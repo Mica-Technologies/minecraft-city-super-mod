@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:signalcontroller.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#east": "csm:blocks/trafficsignals/lane_control_cabinet_side",
+      "#west": "csm:blocks/trafficsignals/lane_control_cabinet_side",
+      "#north": "csm:blocks/trafficsignals/lane_control_cabinet_side",
+      "#south": "csm:blocks/trafficsignals/lane_control_cabinet_side",
+      "#bottom": "csm:blocks/trafficsignals/lane_control_cabinet_side",
+      "#top": "csm:blocks/trafficsignals/lane_control_cabinet_front",
+      "particle": "csm:blocks/trafficsignals/lane_control_cabinet_side"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

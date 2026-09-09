@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -170,6 +171,12 @@ public class BlockLaneControlSignal extends AbstractBlockRotatableNSEW
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
             EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY,
             float hitZ) {
+        // A block's activate runs before the held item's use, so without this exemption the
+        // signal could never be linked to a lane control controller -- its own configuration
+        // GUI would open over the top of the link tool every time.
+        if (player.getHeldItem(hand).getItem() instanceof ItemSignalLinkTool) {
+            return false;
+        }
         player.openGui(Csm.instance, GUI_ID, worldIn, pos.getX(), pos.getY(),
                 pos.getZ());
         return true;

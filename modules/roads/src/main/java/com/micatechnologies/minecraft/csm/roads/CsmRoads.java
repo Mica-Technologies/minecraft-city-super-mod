@@ -16,6 +16,8 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.packets.TileEntityV
 import com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
+import com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlControllerConfigPacket;
+import com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlControllerConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficaccessories.RadarSpeedSignConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.RadarSpeedSignConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficaccessories.SchoolZoneBeaconConfigPacket;
@@ -210,6 +212,10 @@ public class CsmRoads {
     NETWORK.registerMessage(
         InRoadwayLightConfigPacketHandler.class,
         InRoadwayLightConfigPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        LaneControlControllerConfigPacketHandler.class,
+        LaneControlControllerConfigPacket.class,
         Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's

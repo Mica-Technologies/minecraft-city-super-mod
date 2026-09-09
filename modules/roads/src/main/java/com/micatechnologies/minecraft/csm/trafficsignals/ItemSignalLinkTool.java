@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlController;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlSignal;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlController;
 import com.micatechnologies.minecraft.csm.trafficaccessories.AbstractBlockSignalBackplate;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
@@ -33,6 +36,9 @@ import net.minecraft.world.World;
 public class ItemSignalLinkTool extends AbstractItem {
 
   private final Map<UUID, BlockPos> signalControllerPosMap = new HashMap<>();
+  /** Lane control controllers are a separate subject, so the two selections coexist. */
+  private final Map<UUID, BlockPos> laneControllerPosMap = new HashMap<>();
+  private final Map<UUID, Integer> laneGroupIndexMap = new HashMap<>();
   private final Map<UUID, Integer> circuitLinkIndexMap = new HashMap<>();
 
   @Override
@@ -59,6 +65,61 @@ public class ItemSignalLinkTool extends AbstractItem {
               new TextComponentString("Backplate not connected to a configurable signal."));
           return EnumActionResult.FAIL;
         }
+      }
+
+      // Lane control is its own subject and its own targets, so it is resolved before the
+      // signal controller flow rather than threaded through it.
+      if (state.getBlock() instanceof BlockLaneControlController) {
+        int group = player.isSneaking()
+            ? laneGroupIndexMap.getOrDefault(player.getUniqueID(), 0) + 1
+            : 0;
+        TileEntity laneTe = worldIn.getTileEntity(pos);
+        int groupCount = laneTe instanceof TileEntityLaneControlController
+            ? ((TileEntityLaneControlController) laneTe).getGroups().size()
+            : 0;
+        if (groupCount == 0) {
+          player.sendMessage(new TextComponentString(
+              "That lane control controller has no groups yet. Open it and add one first."));
+          return EnumActionResult.SUCCESS;
+        }
+        if (group >= groupCount) {
+          group = 0;
+        }
+        laneControllerPosMap.put(player.getUniqueID(), pos);
+        laneGroupIndexMap.put(player.getUniqueID(), group);
+        player.sendMessage(new TextComponentString(
+            "Linking to lane control group " + (group + 1) + " of " + groupCount
+                + " at (" + pos.getX() + "," + pos.getY() + "," + pos.getZ() + ")."
+                + " Sneak-click the controller to change group."));
+        return EnumActionResult.SUCCESS;
+      }
+      if (state.getBlock() instanceof BlockLaneControlSignal) {
+        BlockPos lanePos = laneControllerPosMap.getOrDefault(player.getUniqueID(), null);
+        if (lanePos == null) {
+          player.sendMessage(
+              new TextComponentString("No lane control controller has been selected."));
+          return EnumActionResult.SUCCESS;
+        }
+        TileEntity laneTe = worldIn.getTileEntity(lanePos);
+        if (!(laneTe instanceof TileEntityLaneControlController)) {
+          player.sendMessage(new TextComponentString(
+              "Unable to link! Lost connection to the selected lane control controller."));
+          return EnumActionResult.SUCCESS;
+        }
+        TileEntityLaneControlController controller = (TileEntityLaneControlController) laneTe;
+        int group = laneGroupIndexMap.getOrDefault(player.getUniqueID(), 0);
+        if (player.isSneaking()) {
+          boolean removed = controller.unlinkSignal(pos);
+          player.sendMessage(new TextComponentString(removed
+              ? "Lane control signal unlinked."
+              : "That lane control signal was not linked to this controller."));
+        } else {
+          boolean linked = controller.linkSignal(group, pos);
+          player.sendMessage(new TextComponentString(linked
+              ? "Lane control signal linked to group " + (group + 1) + "."
+              : "That lane control signal is already in group " + (group + 1) + "."));
+        }
+        return EnumActionResult.SUCCESS;
       }
 
       final BlockPos signalControllerPos =
@@ -346,6 +407,7 @@ public class ItemSignalLinkTool extends AbstractItem {
     list.add("Link signals, sensors, and crosswalks to controller circuits.");
     list.add("Click controller to select, click device to link.");
     list.add("Sneak + click to unlink. Click empty to change circuit.");
+    list.add("Also links lane control signals to a lane control controller.");
   }
 
   /**

@@ -196,6 +196,7 @@ tile.falloutsheltersignalt.name=Schutzraum-Schild (Alternativ)
 tile.freewaycallbox.name=Autobahn-Notrufsäule
 tile.in_roadway_warning_light.name=Fahrbahn-Warnleuchte
 tile.landslidearea.name=Erdrutschgebiet-Schild
+tile.lane_control_controller.name=Fahrstreifensignal-Steuergerät
 tile.lhsstopsign.name=LHS-Stoppschild (Nicht Konform)
 tile.lightsoutnopowersign.name=Lichter Aus – Kein Strom Schild
 tile.metalwirecenter.name=Metalldraht (Zentriert, Unten)

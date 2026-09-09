@@ -53,6 +53,10 @@ public class TrafficAccessoriesGuiProvider implements ICsmGuiProvider {
     } else if (id == BlockRadarSpeedSign.GUI_ID
         && tileEntity instanceof TileEntityRadarSpeedSign) {
       returnValue = new RadarSpeedSignGui((TileEntityRadarSpeedSign) tileEntity);
+    } else if (id == BlockLaneControlController.GUI_ID
+        && tileEntity instanceof TileEntityLaneControlController) {
+      returnValue =
+          new LaneControlControllerGui((TileEntityLaneControlController) tileEntity);
     } else if (id == 18 && tileEntity instanceof TileEntityPoleMountSpeedLimit) {
       returnValue = new BlockPoleMountSpeedLimitGui((TileEntityPoleMountSpeedLimit) tileEntity);
     }
