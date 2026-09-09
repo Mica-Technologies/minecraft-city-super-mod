@@ -17,7 +17,9 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalReca
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
+import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 import net.minecraft.client.gui.GuiButton;
@@ -230,6 +232,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private int selectedPreempt = 0;
   private int selectedOverlap = 0;
 
+  /** Length of the list the current cells were built against; see {@link #updateScreen()}. */
+  private int cellsBuiltForListSize = -1;
+
   private int left;
   private int top;
   private int lcdX;
@@ -439,6 +444,40 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       case STATUS:
       default:
         break;
+    }
+    cellsBuiltForListSize = screenListSize();
+  }
+
+  /**
+   * Number of entries backing the current screen, or -1 for screens that are not list-driven.
+   *
+   * @see #updateScreen()
+   */
+  private int screenListSize() {
+    if (screen == Screen.PREEMPT) {
+      return plan().getPreempts().size();
+    }
+    if (screen == Screen.OVL) {
+      return plan().getVehicleOverlaps().size();
+    }
+    return -1;
+  }
+
+  /**
+   * Rebuilds the cells when the list behind PREEMPT or OVL changes length.
+   *
+   * <p>Adding or removing an entry round-trips through the server, so the plan the client holds
+   * when the button is released is still the old one. Rebuilding at the call site would therefore
+   * build against a list that has not grown yet — and when the list was empty, {@code
+   * buildPreemptCells} and {@code buildOverlapCells} return early, leaving the screen showing its
+   * labels with no editable cells at all until a page change forced another rebuild. Watching the
+   * length instead picks the change up on the tick the sync actually lands.
+   */
+  @Override
+  public void updateScreen() {
+    super.updateScreen();
+    if (screenListSize() != cellsBuiltForListSize) {
+      rebuildCells();
     }
   }
 
@@ -665,6 +704,37 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     return plan().getCoordinationSchedule().getActiveSlot(mc.world);
   }
 
+  /**
+   * Resolves preempt {@code i} from the plan as it stands right now, or {@code null} if the list
+   * no longer reaches that far.
+   *
+   * <p>Cells must go through this rather than closing over the list returned by
+   * {@code plan().getPreempts()}. Editing a preempt round-trips to the server, which sends the
+   * whole plan back, and the client deserializes a brand-new plan object out of the NBT — so a
+   * captured list belongs to the plan that existed when the screen was built and is orphaned the
+   * moment the first edit lands. That is what made the PREEMPT and OVL screens appear frozen until
+   * a page change forced a rebuild, while screens like TIMING, whose cells call {@code plan()}
+   * inside the lambda, updated immediately.
+   */
+  private TrafficSignalPreempt preempt(int i) {
+    List<TrafficSignalPreempt> list = plan().getPreempts();
+    return (i >= 0 && i < list.size()) ? list.get(i) : null;
+  }
+
+  /** Reads a display string off a live preempt, or "--" if it has gone away. */
+  private String preemptText(int i, Function<TrafficSignalPreempt, String> read) {
+    TrafficSignalPreempt p = preempt(i);
+    return p == null ? "--" : read.apply(p);
+  }
+
+  /** Runs an edit against a live preempt, skipping it if the preempt has gone away. */
+  private void preemptEdit(int i, Consumer<TrafficSignalPreempt> edit) {
+    TrafficSignalPreempt p = preempt(i);
+    if (p != null) {
+      edit.accept(p);
+    }
+  }
+
   private void buildPreemptCells() {
     List<TrafficSignalPreempt> preempts = plan().getPreempts();
     if (preempts.isEmpty()) {
@@ -677,20 +747,20 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     int circuitCount = controller.getSignalCircuitCount();
     int y = lcdY + 26;
     cells.add(new Cell(lcdX + 80, y, 40,
-        () -> preempts.get(pi).isEnabled() ? "On" : "off",
-        dir -> send("pe.enabled", pi, preempts.get(pi).isEnabled() ? 0 : 1), null));
+        () -> preemptText(pi, p -> p.isEnabled() ? "On" : "off"),
+        dir -> preemptEdit(pi, p -> send("pe.enabled", pi, p.isEnabled() ? 0 : 1)), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 110,
-        () -> preempts.get(pi).getType().getName(),
-        dir -> send("pe.type", pi,
-            cyc(preempts.get(pi).getType().ordinal(), dir,
-                TrafficSignalPreemptType.values().length)), null));
+        () -> preemptText(pi, p -> p.getType().getName()),
+        dir -> preemptEdit(pi, p -> send("pe.type", pi,
+            cyc(p.getType().ordinal(), dir,
+                TrafficSignalPreemptType.values().length))), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 50,
-        () -> preempts.get(pi).getTriggerCircuitIndex() < 0 ? "--"
-            : ("C" + (preempts.get(pi).getTriggerCircuitIndex() + 1)),
-        dir -> {
-          int c = preempts.get(pi).getTriggerCircuitIndex() + dir;
+        () -> preemptText(pi, p -> p.getTriggerCircuitIndex() < 0 ? "--"
+            : ("C" + (p.getTriggerCircuitIndex() + 1))),
+        dir -> preemptEdit(pi, p -> {
+          int c = p.getTriggerCircuitIndex() + dir;
           if (c < -1) {
             c = circuitCount - 1;
           }
@@ -698,35 +768,35 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             c = -1;
           }
           send("pe.trigCircuit", pi, c);
-        }, null));
+        }), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 60,
-        () -> MOVEMENT_ABBR[preempts.get(pi).getTriggerMovement().ordinal()],
+        () -> preemptText(pi, p -> MOVEMENT_ABBR[p.getTriggerMovement().ordinal()]),
         // PED (the last movement) is excluded: a preempt cannot trigger on the pedestrian
         // movement (a latched button request would never drop, so the dwell could never exit).
-        dir -> send("pe.trigMovement", pi,
-            cyc(preempts.get(pi).getTriggerMovement().ordinal(), dir,
-                TrafficSignalPhaseMovement.values().length - 1)), null));
+        dir -> preemptEdit(pi, p -> send("pe.trigMovement", pi,
+            cyc(p.getTriggerMovement().ordinal(), dir,
+                TrafficSignalPhaseMovement.values().length - 1))), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 50,
-        () -> secs(preempts.get(pi).getMinDwell()),
-        dir -> send("pe.minDwell", pi, preempts.get(pi).getMinDwell() + dir * 20L),
+        () -> preemptText(pi, p -> secs(p.getMinDwell())),
+        dir -> preemptEdit(pi, p -> send("pe.minDwell", pi, p.getMinDwell() + dir * 20L)),
         sec -> send("pe.minDwell", pi, Math.round(sec * 20))));
     // Phase-set toggle rows: TRACK / DWELL / EXIT.
     y += 16;
-    addPhaseToggleRow(preempts, pi, y, "pe.trackToggle", p -> contains(p.getTrackClearPhases()));
+    addPhaseToggleRow(pi, y, "pe.trackToggle", p -> contains(p.getTrackClearPhases()));
     y += 12;
-    addPhaseToggleRow(preempts, pi, y, "pe.dwellToggle", p -> contains(p.getDwellPhases()));
+    addPhaseToggleRow(pi, y, "pe.dwellToggle", p -> contains(p.getDwellPhases()));
     y += 12;
-    addPhaseToggleRow(preempts, pi, y, "pe.exitToggle", p -> contains(p.getExitPhases()));
+    addPhaseToggleRow(pi, y, "pe.exitToggle", p -> contains(p.getExitPhases()));
     // Blankout signs: circuits, not phases — the preempt-driven legends (No-U-Turn / Train) on
     // these circuits illuminate for the whole sequence.
     y += 12;
     for (int ci = 0; ci < circuitCount; ci++) {
       final int c = ci;
       cells.add(new Cell(lcdX + 70 + ci * 22, y, 18,
-          () -> preempts.get(pi).lightsSignsOnCircuit(c) ? ("[" + (c + 1) + "]")
-              : (" " + (c + 1) + " "),
+          () -> preemptText(pi, p -> p.lightsSignsOnCircuit(c) ? ("[" + (c + 1) + "]")
+              : (" " + (c + 1) + " ")),
           dir -> send("pe.signToggle", pi, c), null));
     }
   }
@@ -735,12 +805,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     boolean[] of(TrafficSignalPreempt preempt);
   }
 
-  private void addPhaseToggleRow(List<TrafficSignalPreempt> preempts, int pi, int y, String action,
-      PhaseSet set) {
+  private void addPhaseToggleRow(int pi, int y, String action, PhaseSet set) {
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
       cells.add(new Cell(lcdX + 70 + (pn - 1) * 22, y, 18,
-          () -> set.of(preempts.get(pi))[n] ? ("[" + n + "]") : (" " + n + " "),
+          () -> preemptText(pi, p -> set.of(p)[n] ? ("[" + n + "]") : (" " + n + " ")),
           dir -> send(action, pi, n), null));
     }
   }
@@ -755,6 +824,29 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     return out;
   }
 
+  /**
+   * Resolves overlap {@code i} from the plan as it stands right now, or {@code null} if the list
+   * no longer reaches that far. See {@link #preempt(int)} for why cells must not capture the list.
+   */
+  private TrafficSignalProgrammedOverlap overlap(int i) {
+    List<TrafficSignalProgrammedOverlap> list = plan().getVehicleOverlaps();
+    return (i >= 0 && i < list.size()) ? list.get(i) : null;
+  }
+
+  /** Reads a display string off a live overlap, or "--" if it has gone away. */
+  private String overlapText(int i, Function<TrafficSignalProgrammedOverlap, String> read) {
+    TrafficSignalProgrammedOverlap o = overlap(i);
+    return o == null ? "--" : read.apply(o);
+  }
+
+  /** Runs an edit against a live overlap, skipping it if the overlap has gone away. */
+  private void overlapEdit(int i, Consumer<TrafficSignalProgrammedOverlap> edit) {
+    TrafficSignalProgrammedOverlap o = overlap(i);
+    if (o != null) {
+      edit.accept(o);
+    }
+  }
+
   private void buildOverlapCells() {
     List<TrafficSignalProgrammedOverlap> ovs = plan().getVehicleOverlaps();
     if (ovs.isEmpty()) {
@@ -767,20 +859,20 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     int circuitCount = controller.getSignalCircuitCount();
     int y = lcdY + 26;
     cells.add(new Cell(lcdX + 80, y, 40,
-        () -> ovs.get(oi).isEnabled() ? "On" : "off",
-        dir -> send("ov.enabled", oi, ovs.get(oi).isEnabled() ? 0 : 1), null));
+        () -> overlapText(oi, o -> o.isEnabled() ? "On" : "off"),
+        dir -> overlapEdit(oi, o -> send("ov.enabled", oi, o.isEnabled() ? 0 : 1)), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 60,
-        () -> ovs.get(oi).getType().getName(),
-        dir -> send("ov.type", oi,
-            cyc(ovs.get(oi).getType().ordinal(), dir,
-                TrafficSignalOverlapType.values().length)), null));
+        () -> overlapText(oi, o -> o.getType().getName()),
+        dir -> overlapEdit(oi, o -> send("ov.type", oi,
+            cyc(o.getType().ordinal(), dir,
+                TrafficSignalOverlapType.values().length))), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 50,
-        () -> ovs.get(oi).getOutputCircuitIndex() < 0 ? "--"
-            : ("C" + (ovs.get(oi).getOutputCircuitIndex() + 1)),
-        dir -> {
-          int c = ovs.get(oi).getOutputCircuitIndex() + dir;
+        () -> overlapText(oi, o -> o.getOutputCircuitIndex() < 0 ? "--"
+            : ("C" + (o.getOutputCircuitIndex() + 1))),
+        dir -> overlapEdit(oi, o -> {
+          int c = o.getOutputCircuitIndex() + dir;
           if (c < -1) {
             c = circuitCount - 1;
           }
@@ -788,30 +880,30 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             c = -1;
           }
           send("ov.outCircuit", oi, c);
-        }, null));
+        }), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 60,
-        () -> MOVEMENT_ABBR[ovs.get(oi).getOutputMovement().ordinal()],
-        dir -> send("ov.outMovement", oi,
-            cyc(ovs.get(oi).getOutputMovement().ordinal(), dir,
-                TrafficSignalPhaseMovement.values().length)), null));
+        () -> overlapText(oi, o -> MOVEMENT_ABBR[o.getOutputMovement().ordinal()]),
+        dir -> overlapEdit(oi, o -> send("ov.outMovement", oi,
+            cyc(o.getOutputMovement().ordinal(), dir,
+                TrafficSignalPhaseMovement.values().length))), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 50,
-        () -> secs(ovs.get(oi).getTrailGreen()),
-        dir -> send("ov.trailGreen", oi, ovs.get(oi).getTrailGreen() + dir * 10L),
+        () -> overlapText(oi, o -> secs(o.getTrailGreen())),
+        dir -> overlapEdit(oi, o -> send("ov.trailGreen", oi, o.getTrailGreen() + dir * 10L)),
         sec -> send("ov.trailGreen", oi, Math.round(sec * 20))));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 50,
-        () -> secs(ovs.get(oi).getLeadGreen()),
-        dir -> send("ov.leadGreen", oi, ovs.get(oi).getLeadGreen() + dir * 10L),
+        () -> overlapText(oi, o -> secs(o.getLeadGreen())),
+        dir -> overlapEdit(oi, o -> send("ov.leadGreen", oi, o.getLeadGreen() + dir * 10L)),
         sec -> send("ov.leadGreen", oi, Math.round(sec * 20))));
     y += 12;
     // Detector-to-phase assignment: output-zone detection calls this phase (0 = no call).
     cells.add(new Cell(lcdX + 80, y, 50,
-        () -> ovs.get(oi).getCallPhase() <= 0 ? "--" : ("P" + ovs.get(oi).getCallPhase()),
-        dir -> {
+        () -> overlapText(oi, o -> o.getCallPhase() <= 0 ? "--" : ("P" + o.getCallPhase())),
+        dir -> overlapEdit(oi, o -> {
           int max = TrafficSignalProgrammedPhasePlan.PHASE_COUNT;
-          int cp = ovs.get(oi).getCallPhase() + dir;
+          int cp = o.getCallPhase() + dir;
           if (cp < 0) {
             cp = max;
           }
@@ -819,26 +911,29 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             cp = 0;
           }
           send("ov.callPhase", oi, cp);
-        }, null));
+        }), null));
     y += 14;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
       cells.add(new Cell(lcdX + 70 + (pn - 1) * 22, y, 18,
-          () -> contains(ovs.get(oi).getIncludedPhases())[n] ? ("[" + n + "]") : (" " + n + " "),
+          () -> overlapText(oi,
+              o -> contains(o.getIncludedPhases())[n] ? ("[" + n + "]") : (" " + n + " ")),
           dir -> send("ov.includedToggle", oi, n), null));
     }
     y += 14;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
       cells.add(new Cell(lcdX + 70 + (pn - 1) * 22, y, 18,
-          () -> contains(ovs.get(oi).getPermissivePhases())[n] ? ("[" + n + "]") : (" " + n + " "),
+          () -> overlapText(oi,
+              o -> contains(o.getPermissivePhases())[n] ? ("[" + n + "]") : (" " + n + " ")),
           dir -> send("ov.permToggle", oi, n), null));
     }
     y += 14;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
       cells.add(new Cell(lcdX + 70 + (pn - 1) * 22, y, 18,
-          () -> contains(ovs.get(oi).getModifierPhases())[n] ? ("[" + n + "]") : (" " + n + " "),
+          () -> overlapText(oi,
+              o -> contains(o.getModifierPhases())[n] ? ("[" + n + "]") : (" " + n + " ")),
           dir -> send("ov.modifierToggle", oi, n), null));
     }
   }
