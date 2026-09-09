@@ -1757,6 +1757,19 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * @since 2026.6
    */
   public void applyAdvancedConfig(String action, int index, long value) {
+    applyAdvancedConfig(action, index, value, 0);
+  }
+
+  /**
+   * Applies one configuration action from the ADVANCED panel.
+   *
+   * @param action the action name
+   * @param index  the action's index argument, where it has one
+   * @param value  the action's value argument
+   * @param slot   which coordination pattern the action applies to, for the settings that have
+   *               one per time-of-day slot; ignored by everything else
+   */
+  public void applyAdvancedConfig(String action, int index, long value, int slot) {
     TrafficSignalProgrammedPhasePlan plan = getOrCreateProgrammedPhasePlan();
     TrafficSignalProgrammedPhase phase = plan.getPhase(index);
     boolean changed = true;
@@ -1897,20 +1910,26 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         }
         break;
       case "co.mode":
-        plan.getCoordination().setMode(TrafficSignalCoordinationMode.fromNBT((int) value));
+        plan.getCoordination(slot).setMode(TrafficSignalCoordinationMode.fromNBT((int) value));
         break;
       case "co.cycle":
-        plan.getCoordination().setCycleLength(clampTicks(value));
+        plan.getCoordination(slot).setCycleLength(clampTicks(value));
         break;
       case "co.offset":
-        plan.getCoordination().setOffset(clampTicks(value));
+        plan.getCoordination(slot).setOffset(clampTicks(value));
         break;
       case "co.split":
-        plan.getCoordination().setSplit(index, clampTicks(value));
+        plan.getCoordination(slot).setSplit(index, clampTicks(value));
         break;
       case "co.coordToggle":
-        plan.getCoordination().setCoordinatedPhases(
-            toggleInArray(plan.getCoordination().getCoordinatedPhases(), (int) value));
+        plan.getCoordination(slot).setCoordinatedPhases(
+            toggleInArray(plan.getCoordination(slot).getCoordinatedPhases(), (int) value));
+        break;
+      case "co.todEnabled":
+        plan.setTimeOfDayPatterns(value != 0);
+        break;
+      case "co.todStart":
+        plan.getCoordinationSchedule().setStartHour(index, (int) value);
         break;
       case "pe.add":
         plan.getPreempts().add(new TrafficSignalPreempt());

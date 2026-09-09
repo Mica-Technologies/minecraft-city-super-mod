@@ -205,6 +205,26 @@ public class RingBarrierState {
   private boolean coordinationAdvisoriesReported = false;
 
   /**
+   * Which time-of-day coordination pattern is actually running, or {@code -1} before the first
+   * tick has resolved one.
+   *
+   * <p>This is the <em>only</em> thing in the engine that knows patterns exist. Everything below
+   * it — force-off points, permissive windows, yield — sees a single
+   * {@link TrafficSignalCoordinationPlan} and cannot tell whether a table chose it.</p>
+   *
+   * <p>Transient like the rest of this class: after a reload it is {@code -1} and resolves from
+   * the world clock on the next tick, rather than being remembered. A remembered pattern would
+   * be the wrong one whenever a world was saved in one slot and loaded in another.</p>
+   */
+  private int activeCoordinationSlot = -1;
+
+  /**
+   * Last tick's position in the background cycle, used only to notice the cycle rolling over.
+   * {@code -1} means there is no previous position to compare against.
+   */
+  private long previousLocalCycle = -1L;
+
+  /**
    * Source of per-tick detector and pedestrian demand. Production wraps the world; unit tests
    * supply canned data so the ring-and-barrier engine can be exercised without a Minecraft world.
    */
@@ -282,7 +302,7 @@ public class RingBarrierState {
     this.demand = demandSource;
 
     // Compute coordination windows for this tick (no-op in FREE mode).
-    computeCoordination(plan, now);
+    computeCoordination(plan, now, world);
 
     // Locking detector memory: latch/discharge LOCK phases' vehicle calls before demand is read.
     updateLockedCalls(plan);
@@ -1210,8 +1230,14 @@ public class RingBarrierState {
    * plan's {@link TrafficSignalCoordinationPlan}. In FREE mode this clears the state and returns
    * immediately, so coordination adds nothing to free/actuated operation.
    */
-  private void computeCoordination(TrafficSignalProgrammedPhasePlan plan, long now) {
-    TrafficSignalCoordinationPlan co = plan.getCoordination();
+  private void computeCoordination(TrafficSignalProgrammedPhasePlan plan, long now,
+      World world) {
+    int scheduled = plan.getScheduledCoordinationSlot(world);
+    if (activeCoordinationSlot < 0) {
+      // Cold start (first tick, or the first after a reload): take whatever the clock says now.
+      activeCoordinationSlot = scheduled;
+    }
+    TrafficSignalCoordinationPlan co = plan.getCoordination(activeCoordinationSlot);
     coordinated = co.isCoordinated();
     for (int i = 0; i < PHASE_SLOTS; i++) {
       windowStart[i] = 0L;
@@ -1220,11 +1246,18 @@ public class RingBarrierState {
     }
     if (!coordinated) {
       cycleTicks = 1L;
+      activeCoordinationSlot =
+          nextCoordinationSlot(activeCoordinationSlot, scheduled, false, 0L, -1L);
+      previousLocalCycle = -1L;
       return;
     }
     long cycle = Math.max(1L, co.getCycleLength());
     cycleTicks = cycle;
     localCycle = ((now - co.getOffset()) % cycle + cycle) % cycle;
+
+    activeCoordinationSlot = nextCoordinationSlot(activeCoordinationSlot, scheduled, true,
+        localCycle, previousLocalCycle);
+    previousLocalCycle = localCycle;
 
     for (int ring = 1; ring <= 2; ring++) {
       int[] seq = plan.getRingSequence(ring);
@@ -1263,6 +1296,35 @@ public class RingBarrierState {
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
       coordPhase[n] = co.isCoordinatedPhase(n);
     }
+  }
+
+  /**
+   * Decides which coordination pattern runs next.
+   *
+   * <p>The rule this encodes is the whole of time-of-day patterning as far as the engine is
+   * concerned, which is why it is a function rather than a few lines inline: a pattern may only
+   * be adopted at a cycle boundary. A pattern with a different cycle length or offset taken up
+   * mid-cycle would move every force-off point out from under the phases already timing against
+   * them, and the phases would clear late or early for the rest of that cycle.</p>
+   *
+   * <p>Two cases skip the wait, both because there is nothing to wait for. A cold start has no
+   * pattern yet, and a free pattern has no cycle.</p>
+   *
+   * @param activeSlot         the pattern running now, or negative if none has been chosen yet
+   * @param scheduledSlot      the pattern the clock selects
+   * @param coordinated        whether the running pattern is coordinated at all
+   * @param localCycle         this tick's position in the background cycle
+   * @param previousLocalCycle last tick's position, or negative if there was none
+   *
+   * @return the pattern to run from now on
+   */
+  static int nextCoordinationSlot(int activeSlot, int scheduledSlot, boolean coordinated,
+      long localCycle, long previousLocalCycle) {
+    if (activeSlot < 0 || !coordinated) {
+      return scheduledSlot;
+    }
+    boolean rolledOver = previousLocalCycle >= 0L && localCycle < previousLocalCycle;
+    return rolledOver ? scheduledSlot : activeSlot;
   }
 
   /**

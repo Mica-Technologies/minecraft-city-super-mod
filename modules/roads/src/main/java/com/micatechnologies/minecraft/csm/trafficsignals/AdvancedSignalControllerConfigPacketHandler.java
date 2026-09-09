@@ -35,7 +35,7 @@ public class AdvancedSignalControllerConfigPacketHandler implements
         return;
       }
       ((TileEntityTrafficSignalController) te).applyAdvancedConfig(
-          message.getAction(), message.getIndex(), message.getValue());
+          message.getAction(), message.getIndex(), message.getValue(), message.getSlot());
     });
     return null;
   }

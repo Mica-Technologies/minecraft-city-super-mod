@@ -2,6 +2,8 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationMode;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationPlan;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficTimeOfDaySchedule;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashOverride;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalOverlapType;
@@ -231,6 +233,12 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private int lcdY;
   private int lcdW;
 
+  /**
+   * Which coordination pattern the COORD screen is editing. Purely a view state — the running
+   * pattern is chosen by the clock, and this only says which one the operator is looking at.
+   */
+  private int editingSlot = 0;
+
   public AdvancedSignalControllerGui(TileEntityTrafficSignalController controller) {
     this.controller = controller;
     this.blockPos = controller.getPos();
@@ -320,7 +328,14 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   }
 
   private void send(String action, int index, long value) {
-    CsmRoads.NETWORK.sendToServer(new AdvancedSignalControllerConfigPacket(blockPos, action, index, value));
+    CsmRoads.NETWORK.sendToServer(
+        new AdvancedSignalControllerConfigPacket(blockPos, action, index, value));
+  }
+
+  /** Sends an action against one coordination pattern rather than the controller as a whole. */
+  private void sendForSlot(String action, int index, long value) {
+    CsmRoads.NETWORK.sendToServer(
+        new AdvancedSignalControllerConfigPacket(blockPos, action, index, value, editingSlot));
   }
 
   // endregion
@@ -566,35 +581,78 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   }
 
   private void buildCoordCells() {
+    // The pattern selector sits on the header line rather than a row of its own: the phase table
+    // below already reaches within a few pixels of the bottom of the LCD, so there is no vertical
+    // room to add one without pushing the splits off the screen.
+    cells.add(new Cell(lcdX + 112, lcdY, 34,
+        () -> plan().isTimeOfDayPatterns() ? "TOD" : "SINGLE",
+        dir -> send("co.todEnabled", 0, plan().isTimeOfDayPatterns() ? 0L : 1L), null));
+    cells.add(new Cell(lcdX + 150, lcdY, 64,
+        this::editingSlotLabel,
+        dir -> editingSlot = cyc(editingSlot, dir, TrafficTimeOfDaySchedule.SLOT_COUNT), null));
+    cells.add(new Cell(lcdX + 218, lcdY, 46,
+        () -> plan().isTimeOfDayPatterns()
+            ? "@" + TrafficTimeOfDaySchedule.formatHour(
+                plan().getCoordinationSchedule().getStartHour(editingSlot))
+            : "-",
+        dir -> send("co.todStart", editingSlot,
+            plan().getCoordinationSchedule().getStartHour(editingSlot) + dir), null));
+
     int y = lcdY + 14;
     cells.add(new Cell(lcdX + 70, y, 80,
-        () -> plan().getCoordination().getMode().getName(),
-        dir -> send("co.mode", 0,
-            cyc(plan().getCoordination().getMode().ordinal(), dir,
+        () -> coord().getMode().getName(),
+        dir -> sendForSlot("co.mode", 0,
+            cyc(coord().getMode().ordinal(), dir,
                 TrafficSignalCoordinationMode.values().length)), null));
     y += 12;
     cells.add(new Cell(lcdX + 70, y, 50,
-        () -> secs(plan().getCoordination().getCycleLength()),
-        dir -> send("co.cycle", 0, plan().getCoordination().getCycleLength() + dir * 20L),
-        sec -> send("co.cycle", 0, Math.round(sec * 20))));
+        () -> secs(coord().getCycleLength()),
+        dir -> sendForSlot("co.cycle", 0, coord().getCycleLength() + dir * 20L),
+        sec -> sendForSlot("co.cycle", 0, Math.round(sec * 20))));
     y += 12;
     cells.add(new Cell(lcdX + 70, y, 50,
-        () -> secs(plan().getCoordination().getOffset()),
-        dir -> send("co.offset", 0, plan().getCoordination().getOffset() + dir * 20L),
-        sec -> send("co.offset", 0, Math.round(sec * 20))));
+        () -> secs(coord().getOffset()),
+        dir -> sendForSlot("co.offset", 0, coord().getOffset() + dir * 20L),
+        sec -> sendForSlot("co.offset", 0, Math.round(sec * 20))));
     y += 24;
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
       int ry = y + (pn - 1) * rowH;
       cells.add(new Cell(lcdX + 70, ry, 50,
-          () -> secs(plan().getCoordination().getSplit(n)),
-          dir -> send("co.split", n, plan().getCoordination().getSplit(n) + dir * 20L),
-          sec -> send("co.split", n, Math.round(sec * 20))));
+          () -> secs(coord().getSplit(n)),
+          dir -> sendForSlot("co.split", n, coord().getSplit(n) + dir * 20L),
+          sec -> sendForSlot("co.split", n, Math.round(sec * 20))));
       cells.add(new Cell(lcdX + 150, ry, 40,
-          () -> plan().getCoordination().isCoordinatedPhase(n) ? "COORD" : "-",
-          dir -> send("co.coordToggle", 0, n), null));
+          () -> coord().isCoordinatedPhase(n) ? "COORD" : "-",
+          dir -> sendForSlot("co.coordToggle", 0, n), null));
     }
+  }
+
+  /** The coordination pattern the COORD screen is currently editing. */
+  private TrafficSignalCoordinationPlan coord() {
+    return plan().getCoordination(plan().isTimeOfDayPatterns() ? editingSlot : 0);
+  }
+
+  /**
+   * The pattern selector's label: the slot name, marked when it is the one the clock has
+   * selected, so an operator can see at a glance whether they are editing the running pattern or
+   * a different one.
+   */
+  private String editingSlotLabel() {
+    if (!plan().isTimeOfDayPatterns()) {
+      return "PLAN";
+    }
+    String name = TrafficTimeOfDaySchedule.SLOT_NAMES[editingSlot];
+    return editingSlot == activeSlot() ? name + "*" : name;
+  }
+
+  /** Which pattern the clock currently selects, or -1 when patterns are off or there is no world. */
+  private int activeSlot() {
+    if (!plan().isTimeOfDayPatterns() || mc == null || mc.world == null) {
+      return -1;
+    }
+    return plan().getCoordinationSchedule().getActiveSlot(mc.world);
   }
 
   private void buildPreemptCells() {
@@ -1289,6 +1347,21 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   private void drawCoord() {
     fontRenderer.drawString("COORDINATION", lcdX, lcdY, COLOR_AMBER_HEAD);
+    addHelp(lcdX + 112, lcdY, 34, 9, "Time-of-day patterns",
+        "SINGLE = one coordination plan, always. TOD = four patterns",
+        "(AM Peak / Midday / PM Peak / Night), each with its own mode,",
+        "cycle, offset and splits, chosen by the world clock.");
+    addHelp(lcdX + 150, lcdY, 64, 9, "Pattern being edited",
+        "Which of the four patterns the settings below belong to.",
+        "A * marks the one the clock has selected right now. Changing",
+        "this only changes what you are looking at, never what runs.");
+    addHelp(lcdX + 218, lcdY, 46, 9, "Pattern start time",
+        "The hour this pattern takes over. Each pattern runs until the",
+        "next one begins, wrapping past midnight, so the four of them",
+        "always cover the whole day with no gap.",
+        "A new pattern is adopted at the end of a cycle, never in the",
+        "middle of one — changing cycle length mid-cycle would move",
+        "every force-off point out from under the phases running.");
     fontRenderer.drawString("Mode:", lcdX, lcdY + 14, COLOR_AMBER_DIM);
     fontRenderer.drawString("Cycle:", lcdX, lcdY + 26, COLOR_AMBER_DIM);
     fontRenderer.drawString("Offset:", lcdX, lcdY + 38, COLOR_AMBER_DIM);

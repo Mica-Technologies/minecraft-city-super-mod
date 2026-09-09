@@ -20,15 +20,27 @@ public class AdvancedSignalControllerConfigPacket implements IMessage {
   private String action;
   private int index;
   private long value;
+  /**
+   * Which coordination pattern the action applies to, for the settings that have one per
+   * time-of-day slot. Zero for everything else, which is every action that existed before
+   * patterns did.
+   */
+  private int slot;
 
   public AdvancedSignalControllerConfigPacket() {
   }
 
   public AdvancedSignalControllerConfigPacket(BlockPos pos, String action, int index, long value) {
+    this(pos, action, index, value, 0);
+  }
+
+  public AdvancedSignalControllerConfigPacket(BlockPos pos, String action, int index, long value,
+      int slot) {
     this.pos = pos;
     this.action = action;
     this.index = index;
     this.value = value;
+    this.slot = slot;
   }
 
   @Override
@@ -37,6 +49,7 @@ public class AdvancedSignalControllerConfigPacket implements IMessage {
     this.action = ByteBufUtils.readUTF8String(buf);
     this.index = buf.readInt();
     this.value = buf.readLong();
+    this.slot = buf.readInt();
   }
 
   @Override
@@ -45,6 +58,7 @@ public class AdvancedSignalControllerConfigPacket implements IMessage {
     ByteBufUtils.writeUTF8String(buf, this.action);
     buf.writeInt(this.index);
     buf.writeLong(this.value);
+    buf.writeInt(this.slot);
   }
 
   public BlockPos getPos() {
@@ -61,5 +75,9 @@ public class AdvancedSignalControllerConfigPacket implements IMessage {
 
   public long getValue() {
     return value;
+  }
+
+  public int getSlot() {
+    return slot;
   }
 }
