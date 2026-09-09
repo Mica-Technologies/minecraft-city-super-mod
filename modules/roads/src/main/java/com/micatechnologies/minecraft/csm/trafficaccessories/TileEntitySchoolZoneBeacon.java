@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficTimeOfDaySchedule;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
@@ -130,16 +131,12 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   }
 
   /**
-   * The world's hour of day, 0-23. Minecraft's day starts at 06:00, so tick 0 is 6am and each
-   * 1000 ticks is an hour.
+   * The world's hour of day, 0-23.
    *
    * @return the hour of day, or -1 with no world
    */
   public int getWorldHour() {
-    if (world == null) {
-      return -1;
-    }
-    return (int) (((world.getWorldTime() / 1000L) + 6L) % 24L);
+    return TrafficTimeOfDaySchedule.hourOfDay(world);
   }
 
   /**
@@ -166,8 +163,12 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   }
 
   /**
-   * Whether an hour falls inside a posted window. Package-visible so the wrapping and
-   * zero-length cases can be tested without a world.
+   * Whether an hour falls inside a posted window.
+   *
+   * <p>The arithmetic itself is {@link TrafficTimeOfDaySchedule#inWindow}, shared with the
+   * controllers that read the same clock. This alias stays because the beacon's own tests
+   * document the beacon's contract, and because the short name reads better where it is used.
+   * </p>
    *
    * @param hour  the hour of day, 0-23
    * @param start the window's first hour, inclusive
@@ -176,13 +177,7 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
    * @return {@code true} if the hour is inside the window
    */
   static boolean inWindow(int hour, int start, int end) {
-    if (start == end) {
-      return false; // a zero-length window is off, not all day
-    }
-    if (start < end) {
-      return hour >= start && hour < end;
-    }
-    return hour >= start || hour < end; // wraps past midnight
+    return TrafficTimeOfDaySchedule.inWindow(hour, start, end);
   }
 
   public void setSpeedLimit(int speed) {
