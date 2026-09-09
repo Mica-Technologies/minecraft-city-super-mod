@@ -476,6 +476,149 @@ between two sparse ticks from one that only just started beyond it and should dw
 See `TRAFFIC_SIGNAL_SYSTEM.md` § Coordination for the mechanism and the note that splits now
 include clearance, which shortens side-street greens on plans tuned to the older behavior.
 
+## 5c. Time-of-day coordination patterns
+
+### What the ASC/3 does
+
+A real controller does not run one coordination plan. It holds a **time-of-day table** that selects
+among several patterns through the day — a different cycle length, offset and split set for the AM
+peak, the midday, the PM peak and the night, because a corridor that platoons inbound at 8am
+platoons outbound at 5pm and should not be coordinating at all at 2am.
+
+### Our model
+
+`TrafficSignalProgrammedPhasePlan` holds **four** `TrafficSignalCoordinationPlan`s indexed by
+`TrafficTimeOfDaySchedule` slot, plus its own copy of the schedule and a `timeOfDayPatterns`
+switch. Each pattern is a whole plan, so a pattern changes cycle length, offset, coordinated phase
+set and splits together — which is what makes a corridor genuinely run differently at 8am and 8pm.
+
+**Slot 0 is the plan a controller has always had.** A controller saved before patterns existed
+reads its single plan into slot 0, and with the switch off behaves exactly as it did; the other
+three write as empty compounds. There is no migration step.
+
+The schedule itself (`TrafficTimeOfDaySchedule`, in `trafficsignals/logic`) is shared with the lane
+control controller and the school zone beacon, so the road system has **one** answer to what time
+of day it is. Its four slots — AM Peak, Midday, PM Peak, Night, starting 6/9/15/19 by default —
+**partition the clock** rather than each holding a window: a slot runs until the next one starts,
+wrapping past midnight. That makes a gap between patterns impossible to express by accident, which
+a set of four independent windows does not.
+
+### The change rule, which is a correctness rule
+
+The active pattern is read **once per cycle, not once per tick**:
+
+```java
+static int nextCoordinationSlot(int activeSlot, int scheduledSlot, boolean coordinated,
+    long localCycle, long previousLocalCycle)
+```
+
+A pattern is adopted only when the background cycle rolls over (`localCycle < previousLocalCycle`).
+This is not a simplification to avoid modelling a transition — **a pattern with a different cycle
+length taken up mid-cycle moves every force-off point out from under the phases that are timing
+against them.** Nothing inside `RingBarrierState`'s per-tick force-off and yield maths learns that
+patterns exist at all; it keeps seeing one plan.
+
+Two cases skip the wait, and both matter:
+
+- **Cold start.** `RingBarrierState` is transient and rebuilt on load, so `activeCoordinationSlot`
+  starts at `-1` and takes whatever the clock says on the first tick. Remembering the slot instead
+  would have a reloaded controller running the wrong pattern until the next rollover.
+- **Not coordinated.** A FREE pattern has no cycle to roll over. Without the exemption a controller
+  whose night pattern is FREE could enter it and never leave.
+
+### GUI
+
+The **COORD** screen gains two cells: `SINGLE`/`TOD`, and a pattern selector that chooses which
+slot's plan the rest of the screen is editing (marked `*` when it is the one the clock has
+selected). With `SINGLE` the screen edits slot 0 and the selector is inert.
+
+### Tests
+
+`TrafficTimeOfDayScheduleTest` covers slot selection across all 24 hours including the wrap and the
+NBT round trip; `CoordinationPatternTest` and `RingBarrierStateCoordinationTest` cover the
+boundary-deferred adoption, the cold start and the free-pattern exemption.
+
+## 5d. Transit signal priority (TSP)
+
+### What the ASC/3 does
+
+Priority and preemption are different things, and the ASC/3 treats them differently. A **preempt**
+is the heavy hammer: terminate everything conflicting through yellow and red clearance, serve a
+track-clear, dwell, exit. Coordination is lost and recovered afterwards. **Priority** does neither
+— it nudges the cycle that is already running so a bus makes the green it would otherwise miss,
+and the corridor stays coordinated throughout.
+
+The mod already had `TrafficSignalPreemptType.PRIORITY`, which is a preempt. This is the other
+thing.
+
+### Our model
+
+`TrafficSignalPriorityPlan` (NBT key `pri` inside the phase plan) holds a trigger — **a circuit
+index plus a movement**, exactly how railroad and emergency preempts are triggered, so no new
+detector block exists — a transit phase, and three bounds:
+
+| Setting | Default | Effect |
+|---|---|---|
+| `maxExtension` | 200 ticks (10 s) | how far past its ceiling a transit green may be held |
+| `maxEarlyReturn` | 200 ticks (10 s) | how much may be taken off a conflicting phase's ceiling |
+| `minCyclesBetweenGrants` | 2 | rate limit, counted in whole cycles |
+
+`RingBarrierState.computePriority` decides once per tick whether a call is being honoured, before
+any phase is timed. `applyPriorityToMaxGreen` then adjusts one phase's ceiling, immediately after
+`effMaxGreen` is computed:
+
+- the **transit phase** gets `+ min(extensionLeft, maxExtension)`;
+- a phase that **conflicts** with the transit phase gets `- maxEarlyReturn`, floored at its own
+  minimum green;
+- a phase that conflicts with nothing is left alone — shortening it would rob a movement that was
+  never in the way.
+
+### Why this is safe to bolt onto the ring engine
+
+**Only the maximum green ever moves.** The engine will not terminate a phase until `minMet` and
+`pedDone` regardless of what the maximum says, so priority can lengthen a green or bring one
+forward but can never cut one short, never truncate a pedestrian clearance, and never touch the
+clearance invariant (§ *Clearance Guarantee* in `TRAFFIC_SIGNAL_SYSTEM.md`). Early return shortens
+a phase *toward* its minimum, and that phase then clears normally.
+
+`adjustMaxGreen` floors at the minimum green itself rather than relying on the engine to catch it:
+a maximum below the minimum is a nonsense the plan should not be able to express in the first
+place.
+
+### The grant lifecycle
+
+A grant lasts as long as the call does and spends an extension budget that **does not refill until
+the call drops** — otherwise a bus sitting in a detection zone holds a green indefinitely on one
+call. A fresh call is granted only if `mayGrant(currentCycle, lastGrantCycle)` allows it.
+
+The rate limit is counted in whole cycles because that is the only unit that means anything to a
+coordinated corridor. Free operation has no cycle number, so the limit does not apply there and the
+extension cap is what bounds priority instead — refusing every grant would have silently disabled
+the feature for every uncoordinated controller.
+
+All of this state is **transient**, like the rest of `RingBarrierState`: a grant is a live thing,
+and a controller that came back from a reload still holding one would be favouring a bus that left
+long ago.
+
+### Precedence
+
+Priority loses to railroad and emergency preemption by construction — a preempt drives the phase
+build outright, and priority only ever adjusts a ceiling inside normal ring service. No second
+precedence mechanism was invented for it.
+
+### GUI
+
+Its own **TSP** screen, not a block on the PREEMPT page: the preempt table already fills the LCD
+and a block hanging off the bottom of it ran into the keypad. Six cells — enable, trigger circuit
+and movement, transit phase, extension and early return, minimum cycles.
+
+### Tests
+
+`TrafficSignalPriorityPlanTest` covers the extension arithmetic and its cap, early return applying
+only to conflicting phases, the minimum-green floor, the cycle-counted rate limit and its free-mode
+exemption, `isRunnable` gating, and the round trip — including a plan saved before priority existed
+reading back with it off.
+
 ## 6. Roadmap
 
 Only niche / poor-fit items remain:
@@ -505,6 +648,9 @@ through an injectable `DemandSource` (production wraps the world; tests supply c
   survives the vehicle leaving the zone and is discharged by service; presence phases drop it).
 - `AdvancedActuationTimingTest` — the pure volume-density math (added initial, effective min/max
   green, gap-reduction ramp), tested directly.
+- `TrafficTimeOfDayScheduleTest`, `CoordinationPatternTest` and `RingBarrierStateCoordinationTest`
+  — the time-of-day schedule and the cycle-boundary pattern adoption (§5c).
+- `TrafficSignalPriorityPlanTest` — the transit priority arithmetic and its guards (§5d).
 - `AdvancedPhaseBuilderTest` — the pure `applyFyaLensState(...)` FYA decision (all four outcomes),
   the pure `overlapState(...)` decision plus a builder integration test that an overlap drives a
   different circuit's heads, `TrafficSignalProgrammedOverlap` NBT round-trip, and

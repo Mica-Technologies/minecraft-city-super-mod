@@ -106,6 +106,7 @@ nav:
       - Traffic Signals: guides/traffic-signals.md
       - Advanced Mode (ASC-3): guides/advanced-mode-asc3.md
       - Crosswalks & APS: guides/crosswalks-and-aps.md
+      - Lane Control: guides/lane-control.md
       - Span Wire: guides/span-wire.md
       - Mast Arms: guides/mast-arms.md
       - Road Signs: guides/road-signs.md

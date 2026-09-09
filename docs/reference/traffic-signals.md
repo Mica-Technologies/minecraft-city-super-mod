@@ -2,7 +2,7 @@
 
 Signal heads, crosswalk signals and the controllers that drive them.
 
-!!! info "84 blocks in this tab"
+!!! info "87 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -29,6 +29,7 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | Doghouse Signal (Secondary/Right) | `csm:controllabledoghousesignalsecondaryleft` |  |  |  |  |
 | Doghouse Signal (Secondary/Right: Yellow Arrow + Green/FYA Bimodal) | `csm:controllabledoghousesignalsecondarybimodalright` |  |  |  |  |
 | Hawk Traffic Signal | `csm:controllablehawksignal` | 2 | 10 | pickaxe | 1 |
+| In-Roadway Warning Light | `csm:in_roadway_warning_light` | 2 | 10 | pickaxe | 1 |
 | Overheight Detection Sensor | `csm:overheight_detection_sensor` | 2 | 10 | pickaxe | 1 |
 | PedSafety APS Push Button (Gray) | `csm:controllablecrosswalkbuttonpsgray` | 2 | 10 | pickaxe | 1 |
 | Polara iN2 Crosswalk Button (Black) | `csm:controllablecrosswalkbuttonmale` | 2 | 10 | pickaxe | 1 |
@@ -36,6 +37,7 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | Ramp Meter On Crosswalk Light (Single 16-Inch, Left Mount) | `csm:controllablerampmeteronsignalleftmount` | 2 | 10 | pickaxe | 1 |
 | Ramp Meter On Crosswalk Light (Single 16-Inch, Rear Mount) | `csm:controllablerampmeteronsignalmount` | 2 | 10 | pickaxe | 1 |
 | Ramp Meter On Crosswalk Light (Single 16-Inch, Right Mount) | `csm:controllablerampmeteronsignalrightmount` | 2 | 10 | pickaxe | 1 |
+| RRFB (Rectangular Rapid Flashing Beacon) | `csm:controllablerrfb` | 2 | 10 | pickaxe | 1 |
 | Single Traffic Signal (Flashing Green) | `csm:controllablesinglesolidsignalgreen` |  |  |  |  |
 | Single Traffic Signal (Flashing Red) | `csm:controllablesinglesolidsignalred` |  |  |  |  |
 | Single Traffic Signal (Flashing Yellow) | `csm:controllablesinglesolidsignalyellow` |  |  |  |  |
@@ -85,6 +87,7 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | Vertical Traffic Signal (Right Arrow, Solid Red) | `csm:controllableverticalright2signal` |  |  |  |  |
 | Vertical Traffic Signal (Solid) | `csm:controllableverticalsolidsignal` |  |  |  |  |
 | Vertical Traffic Signal (Solid, 12-8-8 Inch) | `csm:controllableverticalsolidsignal1288inch` |  |  |  |  |
+| Vertical Traffic Signal (Solid, 2-Section 12 Inch) | `csm:controllableverticalsolidsignal2section` |  |  |  |  |
 | Vertical Traffic Signal (Solid, 8 Inch) | `csm:controllableverticalsolidsignal8inch` |  |  |  |  |
 | Vertical Traffic Signal (Solid, 8-8-12 Inch) | `csm:controllableverticalsolidsignal8812inch` |  |  |  |  |
 | Vertical Traffic Signal (Solid, Flashing Green) | `csm:controllableverticalsolidflashgreensignal` |  |  |  |  |

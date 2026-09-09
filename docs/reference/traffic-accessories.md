@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "258 blocks in this tab"
+!!! info "266 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -21,6 +21,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Black Mast Arm Curve 6x2 (Arterial) | `csm:trafficpolemastarmcurve6x2black` | 2 | 10 | pickaxe | 1 |
 | Black Mast Arm Curve 8x2 (Major Intersection) | `csm:trafficpolemastarmcurve8x2black` | 2 | 10 | pickaxe | 1 |
 | Black Metal Signal Mount | `csm:tlpmblack` |  | 10 | pickaxe | 1 |
+| Black Pedestal Traffic Pole | `csm:trafficpolepedestalblack` | 2 | 10 | pickaxe | 1 |
 | Black Thick Traffic Pole | `csm:trafficpoleverticalblack` | 2 | 10 | pickaxe | 1 |
 | Black Thin Traffic Pole | `csm:trafficpolehorizontalblack` | 2 | 10 | pickaxe | 1 |
 | Black Vertical Traffic Pole with Connector | `csm:trafficpoleverticalconnectorblack` |  | 10 | pickaxe | 1 |
@@ -61,6 +62,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Horizontal Signal Mount Kit | `csm:tlhmountkit` |  | 10 | pickaxe | 1 |
 | Horizontal Traffic Pole with Double Mount (Unpainted) | `csm:trafficpolehorzdoublemountunpainted` | 2 | 10 | pickaxe | 1 |
 | Horizontal Traffic Pole with Single Mount (Unpainted) | `csm:trafficpolehorzsinglemountunpainted` | 2 | 10 | pickaxe | 1 |
+| Lane Control Controller | `csm:lane_control_controller` | 2 | 10 | pickaxe | 1 |
 | Lane Control Signal | `csm:lane_control_signal` |  |  |  |  |
 | Metal Wire (Centered, Bottom) | `csm:metalwirecenter` |  | 10 | pickaxe | 1 |
 | Metal Wire (Centered, Top) | `csm:metalwirecentertop` |  | 10 | pickaxe | 1 |
@@ -90,6 +92,8 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Pole-Mount Variable Speed Limit Sign | `csm:polemount_speed_limit_sign` | 2 | 10 | pickaxe | 1 |
 | Portable Changeable Message Sign | `csm:portable_message_sign` | 2 | 10 | pickaxe | 1 |
 | Portable Variable Speed Limit Sign | `csm:portable_speed_limit_sign` | 2 | 10 | pickaxe | 1 |
+| Radar Speed Feedback Sign | `csm:radar_speed_sign` | 2 | 10 | pickaxe | 1 |
+| School Zone Beacon Assembly | `csm:school_zone_beacon` | 2 | 10 | pickaxe | 1 |
 | Silver Angled Thin Traffic Pole | `csm:trafficpolehorizontalanglesilver` | 2 | 10 | pickaxe | 1 |
 | Silver Double Horizontal Traffic Pole | `csm:trafficpolehorzdblsilver` |  | 10 | pickaxe | 1 |
 | Silver Double Vertical Traffic Pole | `csm:trafficpolevertdblsilver` |  | 10 | pickaxe | 1 |
@@ -100,6 +104,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Silver Mast Arm Curve 6x2 (Arterial) | `csm:trafficpolemastarmcurve6x2silver` | 2 | 10 | pickaxe | 1 |
 | Silver Mast Arm Curve 8x2 (Major Intersection) | `csm:trafficpolemastarmcurve8x2silver` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Signal Mount | `csm:tlpmsilver` |  | 10 | pickaxe | 1 |
+| Silver Pedestal Traffic Pole | `csm:trafficpolepedestalsilver` | 2 | 10 | pickaxe | 1 |
 | Silver Vertical Traffic Pole with Double Connector | `csm:trafficpoleverticalconnectordoublesilver` |  | 10 | pickaxe | 1 |
 | Single Signal Border (Black/Black) | `csm:tlbordersingleblackblack` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (Black/Blue) | `csm:tlbordersingleblackblue` | 2 | 10 | pickaxe | 1 |
@@ -130,6 +135,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Tan Mast Arm Curve 6x2 (Arterial) | `csm:trafficpolemastarmcurve6x2tan` | 2 | 10 | pickaxe | 1 |
 | Tan Mast Arm Curve 8x2 (Major Intersection) | `csm:trafficpolemastarmcurve8x2tan` | 2 | 10 | pickaxe | 1 |
 | Tan Metal Signal Mount | `csm:tlpmtan` |  | 10 | pickaxe | 1 |
+| Tan Pedestal Traffic Pole | `csm:trafficpolepedestaltan` | 2 | 10 | pickaxe | 1 |
 | Tan Thick Traffic Pole | `csm:trafficpoleverticaltan` | 2 | 10 | pickaxe | 1 |
 | Tan Thin Traffic Pole | `csm:trafficpolehorizontaltan` | 2 | 10 | pickaxe | 1 |
 | Tan Vertical Traffic Pole with Connector | `csm:trafficpoleverticalconnectortan` |  | 10 | pickaxe | 1 |
@@ -175,6 +181,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Unpainted Mast Arm Curve 5x1 (Collector) | `csm:trafficpolemastarmcurve5x1unpainted` | 2 | 10 | pickaxe | 1 |
 | Unpainted Mast Arm Curve 6x2 (Arterial) | `csm:trafficpolemastarmcurve6x2unpainted` | 2 | 10 | pickaxe | 1 |
 | Unpainted Mast Arm Curve 8x2 (Major Intersection) | `csm:trafficpolemastarmcurve8x2unpainted` | 2 | 10 | pickaxe | 1 |
+| Unpainted Pedestal Traffic Pole | `csm:trafficpolepedestalunpainted` | 2 | 10 | pickaxe | 1 |
 | Unpainted Signal Mount | `csm:tlpmunpainted` |  | 10 | pickaxe | 1 |
 | Unpainted Vertical Traffic Pole with Double Connector | `csm:trafficpoleverticalconnectordoubleunpainted` |  | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Black/Black) | `csm:tlborder5addonblackblack` | 2 | 10 | pickaxe | 1 |
@@ -257,6 +264,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | White Mast Arm Curve 5x1 (Collector) | `csm:trafficpolemastarmcurve5x1white` | 2 | 10 | pickaxe | 1 |
 | White Mast Arm Curve 6x2 (Arterial) | `csm:trafficpolemastarmcurve6x2white` | 2 | 10 | pickaxe | 1 |
 | White Mast Arm Curve 8x2 (Major Intersection) | `csm:trafficpolemastarmcurve8x2white` | 2 | 10 | pickaxe | 1 |
+| White Pedestal Traffic Pole | `csm:trafficpolepedestalwhite` | 2 | 10 | pickaxe | 1 |
 | White Signal Mount | `csm:tlpmwhite` |  | 10 | pickaxe | 1 |
 | White Thick Traffic Pole | `csm:trafficpoleverticalwhite` | 2 | 10 | pickaxe | 1 |
 | White Thin Traffic Pole | `csm:trafficpolehorizontalwhite` | 2 | 10 | pickaxe | 1 |

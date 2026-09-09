@@ -695,6 +695,36 @@ The actual 3D geometry lives in shared custom models (`models/custom/trafficligh
   crossing needs. Regenerate with
   `dev-env-utils/scripts/gen_rrfb_textures.py`; the art is drawn to land exactly on the model's
   `uv [1, 5, 15, 11]` band so it maps one texture pixel per model pixel.
+- **In-roadway warning light** (`in_roadway_warning_light`): The fixture set flush into the
+  pavement at a crosswalk, flashing up and along the road at approaching drivers. A row of them
+  goes across the approach. Built on the RRFB's pattern — no tile-entity renderer, the flash
+  lives in an animated texture — but with two things the RRFB does not have:
+
+  **It links either way.** The tile entity carries an `InRoadwayLightLinkMode`, and
+  `getSignalSide` returns `PEDESTRIAN_BEACON` or `PEDESTRIAN` from it, so the controller files it
+  into whichever list matches. That is not cosmetic: **the two modes read the same colour
+  differently**, and `isLit(color, mode)` is where that lives.
+
+  | Mode | Lit on | Because |
+  |---|---|---|
+  | `BEACON` | anything but `SIGNAL_OFF` | a beacon is dark only when nothing is calling it, exactly as the RRFB |
+  | `CROSSWALK` | `SIGNAL_GREEN`, `SIGNAL_YELLOW` | walk and the pedestrian clearance — and dark on don't-walk, which **is** `SIGNAL_RED` |
+
+  Get that backwards in `CROSSWALK` mode and the pavement lights up to tell people not to cross.
+  It is static and package-visible precisely so it can be tested without a world.
+
+  **It picks its own phase.** Each `InRoadwayLightPattern` — `RRFB` (the IA-21 sequence, imported
+  from the RRFB's own generator so the pavement and the beacon above cannot drift), `WIG_WAG`,
+  `FLASH` — is drawn as two texture strips half a cycle apart, and the block chooses between them
+  from `((pos.getX() + pos.getZ()) & 1)`. Any two fixtures placed side by side, along either axis
+  or across a diagonal, land on opposite phases, so a row laid down in one pass alternates with
+  no configuration and no way to get it wrong.
+
+  Note that the RRFB sequence alternates on only 4 of its 16 frames — a row running it looks
+  close to unison, which is correct. `WIG_WAG` is where the alternation is obvious.
+
+  A sixteenth of a block tall, collision box to match, so it is walked and driven over without a
+  step. Regenerate the strips with `dev-env-utils/scripts/gen_irwl_textures.py`.
 - **Tweeters/Train controller**: Same appearance in all color states (empty color variant overrides).
 - **Gray variants**: Already use newer texture paths (`trafficsignals/old_bulb_body/gray/*`)
   and reference backplate models.
@@ -853,16 +883,19 @@ the dwell phases until the call drops and min-dwell elapses) → **exit** → re
 A front-panel-style GUI (`AdvancedSignalControllerGui`) with an amber LCD, keypad, and status LEDs,
 opened from the **ASC-3** button in the visual editor (or by an op/creative player clicking the
 controller block). Screens: STATUS (overview + ring diagram), TIMING (per-phase intervals), MAP
-(phase→circuit/movement/recall/ped), COORD, and PREEMPT. "Load Std 8-Phase" auto-assigns phases to
-circuits by approach facing. Edits travel via `AdvancedSignalControllerConfigPacket` →
+(phase→circuit/movement/recall/ped), COORD (coordination, and the four time-of-day patterns),
+PREEMPT, TSP (transit signal priority), ACT (actuation), OVL (overlaps) and HELP. "Load Std
+8-Phase" auto-assigns phases to circuits by approach facing. Edits travel via `AdvancedSignalControllerConfigPacket` →
 `TileEntityTrafficSignalController.applyAdvancedConfig()`.
 
 ### Implementation
 
 - `RingBarrierState` — the per-tick dual-ring/barrier state machine (transient; rebuilt on load).
 - `AdvancedPhaseBuilder` — turns ring state into a `TrafficSignalPhase` (reusing overlaps + apply).
-- `TrafficSignalProgrammedPhasePlan` — phases + ring sequence + coordination + preempt table; NBT
-  under key `tcAdv`, written only when an advanced plan exists.
+- `TrafficSignalProgrammedPhasePlan` — phases + ring sequence + coordination + preempt table +
+  transit priority; NBT under key `tcAdv`, written only when an advanced plan exists. Coordination
+  is **four** patterns indexed by time-of-day slot rather than one, with slot 0 being the plan a
+  controller has always had — see `ADVANCED_MODE_ASC3.md` §5c and §5d.
 - The controller dispatches `ADVANCED` directly in `onTick` (like the detection modes); a
   misconfigured plan enters fault state with a descriptive message.
 
@@ -997,6 +1030,24 @@ Replace every untextured `disableTexture2D` draw with this sequence:
 through the shared private `litVertex(...)` helper. The original (non-`Lit`) methods are
 left unchanged for any caller that still uses them.
 
+### The corollary: whoever bound a texture last wins
+
+Step 3 above — a per-vertex UV of `(0.5, 0.5)` — is only white because a white texture is bound.
+Nothing in the pipeline enforces that, so **any pass that binds something else and does not put
+it back silently repaints every untextured draw after it**.
+
+`CsmFontRenderer.drawString` is exactly such a pass: it binds the font atlas and never restores
+what was there. `(0.5, 0.5)` on the font sheet is padding — fully transparent — so geometry drawn
+after a legend does not render wrong, it renders **invisible**.
+
+This cost a full debugging round on the school zone beacon, where the beacon housings vanished
+and the lamps read as "floating LEDs with no housing". Nothing about it fails a build, and it
+looks exactly like a geometry bug.
+
+> **Rule: bind the white swatch yourself at the top of every geometry pass.** Do not trust the
+> state you inherit, and treat a `drawString` anywhere earlier in the renderer as having
+> invalidated it.
+
 ### Display lists: one texture, no cached state
 
 For TESRs that cache geometry in a GL display list (`glNewList` / `glCallList`), binding the
@@ -1127,6 +1178,22 @@ converting standard blocks from standalone to combined keys triggers it.) Droppi
 `forge_marker` to use vanilla format parses but loses per-variant texture overrides. The
 working resolution is the single `MODEL_VARIANT` enum keyed in a standalone property block —
 one property, one model branch, no combined keys.
+
+### Property maps merge fragment by fragment
+
+A related constraint in the same `forge_marker: 1` dialect, and the reason the in-roadway warning
+light has one `LENS` property rather than three:
+
+**Each property in a property-map blockstate contributes its own fragment, and the fragments are
+merged.** So N independent properties cannot between them name a texture that depends on all N —
+a `lit` property, a `pattern` property and a `phase` property can each contribute *something*,
+but no one of them can name `flash_b` on the grounds that the other two happen to say `true` and
+`FLASH`.
+
+The resolution is the same one `MODEL_VARIANT` reaches above: **derive one property that carries
+the whole decision.** `InRoadwayLightLens` is computed in `getActualState` from the controller's
+colour, the tile entity's pattern and link mode, and the block's own position, and the blockstate
+is then a flat list of seven cases with nothing to get subtly wrong. Nothing sets it directly.
 
 ### Known limitation — horizontal add-on tilt/angle alignment
 
