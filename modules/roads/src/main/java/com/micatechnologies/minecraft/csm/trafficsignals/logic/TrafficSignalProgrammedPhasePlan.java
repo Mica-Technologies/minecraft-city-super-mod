@@ -13,7 +13,8 @@ import net.minecraft.world.World;
 /**
  * The full {@code ADVANCED}-mode program: the 8 NEMA {@link TrafficSignalProgrammedPhase}s, the
  * per-ring phase sequence (so lead/lag lefts are configurable), the {@link
- * TrafficSignalCoordinationPlan}, and the {@link TrafficSignalPreempt} table.
+ * TrafficSignalCoordinationPlan} (one per time-of-day slot), and the
+ * {@link TrafficSignalPreempt} table.
  *
  * <p>The standard dual-ring structure is the textbook 8-phase layout:
  *
@@ -45,13 +46,24 @@ public class TrafficSignalProgrammedPhasePlan {
   private static final String K_RING_1 = "r1";
   private static final String K_RING_2 = "r2";
   private static final String K_COORDINATION = "co";
+  private static final String K_PATTERNS = "cop";
+  private static final String K_SCHEDULE = "cos";
+  private static final String K_PATTERNS_ENABLED = "coe";
   private static final String K_PREEMPTS = "pe";
   private static final String K_OVERLAPS = "ov";
 
   private final List<TrafficSignalProgrammedPhase> phases;
   private int[] ring1Sequence;
   private int[] ring2Sequence;
-  private TrafficSignalCoordinationPlan coordination;
+  /**
+   * The coordination patterns, indexed by {@link TrafficTimeOfDaySchedule} slot. Slot 0 is the
+   * plan a controller has always had — a controller saved before patterns existed reads its one
+   * plan into slot 0 and, with {@link #timeOfDayPatterns} off, behaves exactly as it did.
+   */
+  private final TrafficSignalCoordinationPlan[] patterns =
+      new TrafficSignalCoordinationPlan[TrafficTimeOfDaySchedule.SLOT_COUNT];
+  private final TrafficTimeOfDaySchedule coordinationSchedule = new TrafficTimeOfDaySchedule();
+  private boolean timeOfDayPatterns = false;
   private final List<TrafficSignalPreempt> preempts;
   private final List<TrafficSignalProgrammedOverlap> vehicleOverlaps;
 
@@ -61,7 +73,10 @@ public class TrafficSignalProgrammedPhasePlan {
     this.phases = phases;
     this.ring1Sequence = ring1Sequence;
     this.ring2Sequence = ring2Sequence;
-    this.coordination = coordination;
+    this.patterns[0] = coordination;
+    for (int slot = 1; slot < patterns.length; slot++) {
+      this.patterns[slot] = new TrafficSignalCoordinationPlan();
+    }
     this.preempts = preempts;
     this.vehicleOverlaps = vehicleOverlaps;
   }
@@ -148,8 +163,53 @@ public class TrafficSignalProgrammedPhasePlan {
     return ring == 2 ? ring2Sequence : ring1Sequence;
   }
 
+  /**
+   * The coordination pattern for one time-of-day slot.
+   *
+   * @param slot the slot index; clamped rather than throwing, because it arrives from NBT and
+   *             from configuration packets
+   *
+   * @return that slot's pattern
+   */
+  public TrafficSignalCoordinationPlan getCoordination(int slot) {
+    if (slot < 0) {
+      return patterns[0];
+    }
+    return patterns[slot >= patterns.length ? patterns.length - 1 : slot];
+  }
+
+  /** The time-of-day table that chooses between the patterns. */
+  public TrafficTimeOfDaySchedule getCoordinationSchedule() {
+    return coordinationSchedule;
+  }
+
+  /** Whether this controller runs a time-of-day table at all, or just its one plan. */
+  public boolean isTimeOfDayPatterns() {
+    return timeOfDayPatterns;
+  }
+
+  public void setTimeOfDayPatterns(boolean timeOfDayPatterns) {
+    this.timeOfDayPatterns = timeOfDayPatterns;
+  }
+
+  /**
+   * Which pattern the clock says should be running.
+   *
+   * <p>This is only ever the <em>wanted</em> pattern. Adopting it is the ring engine's business,
+   * and it does so at a cycle boundary — a pattern with a different cycle length taken up
+   * mid-cycle would move every force-off point under the engine's feet.</p>
+   *
+   * @param world the world to read the clock from
+   *
+   * @return the slot index the schedule selects, or 0 when patterns are off
+   */
+  public int getScheduledCoordinationSlot(World world) {
+    return timeOfDayPatterns ? coordinationSchedule.getActiveSlot(world) : 0;
+  }
+
+  /** The base coordination plan (slot 0), which is the only one a non-patterned plan uses. */
   public TrafficSignalCoordinationPlan getCoordination() {
-    return coordination;
+    return patterns[0];
   }
 
   public List<TrafficSignalPreempt> getPreempts() {
@@ -407,7 +467,7 @@ public class TrafficSignalProgrammedPhasePlan {
     c.setTag(K_PHASES, phaseList);
     c.setIntArray(K_RING_1, ring1Sequence);
     c.setIntArray(K_RING_2, ring2Sequence);
-    c.setTag(K_COORDINATION, coordination.toNBT());
+    c.setTag(K_COORDINATION, patterns[0].toNBT());
     NBTTagList preemptList = new NBTTagList();
     for (TrafficSignalPreempt p : preempts) {
       preemptList.appendTag(p.toNBT());
@@ -418,6 +478,15 @@ public class TrafficSignalProgrammedPhasePlan {
       overlapList.appendTag(o.toNBT());
     }
     c.setTag(K_OVERLAPS, overlapList);
+    // Slot 0 is already written as K_COORDINATION above, so only 1..3 need storing; a
+    // controller that never turns patterns on therefore adds three empty compounds and no more.
+    NBTTagList patternList = new NBTTagList();
+    for (int slot = 1; slot < patterns.length; slot++) {
+      patternList.appendTag(patterns[slot].toNBT());
+    }
+    c.setTag(K_PATTERNS, patternList);
+    c.setTag(K_SCHEDULE, coordinationSchedule.writeNBT(new NBTTagCompound()));
+    c.setBoolean(K_PATTERNS_ENABLED, timeOfDayPatterns);
     return c;
   }
 
@@ -452,8 +521,20 @@ public class TrafficSignalProgrammedPhasePlan {
         overlaps.add(TrafficSignalProgrammedOverlap.fromNBT(overlapList.getCompoundTagAt(i)));
       }
     }
-    return new TrafficSignalProgrammedPhasePlan(phases, ring1, ring2, coordination, preempts,
-        overlaps);
+    TrafficSignalProgrammedPhasePlan plan = new TrafficSignalProgrammedPhasePlan(phases, ring1,
+        ring2, coordination, preempts, overlaps);
+    if (c.hasKey(K_PATTERNS)) {
+      NBTTagList patternList = c.getTagList(K_PATTERNS, 10);
+      for (int i = 0; i < patternList.tagCount() && i + 1 < plan.patterns.length; i++) {
+        plan.patterns[i + 1] =
+            TrafficSignalCoordinationPlan.fromNBT(patternList.getCompoundTagAt(i));
+      }
+    }
+    if (c.hasKey(K_SCHEDULE)) {
+      plan.coordinationSchedule.readNBT(c.getCompoundTag(K_SCHEDULE));
+    }
+    plan.timeOfDayPatterns = c.getBoolean(K_PATTERNS_ENABLED);
+    return plan;
   }
 
   // endregion
