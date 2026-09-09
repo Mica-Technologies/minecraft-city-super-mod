@@ -208,6 +208,7 @@ tile.noparkingsundayholiday.name=Parkering Förbjuden utom Söndag/Helgdag-Vägm
 tile.nostandingsign.name=Stannande Förbjudet-Vägmärke
 tile.overheight_detection_sensor.name=Överhöjdssensor
 tile.plumbizer_signal_mount.name=Plumbizer Signalfäste
+tile.radar_speed_sign.name=Hastighetsdisplay med radar
 tile.roadend.name=Vägen Slutar-Vägmärke
 tile.rwrkbepreptostop.name=Vägarbete Var Beredd Att Stanna-Vägmärke
 tile.rwrkflagger.name=Vägarbete Flaggvakt-Vägmärke

@@ -12,8 +12,8 @@ import net.minecraft.world.World;
 
 /**
  * Supplies the traffic accessories package's GUI screens: the message signs, the variable speed
- * limits, the lane control signal, the dynamic guide and street signs and the span wire hanger
- * mount.
+ * limits, the lane control signal, the dynamic guide and street signs, the school zone and
+ * radar speed signs, and the span wire hanger mount.
  *
  * @version 1.0
  * @since 2026.9
@@ -50,6 +50,9 @@ public class TrafficAccessoriesGuiProvider implements ICsmGuiProvider {
       returnValue = new SpanWireMountConfigGui((TileEntitySpanWireHanger) tileEntity);
     } else if (id == 19 && tileEntity instanceof TileEntitySchoolZoneBeacon) {
       returnValue = new SchoolZoneBeaconGui((TileEntitySchoolZoneBeacon) tileEntity);
+    } else if (id == BlockRadarSpeedSign.GUI_ID
+        && tileEntity instanceof TileEntityRadarSpeedSign) {
+      returnValue = new RadarSpeedSignGui((TileEntityRadarSpeedSign) tileEntity);
     } else if (id == 18 && tileEntity instanceof TileEntityPoleMountSpeedLimit) {
       returnValue = new BlockPoleMountSpeedLimitGui((TileEntityPoleMountSpeedLimit) tileEntity);
     }

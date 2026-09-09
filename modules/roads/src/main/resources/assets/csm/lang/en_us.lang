@@ -208,6 +208,7 @@ tile.noparkingsundayholiday.name=No Parking except Sunday/Holiday Sign
 tile.nostandingsign.name=No Standing Sign
 tile.overheight_detection_sensor.name=Overheight Detection Sensor
 tile.plumbizer_signal_mount.name=Plumbizer Signal Mount
+tile.radar_speed_sign.name=Radar Speed Feedback Sign
 tile.roadend.name=End Road Sign
 tile.rwrkbepreptostop.name=Road Work Be Prepared To Stop Sign
 tile.rwrkflagger.name=Road Work Flagger Sign

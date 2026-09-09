@@ -2,6 +2,8 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockRadarSpeedSign;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityRadarSpeedSign;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.ITrafficSignalSensor;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +56,8 @@ public class ItemSensorZoneTool extends AbstractItem {
     }
     if (!worldIn.isRemote) {
       IBlockState state = worldIn.getBlockState(pos);
-      if (state.getBlock() instanceof ITrafficSignalSensor) {
+      if (state.getBlock() instanceof ITrafficSignalSensor
+          || state.getBlock() instanceof BlockRadarSpeedSign) {
         modeMap.put(player.getUniqueID(), 1);
         sensorPosMap.put(player.getUniqueID(), pos);
         corner1PosMap.remove(player.getUniqueID());
@@ -108,7 +111,15 @@ public class ItemSensorZoneTool extends AbstractItem {
         try {
           TileEntity tileEntity = worldIn.getTileEntity(
               sensorPosMap.getOrDefault(player.getUniqueID(), null));
-          if (tileEntity instanceof TileEntityTrafficSignalSensor) {
+          if (tileEntity instanceof TileEntityRadarSpeedSign) {
+            // A radar sign has one zone, not four, so the lane mode does not apply to it.
+            boolean radarOverwrote = ((TileEntityRadarSpeedSign) tileEntity)
+                .setZoneCorners(corner1Pos, corner2Pos);
+            player.sendMessage(new TextComponentString(
+                "The selected search box corners have been applied to the radar speed sign's "
+                    + "detection zone successfully."
+                    + (radarOverwrote ? " (Replaced previous search box)" : "")));
+          } else if (tileEntity instanceof TileEntityTrafficSignalSensor) {
             TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
                 = (TileEntityTrafficSignalSensor) tileEntity;
             boolean overwrote;
@@ -188,6 +199,7 @@ public class ItemSensorZoneTool extends AbstractItem {
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
     list.add("Configure detection zones on traffic signal sensors (Standard, Left, Right, Protected).");
+    list.add("Also programs the detection zone of a radar speed feedback sign.");
     list.add("Sneak + right-click a sensor to open its configuration GUI.");
   }
 

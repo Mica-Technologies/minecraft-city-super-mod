@@ -229,10 +229,10 @@ public class TileEntitySchoolZoneBeaconRenderer
     float frontZ = CZ - PANEL_D / 2.0f;
 
     List<RenderHelper.Box> border = new ArrayList<>();
-    addRoundedRect(border,
+    RenderHelper.addRoundedRect(border,
         CX - halfW - PANEL_BORDER, CY - halfH - PANEL_BORDER,
         CX + halfW + PANEL_BORDER, CY + halfH + PANEL_BORDER,
-        frontZ, backZ, PANEL_RADIUS, true, true);
+        frontZ, backZ, PANEL_RADIUS, ROUND_STEPS, true, true);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(border, buf,
         COL_BORDER[0], COL_BORDER[1], COL_BORDER[2], COL_BORDER[3], 0, 0, 0, sky, block);
@@ -246,69 +246,20 @@ public class TileEntitySchoolZoneBeaconRenderer
     float faceRadius = PANEL_RADIUS - PANEL_BORDER;
 
     List<RenderHelper.Box> body = new ArrayList<>();
-    addRoundedRect(body, CX - halfW, CY - halfH, CX + halfW, bodyTop,
-        frontZ - 0.1f, frontZ + 0.2f, faceRadius, true, false);
+    RenderHelper.addRoundedRect(body, CX - halfW, CY - halfH, CX + halfW, bodyTop,
+        frontZ - 0.1f, frontZ + 0.2f, faceRadius, ROUND_STEPS, true, false);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(body, buf,
         COL_PANEL[0], COL_PANEL[1], COL_PANEL[2], COL_PANEL[3], 0, 0, 0, sky, block);
     tess.draw();
 
     List<RenderHelper.Box> banner = new ArrayList<>();
-    addRoundedRect(banner, CX - halfW, bannerBottom, CX + halfW, top,
-        frontZ - 0.1f, frontZ + 0.2f, faceRadius, false, true);
+    RenderHelper.addRoundedRect(banner, CX - halfW, bannerBottom, CX + halfW, top,
+        frontZ - 0.1f, frontZ + 0.2f, faceRadius, ROUND_STEPS, false, true);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(banner, buf,
         COL_BANNER[0], COL_BANNER[1], COL_BANNER[2], COL_BANNER[3], 0, 0, 0, sky, block);
     tess.draw();
-  }
-
-  /**
-   * Adds a rectangle whose corners are stepped in along a quarter circle, as a stack of boxes
-   * that touch but never overlap — overlapping boxes would share a face plane and z-fight.
-   *
-   * <p>Each band's inset is measured at its <em>outer</em> edge, so the silhouette sits just
-   * inside the arc rather than bulging past it at any step.</p>
-   *
-   * @param out         the list to add the boxes to
-   * @param x1          left edge
-   * @param y1          bottom edge
-   * @param x2          right edge
-   * @param y2          top edge
-   * @param z1          front face
-   * @param z2          back face
-   * @param radius      corner radius; zero or less emits one plain box
-   * @param roundBottom whether the bottom two corners are rounded
-   * @param roundTop    whether the top two corners are rounded
-   */
-  private static void addRoundedRect(List<RenderHelper.Box> out,
-      float x1, float y1, float x2, float y2, float z1, float z2,
-      float radius, boolean roundBottom, boolean roundTop) {
-    if (radius <= 0.0f || (!roundBottom && !roundTop)) {
-      out.add(new RenderHelper.Box(new float[]{x1, y1, z1}, new float[]{x2, y2, z2}));
-      return;
-    }
-
-    out.add(new RenderHelper.Box(
-        new float[]{x1, roundBottom ? y1 + radius : y1, z1},
-        new float[]{x2, roundTop ? y2 - radius : y2, z2}));
-
-    for (int i = 0; i < ROUND_STEPS; i++) {
-      float bandLow = radius * i / ROUND_STEPS;
-      float bandHigh = radius * (i + 1) / ROUND_STEPS;
-      float outerDistance = radius - bandLow;
-      float inset = radius
-          - (float) Math.sqrt(Math.max(0.0f, radius * radius - outerDistance * outerDistance));
-      if (roundBottom) {
-        out.add(new RenderHelper.Box(
-            new float[]{x1 + inset, y1 + bandLow, z1},
-            new float[]{x2 - inset, y1 + bandHigh, z2}));
-      }
-      if (roundTop) {
-        out.add(new RenderHelper.Box(
-            new float[]{x1 + inset, y2 - bandHigh, z1},
-            new float[]{x2 - inset, y2 - bandLow, z2}));
-      }
-    }
   }
 
   /**
