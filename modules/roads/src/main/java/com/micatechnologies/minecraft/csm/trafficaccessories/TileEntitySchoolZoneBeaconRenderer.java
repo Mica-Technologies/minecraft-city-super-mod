@@ -95,10 +95,14 @@ public class TileEntitySchoolZoneBeaconRenderer
   private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
   private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
-  /** Pivot: the middle of the cell, pushed back so the panel's rear sits on the cell's back. */
+  /**
+   * Pivot: the middle of the cell, pushed back far enough that the panel's rear face lands
+   * exactly on the cell's back. Anything less leaves a sliver of daylight between the sign and
+   * whatever it is bolted to, which is visible from any angle off the front.
+   */
   private static final float CX = 8.0f;
   private static final float CY = 8.0f;
-  private static final float CZ = 15.0f;
+  private static final float CZ = 16.0f - PANEL_D / 2.0f;
 
   // Face colours. The body is white because a speed limit is a regulatory sign; the SCHOOL
   // plaque above it is the fluorescent yellow-green the MUTCD adopted for school warnings.
