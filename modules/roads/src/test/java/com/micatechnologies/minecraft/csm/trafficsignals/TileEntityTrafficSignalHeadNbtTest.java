@@ -152,15 +152,15 @@ class TileEntityTrafficSignalHeadNbtTest {
     assertEquals(TrafficSignalFlashPattern.C, te.getFlashPattern());
     assertEquals(TrafficSignalFlashPattern.OFF, TrafficSignalFlashPattern.fromNBT(99));
 
-    // D is the newest ordinal, so it is the one a stale reader would drop: round-trip it
+    // F is the newest ordinal, so it is the one a stale reader would drop: round-trip it
     // through the TE to be sure a head set to it survives a save and reload.
     NBTTagCompound alt = new NBTTagCompound();
     alt.setTag("sInfs", buildSectionInfos(1, sections));
-    alt.setInteger("flsP", 3);
+    alt.setInteger("flsP", 5);
     te = new TileEntityTrafficSignalHead();
     te.readNBT(alt);
-    assertEquals(TrafficSignalFlashPattern.D, te.getFlashPattern());
-    assertEquals(3, te.writeNBT(new NBTTagCompound()).getInteger("flsP"));
+    assertEquals(TrafficSignalFlashPattern.F, te.getFlashPattern());
+    assertEquals(5, te.writeNBT(new NBTTagCompound()).getInteger("flsP"));
   }
 
   @Test

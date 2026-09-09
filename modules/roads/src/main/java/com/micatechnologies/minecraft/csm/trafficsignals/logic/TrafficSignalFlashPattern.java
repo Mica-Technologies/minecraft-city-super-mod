@@ -12,7 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * {@link #C} is not part of that pair at all -- it is the rapid multi-pulse strobe the Barlo
  * safety beam fires, applied to the bulb itself. {@link #D} is C's wig-wag counterpart: the same
  * strobe delayed by the length of one burst, so a pair set to C and D fire alternating bursts
- * that never overlap.</p>
+ * that never overlap. {@link #E} and {@link #F} are a third wig-wag pair, shaped exactly like
+ * OFF and B but run at {@value #FAST_FLASH_HZ} Hz rather than 1 Hz.</p>
  *
  * <p>The ordinal is the persisted form, so entries must only ever be appended.</p>
  */
@@ -29,7 +30,17 @@ public enum TrafficSignalFlashPattern implements IStringSerializable {
    * ms, leaving both dark for the rest of it, so two heads set to C and D alternate cleanly
    * rather than overlapping.
    */
-  D("d", "D (alt strobe)");
+  D("d", "D (alt strobe)"),
+  /**
+   * The standard flash sped up to {@value #FAST_FLASH_HZ} Hz: same even on/off duty cycle as
+   * {@link #OFF}, lit for the second half of each cycle, but that many cycles to the second.
+   */
+  E("e", "E (fast flash)"),
+  /**
+   * Wig-wag counterpart of {@link #E}: the same fast flash lit for the first half of each cycle,
+   * so a pair of heads set to E and F alternate the way OFF and B do at the slow rate.
+   */
+  F("f", "F (fast alt)");
 
   /**
    * Length of one full rapid-strobe cycle, in milliseconds. The burst occupies
@@ -45,6 +56,16 @@ public enum TrafficSignalFlashPattern implements IStringSerializable {
 
   /** Length of one full standard flash cycle, in milliseconds. */
   private static final long FLASH_CYCLE_MILLIS = 1000L;
+
+  /** Rate of the fast flash shared by {@link #E} and {@link #F}, in flashes per second. */
+  private static final int FAST_FLASH_HZ = 5;
+
+  /**
+   * Length of one full fast flash cycle, in milliseconds. Kept as a divisor of
+   * {@link #FLASH_CYCLE_MILLIS} so the fast pair stays in step with the slow one at the top of
+   * each second however {@link #FAST_FLASH_HZ} is retuned.
+   */
+  private static final long FAST_FLASH_CYCLE_MILLIS = FLASH_CYCLE_MILLIS / FAST_FLASH_HZ;
 
   /** The identifier used for serialization. */
   private final String name;
@@ -113,6 +134,22 @@ public enum TrafficSignalFlashPattern implements IStringSerializable {
   }
 
   /**
+   * Whether an even on/off flash of the given cycle length is lit at the given wall-clock time.
+   * Both halves of a wig-wag pair go through here with the same cycle and opposite {@code
+   * firstHalf}, which is what guarantees one is lit exactly while the other is dark.
+   *
+   * @param millis      the wall-clock flash timer, in milliseconds
+   * @param cycleMillis the length of one full on/off cycle, in milliseconds
+   * @param firstHalf   {@code true} to be lit for the first half of the cycle, {@code false} for
+   *                    the second
+   *
+   * @return {@code true} if that flash is lit at that instant
+   */
+  private static boolean isEvenFlashLit(long millis, long cycleMillis, boolean firstHalf) {
+    return (Math.floorMod(millis, cycleMillis) < cycleMillis / 2L) == firstHalf;
+  }
+
+  /**
    * Whether a flashing bulb following this pattern is lit at the given wall-clock time.
    *
    * @param millis the wall-clock flash timer, in milliseconds
@@ -122,14 +159,18 @@ public enum TrafficSignalFlashPattern implements IStringSerializable {
   public boolean isFlashLit(long millis) {
     switch (this) {
       case B:
-        return Math.floorMod(millis, FLASH_CYCLE_MILLIS) < FLASH_CYCLE_MILLIS / 2L;
+        return isEvenFlashLit(millis, FLASH_CYCLE_MILLIS, true);
       case C:
         return isRapidStrobeLit(millis);
       case D:
         return isAltRapidStrobeLit(millis);
+      case E:
+        return isEvenFlashLit(millis, FAST_FLASH_CYCLE_MILLIS, false);
+      case F:
+        return isEvenFlashLit(millis, FAST_FLASH_CYCLE_MILLIS, true);
       case OFF:
       default:
-        return Math.floorMod(millis, FLASH_CYCLE_MILLIS) >= FLASH_CYCLE_MILLIS / 2L;
+        return isEvenFlashLit(millis, FLASH_CYCLE_MILLIS, false);
     }
   }
 
