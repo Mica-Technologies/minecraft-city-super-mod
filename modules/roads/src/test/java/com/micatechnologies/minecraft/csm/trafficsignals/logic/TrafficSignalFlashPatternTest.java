@@ -94,11 +94,60 @@ class TrafficSignalFlashPatternTest {
   }
 
   @Test
+  void eIsTheStandardFlashFiveTimesFaster() {
+    // E has OFF's shape -- dark first half, lit second -- on a 200 ms cycle instead of 1000 ms.
+    assertFalse(TrafficSignalFlashPattern.E.isFlashLit(0L));
+    assertFalse(TrafficSignalFlashPattern.E.isFlashLit(99L));
+    assertTrue(TrafficSignalFlashPattern.E.isFlashLit(100L));
+    assertTrue(TrafficSignalFlashPattern.E.isFlashLit(199L));
+    assertFalse(TrafficSignalFlashPattern.E.isFlashLit(200L));
+
+    // Five on-periods to the second, against OFF's one.
+    int pulses = 0;
+    boolean previous = TrafficSignalFlashPattern.E.isFlashLit(-1L);
+    for (long t = 0; t < 1000; t++) {
+      boolean lit = TrafficSignalFlashPattern.E.isFlashLit(t);
+      if (lit && !previous) {
+        pulses++;
+      }
+      previous = lit;
+    }
+    assertEquals(5, pulses);
+  }
+
+  @Test
+  void eAndFAreExactComplements() {
+    // The fast wig-wag pair, checked over negative time too: gameMillis is wall-clock derived.
+    boolean anyFLit = false;
+    for (long t = -1000; t < 1000; t++) {
+      boolean e = TrafficSignalFlashPattern.E.isFlashLit(t);
+      boolean f = TrafficSignalFlashPattern.F.isFlashLit(t);
+      assertNotEquals(e, f, "E and F should never agree, at t=" + t);
+      anyFLit |= f;
+    }
+    assertTrue(anyFLit);
+  }
+
+  @Test
+  void theFastPairStartsEachCycleWhereTheSlowPairStartsEachSecond() {
+    // E/F line up with OFF/B at the top of every second, so a mixed set of heads stays in step.
+    for (long second = -3; second < 3; second++) {
+      long t = second * 1000L;
+      assertEquals(TrafficSignalFlashPattern.OFF.isFlashLit(t),
+          TrafficSignalFlashPattern.E.isFlashLit(t), "at t=" + t);
+      assertEquals(TrafficSignalFlashPattern.B.isFlashLit(t),
+          TrafficSignalFlashPattern.F.isFlashLit(t), "at t=" + t);
+    }
+  }
+
+  @Test
   void patternCyclesThroughEveryValueAndWraps() {
     assertEquals(TrafficSignalFlashPattern.B, TrafficSignalFlashPattern.OFF.getNextPattern());
     assertEquals(TrafficSignalFlashPattern.C, TrafficSignalFlashPattern.B.getNextPattern());
     assertEquals(TrafficSignalFlashPattern.D, TrafficSignalFlashPattern.C.getNextPattern());
-    assertEquals(TrafficSignalFlashPattern.OFF, TrafficSignalFlashPattern.D.getNextPattern());
+    assertEquals(TrafficSignalFlashPattern.E, TrafficSignalFlashPattern.D.getNextPattern());
+    assertEquals(TrafficSignalFlashPattern.F, TrafficSignalFlashPattern.E.getNextPattern());
+    assertEquals(TrafficSignalFlashPattern.OFF, TrafficSignalFlashPattern.F.getNextPattern());
   }
 
   @Test
@@ -109,6 +158,8 @@ class TrafficSignalFlashPatternTest {
     assertEquals(1, TrafficSignalFlashPattern.B.toNBT());
     assertEquals(2, TrafficSignalFlashPattern.C.toNBT());
     assertEquals(3, TrafficSignalFlashPattern.D.toNBT());
+    assertEquals(4, TrafficSignalFlashPattern.E.toNBT());
+    assertEquals(5, TrafficSignalFlashPattern.F.toNBT());
     for (TrafficSignalFlashPattern pattern : TrafficSignalFlashPattern.values()) {
       assertEquals(pattern, TrafficSignalFlashPattern.fromNBT(pattern.toNBT()));
     }
