@@ -10,7 +10,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Configuration GUI for a school zone beacon assembly: the posted speed, the panel size, the
- * beacon arrangement and head size, and the two windows the beacons flash in.
+ * SCHOOL plaque's colour, the beacon arrangement and head size, and the two windows the beacons
+ * flash in.
  *
  * <p>Every button steps forward on a plain click and backward on a shift-click, which matters
  * most for the schedule hours — cycling forward through 24 of them to move one back would be
@@ -58,6 +59,8 @@ public class SchoolZoneBeaconGui extends GuiScreen {
         rightX, topY + ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
     buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_BEACON_SIZE.ordinal(),
         leftX, topY + 2 * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
+    buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_BANNER_COLOR.ordinal(),
+        rightX, topY + 2 * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
 
     for (int i = 0; i < SCHEDULE_LABELS.length; i++) {
       int col = i % 2;
@@ -125,6 +128,8 @@ public class SchoolZoneBeaconGui extends GuiScreen {
       case CYCLE_BEACON_SIZE:
         return "Beacon Size: "
             + TileEntitySchoolZoneBeacon.BEACON_SIZE_NAMES[tileEntity.getBeaconSize()];
+      case CYCLE_BANNER_COLOR:
+        return "Plaque: " + tileEntity.getBannerColor().getFriendlyName();
       case CYCLE_MODE:
         return "Mode: " + TileEntitySchoolZoneBeacon.MODE_NAMES[tileEntity.getMode()];
       default:

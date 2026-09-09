@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -58,10 +57,10 @@ public class RadarSpeedSignConfigPacketHandler
           sign.setScaleIndex(wrap(sign.getScaleIndex() + step,
               TileEntityRadarSpeedSign.SCALES.length));
           break;
-        case CYCLE_PANEL_COLOR:
-          sign.setPanelColor(TrafficSignalBodyColor.values()[
-              wrap(sign.getPanelColor().ordinal() + step,
-                  TrafficSignalBodyColor.values().length)]);
+        case CYCLE_FACE_COLOR:
+          sign.setFaceColor(MutcdSignFaceColor.values()[
+              wrap(sign.getFaceColor().ordinal() + step,
+                  MutcdSignFaceColor.values().length)]);
           break;
         case TOGGLE_HEADER:
           sign.setShowHeader(!sign.isShowHeader());

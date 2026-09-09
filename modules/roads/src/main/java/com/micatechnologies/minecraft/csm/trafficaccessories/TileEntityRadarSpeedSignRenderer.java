@@ -3,7 +3,6 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashPattern;
 import java.util.ArrayList;
 import java.util.List;
@@ -200,7 +199,7 @@ public class TileEntityRadarSpeedSignRenderer
         COL_BORDER[0], COL_BORDER[1], COL_BORDER[2], COL_BORDER[3], 0, 0, 0, sky, block);
     tess.draw();
 
-    TrafficSignalBodyColor colour = te.getPanelColor();
+    MutcdSignFaceColor colour = te.getFaceColor();
     List<RenderHelper.Box> face = new ArrayList<>();
     RenderHelper.addRoundedRect(face,
         CX - halfW, panelBottom(), CX + halfW, panelTop(),

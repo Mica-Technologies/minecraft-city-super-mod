@@ -10,10 +10,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Configuration GUI for a radar speed feedback sign: the posted speed, the speed scale, the
- * panel size and colour, the optional SPEED LIMIT header, and the scan zone.
+ * panel size, the sign face colour, the optional SPEED LIMIT header, and the scan zone.
  *
- * <p>Every button steps forward on a plain click and backward on a shift-click, which matters
- * for the colour list in particular — sixteen forward clicks to get back one is unusable. The
+ * <p>Every button steps forward on a plain click and backward on a shift-click. It matters
+ * least here, where no list is long, and most on the schedule-style settings elsewhere, but the
  * footer says so rather than leaving it to be discovered.</p>
  */
 @SideOnly(Side.CLIENT)
@@ -46,7 +46,7 @@ public class RadarSpeedSignGui extends GuiScreen {
     addSetting(RadarSpeedSignConfigAction.CYCLE_POSTED_SPEED, leftX, topY);
     addSetting(RadarSpeedSignConfigAction.CYCLE_MULTIPLIER, rightX, topY);
     addSetting(RadarSpeedSignConfigAction.CYCLE_SCALE, leftX, topY + ROW_SPACING);
-    addSetting(RadarSpeedSignConfigAction.CYCLE_PANEL_COLOR, rightX, topY + ROW_SPACING);
+    addSetting(RadarSpeedSignConfigAction.CYCLE_FACE_COLOR, rightX, topY + ROW_SPACING);
     addSetting(RadarSpeedSignConfigAction.TOGGLE_HEADER, leftX, topY + 2 * ROW_SPACING);
     addSetting(RadarSpeedSignConfigAction.CLEAR_ZONE, rightX, topY + 2 * ROW_SPACING);
 
@@ -114,8 +114,8 @@ public class RadarSpeedSignGui extends GuiScreen {
       case CYCLE_SCALE:
         return "Panel Size: "
             + TileEntityRadarSpeedSign.SCALE_NAMES[tileEntity.getScaleIndex()];
-      case CYCLE_PANEL_COLOR:
-        return "Panel: " + tileEntity.getPanelColor().getFriendlyName();
+      case CYCLE_FACE_COLOR:
+        return "Face: " + tileEntity.getFaceColor().getFriendlyName();
       case TOGGLE_HEADER:
         return "Header Panel: " + (tileEntity.isShowHeader() ? "On" : "Off");
       case CLEAR_ZONE:

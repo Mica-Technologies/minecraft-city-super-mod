@@ -67,6 +67,7 @@ class TileEntitySchoolZoneBeaconTest {
     te.setScaleIndex(3);
     te.setArrangement(TileEntitySchoolZoneBeacon.BEACONS_TWO_ABOVE);
     te.setBeaconSize(TileEntitySchoolZoneBeacon.BEACON_SIZE_12_INCH);
+    te.setBannerColor(MutcdSignFaceColor.YELLOW);
     te.setMode(TileEntitySchoolZoneBeacon.MODE_ON);
     te.setScheduleHour(0, 6);
     te.setScheduleHour(1, 10);
@@ -81,6 +82,7 @@ class TileEntitySchoolZoneBeaconTest {
     assertEquals(3, restored.getScaleIndex());
     assertEquals(TileEntitySchoolZoneBeacon.BEACONS_TWO_ABOVE, restored.getArrangement());
     assertEquals(TileEntitySchoolZoneBeacon.BEACON_SIZE_12_INCH, restored.getBeaconSize());
+    assertEquals(MutcdSignFaceColor.YELLOW, restored.getBannerColor());
     assertEquals(TileEntitySchoolZoneBeacon.MODE_ON, restored.getMode());
     assertEquals(6, restored.getScheduleHour(0));
     assertEquals(10, restored.getScheduleHour(1));
@@ -99,6 +101,23 @@ class TileEntitySchoolZoneBeaconTest {
     assertEquals(TileEntitySchoolZoneBeacon.BEACONS_ABOVE, te.getArrangement());
     assertEquals(TileEntitySchoolZoneBeacon.BEACON_SIZE_8_INCH, te.getBeaconSize());
     assertTrue(te.getScale() > 0.0f);
+  }
+
+  @Test
+  void anUnconfiguredPlaqueStaysFluorescentYellowGreen() {
+    // Every beacon built before the colour was a choice was fluorescent yellow-green, which is
+    // ordinal 1 -- so an absent tag must not fall through to the enum's zero default, or a
+    // world reload would quietly repaint every existing sign yellow.
+    TileEntitySchoolZoneBeacon te = new TileEntitySchoolZoneBeacon();
+    te.readNBT(new NBTTagCompound());
+    assertEquals(MutcdSignFaceColor.FLUORESCENT_YELLOW_GREEN, te.getBannerColor());
+
+    // A written yellow is still yellow, which is the other half of that distinction.
+    TileEntitySchoolZoneBeacon yellow = new TileEntitySchoolZoneBeacon();
+    yellow.setBannerColor(MutcdSignFaceColor.YELLOW);
+    TileEntitySchoolZoneBeacon restored = new TileEntitySchoolZoneBeacon();
+    restored.readNBT(yellow.writeNBT(new NBTTagCompound()));
+    assertEquals(MutcdSignFaceColor.YELLOW, restored.getBannerColor());
   }
 
   @Test
