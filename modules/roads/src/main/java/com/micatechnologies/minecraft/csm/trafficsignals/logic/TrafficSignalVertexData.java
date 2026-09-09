@@ -778,4 +778,65 @@ public class TrafficSignalVertexData {
       scaleBoxes(SIGNAL_BODY_BUBBLED_VERTEX_DATA, SCALE_8_INCH, true);
   public static final List<Box> SIGNAL_BODY_BUBBLED_4INCH_VERTEX_DATA =
       scaleBoxes(SIGNAL_BODY_BUBBLED_VERTEX_DATA, SCALE_4_INCH, true);
+
+  /** Picks the 12-, 8- or 4-inch variant of a visor for the given section size. */
+  private static List<Box> selectVisorData(List<Box> data12, List<Box> data8, List<Box> data4,
+      int sectionSize) {
+    if (sectionSize <= 4) {
+      return data4;
+    }
+    if (sectionSize <= 8) {
+      return data8;
+    }
+    return data12;
+  }
+
+  /**
+   * Resolves the visor geometry for a visor type at a section size, or {@code null} if the type
+   * has none.
+   *
+   * <p>This lives here rather than in a renderer because more than one thing wears a signal
+   * visor: the signal heads and the school zone beacons both select from this same set, and a
+   * mapping kept privately by one of them is a mapping the other silently gets wrong.
+   *
+   * <p>The two Barlo types have no geometry of their own — they borrow the tunnel and circle
+   * shells and are told apart by the strobe the signal renderer draws over them. A caller that
+   * does not draw that strobe should not offer them, which is why the beacons do not.
+   */
+  public static List<Box> resolveVisorData(TrafficSignalVisorType visorType, int sectionSize) {
+    switch (visorType) {
+      case CIRCLE:
+        return selectVisorData(CIRCLE_VISOR_VERTEX_DATA, CIRCLE_VISOR_8INCH_VERTEX_DATA,
+            CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case TUNNEL:
+        return selectVisorData(TUNNEL_VISOR_VERTEX_DATA, TUNNEL_VISOR_8INCH_VERTEX_DATA,
+            TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case CUTAWAY:
+        return selectVisorData(CAP_VISOR_VERTEX_DATA, CAP_VISOR_8INCH_VERTEX_DATA,
+            CAP_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case BOTH_LOUVERED:
+        return selectVisorData(BOTH_LOUVERED_VISOR_VERTEX_DATA,
+            BOTH_LOUVERED_VISOR_8INCH_VERTEX_DATA, BOTH_LOUVERED_VISOR_4INCH_VERTEX_DATA,
+            sectionSize);
+      case VERTICAL_LOUVERED:
+        return selectVisorData(VERTICAL_LOUVERED_VISOR_VERTEX_DATA,
+            VERTICAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
+            VERTICAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case HORIZONTAL_LOUVERED:
+        return selectVisorData(HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA,
+            HORIZONTAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
+            HORIZONTAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case BARLO:
+        return selectVisorData(TUNNEL_VISOR_VERTEX_DATA, TUNNEL_VISOR_8INCH_VERTEX_DATA,
+            TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case BARLO_VERTICAL:
+        return selectVisorData(CIRCLE_VISOR_VERTEX_DATA, CIRCLE_VISOR_8INCH_VERTEX_DATA,
+            CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case NONE:
+        return selectVisorData(NONE_VISOR_VERTEX_DATA, NONE_VISOR_8INCH_VERTEX_DATA,
+            NONE_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      default:
+        return null;
+    }
+  }
 }

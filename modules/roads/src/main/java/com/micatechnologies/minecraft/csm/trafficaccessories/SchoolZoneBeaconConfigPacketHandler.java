@@ -61,6 +61,21 @@ public class SchoolZoneBeaconConfigPacketHandler
           beacon.setBeaconSize(wrap(beacon.getBeaconSize() + step,
               TileEntitySchoolZoneBeacon.BEACON_SIZE_COUNT));
           break;
+        // These three cycle an index into the beacon's own option tables rather than the signal
+        // enums' ordinals: a beacon offers a subset of each, so stepping the enum directly would
+        // walk into visors and colours it does not support.
+        case CYCLE_BULB_STYLE:
+          beacon.setBulbStyleIndex(wrap(beacon.getBulbStyleIndex() + step,
+              TileEntitySchoolZoneBeacon.BULB_STYLES.length));
+          break;
+        case CYCLE_VISOR_TYPE:
+          beacon.setVisorTypeIndex(wrap(beacon.getVisorTypeIndex() + step,
+              TileEntitySchoolZoneBeacon.VISOR_TYPES.length));
+          break;
+        case CYCLE_HOUSING_COLOR:
+          beacon.setHousingColorIndex(wrap(beacon.getHousingColorIndex() + step,
+              TileEntitySchoolZoneBeacon.HOUSING_COLORS.length));
+          break;
         case CYCLE_BANNER_COLOR:
           beacon.setBannerColor(MutcdSignFaceColor.values()[
               wrap(beacon.getBannerColor().ordinal() + step,

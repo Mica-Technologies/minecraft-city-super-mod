@@ -57,29 +57,37 @@ public class SchoolZoneBeaconGui extends GuiScreen {
         leftX, topY + ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
     buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_ARRANGEMENT.ordinal(),
         rightX, topY + ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
-    buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_BEACON_SIZE.ordinal(),
-        leftX, topY + 2 * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
     buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_BANNER_COLOR.ordinal(),
+        leftX, topY + 2 * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
+    buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_BEACON_SIZE.ordinal(),
         rightX, topY + 2 * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
+    // Appearance of the beacon heads themselves, kept together and below the plaque settings.
+    buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_BULB_STYLE.ordinal(),
+        leftX, topY + 3 * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
+    buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_VISOR_TYPE.ordinal(),
+        rightX, topY + 3 * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
+    buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_HOUSING_COLOR.ordinal(),
+        leftX, topY + 4 * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
 
     for (int i = 0; i < SCHEDULE_LABELS.length; i++) {
       int col = i % 2;
       int row = i / 2;
       buttonList.add(new GuiButton(SCHEDULE_ID_OFFSET + i,
-          col == 0 ? leftX : rightX, topY + (3 + row) * ROW_SPACING,
+          col == 0 ? leftX : rightX, topY + (5 + row) * ROW_SPACING,
           BUTTON_WIDTH, BUTTON_HEIGHT, ""));
     }
 
     buttonList.add(new GuiButton(CLOSE_BUTTON_ID, width / 2 - BUTTON_WIDTH / 2,
-        topY + 5 * ROW_SPACING + 6, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
+        topY + 7 * ROW_SPACING + 6, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
   }
 
   /**
-   * The first row's Y. Five rows of settings plus the close button, centred as a block so the
-   * panel stays put when a row is added rather than drifting off the top of the screen.
+   * The first row's Y. Five rows of settings, two of schedule and the close button, centred as a
+   * block so the panel stays put when a row is added rather than drifting off the top of the
+   * screen.
    */
   private int topRowY() {
-    return height / 2 - (6 * ROW_SPACING) / 2;
+    return height / 2 - (8 * ROW_SPACING) / 2;
   }
 
   @Override
@@ -132,6 +140,12 @@ public class SchoolZoneBeaconGui extends GuiScreen {
         return "Plaque: " + tileEntity.getBannerColor().getFriendlyName();
       case CYCLE_MODE:
         return "Mode: " + TileEntitySchoolZoneBeacon.MODE_NAMES[tileEntity.getMode()];
+      case CYCLE_BULB_STYLE:
+        return "Lens: " + tileEntity.getBulbStyle().getFriendlyName();
+      case CYCLE_VISOR_TYPE:
+        return "Visor: " + tileEntity.getVisorType().getFriendlyName();
+      case CYCLE_HOUSING_COLOR:
+        return "Housing: " + tileEntity.getHousingColor().getFriendlyName();
       default:
         return "N/A";
     }

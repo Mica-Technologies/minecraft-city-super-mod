@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficTimeOfDaySchedule;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -46,6 +49,47 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   public static final int BEACON_SIZE_COUNT = 2;
   public static final String[] BEACON_SIZE_NAMES = {"8 inch", "12 inch"};
 
+  /**
+   * Lens styles a beacon offers — the full signal set, since a beacon lens is an ordinary ball
+   * and the shared atlas carries a yellow tile for every one of them.
+   *
+   * <p>The unlit tile differs by style: GTX, DR6 and LED Dotted each have a single untinted off
+   * texture while LED and Incandescent keep a tinted one, so the choice shows most of the day,
+   * when the beacon is dark.
+   */
+  public static final TrafficSignalBulbStyle[] BULB_STYLES = {
+      TrafficSignalBulbStyle.LED,
+      TrafficSignalBulbStyle.LED_DOTTED,
+      TrafficSignalBulbStyle.INCANDESCENT,
+      TrafficSignalBulbStyle.GTX,
+      TrafficSignalBulbStyle.DR6};
+
+  /**
+   * Visor shells a beacon offers. Deliberately not the signal's full list: louvers exist to
+   * narrow a signal's visibility cone, which defeats the point of a flasher meant to be seen
+   * from the whole approach, and the two Barlo types are a strobe assembly this renderer does
+   * not draw.
+   */
+  public static final TrafficSignalVisorType[] VISOR_TYPES = {
+      TrafficSignalVisorType.CIRCLE,
+      TrafficSignalVisorType.TUNNEL,
+      TrafficSignalVisorType.CUTAWAY,
+      TrafficSignalVisorType.NONE};
+
+  /**
+   * Housing colours a beacon offers: the standard blacks, grays, yellows and greens that school
+   * assemblies actually ship in. The specialty colours in the signal palette are left out.
+   */
+  public static final TrafficSignalBodyColor[] HOUSING_COLORS = {
+      TrafficSignalBodyColor.FLAT_BLACK,
+      TrafficSignalBodyColor.GLOSSY_BLACK,
+      TrafficSignalBodyColor.BATTLESHIP_GRAY,
+      TrafficSignalBodyColor.CHARCOAL_GRAY,
+      TrafficSignalBodyColor.YELLOW,
+      TrafficSignalBodyColor.SCHOOL_BUS_YELLOW,
+      TrafficSignalBodyColor.DARK_OLIVE_GREEN,
+      TrafficSignalBodyColor.FOREST_GREEN};
+
   /** Selectable panel sizes, as a multiplier on the drawn assembly. */
   public static final float[] SCALES = {0.75f, 1.0f, 1.25f, 1.5f, 2.0f};
   public static final String[] SCALE_NAMES = {"75%", "100%", "125%", "150%", "200%"};
@@ -64,6 +108,9 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   private static final String KEY_SCALE = "scl";
   private static final String KEY_ARRANGEMENT = "arr";
   private static final String KEY_BEACON_SIZE = "bsz";
+  private static final String KEY_BULB_STYLE = "bst";
+  private static final String KEY_VISOR_TYPE = "vsr";
+  private static final String KEY_HOUSING_COLOR = "hcl";
   private static final String KEY_BANNER_COLOR = "bnc";
   private static final String KEY_MODE = "mode";
   private static final String KEY_AM_START = "amS";
@@ -75,6 +122,9 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   private int scaleIndex = 1;
   private int arrangement = BEACONS_ABOVE;
   private int beaconSize = BEACON_SIZE_8_INCH;
+  private int bulbStyleIndex = 0;
+  private int visorTypeIndex = 0;
+  private int housingColorIndex = 0;
   private MutcdSignFaceColor bannerColor = DEFAULT_BANNER_COLOR;
   private int mode = MODE_SCHEDULED;
 
@@ -103,6 +153,33 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
 
   public int getBeaconSize() {
     return beaconSize;
+  }
+
+  public int getBulbStyleIndex() {
+    return bulbStyleIndex;
+  }
+
+  /** The lens style the beacons are drawn with. */
+  public TrafficSignalBulbStyle getBulbStyle() {
+    return BULB_STYLES[clamp(bulbStyleIndex, 0, BULB_STYLES.length - 1)];
+  }
+
+  public int getVisorTypeIndex() {
+    return visorTypeIndex;
+  }
+
+  /** The visor shell the beacons are drawn with. */
+  public TrafficSignalVisorType getVisorType() {
+    return VISOR_TYPES[clamp(visorTypeIndex, 0, VISOR_TYPES.length - 1)];
+  }
+
+  public int getHousingColorIndex() {
+    return housingColorIndex;
+  }
+
+  /** The colour of the beacon housings, doors, visors and their bracketry. */
+  public TrafficSignalBodyColor getHousingColor() {
+    return HOUSING_COLORS[clamp(housingColorIndex, 0, HOUSING_COLORS.length - 1)];
   }
 
   /** The SCHOOL plaque's background. The sign body under it is always white. */
@@ -200,6 +277,21 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
     sync();
   }
 
+  public void setBulbStyleIndex(int bulbStyleIndex) {
+    this.bulbStyleIndex = clamp(bulbStyleIndex, 0, BULB_STYLES.length - 1);
+    sync();
+  }
+
+  public void setVisorTypeIndex(int visorTypeIndex) {
+    this.visorTypeIndex = clamp(visorTypeIndex, 0, VISOR_TYPES.length - 1);
+    sync();
+  }
+
+  public void setHousingColorIndex(int housingColorIndex) {
+    this.housingColorIndex = clamp(housingColorIndex, 0, HOUSING_COLORS.length - 1);
+    sync();
+  }
+
   public void setBannerColor(MutcdSignFaceColor bannerColor) {
     this.bannerColor = bannerColor == null ? DEFAULT_BANNER_COLOR : bannerColor;
     sync();
@@ -284,6 +376,12 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
         ? clamp(compound.getInteger(KEY_ARRANGEMENT), 0, BEACON_ARRANGEMENT_COUNT - 1)
         : BEACONS_ABOVE;
     beaconSize = clamp(compound.getInteger(KEY_BEACON_SIZE), 0, BEACON_SIZE_COUNT - 1);
+    // Absent on beacons saved before these were configurable, which getInteger reads as 0 —
+    // the first entry of each table, i.e. the look those beacons already had.
+    bulbStyleIndex = clamp(compound.getInteger(KEY_BULB_STYLE), 0, BULB_STYLES.length - 1);
+    visorTypeIndex = clamp(compound.getInteger(KEY_VISOR_TYPE), 0, VISOR_TYPES.length - 1);
+    housingColorIndex =
+        clamp(compound.getInteger(KEY_HOUSING_COLOR), 0, HOUSING_COLORS.length - 1);
     // Absent means a beacon saved before the colour was a choice, and every one of those was
     // fluorescent yellow-green -- which is ordinal 1, so this cannot lean on the zero default.
     bannerColor = compound.hasKey(KEY_BANNER_COLOR)
@@ -311,6 +409,9 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
     compound.setInteger(KEY_SCALE, scaleIndex);
     compound.setInteger(KEY_ARRANGEMENT, arrangement);
     compound.setInteger(KEY_BEACON_SIZE, beaconSize);
+    compound.setInteger(KEY_BULB_STYLE, bulbStyleIndex);
+    compound.setInteger(KEY_VISOR_TYPE, visorTypeIndex);
+    compound.setInteger(KEY_HOUSING_COLOR, housingColorIndex);
     compound.setInteger(KEY_BANNER_COLOR, bannerColor.ordinal());
     compound.setInteger(KEY_MODE, mode);
     compound.setInteger(KEY_AM_START, amStartHour);

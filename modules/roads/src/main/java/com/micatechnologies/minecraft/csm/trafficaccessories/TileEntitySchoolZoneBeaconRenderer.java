@@ -4,6 +4,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
+import com.micatechnologies.minecraft.csm.codeutils.RenderHelper.Box;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashPattern;
@@ -110,11 +112,8 @@ public class TileEntitySchoolZoneBeaconRenderer
   // as a warning sign throughout.
   private static final float[] COL_PANEL = {0.94f, 0.94f, 0.93f, 1.0f};
   private static final float[] COL_BORDER = {0.05f, 0.05f, 0.05f, 1.0f};
-  private static final float[] COL_HOUSING = {0.13f, 0.13f, 0.14f, 1.0f};
-  private static final float[] COL_VISOR = {
-      Math.min(1.0f, COL_HOUSING[0] * VISOR_TINT_SCALE + VISOR_TINT_BASE),
-      Math.min(1.0f, COL_HOUSING[1] * VISOR_TINT_SCALE + VISOR_TINT_BASE),
-      Math.min(1.0f, COL_HOUSING[2] * VISOR_TINT_SCALE + VISOR_TINT_BASE)};
+  // The housing and visor shades are no longer constants: both come from the beacon's selected
+  // housing colour, resolved per render in Style.
 
   private static final int TEXT_BLACK = 0x111111;
   private static final float TEXT_SCALE_LABEL = 0.42f;
@@ -312,6 +311,7 @@ public class TileEntitySchoolZoneBeaconRenderer
     boolean phaseA = flashing && TrafficSignalFlashPattern.OFF.isFlashLit(millis);
     boolean phaseB = flashing && TrafficSignalFlashPattern.B.isFlashLit(millis);
 
+    Style style = new Style(te);
     float size = sectionSize(te);
     float borderTop = CY + PANEL_H / 2.0f + PANEL_BORDER;
     float borderBottom = CY - PANEL_H / 2.0f - PANEL_BORDER;
@@ -321,11 +321,11 @@ public class TileEntitySchoolZoneBeaconRenderer
       case TileEntitySchoolZoneBeacon.BEACONS_ABOVE_AND_BELOW: {
         float belowY = borderBottom - BEACON_GAP - size / 2.0f;
         renderSupport(CX - BRACKET_HALF_W, borderTop,
-            CX + BRACKET_HALF_W, aboveY - size / 2.0f, sky, block);
+            CX + BRACKET_HALF_W, aboveY - size / 2.0f, style.housing, sky, block);
         renderSupport(CX - BRACKET_HALF_W, belowY + size / 2.0f,
-            CX + BRACKET_HALF_W, borderBottom, sky, block);
-        renderBeacon(CX, aboveY, size, phaseA, sky, block);
-        renderBeacon(CX, belowY, size, phaseB, sky, block);
+            CX + BRACKET_HALF_W, borderBottom, style.housing, sky, block);
+        renderBeacon(CX, aboveY, size, phaseA, style, sky, block);
+        renderBeacon(CX, belowY, size, phaseB, style, sky, block);
         break;
       }
       case TileEntitySchoolZoneBeacon.BEACONS_TWO_ABOVE: {
@@ -336,24 +336,61 @@ public class TileEntitySchoolZoneBeaconRenderer
         float headBottom = aboveY - size / 2.0f;
         float crossbarBottom = headBottom - CROSSBAR_H;
         renderSupport(CX - BRACKET_HALF_W, borderTop,
-            CX + BRACKET_HALF_W, crossbarBottom, sky, block);
+            CX + BRACKET_HALF_W, crossbarBottom, style.housing, sky, block);
         renderSupport(CX - offset - size / 2.0f - CROSSBAR_OVERHANG, crossbarBottom,
-            CX + offset + size / 2.0f + CROSSBAR_OVERHANG, headBottom, sky, block);
-        renderBeacon(CX - offset, aboveY, size, phaseA, sky, block);
-        renderBeacon(CX + offset, aboveY, size, phaseB, sky, block);
+            CX + offset + size / 2.0f + CROSSBAR_OVERHANG, headBottom, style.housing, sky,
+            block);
+        renderBeacon(CX - offset, aboveY, size, phaseA, style, sky, block);
+        renderBeacon(CX + offset, aboveY, size, phaseB, style, sky, block);
         break;
       }
       case TileEntitySchoolZoneBeacon.BEACONS_ABOVE:
       default:
         renderSupport(CX - BRACKET_HALF_W, borderTop,
-            CX + BRACKET_HALF_W, aboveY - size / 2.0f, sky, block);
-        renderBeacon(CX, aboveY, size, phaseA, sky, block);
+            CX + BRACKET_HALF_W, aboveY - size / 2.0f, style.housing, sky, block);
+        renderBeacon(CX, aboveY, size, phaseA, style, sky, block);
         break;
     }
   }
 
+  /**
+   * Everything about how one beacon assembly looks, resolved once per render and handed down
+   * rather than read from renderer state, so nothing depends on the order two assemblies draw in.
+   */
+  private static final class Style {
+    final float[] housing;
+    final float[] visor;
+    final List<Box> visorData12;
+    final List<Box> visorData8;
+    final TrafficSignalBulbStyle bulb;
+
+    Style(TileEntitySchoolZoneBeacon te) {
+      this.housing = housingColor(te.getHousingColor());
+      this.visor = visorColor(this.housing);
+      this.visorData12 = TrafficSignalVertexData.resolveVisorData(te.getVisorType(), 12);
+      this.visorData8 = TrafficSignalVertexData.resolveVisorData(te.getVisorType(), 8);
+      this.bulb = te.getBulbStyle();
+    }
+  }
+
+  /**
+   * The housing colour as {r, g, b, a}, and the visor shade lifted off it by the same tint the
+   * signal heads use so the visor reads as a separate part rather than a flat silhouette.
+   */
+  private static float[] housingColor(TrafficSignalBodyColor color) {
+    return new float[]{color.getRed(), color.getGreen(), color.getBlue(), 1.0f};
+  }
+
+  private static float[] visorColor(float[] housing) {
+    return new float[]{
+        Math.min(1.0f, housing[0] * VISOR_TINT_SCALE + VISOR_TINT_BASE),
+        Math.min(1.0f, housing[1] * VISOR_TINT_SCALE + VISOR_TINT_BASE),
+        Math.min(1.0f, housing[2] * VISOR_TINT_SCALE + VISOR_TINT_BASE)};
+  }
+
   /** A piece of the bracketry between the sign and a beacon, so neither one floats. */
-  private void renderSupport(float x1, float lowY, float x2, float highY, int sky, int block) {
+  private void renderSupport(float x1, float lowY, float x2, float highY, float[] housing,
+      int sky, int block) {
     if (highY <= lowY) {
       return;
     }
@@ -368,7 +405,7 @@ public class TileEntitySchoolZoneBeaconRenderer
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(bracket, buf,
-        COL_HOUSING[0], COL_HOUSING[1], COL_HOUSING[2], COL_HOUSING[3], 0, 0, 0, sky, block);
+        housing[0], housing[1], housing[2], housing[3], 0, 0, 0, sky, block);
     tess.draw();
   }
 
@@ -381,7 +418,7 @@ public class TileEntitySchoolZoneBeaconRenderer
    * geometry drawn after the legend would otherwise sample the font sheet — which is exactly
    * what made the first beacons invisible.</p>
    */
-  private void renderBeacon(float centreX, float centreY, float size, boolean lit,
+  private void renderBeacon(float centreX, float centreY, float size, boolean lit, Style style,
       int sky, int block) {
     boolean twelveInch = size >= SECTION_12_INCH;
     float xOffset = centreX - VISOR_CENTER_X;
@@ -395,17 +432,16 @@ public class TileEntitySchoolZoneBeaconRenderer
     RenderHelper.addBoxesToBufferLit(twelveInch
             ? TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA
             : TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA, buf,
-        COL_HOUSING[0], COL_HOUSING[1], COL_HOUSING[2], COL_HOUSING[3],
+        style.housing[0], style.housing[1], style.housing[2], style.housing[3],
         xOffset, yOffset, 0.0f, sky, block);
     RenderHelper.addBoxesToBufferLit(twelveInch
             ? TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA
             : TrafficSignalVertexData.SIGNAL_DOOR_8INCH_VERTEX_DATA, buf,
-        COL_HOUSING[0], COL_HOUSING[1], COL_HOUSING[2], COL_HOUSING[3],
+        style.housing[0], style.housing[1], style.housing[2], style.housing[3],
         xOffset, yOffset, 0.0f, sky, block);
-    RenderHelper.addTiltedBoxesToBufferDualColorLit(twelveInch
-            ? TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA
-            : TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA, buf,
-        COL_VISOR[0], COL_VISOR[1], COL_VISOR[2],
+    RenderHelper.addTiltedBoxesToBufferDualColorLit(
+        twelveInch ? style.visorData12 : style.visorData8, buf,
+        style.visor[0], style.visor[1], style.visor[2],
         0.0f, 0.0f, 0.0f, 1.0f,
         xOffset, yOffset, 0.0f, VISOR_PIVOT_Z, VISOR_TILT_DEGREES,
         VISOR_CENTER_X, VISOR_CENTER_Y, 0.0f, sky, block);
@@ -414,7 +450,7 @@ public class TileEntitySchoolZoneBeaconRenderer
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     Minecraft.getMinecraft().getTextureManager().bindTexture(SIGNAL_ATLAS);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    addBeaconBulb(buf, xOffset, yOffset, size, lit);
+    addBeaconBulb(buf, xOffset, yOffset, size, lit, style.bulb);
     tess.draw();
   }
 
@@ -424,10 +460,9 @@ public class TileEntitySchoolZoneBeaconRenderer
    * the section, so an 8-inch head is not simply a shrunk 12-inch one.
    */
   private void addBeaconBulb(BufferBuilder buf, float xOffset, float yOffset, float fullSize,
-      boolean lit) {
+      boolean lit, TrafficSignalBulbStyle bulbStyle) {
     TextureInfo texInfo = TrafficSignalTextureMap.getTextureInfoForBulb(
-        TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
-        TrafficSignalBulbColor.YELLOW, lit);
+        bulbStyle, TrafficSignalBulbType.BALL, TrafficSignalBulbColor.YELLOW, lit);
 
     float sizeScale = fullSize / SECTION_12_INCH;
     float inset = fullSize * 0.02f;
