@@ -29,12 +29,21 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   public static final int MODE_COUNT = 3;
   public static final String[] MODE_NAMES = {"Off", "Scheduled", "Always On"};
 
-  /** One beacon bar above the sign. */
-  public static final int BEACONS_ABOVE = 0;
-  /** A bar above and a second below, as a taller assembly carries. */
-  public static final int BEACONS_ABOVE_AND_BELOW = 1;
-  public static final int BEACON_ARRANGEMENT_COUNT = 2;
-  public static final String[] BEACON_ARRANGEMENT_NAMES = {"Above", "Above and Below"};
+  /** One beacon above the sign and a second below it, as a taller assembly carries. */
+  public static final int BEACONS_ABOVE_AND_BELOW = 0;
+  /** A single beacon above the sign. */
+  public static final int BEACONS_ABOVE = 1;
+  /** A wig-wag pair side by side above the sign. */
+  public static final int BEACONS_TWO_ABOVE = 2;
+  public static final int BEACON_ARRANGEMENT_COUNT = 3;
+  public static final String[] BEACON_ARRANGEMENT_NAMES =
+      {"One Above, One Below", "One Above", "Two Above"};
+
+  /** Beacon head diameters, matching the signal sections the renderer borrows geometry from. */
+  public static final int BEACON_SIZE_8_INCH = 0;
+  public static final int BEACON_SIZE_12_INCH = 1;
+  public static final int BEACON_SIZE_COUNT = 2;
+  public static final String[] BEACON_SIZE_NAMES = {"8 inch", "12 inch"};
 
   /** Selectable panel sizes, as a multiplier on the drawn assembly. */
   public static final float[] SCALES = {0.75f, 1.0f, 1.25f, 1.5f, 2.0f};
@@ -46,6 +55,7 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   private static final String KEY_SPEED = "spd";
   private static final String KEY_SCALE = "scl";
   private static final String KEY_ARRANGEMENT = "arr";
+  private static final String KEY_BEACON_SIZE = "bsz";
   private static final String KEY_MODE = "mode";
   private static final String KEY_AM_START = "amS";
   private static final String KEY_AM_END = "amE";
@@ -55,6 +65,7 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   private int speedLimit = 20;
   private int scaleIndex = 1;
   private int arrangement = BEACONS_ABOVE;
+  private int beaconSize = BEACON_SIZE_8_INCH;
   private int mode = MODE_SCHEDULED;
 
   // Two windows, because that is what a real school zone posts: one around arrival and one
@@ -78,6 +89,10 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
 
   public int getArrangement() {
     return arrangement;
+  }
+
+  public int getBeaconSize() {
+    return beaconSize;
   }
 
   public int getMode() {
@@ -171,6 +186,11 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
     sync();
   }
 
+  public void setBeaconSize(int beaconSize) {
+    this.beaconSize = clamp(beaconSize, 0, BEACON_SIZE_COUNT - 1);
+    sync();
+  }
+
   public void setMode(int mode) {
     this.mode = clamp(mode, 0, MODE_COUNT - 1);
     sync();
@@ -244,7 +264,12 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   public void readNBT(NBTTagCompound compound) {
     speedLimit = clamp(compound.getInteger(KEY_SPEED), MIN_SPEED, MAX_SPEED);
     scaleIndex = clamp(compound.getInteger(KEY_SCALE), 0, SCALES.length - 1);
-    arrangement = clamp(compound.getInteger(KEY_ARRANGEMENT), 0, BEACON_ARRANGEMENT_COUNT - 1);
+    // Absent means the tag was never written, and index 0 is now the two-beacon arrangement
+    // rather than the single one, so an unconfigured beacon has to fall back explicitly.
+    arrangement = compound.hasKey(KEY_ARRANGEMENT)
+        ? clamp(compound.getInteger(KEY_ARRANGEMENT), 0, BEACON_ARRANGEMENT_COUNT - 1)
+        : BEACONS_ABOVE;
+    beaconSize = clamp(compound.getInteger(KEY_BEACON_SIZE), 0, BEACON_SIZE_COUNT - 1);
     // Absent means a beacon saved before the mode existed; those all ran on their schedule.
     mode = compound.hasKey(KEY_MODE)
         ? clamp(compound.getInteger(KEY_MODE), 0, MODE_COUNT - 1)
@@ -266,6 +291,7 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
     compound.setInteger(KEY_SPEED, speedLimit);
     compound.setInteger(KEY_SCALE, scaleIndex);
     compound.setInteger(KEY_ARRANGEMENT, arrangement);
+    compound.setInteger(KEY_BEACON_SIZE, beaconSize);
     compound.setInteger(KEY_MODE, mode);
     compound.setInteger(KEY_AM_START, amStartHour);
     compound.setInteger(KEY_AM_END, amEndHour);
@@ -288,7 +314,7 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   @SideOnly(Side.CLIENT)
   public AxisAlignedBB getRenderBoundingBox() {
     return new AxisAlignedBB(
-        pos.getX() - 2, pos.getY() - 3, pos.getZ() - 2,
-        pos.getX() + 3, pos.getY() + 5, pos.getZ() + 3);
+        pos.getX() - 2, pos.getY() - 4, pos.getZ() - 2,
+        pos.getX() + 3, pos.getY() + 8, pos.getZ() + 3);
   }
 }

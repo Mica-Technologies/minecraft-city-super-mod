@@ -57,6 +57,10 @@ public class SchoolZoneBeaconConfigPacketHandler
           beacon.setArrangement(wrap(beacon.getArrangement() + step,
               TileEntitySchoolZoneBeacon.BEACON_ARRANGEMENT_COUNT));
           break;
+        case CYCLE_BEACON_SIZE:
+          beacon.setBeaconSize(wrap(beacon.getBeaconSize() + step,
+              TileEntitySchoolZoneBeacon.BEACON_SIZE_COUNT));
+          break;
         case CYCLE_MODE:
           beacon.setMode(wrap(beacon.getMode() + step,
               TileEntitySchoolZoneBeacon.MODE_COUNT));

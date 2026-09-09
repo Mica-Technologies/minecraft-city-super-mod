@@ -17,7 +17,8 @@ from PIL import Image, ImageDraw
 SIZE = 64
 
 # Matching TileEntitySchoolZoneBeaconRenderer's palette so the icon and the block agree.
-PANEL = (184, 237, 51, 255)
+PANEL = (240, 240, 237, 255)
+BANNER = (184, 237, 51, 255)
 BORDER = (13, 13, 13, 255)
 HOUSING = (33, 33, 36, 255)
 LAMP_LIT = (255, 184, 26, 255)
@@ -41,20 +42,23 @@ def main():
     d.ellipse([19, 5, 27, 13], fill=LAMP_LIT, outline=BORDER)
     d.ellipse([36, 5, 44, 13], fill=LAMP_DARK, outline=BORDER)
 
-    # Sign panel.
+    # Sign panel: the white regulatory body with the yellow-green SCHOOL plaque on top of it,
+    # separated by a strip of border the way the two signs are on a real assembly.
     d.rectangle([16, 17, 47, 60], fill=PANEL, outline=BORDER)
+    d.rectangle([16, 17, 47, 25], fill=BANNER, outline=BORDER)
 
     # Legend, suggested rather than lettered -- at 64 px real text is unreadable, and a row of
     # bars reads as a sign where cramped glyphs read as noise.
-    for y in (21, 26, 31):
+    d.rectangle([21, 20, 42, 22], fill=INK)
+    for y in (29, 34):
         d.rectangle([21, y, 42, y + 2], fill=INK)
     # The posted number, drawn as a chunky block pair.
-    d.rectangle([23, 37, 30, 49], fill=INK)
-    d.rectangle([33, 37, 40, 49], fill=INK)
-    d.rectangle([25, 39, 28, 47], fill=PANEL)
-    d.rectangle([35, 39, 38, 47], fill=PANEL)
+    d.rectangle([23, 39, 30, 51], fill=INK)
+    d.rectangle([33, 39, 40, 51], fill=INK)
+    d.rectangle([25, 41, 28, 49], fill=PANEL)
+    d.rectangle([35, 41, 38, 49], fill=PANEL)
     # "WHEN FLASHING" plaque line.
-    d.rectangle([21, 53, 42, 55], fill=INK)
+    d.rectangle([21, 55, 42, 57], fill=INK)
 
     path = os.path.join(OUT_DIR, 'school_zone_beacon.png')
     img.save(path)

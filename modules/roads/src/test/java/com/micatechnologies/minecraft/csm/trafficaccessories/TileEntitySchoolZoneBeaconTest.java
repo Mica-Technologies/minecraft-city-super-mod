@@ -65,7 +65,8 @@ class TileEntitySchoolZoneBeaconTest {
     TileEntitySchoolZoneBeacon te = new TileEntitySchoolZoneBeacon();
     te.setSpeedLimit(15);
     te.setScaleIndex(3);
-    te.setArrangement(TileEntitySchoolZoneBeacon.BEACONS_ABOVE_AND_BELOW);
+    te.setArrangement(TileEntitySchoolZoneBeacon.BEACONS_TWO_ABOVE);
+    te.setBeaconSize(TileEntitySchoolZoneBeacon.BEACON_SIZE_12_INCH);
     te.setMode(TileEntitySchoolZoneBeacon.MODE_ON);
     te.setScheduleHour(0, 6);
     te.setScheduleHour(1, 10);
@@ -78,7 +79,8 @@ class TileEntitySchoolZoneBeaconTest {
 
     assertEquals(15, restored.getSpeedLimit());
     assertEquals(3, restored.getScaleIndex());
-    assertEquals(TileEntitySchoolZoneBeacon.BEACONS_ABOVE_AND_BELOW, restored.getArrangement());
+    assertEquals(TileEntitySchoolZoneBeacon.BEACONS_TWO_ABOVE, restored.getArrangement());
+    assertEquals(TileEntitySchoolZoneBeacon.BEACON_SIZE_12_INCH, restored.getBeaconSize());
     assertEquals(TileEntitySchoolZoneBeacon.MODE_ON, restored.getMode());
     assertEquals(6, restored.getScheduleHour(0));
     assertEquals(10, restored.getScheduleHour(1));
@@ -95,7 +97,20 @@ class TileEntitySchoolZoneBeaconTest {
     assertEquals(20, te.getSpeedLimit());
     assertEquals(TileEntitySchoolZoneBeacon.MODE_SCHEDULED, te.getMode());
     assertEquals(TileEntitySchoolZoneBeacon.BEACONS_ABOVE, te.getArrangement());
+    assertEquals(TileEntitySchoolZoneBeacon.BEACON_SIZE_8_INCH, te.getBeaconSize());
     assertTrue(te.getScale() > 0.0f);
+  }
+
+  @Test
+  void arrangementZeroIsKeptWhenItWasActuallyWritten() {
+    // Index 0 is the two-beacon arrangement and the absent-tag default is the single one, so
+    // the two cases have to stay distinguishable — reading a written 0 as "unset" would quietly
+    // undo the setting every time the chunk reloaded.
+    TileEntitySchoolZoneBeacon te = new TileEntitySchoolZoneBeacon();
+    te.setArrangement(TileEntitySchoolZoneBeacon.BEACONS_ABOVE_AND_BELOW);
+    TileEntitySchoolZoneBeacon restored = new TileEntitySchoolZoneBeacon();
+    restored.readNBT(te.writeNBT(new NBTTagCompound()));
+    assertEquals(TileEntitySchoolZoneBeacon.BEACONS_ABOVE_AND_BELOW, restored.getArrangement());
   }
 
   @Test
