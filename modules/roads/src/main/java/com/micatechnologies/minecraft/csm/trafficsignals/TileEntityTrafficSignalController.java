@@ -1925,6 +1925,31 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         plan.getCoordination(slot).setCoordinatedPhases(
             toggleInArray(plan.getCoordination(slot).getCoordinatedPhases(), (int) value));
         break;
+      case "pri.enabled":
+        plan.getPriority().setEnabled(value != 0);
+        break;
+      case "pri.circuit":
+        plan.getPriority().setTriggerCircuitIndex((int) value);
+        break;
+      case "pri.movement": {
+        TrafficSignalPhaseMovement[] movements = TrafficSignalPhaseMovement.values();
+        int ordinal = (int) value;
+        plan.getPriority().setTriggerMovement(
+            ordinal >= 0 && ordinal < movements.length ? movements[ordinal] : null);
+        break;
+      }
+      case "pri.phase":
+        plan.getPriority().setTransitPhase((int) value);
+        break;
+      case "pri.extension":
+        plan.getPriority().setMaxExtension(clampTicks(value));
+        break;
+      case "pri.earlyReturn":
+        plan.getPriority().setMaxEarlyReturn(clampTicks(value));
+        break;
+      case "pri.minCycles":
+        plan.getPriority().setMinCyclesBetweenGrants((int) value);
+        break;
       case "co.todEnabled":
         plan.setTimeOfDayPatterns(value != 0);
         break;

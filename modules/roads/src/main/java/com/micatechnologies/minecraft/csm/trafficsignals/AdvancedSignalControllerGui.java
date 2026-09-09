@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationPlan;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPriorityPlan;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficTimeOfDaySchedule;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashOverride;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
@@ -40,7 +41,7 @@ import org.lwjgl.input.Keyboard;
  */
 public class AdvancedSignalControllerGui extends GuiScreen {
 
-  private enum Screen { STATUS, TIMING, MAP, COORD, PREEMPT, ACT, OVL, HELP }
+  private enum Screen { STATUS, TIMING, MAP, COORD, PREEMPT, TSP, ACT, OVL, HELP }
 
   // Palette — controller front panel.
   private static final int COLOR_BODY = 0xFF23272B;
@@ -347,7 +348,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     // Screen-select row across the top of the keypad.
     int sx = left + 12;
     int sy = top + H - 94;
-    String[] names = {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT", "ACT", "OVL", "HELP"};
+    String[] names =
+        {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT", "TSP", "ACT", "OVL", "HELP"};
     // Size the tab row to the panel so all tabs fit regardless of count.
     int tabW = (W - 24) / names.length;
     for (int i = 0; i < names.length; i++) {
@@ -416,6 +418,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         break;
       case PREEMPT:
         buildPreemptCells();
+        break;
+      case TSP:
+        buildPriorityCells(lcdY + 2);
         break;
       case ACT:
         buildActCells();
@@ -1108,6 +1113,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       case PREEMPT:
         drawPreempt();
         break;
+      case TSP:
+        drawPriorityBlock(lcdY + 2);
+        break;
       case ACT:
         drawAct();
         break;
@@ -1419,6 +1427,70 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       }
     }
     return "--";
+  }
+
+  /** Transit signal priority, drawn under the preempt table because that is where a reader
+   * looks for it — and because the contrast with the preempt above is the point: this one does
+   * not take the intersection, it nudges the cycle. */
+  private void drawPriorityBlock(int y) {
+    TrafficSignalPriorityPlan pri = plan().getPriority();
+    fontRenderer.drawString("TRANSIT PRIORITY", lcdX, y, COLOR_AMBER_HEAD);
+    fontRenderer.drawString("Enabled:", lcdX, y + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("Circuit / move:", lcdX, y + 24, COLOR_AMBER_DIM);
+    fontRenderer.drawString("Transit phase:", lcdX, y + 36, COLOR_AMBER_DIM);
+    fontRenderer.drawString("Extend / return:", lcdX, y + 48, COLOR_AMBER_DIM);
+    fontRenderer.drawString("Min cycles:", lcdX, y + 60, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, lcdW - 6, 9, "Transit signal priority",
+        "Not a preempt. Priority nudges the cycle it is already running:",
+        "a call while the transit phase is GREEN holds that green longer,",
+        "and a call while it is RED shortens the conflicting phases toward",
+        "their minimums to bring it back sooner. Coordination survives,",
+        "which is the whole difference from the PRIORITY preempt above.",
+        "Nothing here can cut a phase below its minimum green or truncate",
+        "a pedestrian clearance -- priority only ever moves the maximum.",
+        "Min cycles rate limits it, so a frequent route cannot hold a",
+        "corridor open permanently.");
+    if (pri.isEnabled() && !pri.isRunnable()) {
+      fontRenderer.drawString("(needs a circuit and a transit phase)", lcdX + 150, y,
+          COLOR_AMBER_DIM);
+    }
+  }
+
+  private void buildPriorityCells(int y) {
+    cells.add(new Cell(lcdX + 100, y + 12, 40,
+        () -> plan().getPriority().isEnabled() ? "ON" : "OFF",
+        dir -> send("pri.enabled", 0, plan().getPriority().isEnabled() ? 0L : 1L), null));
+    cells.add(new Cell(lcdX + 100, y + 24, 40,
+        () -> {
+          int c = plan().getPriority().getTriggerCircuitIndex();
+          return c < 0 ? "-" : String.valueOf(c);
+        },
+        dir -> send("pri.circuit", 0, plan().getPriority().getTriggerCircuitIndex() + dir),
+        null));
+    cells.add(new Cell(lcdX + 145, y + 24, 70,
+        () -> plan().getPriority().getTriggerMovement().name(),
+        dir -> send("pri.movement", 0,
+            cyc(plan().getPriority().getTriggerMovement().ordinal(), dir,
+                TrafficSignalPhaseMovement.values().length)), null));
+    cells.add(new Cell(lcdX + 100, y + 36, 40,
+        () -> {
+          int n = plan().getPriority().getTransitPhase();
+          return n <= 0 ? "-" : "\u03c6" + n;
+        },
+        dir -> send("pri.phase", 0, plan().getPriority().getTransitPhase() + dir), null));
+    cells.add(new Cell(lcdX + 100, y + 48, 45,
+        () -> secs(plan().getPriority().getMaxExtension()),
+        dir -> send("pri.extension", 0, plan().getPriority().getMaxExtension() + dir * 20L),
+        sec -> send("pri.extension", 0, Math.round(sec * 20))));
+    cells.add(new Cell(lcdX + 150, y + 48, 45,
+        () -> secs(plan().getPriority().getMaxEarlyReturn()),
+        dir -> send("pri.earlyReturn", 0,
+            plan().getPriority().getMaxEarlyReturn() + dir * 20L),
+        sec -> send("pri.earlyReturn", 0, Math.round(sec * 20))));
+    cells.add(new Cell(lcdX + 100, y + 60, 40,
+        () -> String.valueOf(plan().getPriority().getMinCyclesBetweenGrants()),
+        dir -> send("pri.minCycles", 0,
+            Math.max(0, plan().getPriority().getMinCyclesBetweenGrants() + dir)), null));
   }
 
   private void drawPreempt() {

@@ -224,6 +224,17 @@ public class RingBarrierState {
    */
   private long previousLocalCycle = -1L;
 
+  // Transit signal priority. Transient like the rest: a grant is a live thing, and a controller
+  // that came back from a reload still holding one would be favouring a bus that has long gone.
+  /** Whether a transit call is being honoured this tick. */
+  private boolean priorityGranted = false;
+  /** How much of the extension budget is left in the current grant. */
+  private long priorityExtensionLeft = 0L;
+  /** The cycle a grant was last made in, so the rate limit has something to count from. */
+  private long priorityLastGrantCycle = -1L;
+  /** Whether a transit call was standing last tick, so one call is one grant. */
+  private boolean priorityCallWasActive = false;
+
   /**
    * Source of per-tick detector and pedestrian demand. Production wraps the world; unit tests
    * supply canned data so the ring-and-barrier engine can be exercised without a Minecraft world.
@@ -303,6 +314,9 @@ public class RingBarrierState {
 
     // Compute coordination windows for this tick (no-op in FREE mode).
     computeCoordination(plan, now, world);
+
+    // Transit priority: decide whether a call is being honoured before any phase is timed.
+    computePriority(plan, now);
 
     // Locking detector memory: latch/discharge LOCK phases' vehicle calls before demand is read.
     updateLockedCalls(plan);
@@ -765,6 +779,8 @@ public class RingBarrierState {
             phase.getMinGreen(), addedInit, phase.getBikeMinGreen(), ring.bikeCall);
         long effMaxGreen = AdvancedActuationTiming.effectiveMaxGreen(
             phase.getMaxGreen(), phase.getMax2(), coordinated);
+        effMaxGreen = applyPriorityToMaxGreen(plan, phaseNum, phase, ringNum, effMaxGreen,
+            effMinGreen);
         long effPassage = AdvancedActuationTiming.effectivePassage(phase.getPassage(),
             phase.getMinGap(), phase.getTimeBeforeReduce(), phase.getTimeToReduce(), greenElapsed);
         boolean minMet = greenElapsed >= effMinGreen;
@@ -1296,6 +1312,68 @@ public class RingBarrierState {
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
       coordPhase[n] = co.isCoordinatedPhase(n);
     }
+  }
+
+  /**
+   * Works out whether a transit call is being honoured this tick.
+   *
+   * <p>A grant lasts as long as the call does, and spends an extension budget that does not
+   * refill until the call drops — so a bus sitting in a detection zone cannot hold a green
+   * indefinitely. The rate limit is counted in whole cycles, which is the only unit that means
+   * anything to a coordinated corridor.</p>
+   */
+  private void computePriority(TrafficSignalProgrammedPhasePlan plan, long now) {
+    TrafficSignalPriorityPlan priority = plan.getPriority();
+    if (!priority.isRunnable()) {
+      priorityGranted = false;
+      priorityCallWasActive = false;
+      return;
+    }
+    boolean call = zoneCount(priority.getTriggerCircuitIndex(),
+        priority.getTriggerMovement()) > 0;
+    long cycle = coordinated && cycleTicks > 1L ? now / cycleTicks : -1L;
+
+    if (!call) {
+      // The call dropping is what ends a grant and refills the budget: without that a route
+      // with continuous demand would be granted priority forever on one call.
+      priorityGranted = false;
+      priorityCallWasActive = false;
+      return;
+    }
+    if (!priorityCallWasActive) {
+      // A fresh call. Grant it only if the rate limit allows, and start a new budget.
+      priorityCallWasActive = true;
+      if (priority.mayGrant(cycle, priorityLastGrantCycle)) {
+        priorityGranted = true;
+        priorityExtensionLeft = priority.getMaxExtension();
+        priorityLastGrantCycle = cycle;
+      } else {
+        priorityGranted = false;
+      }
+    }
+    if (priorityGranted && priorityExtensionLeft > 0L) {
+      priorityExtensionLeft--;
+    }
+  }
+
+  /**
+   * Applies a granted priority to one phase's maximum green.
+   *
+   * <p>Only the maximum moves. The engine will not terminate a phase before its minimum green
+   * and its pedestrian clearance are done whatever this returns, so priority can lengthen a
+   * green or bring one forward but can never cut one short of what is safe.</p>
+   */
+  private long applyPriorityToMaxGreen(TrafficSignalProgrammedPhasePlan plan, int phaseNum,
+      TrafficSignalProgrammedPhase phase, int ringNum, long effMaxGreen, long effMinGreen) {
+    if (!priorityGranted) {
+      return effMaxGreen;
+    }
+    TrafficSignalPriorityPlan priority = plan.getPriority();
+    int transit = priority.getTransitPhase();
+    boolean isTransit = phaseNum == transit;
+    boolean conflictsWithTransit = !isTransit && conflicts(phase, ringNum, plan, transit);
+    return priority.adjustMaxGreen(effMaxGreen, effMinGreen, isTransit, conflictsWithTransit,
+        priorityExtensionLeft);
   }
 
   /**

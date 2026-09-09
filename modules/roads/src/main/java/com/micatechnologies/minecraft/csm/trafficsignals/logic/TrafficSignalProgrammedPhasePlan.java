@@ -49,6 +49,7 @@ public class TrafficSignalProgrammedPhasePlan {
   private static final String K_PATTERNS = "cop";
   private static final String K_SCHEDULE = "cos";
   private static final String K_PATTERNS_ENABLED = "coe";
+  private static final String K_PRIORITY = "pri";
   private static final String K_PREEMPTS = "pe";
   private static final String K_OVERLAPS = "ov";
 
@@ -64,6 +65,7 @@ public class TrafficSignalProgrammedPhasePlan {
       new TrafficSignalCoordinationPlan[TrafficTimeOfDaySchedule.SLOT_COUNT];
   private final TrafficTimeOfDaySchedule coordinationSchedule = new TrafficTimeOfDaySchedule();
   private boolean timeOfDayPatterns = false;
+  private TrafficSignalPriorityPlan priority = new TrafficSignalPriorityPlan();
   private final List<TrafficSignalPreempt> preempts;
   private final List<TrafficSignalProgrammedOverlap> vehicleOverlaps;
 
@@ -176,6 +178,11 @@ public class TrafficSignalProgrammedPhasePlan {
       return patterns[0];
     }
     return patterns[slot >= patterns.length ? patterns.length - 1 : slot];
+  }
+
+  /** Transit signal priority: green extension and early return, distinct from a preempt. */
+  public TrafficSignalPriorityPlan getPriority() {
+    return priority;
   }
 
   /** The time-of-day table that chooses between the patterns. */
@@ -487,6 +494,7 @@ public class TrafficSignalProgrammedPhasePlan {
     c.setTag(K_PATTERNS, patternList);
     c.setTag(K_SCHEDULE, coordinationSchedule.writeNBT(new NBTTagCompound()));
     c.setBoolean(K_PATTERNS_ENABLED, timeOfDayPatterns);
+    c.setTag(K_PRIORITY, priority.toNBT());
     return c;
   }
 
@@ -534,6 +542,9 @@ public class TrafficSignalProgrammedPhasePlan {
       plan.coordinationSchedule.readNBT(c.getCompoundTag(K_SCHEDULE));
     }
     plan.timeOfDayPatterns = c.getBoolean(K_PATTERNS_ENABLED);
+    if (c.hasKey(K_PRIORITY)) {
+      plan.priority = TrafficSignalPriorityPlan.fromNBT(c.getCompoundTag(K_PRIORITY));
+    }
     return plan;
   }
 
