@@ -61,6 +61,11 @@ public class SchoolZoneBeaconConfigPacketHandler
           beacon.setBeaconSize(wrap(beacon.getBeaconSize() + step,
               TileEntitySchoolZoneBeacon.BEACON_SIZE_COUNT));
           break;
+        case CYCLE_BANNER_COLOR:
+          beacon.setBannerColor(MutcdSignFaceColor.values()[
+              wrap(beacon.getBannerColor().ordinal() + step,
+                  MutcdSignFaceColor.values().length)]);
+          break;
         case CYCLE_MODE:
           beacon.setMode(wrap(beacon.getMode() + step,
               TileEntitySchoolZoneBeacon.MODE_COUNT));

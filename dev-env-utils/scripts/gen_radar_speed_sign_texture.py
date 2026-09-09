@@ -16,9 +16,9 @@ from PIL import Image, ImageDraw
 
 SIZE = 64
 
-# Matching TileEntityRadarSpeedSignRenderer's palette, and TrafficSignalBodyColor's
-# SCHOOL_BUS_YELLOW, which is the panel colour a freshly placed sign has.
-PANEL = (255, 209, 33, 255)
+# Matching TileEntityRadarSpeedSignRenderer's palette, and MutcdSignFaceColor.YELLOW, which is
+# the face colour a freshly placed sign has.
+PANEL = (255, 204, 0, 255)
 BORDER = (13, 13, 13, 255)
 WINDOW = (14, 13, 12, 255)
 LED = (255, 170, 30, 255)

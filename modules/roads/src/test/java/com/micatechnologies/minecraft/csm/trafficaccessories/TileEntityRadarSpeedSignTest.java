@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -113,7 +112,7 @@ class TileEntityRadarSpeedSignTest {
     sign.setMultiplierIndex(5);
     sign.setScaleIndex(3);
     sign.setShowHeader(true);
-    sign.setPanelColor(TrafficSignalBodyColor.PORTLAND_BLUE);
+    sign.setFaceColor(MutcdSignFaceColor.FLUORESCENT_YELLOW_GREEN);
     sign.setZoneCorners(new BlockPos(1, 2, 3), new BlockPos(9, 8, 7));
 
     TileEntityRadarSpeedSign restored = new TileEntityRadarSpeedSign();
@@ -123,7 +122,7 @@ class TileEntityRadarSpeedSignTest {
     assertEquals(5, restored.getMultiplierIndex());
     assertEquals(3, restored.getScaleIndex());
     assertTrue(restored.isShowHeader());
-    assertEquals(TrafficSignalBodyColor.PORTLAND_BLUE, restored.getPanelColor());
+    assertEquals(MutcdSignFaceColor.FLUORESCENT_YELLOW_GREEN, restored.getFaceColor());
     assertTrue(restored.hasCustomZone());
   }
 
@@ -136,11 +135,27 @@ class TileEntityRadarSpeedSignTest {
     sign.readNBT(new NBTTagCompound());
     assertEquals(25, sign.getPostedSpeed());
     assertEquals(1.0, TileEntityRadarSpeedSign.MULTIPLIERS[sign.getMultiplierIndex()]);
-    assertEquals(TrafficSignalBodyColor.SCHOOL_BUS_YELLOW, sign.getPanelColor());
+    assertEquals(MutcdSignFaceColor.YELLOW, sign.getFaceColor());
     assertFalse(sign.isShowHeader());
     assertFalse(sign.hasCustomZone());
     assertEquals(0, sign.getReading());
     assertTrue(sign.getScale() > 0.0f);
+  }
+
+  @Test
+  void bothFaceColoursSurviveAWriteAndAnAbsentTagFallsBackToYellow() {
+    // Fluorescent yellow-green is ordinal 1, so an absent tag reading as zero happens to be
+    // correct here -- but only by luck, and the assertion is what keeps it correct if the
+    // order ever changes.
+    for (MutcdSignFaceColor colour : MutcdSignFaceColor.values()) {
+      TileEntityRadarSpeedSign sign = new TileEntityRadarSpeedSign();
+      sign.setFaceColor(colour);
+      TileEntityRadarSpeedSign restored = new TileEntityRadarSpeedSign();
+      restored.readNBT(sign.writeNBT(new NBTTagCompound()));
+      assertEquals(colour, restored.getFaceColor());
+    }
+    assertEquals(MutcdSignFaceColor.YELLOW, MutcdSignFaceColor.fromNBT(-1));
+    assertEquals(MutcdSignFaceColor.YELLOW, MutcdSignFaceColor.fromNBT(99));
   }
 
   @Test

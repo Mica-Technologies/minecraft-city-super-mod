@@ -2,7 +2,6 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficEntitySelectors;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -97,7 +96,7 @@ public class TileEntityRadarSpeedSign extends AbstractTickableTileEntity {
   private static final String KEY_MULTIPLIER = "mul";
   private static final String KEY_SCALE = "scl";
   private static final String KEY_HEADER = "hdr";
-  private static final String KEY_COLOR = "col";
+  private static final String KEY_FACE_COLOR = "face";
   private static final String KEY_ZONE_1 = "z1";
   private static final String KEY_ZONE_2 = "z2";
   private static final String KEY_READING = "rdg";
@@ -106,7 +105,7 @@ public class TileEntityRadarSpeedSign extends AbstractTickableTileEntity {
   private int multiplierIndex = DEFAULT_MULTIPLIER_INDEX;
   private int scaleIndex = 1;
   private boolean showHeader = false;
-  private TrafficSignalBodyColor panelColor = TrafficSignalBodyColor.SCHOOL_BUS_YELLOW;
+  private MutcdSignFaceColor faceColor = MutcdSignFaceColor.YELLOW;
 
   private BlockPos zoneCorner1 = null;
   private BlockPos zoneCorner2 = null;
@@ -140,8 +139,8 @@ public class TileEntityRadarSpeedSign extends AbstractTickableTileEntity {
     return showHeader;
   }
 
-  public TrafficSignalBodyColor getPanelColor() {
-    return panelColor;
+  public MutcdSignFaceColor getFaceColor() {
+    return faceColor;
   }
 
   public boolean hasCustomZone() {
@@ -191,8 +190,8 @@ public class TileEntityRadarSpeedSign extends AbstractTickableTileEntity {
     sync();
   }
 
-  public void setPanelColor(TrafficSignalBodyColor panelColor) {
-    this.panelColor = panelColor == null ? TrafficSignalBodyColor.SCHOOL_BUS_YELLOW : panelColor;
+  public void setFaceColor(MutcdSignFaceColor faceColor) {
+    this.faceColor = faceColor == null ? MutcdSignFaceColor.YELLOW : faceColor;
     sync();
   }
 
@@ -389,9 +388,7 @@ public class TileEntityRadarSpeedSign extends AbstractTickableTileEntity {
         : DEFAULT_MULTIPLIER_INDEX;
     scaleIndex = clamp(compound.getInteger(KEY_SCALE), 0, SCALES.length - 1);
     showHeader = compound.getBoolean(KEY_HEADER);
-    panelColor = compound.hasKey(KEY_COLOR)
-        ? TrafficSignalBodyColor.fromNBT(compound.getInteger(KEY_COLOR))
-        : TrafficSignalBodyColor.SCHOOL_BUS_YELLOW;
+    faceColor = MutcdSignFaceColor.fromNBT(compound.getInteger(KEY_FACE_COLOR));
     zoneCorner1 = compound.hasKey(KEY_ZONE_1)
         ? BlockPos.fromLong(compound.getLong(KEY_ZONE_1)) : null;
     zoneCorner2 = compound.hasKey(KEY_ZONE_2)
@@ -407,7 +404,7 @@ public class TileEntityRadarSpeedSign extends AbstractTickableTileEntity {
     compound.setInteger(KEY_MULTIPLIER, multiplierIndex);
     compound.setInteger(KEY_SCALE, scaleIndex);
     compound.setBoolean(KEY_HEADER, showHeader);
-    compound.setInteger(KEY_COLOR, panelColor.ordinal());
+    compound.setInteger(KEY_FACE_COLOR, faceColor.ordinal());
     if (zoneCorner1 != null && zoneCorner2 != null) {
       compound.setLong(KEY_ZONE_1, zoneCorner1.toLong());
       compound.setLong(KEY_ZONE_2, zoneCorner2.toLong());

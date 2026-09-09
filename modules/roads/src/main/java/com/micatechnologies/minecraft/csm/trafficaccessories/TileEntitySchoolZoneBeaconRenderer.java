@@ -105,10 +105,10 @@ public class TileEntitySchoolZoneBeaconRenderer
   private static final float CZ = 16.0f - PANEL_D / 2.0f;
 
   // Face colours. The body is white because a speed limit is a regulatory sign; the SCHOOL
-  // plaque above it is the fluorescent yellow-green the MUTCD adopted for school warnings.
-  // Colouring the whole panel green, as this first did, reads as a warning sign throughout.
+  // plaque above it is a warning sign, and so takes whichever of the two MUTCD warning
+  // backgrounds the beacon is set to. Colouring the whole panel green, as this first did, reads
+  // as a warning sign throughout.
   private static final float[] COL_PANEL = {0.94f, 0.94f, 0.93f, 1.0f};
-  private static final float[] COL_BANNER = {0.72f, 0.93f, 0.20f, 1.0f};
   private static final float[] COL_BORDER = {0.05f, 0.05f, 0.05f, 1.0f};
   private static final float[] COL_HOUSING = {0.13f, 0.13f, 0.14f, 1.0f};
   private static final float[] COL_VISOR = {
@@ -170,7 +170,7 @@ public class TileEntitySchoolZoneBeaconRenderer
     int sky = (combined >> 16) & 0xFFFF;
     int block = combined & 0xFFFF;
 
-    renderPanel(sky, block);
+    renderPanel(te, sky, block);
     renderPanelText(te);
 
     renderBeacons(te, sky, block);
@@ -219,7 +219,7 @@ public class TileEntitySchoolZoneBeaconRenderer
     }
   }
 
-  private void renderPanel(int sky, int block) {
+  private void renderPanel(TileEntitySchoolZoneBeacon te, int sky, int block) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
@@ -253,12 +253,13 @@ public class TileEntitySchoolZoneBeaconRenderer
         COL_PANEL[0], COL_PANEL[1], COL_PANEL[2], COL_PANEL[3], 0, 0, 0, sky, block);
     tess.draw();
 
+    MutcdSignFaceColor plaque = te.getBannerColor();
     List<RenderHelper.Box> banner = new ArrayList<>();
     RenderHelper.addRoundedRect(banner, CX - halfW, bannerBottom, CX + halfW, top,
         frontZ - 0.1f, frontZ + 0.2f, faceRadius, ROUND_STEPS, false, true);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(banner, buf,
-        COL_BANNER[0], COL_BANNER[1], COL_BANNER[2], COL_BANNER[3], 0, 0, 0, sky, block);
+        plaque.getRed(), plaque.getGreen(), plaque.getBlue(), 1.0f, 0, 0, 0, sky, block);
     tess.draw();
   }
 

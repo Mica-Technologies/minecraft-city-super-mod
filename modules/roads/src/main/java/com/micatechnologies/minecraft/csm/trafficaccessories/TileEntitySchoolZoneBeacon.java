@@ -49,6 +49,13 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   public static final float[] SCALES = {0.75f, 1.0f, 1.25f, 1.5f, 2.0f};
   public static final String[] SCALE_NAMES = {"75%", "100%", "125%", "150%", "200%"};
 
+  /**
+   * The plaque's background. The MUTCD permits either colour on a school warning sign, and this
+   * is the same choice the radar speed sign offers, so the two agree when they share a pole.
+   */
+  private static final MutcdSignFaceColor DEFAULT_BANNER_COLOR =
+      MutcdSignFaceColor.FLUORESCENT_YELLOW_GREEN;
+
   public static final int MIN_SPEED = 5;
   public static final int MAX_SPEED = 45;
 
@@ -56,6 +63,7 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   private static final String KEY_SCALE = "scl";
   private static final String KEY_ARRANGEMENT = "arr";
   private static final String KEY_BEACON_SIZE = "bsz";
+  private static final String KEY_BANNER_COLOR = "bnc";
   private static final String KEY_MODE = "mode";
   private static final String KEY_AM_START = "amS";
   private static final String KEY_AM_END = "amE";
@@ -66,6 +74,7 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
   private int scaleIndex = 1;
   private int arrangement = BEACONS_ABOVE;
   private int beaconSize = BEACON_SIZE_8_INCH;
+  private MutcdSignFaceColor bannerColor = DEFAULT_BANNER_COLOR;
   private int mode = MODE_SCHEDULED;
 
   // Two windows, because that is what a real school zone posts: one around arrival and one
@@ -93,6 +102,11 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
 
   public int getBeaconSize() {
     return beaconSize;
+  }
+
+  /** The SCHOOL plaque's background. The sign body under it is always white. */
+  public MutcdSignFaceColor getBannerColor() {
+    return bannerColor;
   }
 
   public int getMode() {
@@ -191,6 +205,11 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
     sync();
   }
 
+  public void setBannerColor(MutcdSignFaceColor bannerColor) {
+    this.bannerColor = bannerColor == null ? DEFAULT_BANNER_COLOR : bannerColor;
+    sync();
+  }
+
   public void setMode(int mode) {
     this.mode = clamp(mode, 0, MODE_COUNT - 1);
     sync();
@@ -270,6 +289,11 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
         ? clamp(compound.getInteger(KEY_ARRANGEMENT), 0, BEACON_ARRANGEMENT_COUNT - 1)
         : BEACONS_ABOVE;
     beaconSize = clamp(compound.getInteger(KEY_BEACON_SIZE), 0, BEACON_SIZE_COUNT - 1);
+    // Absent means a beacon saved before the colour was a choice, and every one of those was
+    // fluorescent yellow-green -- which is ordinal 1, so this cannot lean on the zero default.
+    bannerColor = compound.hasKey(KEY_BANNER_COLOR)
+        ? MutcdSignFaceColor.fromNBT(compound.getInteger(KEY_BANNER_COLOR))
+        : DEFAULT_BANNER_COLOR;
     // Absent means a beacon saved before the mode existed; those all ran on their schedule.
     mode = compound.hasKey(KEY_MODE)
         ? clamp(compound.getInteger(KEY_MODE), 0, MODE_COUNT - 1)
@@ -292,6 +316,7 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
     compound.setInteger(KEY_SCALE, scaleIndex);
     compound.setInteger(KEY_ARRANGEMENT, arrangement);
     compound.setInteger(KEY_BEACON_SIZE, beaconSize);
+    compound.setInteger(KEY_BANNER_COLOR, bannerColor.ordinal());
     compound.setInteger(KEY_MODE, mode);
     compound.setInteger(KEY_AM_START, amStartHour);
     compound.setInteger(KEY_AM_END, amEndHour);
