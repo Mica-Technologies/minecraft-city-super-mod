@@ -194,6 +194,7 @@ tile.dmptwhite.name=NOV Dekorativ Metallstolptopp (Vit)
 tile.falloutsheltersign.name=Skyddsrumsskylt
 tile.falloutsheltersignalt.name=Skyddsrumsskylt (Alternativ)
 tile.freewaycallbox.name=Motorvägsnödtelefon
+tile.in_roadway_warning_light.name=Varningsljus i körbanan
 tile.landslidearea.name=Jordskredsområde-Vägmärke
 tile.lhsstopsign.name=LHS Stopp-Vägmärke (Ej Regelenlig)
 tile.lightsoutnopowersign.name=Ljus Släckta, Strömavbrott-Vägmärke

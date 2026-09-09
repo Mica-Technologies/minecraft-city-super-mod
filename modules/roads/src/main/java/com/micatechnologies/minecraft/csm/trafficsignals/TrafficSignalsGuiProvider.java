@@ -41,6 +41,9 @@ public class TrafficSignalsGuiProvider implements ICsmGuiProvider {
       returnValue = new BlankoutBoxConfigGui((TileEntityBlankoutBox) tileEntity);
     } else if (id == 20 && tileEntity instanceof TileEntityRrfb) {
       returnValue = new RrfbConfigGui((TileEntityRrfb) tileEntity);
+    } else if (id == 23 && tileEntity instanceof TileEntityInRoadwayWarningLight) {
+      returnValue =
+          new InRoadwayLightConfigGui((TileEntityInRoadwayWarningLight) tileEntity);
     } else if (id == 19 && tileEntity instanceof TileEntityTrafficSignalSensor) {
       returnValue = new SensorConfigGui((TileEntityTrafficSignalSensor) tileEntity);
     }
