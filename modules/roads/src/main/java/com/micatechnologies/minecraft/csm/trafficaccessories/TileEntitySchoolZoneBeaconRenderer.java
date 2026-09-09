@@ -68,12 +68,17 @@ public class TileEntitySchoolZoneBeaconRenderer
   private static final float PANEL_RADIUS = 1.5f;
   private static final int ROUND_STEPS = 3;
 
-  // Beacons: the gap between the sign's border and the beacon, and the bracket that spans it.
-  private static final float BEACON_GAP = 2.0f;
+  // Beacons: the gap between the sign's border and the beacon, and the bracketry that spans
+  // it. The bracket runs the full depth of the section behind it rather than being a thin tab
+  // on the sign's own plane — a head this heavy hanging off a 2-unit sliver read as floating.
+  private static final float BEACON_GAP = 3.0f;
   private static final float BEACON_PAIR_GAP = 0.5f;
-  private static final float BRACKET_HALF_W = 1.1f;
-  private static final float BRACKET_Z1 = 12.6f;
-  private static final float BRACKET_Z2 = 14.6f;
+  private static final float BRACKET_HALF_W = 2.0f;
+  private static final float BRACKET_Z1 = 11.8f;
+  private static final float BRACKET_Z2 = 16.0f;
+  /** How far the crossbar of a two-head assembly runs past the outside of each head. */
+  private static final float CROSSBAR_OVERHANG = 2.0f;
+  private static final float CROSSBAR_H = 2.2f;
 
   // Signal section geometry, shared with the traffic signal renderer so a school zone beacon
   // is the same object as a signal head's section rather than a lookalike.
@@ -359,37 +364,50 @@ public class TileEntitySchoolZoneBeaconRenderer
     switch (te.getArrangement()) {
       case TileEntitySchoolZoneBeacon.BEACONS_ABOVE_AND_BELOW: {
         float belowY = borderBottom - BEACON_GAP - size / 2.0f;
-        renderBracket(CX, borderTop, aboveY - size / 2.0f, sky, block);
-        renderBracket(CX, belowY + size / 2.0f, borderBottom, sky, block);
+        renderSupport(CX - BRACKET_HALF_W, borderTop,
+            CX + BRACKET_HALF_W, aboveY - size / 2.0f, sky, block);
+        renderSupport(CX - BRACKET_HALF_W, belowY + size / 2.0f,
+            CX + BRACKET_HALF_W, borderBottom, sky, block);
         renderBeacon(CX, aboveY, size, phaseA, sky, block);
         renderBeacon(CX, belowY, size, phaseB, sky, block);
         break;
       }
       case TileEntitySchoolZoneBeacon.BEACONS_TWO_ABOVE: {
+        // The pair hangs off a crossbar rather than off two separate stalks, which is both how
+        // a real two-head assembly is built and the only way the outer head has anything under
+        // it — the sign is not wide enough to put a stalk under each.
         float offset = (size + BEACON_PAIR_GAP) / 2.0f;
-        renderBracket(CX - offset, borderTop, aboveY - size / 2.0f, sky, block);
-        renderBracket(CX + offset, borderTop, aboveY - size / 2.0f, sky, block);
+        float headBottom = aboveY - size / 2.0f;
+        float crossbarBottom = headBottom - CROSSBAR_H;
+        renderSupport(CX - BRACKET_HALF_W, borderTop,
+            CX + BRACKET_HALF_W, crossbarBottom, sky, block);
+        renderSupport(CX - offset - size / 2.0f - CROSSBAR_OVERHANG, crossbarBottom,
+            CX + offset + size / 2.0f + CROSSBAR_OVERHANG, headBottom, sky, block);
         renderBeacon(CX - offset, aboveY, size, phaseA, sky, block);
         renderBeacon(CX + offset, aboveY, size, phaseB, sky, block);
         break;
       }
       case TileEntitySchoolZoneBeacon.BEACONS_ABOVE:
       default:
-        renderBracket(CX, borderTop, aboveY - size / 2.0f, sky, block);
+        renderSupport(CX - BRACKET_HALF_W, borderTop,
+            CX + BRACKET_HALF_W, aboveY - size / 2.0f, sky, block);
         renderBeacon(CX, aboveY, size, phaseA, sky, block);
         break;
     }
   }
 
-  /** The stub of mast between the sign's border and a beacon, so neither one floats. */
-  private void renderBracket(float centreX, float lowY, float highY, int sky, int block) {
+  /** A piece of the bracketry between the sign and a beacon, so neither one floats. */
+  private void renderSupport(float x1, float lowY, float x2, float highY, int sky, int block) {
+    if (highY <= lowY) {
+      return;
+    }
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
     List<RenderHelper.Box> bracket = new ArrayList<>();
     bracket.add(new RenderHelper.Box(
-        new float[]{centreX - BRACKET_HALF_W, lowY, BRACKET_Z1},
-        new float[]{centreX + BRACKET_HALF_W, highY, BRACKET_Z2}));
+        new float[]{x1, lowY, BRACKET_Z1},
+        new float[]{x2, highY, BRACKET_Z2}));
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
