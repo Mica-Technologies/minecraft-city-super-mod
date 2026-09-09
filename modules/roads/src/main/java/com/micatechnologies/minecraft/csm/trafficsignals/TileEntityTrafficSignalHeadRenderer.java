@@ -703,55 +703,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
   }
 
-  private static List<RenderHelper.Box> selectVisorData(List<RenderHelper.Box> data12,
-      List<RenderHelper.Box> data8, List<RenderHelper.Box> data4, int sectionSize) {
-    if (sectionSize <= 4) return data4;
-    if (sectionSize <= 8) return data8;
-    return data12;
-  }
-
   private static List<RenderHelper.Box> resolveVisorData(TrafficSignalVisorType visorType,
       int sectionSize) {
-    switch (visorType) {
-      case CIRCLE:
-        return selectVisorData(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
-      case TUNNEL:
-        return selectVisorData(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
-      case CUTAWAY:
-        return selectVisorData(TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.CAP_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.CAP_VISOR_4INCH_VERTEX_DATA, sectionSize);
-      case BOTH_LOUVERED:
-        return selectVisorData(TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.BOTH_LOUVERED_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.BOTH_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
-      case VERTICAL_LOUVERED:
-        return selectVisorData(TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
-      case HORIZONTAL_LOUVERED:
-        return selectVisorData(TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
-      case BARLO:
-        return selectVisorData(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
-      case BARLO_VERTICAL:
-        return selectVisorData(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
-      case NONE:
-        return selectVisorData(TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.NONE_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.NONE_VISOR_4INCH_VERTEX_DATA, sectionSize);
-      default:
-        return null;
-    }
+    // Shared with the school zone beacons; see TrafficSignalVertexData.resolveVisorData.
+    return TrafficSignalVertexData.resolveVisorData(visorType, sectionSize);
   }
 
   /**

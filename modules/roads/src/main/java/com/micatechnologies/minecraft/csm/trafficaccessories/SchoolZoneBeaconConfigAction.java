@@ -12,5 +12,11 @@ public enum SchoolZoneBeaconConfigAction {
   CYCLE_BEACON_SIZE,
   CYCLE_BANNER_COLOR,
   CYCLE_MODE,
-  ADJUST_SCHEDULE_HOUR
+  ADJUST_SCHEDULE_HOUR,
+
+  // Appended, not inserted: the ordinal is what the packet carries and what the GUI uses as its
+  // button id, so inserting above would remap every existing action.
+  CYCLE_BULB_STYLE,
+  CYCLE_VISOR_TYPE,
+  CYCLE_HOUSING_COLOR
 }
