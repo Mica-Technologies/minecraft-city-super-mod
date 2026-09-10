@@ -602,7 +602,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.297187, 0.000000, 0.297187, 0.702813, 0.770000, 0.702813)));
     initTabBlock(new BlockWorkZoneDevice("traffic_cone_lime",
         new AxisAlignedBB(0.297187, 0.000000, 0.297187, 0.702813, 0.770000, 0.702813)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("traffic_cone_knocked",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("traffic_cone_knocked",
         new AxisAlignedBB(0.297187, 0.000000, 0.115000, 0.702813, 0.405625, 0.885000)));
     initTabBlock(new BlockWorkZoneDeviceFlashing("traffic_drum",
         new AxisAlignedBB(0.064777, 0.000000, 0.064777, 0.935223, 1.077462, 0.935223)));
@@ -612,9 +612,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.213129, 0.000000, 0.168750, 0.786871, 1.183469, 0.831250)));
     initTabBlock(new BlockWorkZoneDevice("channelizer_tube_lime",
         new AxisAlignedBB(0.213129, 0.000000, 0.168750, 0.786871, 1.183469, 0.831250)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("channelizer_cade_left",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("channelizer_cade_left",
         new AxisAlignedBB(0.217062, 0.000000, 0.217062, 0.782938, 0.975000, 0.782938)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("channelizer_cade_right",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("channelizer_cade_right",
         new AxisAlignedBB(0.217062, 0.000000, 0.217062, 0.782938, 0.975000, 0.782938)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_left", BarricadeGeometry.TYPE1_TOP,
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 0.810000, 0.719375)));
@@ -656,17 +656,17 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.000000, 0.000000, 0.275000, 1.000000, 0.812500, 0.725000)));
     initTabBlock(new BlockWorkZoneDeviceRotatable("portable_signal_trailer_arm",
         new AxisAlignedBB(-1.125000, 0.000000, 0.000000, 1.625000, 1.350000, 1.000000)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("portable_signal_trailer",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("portable_signal_trailer",
         new AxisAlignedBB(-1.125000, 0.000000, 0.000000, 1.625000, 1.350000, 1.000000)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("portable_ped_signal_trailer",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("portable_ped_signal_trailer",
         new AxisAlignedBB(-1.125000, 0.000000, 0.000000, 1.625000, 1.350000, 1.000000)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("vertical_panel_left",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("vertical_panel_left",
         new AxisAlignedBB(0.368750, 0.000000, 0.397500, 0.631250, 0.887500, 0.685000)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("vertical_panel_right",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("vertical_panel_right",
         new AxisAlignedBB(0.368750, 0.000000, 0.397500, 0.631250, 0.887500, 0.685000)));
     initTabBlock(new BlockWorkZonePlate("road_plate",
         new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.053125, 1.000000)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("safety_fence",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("safety_fence",
         new AxisAlignedBB(0.000000, 0.000000, 0.473750, 1.000000, 0.887500, 0.526250)));
     initTabBlock(new BlockWorkZoneArrowBoard("arrow_board",
         new AxisAlignedBB(-1.388350, 0.000000, -0.379375, 2.573750, 0.603750, 1.379375)));

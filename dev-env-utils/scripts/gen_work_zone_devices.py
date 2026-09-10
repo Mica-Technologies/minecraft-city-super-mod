@@ -2305,14 +2305,14 @@ DEVICES = {
         "texture": "workzone_cone_orange",
         "texture_fn": lambda: cone_texture(ORANGE, ORANGE_DARK),
         "display": "Traffic Cone (Knocked Over)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "traffic_drum": {
         "model": "workzone_drum_lit", "build": lambda m: build_drum(m, lit=True),
         "texture": "workzone_drum",
         "texture_fn": drum_texture,
         "display": "Traffic Drum",
-        "rotatable": True, "java": "BlockWorkZoneDeviceFlashing",
+        "diagonal": True, "java": "BlockWorkZoneDeviceFlashing",
     },
     "traffic_drum_unlit": {
         "model": "workzone_drum", "build": lambda m: build_drum(m, lit=False),
@@ -2339,14 +2339,14 @@ DEVICES = {
         "texture": "workzone_cade_left",
         "texture_fn": lambda: diagonal_stripe_image(False, CADE_PANEL_W, CADE_PANEL_H),
         "display": "Channelizer-Cade (Keep Left)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "channelizer_cade_right": {
         "model": "workzone_channelizer_cade", "build": None,
         "texture": "workzone_cade_right",
         "texture_fn": lambda: diagonal_stripe_image(True, CADE_PANEL_W, CADE_PANEL_H),
         "display": "Channelizer-Cade (Keep Right)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "barricade_type_1_left": {
         "barricade": "type1", "top": "BarricadeGeometry.TYPE1_TOP",
@@ -2354,7 +2354,7 @@ DEVICES = {
         "texture": "workzone_rail_left",
         "texture_fn": lambda: diagonal_stripe_image(False, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
         "display": "Type I Barricade (Keep Left)",
-        "rotatable": True, "java": "BlockWorkZoneBarricade",
+        "diagonal": True, "java": "BlockWorkZoneBarricade",
     },
     "barricade_type_1_right": {
         "barricade": "type1", "top": "BarricadeGeometry.TYPE1_TOP",
@@ -2362,14 +2362,14 @@ DEVICES = {
         "texture": "workzone_rail_right",
         "texture_fn": lambda: diagonal_stripe_image(True, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
         "display": "Type I Barricade (Keep Right)",
-        "rotatable": True, "java": "BlockWorkZoneBarricade",
+        "diagonal": True, "java": "BlockWorkZoneBarricade",
     },
     "barricade_type_2_left": {
         "model": "workzone_barricade_type2", "build": build_barricade_folding,
         "texture": "workzone_fold_rail_left",
         "texture_fn": lambda: diagonal_stripe_image(False, FOLD_RAIL_W, FOLD_RAIL_H, BARRICADE_STRIPE),
         "display": "Type II Folding Barricade (Keep Left)",
-        "rotatable": True, "java": "BlockWorkZoneBarricadeFolding",
+        "diagonal": True, "java": "BlockWorkZoneBarricadeFolding",
         "top": "BarricadeGeometry.FOLDING_TOP",
     },
     "barricade_type_2_right": {
@@ -2377,7 +2377,7 @@ DEVICES = {
         "texture": "workzone_fold_rail_right",
         "texture_fn": lambda: diagonal_stripe_image(True, FOLD_RAIL_W, FOLD_RAIL_H, BARRICADE_STRIPE),
         "display": "Type II Folding Barricade (Keep Right)",
-        "rotatable": True, "java": "BlockWorkZoneBarricadeFolding",
+        "diagonal": True, "java": "BlockWorkZoneBarricadeFolding",
         "top": "BarricadeGeometry.FOLDING_TOP",
     },
     "barricade_type_3_left": {
@@ -2386,7 +2386,7 @@ DEVICES = {
         "texture": "workzone_rail_left",
         "texture_fn": lambda: diagonal_stripe_image(False, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
         "display": "Type III Barricade (Keep Left)",
-        "rotatable": True, "java": "BlockWorkZoneBarricade",
+        "diagonal": True, "java": "BlockWorkZoneBarricade",
     },
     "barricade_type_3_right": {
         "barricade": "type3", "top": "BarricadeGeometry.TYPE3_TOP",
@@ -2394,7 +2394,7 @@ DEVICES = {
         "texture": "workzone_rail_right",
         "texture_fn": lambda: diagonal_stripe_image(True, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
         "display": "Type III Barricade (Keep Right)",
-        "rotatable": True, "java": "BlockWorkZoneBarricade",
+        "diagonal": True, "java": "BlockWorkZoneBarricade",
     },
     "delineator_post": {
         "model": "workzone_delineator", "build": build_delineator,
@@ -2480,7 +2480,7 @@ DEVICES = {
         "texture_fn": lambda: wall_texture(ORANGE, ORANGE_DARK, LCD_TOP_BAND, WHITE, WHITE_DIM,
                                            LCD_RIBS),
         "display": "Water-Filled Barrier (Orange)",
-        "rotatable": True, "java": "BlockWorkZoneWall",
+        "diagonal": True, "java": "BlockWorkZoneWall",
     },
     "channelizing_wall_white": {
         "model": "workzone_channelizing_wall",
@@ -2497,7 +2497,7 @@ DEVICES = {
         "texture_fn": lambda: wall_texture(WHITE, WHITE_DIM, LCD_TOP_BAND, ORANGE, ORANGE_DARK,
                                            LCD_RIBS),
         "display": "Water-Filled Barrier (White)",
-        "rotatable": True, "java": "BlockWorkZoneWall",
+        "diagonal": True, "java": "BlockWorkZoneWall",
     },
     "concrete_barrier": {
         "model": "workzone_concrete_barrier",
@@ -2515,7 +2515,7 @@ DEVICES = {
         "texture": "workzone_concrete_barrier",
         "texture_fn": lambda: wall_texture(CONCRETE, CONCRETE_DARK),
         "display": "Temporary Concrete Barrier",
-        "rotatable": True, "java": "BlockWorkZoneWall",
+        "diagonal": True, "java": "BlockWorkZoneWall",
     },
     "portable_signal_trailer_arm": {
         "model": "workzone_signal_trailer_arm",
@@ -2541,7 +2541,7 @@ DEVICES = {
         "texture_fn": trailer_texture,
         "display": "Portable Signal Trailer",
         "bbox": (-18.0, 0.0, 0.0, 26.0, 21.6, 16.0),
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "portable_ped_signal_trailer": {
         "model": "workzone_signal_trailer_ped",
@@ -2552,21 +2552,21 @@ DEVICES = {
         "texture_fn": trailer_texture,
         "display": "Portable Pedestrian Signal Trailer",
         "bbox": (-18.0, 0.0, 0.0, 26.0, 21.6, 16.0),
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "vertical_panel_left": {
         "model": "workzone_vertical_panel", "build": build_vertical_panel,
         "texture": "workzone_vpanel_left",
         "texture_fn": lambda: diagonal_stripe_image(False, VPANEL_W, VPANEL_H, BARRICADE_STRIPE),
         "display": "Vertical Panel (Keep Left)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "vertical_panel_right": {
         "model": "workzone_vertical_panel", "build": None,
         "texture": "workzone_vpanel_right",
         "texture_fn": lambda: diagonal_stripe_image(True, VPANEL_W, VPANEL_H, BARRICADE_STRIPE),
         "display": "Vertical Panel (Keep Right)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "road_plate": {
         "model": "workzone_road_plate",
@@ -2588,7 +2588,7 @@ DEVICES = {
         "texture": "workzone_safety_fence",
         "texture_fn": safety_fence_texture,
         "display": "Safety Fence",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "arrow_board": {
         "model": "workzone_arrow_board", "build": build_arrow_board,
@@ -2597,7 +2597,7 @@ DEVICES = {
         "texture": "workzone_arrow_board",
         "texture_fn": arrow_board_image,
         "display": "Arrow Board",
-        "rotatable": True, "java": "BlockWorkZoneArrowBoard",
+        "diagonal": True, "java": "BlockWorkZoneArrowBoard",
     },
     "sand_barrel_array": {
         "model": "workzone_sand_barrel", "build": build_sand_barrel,
@@ -2631,6 +2631,35 @@ def mesh_bounds(mesh):
     return (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
 
 
+# Facing name to model rotation, matching DirectionEight.getRotationDegrees() on the Java
+# side. A renderer drawing part of a device has to turn by the same amount as the baked
+# model beside it, so the two tables must not drift.
+DIAGONAL_FACINGS = (("n", 0), ("nw", 45), ("w", 90), ("sw", 135),
+                    ("s", 180), ("se", 225), ("e", 270), ("ne", 315))
+
+
+def facing_variants(spec):
+    """The `facing` variant block for a device, four-way or eight-way.
+
+    Shared by all three blockstate writers. It used to be written out in each of them, and the
+    two that draw a device as several pieces were still hardcoded to four facings long after the
+    plain one had grown eight -- so a device could be given eight facings in DEVICES, take them
+    in its block class, and silently render only four.
+
+    The in-between angles cannot use the variant's own "y" shorthand, which only takes right
+    angles. The OBJ loader takes an explicit transform rotation at any angle instead.
+    """
+    if spec.get("diagonal"):
+        return {
+            name: ({} if degrees == 0 else
+                   {"transform": {"rotation": [{"x": 0}, {"y": degrees}, {"z": 0}]}})
+            for name, degrees in DIAGONAL_FACINGS
+        }
+    if spec.get("rotatable"):
+        return {"north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270}}
+    return None
+
+
 def blockstate_json(spec):
     """The Forge blockstate for one device.
 
@@ -2641,21 +2670,9 @@ def blockstate_json(spec):
     model = "csm:trafficaccessories/shared_models/%s.obj" % spec["model"]
     texture = "%s/%s" % (TEXTURE_PREFIX, spec["texture"])
     variants = {}
-    if spec.get("diagonal"):
-        # Eight facings, and the in-between ones are not a quarter turn, so they cannot use the
-        # variant's own "y" shorthand -- that only takes right angles. The OBJ loader takes an
-        # explicit transform rotation at any angle instead, which is what the eight-way blocks
-        # already in this tab use.
-        variants["facing"] = {
-            name: ({} if degrees == 0 else
-                   {"transform": {"rotation": [{"x": 0}, {"y": degrees}, {"z": 0}]}})
-            for name, degrees in (("n", 0), ("nw", 45), ("w", 90), ("sw", 135),
-                                  ("s", 180), ("se", 225), ("e", 270), ("ne", 315))
-        }
-    elif spec.get("rotatable"):
-        variants["facing"] = {
-            "north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270},
-        }
+    facing = facing_variants(spec)
+    if facing is not None:
+        variants["facing"] = facing
     variants["normal"] = [{}]
     inventory = {"transform": "forge:default-block"}
     if spec.get("inventory_model"):
@@ -2864,10 +2881,9 @@ def joining_blockstate(spec):
                                       "textures": {"#%s" % MATERIAL: texture}}}}
 
     variants = {}
-    if spec.get("rotatable"):
-        variants["facing"] = {
-            "north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270},
-        }
+    facing = facing_variants(spec)
+    if facing is not None:
+        variants["facing"] = facing
     # The piece is on the FALSE side: it is drawn where nothing connects.
     for prop, piece in joining["properties"].items():
         variants[prop] = {"false": submodel(piece), "true": {}}
@@ -2942,7 +2958,7 @@ def barricade_blockstate(spec):
             "textures": {"#%s" % MATERIAL: texture},
         },
         "variants": {
-            "facing": {"north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270}},
+            "facing": facing_variants(spec),
             # The end is on the FALSE side: it is drawn where nothing connects.
             "connectleft": {"false": submodel("end_left"), "true": {}},
             "connectright": {"false": submodel("end_right"), "true": {}},

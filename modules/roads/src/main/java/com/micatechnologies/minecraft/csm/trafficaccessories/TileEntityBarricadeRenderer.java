@@ -1,7 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
+import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRoadSurfaceAware;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -126,8 +127,9 @@ public class TileEntityBarricadeRenderer
       return;
     }
 
-    EnumFacing facing = state.getPropertyKeys().contains(AbstractBlockRotatableNSEW.FACING)
-        ? state.getValue(AbstractBlockRotatableNSEW.FACING) : EnumFacing.NORTH;
+    DirectionEight facing = state.getPropertyKeys().contains(
+        AbstractBlockRotatableHZEight.FACING)
+        ? state.getValue(AbstractBlockRotatableHZEight.FACING) : DirectionEight.N;
     double settle = ((ICsmRoadSurfaceAware) block).getRoadSurfaceOffset(te.getWorld(),
         te.getPos());
     AbstractBlockWorkZoneBarricade barricade = (AbstractBlockWorkZoneBarricade) block;
@@ -493,17 +495,8 @@ public class TileEntityBarricadeRenderer
    *
    * @return the rotation in degrees
    */
-  private static float rotationFor(EnumFacing facing) {
-    switch (facing) {
-      case WEST:
-        return 90f;
-      case SOUTH:
-        return 180f;
-      case EAST:
-        return 270f;
-      default:
-        return 0f;
-    }
+  private static float rotationFor(DirectionEight facing) {
+    return facing.getRotationDegrees();
   }
 
   /**

@@ -29,7 +29,7 @@ import net.minecraft.world.World;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockWorkZoneArrowBoard extends BlockWorkZoneDeviceRotatable
+public class BlockWorkZoneArrowBoard extends BlockWorkZoneDeviceDiagonal
     implements ICsmTileEntityProvider {
 
   /**

@@ -14,23 +14,24 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | Block | Class | Notes |
 |---|---|---|
 | `traffic_cone`, `traffic_cone_lime` | `BlockWorkZoneDevice` | |
-| `traffic_cone_knocked` | `BlockWorkZoneDeviceRotatable` | the same cone laid on its side, not a second model |
+| `traffic_cone_knocked` | `BlockWorkZoneDeviceDiagonal` | the same cone laid on its side, not a second model |
 | `traffic_drum` | `BlockWorkZoneDeviceFlashing` | carries a flashing warning light |
 | `traffic_drum_unlit` | `BlockWorkZoneDevice` | |
 | `channelizer_tube`, `channelizer_tube_lime` | `BlockWorkZoneDevice` | the tall slim tube |
-| `channelizer_cade_left`, `_right` | `BlockWorkZoneDeviceRotatable` | tube with a small striped panel |
+| `channelizer_cade_left`, `_right` | `BlockWorkZoneDeviceDiagonal` | tube with a small striped panel |
 | `barricade_type_1_left`, `_right` | `BlockWorkZoneBarricade` | one rail, joins into runs |
 | `barricade_type_2_left`, `_right` | `BlockWorkZoneBarricadeFolding` | two rails on a folding A-frame, stands alone |
 | `barricade_type_3_left`, `_right` | `BlockWorkZoneBarricade` | three rails, joins into runs |
 | `delineator_post`, `delineator_post_yellow` | `BlockWorkZoneDevice` | |
 | `delineator_zebra` | `BlockWorkZoneDeviceDiagonal` | the low rubber lane separator; runs the length of its cell so a line of them is continuous, and takes all eight facings |
 | `pavement_marker_white`, `_yellow`, `_orange`, `_red`, `_blue`, `_green` | `BlockWorkZoneDeviceDiagonal` | the small folded tabs taped down a lane line |
-| `channelizing_wall_orange`, `_white` | `BlockWorkZoneDeviceRotatable` | the plastic wall filled with water on site |
-| `concrete_barrier` | `BlockWorkZoneDeviceRotatable` | precast, in the New Jersey profile |
-| `road_plate` | `BlockWorkZoneDevice` | steel plate over an open trench |
-| `safety_fence` | `BlockWorkZoneDeviceRotatable` | orange mesh fence closing off the work area |
-| `vertical_panel_left`, `_right` | `BlockWorkZoneDeviceRotatable` | narrow striped panel for places too tight for a barricade |
-| `portable_signal_trailer_arm`, `portable_signal_trailer`, `portable_ped_signal_trailer` | `BlockWorkZoneDeviceRotatable` | towed signal; carries no heads of its own |
+| `channelizing_wall_orange`, `_white` | `BlockWorkZoneWall` | the plastic wall filled with water on site |
+| `concrete_barrier` | `BlockWorkZoneWall` | precast, in the New Jersey profile |
+| `road_plate` | `BlockWorkZonePlate` | steel plate over an open trench |
+| `safety_fence` | `BlockWorkZoneDeviceDiagonal` | orange mesh fence closing off the work area |
+| `vertical_panel_left`, `_right` | `BlockWorkZoneDeviceDiagonal` | narrow striped panel for places too tight for a barricade |
+| `portable_signal_trailer_arm` | `BlockWorkZoneDeviceRotatable` | towed signal; carries no heads of its own. The one device here kept to four facings — see below |
+| `portable_signal_trailer`, `portable_ped_signal_trailer` | `BlockWorkZoneDeviceDiagonal` | the boomless styles, which take all eight |
 | `sand_barrel_array` | `BlockWorkZoneDevice` | |
 | `arrow_board` | `BlockWorkZoneArrowBoard` | trailer board with seven animated modes |
 
@@ -203,21 +204,53 @@ barricade gets a proportionately smaller sign rather than one hanging off its en
 `BarricadeGeometry` is **generated** alongside the models, so the renderer and the baked geometry
 cannot disagree about where the uprights and rails are.
 
-### Why some devices get eight facings
+### Why nearly everything gets eight facings
 
-The zebra delineator and the pavement markers do; nothing else here does. Four facings are enough for anything that stands up and
-faces traffic, and not enough for something laid ALONG a line: a lane edge, a taper into a work
-zone or a bike lane running off the grid all need the in-between angles, and a line of long
-devices that can only lie north-south or east-west has to staircase across a diagonal instead of
-following it.
+Everything in this tab that faces a way takes all eight, with one exception noted below. Four
+facings are enough for a device on a grid-square road and not enough for anything else: a lane
+edge, a taper into a work zone, a bike lane running off the grid, or simply a road laid at
+forty-five degrees. A line of devices that can only lie north-south or east-west has to
+staircase across a diagonal instead of following it.
 
-That applies to a dotted line of markers as much as to a continuous line of delineators, and
-arguably more: a staircase is more obvious on something small and repeated than on
-something long enough to read as a line on its own.
+The first version of this tab gave eight facings only to the zebra delineator and the pavement
+markers, on the reasoning that four are enough for "anything that stands up and faces traffic".
+That was wrong, and for a plain reason: it assumed the road runs along the grid. A barricade
+across a diagonal lane closure faces diagonally whether or not it stands up.
 
-The in-between facings are not quarter turns, so they cannot use a blockstate variant's own
-`y` shorthand -- that only takes right angles. They use an explicit `transform` rotation, which
-the OBJ loader accepts at any angle and which the eight-way blocks already in this tab use.
+**The one exception is the mast-arm signal trailer.** Its boom is an eight-cell structure that
+other blocks attach to by walking cells back to the trailer, and at forty-five degrees those
+cells meet at their corners rather than their faces. The mount kit could not find the boom, and
+the table of cells left free for heads would be wrong. The plain mast and pedestrian trailers
+carry no boom and do take all eight.
+
+Two things follow from eight facings that four never had to deal with:
+
+- **A run joins diagonally.** `WorkZoneJoins` steps by the direction's own X and Z offsets rather
+  than with `BlockPos.offset`, because a diagonal run continues into the block that shares only a
+  *corner* with this one, and `EnumFacing` cannot name that block at all.
+- **A bounding box at forty-five degrees is approximate.** `RotationUtils.rotateBoundingBoxByFacing`
+  unions the two adjacent cardinal rotations rather than truly rotating the box, so a diagonal
+  device selects and collides as something slightly wider than it looks. That is the established
+  behaviour for every eight-way block in the mod, not something new here.
+
+The in-between facings are not quarter turns, so they cannot use a blockstate variant's own `y`
+shorthand -- that only takes right angles. They use an explicit `transform` rotation, which the
+OBJ loader accepts at any angle. All three of the blockstate writers in the generator get that
+block from one shared `facing_variants()` helper: the two that draw a device as several pieces
+were hardcoded to four facings long after the plain one had grown eight, so a device could be
+given eight facings in `DEVICES`, take them in its block class, and still silently render four.
+
+Anything drawn by a tile entity renderer -- a barricade's warning lights and mounted sign, the
+arrow board's panel, a lit drum's beacon -- has to turn by the same angle as the baked model
+beside it. Both sides read one table: `DirectionEight.getRotationDegrees()` in Java and
+`DIAGONAL_FACINGS` in the generator. A renderer left reading the old four-way property does not
+fail; it falls back to north and draws every device facing north while its model faces eight
+ways, which is exactly what happened on the way here.
+
+**Existing worlds keep their facings.** `DirectionEight` numbers the four cardinals 0-3 to match
+`EnumFacing.getHorizontalIndex()`, with the diagonals appended at 4-7, so a block converted from
+four facings to eight decodes every meta value already saved. That ordering is a migration
+decision rather than a compass, which is why `rotateY()` on it cannot be index arithmetic.
 
 ### The temporary pavement markers
 

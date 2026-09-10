@@ -119,7 +119,15 @@ public abstract class AbstractBlockRotatableHZEight extends AbstractBlock {
   @Override
   @Nonnull
   public IBlockState getStateFromMeta(int meta) {
-    return getDefaultState().withProperty(FACING, DirectionEight.values()[meta]);
+    // Meta is four bits and only eight of the sixteen values are ours, so anything above seven
+    // has to be absorbed rather than indexed with. Chunks written before a block moved to eight
+    // facings, and any block whose meta once carried something else, both arrive here — and an
+    // exception thrown while a chunk is loading takes the world with it, not just the block.
+    DirectionEight[] directions = DirectionEight.values();
+    if (meta < 0 || meta >= directions.length) {
+      return getDefaultState();
+    }
+    return getDefaultState().withProperty(FACING, directions[meta]);
   }
 
   /**
