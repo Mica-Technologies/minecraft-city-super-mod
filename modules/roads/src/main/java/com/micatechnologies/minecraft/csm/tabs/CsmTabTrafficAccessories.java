@@ -642,6 +642,10 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
     initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_green",
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_orange",
+        new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_red",
+        new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
     initTabBlock(new BlockWorkZoneArrowBoard("arrow_board",
         new AxisAlignedBB(-1.388350, 0.000000, -0.379375, 2.573750, 0.603750, 1.379375)));
     initTabBlock(new BlockWorkZoneDevice("sand_barrel_array",

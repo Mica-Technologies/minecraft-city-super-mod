@@ -1073,4 +1073,6 @@ tile.pavement_marker_white.name=Temporary Pavement Marker (White)
 tile.pavement_marker_yellow.name=Temporary Pavement Marker (Yellow)
 tile.pavement_marker_blue.name=Temporary Pavement Marker (Blue)
 tile.pavement_marker_green.name=Temporary Pavement Marker (Bike Lane Green)
+tile.pavement_marker_orange.name=Temporary Pavement Marker (Construction Orange)
+tile.pavement_marker_red.name=Temporary Pavement Marker (Red)
 tile.arrow_board.name=Arrow Board

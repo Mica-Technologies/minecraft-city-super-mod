@@ -1,7 +1,7 @@
 # Work Zone Accessories
 
 The channelizing devices a road crew puts out: cones, drums, channelizers, barricades, delineator
-posts, temporary pavement markers, sand barrels and the arrow board. Twenty-five blocks in the Traffic Accessories tab, all
+posts, temporary pavement markers, sand barrels and the arrow board. Twenty-seven blocks in the Traffic Accessories tab, all
 generated from one script, and all sharing one behaviour that nothing else in the mod has — they
 **settle onto the surface underneath them** instead of floating a cell above it.
 
@@ -24,7 +24,7 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `barricade_type_3_left`, `_right` | `BlockWorkZoneBarricade` | three rails, joins into runs |
 | `delineator_post`, `delineator_post_yellow` | `BlockWorkZoneDevice` | |
 | `delineator_zebra` | `BlockWorkZoneDeviceDiagonal` | the low rubber lane separator; runs the length of its cell so a line of them is continuous, and takes all eight facings |
-| `pavement_marker_white`, `_yellow`, `_blue`, `_green` | `BlockWorkZoneDeviceRotatable` | the small folded tabs taped down a lane line |
+| `pavement_marker_white`, `_yellow`, `_orange`, `_red`, `_blue`, `_green` | `BlockWorkZoneDeviceRotatable` | the small folded tabs taped down a lane line |
 | `sand_barrel_array` | `BlockWorkZoneDevice` | |
 | `arrow_board` | `BlockWorkZoneArrowBoard` | trailer board with seven animated modes |
 
@@ -207,7 +207,7 @@ the OBJ loader accepts at any angle and which the eight-way blocks already in th
 
 A flat foot taped to the road, a panel standing up off the back of it, and a beaded reflective
 strip along the panel's top edge under a moulded lip. White, yellow, MUTCD/ADA blue and the FHWA
-green a bike lane is surfaced in.
+green a bike lane is surfaced in, plus construction orange and stop sign red.
 
 Unlike the zebra delineator these do **not** span their cell. Real ones are set out at intervals
 with clear road between them, so one small marker per block already gives a line the spacing it
