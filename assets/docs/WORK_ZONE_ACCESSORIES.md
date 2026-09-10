@@ -24,7 +24,7 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `barricade_type_3_left`, `_right` | `BlockWorkZoneBarricade` | three rails, joins into runs |
 | `delineator_post`, `delineator_post_yellow` | `BlockWorkZoneDevice` | |
 | `delineator_zebra` | `BlockWorkZoneDeviceDiagonal` | the low rubber lane separator; runs the length of its cell so a line of them is continuous, and takes all eight facings |
-| `pavement_marker_white`, `_yellow`, `_orange`, `_red`, `_blue`, `_green` | `BlockWorkZoneDeviceRotatable` | the small folded tabs taped down a lane line |
+| `pavement_marker_white`, `_yellow`, `_orange`, `_red`, `_blue`, `_green` | `BlockWorkZoneDeviceDiagonal` | the small folded tabs taped down a lane line |
 | `channelizing_wall_orange`, `_white` | `BlockWorkZoneDeviceRotatable` | the plastic wall filled with water on site |
 | `concrete_barrier` | `BlockWorkZoneDeviceRotatable` | precast, in the New Jersey profile |
 | `road_plate` | `BlockWorkZoneDevice` | steel plate over an open trench |
@@ -201,13 +201,17 @@ barricade gets a proportionately smaller sign rather than one hanging off its en
 `BarricadeGeometry` is **generated** alongside the models, so the renderer and the baked geometry
 cannot disagree about where the uprights and rails are.
 
-### Why the zebra delineator gets eight facings
+### Why some devices get eight facings
 
-It is the only device here that does. Four facings are enough for anything that stands up and
+The zebra delineator and the pavement markers do; nothing else here does. Four facings are enough for anything that stands up and
 faces traffic, and not enough for something laid ALONG a line: a lane edge, a taper into a work
 zone or a bike lane running off the grid all need the in-between angles, and a line of long
 devices that can only lie north-south or east-west has to staircase across a diagonal instead of
 following it.
+
+That applies to a dotted line of markers as much as to a continuous line of delineators, and
+arguably more: a staircase is more obvious on something small and repeated than on
+something long enough to read as a line on its own.
 
 The in-between facings are not quarter turns, so they cannot use a blockstate variant's own
 `y` shorthand -- that only takes right angles. They use an explicit `transform` rotation, which
