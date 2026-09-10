@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
+import com.micatechnologies.minecraft.csm.codeutils.RoadSurfaceHeight;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyEnum;
@@ -54,8 +55,9 @@ final class GuardrailJoins {
     ICsmGuardrailRail rail = (ICsmGuardrailRail) self;
     DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
 
+    DirectionEight toRight = facing.rotateY();
     int right = neighbourLevel(rail, rail.getRailKindOnRight(), access, pos, facing,
-        facing.rotateY(), true);
+        toRight, true);
     boolean joinsRight = right != NONE;
     boolean joinsLeft = neighbourLevel(rail, rail.getRailKindOnLeft(), access, pos, facing,
         facing.rotateYCCW(), false) != NONE;
@@ -63,11 +65,16 @@ final class GuardrailJoins {
     // The slope is read off the RIGHT-hand neighbour alone, and that is enough for a whole run:
     // this cell ramps up to meet the one above it, and that cell in turn ramps up to the next, so
     // each rail's right-hand end lands exactly on its neighbour's left-hand end all the way up.
+    //
+    // It is read as a real HEIGHT, not as a difference of block positions. A guardrail settles
+    // onto whatever it stands on, so a cell on bare ground and its neighbour a block up on a snow
+    // layer are one block apart in Y and a couple of sixteenths apart in the world. Asking the
+    // block positions answers that with a whole block's ramp, which is the rail diving into the
+    // ground that this replaced.
     GuardrailSlope slope = GuardrailSlope.FLAT;
-    if (joinsRight && right > 0) {
-      slope = GuardrailSlope.UP;
-    } else if (joinsRight && right < 0) {
-      slope = GuardrailSlope.DOWN;
+    if (joinsRight) {
+      BlockPos neighbour = pos.add(toRight.getOffsetX(), right, toRight.getOffsetZ());
+      slope = GuardrailSlope.forRise(settledHeight(access, neighbour) - settledHeight(access, pos));
     }
 
     return state
@@ -151,6 +158,17 @@ final class GuardrailJoins {
       }
     }
     return false;
+  }
+
+  /**
+   * Where a guardrail at {@code pos} actually draws its rail, in blocks.
+   *
+   * <p>Its cell's Y plus however far it has settled onto the surface below — which is what makes
+   * this different from the block position, and is the number every height comparison here wants.
+   * A run laid across snow layers of different depths is at one Y and half a dozen heights.</p>
+   */
+  private static double settledHeight(IBlockAccess access, BlockPos pos) {
+    return pos.getY() + RoadSurfaceHeight.offsetFor(access, pos);
   }
 
   /** Returned by {@link #neighbourLevel} when there is no guardrail that way at all. */
