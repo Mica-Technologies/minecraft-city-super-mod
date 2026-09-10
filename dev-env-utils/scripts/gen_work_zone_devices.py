@@ -106,9 +106,14 @@ MARKER_BLUE = (0, 89, 152)        # MUTCD/ADA blue
 MARKER_BLUE_DARK = (0, 66, 114)
 MARKER_GREEN = (0, 177, 64)       # the FHWA green a bike lane is surfaced in
 MARKER_GREEN_DARK = (0, 138, 50)
-STEEL = (132, 134, 138)           # the road plate's bare steel
-STEEL_DARK = (104, 106, 110)
-STEEL_LIGHT = (158, 160, 164)
+# A road plate is not bright steel. It goes down weathered and comes up weathered, and what is
+# on the road is a dark, almost black surface with the tread worn smooth under traffic and rust
+# blooming from the edges and the lifting holes.
+STEEL = (62, 58, 56)              # the road plate's weathered steel
+STEEL_DARK = (46, 43, 42)
+STEEL_LIGHT = (80, 75, 72)
+STEEL_RUST = (104, 60, 36)
+STEEL_RUST_LIGHT = (128, 78, 46)
 CONCRETE = (168, 168, 162)        # the temporary barrier's precast grey
 CONCRETE_DARK = (136, 136, 130)
 MARKER_RED = (178, 26, 44)        # MUTCD stop sign red
@@ -487,13 +492,12 @@ ZEBRA_BANDS = [(c - ZEBRA_BAND_W / 2.0, c + ZEBRA_BAND_W / 2.0)
 # precast concrete barrier that goes in for longer closures. Both run the length of their cell so
 # a line of them is a continuous wall.
 #
-# Both stop a HAIR short of the cell rather than spanning it exactly. Two segments meeting exactly
-# on the boundary would put their end faces in one plane and z-fight along the whole joint; the
-# barricades solve that by splitting the model and dropping the end where something connects,
-# which is worth it there because a barricade's ends carry an overhang and an upright. A wall's
-# ends carry nothing, and real ones of both kinds show a joint line every segment anyway, so the
-# gap is both cheaper and more accurate.
-WALL_X = (0.20, 15.80)
+# Both span the cell EXACTLY, and are drawn as a core plus two end caps with the cap left off
+# wherever a neighbour stands, the same way the barricades are. Leaving a hair of gap instead and
+# always capping was tried first: it avoids the z-fight of two coincident end faces for nothing,
+# but a run then reads as a line of separate blocks rather than as a wall, which is the one thing
+# a wall has to do.
+WALL_X = (0.00, 16.00)
 
 # (half width, height) up one side of the cross-section, bottom to top.
 LCD_PROFILE = [(3.00, 0.00), (3.00, 1.30), (1.70, 4.60), (1.45, 9.60), (1.10, 11.00)]
@@ -508,10 +512,15 @@ BARRIER_PROFILE = [(3.60, 0.00), (3.60, 1.40), (1.90, 4.20), (1.35, 12.20), (1.2
 # The plate laid over an open trench so traffic can cross it before the trench is backfilled. It
 # is the one device here that is meant to be DRIVEN over rather than steered around, so it is
 # nearly the full cell and barely off the road.
-PLATE_HALF = 7.65
+# It spans its cell exactly and joins its neighbours on all four sides, so a patch of plates is
+# one steel surface rather than a grid of tiles with seams down it.
+PLATE_SPAN = 16.00
 PLATE_Y = 0.85
 PLATE_TEX_SIZE = 64
 PLATE_TREAD = 2.10        # pitch of the raised diamond tread, in world units
+PLATE_RUST_BLOB = 1.30    # how big a rust stain is, in world units
+PLATE_SIDES = (("north", (0, 0, -1)), ("south", (0, 0, 1)),
+               ("west", (-1, 0, 0)), ("east", (1, 0, 0)))
 
 # --- the orange safety fence ---------------------------------------------------------------------
 # The plastic mesh barrier fence that closes off the work area itself rather than channelizing
@@ -1542,9 +1551,11 @@ def swept_wall(mesh, profile, swatch_v=SWATCH_BAND_V, cz=AXIS):
 
     ``profile`` is (half width, height) up ONE side, bottom to top; the other side is mirrored.
     The two long faces are mapped by height, so a texture drawn the way ``band_image`` draws one
-    puts its bands across the wall at the heights it names. Every other face takes the flat
-    swatch: the ends and the underside of a wall are moulded plastic or bare concrete, not
-    sheeting.
+    puts its bands across the wall at the heights it names. The top and the underside take the
+    flat swatch: bare plastic or concrete, not sheeting.
+
+    This is the CORE -- what every segment draws. The caps over its open ends are
+    ``swept_wall_end``, and are added only where nothing connects.
     """
     x0, x1 = WALL_X
     t = uv_swatch(swatch_v)
@@ -1571,22 +1582,25 @@ def swept_wall(mesh, profile, swatch_v=SWATCH_BAND_V, cz=AXIS):
     mesh.quad_out([(x0, 0.0, cz - base_hz), (x1, 0.0, cz - base_hz),
                    (x1, 0.0, cz + base_hz), (x0, 0.0, cz + base_hz)], (0, -1, 0), q)
 
-    for x, nx in ((x0, -1), (x1, 1)):
-        for (hz0, y0), (hz1, y1) in zip(profile, profile[1:]):
-            if abs(hz1 - hz0) < 1e-9 and abs(y1 - y0) < 1e-9:
-                continue
-            mesh.quad_out([(x, y0, cz - hz0), (x, y0, cz + hz0),
-                           (x, y1, cz + hz1), (x, y1, cz - hz1)], (nx, 0, 0), q)
 
 
-def build_channelizing_wall(mesh):
-    """The plastic wall that is set out empty and filled with water on site."""
-    swept_wall(mesh, LCD_PROFILE)
 
+def swept_wall_end(mesh, profile, left, swatch_v=SWATCH_BAND_V, cz=AXIS):
+    """The cap over a wall's open end, drawn only where nothing connects.
 
-def build_concrete_barrier(mesh):
-    """The precast concrete barrier, in the New Jersey profile."""
-    swept_wall(mesh, BARRIER_PROFILE, swatch_v=SWATCH_BASE_V)
+    Two segments meeting on the cell boundary would otherwise put their end faces in one plane
+    and z-fight along the whole joint. Dropping the cap at a joint leaves the two cores meeting
+    edge to edge, which is a seam rather than an overlap and draws cleanly.
+    """
+    x = WALL_X[0] if left else WALL_X[1]
+    normal = (-1, 0, 0) if left else (1, 0, 0)
+    t = uv_swatch(swatch_v)
+    q = [t, t, t, t]
+    for (hz0, y0), (hz1, y1) in zip(profile, profile[1:]):
+        if abs(hz1 - hz0) < 1e-9 and abs(y1 - y0) < 1e-9:
+            continue
+        mesh.quad_out([(x, y0, cz - hz0), (x, y0, cz + hz0),
+                       (x, y1, cz + hz1), (x, y1, cz - hz1)], normal, q)
 
 
 def wall_texture(body, body_shade, band=None, band_color=None, band_shade=None, ribs=0):
@@ -1622,18 +1636,44 @@ def wall_texture(body, body_shade, band=None, band_color=None, band_shade=None, 
     return img
 
 
-def build_road_plate(mesh):
-    """A steel plate, tread side up."""
-    h = PLATE_HALF
-    box(mesh, AXIS - h, AXIS + h, 0.0, PLATE_Y, AXIS - h, AXIS + h, SWATCH_BASE_V,
-        faces=("x-", "x+", "y-", "z-", "z+"))
-    # The tread face is mapped across the plate in BOTH directions rather than by height, which
-    # is what every other face here does. A plate is the one thing in this family whose pattern
-    # runs in two directions at once.
-    mesh.quad_out([(AXIS - h, PLATE_Y, AXIS - h), (AXIS + h, PLATE_Y, AXIS - h),
-                   (AXIS + h, PLATE_Y, AXIS + h), (AXIS - h, PLATE_Y, AXIS + h)],
+def build_road_plate_core(mesh):
+    """A steel plate's faces, tread side up, without its rims.
+
+    The tread face is mapped across the plate in BOTH directions rather than by height, which is
+    what every other face here does. A plate is the one thing in this family whose pattern runs
+    two ways at once.
+    """
+    n = PLATE_SPAN
+    t = uv_swatch(SWATCH_BASE_V)
+    mesh.quad_out([(0.0, PLATE_Y, 0.0), (n, PLATE_Y, 0.0), (n, PLATE_Y, n), (0.0, PLATE_Y, n)],
                   (0, 1, 0),
                   [(0.0, 0.0), (SWATCH_U0, 0.0), (SWATCH_U0, 1.0), (0.0, 1.0)])
+    mesh.quad_out([(0.0, 0.0, 0.0), (n, 0.0, 0.0), (n, 0.0, n), (0.0, 0.0, n)],
+                  (0, -1, 0), [t, t, t, t])
+
+
+def build_road_plate_edge(mesh, side):
+    """One rim of a plate, drawn only where no other plate abuts that side.
+
+    A patch of plates is laid edge to edge and welded or simply butted, so a rim inside the patch
+    is not there to be seen -- and two rims in one plane z-fight anyway.
+    """
+    n = PLATE_SPAN
+    t = uv_swatch(SWATCH_BASE_V)
+    q = [t, t, t, t]
+    if side == "north":
+        pts = [(0.0, 0.0, 0.0), (n, 0.0, 0.0), (n, PLATE_Y, 0.0), (0.0, PLATE_Y, 0.0)]
+        normal = (0, 0, -1)
+    elif side == "south":
+        pts = [(0.0, 0.0, n), (n, 0.0, n), (n, PLATE_Y, n), (0.0, PLATE_Y, n)]
+        normal = (0, 0, 1)
+    elif side == "west":
+        pts = [(0.0, 0.0, 0.0), (0.0, 0.0, n), (0.0, PLATE_Y, n), (0.0, PLATE_Y, 0.0)]
+        normal = (-1, 0, 0)
+    else:
+        pts = [(n, 0.0, 0.0), (n, 0.0, n), (n, PLATE_Y, n), (n, PLATE_Y, 0.0)]
+        normal = (1, 0, 0)
+    mesh.quad_out(pts, normal, q)
 
 
 def road_plate_texture():
@@ -1646,15 +1686,30 @@ def road_plate_texture():
                 continue
             # World position across the plate, so the tread keeps its pitch whatever the
             # texture size is.
-            wx = (u / SWATCH_U0) * PLATE_HALF * 2.0
-            wz = ((r + 0.5) / PLATE_TEX_SIZE) * PLATE_HALF * 2.0
+            wx = (u / SWATCH_U0) * PLATE_SPAN
+            wz = ((r + 0.5) / PLATE_TEX_SIZE) * PLATE_SPAN
             a = ((wx + wz) % PLATE_TREAD) / PLATE_TREAD
             b = ((wx - wz) % PLATE_TREAD) / PLATE_TREAD
             colour = STEEL
-            if a < 0.30:
-                colour = STEEL_LIGHT if a < 0.15 else STEEL_DARK
-            elif b < 0.30:
-                colour = STEEL_LIGHT if b < 0.15 else STEEL_DARK
+            # The tread is barely there. It is milled shallow to begin with and polished flat by
+            # everything that drives over it, so on a plate that has been down a week it reads as
+            # a faint sheen rather than as a pattern.
+            if a < 0.22:
+                colour = STEEL_LIGHT if a < 0.11 else STEEL_DARK
+            elif b < 0.22:
+                colour = STEEL_LIGHT if b < 0.11 else STEEL_DARK
+
+            # Rust, strongest at the edges where water sits and the plate is scraped. Hashed
+            # rather than random so regenerating gives the same plate back.
+            edge = min(wx, PLATE_SPAN - wx, wz, PLATE_SPAN - wz) / (PLATE_SPAN * 0.5)
+            # Hashed on a COARSE grid, not per pixel: rust arrives as stains a hand's width
+            # across, and a per-pixel hash gives confetti instead. Hashed rather than random so
+            # regenerating gives the same plate back.
+            cell = (int(wx / PLATE_RUST_BLOB) * 31 + int(wz / PLATE_RUST_BLOB) * 17) % 97
+            fine = (int(wx / (PLATE_RUST_BLOB * 0.4)) * 13
+                    + int(wz / (PLATE_RUST_BLOB * 0.4)) * 7) % 11
+            if cell < 26 - int(edge * 21) and fine > 2:
+                colour = STEEL_RUST_LIGHT if fine > 8 else STEEL_RUST
             img.putpixel((c, r), colour + (255,))
     draw_swatches(img, STEEL, STEEL_DARK, STEEL_LIGHT)
     return img
@@ -2019,33 +2074,71 @@ DEVICES = {
         "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "channelizing_wall_orange": {
-        "model": "workzone_channelizing_wall", "build": build_channelizing_wall,
+        "model": "workzone_channelizing_wall", "build": None,
+        "joining": {
+            "model": "workzone_channelizing_wall",
+            "pieces": {
+                "core": lambda m: swept_wall(m, LCD_PROFILE),
+                "end_left": lambda m: swept_wall_end(m, LCD_PROFILE, True),
+                "end_right": lambda m: swept_wall_end(m, LCD_PROFILE, False),
+            },
+            "properties": {"connectleft": "end_left", "connectright": "end_right"},
+        },
         "texture": "workzone_channelizing_wall_orange",
         "texture_fn": lambda: wall_texture(ORANGE, ORANGE_DARK, LCD_TOP_BAND, WHITE, WHITE_DIM,
                                            LCD_RIBS),
         "display": "Water-Filled Barrier (Orange)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "rotatable": True, "java": "BlockWorkZoneWall",
     },
     "channelizing_wall_white": {
-        "model": "workzone_channelizing_wall", "build": None,
+        "model": "workzone_channelizing_wall",
+        "joining": {
+            "model": "workzone_channelizing_wall",
+            "pieces": {
+                "core": lambda m: swept_wall(m, LCD_PROFILE),
+                "end_left": lambda m: swept_wall_end(m, LCD_PROFILE, True),
+                "end_right": lambda m: swept_wall_end(m, LCD_PROFILE, False),
+            },
+            "properties": {"connectleft": "end_left", "connectright": "end_right"},
+        },
         "texture": "workzone_channelizing_wall_white",
         "texture_fn": lambda: wall_texture(WHITE, WHITE_DIM, LCD_TOP_BAND, ORANGE, ORANGE_DARK,
                                            LCD_RIBS),
         "display": "Water-Filled Barrier (White)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "rotatable": True, "java": "BlockWorkZoneWall",
     },
     "concrete_barrier": {
-        "model": "workzone_concrete_barrier", "build": build_concrete_barrier,
+        "model": "workzone_concrete_barrier",
+        "joining": {
+            "model": "workzone_concrete_barrier",
+            "pieces": {
+                "core": lambda m: swept_wall(m, BARRIER_PROFILE, swatch_v=SWATCH_BASE_V),
+                "end_left": lambda m: swept_wall_end(m, BARRIER_PROFILE, True,
+                                                     swatch_v=SWATCH_BASE_V),
+                "end_right": lambda m: swept_wall_end(m, BARRIER_PROFILE, False,
+                                                      swatch_v=SWATCH_BASE_V),
+            },
+            "properties": {"connectleft": "end_left", "connectright": "end_right"},
+        },
         "texture": "workzone_concrete_barrier",
         "texture_fn": lambda: wall_texture(CONCRETE, CONCRETE_DARK),
         "display": "Temporary Concrete Barrier",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "rotatable": True, "java": "BlockWorkZoneWall",
     },
     "road_plate": {
-        "model": "workzone_road_plate", "build": build_road_plate,
+        "model": "workzone_road_plate",
+        "joining": {
+            "model": "workzone_road_plate",
+            "pieces": dict([("core", build_road_plate_core)] + [
+                ("edge_%s" % side, (lambda sd: lambda m: build_road_plate_edge(m, sd))(side))
+                for side, _n in PLATE_SIDES]),
+            "properties": dict(("connect%s" % side, "edge_%s" % side)
+                               for side, _n in PLATE_SIDES),
+        },
         "texture": "workzone_road_plate",
         "texture_fn": road_plate_texture,
         "display": "Steel Road Plate",
+        "java": "BlockWorkZonePlate",
     },
     "safety_fence": {
         "model": "workzone_safety_fence", "build": build_safety_fence,
@@ -2170,6 +2263,25 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
     for registry, spec in DEVICES.items():
         if only and registry not in only:
             continue
+        if "joining" in spec:
+            stem = spec["joining"]["model"]
+            if stem not in seen_models:
+                seen_models.add(stem)
+                set_v_span(spec.get("v_span", 16.0))
+                paths, box_bounds = write_joining_models(model_dir, spec)
+                written.extend(paths)
+                bounds[stem] = box_bounds
+            tex_path = os.path.join(texture_dir, spec["texture"] + ".png")
+            if tex_path not in written:
+                set_v_span(spec.get("v_span", 16.0))
+                spec["texture_fn"]().save(tex_path)
+                written.append(tex_path)
+            bs_path = os.path.join(blockstate_dir, registry + ".json")
+            with open(bs_path, "w", newline="\n") as fh:
+                json.dump(joining_blockstate(spec), fh, indent=2)
+                fh.write("\n")
+            written.append(bs_path)
+            continue
         if "barricade" in spec:
             tex_path = os.path.join(texture_dir, spec["texture"] + ".png")
             if tex_path not in written:
@@ -2260,6 +2372,75 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
     written.append(write_barricade_geometry())
 
     return written
+
+
+def write_joining_models(model_dir, spec):
+    """Emit a joining device as a core, one model per detachable piece, and an inventory model.
+
+    The barricades have their own version of this above, kept separate because their pieces are
+    generated per barricade TYPE rather than per device. Everything else that joins comes through
+    here.
+    """
+    joining = spec["joining"]
+    stem = joining["model"]
+    written = []
+    for suffix, builder in joining["pieces"].items():
+        mesh = Mesh()
+        builder(mesh)
+        check_uvs(mesh, "%s_%s" % (stem, suffix))
+        path = os.path.join(model_dir, "%s_%s.obj" % (stem, suffix))
+        mesh.write(path, "%s_%s" % (stem, suffix), stem + ".mtl")
+        written.append(path)
+
+    # An item has no neighbours to ask, so its model is every piece at once.
+    inv = Mesh()
+    for builder in joining["pieces"].values():
+        builder(inv)
+    check_uvs(inv, stem + "_inv")
+    inv_path = os.path.join(model_dir, stem + "_inv.obj")
+    inv.write(inv_path, stem + "_inv", stem + ".mtl")
+    written.append(inv_path)
+
+    mtl_path = os.path.join(model_dir, stem + ".mtl")
+    write_mtl(mtl_path, spec["texture"])
+    written.append(mtl_path)
+    return written, mesh_bounds(inv)
+
+
+def joining_blockstate(spec):
+    """The blockstate for one joining device: each piece appears only where nothing connects."""
+    joining = spec["joining"]
+    stem = joining["model"]
+    texture = "%s/%s" % (TEXTURE_PREFIX, spec["texture"])
+    model = "csm:trafficaccessories/shared_models/%s" % stem
+
+    def submodel(suffix):
+        return {"submodel": {suffix: {"model": "%s_%s.obj" % (model, suffix),
+                                      "custom": {"flip-v": True},
+                                      "textures": {"#%s" % MATERIAL: texture}}}}
+
+    variants = {}
+    if spec.get("rotatable"):
+        variants["facing"] = {
+            "north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270},
+        }
+    # The piece is on the FALSE side: it is drawn where nothing connects.
+    for prop, piece in joining["properties"].items():
+        variants[prop] = {"false": submodel(piece), "true": {}}
+    variants["normal"] = [{}]
+    variants["inventory"] = [{"model": "%s_inv.obj" % model,
+                              "custom": {"flip-v": True},
+                              "textures": {"#%s" % MATERIAL: texture},
+                              "transform": "forge:default-block"}]
+    return {
+        "forge_marker": 1,
+        "defaults": {
+            "model": "%s_core.obj" % model,
+            "custom": {"flip-v": True},
+            "textures": {"#%s" % MATERIAL: texture},
+        },
+        "variants": variants,
+    }
 
 
 def write_barricade_models(model_dir):

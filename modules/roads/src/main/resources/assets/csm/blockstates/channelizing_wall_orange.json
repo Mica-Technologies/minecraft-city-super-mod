@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/shared_models/workzone_channelizing_wall.obj",
+    "model": "csm:trafficaccessories/shared_models/workzone_channelizing_wall_core.obj",
     "custom": {
       "flip-v": true
     },
@@ -22,11 +22,50 @@
         "y": 270
       }
     },
+    "connectleft": {
+      "false": {
+        "submodel": {
+          "end_left": {
+            "model": "csm:trafficaccessories/shared_models/workzone_channelizing_wall_end_left.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_channelizing_wall_orange"
+            }
+          }
+        }
+      },
+      "true": {}
+    },
+    "connectright": {
+      "false": {
+        "submodel": {
+          "end_right": {
+            "model": "csm:trafficaccessories/shared_models/workzone_channelizing_wall_end_right.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_channelizing_wall_orange"
+            }
+          }
+        }
+      },
+      "true": {}
+    },
     "normal": [
       {}
     ],
     "inventory": [
       {
+        "model": "csm:trafficaccessories/shared_models/workzone_channelizing_wall_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/trafficaccessories/workzone/workzone_channelizing_wall_orange"
+        },
         "transform": "forge:default-block"
       }
     ]

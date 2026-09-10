@@ -277,23 +277,39 @@ a wall of constant cross-section running the length of a cell. `swept_wall` take
 one side and mirrors it, mapping the two long faces by HEIGHT so a texture drawn the way
 `band_image` draws one puts its bands across the wall at the heights it names.
 
-Both stop a **hair short** of the cell rather than spanning it exactly. Two segments meeting on
-the boundary would put their end faces in one plane and z-fight along the whole joint. The
-barricades solve that by splitting the model and dropping the end where something connects,
-which is worth it there because a barricade's ends carry an overhang and an upright — a wall's
-ends carry nothing, and real ones of both kinds show a joint line every segment anyway. Cheaper
-and more accurate at once.
+Both span their cell **exactly** and join their neighbours, drawn as a core plus two end caps
+with the cap left off wherever a wall of the same kind stands facing the same way. Without
+that, two segments meeting on the boundary put their end faces in one plane and z-fight along
+the whole joint.
+
+Leaving a hair of gap and always capping was tried first. It avoids the z-fight for nothing,
+and real walls of both kinds do show a joint line every segment — but a run then reads as a
+line of separate blocks rather than as a wall, which is the one thing a wall has to do.
 
 The plastic wall's moulded ribs are drawn into the texture rather than modelled. A rib deep
 enough to catch the light is a rib deep enough to z-fight against the face it stands on, and at
 this size it would be two texels wide regardless.
 
+Both of those, and the barricades, resolve their connections through `WorkZoneJoins`, which
+holds the one rule for what counts as a join: the same block, and — for anything that faces a
+way — facing the same way. A run that changes kind or direction partway is two runs.
+
 ## The road plate and the safety fence
 
-The road plate is the one device here meant to be driven **over** rather than steered around, so
-it is nearly the full cell and barely off the road. Its tread face is also the one face in this
-family mapped in two directions at once rather than by height — a diamond tread runs both ways.
-It averages to flat grey at a distance, which is what a real one does.
+The road plate is the one device here meant to be driven **over** rather than steered around,
+so it spans its cell exactly and sits barely off the road. Its tread face is also the one face
+in this family mapped in two directions at once rather than by height — a diamond tread runs
+both ways.
+
+It joins on all **four** sides rather than two, because plates are laid in a patch rather than
+a line and the block has no facing at all — "left" and "right" mean nothing to it. The piece
+that comes and goes is the rim on each side: inside a patch a rim is not there to be seen, and
+two rims in one plane z-fight anyway.
+
+Its colour is deliberately dark. A plate goes down weathered and comes up weathered, so what
+is on the road is nearly black, with the tread polished smooth by traffic and rust blooming
+from the edges. Bright steel with a crisp tread is what a plate looks like in a catalogue and
+not what one looks like in a street.
 
 The safety fence's mesh is **cut out of the texture**, not modelled: a mesh built from geometry
 is hundreds of faces for something read at two texels. The holes are real transparency, which is

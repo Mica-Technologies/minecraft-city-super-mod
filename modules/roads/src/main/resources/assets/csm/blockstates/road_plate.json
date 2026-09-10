@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/shared_models/workzone_road_plate.obj",
+    "model": "csm:trafficaccessories/shared_models/workzone_road_plate_core.obj",
     "custom": {
       "flip-v": true
     },
@@ -10,11 +10,82 @@
     }
   },
   "variants": {
+    "connectnorth": {
+      "false": {
+        "submodel": {
+          "edge_north": {
+            "model": "csm:trafficaccessories/shared_models/workzone_road_plate_edge_north.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_road_plate"
+            }
+          }
+        }
+      },
+      "true": {}
+    },
+    "connectsouth": {
+      "false": {
+        "submodel": {
+          "edge_south": {
+            "model": "csm:trafficaccessories/shared_models/workzone_road_plate_edge_south.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_road_plate"
+            }
+          }
+        }
+      },
+      "true": {}
+    },
+    "connectwest": {
+      "false": {
+        "submodel": {
+          "edge_west": {
+            "model": "csm:trafficaccessories/shared_models/workzone_road_plate_edge_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_road_plate"
+            }
+          }
+        }
+      },
+      "true": {}
+    },
+    "connecteast": {
+      "false": {
+        "submodel": {
+          "edge_east": {
+            "model": "csm:trafficaccessories/shared_models/workzone_road_plate_edge_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_road_plate"
+            }
+          }
+        }
+      },
+      "true": {}
+    },
     "normal": [
       {}
     ],
     "inventory": [
       {
+        "model": "csm:trafficaccessories/shared_models/workzone_road_plate_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/trafficaccessories/workzone/workzone_road_plate"
+        },
         "transform": "forge:default-block"
       }
     ]
