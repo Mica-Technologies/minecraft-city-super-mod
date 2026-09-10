@@ -222,7 +222,30 @@ CABLE_END_BLOCKS = (
     "cable_barrier_anchor",
 )
 
+# Box beam gets a BULLNOSE, which is none of the four W-beam ends and could not be: there is no
+# shoe to fold and no corrugation to press out of a closed tube. The tube is turned through a half
+# circle in plan, away from the roadway, and run back parallel to itself.
+BOX_END_BLOCKS = (
+    "guardrail_end_bullnose_box",
+)
+
 TRANSITION_BLOCK = "w_beam_thrie_transition"
+
+# The crash cushion. Laid the way a run is -- a nose and then as many bays as the site wants --
+# because a real one is twenty to thirty feet long and a single block would read as a toy beside
+# the rail it terminates. The nose is always at the LEFT end: it is the impact face, and nothing
+# joins to it.
+CUSHION_BLOCKS = (
+    "crash_cushion_nose",
+    "crash_cushion_bay",
+)
+
+#: The section a cushion presents to its own kind. A bay accepts this on its left and any rail at
+#: all on its right, which is what lets one cushion terminate all four rail families.
+CUSHION_KIND = "crash_cushion"
+
+#: What the nose presents at its impact face. Nothing accepts it, which is the point.
+CUSHION_NOSE_KIND = "crash_cushion_nose"
 
 # --- shared paths ---------------------------------------------------------------------------------
 MODEL_SUBDIR = "trafficaccessories/shared_models"

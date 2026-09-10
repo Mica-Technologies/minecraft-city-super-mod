@@ -1105,4 +1105,7 @@ tile.box_beam_guardrail_double.name=Vägräcke med Fyrkantsprofil (Dubbelsidigt)
 tile.cable_barrier.name=Vajerräcke
 tile.cable_barrier_double.name=Vajerräcke (Dubbelsidigt)
 tile.cable_barrier_anchor.name=Vajerräckesförankring
+tile.guardrail_end_bullnose_box.name=Vägräckesände Fyrkantsprofil (Rundnos)
+tile.crash_cushion_nose.name=Krockdämpare (Nos)
+tile.crash_cushion_bay.name=Krockdämpare (Sektion)
 item.guardrail_tool.name=Vägräckesverktyg

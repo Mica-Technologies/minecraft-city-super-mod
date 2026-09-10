@@ -1105,4 +1105,7 @@ tile.box_beam_guardrail_double.name=Guardarraíl de Perfil Tubular (Doble Cara)
 tile.cable_barrier.name=Barrera de Cables
 tile.cable_barrier_double.name=Barrera de Cables (Doble Cara)
 tile.cable_barrier_anchor.name=Anclaje de Barrera de Cables
+tile.guardrail_end_bullnose_box.name=Extremo de Guardarraíl Tubular (Morro Curvo)
+tile.crash_cushion_nose.name=Amortiguador de Impactos (Morro)
+tile.crash_cushion_bay.name=Amortiguador de Impactos (Módulo)
 item.guardrail_tool.name=Herramienta de Guardarraíl

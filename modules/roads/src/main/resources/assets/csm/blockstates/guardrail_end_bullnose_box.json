@@ -1,0 +1,143 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/guardrail_end_bullnose_box.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_end"
+    }
+  },
+  "variants": {
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 45
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 135
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 225
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 315
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      }
+    },
+    "mirrored": {
+      "false": {},
+      "true": {
+        "model": "csm:trafficaccessories/shared_models/guardrail_end_bullnose_box_mirrored.obj"
+      }
+    },
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/guardrail_end_bullnose_box_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_end"
+        },
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}
