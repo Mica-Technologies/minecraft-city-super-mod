@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
+import com.micatechnologies.minecraft.csm.codeutils.RoadSurfaceHeight;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashPattern;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,8 +106,12 @@ public class TileEntityRadarSpeedSignRenderer
       return;
     }
 
+    // A renderer draws in world space and knows nothing about the block's render offset, so
+    // the settle onto the road below has to be applied here too. See RoadSurfaceHeight.
+    double settle = RoadSurfaceHeight.offsetFor(te.getWorld(), te.getPos());
+
     GlStateManager.pushMatrix();
-    GlStateManager.translate(x, y, z);
+    GlStateManager.translate(x, y + settle, z);
     GlStateManager.translate(0.5, 0.0, 0.5);
     GlStateManager.rotate(rotationFor(facing), 0, 1, 0);
     GlStateManager.translate(-0.5, 0.0, -0.5);

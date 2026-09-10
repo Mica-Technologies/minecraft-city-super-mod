@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.Csm;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRoadSurfaceRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSensorZoneTool;
 import net.minecraft.block.SoundType;
@@ -34,7 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * @author Mica Technologies
  * @since 2026.9
  */
-public class BlockRadarSpeedSign extends AbstractBlockRotatableNSEW
+public class BlockRadarSpeedSign extends AbstractBlockRoadSurfaceRotatableNSEW
     implements ICsmTileEntityProvider {
 
   public static final int GUI_ID = 21;

@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.Csm;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRoadSurfaceRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockPortableSpeedLimitSign extends AbstractBlockRotatableNSEW
+public class BlockPortableSpeedLimitSign extends AbstractBlockRoadSurfaceRotatableNSEW
     implements ICsmTileEntityProvider {
 
   public BlockPortableSpeedLimitSign() {
