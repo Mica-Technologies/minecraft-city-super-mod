@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 
 /**
@@ -41,6 +42,41 @@ public class TileEntityTrafficLightMountKit extends AbstractTileEntity {
    */
   public void invalidateCachedBB() {
     this.cachedBoundingBox = null;
+    this.boomCheckedAt = Long.MIN_VALUE;
+  }
+
+  /** How long a boom lookup is trusted for, in ticks. */
+  private static final long BOOM_RECHECK_TICKS = 20L;
+
+  private long boomCheckedAt = Long.MIN_VALUE;
+
+  @Nullable
+  private SignalTrailerBoom boom;
+
+  /**
+   * The portable signal trailer boom running through this block, or {@code null} if there is
+   * none.
+   *
+   * <p>Cached, because the renderer asks every frame and answering means walking up to eight
+   * cells back along the boom to the trailer that owns it — the boom is geometry rather than
+   * blocks, so there is nothing nearer to ask.</p>
+   *
+   * <p>The cache expires on a timer rather than only on {@link #invalidateCachedBB()}, and that
+   * is not laziness: the trailer is eight cells out and eight down, so placing or breaking it
+   * never reaches this block as a neighbour change. A mount kit put up before its trailer would
+   * otherwise cache "no boom" and keep clamping thin air until something else disturbed it.</p>
+   *
+   * @param facing which way the mount kit faces; the boom is looked for across it
+   * @since 1.0
+   */
+  @Nullable
+  public SignalTrailerBoom getBoom(EnumFacing facing) {
+    long now = getWorld() != null ? getWorld().getTotalWorldTime() : 0L;
+    if (now - boomCheckedAt >= BOOM_RECHECK_TICKS || boomCheckedAt == Long.MIN_VALUE) {
+      boom = SignalTrailerBoom.findAt(getWorld(), getPos(), facing);
+      boomCheckedAt = now;
+    }
+    return boom;
   }
 
   /** Returns the current color scheme. Never null. */

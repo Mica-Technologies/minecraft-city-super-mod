@@ -48,6 +48,8 @@ public class TileEntityTrafficLightMountKitRenderer
   // --- Model-space constants (16 units = 1 block) ---
   private static final float CENTER_X = 8.0f;
   private static final float CENTER_Y = 6.0f;
+  /** The block's centre on the depth axis — where a trailer's boom passes through it. */
+  private static final float CENTER_Z = 8.0f;
 
   // --- C-channel arm cross-section ---
   // Real Astro-brac arms are aluminum C-channel (U-shape when viewed end-on).
@@ -61,12 +63,16 @@ public class TileEntityTrafficLightMountKitRenderer
   private static final float ARM_FRONT_Z = -2.0f;
   private static final float ARM_BACK_Z = ARM_FRONT_Z + CHANNEL_DEPTH;  // flanges only go this deep
   private static final float WEB_FRONT_Z = ARM_BACK_Z;                  // web starts where flanges end
-  private static final float WEB_BACK_Z = 16.0f;                        // web runs to back of block
 
   // --- Spine (round tube, approximated as box) ---
   private static final float SPINE_SIZE = 1.4f;      // width=height of spine tube
-  private static final float SPINE_FRONT_Z = 14.0f;  // spine sits at back, behind the arms
-  private static final float SPINE_BACK_Z = 16.0f;
+  private static final float SPINE_DEPTH = 2.0f;     // how far forward of the back face it reaches
+
+  // How deep the bracket is: where its back face — spine, pivot hubs, and the far end of the
+  // arms' webs — sits. Normally the back of the block, because the pole it clamps is the block
+  // behind. On a portable signal trailer's boom it is not: the boom is a bar through the MIDDLE
+  // of this block, so the whole bracket is shallower and its back moves forward to meet it.
+  private static final float DEFAULT_BACK_Z = 16.0f;
 
   // --- Pivot joint hubs (where arms meet spine) ---
   private static final float PIVOT_SIZE = 3.5f;      // larger than both arm and spine
@@ -84,6 +90,16 @@ public class TileEntityTrafficLightMountKitRenderer
   // --- Mounting collar (top of spine, mast arm attachment) ---
   private static final float COLLAR_SIZE = 2.5f;
   private static final float COLLAR_HEIGHT = 1.5f;
+
+  // --- Boom saddle (the clamp that holds the bracket to a signal trailer's boom) ---
+  // The collar's counterpart, and drawn instead of it: a collar wraps a vertical pole rising past
+  // the top of the bracket, and on a boom there is no such pole — there is a bar through the
+  // middle of the block, across the way the head faces. So the saddle is a band around that bar.
+  private static final float SADDLE_ALONG_BOOM = 5.4f;  // how much of the bar it grips
+  private static final float SADDLE_GRIP = 0.7f;        // how far it stands off the bar's faces
+  // How far into the bar's front face the spine finishes. Flush would put two faces in one
+  // plane; short of it would leave the bracket hanging off the boom with daylight between.
+  private static final float SADDLE_BITE = 0.5f;
 
   // How many blocks to scan in each direction for signal heads (handles add-on signals)
   private static final int MAX_SCAN_DISTANCE = 3;
@@ -183,9 +199,9 @@ public class TileEntityTrafficLightMountKitRenderer
     float bottomEdge = info.minY;
 
     // --- Top C-channel arm (horizontal, extending outward from top of signal) ---
-    buildVerticalArm(topEdge, true, alu, aluDark);
+    buildVerticalArm(topEdge, true, info.backZ, alu, aluDark);
     // --- Bottom C-channel arm ---
-    buildVerticalArm(bottomEdge, false, alu, aluDark);
+    buildVerticalArm(bottomEdge, false, info.backZ, alu, aluDark);
 
     // --- Top knuckle clamp ---
     buildVerticalKnuckle(topEdge, true, knuckle);
@@ -195,23 +211,49 @@ public class TileEntityTrafficLightMountKitRenderer
     // --- Pivot joint hubs (where arms meet spine) ---
     float topPivotCenter = topEdge + CHANNEL_OUTER / 2f;
     float bottomPivotCenter = bottomEdge - CHANNEL_OUTER / 2f;
-    buildPivotHub(CENTER_X, topPivotCenter, pivot);
-    buildPivotHub(CENTER_X, bottomPivotCenter, pivot);
+    buildPivotHub(CENTER_X, topPivotCenter, info.backZ, pivot);
+    buildPivotHub(CENTER_X, bottomPivotCenter, info.backZ, pivot);
 
     // --- Vertical spine connecting the two pivots ---
     float spineMinX = CENTER_X - SPINE_SIZE / 2f;
     float spineMaxX = CENTER_X + SPINE_SIZE / 2f;
     alu.add(new RenderHelper.Box(
-        new float[]{spineMinX, bottomPivotCenter + PIVOT_SIZE / 2f, SPINE_FRONT_Z},
-        new float[]{spineMaxX, topPivotCenter - PIVOT_SIZE / 2f, SPINE_BACK_Z}));
+        new float[]{spineMinX, bottomPivotCenter + PIVOT_SIZE / 2f, info.spineFrontZ()},
+        new float[]{spineMaxX, topPivotCenter - PIVOT_SIZE / 2f, info.backZ}));
+
+    if (info.boom != null) {
+      // --- Saddle clamp around the boom, in place of the collar ---
+      buildBoomSaddle(info, pivot);
+      return;
+    }
 
     // --- Mounting collar at top of spine ---
     float collarMin = CENTER_X - COLLAR_SIZE / 2f;
     float collarMax = CENTER_X + COLLAR_SIZE / 2f;
     float collarY = topPivotCenter + PIVOT_SIZE / 2f;
     pivot.add(new RenderHelper.Box(
-        new float[]{collarMin, collarY, SPINE_FRONT_Z},
-        new float[]{collarMax, collarY + COLLAR_HEIGHT, SPINE_BACK_Z}));
+        new float[]{collarMin, collarY, info.spineFrontZ()},
+        new float[]{collarMax, collarY + COLLAR_HEIGHT, info.backZ}));
+  }
+
+  /**
+   * Builds the band that grips a portable signal trailer's boom, drawn instead of the mounting
+   * collar when the bracket is clamped to one.
+   *
+   * <p>The bar runs across the way the head faces, through the middle of this block, and its
+   * underside is the block's floor — plus however far the trailer that owns it has settled onto
+   * the road, because the whole trailer model moves with that and the boom with it.</p>
+   */
+  private void buildBoomSaddle(SignalInfo info, List<RenderHelper.Box> pivot) {
+    SignalTrailerBoom boom = info.boom;
+    float barY0 = (float) (boom.settleY * 16.0);
+    float barY1 = barY0 + boom.thickness;
+    float barZ0 = CENTER_Z - boom.halfWidth;
+    float barZ1 = CENTER_Z + boom.halfWidth;
+
+    pivot.add(new RenderHelper.Box(
+        new float[]{CENTER_X - SADDLE_ALONG_BOOM / 2f, barY0 - SADDLE_GRIP, barZ0 - SADDLE_GRIP},
+        new float[]{CENTER_X + SADDLE_ALONG_BOOM / 2f, barY1 + SADDLE_GRIP, barZ1 + SADDLE_GRIP}));
   }
 
   /**
@@ -220,8 +262,9 @@ public class TileEntityTrafficLightMountKitRenderer
    *
    * @param signalEdge the Y coordinate of the signal envelope edge
    * @param isTop      true for top arm (extends upward), false for bottom (extends downward)
+   * @param backZ      where the arm's web finishes; see {@link #DEFAULT_BACK_Z}
    */
-  private void buildVerticalArm(float signalEdge, boolean isTop,
+  private void buildVerticalArm(float signalEdge, boolean isTop, float backZ,
       List<RenderHelper.Box> alu, List<RenderHelper.Box> aluDark) {
     float armMinX = CENTER_X - CHANNEL_OUTER / 2f;
     float armMaxX = CENTER_X + CHANNEL_OUTER / 2f;
@@ -241,17 +284,17 @@ public class TileEntityTrafficLightMountKitRenderer
     // Top flange (outer edge of channel)
     alu.add(new RenderHelper.Box(
         new float[]{armMinX, yMax - FLANGE_THICK, ARM_FRONT_Z},
-        new float[]{armMaxX, yMax, WEB_BACK_Z}));
+        new float[]{armMaxX, yMax, backZ}));
 
     // Bottom flange (inner edge of channel, toward signal)
     alu.add(new RenderHelper.Box(
         new float[]{armMinX, yMin, ARM_FRONT_Z},
-        new float[]{armMaxX, yMin + FLANGE_THICK, WEB_BACK_Z}));
+        new float[]{armMaxX, yMin + FLANGE_THICK, backZ}));
 
     // Web (back wall of the C-channel, connecting flanges)
     aluDark.add(new RenderHelper.Box(
         new float[]{armMinX, yMin + FLANGE_THICK, WEB_FRONT_Z},
-        new float[]{armMaxX, yMax - FLANGE_THICK, WEB_BACK_Z}));
+        new float[]{armMaxX, yMax - FLANGE_THICK, backZ}));
   }
 
   /**
@@ -298,9 +341,9 @@ public class TileEntityTrafficLightMountKitRenderer
     float rightEdge = info.maxX;
 
     // --- Left C-channel arm (vertical, extending outward from left of signal) ---
-    buildHorizontalArm(leftEdge, true, alu, aluDark);
+    buildHorizontalArm(leftEdge, true, info.backZ, alu, aluDark);
     // --- Right C-channel arm ---
-    buildHorizontalArm(rightEdge, false, alu, aluDark);
+    buildHorizontalArm(rightEdge, false, info.backZ, alu, aluDark);
 
     // --- Left knuckle clamp ---
     buildHorizontalKnuckle(leftEdge, true, knuckle);
@@ -310,29 +353,29 @@ public class TileEntityTrafficLightMountKitRenderer
     // --- Pivot joint hubs ---
     float leftPivotCenter = leftEdge - CHANNEL_OUTER / 2f;
     float rightPivotCenter = rightEdge + CHANNEL_OUTER / 2f;
-    buildPivotHub(leftPivotCenter, CENTER_Y, pivot);
-    buildPivotHub(rightPivotCenter, CENTER_Y, pivot);
+    buildPivotHub(leftPivotCenter, CENTER_Y, info.backZ, pivot);
+    buildPivotHub(rightPivotCenter, CENTER_Y, info.backZ, pivot);
 
     // --- Horizontal spine connecting the two pivots ---
     float spineMinY = CENTER_Y - SPINE_SIZE / 2f;
     float spineMaxY = CENTER_Y + SPINE_SIZE / 2f;
     alu.add(new RenderHelper.Box(
-        new float[]{leftPivotCenter + PIVOT_SIZE / 2f, spineMinY, SPINE_FRONT_Z},
-        new float[]{rightPivotCenter - PIVOT_SIZE / 2f, spineMaxY, SPINE_BACK_Z}));
+        new float[]{leftPivotCenter + PIVOT_SIZE / 2f, spineMinY, info.spineFrontZ()},
+        new float[]{rightPivotCenter - PIVOT_SIZE / 2f, spineMaxY, info.backZ}));
 
     // --- Mounting collar at right end of spine ---
     float collarMin = CENTER_Y - COLLAR_SIZE / 2f;
     float collarMax = CENTER_Y + COLLAR_SIZE / 2f;
     float collarX = rightPivotCenter + PIVOT_SIZE / 2f;
     pivot.add(new RenderHelper.Box(
-        new float[]{collarX, collarMin, SPINE_FRONT_Z},
-        new float[]{collarX + COLLAR_HEIGHT, collarMax, SPINE_BACK_Z}));
+        new float[]{collarX, collarMin, info.spineFrontZ()},
+        new float[]{collarX + COLLAR_HEIGHT, collarMax, info.backZ}));
   }
 
   /**
    * Builds one vertical C-channel arm for a horizontal bracket.
    */
-  private void buildHorizontalArm(float signalEdge, boolean isLeft,
+  private void buildHorizontalArm(float signalEdge, boolean isLeft, float backZ,
       List<RenderHelper.Box> alu, List<RenderHelper.Box> aluDark) {
     float armMinY = CENTER_Y - CHANNEL_OUTER / 2f;
     float armMaxY = CENTER_Y + CHANNEL_OUTER / 2f;
@@ -351,17 +394,17 @@ public class TileEntityTrafficLightMountKitRenderer
     // Left flange (outer edge)
     alu.add(new RenderHelper.Box(
         new float[]{xMin, armMinY, ARM_FRONT_Z},
-        new float[]{xMin + FLANGE_THICK, armMaxY, WEB_BACK_Z}));
+        new float[]{xMin + FLANGE_THICK, armMaxY, backZ}));
 
     // Right flange (inner edge, toward signal)
     alu.add(new RenderHelper.Box(
         new float[]{xMax - FLANGE_THICK, armMinY, ARM_FRONT_Z},
-        new float[]{xMax, armMaxY, WEB_BACK_Z}));
+        new float[]{xMax, armMaxY, backZ}));
 
     // Web (back wall)
     aluDark.add(new RenderHelper.Box(
         new float[]{xMin + FLANGE_THICK, armMinY, WEB_FRONT_Z},
-        new float[]{xMax - FLANGE_THICK, armMaxY, WEB_BACK_Z}));
+        new float[]{xMax - FLANGE_THICK, armMaxY, backZ}));
   }
 
   /**
@@ -400,12 +443,13 @@ public class TileEntityTrafficLightMountKitRenderer
    * Builds a pivot joint hub — a thick block at the point where an arm meets the spine.
    * Sits slightly forward and larger than the spine to fully enclose it without Z-fighting.
    */
-  private void buildPivotHub(float centerX, float centerY, List<RenderHelper.Box> pivot) {
+  private void buildPivotHub(float centerX, float centerY, float backZ,
+      List<RenderHelper.Box> pivot) {
     pivot.add(new RenderHelper.Box(
         new float[]{centerX - PIVOT_SIZE / 2f, centerY - PIVOT_SIZE / 2f,
-            SPINE_FRONT_Z - PIVOT_DEPTH / 2f},
+            backZ - SPINE_DEPTH - PIVOT_DEPTH / 2f},
         new float[]{centerX + PIVOT_SIZE / 2f, centerY + PIVOT_SIZE / 2f,
-            SPINE_BACK_Z + 0.01f}));
+            backZ + 0.01f}));
   }
 
   /**
@@ -427,7 +471,7 @@ public class TileEntityTrafficLightMountKitRenderer
     }
 
     if (signalColumn == null) {
-      return getDefaultSignalInfo();
+      return withBoom(te, facing, getDefaultSignalInfo());
     }
 
     // Scan the signal column vertically: start at the found position, then scan
@@ -456,7 +500,26 @@ public class TileEntityTrafficLightMountKitRenderer
       }
     }
 
-    return merged != null ? merged : getDefaultSignalInfo();
+    return withBoom(te, facing, merged != null ? merged : getDefaultSignalInfo());
+  }
+
+  /**
+   * Looks for a portable signal trailer's boom running through this block and, if there is one,
+   * moves the back of the bracket forward onto it.
+   *
+   * <p>The boom is a bar through the MIDDLE of the block rather than a pole in the block behind,
+   * so a bracket left at its normal depth reaches straight past it and clamps thin air. Cached
+   * on the tile entity, because finding it means walking back up to eight cells to the trailer
+   * that owns it and this runs every frame.</p>
+   */
+  private SignalInfo withBoom(TileEntityTrafficLightMountKit te, EnumFacing facing,
+      SignalInfo info) {
+    SignalTrailerBoom boom = te.getBoom(facing);
+    if (boom != null) {
+      info.boom = boom;
+      info.backZ = CENTER_Z - boom.halfWidth + SADDLE_BITE;
+    }
+    return info;
   }
 
   private boolean isSignalHead(TileEntityTrafficLightMountKit te, BlockPos pos) {
@@ -587,5 +650,18 @@ public class TileEntityTrafficLightMountKitRenderer
   private static class SignalInfo {
     float minX, maxX, minY, maxY;
     boolean horizontal;
+
+    /**
+     * The trailer boom this bracket is clamped to, or {@code null} for the usual case of a pole
+     * in the block behind.
+     */
+    SignalTrailerBoom boom;
+
+    /** Where the back of the bracket sits: {@link #DEFAULT_BACK_Z}, or the boom's near face. */
+    float backZ = DEFAULT_BACK_Z;
+
+    float spineFrontZ() {
+      return backZ - SPINE_DEPTH;
+    }
   }
 }

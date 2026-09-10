@@ -36,7 +36,22 @@ public enum MountKitColorScheme {
       0.12f, 0.12f, 0.13f,
       0.08f, 0.08f, 0.09f,
       0.06f, 0.06f, 0.07f,
-      0.04f, 0.04f, 0.05f);
+      0.04f, 0.04f, 0.05f),
+
+  /**
+   * Highway orange, matching the portable signal trailers — a bracket clamped to a trailer's
+   * boom is painted with the machine, not left in raw aluminum.
+   *
+   * <p>Appended rather than inserted: the scheme is persisted on the tile entity by ordinal, so
+   * putting it anywhere else would silently repaint every mount kit already placed. The body
+   * tone is the trailers' own orange (232, 106, 24); the other three are the same steps down
+   * that the aluminum scheme uses.</p>
+   */
+  ORANGE("Highway Orange",
+      0.910f, 0.416f, 0.094f,
+      0.795f, 0.355f, 0.075f,
+      0.690f, 0.302f, 0.060f,
+      0.600f, 0.255f, 0.048f);
 
   private final String friendlyName;
   public final float aluR, aluG, aluB;
