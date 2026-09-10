@@ -150,6 +150,22 @@
       },
       "true": {}
     },
+    "diagfill": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "fill_right": {
+            "model": "csm:trafficaccessories/shared_models/workzone_barricade_type1_fill_right.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_rail_right"
+            }
+          }
+        }
+      }
+    },
     "normal": [
       {}
     ],

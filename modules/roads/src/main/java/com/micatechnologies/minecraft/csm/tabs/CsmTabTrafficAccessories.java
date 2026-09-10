@@ -655,7 +655,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockWorkZoneWall("concrete_barrier",
         new AxisAlignedBB(0.000000, 0.000000, 0.275000, 1.000000, 0.812500, 0.725000)));
     initTabBlock(new BlockWorkZoneDeviceRotatable("portable_signal_trailer_arm",
-        new AxisAlignedBB(-1.125000, 0.000000, 0.000000, 1.625000, 1.350000, 1.000000)));
+        new AxisAlignedBB(-1.875000, 0.000000, -0.312500, 2.125000, 1.400000, 1.312500)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("portable_signal_trailer",
         new AxisAlignedBB(-1.125000, 0.000000, 0.000000, 1.625000, 1.350000, 1.000000)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("portable_ped_signal_trailer",

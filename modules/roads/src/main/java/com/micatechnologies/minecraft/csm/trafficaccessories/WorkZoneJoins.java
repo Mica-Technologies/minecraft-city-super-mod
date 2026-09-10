@@ -41,6 +41,21 @@ final class WorkZoneJoins {
   static final PropertyBool CONNECT_RIGHT = PropertyBool.create("connectright");
 
   /**
+   * Whether this device has to close a gap to the device on its right.
+   *
+   * <p>A device spans one cell and a diagonal step between cell centres is sqrt(2) cells, so a
+   * run laid at forty-five degrees stands off its neighbour by about four tenths of a cell.
+   * Connecting is not enough to look connected: the ends come off, and what is left is a dotted
+   * line. So a device joined DIAGONALLY grows a filler that bridges it.</p>
+   *
+   * <p>Only ever on the right. Filling from both sides of a joint would put two fillers in the
+   * same air, and the seam would z-fight down its whole length.</p>
+   *
+   * @since 1.0
+   */
+  static final PropertyBool DIAG_FILL = PropertyBool.create("diagfill");
+
+  /**
    * Whether a matching device abuts the block's north, south, west or east side.
    *
    * <p>Separate from the pair above because these are WORLD directions, not the ends of
@@ -83,9 +98,11 @@ final class WorkZoneJoins {
    */
   static IBlockState resolve(Block self, IBlockState state, IBlockAccess access, BlockPos pos) {
     DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
+    boolean right = joins(self, access, pos, facing, facing.rotateY());
     return state
         .withProperty(CONNECT_LEFT, joins(self, access, pos, facing, facing.rotateYCCW()))
-        .withProperty(CONNECT_RIGHT, joins(self, access, pos, facing, facing.rotateY()));
+        .withProperty(CONNECT_RIGHT, right)
+        .withProperty(DIAG_FILL, right && facing.isDiagonal());
   }
 
   /**
