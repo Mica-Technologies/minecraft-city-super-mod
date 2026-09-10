@@ -335,7 +335,9 @@ and its facing:
 
 | Cell | Head | Mount type |
 |---|---|---|
-| three to eight cells out, under the level run | the overhead head (arm style only) | Overhead Mount |
+| three to eight cells out, under the level run | the overhead head, hanging (arm style only) | Overhead Mount |
+| three to eight cells out, IN the level run | a Dynamic Signal Mount Kit clamped to the boom | — |
+| the cell beyond that kit | the overhead head, mounted beside the boom | None |
 | either cell to the SIDE, five up | the near-side head, on the mast | Rear Mount |
 
 The near head goes **beside** the trailer rather than out along the boom because it faces ACROSS
@@ -395,6 +397,28 @@ body tilt turns about, so an angle-mounted head keeps its post upright and under
 of swinging it out from under.
 
 It works on CSM's own mast arm curves too, not just here.
+
+### Mounting beside the boom instead of under it
+
+A head does not have to hang. Put a **Dynamic Signal Mount Kit** in one of the boom's own level-run
+cells and it clamps to the boom rather than to a pole, and a head in the next cell out then mounts
+to it the traditional way, sitting beside the boom with its top about level with the bar. Give the
+head **None** for its own mount type — the kit is the hardware, and a head drawing its own bracket
+as well would double up.
+
+The kit has a **Highway Orange** finish in its colour cycle for exactly this: a bracket bolted to a
+trailer's boom is painted with the machine.
+
+How the kit finds the boom, and why it has to be told rather than look, is in
+`assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` under "Clamped to a portable signal trailer's boom".
+
+### The solar array
+
+Tilted, and the one face on any device in this tab that carries a picture rather than a flat
+colour. Both for the same reason: a swatch of dark blue lying flat on the deck reads as a
+tarpaulin, and the whole point of a solar panel is that it is pointed at something. It reuses the
+cell texture the mini solar panel block already ships, so the two match wherever they stand
+together.
 
 **The scale is set by the signals, not by the trailer.** A signal head here is a block, and a mast
 arm intersection is built with its arm around ten blocks over the road; a temporary signal sits

@@ -79,6 +79,15 @@ TEX_SIZE = 32                 # texture edge, px. Power of two, and fine enough 
 # The striped panels get a bigger sprite: a diagonal edge across a rail six times wider than it
 # is tall is all staircase at 32 px, and unlike a horizontal band its cost is in the diagonal.
 STRIPE_TEX_SIZE = 64
+# The signal trailers get a bigger sprite because of the solar array: a cell grid on a 32 px
+# sheet is four pixels a cell, which is a blue smear.
+TRAILER_TEX_SIZE = 64
+# The cell grid the mini solar panel block already ships. Reused rather than drawn
+# again so the trailer's array and that block match wherever they stand together.
+SOLAR_CELL_TEXTURE = os.path.join(
+    layout.REPO_ROOT, "modules", "roads", "src", "main", "resources", "assets",
+    "csm", "textures", "blocks", "trafficaccessories", "shared_textures",
+    "solar_panel.png")
 # The arrow board gets a bigger sprite again: 35 lamps across a 7-column grid leaves about seven
 # pixels a cell at 64, and a round lamp does not survive a 2.4 pixel radius.
 ARROW_TEX_SIZE = 128
@@ -551,8 +560,24 @@ PSIG_WHEEL = {"r": 9.20, "half": 3.00, "x": 1.00, "y": 9.20, "z": (-2.60, 18.60)
 PSIG_JACK_X = (-14.40, 22.40)
 PSIG_JACK_Z = (-1.20, 17.20)
 PSIG_JACK_HALF = 1.10
-PSIG_SOLAR = (-15.00, 2.00, 20.40, 21.60, 1.20, 14.80)    # the deck panel
 PSIG_CABINET = (12.00, 24.00, 20.40, 38.00, 2.60, 13.40)  # the controller box beside the mast
+
+# --- the solar array -------------------------------------------------------------------------
+# The one part of a trailer that is not painted steel, and the only one worth a picture rather
+# than a flat colour: a swatch of dark blue at this size reads as a tarpaulin. It carries the
+# same cell texture the mini solar panel block uses, so the two match wherever they stand
+# together, and it is TILTED — a panel lying flat on the deck is the one thing nobody builds,
+# because the whole point of it is to face the sun.
+PSIG_SOLAR = (-16.50, 4.50, 0.50, 15.50)   # x0, x1, z0, z1 -- its footprint on the deck
+PSIG_SOLAR_Y = 21.00       # underside of its LOW edge
+PSIG_SOLAR_RISE = 3.40     # how much higher the far edge stands
+PSIG_SOLAR_THICK = 0.90
+PSIG_SOLAR_PROP = 0.75     # half-size of the props holding the high edge up
+# Where the cell image sits on the trailer's sheet. flip-v is on, so a face asking for v samples
+# sprite row size*(1-v) -- the paste has to be at the flipped rows or the panel wears whatever is
+# above it. The region's aspect matches the panel's, so the cells come out square.
+PSIG_SOLAR_U = (0.03, 0.72)
+PSIG_SOLAR_V = (0.55, 0.92)
 
 PSIG_MAST_X = 8.00
 PSIG_MAST_Z = 8.00
@@ -599,9 +624,16 @@ PSIG_RAM_HALF = 1.45
 # carry the boom's outer end, the tie does. The mast style carries one head against the mast and
 # needs no boom; the pedestrian one is lower again, because a walk signal is read from the kerb
 # and not from a car.
+#
+# The mast style's height is set by the head it carries, not by the trailer. Its near-side head
+# goes five up, and a three-section body reaches 1.5 blocks above its own block, so the head's
+# top -- and the top bracket of its Rear Mount -- is at six and a half blocks. A mast that stops
+# at six and a bit ends BELOW the hardware bolted to it, which is what it did at first. It stands
+# a clear block above the head now, which is also where the winch and the beacon live on a real
+# one.
 PSIG_STYLES = {
     "arm": {"mast_top": PSIG_PIVOT_Y + 14.0, "arm": PSIG_ARM_TIP_Z},
-    "mast": {"mast_top": 6 * 16.0 + 10.0, "arm": None},
+    "mast": {"mast_top": 7 * 16.0 + 8.0, "arm": None},
     "ped": {"mast_top": 4 * 16.0 + 8.0, "arm": None},
 }
 
@@ -1796,11 +1828,10 @@ def build_signal_trailer(mesh, style, tip_z=None, rigging=True):
             box(mesh, jx - j * 2.2, jx + j * 2.2, 0.0, 0.80, jz - j * 2.2, jz + j * 2.2,
                 SWATCH_BAND_V)
 
-    # Both start INSIDE the bed and skip their own undersides, rather than sitting flush on it:
-    # flush would put three faces in the plane of the bed's top and z-fight across all of them.
-    sx0, sx1, sy0, sy1, sz0, sz1 = PSIG_SOLAR
-    box(mesh, sx0, sx1, sy0 - 0.30, sy1, sz0, sz1, SWATCH_ACCENT_V,
-        faces=("x-", "x+", "y+", "z-", "z+"))
+    solar_array(mesh, by1)
+
+    # Starts INSIDE the bed and skips its own underside, rather than sitting flush on it: flush
+    # would put three faces in the plane of the bed's top and z-fight across all of them.
     cx0, cx1, cy0, cy1, cz0, cz1 = PSIG_CABINET
     box(mesh, cx0, cx1, cy0 - 0.30, cy1, cz0, cz1, SWATCH_BASE_V,
         faces=("x-", "x+", "y+", "z-", "z+"))
@@ -1912,10 +1943,63 @@ def build_signal_trailer_inventory(mesh, style):
     fit_in_cell(mesh)
 
 
+def solar_array(mesh, deck_top):
+    """The tilted solar array on a trailer's deck.
+
+    The panel is the one face on any of these devices that carries a picture rather than a flat
+    swatch, so it is built by hand instead of with ``box``: its top takes the cell image and the
+    other five faces take the dark swatch, which is the frame around a real one.
+
+    It leans, which is why it is a prism and not a box. Everything else about a solar panel is
+    negotiable; lying flat is not, because then it is not pointing at anything.
+    """
+    x0, x1, z0, z1 = PSIG_SOLAR
+    y0 = PSIG_SOLAR_Y
+    rise = PSIG_SOLAR_RISE
+    t = PSIG_SOLAR_THICK
+
+    # Lower surface, low edge at z0 and high edge at z1; the upper surface is the same lifted.
+    low = [(x0, y0, z0), (x1, y0, z0), (x1, y0 + rise, z1), (x0, y0 + rise, z1)]
+    top = [(p[0], p[1] + t, p[2]) for p in low]
+
+    u0, u1 = PSIG_SOLAR_U
+    v0, v1 = PSIG_SOLAR_V
+    cell_uv = [(u0, v0), (u1, v0), (u1, v1), (u0, v1)]
+    # Up and toward the low edge: the cross product of the panel's own two directions, flipped
+    # so it points out of the face that is meant to see the sky.
+    mesh.quad_out(list(top), (0.0, z1 - z0, -rise), cell_uv)
+
+    dark = uv_swatch(SWATCH_DARK_V)
+    flat = [dark, dark, dark, dark]
+    mesh.quad_out(list(reversed(low)), (0.0, -(z1 - z0), rise), flat)
+    for i in range(4):
+        j = (i + 1) % 4
+        edge = [low[i], low[j], top[j], top[i]]
+        mid = tuple(sum(p[k] for p in edge) / 4.0 for k in range(3))
+        centre = (0.5 * (x0 + x1), y0 + rise * 0.5 + t * 0.5, 0.5 * (z0 + z1))
+        mesh.quad_out(edge, tuple(mid[k] - centre[k] for k in range(3)), flat)
+
+    # Two props under the high edge. They start inside the deck, finish inside the panel, and
+    # stop short of its high edge, so no end of either shares a plane with what it meets.
+    p = PSIG_SOLAR_PROP
+    for px in (x0 + 3.0, x1 - 3.0):
+        box(mesh, px - p, px + p, deck_top - 0.40, y0 + rise + t * 0.5,
+            z1 - p * 2.8, z1 - 0.40, SWATCH_BAND_V)
+
+
 def trailer_texture():
-    """A signal trailer's colours: highway orange, black tyres, galvanised jacks, solar deck."""
-    img = Image.new("RGBA", (TEX_SIZE, TEX_SIZE), ARROW_FRAME_ORANGE + (255,))
+    """A signal trailer's colours: highway orange, black tyres, galvanised jacks, and the solar
+    array's cell grid pasted in at the flipped rows the panel's UVs read from."""
+    size = TRAILER_TEX_SIZE
+    img = Image.new("RGBA", (size, size), ARROW_FRAME_ORANGE + (255,))
     draw_swatches(img, ARROW_FRAME_ORANGE, GALVANISED, SOLAR_BLUE)
+
+    cells = Image.open(SOLAR_CELL_TEXTURE).convert("RGBA")
+    u0, u1 = PSIG_SOLAR_U
+    v0, v1 = PSIG_SOLAR_V
+    px0, px1 = int(round(u0 * size)), int(round(u1 * size))
+    py0, py1 = int(round((1.0 - v1) * size)), int(round((1.0 - v0) * size))
+    img.paste(cells.resize((px1 - px0, py1 - py0), Image.LANCZOS), (px0, py0))
     return img
 
 
@@ -2728,6 +2812,7 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
     written.append(tab_path)
 
     written.append(write_geometry_constants())
+    written.append(write_signal_trailer_geometry())
     written.append(write_barricade_geometry())
 
     return written
@@ -2996,6 +3081,117 @@ def write_geometry_constants():
     lines += [
         "  private ArrowBoardGeometry() {",
         "    throw new AssertionError(\"ArrowBoardGeometry is constants only\");",
+        "  }",
+        "}",
+    ]
+    with open(path, "w", newline="\n") as fh:
+        fh.write("\n".join(lines) + "\n")
+    return path
+
+
+def write_signal_trailer_geometry():
+    """Emit ``SignalTrailerGeometry``: where the arm trailer's boom is, cell by cell.
+
+    A mount kit clamped to the boom has to know where the boom IS, and the boom is not a block
+    -- it is geometry belonging to a trailer up to eight cells away. Nothing in the world can be
+    probed for it. So the cell layout is emitted from the same constants the boom is swept from,
+    and the block that looks for it reads these rather than carrying its own copy of the numbers.
+    That is the whole point: the placement code cannot disagree with the geometry it was built
+    from, because there is only one set of numbers.
+
+    Everything is in 1/16 block units, in the frame of the CELL the boom passes through: the bar
+    is centred on the cell in the axis across the boom, and its underside is the cell's floor.
+    """
+    path = layout.source_for_write(TRAFFICACCESSORIES_OWNER,
+                                   "trafficaccessories/SignalTrailerGeometry.java")
+
+    # Model z of the near face of the trailer's own cell is +16, and one cell is 16 units, so
+    # cell n out spans model z from 16-16n to -16n. Cell FIRST is the one the elbow lands on.
+    first = int(round((16.0 - PSIG_ELBOW_Z) / 16.0))          # 3
+    last = int(round((16.0 - PSIG_ARM_TIP_Z) / 16.0)) - 1      # 8
+    height = int(round(PSIG_ARM_CLEARANCE / 16.0))             # 8
+
+    elb_h, elb_t = PSIG_BOOM_ELBOW
+    tip_h, tip_t = PSIG_BOOM_TIP
+
+    halves, thicks = [], []
+    for n in range(first, last + 1):
+        centre_z = 16.0 - 16.0 * n - 8.0
+        t = (centre_z - PSIG_ELBOW_Z) / (PSIG_ARM_TIP_Z - PSIG_ELBOW_Z)
+        halves.append(elb_h + t * (tip_h - elb_h))
+        thicks.append(elb_t + t * (tip_t - elb_t))
+
+    def arr(values):
+        return "{" + ", ".join("%.4ff" % v for v in values) + "}"
+
+    lines = [
+        "package com.micatechnologies.minecraft.csm.trafficaccessories;",
+        "",
+        "/**",
+        " * Where a portable signal trailer's boom is, cell by cell, in 1/16 block units.",
+        " *",
+        " * <p>Generated by {@code dev-env-utils/scripts/gen_work_zone_devices.py} -- do not hand",
+        " * edit.</p>",
+        " *",
+        " * <p>The boom is not a block. It is geometry belonging to a trailer up to eight cells",
+        " * away, so a mount kit that wants to clamp to it cannot probe the world for it and has to",
+        " * be told. These are the same numbers the boom is swept from, which is what stops the",
+        " * clamp drifting off the bar the next time the boom is reshaped.</p>",
+        " *",
+        " * <p>Coordinates are in the frame of the CELL the boom passes through: the bar is centred",
+        " * on the cell across the boom's run, and its underside is that cell's floor.</p>",
+        " *",
+        " * @version 1.0",
+        " * @since 2026.9",
+        " */",
+        "public final class SignalTrailerGeometry {",
+        "",
+        "  /** Registry name of the trailer style that carries a boom. */",
+        "  public static final String ARM_TRAILER = \"portable_signal_trailer_arm\";",
+        "",
+        "  /** Cells above the trailer's own block that the boom's level run sits at. */",
+        "  public static final int BOOM_HEIGHT = %d;" % height,
+        "",
+        "  /** First cell out from the trailer that the LEVEL run covers; nearer cells are the rise. */",
+        "  public static final int FIRST_CELL = %d;" % first,
+        "",
+        "  /** Last cell out from the trailer that the level run covers. */",
+        "  public static final int LAST_CELL = %d;" % last,
+        "",
+        "  /** Half the bar's width, per cell from {@link #FIRST_CELL}. The boom tapers. */",
+        "  public static final float[] HALF_WIDTH = %s;" % arr(halves),
+        "",
+        "  /** The bar's depth above the cell floor, per cell from {@link #FIRST_CELL}. */",
+        "  public static final float[] THICKNESS = %s;" % arr(thicks),
+        "",
+        "  /** True if {@code cell} is a cell the level run covers. */",
+        "  public static boolean isLevelRunCell(int cell) {",
+        "    return cell >= FIRST_CELL && cell <= LAST_CELL;",
+        "  }",
+        "",
+        "  /** Half the bar's width at {@code cell}; the nearest covered cell if it is out of range. */",
+        "  public static float halfWidthAt(int cell) {",
+        "    return HALF_WIDTH[clampIndex(cell)];",
+        "  }",
+        "",
+        "  /** The bar's depth above the cell floor at {@code cell}, clamped the same way. */",
+        "  public static float thicknessAt(int cell) {",
+        "    return THICKNESS[clampIndex(cell)];",
+        "  }",
+        "",
+        "  private static int clampIndex(int cell) {",
+        "    int index = cell - FIRST_CELL;",
+        "    if (index < 0) {",
+        "      return 0;",
+        "    }",
+        "    if (index >= HALF_WIDTH.length) {",
+        "      return HALF_WIDTH.length - 1;",
+        "    }",
+        "    return index;",
+        "  }",
+        "",
+        "  private SignalTrailerGeometry() {",
+        "    throw new AssertionError(\"SignalTrailerGeometry is constants only\");",
         "  }",
         "}",
     ]
