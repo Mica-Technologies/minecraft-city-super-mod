@@ -1,9 +1,11 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractPoweredBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRoadSurfaceAware;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -51,17 +53,33 @@ public class TileEntityTrafficBeaconRenderer
 
     ITrafficBeaconBlock beacon = (ITrafficBeaconBlock) block;
 
-    if (!state.getPropertyKeys().contains(AbstractPoweredBlockRotatableNSEWUD.POWERED)) return;
-    if (!state.getValue(AbstractPoweredBlockRotatableNSEWUD.POWERED)) return;
+    // POWERED is respected when the block has it and ignored when it does not: the redstone
+    // beacons gate on it, while a work zone warning light runs on its own and has no such
+    // property. Requiring the property outright would silently render nothing for the latter.
+    if (state.getPropertyKeys().contains(AbstractPoweredBlockRotatableNSEWUD.POWERED)
+        && !state.getValue(AbstractPoweredBlockRotatableNSEWUD.POWERED)) {
+      return;
+    }
 
     long offset = (te instanceof TileEntityTrafficBeacon)
         ? ((TileEntityTrafficBeacon) te).getStrobeOffset() : 0L;
     long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks) + offset;
-    float intensity = computeIntensity(gameMillis);
+    long cycle = beacon.getBeaconCycleMillis();
+    float intensity = cycle > 0L
+        ? computePulseIntensity(gameMillis, cycle, beacon.getBeaconPulseMillis(),
+            beacon.getBeaconFadeMillis())
+        : computeIntensity(gameMillis);
     if (intensity <= 0f) return;
 
-    if (!state.getPropertyKeys().contains(AbstractPoweredBlockRotatableNSEWUD.FACING)) return;
-    EnumFacing facing = state.getValue(AbstractPoweredBlockRotatableNSEWUD.FACING);
+    // Facing comes from whichever rotation property the block actually carries. The full
+    // six-way beacons use one, the horizontal-only work zone devices another, and a device with
+    // no rotation at all is drawn unrotated rather than skipped.
+    EnumFacing facing = EnumFacing.NORTH;
+    if (state.getPropertyKeys().contains(AbstractPoweredBlockRotatableNSEWUD.FACING)) {
+      facing = state.getValue(AbstractPoweredBlockRotatableNSEWUD.FACING);
+    } else if (state.getPropertyKeys().contains(AbstractBlockRotatableNSEW.FACING)) {
+      facing = state.getValue(AbstractBlockRotatableNSEW.FACING);
+    }
 
     float[] from = beacon.getBeaconLensFrom();
     float[] to = beacon.getBeaconLensTo();
@@ -76,8 +94,16 @@ public class TileEntityTrafficBeaconRenderer
     float maxY = to[1] / 16f - 0.5f;
     float maxZ = to[2] / 16f - 0.5f;
 
+    // A device that settles onto the road under it is DRAWN lower than its own cell, but this
+    // renderer works in world space and knows nothing about that offset. Without adding it here
+    // the lens flashes at the height the block was placed at while the device it belongs to sits
+    // lower down.
+    double settle = (block instanceof ICsmRoadSurfaceAware)
+        ? ((ICsmRoadSurfaceAware) block).getRoadSurfaceOffset(te.getWorld(), te.getPos())
+        : 0.0;
+
     GlStateManager.pushMatrix();
-    GlStateManager.translate((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
+    GlStateManager.translate((float) x + 0.5f, (float) (y + settle) + 0.5f, (float) z + 0.5f);
     applyFacingRotation(facing);
 
     // Bind a 1x1 white pixel texture instead of disableTexture2D — shaders ignore
@@ -119,6 +145,32 @@ public class TileEntityTrafficBeaconRenderer
         GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableBlend();
     GlStateManager.popMatrix();
+  }
+
+  /**
+   * One short pulse per cycle, with a brief fade out.
+   *
+   * <p>The caller has already added the beacon's own random offset to {@code gameMillis}, which
+   * is what puts a row of these out of step with one another the way a row of real warning
+   * lights is. Nothing here needs to know that has happened.</p>
+   *
+   * @param gameMillis  the beacon's own clock, in milliseconds
+   * @param cycleMillis the length of one full cycle
+   * @param pulseMillis how long the beacon is at full brightness
+   * @param fadeMillis  how long it takes to fade out afterwards
+   *
+   * @return the brightness, 0 to 1
+   */
+  private static float computePulseIntensity(long gameMillis, long cycleMillis, long pulseMillis,
+      long fadeMillis) {
+    long t = Math.floorMod(gameMillis, cycleMillis);
+    if (t < pulseMillis) {
+      return 1.0f;
+    }
+    if (fadeMillis > 0L && t < pulseMillis + fadeMillis) {
+      return 1.0f - (float) (t - pulseMillis) / fadeMillis;
+    }
+    return 0f;
   }
 
   private static float computeIntensity(long gameMillis) {
