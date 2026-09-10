@@ -109,6 +109,8 @@ MARKER_GREEN_DARK = (0, 138, 50)
 # A road plate is not bright steel. It goes down weathered and comes up weathered, and what is
 # on the road is a dark, almost black surface with the tread worn smooth under traffic and rust
 # blooming from the edges and the lifting holes.
+SOLAR_BLUE = (30, 44, 92)         # the cell panel on a trailer's deck
+GALVANISED = (158, 160, 166)      # a trailer's jack legs and winch hardware
 STEEL = (62, 58, 56)              # the road plate's weathered steel
 STEEL_DARK = (46, 43, 42)
 STEEL_LIGHT = (80, 75, 72)
@@ -507,6 +509,71 @@ LCD_RIBS = 6                   # moulded vertical ribs along the body
 # The New Jersey profile: a wide foot, a steep lower flare that turns a tyre back, and a near
 # vertical face above it.
 BARRIER_PROFILE = [(3.60, 0.00), (3.60, 1.40), (1.90, 4.20), (1.35, 12.20), (1.20, 13.00)]
+
+# --- the portable signal trailers -----------------------------------------------------------------
+# The towed signal that runs a one-lane two-way work zone: a single-axle trailer, a winch mast,
+# and on the arm style an arm reaching out over the road.
+#
+# It carries NO signal heads of its own. The mod already has every signal anyone could want and a
+# controller system to drive them, and a signal head placed beside anything draws its own mounting
+# hardware, so the trailer's job is to be the thing they mount ON.
+#
+# THE SCALE IS SET BY THE SIGNALS, NOT BY THE TRAILER. A signal head in this mod is a block, and a
+# mast arm intersection is built with its arm around ten blocks over the road; a temporary signal
+# sits a little lower but not much, or traffic does not fit under it. So the arm's underside is
+# eight blocks up and everything else follows from that -- which makes the mast very tall against
+# a compact trailer, exactly as it is on the real thing.
+PSIG_ARM_CLEARANCE = 8 * 16.0        # underside of the arm, in 1/16 units above the trailer's base
+
+# Relative to the trailer's own cell and its facing, the cells left free for heads are:
+#   two out, seven up  -- under the arm's tip, the overhead head   (arm style only)
+#   one out, five up   -- against the mast, the near-side head
+# The near head sits lower than the overhead one, which is how these are actually rigged: the mast
+# head is read from the stop line and the arm head from back down the lane.
+PSIG_BED = (-10.00, 22.00, 7.90, 14.60, 0.40, 15.60)   # x0, x1, y0, y1, z0, z1
+PSIG_TONGUE = (22.00, 37.00, 9.40, 12.60, 6.20, 9.80)
+PSIG_WHEEL = {"r": 7.10, "half": 2.90, "x": 0.00, "y": 7.10, "z": (-2.60, 18.60)}
+PSIG_JACK_X = (-7.20, 19.20)
+PSIG_JACK_Z = (-1.60, 17.60)
+PSIG_JACK_HALF = 0.86
+PSIG_SOLAR = (-5.00, 12.00, 14.60, 15.60, 1.80, 14.20)   # the deck panel
+PSIG_CABINET = (13.00, 21.00, 14.60, 26.00, 3.60, 12.40)  # the controller box beside the mast
+
+PSIG_MAST_X = 8.00
+PSIG_MAST_Z = 8.00
+PSIG_MAST_HALF = 2.40
+PSIG_ARM_THICK = 4.20
+PSIG_ARM_HALF_X = 2.00
+PSIG_ARM_TIP_Z = -32.00        # two whole cells out, so the arm spans both mount cells and ends
+                               # flush with the far one rather than inside it
+PSIG_BRACE = 0.62              # where the arm's stay meets the mast, as a fraction of its height
+
+# Mast height per style. The mast style carries one head against the mast and needs no arm; the
+# pedestrian one is lower again, because a walk signal is read from the kerb and not from a car.
+PSIG_STYLES = {
+    "arm": {"mast_top": PSIG_ARM_CLEARANCE + 14.0, "arm": PSIG_ARM_TIP_Z},
+    "mast": {"mast_top": 6 * 16.0 + 10.0, "arm": None},
+    "ped": {"mast_top": 4 * 16.0 + 8.0, "arm": None},
+}
+
+# --- the vertical panel --------------------------------------------------------------------------
+# The narrow striped panel on a post: a channelizing device for places too tight for a barricade,
+# and the one MUTCD device whose whole job is its own narrowness -- a lane shift beside a bridge
+# parapet or a barrier wall where a Type I would not fit.
+#
+# Its stripes slope toward the side traffic should pass, so it comes in a keep-left and a
+# keep-right the way the barricades and the channelizer-cades do.
+VPANEL_POST_HALF = 0.52
+VPANEL_TOP = 14.20
+VPANEL_PANEL = (2.10, 4.30, 13.60)   # half width, y0, y1 of the striped panel
+VPANEL_PANEL_HALF_Z = 0.24
+VPANEL_FOOT = (1.65, 0.62, 2.30)     # half x, height, half z of the moulded foot
+# The post stands BEHIND the panel, not through it: the striped face is what points at traffic
+# and a post in front of it interrupts the stripes. It starts just inside the panel's back face
+# rather than flush against it, so the two never share a plane.
+VPANEL_POST_CZ = AXIS + VPANEL_PANEL_HALF_Z + VPANEL_POST_HALF - 0.10
+VPANEL_W = VPANEL_PANEL[0] * 2.0
+VPANEL_H = VPANEL_PANEL[2] - VPANEL_PANEL[1]
 
 # --- the steel road plate ------------------------------------------------------------------------
 # The plate laid over an open trench so traffic can cross it before the trench is backfilled. It
@@ -1641,6 +1708,108 @@ def wall_texture(body, body_shade, band=None, band_color=None, band_shade=None, 
     return img
 
 
+def build_signal_trailer(mesh, style):
+    """A portable signal trailer: chassis, deck, winch mast and, on the arm styles, the arm.
+
+    Everything is flat swatch. There is nothing on a signal trailer that carries sheeting or a
+    pattern, and the one part that is not painted steel -- the solar deck -- is a colour rather
+    than an image at this size.
+    """
+    spec = PSIG_STYLES[style]
+
+    bx0, bx1, by0, by1, bz0, bz1 = PSIG_BED
+    box(mesh, bx0, bx1, by0, by1, bz0, bz1, SWATCH_BASE_V)
+    tx0, tx1, ty0, ty1, tz0, tz1 = PSIG_TONGUE
+    box(mesh, tx0, tx1, ty0, ty1, tz0, tz1, SWATCH_BASE_V)
+
+    # A single axle, which is what a trailer this size runs on.
+    w = PSIG_WHEEL
+    for wz in w["z"]:
+        lens_rim(mesh, w["x"], w["y"], wz - w["half"], wz + w["half"], w["r"], SWATCH_DARK_V,
+                 sides=10)
+        lens_disc(mesh, w["x"], w["y"], wz + w["half"], w["r"], (0, 0, 1), SWATCH_DARK_V, sides=10)
+        lens_disc(mesh, w["x"], w["y"], wz - w["half"], w["r"], (0, 0, -1), SWATCH_DARK_V,
+                  sides=10)
+
+    # The levelling jacks a deployed trailer stands on. The leg starts inside its pad, so the two
+    # never share a plane.
+    j = PSIG_JACK_HALF
+    for jx in PSIG_JACK_X:
+        for jz in PSIG_JACK_Z:
+            box(mesh, jx - j, jx + j, 0.60, by0 + 1.0, jz - j, jz + j, SWATCH_BAND_V,
+                faces=("x-", "x+", "y+", "z-", "z+"))
+            box(mesh, jx - j * 2.2, jx + j * 2.2, 0.0, 0.80, jz - j * 2.2, jz + j * 2.2,
+                SWATCH_BAND_V)
+
+    # Both start INSIDE the bed and skip their own undersides, rather than sitting flush on it:
+    # flush would put three faces in the plane of the bed's top and z-fight across all of them.
+    sx0, sx1, sy0, sy1, sz0, sz1 = PSIG_SOLAR
+    box(mesh, sx0, sx1, sy0 - 0.30, sy1, sz0, sz1, SWATCH_ACCENT_V,
+        faces=("x-", "x+", "y+", "z-", "z+"))
+    cx0, cx1, cy0, cy1, cz0, cz1 = PSIG_CABINET
+    box(mesh, cx0, cx1, cy0 - 0.30, cy1, cz0, cz1, SWATCH_BASE_V,
+        faces=("x-", "x+", "y+", "z-", "z+"))
+
+    mh = PSIG_MAST_HALF
+    mx, mz = PSIG_MAST_X, PSIG_MAST_Z
+    top = spec["mast_top"]
+    box(mesh, mx - mh, mx + mh, cy1 - 0.5, top, mz - mh, mz + mh, SWATCH_BASE_V,
+        faces=("x-", "x+", "y+", "z-", "z+"))
+
+    if spec["arm"] is None:
+        return
+
+    ay0 = PSIG_ARM_CLEARANCE
+    ay1 = ay0 + PSIG_ARM_THICK
+    ah = PSIG_ARM_HALF_X
+    tip = spec["arm"]
+    box(mesh, mx - ah, mx + ah, ay0, ay1, tip, mz, SWATCH_BASE_V)
+
+    # The stay that holds the arm up, run from inside the mast to inside the arm so its ends
+    # finish within them rather than against them.
+    brace_y = ay0 * PSIG_BRACE
+    brace_z = tip + (mz - tip) * 0.45
+    bh = ah * 0.55
+    prism(mesh,
+          [(mx - bh, brace_y, mz - bh), (mx + bh, brace_y, mz - bh),
+           (mx + bh, brace_y, mz + bh), (mx - bh, brace_y, mz + bh)],
+          [(mx - bh, ay0 + 0.8, brace_z - bh), (mx + bh, ay0 + 0.8, brace_z - bh),
+           (mx + bh, ay0 + 0.8, brace_z + bh), (mx - bh, ay0 + 0.8, brace_z + bh)],
+          SWATCH_BASE_V)
+
+
+def trailer_texture():
+    """A signal trailer's colours: highway orange, black tyres, galvanised jacks, solar deck."""
+    img = Image.new("RGBA", (TEX_SIZE, TEX_SIZE), ARROW_FRAME_ORANGE + (255,))
+    draw_swatches(img, ARROW_FRAME_ORANGE, GALVANISED, SOLAR_BLUE)
+    return img
+
+
+def build_vertical_panel(mesh):
+    """A striped panel on a post, on a moulded foot.
+
+    The panel's two broad faces carry the stripes and everything else takes the flat swatch, the
+    same division the barricade rails use: sheeting where a real one carries sheeting, bare
+    plastic everywhere else.
+    """
+    fx, fy, fz = VPANEL_FOOT
+    cz = VPANEL_POST_CZ
+    box(mesh, AXIS - fx, AXIS + fx, 0.0, fy, cz - fz, cz + fz, SWATCH_BAND_V)
+    box(mesh, AXIS - VPANEL_POST_HALF, AXIS + VPANEL_POST_HALF, fy - 0.14, VPANEL_TOP,
+        cz - VPANEL_POST_HALF, cz + VPANEL_POST_HALF, SWATCH_BAND_V,
+        faces=("x-", "x+", "y+", "z-", "z+"))
+
+    half, y0, y1 = VPANEL_PANEL
+    hz = VPANEL_PANEL_HALF_Z
+    box(mesh, AXIS - half, AXIS + half, y0, y1, AXIS - hz, AXIS + hz, SWATCH_BAND_V,
+        faces=("x-", "x+", "y-", "y+"))
+    for z, normal in ((AXIS + hz, (0, 0, 1)), (AXIS - hz, (0, 0, -1))):
+        pts = [(AXIS - half, y0, z), (AXIS + half, y0, z),
+               (AXIS + half, y1, z), (AXIS - half, y1, z)]
+        uvs = [(0.0, 0.0), (SWATCH_U0, 0.0), (SWATCH_U0, 1.0), (0.0, 1.0)]
+        mesh.quad_out(pts, normal, uvs)
+
+
 def build_road_plate_core(mesh):
     """A steel plate's faces, tread side up, without its rims.
 
@@ -2130,6 +2299,51 @@ DEVICES = {
         "display": "Temporary Concrete Barrier",
         "rotatable": True, "java": "BlockWorkZoneWall",
     },
+    "portable_signal_trailer_arm": {
+        "model": "workzone_signal_trailer_arm",
+        "build": lambda m: build_signal_trailer(m, "arm"),
+        "texture": "workzone_signal_trailer",
+        "texture_fn": trailer_texture,
+        "display": "Portable Signal Trailer (Mast Arm)",
+        # The model reaches two cells out and eight up; its BOX is the TRAILER only, the way the
+        # arrow board's is. A box tall enough to hold the mast would also be a collision box tall
+        # enough to wall the road off, and one wide enough to hold the arm would have the player
+        # selecting the trailer from two cells away.
+        "bbox": (-10.0, 0.0, 0.40, 22.0, 15.0, 15.60),
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "portable_signal_trailer": {
+        "model": "workzone_signal_trailer_mast",
+        "build": lambda m: build_signal_trailer(m, "mast"),
+        "texture": "workzone_signal_trailer",
+        "texture_fn": trailer_texture,
+        "display": "Portable Signal Trailer",
+        "bbox": (-10.0, 0.0, 0.40, 22.0, 15.0, 15.60),
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "portable_ped_signal_trailer": {
+        "model": "workzone_signal_trailer_ped",
+        "build": lambda m: build_signal_trailer(m, "ped"),
+        "texture": "workzone_signal_trailer",
+        "texture_fn": trailer_texture,
+        "display": "Portable Pedestrian Signal Trailer",
+        "bbox": (-10.0, 0.0, 0.40, 22.0, 15.0, 15.60),
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "vertical_panel_left": {
+        "model": "workzone_vertical_panel", "build": build_vertical_panel,
+        "texture": "workzone_vpanel_left",
+        "texture_fn": lambda: diagonal_stripe_image(False, VPANEL_W, VPANEL_H, BARRICADE_STRIPE),
+        "display": "Vertical Panel (Keep Left)",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "vertical_panel_right": {
+        "model": "workzone_vertical_panel", "build": None,
+        "texture": "workzone_vpanel_right",
+        "texture_fn": lambda: diagonal_stripe_image(True, VPANEL_W, VPANEL_H, BARRICADE_STRIPE),
+        "display": "Vertical Panel (Keep Right)",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
     "road_plate": {
         "model": "workzone_road_plate",
         "joining": {
@@ -2359,7 +2573,7 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
             if only and registry not in only:
                 continue
             b = (BARRICADE_BOUNDS.get(spec["barricade"]) if "barricade" in spec
-                 else bounds.get(spec["model"]))
+                 else spec.get("bbox") or bounds.get(spec["model"]))
             if b is None:
                 continue
             cls = spec.get("java", "BlockWorkZoneDevice")

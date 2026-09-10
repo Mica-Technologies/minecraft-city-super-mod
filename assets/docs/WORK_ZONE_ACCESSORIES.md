@@ -1,7 +1,7 @@
 # Work Zone Accessories
 
 The channelizing devices a road crew puts out: cones, drums, channelizers, barricades, delineator
-posts, temporary pavement markers, barrier walls, sand barrels and the arrow board. Thirty-two blocks in the Traffic Accessories tab, all
+posts, temporary pavement markers, barrier walls, sand barrels and the arrow board. Thirty-seven blocks in the Traffic Accessories tab, all
 generated from one script, and all sharing one behaviour that nothing else in the mod has — they
 **settle onto the surface underneath them** instead of floating a cell above it.
 
@@ -29,6 +29,8 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `concrete_barrier` | `BlockWorkZoneDeviceRotatable` | precast, in the New Jersey profile |
 | `road_plate` | `BlockWorkZoneDevice` | steel plate over an open trench |
 | `safety_fence` | `BlockWorkZoneDeviceRotatable` | orange mesh fence closing off the work area |
+| `vertical_panel_left`, `_right` | `BlockWorkZoneDeviceRotatable` | narrow striped panel for places too tight for a barricade |
+| `portable_signal_trailer_arm`, `portable_signal_trailer`, `portable_ped_signal_trailer` | `BlockWorkZoneDeviceRotatable` | towed signal; carries no heads of its own |
 | `sand_barrel_array` | `BlockWorkZoneDevice` | |
 | `arrow_board` | `BlockWorkZoneArrowBoard` | trailer board with seven animated modes |
 
@@ -320,6 +322,35 @@ is hundreds of faces for something read at two texels. The holes are real transp
 why the block draws on the cutout layer — a fence you cannot see through is a wall. Its panel
 spans the whole cell so a run is continuous, and its stakes are inset from the edges rather than
 sitting on them, so a joint shows the pair of stakes a real run has instead of one shared post.
+
+## The portable signal trailers
+
+Three styles: a mast arm, a plain mast, and a lower one for a pedestrian head.
+
+They carry **no signal heads of their own**. The mod already has every signal anyone could want
+and a controller system to drive them, and a head placed beside anything draws its own mounting
+hardware, so the trailer's job is to be the thing they mount ON. What it has to get right is
+therefore not the signals but the CELLS left free for them. Relative to the trailer's own cell
+and its facing:
+
+| Cell | Head |
+|---|---|
+| two out, seven up | under the arm's tip, the overhead head (arm style only) |
+| one out, five up | against the mast, the near-side head |
+
+The near head sits lower than the overhead one, which is how these are rigged: the mast head is
+read from the stop line and the arm head from back down the lane.
+
+**The scale is set by the signals, not by the trailer.** A signal head here is a block, and a
+mast arm intersection is built with its arm around ten blocks over the road; a temporary signal
+sits lower but not much, or traffic does not fit under it. So the arm's underside is eight blocks
+up and everything else follows, which makes the mast very tall against a compact trailer —
+exactly as it is on the real thing. Sizing it from the trailer instead gives something that looks
+right on its own and is a toy next to a signal, which is how the first version came out.
+
+Their bounding box is the **trailer only**, like the arrow board's. A box tall enough to hold the
+mast is also a collision box tall enough to wall the road off, and one wide enough to hold the
+arm would have the player selecting the trailer from two cells away.
 
 ## The arrow board
 
