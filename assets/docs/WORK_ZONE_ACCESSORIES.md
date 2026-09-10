@@ -1,7 +1,7 @@
 # Work Zone Accessories
 
 The channelizing devices a road crew puts out: cones, drums, channelizers, barricades, delineator
-posts, temporary pavement markers, sand barrels and the arrow board. Twenty-seven blocks in the Traffic Accessories tab, all
+posts, temporary pavement markers, barrier walls, sand barrels and the arrow board. Thirty-two blocks in the Traffic Accessories tab, all
 generated from one script, and all sharing one behaviour that nothing else in the mod has — they
 **settle onto the surface underneath them** instead of floating a cell above it.
 
@@ -25,6 +25,10 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `delineator_post`, `delineator_post_yellow` | `BlockWorkZoneDevice` | |
 | `delineator_zebra` | `BlockWorkZoneDeviceDiagonal` | the low rubber lane separator; runs the length of its cell so a line of them is continuous, and takes all eight facings |
 | `pavement_marker_white`, `_yellow`, `_orange`, `_red`, `_blue`, `_green` | `BlockWorkZoneDeviceRotatable` | the small folded tabs taped down a lane line |
+| `channelizing_wall_orange`, `_white` | `BlockWorkZoneDeviceRotatable` | the plastic wall filled with water on site |
+| `concrete_barrier` | `BlockWorkZoneDeviceRotatable` | precast, in the New Jersey profile |
+| `road_plate` | `BlockWorkZoneDevice` | steel plate over an open trench |
+| `safety_fence` | `BlockWorkZoneDeviceRotatable` | orange mesh fence closing off the work area |
 | `sand_barrel_array` | `BlockWorkZoneDevice` | |
 | `arrow_board` | `BlockWorkZoneArrowBoard` | trailer board with seven animated modes |
 
@@ -265,6 +269,37 @@ one-sided lighting over the crown, where the highlight belongs.
 The moulded dimples are not decoration. Without them the body is a flat black shape whose only
 cue to its curve is that lighting, and it reads as a painted marking rather than as something
 standing off the road.
+
+## The wall devices
+
+The water-filled plastic barrier and the precast concrete barrier are the same shape problem:
+a wall of constant cross-section running the length of a cell. `swept_wall` takes the profile up
+one side and mirrors it, mapping the two long faces by HEIGHT so a texture drawn the way
+`band_image` draws one puts its bands across the wall at the heights it names.
+
+Both stop a **hair short** of the cell rather than spanning it exactly. Two segments meeting on
+the boundary would put their end faces in one plane and z-fight along the whole joint. The
+barricades solve that by splitting the model and dropping the end where something connects,
+which is worth it there because a barricade's ends carry an overhang and an upright — a wall's
+ends carry nothing, and real ones of both kinds show a joint line every segment anyway. Cheaper
+and more accurate at once.
+
+The plastic wall's moulded ribs are drawn into the texture rather than modelled. A rib deep
+enough to catch the light is a rib deep enough to z-fight against the face it stands on, and at
+this size it would be two texels wide regardless.
+
+## The road plate and the safety fence
+
+The road plate is the one device here meant to be driven **over** rather than steered around, so
+it is nearly the full cell and barely off the road. Its tread face is also the one face in this
+family mapped in two directions at once rather than by height — a diamond tread runs both ways.
+It averages to flat grey at a distance, which is what a real one does.
+
+The safety fence's mesh is **cut out of the texture**, not modelled: a mesh built from geometry
+is hundreds of faces for something read at two texels. The holes are real transparency, which is
+why the block draws on the cutout layer — a fence you cannot see through is a wall. Its panel
+spans the whole cell so a run is continuous, and its stakes are inset from the edges rather than
+sitting on them, so a joint shows the pair of stakes a real run has instead of one shared post.
 
 ## The arrow board
 
