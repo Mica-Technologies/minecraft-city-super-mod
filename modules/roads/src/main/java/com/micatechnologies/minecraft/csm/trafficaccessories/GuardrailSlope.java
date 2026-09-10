@@ -29,10 +29,46 @@ public enum GuardrailSlope implements IStringSerializable {
   /** Falls across the cell toward its RIGHT-hand end. */
   DOWN("down");
 
+  /**
+   * How much of a block a rail has to be climbing before it ramps rather than staying level.
+   *
+   * <p>Half, because these three are the only shapes there are: a rail ramps by exactly one block
+   * or not at all, so every rise is drawn as whichever of those two is nearer. A rise of a
+   * quarter block left as a step is a smaller lie than one drawn as a whole block's ramp.</p>
+   */
+  private static final double RAMP_AT = 0.5;
+
   private final String name;
 
   GuardrailSlope(String name) {
     this.name = name;
+  }
+
+  /**
+   * The slope that best draws a rail climbing {@code rise} blocks across its own cell.
+   *
+   * <p>Takes a real height rather than a difference of block positions, and that is the whole
+   * point of it. A guardrail settles onto whatever it is standing on, so two cells a block apart
+   * in Y can be a hair apart in the world — one on bare ground and its neighbour on a snow layer
+   * is the everyday case — and a rail that read the block positions would answer that with a
+   * full block's ramp and dive into the ground. What decides the shape is where the two rails
+   * actually are.</p>
+   *
+   * @param rise how far the right-hand neighbour's rail sits above this one's, in blocks
+   *
+   * @return the slope to draw
+   *
+   * @see GuardrailJoins#resolve
+   * @since 1.0
+   */
+  public static GuardrailSlope forRise(double rise) {
+    if (rise >= RAMP_AT) {
+      return UP;
+    }
+    if (rise <= -RAMP_AT) {
+      return DOWN;
+    }
+    return FLAT;
   }
 
   @Override
