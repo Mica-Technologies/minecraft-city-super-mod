@@ -1,0 +1,422 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_core.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+    }
+  },
+  "variants": {
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 45
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 135
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 225
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 315
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      }
+    },
+    "connectleft": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "end_left_u": null,
+          "end_left_m": null
+        }
+      }
+    },
+    "connectright": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "end_right_u": null,
+          "end_right_m": null
+        }
+      }
+    },
+    "diagfill": {
+      "false": {
+        "submodel": {
+          "fill_u": null,
+          "fill_m": null
+        }
+      },
+      "true": {}
+    },
+    "mirrored": {
+      "false": {
+        "submodel": {
+          "core_m": null,
+          "end_left_m": null,
+          "end_right_m": null,
+          "fill_m": null
+        }
+      },
+      "true": {
+        "model": null,
+        "submodel": {
+          "end_left_u": null,
+          "end_right_u": null,
+          "fill_u": null
+        }
+      }
+    },
+    "post": {
+      "false": {
+        "submodel": {
+          "post": null
+        }
+      },
+      "true": {}
+    },
+    "slope": {
+      "flat": {
+        "submodel": {
+          "core_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_core_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "post": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_post_flat.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_left_u": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_left.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_left_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_left_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_right_u": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_right_flat.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_right_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_right_flat_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "fill_u": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_fill_flat.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "fill_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_fill_flat_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          }
+        }
+      },
+      "up": {
+        "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_core_up.obj",
+        "submodel": {
+          "core_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_core_up_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "post": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_post_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_left_u": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_left.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_left_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_left_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_right_u": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_right_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_right_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_right_up_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "fill_u": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_fill_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "fill_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_fill_up_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          }
+        }
+      },
+      "down": {
+        "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_core_down.obj",
+        "submodel": {
+          "core_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_core_down_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "post": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_post_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_left_u": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_left.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_left_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_left_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_right_u": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_right_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "end_right_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_end_right_down_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "fill_u": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_fill_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          },
+          "fill_m": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_fill_down_mirrored.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+            }
+          }
+        }
+      }
+    },
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/guardrail_w_beam_thrie_transition_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_thrie_steel"
+        },
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

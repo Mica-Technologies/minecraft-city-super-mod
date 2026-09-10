@@ -107,6 +107,66 @@ GLOVE_PANEL = (2.20, 13.80, 3.40, 14.60)    # x0, x1, y0, y1
 GLOVE_PANEL_Z = 1.20
 GLOVE_STRIPE_DEG = 45.0
 
+# --- the thrie-beam rail --------------------------------------------------------------------------
+# Three corrugations instead of two, and a great deal deeper: a real thrie beam is 813 mm against
+# the W's 312, which is most of a cell. Taken at face value its bottom edge would sit on the
+# ground, so it is drawn nine units deep rather than thirteen -- deep enough to read as the bigger
+# rail beside a W-beam, shallow enough to still show daylight under it.
+#
+# The mounting height is the same as the W-beam's, because that is set by what the rail is for
+# rather than by how deep it is.
+THRIE_RAIL_TOP_Y = 13.00
+THRIE_RAIL_BOTTOM_Y = 4.00
+THRIE_RAIL_FRONT_Z = RAIL_FRONT_Z
+THRIE_RAIL_BACK_Z = RAIL_BACK_Z
+
+# Three crests and two valleys, drawn bottom to top as (z offset back from the face, y). Same
+# lip-crest-valley language as the W, one corrugation longer.
+_THRIE_SPAN = THRIE_RAIL_TOP_Y - THRIE_RAIL_BOTTOM_Y
+THRIE_PROFILE = [
+    (1.60, THRIE_RAIL_BOTTOM_Y),
+    (0.30, THRIE_RAIL_BOTTOM_Y + 0.80),
+    (0.00, THRIE_RAIL_BOTTOM_Y + 1.40),
+    (0.30, THRIE_RAIL_BOTTOM_Y + 2.00),
+    (1.45, THRIE_RAIL_BOTTOM_Y + _THRIE_SPAN * 0.32),   # first valley
+    (0.30, THRIE_RAIL_BOTTOM_Y + _THRIE_SPAN * 0.42),
+    (0.00, THRIE_RAIL_BOTTOM_Y + _THRIE_SPAN * 0.50),   # middle crest
+    (0.30, THRIE_RAIL_BOTTOM_Y + _THRIE_SPAN * 0.58),
+    (1.45, THRIE_RAIL_BOTTOM_Y + _THRIE_SPAN * 0.68),   # second valley
+    (0.30, THRIE_RAIL_TOP_Y - 2.00),
+    (0.00, THRIE_RAIL_TOP_Y - 1.40),
+    (0.30, THRIE_RAIL_TOP_Y - 0.80),
+    (1.60, THRIE_RAIL_TOP_Y),
+]
+
+# --- the box beam rail ----------------------------------------------------------------------------
+# A square tube rather than a pressed section, and the one rail here whose posts carry a visible
+# BASE PLATE -- it is bolted down rather than driven, which is plain in the reference and is most
+# of what tells the two apart at a glance.
+BOX_RAIL_TOP_Y = RAIL_TOP_Y
+BOX_RAIL_BOTTOM_Y = BOX_RAIL_TOP_Y - 3.20
+BOX_RAIL_FRONT_Z = RAIL_FRONT_Z
+BOX_RAIL_BACK_Z = BOX_RAIL_FRONT_Z + 3.20
+BOX_BASE_PLATE = (3.40, 0.60)     # half width, thickness
+
+# --- the cable barrier -----------------------------------------------------------------------------
+# Not a beam at all: tensioned cables on slim posts. The cables are thin enough that the span wire
+# system's lesson applies -- a member under about a unit across reads as a scratch rather than a
+# rope, so these are drawn a little fatter than scale.
+CABLE_POST_HALF = 0.90
+CABLE_POST_TOP_Y = 13.60
+CABLE_RADIUS = 0.55
+CABLE_HEIGHTS = (8.40, 10.60, 12.60)
+CABLE_Z = 2.40                    # the plane the cables run in, in front of the post
+CABLE_BACK_Z = 5.60               # the mirrored plane, on a double-sided run
+
+# --- the W-to-thrie transition ---------------------------------------------------------------------
+# Real runs do not butt a W-beam against a thrie beam; a transition piece carries one into the
+# other. Ours does it across a single cell, W at its LEFT-hand end and thrie at its right, which is
+# what lets one run carry straight through the change of rail.
+TRANSITION_LEFT_PROFILE = "w_beam"
+TRANSITION_RIGHT_PROFILE = "thrie_beam"
+
 # --- registry names -------------------------------------------------------------------------------
 RAIL_BLOCKS = (
     "w_beam_guardrail",
@@ -115,12 +175,47 @@ RAIL_BLOCKS = (
     "w_beam_guardrail_wood_double",
 )
 
+THRIE_RAIL_BLOCKS = (
+    "thrie_beam_guardrail",
+    "thrie_beam_guardrail_wood",
+    "thrie_beam_guardrail_double",
+    "thrie_beam_guardrail_wood_double",
+)
+
+# Box beam and cable barrier get no wooden post: neither is ever built that way. Box beam bolts to
+# a plated steel post and cable barrier to a driven or socketed one.
+BOX_RAIL_BLOCKS = (
+    "box_beam_guardrail",
+    "box_beam_guardrail_double",
+)
+
+CABLE_BLOCKS = (
+    "cable_barrier",
+    "cable_barrier_double",
+)
+
 END_BLOCKS = (
     "guardrail_end_flared",
     "guardrail_end_boxing_glove",
     "guardrail_end_terminal",
     "guardrail_end_turndown",
 )
+
+# The thrie beam's flared shoe and turndown are the RAIL ITSELF folded, so they must match a rail
+# two and a half times as deep. The impact head and the energy-absorbing terminal are bolt-on
+# units that look much the same whichever rail they cap, and are shared.
+THRIE_END_BLOCKS = (
+    "guardrail_end_flared_thrie",
+    "guardrail_end_turndown_thrie",
+)
+
+# Cable barrier ends in an ANCHOR -- a raked block holding the cables' tension -- rather than in
+# anything that would deflect a vehicle.
+CABLE_END_BLOCKS = (
+    "cable_barrier_anchor",
+)
+
+TRANSITION_BLOCK = "w_beam_thrie_transition"
 
 # --- shared paths ---------------------------------------------------------------------------------
 MODEL_SUBDIR = "trafficaccessories/shared_models"

@@ -49,6 +49,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetN
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrail;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailEnd;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailTransition;
 import com.micatechnologies.minecraft.csm.trafficaccessories.ItemGuardrailTool;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneArrowBoard;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneBarricade;
@@ -701,6 +702,44 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.000000, 0.000000, 0.025000, 1.000000, 0.737500, 0.607322)));
     initTabBlock(new BlockGuardrailEnd("guardrail_end_turndown",
         new AxisAlignedBB(0.000000, 0.000000, 0.018750, 0.987562, 0.735629, 0.600000)));
+    // The RAIL KIND is what a run joins on, and it is the one thing the generators cannot know.
+    // Left off, every family would default to w_beam and a box beam would happily join a W-beam
+    // run — two rails of different depths meeting with a step and calling themselves one run.
+    initTabBlock(new BlockGuardrail("thrie_beam_guardrail",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.850000, 0.600000), THRIE));
+    initTabBlock(new BlockGuardrail("thrie_beam_guardrail_wood",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.850000, 0.600000), THRIE));
+    initTabBlock(new BlockGuardrail("thrie_beam_guardrail_double",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.850000, 0.950000), THRIE));
+    initTabBlock(new BlockGuardrail("thrie_beam_guardrail_wood_double",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.850000, 0.950000), THRIE));
+    initTabBlock(new BlockGuardrailEnd("guardrail_end_flared_thrie",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 0.862829, 0.849699, 0.730165), THRIE));
+    initTabBlock(new BlockGuardrailEnd("guardrail_end_turndown_thrie",
+        new AxisAlignedBB(0.000000, 0.000000, 0.018750, 1.000000, 0.848833, 0.600000), THRIE));
+    // W-beam at one end and thrie at the other, which is why it needs a class of its own: a block
+    // that is two rails matches neither neighbour under the ordinary rule.
+    initTabBlock(new BlockGuardrailTransition("w_beam_thrie_transition",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.812500, 0.600000),
+        W_BEAM, THRIE));
+
+    initTabBlock(new BlockGuardrail("box_beam_guardrail",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.737500, 0.712500), BOX_BEAM));
+    initTabBlock(new BlockGuardrail("box_beam_guardrail_double",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.737500, 0.950000), BOX_BEAM));
+    initTabBlock(new BlockGuardrail("cable_barrier",
+        new AxisAlignedBB(0.000000, 0.000000, 0.118242, 1.000000, 0.850000, 0.306250), CABLE));
+    initTabBlock(new BlockGuardrail("cable_barrier_double",
+        new AxisAlignedBB(0.000000, 0.000000, 0.118242, 1.000000, 0.850000, 0.381758), CABLE));
+    initTabBlock(new BlockGuardrailEnd("cable_barrier_anchor",
+        new AxisAlignedBB(0.000000, 0.000000, 0.012500, 0.537500, 0.887500, 0.287500), CABLE));
+
     initTabItem(ItemGuardrailTool.class, fmlPreInitializationEvent); // Guardrail Tool
   }
+
+  /** Rail sections. Two guardrails join only if the rails at the ends that meet are the same. */
+  private static final String W_BEAM = "w_beam";
+  private static final String THRIE = "thrie_beam";
+  private static final String BOX_BEAM = "box_beam";
+  private static final String CABLE = "cable";
 }
