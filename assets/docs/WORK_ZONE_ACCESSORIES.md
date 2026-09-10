@@ -76,6 +76,12 @@ three places:
 Miss the second and the block's hitbox floats above its model. Miss the third and a barricade's
 warning lights hover over a barricade that has settled beneath them.
 
+The three trailer-mounted devices in this tab settle too, and did not to begin with: the
+portable changeable message sign, the portable variable speed limit sign and the radar speed
+feedback sign predate this mechanism and were left at the block grid, so an arrow board sat
+flush on a sloped road while the trailer parked beside it floated. They use the same base
+class now, and their renderers apply the offset by hand for the reason above.
+
 `RoadSurfaceHeightTest` covers the decision as two pure functions — `surfaceFromBox` and
 `offsetForSurface` — precisely so the rules can be tested without a block registry, which this
 project has no mocking framework for.

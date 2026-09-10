@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
+import com.micatechnologies.minecraft.csm.codeutils.RoadSurfaceHeight;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
@@ -136,8 +137,12 @@ public class TileEntityPortableSpeedLimitRenderer
     if (angleIdx < 0 || angleIdx >= ANGLE_ROTATIONS.length) angleIdx = 0;
     float angleOffset = ANGLE_ROTATIONS[angleIdx];
 
+    // A renderer draws in world space and knows nothing about the block's render offset, so
+    // the settle onto the road below has to be applied here too. See RoadSurfaceHeight.
+    double settle = RoadSurfaceHeight.offsetFor(te.getWorld(), te.getPos());
+
     GlStateManager.pushMatrix();
-    GlStateManager.translate(x, y, z);
+    GlStateManager.translate(x, y + settle, z);
     GlStateManager.translate(0.5, 0.0, 0.5);
 
     float rotY = 0;
