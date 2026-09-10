@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/shared_models/workzone_barricade_type3.obj",
+    "model": "csm:trafficaccessories/shared_models/workzone_barricade_type3_core.obj",
     "custom": {
       "flip-v": true
     },
@@ -22,11 +22,50 @@
         "y": 270
       }
     },
+    "connectleft": {
+      "false": {
+        "submodel": {
+          "end_left": {
+            "model": "csm:trafficaccessories/shared_models/workzone_barricade_type3_end_left.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_rail_right"
+            }
+          }
+        }
+      },
+      "true": {}
+    },
+    "connectright": {
+      "false": {
+        "submodel": {
+          "end_right": {
+            "model": "csm:trafficaccessories/shared_models/workzone_barricade_type3_end_right.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_rail_right"
+            }
+          }
+        }
+      },
+      "true": {}
+    },
     "normal": [
       {}
     ],
     "inventory": [
       {
+        "model": "csm:trafficaccessories/shared_models/workzone_barricade_type3_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/trafficaccessories/workzone/workzone_rail_right"
+        },
         "transform": "forge:default-block"
       }
     ]
