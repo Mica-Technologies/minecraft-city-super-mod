@@ -23,7 +23,16 @@ public enum SignalHeadMountType implements IStringSerializable {
   NONE("none", "None"),
   REAR("rear", "Rear Mount"),
   LEFT("left", "Left Mount"),
-  RIGHT("right", "Right Mount");
+  RIGHT("right", "Right Mount"),
+  /**
+   * A single bracket at the TOP of the body, running straight up to something overhead: a mast
+   * arm, or a portable signal trailer's arm. The other types all reach sideways or backwards to a
+   * pole beside the head, and none of them can describe a head that HANGS.
+   *
+   * <p>Appended rather than inserted: the mount type is stored in NBT by ordinal, so putting it
+   * anywhere else would silently re-mount every signal already placed.</p>
+   */
+  OVERHEAD("overhead", "Overhead Mount");
 
   private final String name;
   private final String friendlyName;
@@ -48,7 +57,7 @@ public enum SignalHeadMountType implements IStringSerializable {
     return values()[ordinal];
   }
 
-  /** Cycles to the next mount type (NONE → REAR → LEFT → RIGHT → NONE). */
+  /** Cycles to the next mount type (NONE → REAR → LEFT → RIGHT → OVERHEAD → NONE). */
   public SignalHeadMountType getNext() {
     return values()[(ordinal() + 1) % values().length];
   }

@@ -1127,6 +1127,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
         case REAR:  poleLeg = PoleLeg.REAR_POS_Z; break;
         case LEFT:  poleLeg = PoleLeg.DOWN_NEG_Y; break; // "left mount" in horizontal = pole below
         case RIGHT: poleLeg = PoleLeg.UP_POS_Y;   break; // "right mount" in horizontal = pole above
+        case OVERHEAD: poleLeg = PoleLeg.UP_POS_Y; break;
         default: return;
       }
     } else {
@@ -1134,6 +1135,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
         case REAR:  poleLeg = PoleLeg.REAR_POS_Z;  break;
         case LEFT:  poleLeg = PoleLeg.RIGHT_POS_X; break; // model +X → viewer's LEFT after facing rotation
         case RIGHT: poleLeg = PoleLeg.LEFT_NEG_X;  break; // model -X → viewer's RIGHT
+        case OVERHEAD: poleLeg = PoleLeg.UP_POS_Y; break;  // hanging from something above
         default: return;
       }
     }
@@ -1144,6 +1146,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
     if (horizontal) {
       if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg, mountTiltAngle));
       if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg, mountTiltAngle));
+    } else if (mountType == SignalHeadMountType.OVERHEAD) {
+      // One bracket only, at the TOP. The other vertical types put a bracket at each end and
+      // reach sideways, which is fine when the pole is beside the head; reaching UP from both
+      // ends would run the lower bracket straight through the signal it is holding.
+      brackets.add(new BracketSpec(8.0f, topY, false, true, poleLeg, mountTiltAngle));
     } else {
       if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg, mountTiltAngle));
       if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg, mountTiltAngle));
