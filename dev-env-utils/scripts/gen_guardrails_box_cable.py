@@ -308,16 +308,39 @@ def cable_planes(double):
     return (geo.CABLE_Z, geo.CABLE_BACK_Z) if double else (geo.CABLE_Z,)
 
 
-def build_cable_post(mesh, slope):
+def build_cable_post(mesh, double, slope):
     """A simple square post -- cable barrier gets no C-section, per the brief. Centred between
     the two cable planes so it stands squarely behind a single-sided run's one plane and squarely
-    between a double-sided run's two."""
+    between a double-sided run's two, and carrying the clip that holds each cable it passes."""
     lift = geo.slope_lift(slope, geo.POST_LIFT)
     foot = min(geo.POST_BOTTOM_Y, lift)
     top = geo.CABLE_POST_TOP_Y + lift
     half = geo.CABLE_POST_HALF
     box(mesh, CX - half, CX + half, foot, top,
         CABLE_POST_CZ - CABLE_POST_Z_HALF, CABLE_POST_CZ + CABLE_POST_Z_HALF, CABLE_POST_SWATCH)
+    build_cable_clips(mesh, double, lift)
+
+
+def build_cable_clips(mesh, double, lift):
+    """The strap holding each cable to the post it passes.
+
+    One box per cable per plane, reaching from the post's own face out past the cable's far side.
+    It runs THROUGH the cable rather than wrapping it: at this scale a hollow U would be three
+    slivers where a solid strap is one clearly bolted-on band, and the cable is opaque either way.
+
+    It is drawn with the post's lift, not the cable's grade, because the whole thing is bolted to
+    the post at one x -- the point where the cable crosses it -- so there is nothing here to
+    ramp."""
+    for z in cable_planes(double):
+        outward = -1.0 if z < CABLE_POST_CZ else 1.0
+        face = CABLE_POST_CZ + outward * CABLE_POST_Z_HALF
+        tip = z + outward * (geo.CABLE_RADIUS + geo.CABLE_CLIP_PROUD)
+        z0, z1 = (tip, face) if outward < 0.0 else (face, tip)
+        for cy in geo.CABLE_HEIGHTS:
+            y = cy + lift
+            box(mesh, CX - geo.CABLE_CLIP_X_HALF, CX + geo.CABLE_CLIP_X_HALF,
+                y - geo.CABLE_CLIP_Y_HALF, y + geo.CABLE_CLIP_Y_HALF,
+                z0, z1, CABLE_POST_SWATCH)
 
 
 def build_cable_core(mesh, double, slope):
@@ -352,7 +375,7 @@ def build_cable_fill(mesh, double, slope):
 
 def build_cable_inventory(mesh, double):
     build_cable_core(mesh, double, "flat")
-    build_cable_post(mesh, "flat")
+    build_cable_post(mesh, double, "flat")
     build_cable_end(mesh, double, "flat", True)
     build_cable_end(mesh, double, "flat", False)
 
@@ -366,7 +389,8 @@ def cable_model_pieces(spec):
     for slope in geo.SLOPES:
         if slope != "flat":
             pieces["core_%s" % slope] = (lambda s: lambda m: build_cable_core(m, double, s))(slope)
-        pieces["post_%s" % slope] = (lambda s: lambda m: build_cable_post(m, s))(slope)
+        pieces["post_%s" % slope] = (
+            (lambda s: lambda m: build_cable_post(m, double, s))(slope))
         pieces["fill_%s" % slope] = (lambda s: lambda m: build_cable_fill(m, double, s))(slope)
         pieces["end_right_%s" % slope] = (
             (lambda s: lambda m: build_cable_end(m, double, s, False))(slope))

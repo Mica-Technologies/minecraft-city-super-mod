@@ -160,6 +160,13 @@ CABLE_HEIGHTS = (8.40, 10.60, 12.60)
 CABLE_Z = 2.40                    # the plane the cables run in, in front of the post
 CABLE_BACK_Z = 5.60               # the mirrored plane, on a double-sided run
 
+# Each cable is held to the post by a clip. The gap the clip has to bridge is only about a sixth
+# of a unit, so a plate filling it would be invisible; what reads at playing distance is the strap
+# standing PROUD of the cable on the far side from the post, so that is what these describe.
+CABLE_CLIP_X_HALF = 0.55          # narrower than the post, so it reads as separate hardware
+CABLE_CLIP_Y_HALF = CABLE_RADIUS + 0.35
+CABLE_CLIP_PROUD = 0.30           # how far past the cable's outer face the strap carries
+
 # --- the W-to-thrie transition ---------------------------------------------------------------------
 # Real runs do not butt a W-beam against a thrie beam; a transition piece carries one into the
 # other. Ours does it across a single cell, W at its LEFT-hand end and thrie at its right, which is
