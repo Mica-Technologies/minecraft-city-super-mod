@@ -465,22 +465,23 @@ Eight backplate textures have `_e` companions in `shared_textures` -- the OptiFi
 overlay for the coloured border, which is retroreflective on a real plate. They stopped taking
 effect when the drawing moved here.
 
-Two separate things are going on, and they are easy to conflate:
+The declaration is not what is missing. The mod never shipped an `emissive.properties` of its
+own until the work zone pavement markers needed one, so the emissive these used to show came from
+a resource pack supplying `suffix.emissive=_e`. Core ships that same declaration now
+(`assets/minecraft/optifine/emissive.properties`); it is global, so it covers these too, and
+there is no per-texture opt-in in OptiFine to add.
 
-- The mod has never shipped an `emissive.properties` of its own until recently, so any emissive
-  anyone saw on these came from a resource pack supplying the `suffix.emissive=_e` declaration.
-  Core ships that declaration now (`assets/minecraft/optifine/emissive.properties`), added for
-  the work zone pavement markers; it is global, so it covers these too. There is no per-texture
-  opt-in in OptiFine to add.
-- Whether the declaration is ENOUGH here is unverified. OptiFine's emissive pass patches
-  `BlockModelRenderer`, and this renderer does route through `renderModelFlat`, so the hook may
-  well still fire -- but from inside a tile entity renderer's GL state rather than the chunk
-  pass it was written for. It cannot be checked in a development environment, because OptiFine
-  does not load deobfuscated.
+What broke them is this renderer. With the pack's declaration in place the whole time, the
+borders stopped lighting the moment the plates moved off chunk geometry — so OptiFine's emissive
+pass, which patches `BlockModelRenderer`, does not reach them here even though the renderer does
+route through `renderModelFlat`. Adding the declaration to the mod does not bring them back.
 
-If it turns out not to fire, the fix is a second pass in this renderer: stitch the `_e` sprites
+Note that the pavement markers are unaffected by any of this: they are ordinary chunk geometry,
+which is the case OptiFine's pass was written for.
+
+The fix, if the borders are wanted back, is a second pass in this renderer: stitch the `_e` sprites
 and draw the same quads again with them at a full-bright lightmap, which is what OptiFine would
-have done and what every other lit thing in this mod does by hand.
+have done, and what every other lit thing in this mod does by hand.
 
 The obvious design was the other one: derive an "is it shifted" property, swap in an empty model
 when true, and keep the cheap chunk batch for every plate that has not moved. It was tried and
