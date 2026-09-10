@@ -441,6 +441,30 @@ DELINEATOR_BASE_HALF = 2.30
 DELINEATOR_BASE_TOP = 0.55
 DELINEATOR_REFLECTOR = (11.90, 13.40)
 
+# --- the zebra delineator ----------------------------------------------------------------------
+# The low rubber lane separator laid nose to tail along a bike lane edge: a long flattened dome,
+# black, with white reflective bands wrapped across it.
+#
+# It runs the length of its cell so a line of them is continuous, and tapers to a nose at each
+# end, which is what gives a row its scalloped look without needing a gap between blocks.
+#
+# Its texture is mapped the other way round from every other device here: v runs along the BODY
+# rather than up it, and u runs around the arched cross-section. That is what lets band_image --
+# written for the collars on a cone -- draw bands ACROSS this one, and it also puts that
+# function's one-sided lighting over the crown, where the highlight belongs.
+ZEBRA_X = (1.10, 14.90)        # x0, x1 of the body
+ZEBRA_HALF_Z = 2.55            # half width at the widest point
+ZEBRA_HEIGHT = 3.05            # crown height at the widest point
+ZEBRA_NOSE = 0.55              # taper exponent; lower is a longer, finer nose
+ZEBRA_TIP = 0.13               # how much section is left at the very tip, as a fraction
+ZEBRA_ARCH_SIDES = 10          # segments around the half-ellipse cross-section
+ZEBRA_STATIONS = 18            # cross-sections along the length
+# Five bands, evenly pitched, stopping short of both noses -- a band wrapped round the tip reads
+# as a painted end rather than applied sheeting.
+ZEBRA_BAND_W = 1.15
+ZEBRA_BANDS = [(c - ZEBRA_BAND_W / 2.0, c + ZEBRA_BAND_W / 2.0)
+               for c in (3.40, 5.90, 8.40, 10.90, 13.40)]
+
 # --- the sand barrel ---------------------------------------------------------------------------
 SAND_BARREL_HEIGHT = 13.80
 SAND_BARREL_SIDES = 16
@@ -1230,6 +1254,89 @@ def build_delineator(mesh):
                   (0, 1, 0), [t, t, t, t])
 
 
+def _zebra_section(f):
+    """The cross-section at fraction ``f`` along the body, as (half width, crown height)."""
+    scale = max(ZEBRA_TIP, math.sin(math.pi * f) ** ZEBRA_NOSE)
+    return ZEBRA_HALF_Z * scale, ZEBRA_HEIGHT * scale
+
+
+def _zebra_arch(x, half_z, height):
+    """One arched cross-section, from the ground on one side over the crown to the other."""
+    pts = []
+    for j in range(ZEBRA_ARCH_SIDES + 1):
+        a = math.pi * j / ZEBRA_ARCH_SIDES
+        pts.append((x, height * math.sin(a), AXIS - half_z * math.cos(a)))
+    return pts
+
+
+def build_zebra_delineator(mesh):
+    """A long flattened dome that tapers to a nose at each end.
+
+    Built as a run of arched cross-sections rather than a lathe, because the section changes
+    along the body: a lathe would give a shape of revolution, and this is a shape that is wide in
+    the middle and pointed at both ends.
+    """
+    x0, x1 = ZEBRA_X
+    stations = []
+    for i in range(ZEBRA_STATIONS + 1):
+        f = i / ZEBRA_STATIONS
+        x = x0 + (x1 - x0) * f
+        half_z, height = _zebra_section(f)
+        stations.append((x, half_z, _zebra_arch(x, half_z, height)))
+
+    # The shell. Each quad's u is where it sits around the arch, its v where it sits along the
+    # body, which is what puts the bands across it.
+    for i in range(ZEBRA_STATIONS):
+        xa, _ha, arch_a = stations[i]
+        xb, _hb, arch_b = stations[i + 1]
+        for j in range(ZEBRA_ARCH_SIDES):
+            t0 = j / ZEBRA_ARCH_SIDES
+            t1 = (j + 1) / ZEBRA_ARCH_SIDES
+            pts = [arch_a[j], arch_b[j], arch_b[j + 1], arch_a[j + 1]]
+            uvs = [uv_at(t0, xa), uv_at(t0, xb), uv_at(t1, xb), uv_at(t1, xa)]
+            # Outward is away from the body's own centre line, which is the ground line under
+            # the crown. Naming a normal per face would have to know which way each one leans.
+            mid = tuple(sum(p[k] for p in pts) / 4.0 for k in range(3))
+            axis_point = (mid[0], 0.0, AXIS)
+            normal = (mid[0] - axis_point[0], mid[1] - axis_point[1], mid[2] - axis_point[2])
+            mesh.quad_out(pts, normal, uvs)
+
+    # The underside, and a fan closing each nose.
+    t = uv_swatch(SWATCH_DARK_V)
+    for i in range(ZEBRA_STATIONS):
+        xa, ha, _a = stations[i]
+        xb, hb, _b = stations[i + 1]
+        mesh.quad_out([(xa, 0.0, AXIS - ha), (xb, 0.0, AXIS - hb),
+                       (xb, 0.0, AXIS + hb), (xa, 0.0, AXIS + ha)],
+                      (0, -1, 0), [t, t, t, t])
+    for (x, _half_z, arch), sign in ((stations[0], -1), (stations[-1], 1)):
+        centre = (x, 0.0, AXIS)
+        normal = (sign, 0, 0)
+        for j in range(ZEBRA_ARCH_SIDES):
+            mesh.tri([(centre, t, normal), (arch[j], t, normal), (arch[j + 1], t, normal)])
+
+
+def zebra_texture():
+    """Black with white bands, and the moulded dimples the rubber body carries.
+
+    The dimples are drawn on the base colour only. They are not decoration: without them the body
+    is a flat black shape whose one-sided lighting is the only cue to its curve, and it reads as
+    a painted marking rather than something standing off the road.
+    """
+    img = band_image(BLACK, BLACK_LIGHT, ZEBRA_BANDS, WHITE, WHITE_DIM)
+    for r in range(TEX_SIZE):
+        for c in range(TEX_SIZE):
+            if (c + 0.5) / TEX_SIZE > SWATCH_U0:
+                continue
+            if (r + c) % 4 or (r - c) % 4:
+                continue
+            pixel = img.getpixel((c, r))
+            if pixel[0] > 120:      # inside a band; leave the sheeting smooth
+                continue
+            img.putpixel((c, r), tuple(min(255, v + 16) for v in pixel[:3]) + (255,))
+    return img
+
+
 def build_sand_barrel(mesh):
     lathe(mesh, SAND_BARREL_PROFILE, sides=SAND_BARREL_SIDES)
     disc(mesh, SAND_BARREL_LID_R, SAND_BARREL_HEIGHT, (0, 1, 0), SWATCH_BAND_V,
@@ -1493,6 +1600,13 @@ DEVICES = {
         "texture": "workzone_delineator_yellow",
         "texture_fn": lambda: delineator_texture(SAND_YELLOW, SAND_YELLOW_DARK),
         "display": "Delineator Post (Yellow)",
+    },
+    "delineator_zebra": {
+        "model": "workzone_zebra_delineator", "build": build_zebra_delineator,
+        "texture": "workzone_zebra_delineator",
+        "texture_fn": zebra_texture,
+        "display": "Zebra Delineator",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "arrow_board": {
         "model": "workzone_arrow_board", "build": build_arrow_board,

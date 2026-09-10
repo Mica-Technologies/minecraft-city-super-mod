@@ -1067,4 +1067,5 @@ tile.barricade_type_2_right.name=Barricada Plegable Tipo II (Manténgase a la De
 tile.barricade_type_3_left.name=Barricada Tipo III (Manténgase a la Izquierda)
 tile.barricade_type_3_right.name=Barricada Tipo III (Manténgase a la Derecha)
 tile.traffic_cone_knocked.name=Cono de Tráfico (Derribado)
+tile.delineator_zebra.name=Delineador Cebra
 tile.arrow_board.name=Panel de Flechas

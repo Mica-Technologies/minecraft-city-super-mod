@@ -1068,4 +1068,5 @@ tile.barricade_type_2_right.name=Type II Folding Barricade (Keep Right)
 tile.barricade_type_3_left.name=Type III Barricade (Keep Left)
 tile.barricade_type_3_right.name=Type III Barricade (Keep Right)
 tile.traffic_cone_knocked.name=Traffic Cone (Knocked Over)
+tile.delineator_zebra.name=Zebra Delineator
 tile.arrow_board.name=Arrow Board

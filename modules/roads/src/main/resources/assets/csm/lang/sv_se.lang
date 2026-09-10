@@ -1067,4 +1067,5 @@ tile.barricade_type_2_right.name=Hopfällbar Typ II-Barrikad (Håll Höger)
 tile.barricade_type_3_left.name=Typ III-Barrikad (Håll Vänster)
 tile.barricade_type_3_right.name=Typ III-Barrikad (Håll Höger)
 tile.traffic_cone_knocked.name=Trafikkon (Omkullvält)
+tile.delineator_zebra.name=Zebramarkör
 tile.arrow_board.name=Piltavla
