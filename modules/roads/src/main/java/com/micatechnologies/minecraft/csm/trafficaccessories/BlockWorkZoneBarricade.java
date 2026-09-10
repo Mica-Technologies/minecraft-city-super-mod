@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -55,7 +56,7 @@ public class BlockWorkZoneBarricade extends AbstractBlockWorkZoneBarricade {
   public BlockWorkZoneBarricade(String registryName, float topY, AxisAlignedBB boundingBox) {
     super(registryName, topY, boundingBox);
     setDefaultState(this.blockState.getBaseState()
-        .withProperty(FACING, EnumFacing.NORTH)
+        .withProperty(FACING, DirectionEight.N)
         .withProperty(CONNECT_LEFT, false)
         .withProperty(CONNECT_RIGHT, false));
   }

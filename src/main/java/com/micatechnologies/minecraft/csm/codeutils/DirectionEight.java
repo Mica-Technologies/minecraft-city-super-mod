@@ -49,6 +49,71 @@ public enum DirectionEight implements IStringSerializable {
     return this == NE || this == NW || this == SE || this == SW;
   }
 
+  /**
+   * Returns how far a model facing north has to be turned about Y to face this way, in degrees.
+   *
+   * <p>North is zero and the angle runs anticlockwise, which is the convention the blockstate
+   * JSON the generator writes already uses. Anything drawn by a tile entity renderer has to turn
+   * by the same amount as the baked model beside it, so both read this rather than each carrying
+   * a switch of its own — that is how a renderer ends up drawing every device facing north while
+   * its model faces eight ways, with nothing failing anywhere.</p>
+   *
+   * @return the model rotation in degrees
+   *
+   * @since 1.0
+   */
+  public float getRotationDegrees() {
+    switch (this) {
+      case N:  return 0f;
+      case NW: return 45f;
+      case W:  return 90f;
+      case SW: return 135f;
+      case S:  return 180f;
+      case SE: return 225f;
+      case E:  return 270f;
+      case NE: return 315f;
+      default: return 0f;
+    }
+  }
+
+  /**
+   * Returns the direction 90° clockwise of this one, seen from above.
+   *
+   * <p>The counterpart of {@link net.minecraft.util.EnumFacing#rotateY()}, and it cannot be
+   * index arithmetic: the four cardinals are numbered 0-3 to match
+   * {@code EnumFacing.getHorizontalIndex()} so that a block converted from four facings to eight
+   * keeps every facing already saved in a world, which leaves the diagonals appended at 4-7
+   * rather than interleaved. The order is a migration decision, not a compass.</p>
+   *
+   * @return the direction a quarter turn clockwise
+   *
+   * @since 1.0
+   */
+  public DirectionEight rotateY() {
+    switch (this) {
+      case N:  return E;
+      case E:  return S;
+      case S:  return W;
+      case W:  return N;
+      case NE: return SE;
+      case SE: return SW;
+      case SW: return NW;
+      case NW: return NE;
+      default: return this;
+    }
+  }
+
+  /**
+   * Returns the direction 90° anticlockwise of this one, seen from above.
+   *
+   * @return the direction a quarter turn anticlockwise
+   *
+   * @since 1.0
+   */
+  public DirectionEight rotateYCCW() {
+    return rotateY().rotateY().rotateY();
+  }
+
   /** Returns the 180° opposite direction (S↔N, E↔W, NE↔SW, SE↔NW). */
   public DirectionEight getOpposite() {
     switch (this) {

@@ -23,7 +23,7 @@ import net.minecraft.world.World;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockWorkZoneDeviceFlashing extends BlockWorkZoneDeviceRotatable
+public class BlockWorkZoneDeviceFlashing extends BlockWorkZoneDeviceDiagonal
     implements ITrafficBeaconBlock, ICsmTileEntityProvider {
 
   /**

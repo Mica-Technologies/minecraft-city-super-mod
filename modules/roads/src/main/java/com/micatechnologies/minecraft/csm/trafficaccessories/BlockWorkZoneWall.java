@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -24,7 +25,7 @@ import net.minecraft.world.IBlockAccess;
  * @see WorkZoneJoins
  * @since 2026.9
  */
-public class BlockWorkZoneWall extends BlockWorkZoneDeviceRotatable {
+public class BlockWorkZoneWall extends BlockWorkZoneDeviceDiagonal {
 
   /**
    * Whether a matching wall adjoins the model's left-hand end.
@@ -51,7 +52,7 @@ public class BlockWorkZoneWall extends BlockWorkZoneDeviceRotatable {
   public BlockWorkZoneWall(String registryName, AxisAlignedBB boundingBox) {
     super(registryName, boundingBox);
     setDefaultState(this.blockState.getBaseState()
-        .withProperty(FACING, EnumFacing.NORTH)
+        .withProperty(FACING, DirectionEight.N)
         .withProperty(CONNECT_LEFT, false)
         .withProperty(CONNECT_RIGHT, false));
   }

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
+import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
@@ -81,7 +82,7 @@ final class WorkZoneJoins {
    * @since 1.0
    */
   static IBlockState resolve(Block self, IBlockState state, IBlockAccess access, BlockPos pos) {
-    EnumFacing facing = state.getValue(AbstractBlockRotatableNSEW.FACING);
+    DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
     return state
         .withProperty(CONNECT_LEFT, joins(self, access, pos, facing, facing.rotateYCCW()))
         .withProperty(CONNECT_RIGHT, joins(self, access, pos, facing, facing.rotateY()));
@@ -135,6 +136,10 @@ final class WorkZoneJoins {
    * whose striping slopes toward the side traffic should pass, so the two contradict each other
    * in the middle of the run.</p>
    *
+   * <p>A diagonal run steps diagonally, so the neighbour it looks for shares only a corner with
+   * this block rather than a face. That is what a line of devices following a diagonal road
+   * actually looks like, and it is why this cannot be written in terms of {@code EnumFacing}.</p>
+   *
    * @param self      the block asking
    * @param access    the block access
    * @param pos       this device's position
@@ -145,11 +150,15 @@ final class WorkZoneJoins {
    *
    * @since 1.0
    */
-  private static boolean joins(Block self, IBlockAccess access, BlockPos pos, EnumFacing facing,
-      EnumFacing direction) {
-    IBlockState neighbour = access.getBlockState(pos.offset(direction));
+  private static boolean joins(Block self, IBlockAccess access, BlockPos pos,
+      DirectionEight facing, DirectionEight direction) {
+    // Stepped by the direction's own offsets rather than with BlockPos.offset, because a run
+    // laid at forty-five degrees continues into the block diagonally adjacent and EnumFacing
+    // cannot name that block at all.
+    BlockPos neighbourPos = pos.add(direction.getOffsetX(), 0, direction.getOffsetZ());
+    IBlockState neighbour = access.getBlockState(neighbourPos);
     return neighbour.getBlock() == self
-        && neighbour.getPropertyKeys().contains(AbstractBlockRotatableNSEW.FACING)
-        && neighbour.getValue(AbstractBlockRotatableNSEW.FACING) == facing;
+        && neighbour.getPropertyKeys().contains(AbstractBlockRotatableHZEight.FACING)
+        && neighbour.getValue(AbstractBlockRotatableHZEight.FACING) == facing;
   }
 }

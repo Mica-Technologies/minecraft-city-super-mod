@@ -1,7 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
+import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractPoweredBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
@@ -74,11 +75,15 @@ public class TileEntityTrafficBeaconRenderer
     // Facing comes from whichever rotation property the block actually carries. The full
     // six-way beacons use one, the horizontal-only work zone devices another, and a device with
     // no rotation at all is drawn unrotated rather than skipped.
-    EnumFacing facing = EnumFacing.NORTH;
+    // A six-way beacon can point up or down, which no rotation about Y can express, so it keeps
+    // its own EnumFacing path. The flat work zone devices carry eight facings instead and simply
+    // turn by their own angle.
+    EnumFacing poweredFacing = null;
+    DirectionEight flatFacing = null;
     if (state.getPropertyKeys().contains(AbstractPoweredBlockRotatableNSEWUD.FACING)) {
-      facing = state.getValue(AbstractPoweredBlockRotatableNSEWUD.FACING);
-    } else if (state.getPropertyKeys().contains(AbstractBlockRotatableNSEW.FACING)) {
-      facing = state.getValue(AbstractBlockRotatableNSEW.FACING);
+      poweredFacing = state.getValue(AbstractPoweredBlockRotatableNSEWUD.FACING);
+    } else if (state.getPropertyKeys().contains(AbstractBlockRotatableHZEight.FACING)) {
+      flatFacing = state.getValue(AbstractBlockRotatableHZEight.FACING);
     }
 
     float[] from = beacon.getBeaconLensFrom();
@@ -99,7 +104,11 @@ public class TileEntityTrafficBeaconRenderer
 
     GlStateManager.pushMatrix();
     GlStateManager.translate((float) x + 0.5f, (float) (y + settle) + 0.5f, (float) z + 0.5f);
-    applyFacingRotation(facing);
+    if (poweredFacing != null) {
+      applyFacingRotation(poweredFacing);
+    } else if (flatFacing != null) {
+      GlStateManager.rotate(flatFacing.getRotationDegrees(), 0f, 1f, 0f);
+    }
 
     // Bind a 1x1 white pixel texture instead of disableTexture2D — shaders ignore
     // disableTexture2D and sample whatever was last bound. Fullbright lightmap is baked

@@ -32,7 +32,7 @@ import net.minecraft.world.World;
  * @version 1.0
  * @since 2026.9
  */
-public abstract class AbstractBlockWorkZoneBarricade extends BlockWorkZoneDeviceRotatable
+public abstract class AbstractBlockWorkZoneBarricade extends BlockWorkZoneDeviceDiagonal
     implements ICsmTileEntityProvider {
 
   /**
