@@ -1066,3 +1066,4 @@ tile.barricade_type_1_right.name=Type I Barricade (Keep Right)
 tile.barricade_type_3_left.name=Type III Barricade (Keep Left)
 tile.barricade_type_3_right.name=Type III Barricade (Keep Right)
 tile.traffic_cone_knocked.name=Traffic Cone (Knocked Over)
+tile.arrow_board.name=Arrow Board

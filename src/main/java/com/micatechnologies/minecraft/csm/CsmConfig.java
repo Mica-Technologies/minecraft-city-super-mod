@@ -94,6 +94,15 @@ public class CsmConfig {
           + "room temperature, and outside temperature.";
   private static final boolean FIELD_DEFAULT_ENABLE_THERMOSTAT_DISPLAY = true;
 
+  private static final String FIELD_KEY_ARROW_BOARD_SPEED_PERCENT = "arrowBoardSpeedPercent";
+  private static final String FIELD_DESCRIPTION_ARROW_BOARD_SPEED_PERCENT =
+      "How fast work zone arrow boards run their sequences, as a percentage of the standard "
+          + "rate. 100 is the default; lower is slower and higher is faster. 50 runs every "
+          + "sequence at half speed, 200 at double.";
+  private static final int FIELD_DEFAULT_ARROW_BOARD_SPEED_PERCENT = 100;
+  private static final int FIELD_MIN_ARROW_BOARD_SPEED_PERCENT = 10;
+  private static final int FIELD_MAX_ARROW_BOARD_SPEED_PERCENT = 400;
+
   private static final String FIELD_KEY_TRAFFIC_POLE_IGNORE_BLOCKS = "trafficPoleIgnoreBlocks";
   private static final String FIELD_DESCRIPTION_TRAFFIC_POLE_IGNORE_BLOCKS =
       "Additional block registry names that traffic poles should NOT visually connect/mount to, "
@@ -110,6 +119,13 @@ public class CsmConfig {
 
   private static boolean enableUpdateCheck;
   private static boolean enableThermostatDisplay;
+
+  /**
+   * How fast arrow boards run their sequences, as a percentage of the standard rate.
+   *
+   * @since 2026.9
+   */
+  private static int arrowBoardSpeedPercent;
 
   /**
    * The configuration field value for the generateWikiFiles option.
@@ -181,6 +197,10 @@ public class CsmConfig {
     wikiFilesFolder = config.getString(FIELD_KEY_WIKI_FILES_FOLDER, CATEGORY_WIKI,
         FIELD_DEFAULT_WIKI_FILES_FOLDER, FIELD_DESCRIPTION_WIKI_FILES_FOLDER);
 
+    arrowBoardSpeedPercent = config.getInt(FIELD_KEY_ARROW_BOARD_SPEED_PERCENT, CATEGORY_GENERAL,
+        FIELD_DEFAULT_ARROW_BOARD_SPEED_PERCENT, FIELD_MIN_ARROW_BOARD_SPEED_PERCENT,
+        FIELD_MAX_ARROW_BOARD_SPEED_PERCENT, FIELD_DESCRIPTION_ARROW_BOARD_SPEED_PERCENT);
+
     String[] rawIgnores = config.getStringList(FIELD_KEY_TRAFFIC_POLE_IGNORE_BLOCKS,
         CATEGORY_TRAFFIC_POLES, FIELD_DEFAULT_TRAFFIC_POLE_IGNORE_BLOCKS,
         FIELD_DESCRIPTION_TRAFFIC_POLE_IGNORE_BLOCKS);
@@ -248,6 +268,25 @@ public class CsmConfig {
             FIELD_DESCRIPTION_TRAFFIC_POLE_IGNORE_BLOCKS)
         .setValues(serialized);
     config.save();
+  }
+
+  /**
+   * Scales a sequence stage length by the configured arrow board speed.
+   *
+   * <p>Expressed as a speed rather than a duration so the number reads the way a player expects:
+   * a bigger value is a faster board. It scales every stage of every pattern together, so the
+   * shape of a sequence is unchanged by retiming it.</p>
+   *
+   * @param stageMillis the stage length at the standard rate
+   *
+   * @return the stage length to use, never less than one millisecond
+   *
+   * @since 2026.9
+   */
+  public static long scaleArrowBoardStage(long stageMillis) {
+    int percent = arrowBoardSpeedPercent <= 0 ? FIELD_DEFAULT_ARROW_BOARD_SPEED_PERCENT
+        : arrowBoardSpeedPercent;
+    return Math.max(1L, stageMillis * 100L / percent);
   }
 
   /**

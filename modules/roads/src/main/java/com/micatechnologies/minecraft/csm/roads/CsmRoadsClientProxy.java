@@ -82,6 +82,11 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeacon.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeaconRenderer());
 
+    // The arrow board draws its own mast, panel and animated lamp grid.
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityArrowBoard.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityArrowBoardRenderer());
+
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTattleTaleBeacon.class,
         new com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTattleTaleBeaconRenderer());
