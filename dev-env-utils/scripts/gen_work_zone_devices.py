@@ -526,8 +526,8 @@ BARRIER_PROFILE = [(3.60, 0.00), (3.60, 1.40), (1.90, 4.20), (1.35, 12.20), (1.2
 PSIG_ARM_CLEARANCE = 8 * 16.0        # underside of the arm, in 1/16 units above the trailer's base
 
 # Relative to the trailer's own cell and its facing, the cells left free for heads are:
-#   two out, seven up  -- under the arm's tip, the overhead head   (arm style only)
-#   one out, five up   -- against the mast, the near-side head
+#   any cell one to ten out, seven up -- under the arm, the overhead head   (arm style only)
+#   one out, five up                  -- against the mast, the near-side head
 # The near head sits lower than the overhead one, which is how these are actually rigged: the mast
 # head is read from the stop line and the arm head from back down the lane.
 PSIG_BED = (-10.00, 22.00, 7.90, 14.60, 0.40, 15.60)   # x0, x1, y0, y1, z0, z1
@@ -544,8 +544,14 @@ PSIG_MAST_Z = 8.00
 PSIG_MAST_HALF = 2.40
 PSIG_ARM_THICK = 4.20
 PSIG_ARM_HALF_X = 2.00
-PSIG_ARM_TIP_Z = -32.00        # two whole cells out, so the arm spans both mount cells and ends
-                               # flush with the far one rather than inside it
+# Ten whole cells out. These arms are LONG -- on the real thing the arm is about as long as the
+# mast is tall, which is what lets one trailer signal the far lane of a road it is parked beside.
+# It ends flush on a cell boundary, so a head hung in any cell under it meets the arm rather than
+# poking through it, and the tip cell is the natural place for the far one.
+PSIG_ARM_TIP_Z = -160.00
+PSIG_ARM_TIP_HALF_X = 1.15     # the arm tapers; a cantilever this long is not a constant section
+PSIG_ARM_TIP_THICK = 2.60
+PSIG_TIE_AT = 0.58             # where the tie from the king post meets the arm, along its span
 PSIG_BRACE = 0.62              # where the arm's stay meets the mast, as a fraction of its height
 
 # Mast height per style. The mast style carries one head against the mast and needs no arm; the
@@ -1763,19 +1769,39 @@ def build_signal_trailer(mesh, style):
     ay1 = ay0 + PSIG_ARM_THICK
     ah = PSIG_ARM_HALF_X
     tip = spec["arm"]
-    box(mesh, mx - ah, mx + ah, ay0, ay1, tip, mz, SWATCH_BASE_V)
 
-    # The stay that holds the arm up, run from inside the mast to inside the arm so its ends
-    # finish within them rather than against them.
+    # The arm itself, tapering toward the tip. A cantilever this long is not a constant section on
+    # the real thing and does not look like one here either: a bar of even thickness ten cells out
+    # reads as scaffolding rather than as an arm.
+    th = PSIG_ARM_TIP_HALF_X
+    tt = PSIG_ARM_TIP_THICK
+    prism(mesh,
+          [(mx - ah, ay0, mz), (mx + ah, ay0, mz), (mx + ah, ay1, mz), (mx - ah, ay1, mz)],
+          [(mx - th, ay0, tip), (mx + th, ay0, tip),
+           (mx + th, ay0 + tt, tip), (mx - th, ay0 + tt, tip)],
+          SWATCH_BASE_V)
+
+    # Two members hold it up, as the references have: a stay under the root, and a tie from the
+    # king post above the arm out to the middle of the span. Both run from INSIDE the mast to
+    # INSIDE the arm, so their ends finish within them rather than against them.
+    bh = ah * 0.50
     brace_y = ay0 * PSIG_BRACE
-    brace_z = tip + (mz - tip) * 0.45
-    bh = ah * 0.55
+    brace_z = tip * 0.16
     prism(mesh,
           [(mx - bh, brace_y, mz - bh), (mx + bh, brace_y, mz - bh),
            (mx + bh, brace_y, mz + bh), (mx - bh, brace_y, mz + bh)],
           [(mx - bh, ay0 + 0.8, brace_z - bh), (mx + bh, ay0 + 0.8, brace_z - bh),
            (mx + bh, ay0 + 0.8, brace_z + bh), (mx - bh, ay0 + 0.8, brace_z + bh)],
           SWATCH_BASE_V)
+
+    tie_h = ah * 0.30
+    tie_z = tip * PSIG_TIE_AT
+    prism(mesh,
+          [(mx - tie_h, top - 2.4, mz - tie_h), (mx + tie_h, top - 2.4, mz - tie_h),
+           (mx + tie_h, top - 2.4, mz + tie_h), (mx - tie_h, top - 2.4, mz + tie_h)],
+          [(mx - tie_h, ay1 - 0.6, tie_z - tie_h), (mx + tie_h, ay1 - 0.6, tie_z - tie_h),
+           (mx + tie_h, ay1 - 0.6, tie_z + tie_h), (mx - tie_h, ay1 - 0.6, tie_z + tie_h)],
+          SWATCH_BAND_V)
 
 
 def trailer_texture():
