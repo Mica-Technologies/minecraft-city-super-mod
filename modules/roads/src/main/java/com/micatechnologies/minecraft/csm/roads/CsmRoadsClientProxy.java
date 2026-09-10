@@ -82,6 +82,11 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeacon.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeaconRenderer());
 
+    // A barricade draws whatever it is carrying: warning lights, and any mounted sign.
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityBarricade.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityBarricadeRenderer());
+
     // The arrow board draws its own mast, panel and animated lamp grid.
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityArrowBoard.class,
