@@ -71,6 +71,9 @@ TEX_SIZE = 32                 # texture edge, px. Power of two, and fine enough 
 # The striped panels get a bigger sprite: a diagonal edge across a rail six times wider than it
 # is tall is all staircase at 32 px, and unlike a horizontal band its cost is in the diagonal.
 STRIPE_TEX_SIZE = 64
+# The arrow board gets a bigger sprite again: 35 lamps across a 7-column grid leaves about seven
+# pixels a cell at 64, and a round lamp does not survive a 2.4 pixel radius.
+ARROW_TEX_SIZE = 128
 SWATCH_U0 = 0.78125           # 25/32: everything right of this column is flat swatches
 SWATCH_BASE_V = 0.125         # v of the base-colour swatch's centre
 SWATCH_DARK_V = 0.375         # v of the black swatch's centre
@@ -279,6 +282,81 @@ BARRICADE_RAIL_H = BARRICADE_TYPE1_RAILS[0][1] - BARRICADE_TYPE1_RAILS[0][0]
 # The stripe pitch grows with the rail, so a bigger barricade carries the same number of bands
 # rather than the same band size.
 BARRICADE_STRIPE = 3.6 * BARRICADE_SCALE
+
+# --- the arrow board -------------------------------------------------------------------------------
+# A trailer-mounted arrow board: a black 2:1 panel of amber lamps on a tall orange mast over a
+# small two-wheel trailer, measured off reference photographs.
+#
+# The lamp grid is 7 by 5 -- the 25-lamp board -- rather than the 15-lamp one drawn first. That
+# matters for more than lamp count: seven columns is what lets a chevron actually converge to a
+# point, and five rows is what lets it have a diagonal rather than a single barb. A 5 by 3 grid
+# can only draw a shaft with a bump on it.
+ARROW_PANEL = (1.20, 14.80, 10.40, 17.20)   # x0, x1, y0, y1 of the panel face
+ARROW_PANEL_Z = (7.30, 8.40)
+ARROW_FRAME = 0.42                          # border of panel casing around the lit face
+# Twin mast posts, as the references have, rather than one central column.
+ARROW_MAST_X = (6.55, 9.45)
+ARROW_MAST_HALF = 0.42
+ARROW_MAST = (1.80, 11.00)                  # y0, y1
+ARROW_MAST_BRACE = (6.40, 9.60)             # y of the two cross braces, below the panel
+ARROW_CHASSIS = (2.60, 13.40, 0.85, 1.80, 5.60, 10.40)
+ARROW_TONGUE = (13.40, 15.90, 1.05, 1.60, 7.60, 8.40)
+ARROW_WHEEL_R = 1.15
+ARROW_WHEEL_X = (1.90, 14.10)
+ARROW_WHEEL_HALF = 0.45
+ARROW_WHEEL_Y = 1.15
+ARROW_WHEEL_Z = (5.10, 10.90)
+ARROW_JACK_X = (3.40, 12.60)                # the outrigger jacks either side
+ARROW_JACK_HALF = 0.28
+ARROW_GRID = (7, 5)
+# Everything above is authored at a convenient size and then scaled about the block's centre.
+#
+# The scale is set by the company this device keeps, not by the block grid: the portable message
+# sign and the portable speed limit sign next to it in this tab are drawn 66 units wide and over
+# 70 tall -- four blocks and more -- by their tile entity renderers. An arrow board built to fit
+# inside one cell stands next to them looking like a toy, which is exactly how the first version
+# of this came out. An arrow board is smaller than a full message board, so it lands a little
+# under them rather than level.
+#
+# It follows that the model leaves its cell in every direction, which for a static model means
+# it is drawn as part of its chunk section and can pop when that section is culled. The mast arm
+# curves and the controller cabinets in this tab already accept that; the alternative is a tile
+# entity renderer with an expanded render bounding box, as the portable signs use, which is a
+# larger change than this batch warrants.
+ARROW_SCALE = 4.2
+# The two arrow formats a real board can show, plus caution mode. Written pointing RIGHT and
+# mirrored for the left variants, so the pair can never drift apart.
+#
+# A chevron is the arrowhead alone, drawn two lamps thick along each limb. A bar arrow is a shaft
+# with a head on it. The barbs sit one column BACK from the tip, not level with it -- barbs in the
+# tip's own column light a cross rather than an arrow, which is what the first attempt drew.
+_ARROW_CHEVRON_RIGHT = [(6, 2), (5, 1), (4, 0), (5, 3), (4, 4),
+                        (5, 2), (4, 1), (3, 0), (4, 3), (3, 4)]
+_ARROW_BAR_RIGHT = [(0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2),
+                    (5, 1), (4, 0), (5, 3), (4, 4)]
+# Caution mode is the four corner lamps, which is what a real board shows when it is warning
+# rather than directing.
+_ARROW_CAUTION = [(0, 0), (6, 0), (0, 4), (6, 4)]
+
+
+def _mirror(lamps):
+    """Mirror a pattern left-right across the grid."""
+    cols = ARROW_GRID[0]
+    return [(cols - 1 - c, r) for (c, r) in lamps]
+
+
+ARROW_PATTERNS = {
+    "chevron_right": _ARROW_CHEVRON_RIGHT,
+    "chevron_left": _mirror(_ARROW_CHEVRON_RIGHT),
+    "bar_right": _ARROW_BAR_RIGHT,
+    "bar_left": _mirror(_ARROW_BAR_RIGHT),
+    "caution": _ARROW_CAUTION,
+}
+ARROW_PANEL_W = (ARROW_PANEL[1] - ARROW_FRAME) - (ARROW_PANEL[0] + ARROW_FRAME)
+ARROW_PANEL_H = (ARROW_PANEL[3] - ARROW_FRAME) - (ARROW_PANEL[2] + ARROW_FRAME)
+ARROW_LAMP_OFF = (58, 58, 62)
+ARROW_PANEL_BLACK = (26, 26, 28)
+ARROW_FRAME_ORANGE = (232, 106, 24)   # the trailer and mast, which are orange on every real one
 
 # --- the delineator post -----------------------------------------------------------------------
 DELINEATOR_HEIGHT = 15.00
@@ -634,6 +712,13 @@ def transform_mesh(mesh, xf, nxf):
     mesh.vn[:] = [nxf(n) for n in mesh.vn]
 
 
+def scale_mesh(mesh, factor, cx=AXIS, cz=AXIS):
+    """Scale a finished mesh about (cx, 0, cz), so it grows upward from the floor and outward
+    from the block's axis. Uniform, so normals and UVs are both unaffected."""
+    mesh.v[:] = [(cx + (p[0] - cx) * factor, p[1] * factor, cz + (p[2] - cz) * factor)
+                 for p in mesh.v]
+
+
 def rest_on_floor(mesh, cx=AXIS, cz=AXIS):
     """Drop a mesh so its lowest point sits on y=0, and centre it in its cell."""
     minx, miny, minz, maxx, _maxy, maxz = mesh_bounds(mesh)
@@ -828,6 +913,43 @@ def build_barricade(mesh, rails, top_y):
             mesh.quad_out(pts, normal, uvs)
 
 
+def build_arrow_board(mesh):
+    """The arrow board's CHASSIS only: trailer, tongue, wheels and jacks.
+
+    Everything above the chassis -- mast, panel and the lamp grid -- is drawn by
+    ``TileEntityArrowBoardRenderer`` instead, because the lamps have to animate and a baked model
+    cannot. Splitting it here rather than moving the whole board into the renderer keeps an
+    inventory icon and something solid in the world, and leaves the static part small enough to
+    sit inside its own cell, where it cannot pop when its chunk section is culled. The tall part
+    that would have popped is now tile entity geometry, which is culled by its own render
+    bounding box instead.
+    """
+    cx0, cx1, cy0, cy1, cz0, cz1 = ARROW_CHASSIS
+    box(mesh, cx0, cx1, cy0, cy1, cz0, cz1, SWATCH_BAND_V)
+    tx0, tx1, ty0, ty1, tz0, tz1 = ARROW_TONGUE
+    box(mesh, tx0, tx1, ty0, ty1, tz0, tz1, SWATCH_BAND_V)
+
+    for wx in ARROW_WHEEL_X:
+        for wz in ARROW_WHEEL_Z:
+            lens_rim(mesh, wx, ARROW_WHEEL_Y, wz - ARROW_WHEEL_HALF, wz + ARROW_WHEEL_HALF,
+                     ARROW_WHEEL_R, SWATCH_DARK_V, sides=10)
+            lens_disc(mesh, wx, ARROW_WHEEL_Y, wz + ARROW_WHEEL_HALF, ARROW_WHEEL_R,
+                      (0, 0, 1), SWATCH_DARK_V, sides=10)
+            lens_disc(mesh, wx, ARROW_WHEEL_Y, wz - ARROW_WHEEL_HALF, ARROW_WHEEL_R,
+                      (0, 0, -1), SWATCH_DARK_V, sides=10)
+
+    # Outrigger jacks, which is what a deployed board stands on rather than its wheels. The leg
+    # starts inside its foot pad and has no bottom face, so the two do not meet in one plane.
+    j = ARROW_JACK_HALF
+    for jx in ARROW_JACK_X:
+        box(mesh, jx - j, jx + j, 0.18, ARROW_CHASSIS[3] - 0.15, AXIS - j, AXIS + j,
+            SWATCH_BAND_V, faces=("x-", "x+", "y+", "z-", "z+"))
+        box(mesh, jx - j * 2.2, jx + j * 2.2, 0.0, 0.28, AXIS - j * 2.2, AXIS + j * 2.2,
+            SWATCH_DARK_V)
+
+    scale_mesh(mesh, ARROW_SCALE)
+
+
 def build_delineator(mesh):
     square_frustum(mesh, [(DELINEATOR_BASE_HALF, 0.0),
                           (DELINEATOR_BASE_HALF, 0.35),
@@ -973,6 +1095,17 @@ def diagonal_stripe_image(slope_right, world_w, world_h, stripe_world=3.6, base=
     return img
 
 
+def arrow_board_image():
+    """The chassis texture: flat swatches only.
+
+    The panel and its lamps are drawn by the renderer now, so nothing here needs a lamp grid --
+    which is the point, since a lamp baked into a texture is a lamp that cannot animate.
+    """
+    img = Image.new("RGBA", (TEX_SIZE, TEX_SIZE), ARROW_FRAME_ORANGE + (255,))
+    draw_swatches(img, ARROW_FRAME_ORANGE, ARROW_FRAME_ORANGE, AMBER)
+    return img
+
+
 def sand_barrel_texture():
     # A sand barrel carries no reflective banding of its own: it is a plain yellow module with a
     # darker lid, and it is the array of them that channelizes rather than any marking on one.
@@ -1083,6 +1216,13 @@ DEVICES = {
         "texture": "workzone_delineator_yellow",
         "texture_fn": lambda: delineator_texture(SAND_YELLOW, SAND_YELLOW_DARK),
         "display": "Delineator Post (Yellow)",
+    },
+    "arrow_board": {
+        "model": "workzone_arrow_board", "build": build_arrow_board,
+        "texture": "workzone_arrow_board",
+        "texture_fn": arrow_board_image,
+        "display": "Arrow Board",
+        "rotatable": True, "java": "BlockWorkZoneArrowBoard",
     },
     "sand_barrel_array": {
         "model": "workzone_sand_barrel", "build": build_sand_barrel,
@@ -1220,7 +1360,87 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
                      % (cls, registry, java_bbox(b)))
     written.append(tab_path)
 
+    written.append(write_geometry_constants())
+
     return written
+
+
+def write_geometry_constants():
+    """Emit ``ArrowBoardGeometry``: the numbers the renderer draws the board from.
+
+    The chassis is a baked model and everything above it is drawn by a tile entity renderer, so
+    the two have to agree about where the chassis ends and the mast begins, and about the scale
+    they are both at. Emitting the shared numbers is what stops the drawn board floating above,
+    or sinking into, the trailer it is bolted to.
+
+    Everything is written at FINAL scale, in 1/16 block units, ready to use.
+    """
+    path = layout.source_for_write(TRAFFICACCESSORIES_OWNER,
+                                   "trafficaccessories/ArrowBoardGeometry.java")
+
+    def sx(v):
+        return AXIS + (v - AXIS) * ARROW_SCALE
+
+    def sy(v):
+        return v * ARROW_SCALE
+
+    cols, rows = ARROW_GRID
+    lit_x0, lit_x1 = sx(ARROW_PANEL[0] + ARROW_FRAME), sx(ARROW_PANEL[1] - ARROW_FRAME)
+    lit_y0, lit_y1 = sy(ARROW_PANEL[2] + ARROW_FRAME), sy(ARROW_PANEL[3] - ARROW_FRAME)
+    cell_w = (lit_x1 - lit_x0) / cols
+    cell_h = (lit_y1 - lit_y0) / rows
+    values = [
+        ("MAST_X0", sx(ARROW_MAST_X[0])), ("MAST_X1", sx(ARROW_MAST_X[1])),
+        ("MAST_HALF", ARROW_MAST_HALF * ARROW_SCALE),
+        ("MAST_Y0", sy(ARROW_CHASSIS[2] + 0.20)),
+        # Stops just inside the panel, which then hides it. Taking the brace height here
+        # instead ran the posts up the FRONT of the lamp grid.
+        ("MAST_Y1", sy(ARROW_PANEL[2] + 0.60)),
+        ("BRACE_Y0", sy(ARROW_MAST_BRACE[0])), ("BRACE_Y1", sy(ARROW_MAST_BRACE[1])),
+        ("BRACE_HALF_Y", 0.30 * ARROW_SCALE),
+        ("PANEL_X0", sx(ARROW_PANEL[0])), ("PANEL_X1", sx(ARROW_PANEL[1])),
+        ("PANEL_Y0", sy(ARROW_PANEL[2])), ("PANEL_Y1", sy(ARROW_PANEL[3])),
+        ("PANEL_Z0", sx(ARROW_PANEL_Z[0])), ("PANEL_Z1", sx(ARROW_PANEL_Z[1])),
+        ("LIT_X0", lit_x0), ("LIT_Y0", lit_y0),
+        ("CELL_W", cell_w), ("CELL_H", cell_h),
+        ("LAMP_RADIUS", 0.34 * min(cell_w, cell_h)),
+    ]
+    lines = [
+        "package com.micatechnologies.minecraft.csm.trafficaccessories;",
+        "",
+        "/**",
+        " * Where the parts of an arrow board are, in 1/16 block units.",
+        " *",
+        " * <p>Generated by {@code dev-env-utils/scripts/gen_work_zone_devices.py} -- do not hand",
+        " * edit. The chassis is a baked model and everything above it is drawn by",
+        " * {@link TileEntityArrowBoardRenderer}; these are the numbers both are built from, so the",
+        " * drawn mast meets the modelled trailer instead of floating over it.</p>",
+        " *",
+        " * @version 1.0",
+        " * @since 2026.9",
+        " */",
+        "public final class ArrowBoardGeometry {",
+        "",
+        "  /** Lamp columns across the panel. */",
+        "  public static final int GRID_COLS = %d;" % cols,
+        "",
+        "  /** Lamp rows down the panel. */",
+        "  public static final int GRID_ROWS = %d;" % rows,
+        "",
+    ]
+    for name, value in values:
+        lines.append("  /** %s, in 1/16 block units. */" % name.replace("_", " ").lower())
+        lines.append("  public static final float %s = %.4ff;" % (name, value))
+        lines.append("")
+    lines += [
+        "  private ArrowBoardGeometry() {",
+        "    throw new AssertionError(\"ArrowBoardGeometry is constants only\");",
+        "  }",
+        "}",
+    ]
+    with open(path, "w", newline="\n") as fh:
+        fh.write("\n".join(lines) + "\n")
+    return path
 
 
 def main():

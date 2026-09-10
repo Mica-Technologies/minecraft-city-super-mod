@@ -46,6 +46,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalF
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSign;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignDouble;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneArrowBoard;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDevice;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceFlashing;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceRotatable;
@@ -621,6 +622,8 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
     initTabBlock(new BlockWorkZoneDevice("delineator_post_yellow",
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
+    initTabBlock(new BlockWorkZoneArrowBoard("arrow_board",
+        new AxisAlignedBB(-1.388350, 0.000000, -0.379375, 2.573750, 0.603750, 1.379375)));
     initTabBlock(new BlockWorkZoneDevice("sand_barrel_array",
         new AxisAlignedBB(0.064777, 0.000000, 0.064777, 0.935223, 0.862500, 0.935223)));
   }

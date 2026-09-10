@@ -83,16 +83,11 @@ public class TileEntityTrafficBeaconRenderer
 
     float[] from = beacon.getBeaconLensFrom();
     float[] to = beacon.getBeaconLensTo();
+    float[][] lenses = {{from[0], from[1], from[2], to[0], to[1], to[2]}};
+
     float r = beacon.getBeaconColorR();
     float g = beacon.getBeaconColorG();
     float b = beacon.getBeaconColorB();
-
-    float minX = from[0] / 16f - 0.5f;
-    float minY = from[1] / 16f - 0.5f;
-    float minZ = from[2] / 16f - 0.5f;
-    float maxX = to[0] / 16f - 0.5f;
-    float maxY = to[1] / 16f - 0.5f;
-    float maxZ = to[2] / 16f - 0.5f;
 
     // A device that settles onto the road under it is DRAWN lower than its own cell, but this
     // renderer works in world space and knows nothing about that offset. Without adding it here
@@ -120,21 +115,11 @@ public class TileEntityTrafficBeaconRenderer
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buf = tessellator.getBuffer();
 
-    // Core glow: all 6 faces of the beacon lens, slightly offset outward
-    float off = 0.005f;
-    drawBox(buf, tessellator, minX - off, minY - off, minZ - off,
-        maxX + off, maxY + off, maxZ + off, r, g, b, 1.0f * intensity);
-
-    // Inner halo: 50% padding around the lens
-    float padX = (maxX - minX) * 0.5f;
-    float padY = (maxY - minY) * 0.5f;
-    float padZ = (maxZ - minZ) * 0.5f;
-    drawBox(buf, tessellator, minX - padX, minY - padY, minZ - padZ,
-        maxX + padX, maxY + padY, maxZ + padZ, r, g, b, 0.35f * intensity);
-
-    // Outer halo: larger, more transparent
-    drawBox(buf, tessellator, minX - padX * 2f, minY - padY * 2f, minZ - padZ * 2f,
-        maxX + padX * 2f, maxY + padY * 2f, maxZ + padZ * 2f, r, g, b, 0.12f * intensity);
+    // Three layers: the lens itself, then two haloes. Every lens is emitted into ONE buffer per
+    // layer rather than one draw call each, so a board of forty lamps still costs three draws.
+    drawLayer(buf, tessellator, lenses, 0.005f, false, r, g, b, 1.0f * intensity);
+    drawLayer(buf, tessellator, lenses, 0.5f, true, r, g, b, 0.35f * intensity);
+    drawLayer(buf, tessellator, lenses, 1.0f, true, r, g, b, 0.12f * intensity);
 
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
@@ -186,10 +171,42 @@ public class TileEntityTrafficBeaconRenderer
     return 0f;
   }
 
-  private static void drawBox(BufferBuilder buf, Tessellator tess,
+  /**
+   * Draws one glow layer over every lens in a single buffer.
+   *
+   * @param buf       the buffer to emit into
+   * @param tess      the tessellator to draw with
+   * @param lenses    the lens boxes, each {x0, y0, z0, x1, y1, z1} in 1/16 block units
+   * @param pad       the padding, as a fraction of each lens's own size when
+   *                  {@code relativePad} is set, or in blocks when it is not
+   * @param proportional whether {@code pad} scales with the lens or is a flat offset
+   * @param r         the red component
+   * @param g         the green component
+   * @param b         the blue component
+   * @param a         the alpha component
+   */
+  private static void drawLayer(BufferBuilder buf, Tessellator tess, float[][] lenses,
+      float pad, boolean proportional, float r, float g, float b, float a) {
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    for (float[] lens : lenses) {
+      float minX = lens[0] / 16f - 0.5f;
+      float minY = lens[1] / 16f - 0.5f;
+      float minZ = lens[2] / 16f - 0.5f;
+      float maxX = lens[3] / 16f - 0.5f;
+      float maxY = lens[4] / 16f - 0.5f;
+      float maxZ = lens[5] / 16f - 0.5f;
+      float px = proportional ? (maxX - minX) * pad : pad;
+      float py = proportional ? (maxY - minY) * pad : pad;
+      float pz = proportional ? (maxZ - minZ) * pad : pad;
+      emitBox(buf, minX - px, minY - py, minZ - pz, maxX + px, maxY + py, maxZ + pz, r, g, b, a);
+    }
+    tess.draw();
+  }
+
+  /** Emits one box's six faces into an already-begun buffer. */
+  private static void emitBox(BufferBuilder buf,
       float x1, float y1, float z1, float x2, float y2, float z2,
       float r, float g, float b, float a) {
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     // -Z face
     emit(buf, x1, y1, z1, r, g, b, a);
     emit(buf, x2, y1, z1, r, g, b, a);
@@ -220,7 +237,6 @@ public class TileEntityTrafficBeaconRenderer
     emit(buf, x2, y2, z1, r, g, b, a);
     emit(buf, x2, y2, z2, r, g, b, a);
     emit(buf, x1, y2, z2, r, g, b, a);
-    tess.draw();
   }
 
   private static void emit(BufferBuilder buf, float x, float y, float z,
