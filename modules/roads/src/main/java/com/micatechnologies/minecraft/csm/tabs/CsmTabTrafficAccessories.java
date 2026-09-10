@@ -54,6 +54,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDevice
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceDiagonal;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceFlashing;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceRotatable;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneFence;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZonePlate;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneWall;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdoublemountunpainted;
@@ -666,7 +667,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.368750, 0.000000, 0.397500, 0.631250, 0.887500, 0.685000)));
     initTabBlock(new BlockWorkZonePlate("road_plate",
         new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.053125, 1.000000)));
-    initTabBlock(new BlockWorkZoneDeviceDiagonal("safety_fence",
+    initTabBlock(new BlockWorkZoneFence("safety_fence",
         new AxisAlignedBB(0.000000, 0.000000, 0.473750, 1.000000, 0.887500, 0.526250)));
     initTabBlock(new BlockWorkZoneArrowBoard("arrow_board",
         new AxisAlignedBB(-1.388350, 0.000000, -0.379375, 2.573750, 0.603750, 1.379375)));

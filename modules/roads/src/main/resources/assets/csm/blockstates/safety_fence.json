@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/shared_models/workzone_safety_fence.obj",
+    "model": "csm:trafficaccessories/shared_models/workzone_safety_fence_core.obj",
     "custom": {
       "flip-v": true
     },
@@ -118,11 +118,34 @@
         }
       }
     },
+    "diagfill": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "fill_right": {
+            "model": "csm:trafficaccessories/shared_models/workzone_safety_fence_fill_right.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/workzone/workzone_safety_fence"
+            }
+          }
+        }
+      }
+    },
     "normal": [
       {}
     ],
     "inventory": [
       {
+        "model": "csm:trafficaccessories/shared_models/workzone_safety_fence_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/trafficaccessories/workzone/workzone_safety_fence"
+        },
         "transform": "forge:default-block"
       }
     ]

@@ -360,6 +360,13 @@ is on the road is nearly black, with the tread polished smooth by traffic and ru
 from the edges. Bright steel with a crisp tread is what a plate looks like in a catalogue and
 not what one looks like in a street.
 
+The safety fence is the one device here that joins on a diagonal but needs nothing at a square
+joint. Its panel spans the whole cell and its stakes are inset from the edges, so a square run is
+already one continuous fence with the pair of stakes at each joint that a real one has — there is
+nothing to take off and nothing to add. A diagonal run leaves the same gap everything else does,
+so it carries `diagfill` and only `diagfill` (`WorkZoneJoins.resolveFill` rather than the full
+`resolve` the barriers and barricades use).
+
 The safety fence's mesh is **cut out of the texture**, not modelled: a mesh built from geometry
 is hundreds of faces for something read at two texels. The holes are real transparency, which is
 why the block draws on the cutout layer — a fence you cannot see through is a wall. Its panel

@@ -2210,6 +2210,22 @@ def build_safety_fence(mesh):
         mesh.quad_out(pts, normal, uvs)
 
 
+def build_safety_fence_fill(mesh):
+    """The panel carried on past the cell's right edge to meet a DIAGONAL neighbour.
+
+    Panel only. The stakes stay where they are -- a run gets one pair per cell either way, and a
+    stake standing in the gap would be a post in the middle of a span rather than at a joint.
+    """
+    y0, y1 = FENCE_PANEL
+    span = 16.0
+    u1 = DIAGONAL_GAP / span
+    for z, normal in ((AXIS + FENCE_HALF_Z, (0, 0, 1)), (AXIS - FENCE_HALF_Z, (0, 0, -1))):
+        pts = [(span, y0, z), (span + DIAGONAL_GAP, y0, z),
+               (span + DIAGONAL_GAP, y1, z), (span, y1, z)]
+        uvs = [uv_at(0.0, y0), uv_at(u1, y0), uv_at(u1, y1), uv_at(0.0, y1)]
+        mesh.quad_out(pts, normal, uvs)
+
+
 def safety_fence_texture():
     """Orange mesh: plastic strands on transparency, drawn in world units.
 
@@ -2682,10 +2698,21 @@ DEVICES = {
     },
     "safety_fence": {
         "model": "workzone_safety_fence", "build": build_safety_fence,
+        # No end pieces: the panel already spans the cell and the stakes are inset, so a square
+        # run needs nothing. Only the diagonal filler, for the gap a forty-five degree run leaves.
+        "joining": {
+            "model": "workzone_safety_fence",
+            "pieces": {
+                "core": build_safety_fence,
+                "fill_right": build_safety_fence_fill,
+            },
+            "properties": {},
+            "fill_properties": {"diagfill": "fill_right"},
+        },
         "texture": "workzone_safety_fence",
         "texture_fn": safety_fence_texture,
         "display": "Safety Fence",
-        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
+        "diagonal": True, "java": "BlockWorkZoneFence",
     },
     "arrow_board": {
         "model": "workzone_arrow_board", "build": build_arrow_board,
