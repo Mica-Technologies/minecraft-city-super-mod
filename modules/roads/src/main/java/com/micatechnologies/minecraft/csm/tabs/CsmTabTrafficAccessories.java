@@ -47,6 +47,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalF
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSign;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignDouble;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockCrashCushion;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrail;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailEnd;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailTransition;
@@ -731,8 +732,15 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.000000, 0.000000, 0.096875, 1.000000, 0.850000, 0.306250), CABLE));
     initTabBlock(new BlockGuardrail("cable_barrier_double",
         new AxisAlignedBB(0.000000, 0.000000, 0.096875, 1.000000, 0.850000, 0.403125), CABLE));
+    initTabBlock(new BlockGuardrailEnd("guardrail_end_bullnose_box",
+        new AxisAlignedBB(0.000000, 0.000000, 0.012500, 0.618750, 0.950000, 0.800000), BOX_BEAM));
     initTabBlock(new BlockGuardrailEnd("cable_barrier_anchor",
         new AxisAlignedBB(0.000000, 0.000000, 0.012500, 0.537500, 0.887500, 0.287500), CABLE));
+
+    initTabBlock(new BlockCrashCushion("crash_cushion_nose",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.843750, 0.500000), true));
+    initTabBlock(new BlockCrashCushion("crash_cushion_bay",
+        new AxisAlignedBB(0.000000, 0.000000, 0.028125, 1.000000, 0.868750, 0.521875)));
 
     initTabItem(ItemGuardrailTool.class, fmlPreInitializationEvent); // Guardrail Tool
   }

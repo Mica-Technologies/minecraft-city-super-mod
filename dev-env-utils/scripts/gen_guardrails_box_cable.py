@@ -607,6 +607,189 @@ def anchor_blockstate_json():
     }
 
 
+# ===================================================================================================
+# D. THE BOX BEAM BULLNOSE END
+# ===================================================================================================
+# The tube leaves the last rail dead straight, turns through a half circle in plan away from the
+# roadway, and runs back parallel to itself. Everything here is in PLAN -- the tube keeps the run's
+# own height the whole way round, which is what makes a bullnose different from every W-beam end
+# in this batch: those all get their shape by dropping or flaring the rail, and this one gets its
+# shape without leaving the horizontal at all.
+BULLNOSE_LEAD_X = 3.60                               # dead straight before the turn starts
+BULLNOSE_RADIUS = 4.10                               # centre-line radius of the half turn
+BULLNOSE_RETURN_X = 1.40                             # where the returning leg is cut off
+BULLNOSE_SAMPLES = 15                                # stations round the half circle
+BULLNOSE_CZ = (geo.BOX_RAIL_FRONT_Z + geo.BOX_RAIL_BACK_Z) * 0.5
+BULLNOSE_HALF = (geo.BOX_RAIL_BACK_Z - geo.BOX_RAIL_FRONT_Z) * 0.5
+BULLNOSE_RETURN_CZ = BULLNOSE_CZ + 2.0 * BULLNOSE_RADIUS
+BULLNOSE_APEX_X = BULLNOSE_LEAD_X + BULLNOSE_RADIUS
+
+# One post under each leg and one under the nose. Bolted down like every other box beam post,
+# but on a NARROWER plate: the run's own plate is nearly seven units across, which is fine when the
+# next post is a whole cell away and laps straight over its neighbour when three posts share one
+# cell. Two slabs on the same ground plane are a coplanar overlap, so the plate is sized to the
+# spacing rather than the spacing to the plate.
+BULLNOSE_PLATE = (2.20, geo.BOX_BASE_PLATE[1])       # half width, thickness
+BULLNOSE_POSTS = (
+    (2.40, BULLNOSE_CZ),
+    (2.40, BULLNOSE_RETURN_CZ),
+    (BULLNOSE_APEX_X, BULLNOSE_CZ + BULLNOSE_RADIUS),
+)
+
+# The object marker on the nose, standing on top of the tube and facing the traffic the bullnose
+# is turned away from. Its foot is sunk INTO the tube rather than resting on it: a plate whose
+# underside sat exactly on the tube's top would share a plane with it, which is the one fault
+# every generator in this batch has to dodge.
+BULLNOSE_MARKER_X = (BULLNOSE_APEX_X - 0.30, BULLNOSE_APEX_X + 0.30)
+BULLNOSE_MARKER_Y = (geo.BOX_RAIL_TOP_Y - 0.80, geo.BOX_RAIL_TOP_Y + 4.00)
+BULLNOSE_MARKER_Z_HALF = 1.60
+
+BULLNOSE_TEXTURE = "guardrail_box_end"
+BULLNOSE_MODEL = "guardrail_end_bullnose_box"
+
+
+def bullnose_path():
+    """The tube's centre line in plan, as (x, z) stations: lead-in, half turn, return leg.
+
+    The turn is centred one radius to the FAR side of the run from the traffic face, so the tube
+    leaves the lead-in already travelling straight -- a turn centred anywhere else would put a
+    kink at the joint, and the joint is the one place on an end treatment that has to line up with
+    something else.
+    """
+    cx, cz = BULLNOSE_LEAD_X, BULLNOSE_CZ + BULLNOSE_RADIUS
+    pts = [(0.0, BULLNOSE_CZ)]
+    for i in range(BULLNOSE_SAMPLES):
+        a = -0.5 * math.pi + math.pi * i / float(BULLNOSE_SAMPLES - 1)
+        pts.append((cx + BULLNOSE_RADIUS * math.cos(a), cz + BULLNOSE_RADIUS * math.sin(a)))
+    pts.append((BULLNOSE_RETURN_X, BULLNOSE_RETURN_CZ))
+    return pts
+
+
+def bullnose_section():
+    """The tube's cross-section as (offset ACROSS the path, y).
+
+    Across the path rather than across z, which is the whole difference between this and
+    ``box_rail_section``: a section written in z can only be swept down a straight run, and this
+    one has to stay square to a curve.
+    """
+    y0, y1 = geo.BOX_RAIL_BOTTOM_Y, geo.BOX_RAIL_TOP_Y
+    return [(-BULLNOSE_HALF, y0), (BULLNOSE_HALF, y0),
+            (BULLNOSE_HALF, y1), (-BULLNOSE_HALF, y1)]
+
+
+def _path_frames(path):
+    """Each station's point and unit normal across the path, from its own tangent."""
+    frames = []
+    for i, (px, pz) in enumerate(path):
+        ax, az = path[max(i - 1, 0)]
+        bx, bz = path[min(i + 1, len(path) - 1)]
+        tx, tz = bx - ax, bz - az
+        length = math.hypot(tx, tz) or 1.0
+        tx, tz = tx / length, tz / length
+        frames.append(((px, pz), (-tz, tx), (tx, tz)))
+    return frames
+
+
+def sweep_along_path(mesh, path, section, swatch_v):
+    """Sweep a closed (offset, y) section along a plan path, capping both open ends.
+
+    The same job ``sweep_section`` does for a straight run, with the section's offset axis turned
+    to follow the path instead of pinned to z. Outward normals come out of the section the same
+    way -- an edge running (d_offset, dy) has its outward side at (dy, -d_offset) in the section's
+    own frame -- so a counter-clockwise section gives outward normals here exactly as it does
+    there, and no piece of this needs its own winding rule.
+    """
+    t = uv_swatch(swatch_v)
+    frames = _path_frames(path)
+    rings = [[(px + ox * o, y, pz + oz * o) for (o, y) in section]
+             for ((px, pz), (ox, oz), _tan) in frames]
+
+    n_pts = len(section)
+    for k in range(len(rings) - 1):
+        a, b = rings[k], rings[k + 1]
+        (ox, oz) = frames[k][1]
+        for i in range(n_pts):
+            j = (i + 1) % n_pts
+            d_off = section[j][0] - section[i][0]
+            dy = section[j][1] - section[i][1]
+            normal = (ox * dy, -d_off, oz * dy)
+            mesh.quad_out([a[i], b[i], b[j], a[j]], normal, [t, t, t, t])
+
+    for (ring, (_pt, _n, (tx, tz)), sign) in ((rings[0], frames[0], -1.0),
+                                              (rings[-1], frames[-1], 1.0)):
+        normal = (sign * tx, 0.0, sign * tz)
+        cx = sum(p[0] for p in ring) / n_pts
+        cy = sum(p[1] for p in ring) / n_pts
+        cz = sum(p[2] for p in ring) / n_pts
+        centre = ((cx, cy, cz), t, normal)
+        for i in range(n_pts):
+            j = (i + 1) % n_pts
+            first, second = (i, j) if sign > 0.0 else (j, i)
+            mesh.tri([centre, (ring[first], t, normal), (ring[second], t, normal)])
+
+
+def bullnose_post(mesh, x, z):
+    """A bolted-down post under the tube at one point on the path.
+
+    The base plate and the raised foot are the box beam run's own arrangement, taken from
+    ``build_box_post`` rather than restated: box beam is bolted down, not driven, and a bullnose
+    that stood on a driven post would say the opposite of what the run beside it says.
+    """
+    plate_half, plate_thick = BULLNOSE_PLATE
+    box(mesh, x - plate_half, x + plate_half, 0.0, plate_thick,
+        z - plate_half, z + plate_half, BOX_PLATE_SWATCH)
+    half = geo.POST_HALF_X
+    box(mesh, x - half, x + half, plate_thick, geo.BOX_RAIL_BOTTOM_Y + 0.40,
+        z - half, z + half, BOX_POST_SWATCH)
+
+
+def build_bullnose(mesh):
+    sweep_along_path(mesh, bullnose_path(), bullnose_section(), BOX_RAIL_SWATCH)
+    for (x, z) in BULLNOSE_POSTS:
+        bullnose_post(mesh, x, z)
+    cz = BULLNOSE_CZ + BULLNOSE_RADIUS
+    box(mesh, BULLNOSE_MARKER_X[0], BULLNOSE_MARKER_X[1],
+        BULLNOSE_MARKER_Y[0], BULLNOSE_MARKER_Y[1],
+        cz - BULLNOSE_MARKER_Z_HALF, cz + BULLNOSE_MARKER_Z_HALF, SWATCH_ACCENT_V)
+
+
+def build_bullnose_inventory(mesh):
+    build_bullnose(mesh)
+    fit_in_cell(mesh)
+
+
+def bullnose_texture():
+    """The run's own galvanised steel, plus a yellow accent for the object marker."""
+    img = Image.new("RGBA", (TEX_SIZE, TEX_SIZE), geo.GALVANISED + (255,))
+    draw_swatches(img, geo.GALVANISED, geo.GALVANISED_DARK, geo.CHEVRON_YELLOW)
+    return img
+
+
+def bullnose_blockstate_json():
+    variants = {
+        "facing": facing_variants({"diagonal": True}),
+        "mirrored": {
+            "false": {},
+            "true": {"model": "%s/%s_mirrored.obj" % (MODEL_PREFIX, BULLNOSE_MODEL)},
+        },
+        "normal": [{}],
+        "inventory": [{"model": "%s/%s_inv.obj" % (MODEL_PREFIX, BULLNOSE_MODEL),
+                       "custom": {"flip-v": True},
+                       "textures": {"#%s" % geo.MATERIAL: "%s/%s"
+                                    % (geo.TEXTURE_PREFIX, BULLNOSE_TEXTURE)},
+                       "transform": "forge:default-block"}],
+    }
+    return {
+        "forge_marker": 1,
+        "defaults": {
+            "model": "%s/%s.obj" % (MODEL_PREFIX, BULLNOSE_MODEL),
+            "custom": {"flip-v": True},
+            "textures": {"#%s" % geo.MATERIAL: "%s/%s" % (geo.TEXTURE_PREFIX, BULLNOSE_TEXTURE)},
+        },
+        "variants": variants,
+    }
+
+
 # --- output -----------------------------------------------------------------------------------------
 def write_model(mesh, path, name, mtl_file):
     """Write one OBJ, stamped with THIS generator's own name -- ``Mesh.write`` stamps the work
@@ -649,6 +832,7 @@ TEXTURES = {
     "guardrail_box_beam_steel": box_beam_texture,
     "guardrail_cable_barrier_steel": cable_barrier_texture,
     ANCHOR_TEXTURE: anchor_texture,
+    BULLNOSE_TEXTURE: bullnose_texture,
 }
 
 
@@ -683,6 +867,48 @@ def _write_rail_family(blocks, model_pieces_fn, build_inventory_fn, model_dir, t
         written.append(bs_path)
 
 
+def _write_end_treatment(registry, model, texture, build, build_inventory, blockstate_fn,
+                         clip_bounds, model_dir, blockstate_dir, written, bounds):
+    """Emit one end treatment: its model, its mirrored sibling, its inventory model, its material
+    and its blockstate.
+
+    The mirrored sibling is built from the SAME builder and reflected, never built a second time,
+    so the two ends of a run cannot end up two different shapes -- and sharing one MTL means they
+    cannot end up two different textures either.
+    """
+    mtl_file = model + ".mtl"
+
+    mesh = Mesh()
+    build(mesh)
+    bounds[registry] = clip_bounds(mesh_bounds(mesh))
+    obj_path = os.path.join(model_dir, model + ".obj")
+    write_model(mesh, obj_path, model, mtl_file)
+    written.append(obj_path)
+
+    mirrored = Mesh()
+    build(mirrored)
+    mirror_mesh(mirrored)
+    mirror_path = os.path.join(model_dir, model + "_mirrored.obj")
+    write_model(mirrored, mirror_path, model + "_mirrored", mtl_file)
+    written.append(mirror_path)
+
+    inv_mesh = Mesh()
+    build_inventory(inv_mesh)
+    inv_path = os.path.join(model_dir, model + "_inv.obj")
+    write_model(inv_mesh, inv_path, model + "_inv", mtl_file)
+    written.append(inv_path)
+
+    mtl_path = os.path.join(model_dir, mtl_file)
+    write_mtl(mtl_path, texture)
+    written.append(mtl_path)
+
+    bs_path = os.path.join(blockstate_dir, registry + ".json")
+    with open(bs_path, "w", newline="\n") as fh:
+        json.dump(blockstate_fn(), fh, indent=2)
+        fh.write("\n")
+    written.append(bs_path)
+
+
 def generate(model_dir, texture_dir, blockstate_dir, fragment_dir):
     for d in (model_dir, texture_dir, blockstate_dir, fragment_dir):
         os.makedirs(d, exist_ok=True)
@@ -700,40 +926,19 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir):
     _write_rail_family(CABLE_RAIL_BLOCKS, cable_model_pieces, build_cable_inventory,
                        model_dir, texture_dir, blockstate_dir, written, bounds)
 
-    # C. The cable end anchor: one fixed shape plus its mirrored sibling, like a W-beam end.
+    # C. The cable end anchor and D. the box beam bullnose: one fixed shape apiece, each with a
+    # mirrored sibling, exactly like a W-beam end.
     anchor_registry = geo.CABLE_END_BLOCKS[0]
-    anchor_mtl = "guardrail_cable_anchor.mtl"
+    _write_end_treatment(anchor_registry, "guardrail_cable_anchor", ANCHOR_TEXTURE,
+                         build_anchor, build_anchor_inventory, anchor_blockstate_json,
+                         anchor_cell_bounds,
+                         model_dir, blockstate_dir, written, bounds)
 
-    mesh = Mesh()
-    build_anchor(mesh)
-    raw_bounds = mesh_bounds(mesh)
-    bounds[anchor_registry] = anchor_cell_bounds(raw_bounds)
-    obj_path = os.path.join(model_dir, "guardrail_cable_anchor.obj")
-    write_model(mesh, obj_path, "guardrail_cable_anchor", anchor_mtl)
-    written.append(obj_path)
-
-    mirrored = Mesh()
-    build_anchor(mirrored)
-    mirror_mesh(mirrored)
-    mirror_path = os.path.join(model_dir, "guardrail_cable_anchor_mirrored.obj")
-    write_model(mirrored, mirror_path, "guardrail_cable_anchor_mirrored", anchor_mtl)
-    written.append(mirror_path)
-
-    inv_mesh = Mesh()
-    build_anchor_inventory(inv_mesh)
-    inv_path = os.path.join(model_dir, "guardrail_cable_anchor_inv.obj")
-    write_model(inv_mesh, inv_path, "guardrail_cable_anchor_inv", anchor_mtl)
-    written.append(inv_path)
-
-    anchor_mtl_path = os.path.join(model_dir, anchor_mtl)
-    write_mtl(anchor_mtl_path, ANCHOR_TEXTURE)
-    written.append(anchor_mtl_path)
-
-    anchor_bs_path = os.path.join(blockstate_dir, anchor_registry + ".json")
-    with open(anchor_bs_path, "w", newline="\n") as fh:
-        json.dump(anchor_blockstate_json(), fh, indent=2)
-        fh.write("\n")
-    written.append(anchor_bs_path)
+    bullnose_registry = geo.BOX_END_BLOCKS[0]
+    _write_end_treatment(bullnose_registry, BULLNOSE_MODEL, BULLNOSE_TEXTURE,
+                         build_bullnose, build_bullnose_inventory, bullnose_blockstate_json,
+                         anchor_cell_bounds,
+                         model_dir, blockstate_dir, written, bounds)
 
     # Fragments, for pasting into the lang file and the tab: this generator never rewrites a file
     # it does not own.
@@ -741,6 +946,7 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir):
     all_display.update({k: v["display"] for k, v in BOX_BLOCKS.items()})
     all_display.update({k: v["display"] for k, v in CABLE_RAIL_BLOCKS.items()})
     all_display[anchor_registry] = "Cable Barrier Anchor"
+    all_display[bullnose_registry] = "Box Beam Guardrail End (Bullnose)"
 
     lang_path = os.path.join(fragment_dir, "box_cable_lang.txt")
     with open(lang_path, "w", newline="\n") as fh:
@@ -757,8 +963,9 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir):
         for registry in list(BOX_BLOCKS) + list(CABLE_RAIL_BLOCKS):
             fh.write('initTabBlock(new %s("%s",\n    %s));\n'
                      % (RAIL_JAVA_CLASS, registry, java_bbox(bounds[registry])))
-        fh.write('initTabBlock(new %s("%s",\n    %s));\n'
-                 % (END_JAVA_CLASS, anchor_registry, java_bbox(bounds[anchor_registry])))
+        for registry in (anchor_registry, bullnose_registry):
+            fh.write('initTabBlock(new %s("%s",\n    %s));\n'
+                     % (END_JAVA_CLASS, registry, java_bbox(bounds[registry])))
     written.append(tab_path)
 
     return written

@@ -1105,4 +1105,7 @@ tile.box_beam_guardrail_double.name=Kastenprofil-Schutzplanke (Beidseitig)
 tile.cable_barrier.name=Seilschutzplanke
 tile.cable_barrier_double.name=Seilschutzplanke (Beidseitig)
 tile.cable_barrier_anchor.name=Seilschutzplanken-Verankerung
+tile.guardrail_end_bullnose_box.name=Kastenprofil-Schutzplankenende (Rundkopf)
+tile.crash_cushion_nose.name=Anpralldämpfer (Kopfstück)
+tile.crash_cushion_bay.name=Anpralldämpfer (Segment)
 item.guardrail_tool.name=Schutzplanken-Werkzeug

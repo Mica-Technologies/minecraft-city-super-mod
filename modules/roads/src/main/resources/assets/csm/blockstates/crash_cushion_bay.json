@@ -1,0 +1,239 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_core.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/trafficaccessories/guardrail/crash_cushion_steel"
+    }
+  },
+  "variants": {
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 45
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 135
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 225
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 315
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      }
+    },
+    "connectleft": {
+      "false": {
+        "submodel": {
+          "end_left": {
+            "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_end_left.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/crash_cushion_steel"
+            }
+          }
+        }
+      },
+      "true": {}
+    },
+    "connectright": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "end_right": null
+        }
+      }
+    },
+    "diagfill": {
+      "false": {
+        "submodel": {
+          "fill": null
+        }
+      },
+      "true": {}
+    },
+    "slope": {
+      "flat": {
+        "submodel": {
+          "fill": {
+            "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_fill_flat.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/crash_cushion_steel"
+            }
+          },
+          "end_right": {
+            "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_end_right_flat.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/crash_cushion_steel"
+            }
+          }
+        }
+      },
+      "up": {
+        "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_core_up.obj",
+        "submodel": {
+          "fill": {
+            "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_fill_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/crash_cushion_steel"
+            }
+          },
+          "end_right": {
+            "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_end_right_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/crash_cushion_steel"
+            }
+          }
+        }
+      },
+      "down": {
+        "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_core_down.obj",
+        "submodel": {
+          "fill": {
+            "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_fill_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/crash_cushion_steel"
+            }
+          },
+          "end_right": {
+            "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_end_right_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/crash_cushion_steel"
+            }
+          }
+        }
+      }
+    },
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/crash_cushion_bay_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/trafficaccessories/guardrail/crash_cushion_steel"
+        },
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

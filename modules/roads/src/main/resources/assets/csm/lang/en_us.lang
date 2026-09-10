@@ -1106,4 +1106,7 @@ tile.box_beam_guardrail_double.name=Box Beam Guardrail (Double Sided)
 tile.cable_barrier.name=Cable Barrier
 tile.cable_barrier_double.name=Cable Barrier (Double Sided)
 tile.cable_barrier_anchor.name=Cable Barrier Anchor
+tile.guardrail_end_bullnose_box.name=Box Beam Guardrail End (Bullnose)
+tile.crash_cushion_nose.name=Crash Cushion (Nose)
+tile.crash_cushion_bay.name=Crash Cushion (Bay)
 item.guardrail_tool.name=Guardrail Tool
