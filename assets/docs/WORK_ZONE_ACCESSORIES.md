@@ -335,11 +335,16 @@ and its facing:
 
 | Cell | Head |
 |---|---|
-| two out, seven up | under the arm's tip, the overhead head (arm style only) |
+| any cell one to ten out, seven up | under the arm, the overhead head (arm style only) |
 | one out, five up | against the mast, the near-side head |
 
 The near head sits lower than the overhead one, which is how these are rigged: the mast head is
 read from the stop line and the arm head from back down the lane.
+
+The arm is **ten cells long** -- about as long as the mast is tall, which is what lets one
+trailer signal the far lane of a road it is parked beside, and what the real ones look like. It
+tapers toward the tip and is held by two members, a stay under its root and a tie from the king
+post above it: a bar of even thickness ten cells out reads as scaffolding rather than as an arm.
 
 **The scale is set by the signals, not by the trailer.** A signal head here is a block, and a
 mast arm intersection is built with its arm around ten blocks over the road; a temporary signal
