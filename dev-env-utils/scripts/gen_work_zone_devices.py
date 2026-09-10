@@ -100,6 +100,16 @@ LIME_DARK = (152, 186, 30)
 SAND_YELLOW = (216, 176, 52)  # the sand barrel's weathered yellow
 SAND_YELLOW_DARK = (176, 140, 36)
 AMBER = (246, 166, 24)        # the warning light's lens
+MARKER_YELLOW = (242, 198, 34)    # the temporary marker's moulded yellow, lighter than a cone's
+MARKER_YELLOW_DARK = (198, 158, 22)
+MARKER_BLUE = (0, 89, 152)        # MUTCD/ADA blue
+MARKER_BLUE_DARK = (0, 66, 114)
+MARKER_GREEN = (0, 177, 64)       # the FHWA green a bike lane is surfaced in
+MARKER_GREEN_DARK = (0, 138, 50)
+MARKER_SILVER = (206, 212, 220)   # the glass-beaded reflective strip along the top
+MARKER_SILVER_DARK = (170, 176, 186)
+MARKER_GOLD = (250, 216, 96)      # the same strip on an amber marker
+MARKER_GOLD_DARK = (214, 178, 62)
 
 # --- the cone, in 1/16 block units --------------------------------------------------------------
 # A 28 in cone on a 1 m block: 28 in is 0.711 m, so 11.2 units tall, on a 14 in (5.7 unit) base.
@@ -464,6 +474,30 @@ ZEBRA_STATIONS = 18            # cross-sections along the length
 ZEBRA_BAND_W = 1.15
 ZEBRA_BANDS = [(c - ZEBRA_BAND_W / 2.0, c + ZEBRA_BAND_W / 2.0)
                for c in (3.40, 5.90, 8.40, 10.90, 13.40)]
+
+# --- the temporary pavement markers --------------------------------------------------------------
+# The small folded plastic tabs taped down a lane line while the permanent markings are missing: a
+# flat foot glued to the road, a panel standing up off the back of it, and a beaded reflective
+# strip along the panel's top edge under a moulded lip.
+#
+# Unlike the zebra delineator these do NOT span their cell. Real ones are set out at intervals
+# with clear road between them, so one small marker per block already gives the spacing a line of
+# them is supposed to have; stretching them to touch would turn a dotted line into a solid one.
+# Everything below is authored at a size that reads clearly on screen and then taken down by
+# MARKER_SCALE, because it read as too big beside the devices it shares a road with. The scale is
+# on the design dimensions only -- the clearances in the builder that stop two pieces sharing a
+# plane are absolute, and shrinking those with the shape would eventually bring them back into
+# one plane.
+MARKER_SCALE = 0.70
+MARKER_HALF_X = 3.60 * MARKER_SCALE            # half the marker's width
+MARKER_PANEL_TOP = 3.15 * MARKER_SCALE         # top of the upright panel
+# The panel stands across the back of the foot, and the foot reaches forward from it.
+MARKER_PANEL_Z = (AXIS + 0.85 * MARKER_SCALE, AXIS + 1.20 * MARKER_SCALE)
+MARKER_FOOT_Z0 = AXIS - 2.40 * MARKER_SCALE
+MARKER_FOOT_Y = 0.26 * MARKER_SCALE
+MARKER_LIP_H = 0.85 * MARKER_SCALE   # the reflective strip's height, at the top of the panel
+MARKER_LIP_Z0 = AXIS + 0.62 * MARKER_SCALE     # the lip stands a little proud of the panel face
+MARKER_BAND = (MARKER_PANEL_TOP - MARKER_LIP_H, MARKER_PANEL_TOP)
 
 # --- the sand barrel ---------------------------------------------------------------------------
 SAND_BARREL_HEIGHT = 13.80
@@ -1337,6 +1371,86 @@ def zebra_texture():
     return img
 
 
+def build_pavement_marker(mesh):
+    """A flat foot with a panel standing up off the back of it.
+
+    The panel's two broad faces are mapped by height so the reflective strip lands where the
+    texture puts it; everything else -- the foot, the panel's edges -- takes the flat swatch, so
+    the marker shows beading only along the strip, as a real one does.
+    """
+    z0, z1 = MARKER_PANEL_Z
+    y0 = MARKER_FOOT_Y - 0.10
+
+    # Foot, panel and lip each step in a little from the one behind, and each finishes INSIDE it
+    # rather than flush with it. Three pieces the same width would put three pairs of faces in
+    # the same two planes, which z-fights along both ends of the marker.
+    foot_hx = MARKER_HALF_X
+    panel_hx = MARKER_HALF_X - 0.12
+    lip_hx = MARKER_HALF_X - 0.30
+
+    box(mesh, AXIS - foot_hx, AXIS + foot_hx, 0.0, MARKER_FOOT_Y, MARKER_FOOT_Z0, z1 - 0.06,
+        SWATCH_BASE_V)
+
+    box(mesh, AXIS - panel_hx, AXIS + panel_hx, y0, MARKER_PANEL_TOP, z0, z1,
+        SWATCH_BASE_V, faces=("x-", "x+", "y+"))
+    for z, normal in ((z1, (0, 0, 1)), (z0, (0, 0, -1))):
+        pts = [(AXIS - panel_hx, y0, z), (AXIS + panel_hx, y0, z),
+               (AXIS + panel_hx, MARKER_PANEL_TOP, z), (AXIS - panel_hx, MARKER_PANEL_TOP, z)]
+        uvs = [uv_at(0.0, y0), uv_at(1.0, y0),
+               uv_at(1.0, MARKER_PANEL_TOP), uv_at(0.0, MARKER_PANEL_TOP)]
+        mesh.quad_out(pts, normal, uvs)
+
+    # The moulded lip over the strip: proud of the panel's front face, and kept strictly inside
+    # the textured band so its own faces still land on the beading.
+    lip_y0 = MARKER_BAND[0] + 0.05
+    lip_y1 = MARKER_PANEL_TOP - 0.05
+    box(mesh, AXIS - lip_hx, AXIS + lip_hx, lip_y0, lip_y1, MARKER_LIP_Z0, z0 + 0.05,
+        SWATCH_BASE_V, faces=("x-", "x+", "y-", "y+"))
+    pts = [(AXIS - lip_hx, lip_y0, MARKER_LIP_Z0), (AXIS + lip_hx, lip_y0, MARKER_LIP_Z0),
+           (AXIS + lip_hx, lip_y1, MARKER_LIP_Z0), (AXIS - lip_hx, lip_y1, MARKER_LIP_Z0)]
+    mesh.quad_out(pts, (0, 0, -1),
+                  [uv_at(0.0, lip_y0), uv_at(1.0, lip_y0),
+                   uv_at(1.0, lip_y1), uv_at(0.0, lip_y1)])
+
+
+def marker_texture(body, body_shade, strip, strip_shade):
+    """A flat body with the beaded reflective strip across the top of the panel.
+
+    Deliberately not ``band_image``: that shades across u with a sine, which reads as the round
+    side of a lathed cone or drum and reads as a vignette on something flat. A marker is a
+    moulded plastic tab, so its body is left flat and only the strip carries any texture.
+    """
+    img = Image.new("RGBA", (TEX_SIZE, TEX_SIZE), body + (255,))
+    band_y0, band_y1 = MARKER_BAND
+    for r in range(TEX_SIZE):
+        y = V_SPAN * (1.0 - (r + 0.5) / TEX_SIZE)
+        if band_y0 <= y <= band_y1:
+            color = strip
+            if y - band_y0 < 0.09 or band_y1 - y < 0.09:
+                color = strip_shade
+        elif 0.0 <= band_y0 - y < 0.08:
+            color = body_shade       # a shadow line just under the strip
+        else:
+            continue
+        for c in range(TEX_SIZE):
+            if (c + 0.5) / TEX_SIZE > SWATCH_U0:
+                continue
+            img.putpixel((c, r), color + (255,))
+
+    # The beading. Sparse bright pixels inside the strip only, which is what separates a
+    # retroreflective strip from a painted stripe at this distance.
+    r0 = int(TEX_SIZE * (1.0 - band_y1 / V_SPAN))
+    r1 = int(TEX_SIZE * (1.0 - band_y0 / V_SPAN))
+    for r in range(max(0, r0 + 1), min(TEX_SIZE, r1 - 1)):
+        for c in range(TEX_SIZE):
+            if (c + 0.5) / TEX_SIZE > SWATCH_U0 or (r * 5 + c * 3) % 7:
+                continue
+            img.putpixel((c, r), tuple(min(255, v + 34) for v in strip) + (255,))
+
+    draw_swatches(img, body, strip, AMBER)
+    return img
+
+
 def build_sand_barrel(mesh):
     lathe(mesh, SAND_BARREL_PROFILE, sides=SAND_BARREL_SIDES)
     disc(mesh, SAND_BARREL_LID_R, SAND_BARREL_HEIGHT, (0, 1, 0), SWATCH_BAND_V,
@@ -1606,7 +1720,37 @@ DEVICES = {
         "texture": "workzone_zebra_delineator",
         "texture_fn": zebra_texture,
         "display": "Zebra Delineator",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        # The one device here that gets all eight facings: it is laid ALONG a line rather than
+        # standing across one, and a lane edge does not always run with the block grid.
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
+    },
+    "pavement_marker_white": {
+        "model": "workzone_pavement_marker", "build": build_pavement_marker,
+        "texture": "workzone_pavement_marker_white",
+        "texture_fn": lambda: marker_texture(WHITE, WHITE_DIM, MARKER_SILVER, MARKER_SILVER_DARK),
+        "display": "Temporary Pavement Marker (White)",
+        "rotatable": True, "java": "BlockWorkZonePavementMarker",
+    },
+    "pavement_marker_yellow": {
+        "model": "workzone_pavement_marker", "build": None,
+        "texture": "workzone_pavement_marker_yellow",
+        "texture_fn": lambda: marker_texture(MARKER_YELLOW, MARKER_YELLOW_DARK, MARKER_GOLD, MARKER_GOLD_DARK),
+        "display": "Temporary Pavement Marker (Yellow)",
+        "rotatable": True, "java": "BlockWorkZonePavementMarker",
+    },
+    "pavement_marker_blue": {
+        "model": "workzone_pavement_marker", "build": None,
+        "texture": "workzone_pavement_marker_blue",
+        "texture_fn": lambda: marker_texture(MARKER_BLUE, MARKER_BLUE_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
+        "display": "Temporary Pavement Marker (Blue)",
+        "rotatable": True, "java": "BlockWorkZonePavementMarker",
+    },
+    "pavement_marker_green": {
+        "model": "workzone_pavement_marker", "build": None,
+        "texture": "workzone_pavement_marker_green",
+        "texture_fn": lambda: marker_texture(MARKER_GREEN, MARKER_GREEN_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
+        "display": "Temporary Pavement Marker (Bike Lane Green)",
+        "rotatable": True, "java": "BlockWorkZonePavementMarker",
     },
     "arrow_board": {
         "model": "workzone_arrow_board", "build": build_arrow_board,
@@ -1659,7 +1803,18 @@ def blockstate_json(spec):
     model = "csm:trafficaccessories/shared_models/%s.obj" % spec["model"]
     texture = "%s/%s" % (TEXTURE_PREFIX, spec["texture"])
     variants = {}
-    if spec.get("rotatable"):
+    if spec.get("diagonal"):
+        # Eight facings, and the in-between ones are not a quarter turn, so they cannot use the
+        # variant's own "y" shorthand -- that only takes right angles. The OBJ loader takes an
+        # explicit transform rotation at any angle instead, which is what the eight-way blocks
+        # already in this tab use.
+        variants["facing"] = {
+            name: ({} if degrees == 0 else
+                   {"transform": {"rotation": [{"x": 0}, {"y": degrees}, {"z": 0}]}})
+            for name, degrees in (("n", 0), ("nw", 45), ("w", 90), ("sw", 135),
+                                  ("s", 180), ("se", 225), ("e", 270), ("ne", 315))
+        }
+    elif spec.get("rotatable"):
         variants["facing"] = {
             "north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270},
         }
