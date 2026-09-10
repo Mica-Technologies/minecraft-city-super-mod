@@ -64,6 +64,14 @@ TEXTURE_DIR = layout.asset_dir_for_write(TRAFFICACCESSORIES_OWNER,
 BLOCKSTATE_DIR = layout.asset_dir_for_write(TRAFFICACCESSORIES_OWNER, "blockstates")
 SCRATCH_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_workzone_out")
 
+# Filled by write_barricade_models; the tab's bounding boxes come from the inventory model, which
+# is the widest a barricade ever gets.
+BARRICADE_BOUNDS = {}
+
+# The block centre, which every device is built around. Declared up here because the
+# shape constants below are written relative to it.
+AXIS = 8.0
+
 TEXTURE_PREFIX = "csm:blocks/trafficaccessories/workzone"
 MATERIAL = "body"
 
@@ -243,19 +251,22 @@ CADE_PANEL_H = CADE_PANEL[2] - CADE_PANEL[1]
 # --- the barricades ------------------------------------------------------------------------------
 # Type I carries one striped rail, Type III three.
 #
-# BARRICADE_SCALE stretches the whole assembly about its feet. A real Type III is four to eight
-# feet long and about five feet tall, so even scaled up it is under-sized; what it may not do is
-# become a multi-block assembly like the mast arms, since a barricade wants to be one block to
-# place and one to break. At this scale it overhangs its cell sideways, which is ordinary for
-# this tab. Nothing here reads the band strip -- the rails carry explicit panel UVs and
-# everything else takes a flat swatch -- so growing past 16 units cannot push a UV out of range
-# the way it did on the channelizer (D14).
+# BARRICADE_SCALE stretches the assembly's HEIGHT and its members about its feet. A real Type III
+# is four to eight feet long and about five feet tall, so even scaled up it is under-sized.
+#
+# The rails, though, span EXACTLY one cell, and that is what makes barricades connect. Abutting
+# runs need their rails to meet at the cell boundary: overhanging rails would overlap a
+# neighbour's and z-fight, and the striped panel UVs cannot continue past the edge of their
+# sprite to cover an overhang anyway (see D14 for what out-of-range UVs do). Spanning the cell
+# exactly also means a run of five barricades is five blocks long, which is what anyone laying
+# one out will expect.
+#
+# The legs are centred ON the cell edges rather than inside them, so where two barricades meet
+# the single shared upright sits on the seam instead of beside it.
 BARRICADE_SCALE = 1.35
-_BARRICADE_RAIL_HALF_X = 7.60
 _BARRICADE_RAIL_HALF_Z = 0.26
 _BARRICADE_LEG_HALF_X = 0.55
 _BARRICADE_LEG_HALF_Z = 0.42
-_BARRICADE_LEG_X = 5.90          # legs this far either side of the axis
 _BARRICADE_FOOT_HALF_Z = 2.60    # the splayed foot each leg stands on
 _BARRICADE_FOOT_Y1 = 0.55
 # (y0, y1) of each rail, bottom up.
@@ -264,11 +275,15 @@ _BARRICADE_TYPE1_TOP = 9.60
 _BARRICADE_TYPE3_RAILS = [(3.00, 5.40), (6.60, 9.00), (10.20, 12.60)]
 _BARRICADE_TYPE3_TOP = 13.20
 
-BARRICADE_RAIL_HALF_X = _BARRICADE_RAIL_HALF_X * BARRICADE_SCALE
+BARRICADE_RAIL_HALF_X = AXIS       # exactly half a cell: rails meet on the boundary
+# How far the rails run PAST the uprights at a free end. Only a free end gets it -- a connected
+# one has the neighbour's rail there instead -- which is what lets the same rail both butt
+# cleanly against another barricade and finish properly when it is the last in the run.
+BARRICADE_RAIL_OVERHANG = 2.26 * BARRICADE_SCALE
 BARRICADE_RAIL_HALF_Z = _BARRICADE_RAIL_HALF_Z * BARRICADE_SCALE
 BARRICADE_LEG_HALF_X = _BARRICADE_LEG_HALF_X * BARRICADE_SCALE
 BARRICADE_LEG_HALF_Z = _BARRICADE_LEG_HALF_Z * BARRICADE_SCALE
-BARRICADE_LEG_X = _BARRICADE_LEG_X * BARRICADE_SCALE
+BARRICADE_LEG_X = AXIS             # legs centred on the cell edges, so seams share one
 BARRICADE_FOOT_HALF_Z = _BARRICADE_FOOT_HALF_Z * BARRICADE_SCALE
 BARRICADE_FOOT_Y1 = _BARRICADE_FOOT_Y1 * BARRICADE_SCALE
 BARRICADE_TYPE1_RAILS = [(y0 * BARRICADE_SCALE, y1 * BARRICADE_SCALE)
@@ -277,11 +292,20 @@ BARRICADE_TYPE1_TOP = _BARRICADE_TYPE1_TOP * BARRICADE_SCALE
 BARRICADE_TYPE3_RAILS = [(y0 * BARRICADE_SCALE, y1 * BARRICADE_SCALE)
                          for (y0, y1) in _BARRICADE_TYPE3_RAILS]
 BARRICADE_TYPE3_TOP = _BARRICADE_TYPE3_TOP * BARRICADE_SCALE
+# Which rails and what height each barricade type carries, keyed by the name its models take.
+BARRICADE_TYPES = {
+    "type1": (BARRICADE_TYPE1_RAILS, BARRICADE_TYPE1_TOP),
+    "type3": (BARRICADE_TYPE3_RAILS, BARRICADE_TYPE3_TOP),
+}
 BARRICADE_RAIL_W = BARRICADE_RAIL_HALF_X * 2.0
 BARRICADE_RAIL_H = BARRICADE_TYPE1_RAILS[0][1] - BARRICADE_TYPE1_RAILS[0][0]
-# The stripe pitch grows with the rail, so a bigger barricade carries the same number of bands
-# rather than the same band size.
-BARRICADE_STRIPE = 3.6 * BARRICADE_SCALE
+# The stripe pitch is the rail width over four, which puts exactly TWO full light-dark periods
+# across a cell. That is not cosmetic: it means the pattern has the same phase at both edges of
+# every rail, so where two barricades meet the striping carries straight on across the seam
+# instead of jumping, and a run reads as one long barricade rather than a line of separate
+# panels. It is also what lets a free end's overhang continue the pattern by wrapping round to
+# the far edge of the same sprite.
+BARRICADE_STRIPE = BARRICADE_RAIL_W / 4.0
 
 # --- the arrow board -------------------------------------------------------------------------------
 # A trailer-mounted arrow board: a black 2:1 panel of amber lamps on a tall orange mast over a
@@ -508,7 +532,6 @@ def uv_swatch(v):
 
 
 # --- primitives (standing frame, Y up, axis through the block centre) ---------------------------
-AXIS = 8.0
 
 
 def ring_angles(sides):
@@ -882,35 +905,83 @@ def build_channelizer_cade(mesh):
         mesh.quad_out(pts, normal, uvs)
 
 
-def build_barricade(mesh, rails, top_y):
-    """Legs, feet and striped rails.
+def _barricade_upright(mesh, cx, top_y):
+    """One leg with the splayed foot it stands on, centred at ``cx``."""
+    box(mesh, cx - BARRICADE_LEG_HALF_X - 0.35, cx + BARRICADE_LEG_HALF_X + 0.35,
+        0.0, BARRICADE_FOOT_Y1,
+        AXIS - BARRICADE_FOOT_HALF_Z, AXIS + BARRICADE_FOOT_HALF_Z, SWATCH_BAND_V)
+    box(mesh, cx - BARRICADE_LEG_HALF_X, cx + BARRICADE_LEG_HALF_X,
+        BARRICADE_FOOT_Y1, top_y,
+        AXIS - BARRICADE_LEG_HALF_Z, AXIS + BARRICADE_LEG_HALF_Z, SWATCH_BAND_V)
+
+
+def build_barricade_core(mesh, rails, top_y):
+    """The rails, and the upright on the LEFT edge of the cell.
+
+    This piece is drawn by every barricade, connected or not, which is what puts exactly one
+    upright on each seam of a run: the block to the left of a seam omits its right upright and
+    the block to the right always draws its left one. Drawing the upright at both ends and
+    hiding both at a seam would leave the joint with no leg at all.
 
     Each rail's two faces map the whole striped region of the texture onto the rail rectangle,
-    so the stripes run across the rail at the angle the rail's own proportions give them. The
-    legs and feet come from the flat white swatch instead, so a barricade shows stripes only
-    where a real one carries sheeting.
+    so the stripes run across it at the angle the rail's own proportions give them. The legs and
+    feet come from the flat white swatch instead, so a barricade shows stripes only where a real
+    one carries sheeting.
     """
-    for sign in (-1, 1):
-        cx = AXIS + sign * BARRICADE_LEG_X
-        # Foot: a splayed board, wider front to back than the leg so the thing stands up.
-        box(mesh, cx - BARRICADE_LEG_HALF_X - 0.35, cx + BARRICADE_LEG_HALF_X + 0.35,
-            0.0, BARRICADE_FOOT_Y1,
-            AXIS - BARRICADE_FOOT_HALF_Z, AXIS + BARRICADE_FOOT_HALF_Z, SWATCH_BAND_V)
-        box(mesh, cx - BARRICADE_LEG_HALF_X, cx + BARRICADE_LEG_HALF_X,
-            BARRICADE_FOOT_Y1, top_y,
-            AXIS - BARRICADE_LEG_HALF_Z, AXIS + BARRICADE_LEG_HALF_Z, SWATCH_BAND_V)
+    _barricade_upright(mesh, AXIS - BARRICADE_LEG_X, top_y)
 
     hz = BARRICADE_RAIL_HALF_Z
     hx = BARRICADE_RAIL_HALF_X
     for (y0, y1) in rails:
-        # The rail's edges, from the swatch; its two broad faces carry the stripes.
+        # The rail's edges, from the swatch; its two broad faces carry the stripes. The end faces
+        # are left off: on a connected run they would sit inside the neighbour's rail.
         box(mesh, AXIS - hx, AXIS + hx, y0, y1, AXIS - hz, AXIS + hz, SWATCH_BAND_V,
-            faces=("x-", "x+", "y-", "y+"))
+            faces=("y-", "y+"))
         for z, normal in ((AXIS + hz, (0, 0, 1)), (AXIS - hz, (0, 0, -1))):
             pts = [(AXIS - hx, y0, z), (AXIS + hx, y0, z),
                    (AXIS + hx, y1, z), (AXIS - hx, y1, z)]
             uvs = [(0.0, 0.0), (SWATCH_U0, 0.0), (SWATCH_U0, 1.0), (0.0, 1.0)]
             mesh.quad_out(pts, normal, uvs)
+
+
+def build_barricade_end(mesh, rails, top_y, left):
+    """An UNCONNECTED end: the rails overhanging past the upright, capped, plus the upright
+    itself on the right-hand side.
+
+    A free end keeps the overhang a real barricade has; a connected one must not, because the
+    neighbour's rail already occupies that space and two rails in one place z-fight.
+
+    The overhang continues the stripe by wrapping to the far edge of the same sprite, which lands
+    seamlessly only because the pitch puts a whole number of periods across the rail (see
+    BARRICADE_STRIPE). Give it a fresh 0..1 mapping instead and the pattern visibly restarts at
+    the upright.
+    """
+    sign = -1 if left else 1
+    hz = BARRICADE_RAIL_HALF_Z
+    inner = AXIS + sign * BARRICADE_RAIL_HALF_X
+    outer = inner + sign * BARRICADE_RAIL_OVERHANG
+    if not left:
+        _barricade_upright(mesh, AXIS + BARRICADE_LEG_X, top_y)
+
+    # The slice of the sprite the overhang wears, taken from the opposite edge so it continues.
+    fraction = BARRICADE_RAIL_OVERHANG / (BARRICADE_RAIL_HALF_X * 2.0)
+    if left:
+        u_outer, u_inner = SWATCH_U0 * (1.0 - fraction), SWATCH_U0
+    else:
+        u_outer, u_inner = SWATCH_U0 * fraction, 0.0
+
+    t = uv_swatch(SWATCH_BAND_V)
+    for (y0, y1) in rails:
+        box(mesh, min(inner, outer), max(inner, outer), y0, y1, AXIS - hz, AXIS + hz,
+            SWATCH_BAND_V, faces=("y-", "y+"))
+        for z, normal in ((AXIS + hz, (0, 0, 1)), (AXIS - hz, (0, 0, -1))):
+            pts = [(outer, y0, z), (inner, y0, z), (inner, y1, z), (outer, y1, z)]
+            uvs = [(u_outer, 0.0), (u_inner, 0.0), (u_inner, 1.0), (u_outer, 1.0)]
+            mesh.quad_out(pts, normal, uvs)
+        # Cap the very end, so a free end is not an open box.
+        pts = [(outer, y0, AXIS - hz), (outer, y0, AXIS + hz),
+               (outer, y1, AXIS + hz), (outer, y1, AXIS - hz)]
+        mesh.quad_out(pts, (sign, 0, 0), [t, t, t, t])
 
 
 def build_arrow_board(mesh):
@@ -1176,34 +1247,36 @@ DEVICES = {
         "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "barricade_type_1_left": {
+        "barricade": "type1",
         "model": "workzone_barricade_type1",
-        "build": lambda m: build_barricade(m, BARRICADE_TYPE1_RAILS, BARRICADE_TYPE1_TOP),
         "texture": "workzone_rail_left",
         "texture_fn": lambda: diagonal_stripe_image(False, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
         "display": "Type I Barricade (Keep Left)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "rotatable": True, "java": "BlockWorkZoneBarricade",
     },
     "barricade_type_1_right": {
+        "barricade": "type1",
         "model": "workzone_barricade_type1", "build": None,
         "texture": "workzone_rail_right",
         "texture_fn": lambda: diagonal_stripe_image(True, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
         "display": "Type I Barricade (Keep Right)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "rotatable": True, "java": "BlockWorkZoneBarricade",
     },
     "barricade_type_3_left": {
+        "barricade": "type3",
         "model": "workzone_barricade_type3",
-        "build": lambda m: build_barricade(m, BARRICADE_TYPE3_RAILS, BARRICADE_TYPE3_TOP),
         "texture": "workzone_rail_left",
         "texture_fn": lambda: diagonal_stripe_image(False, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
         "display": "Type III Barricade (Keep Left)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "rotatable": True, "java": "BlockWorkZoneBarricade",
     },
     "barricade_type_3_right": {
+        "barricade": "type3",
         "model": "workzone_barricade_type3", "build": None,
         "texture": "workzone_rail_right",
         "texture_fn": lambda: diagonal_stripe_image(True, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
         "display": "Type III Barricade (Keep Right)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "rotatable": True, "java": "BlockWorkZoneBarricade",
     },
     "delineator_post": {
         "model": "workzone_delineator", "build": build_delineator,
@@ -1305,8 +1378,24 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
     seen_models = set()
     bounds = {}
 
+    written.extend(write_barricade_models(model_dir))
+    for name in BARRICADE_TYPES:
+        write_mtl(os.path.join(model_dir, "workzone_barricade_%s.mtl" % name),
+                  "workzone_rail_right")
+
     for registry, spec in DEVICES.items():
         if only and registry not in only:
+            continue
+        if "barricade" in spec:
+            tex_path = os.path.join(texture_dir, spec["texture"] + ".png")
+            if tex_path not in written:
+                spec["texture_fn"]().save(tex_path)
+                written.append(tex_path)
+            bs_path = os.path.join(blockstate_dir, registry + ".json")
+            with open(bs_path, "w", newline="\n") as fh:
+                json.dump(barricade_blockstate(spec), fh, indent=2)
+                fh.write("\n")
+            written.append(bs_path)
             continue
         model = spec["model"]
         if spec["build"] is not None and model not in seen_models:
@@ -1352,7 +1441,8 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
         for registry, spec in DEVICES.items():
             if only and registry not in only:
                 continue
-            b = bounds.get(spec["model"])
+            b = (BARRICADE_BOUNDS.get(spec["barricade"]) if "barricade" in spec
+                 else bounds.get(spec["model"]))
             if b is None:
                 continue
             cls = spec.get("java", "BlockWorkZoneDevice")
@@ -1363,6 +1453,74 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
     written.append(write_geometry_constants())
 
     return written
+
+
+def write_barricade_models(model_dir):
+    """Emit each barricade type as a core plus two detachable ends.
+
+    A barricade is the one device here whose model depends on its NEIGHBOURS, so it cannot be a
+    single baked shape. The core is what every barricade draws; the ends are added only where
+    nothing connects. The inventory model is core plus both ends, since an item has no
+    neighbours to ask.
+    """
+    written = []
+    for name, (rails, top_y) in BARRICADE_TYPES.items():
+        stem = "workzone_barricade_%s" % name
+        pieces = {
+            "core": lambda m, r=rails, t=top_y: build_barricade_core(m, r, t),
+            "end_left": lambda m, r=rails, t=top_y: build_barricade_end(m, r, t, True),
+            "end_right": lambda m, r=rails, t=top_y: build_barricade_end(m, r, t, False),
+        }
+        for suffix, builder in pieces.items():
+            mesh = Mesh()
+            builder(mesh)
+            check_uvs(mesh, "%s_%s" % (stem, suffix))
+            path = os.path.join(model_dir, "%s_%s.obj" % (stem, suffix))
+            mesh.write(path, "%s_%s" % (stem, suffix), stem + ".mtl")
+            written.append(path)
+
+        inv = Mesh()
+        build_barricade_core(inv, rails, top_y)
+        build_barricade_end(inv, rails, top_y, True)
+        build_barricade_end(inv, rails, top_y, False)
+        check_uvs(inv, stem + "_inv")
+        inv_path = os.path.join(model_dir, stem + "_inv.obj")
+        inv.write(inv_path, stem + "_inv", stem + ".mtl")
+        written.append(inv_path)
+        BARRICADE_BOUNDS[name] = mesh_bounds(inv)
+    return written
+
+
+def barricade_blockstate(spec):
+    """The blockstate for one barricade: ends appear only where nothing connects."""
+    stem = "workzone_barricade_%s" % spec["barricade"]
+    texture = "%s/%s" % (TEXTURE_PREFIX, spec["texture"])
+    model = "csm:trafficaccessories/shared_models/%s" % stem
+
+    def submodel(suffix):
+        return {"submodel": {suffix: {"model": "%s_%s.obj" % (model, suffix),
+                                      "custom": {"flip-v": True},
+                                      "textures": {"#%s" % MATERIAL: texture}}}}
+
+    return {
+        "forge_marker": 1,
+        "defaults": {
+            "model": "%s_core.obj" % model,
+            "custom": {"flip-v": True},
+            "textures": {"#%s" % MATERIAL: texture},
+        },
+        "variants": {
+            "facing": {"north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270}},
+            # The end is on the FALSE side: it is drawn where nothing connects.
+            "connectleft": {"false": submodel("end_left"), "true": {}},
+            "connectright": {"false": submodel("end_right"), "true": {}},
+            "normal": [{}],
+            "inventory": [{"model": "%s_inv.obj" % model,
+                           "custom": {"flip-v": True},
+                           "textures": {"#%s" % MATERIAL: texture},
+                           "transform": "forge:default-block"}],
+        },
+    }
 
 
 def write_geometry_constants():

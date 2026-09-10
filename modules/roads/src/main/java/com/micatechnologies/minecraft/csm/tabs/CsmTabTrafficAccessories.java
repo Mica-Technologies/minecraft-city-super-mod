@@ -47,6 +47,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetN
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignDouble;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneArrowBoard;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneBarricade;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDevice;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceFlashing;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceRotatable;
@@ -610,14 +611,14 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.217062, 0.000000, 0.217062, 0.782938, 0.975000, 0.782938)));
     initTabBlock(new BlockWorkZoneDeviceRotatable("channelizer_cade_right",
         new AxisAlignedBB(0.217062, 0.000000, 0.217062, 0.782938, 0.975000, 0.782938)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("barricade_type_1_left",
-        new AxisAlignedBB(-0.141250, 0.000000, 0.280625, 1.141250, 0.810000, 0.719375)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("barricade_type_1_right",
-        new AxisAlignedBB(-0.141250, 0.000000, 0.280625, 1.141250, 0.810000, 0.719375)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("barricade_type_3_left",
-        new AxisAlignedBB(-0.141250, 0.000000, 0.280625, 1.141250, 1.113750, 0.719375)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("barricade_type_3_right",
-        new AxisAlignedBB(-0.141250, 0.000000, 0.280625, 1.141250, 1.113750, 0.719375)));
+    initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_left",
+        new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 0.810000, 0.719375)));
+    initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_right",
+        new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 0.810000, 0.719375)));
+    initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_left",
+        new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 1.113750, 0.719375)));
+    initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_right",
+        new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 1.113750, 0.719375)));
     initTabBlock(new BlockWorkZoneDevice("delineator_post",
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
     initTabBlock(new BlockWorkZoneDevice("delineator_post_yellow",
