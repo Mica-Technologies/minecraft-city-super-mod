@@ -308,6 +308,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/SPAN_WIRE_SYSTEM.md` -- Wire-span signal mounting: the catenary solver, why mounts
   go below the cable, the three different ways a payload hangs, box span tether clearance
 - `assets/docs/MAST_ARM_CURVE_SYSTEM.md` -- Realistically scaled signal mast arm upsweeps: why they are multi-block, the parabolic sweep, oblique end clipping
+- `assets/docs/WORK_ZONE_ACCESSORIES.md` -- Cones, drums, channelizers, barricades and the arrow board: how a device settles onto the road below it with no dependency on whatever built that road, barricade runs and their mounted signs, the animated arrow board
 - `assets/docs/PEDESTAL_POLE_SYSTEM.md` -- The pedestrian pedestal pole: one stackable block that decides base, cap or seamless joint per end from its neighbours, why the end properties are named in model space
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 
