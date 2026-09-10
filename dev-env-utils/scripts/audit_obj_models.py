@@ -73,6 +73,27 @@ def load(path):
     return triangles
 
 
+def out_of_range_uvs(path):
+    """Every ``vt`` outside the 0-1 range Forge's OBJ loader insists on.
+
+    Forge refuses the WHOLE model on the first one and substitutes the purple and black
+    placeholder, so this is not cosmetic -- it is the difference between a model appearing and
+    not. It earns a place here because nothing else catches it: the geometry checks below do not
+    look at UVs, ``preview_block_model.py`` does its own UV maths and renders the model happily,
+    and in the log the one ``UVsOutOfBoundsException`` is buried under the pile of knock-on
+    "exception loading model" errors it causes for every variant and item that referenced it.
+    """
+    bad = []
+    for number, line in enumerate(open(path, encoding="utf-8"), 1):
+        parts = line.split()
+        if parts[:1] != ["vt"]:
+            continue
+        uv = tuple(float(v) for v in parts[1:3])
+        if not all(0.0 <= c <= 1.0 for c in uv):
+            bad.append((number, uv))
+    return bad
+
+
 def key(point):
     return tuple(round(c / QUANT) for c in point)
 
@@ -279,17 +300,21 @@ def main():
         p for pattern in DEFAULT_GLOBS for p in glob.glob(pattern))
     for path in paths:
         triangles = load(path)
+        bad_uvs = out_of_range_uvs(path)
         inconsistent, boundary = winding_and_boundary(triangles)
         overlaps = coplanar_overlaps(triangles)
         boundary_faces = on_block_boundary(triangles)
         holes = see_through(triangles)
         open_holes = [hole for hole in holes if not hole[3]]
         name = path.replace("\\", "/").rsplit("/", 1)[-1]
-        flag = ("FAIL" if (overlaps or boundary_faces)
+        flag = ("FAIL" if (overlaps or boundary_faces or bad_uvs)
                 else "warn" if (inconsistent or open_holes) else "ok  ")
         print("%s %-32s tris=%4d  winding=%-3d coplanar=%-3d onface=%-3d seethru=%-2d boundary=%d"
               % (flag, name, len(triangles), len(inconsistent), len(overlaps),
                  len(boundary_faces), len(open_holes), len(boundary)))
+        for number, uv in bad_uvs[:4]:
+            print("        UV outside 0-1 at line %d: (%.4f, %.4f)"
+                  " -- Forge will refuse the whole model" % (number, uv[0], uv[1]))
         for direction, count, seen, is_mounted in holes[:5]:
             print("        see-through looking along %s: %d of %d rays hit a back face first%s"
                   % (direction, count, seen,
@@ -304,7 +329,7 @@ def main():
         for i, j in inconsistent[:4]:
             centre = [sum(t[k] * 16 for t in triangles[i]) / 3 for k in range(3)]
             print("        winding flip near (%.2f, %.2f, %.2f)" % tuple(centre))
-        worst = max(worst, len(overlaps) + len(boundary_faces))
+        worst = max(worst, len(overlaps) + len(boundary_faces) + len(bad_uvs))
     return 1 if worst else 0
 
 

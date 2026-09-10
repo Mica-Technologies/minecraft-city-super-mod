@@ -46,6 +46,9 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalF
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSign;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignDouble;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDevice;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceFlashing;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceRotatable;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdoublemountunpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzsinglemountunpainted;
 import net.minecraft.block.Block;
@@ -583,5 +586,42 @@ public class CsmTabTrafficAccessories extends CsmTab {
     // --- Class-based: Dynamic Street Sign ---
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockDynamicStreetSign.class,
         fmlPreInitializationEvent);
+
+    // --- Work zone channelizing devices ---
+    // Bounding boxes come from the models' own extents, emitted by
+    // dev-env-utils/scripts/gen_work_zone_devices.py alongside the geometry, so they follow the
+    // shape rather than being eyeballed. Regenerate rather than hand-editing them.
+    initTabBlock(new BlockWorkZoneDevice("traffic_cone",
+        new AxisAlignedBB(0.297187, 0.000000, 0.297187, 0.702813, 0.770000, 0.702813)));
+    initTabBlock(new BlockWorkZoneDevice("traffic_cone_lime",
+        new AxisAlignedBB(0.297187, 0.000000, 0.297187, 0.702813, 0.770000, 0.702813)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("traffic_cone_knocked",
+        new AxisAlignedBB(0.297187, 0.000000, 0.115000, 0.702813, 0.405625, 0.885000)));
+    initTabBlock(new BlockWorkZoneDeviceFlashing("traffic_drum",
+        new AxisAlignedBB(0.064777, 0.000000, 0.064777, 0.935223, 1.077462, 0.935223)));
+    initTabBlock(new BlockWorkZoneDevice("traffic_drum_unlit",
+        new AxisAlignedBB(0.064777, 0.000000, 0.064777, 0.935223, 0.959375, 0.935223)));
+    initTabBlock(new BlockWorkZoneDevice("channelizer_tube",
+        new AxisAlignedBB(0.213129, 0.000000, 0.168750, 0.786871, 1.183469, 0.831250)));
+    initTabBlock(new BlockWorkZoneDevice("channelizer_tube_lime",
+        new AxisAlignedBB(0.213129, 0.000000, 0.168750, 0.786871, 1.183469, 0.831250)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("channelizer_cade_left",
+        new AxisAlignedBB(0.217062, 0.000000, 0.217062, 0.782938, 0.975000, 0.782938)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("channelizer_cade_right",
+        new AxisAlignedBB(0.217062, 0.000000, 0.217062, 0.782938, 0.975000, 0.782938)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("barricade_type_1_left",
+        new AxisAlignedBB(-0.141250, 0.000000, 0.280625, 1.141250, 0.810000, 0.719375)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("barricade_type_1_right",
+        new AxisAlignedBB(-0.141250, 0.000000, 0.280625, 1.141250, 0.810000, 0.719375)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("barricade_type_3_left",
+        new AxisAlignedBB(-0.141250, 0.000000, 0.280625, 1.141250, 1.113750, 0.719375)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("barricade_type_3_right",
+        new AxisAlignedBB(-0.141250, 0.000000, 0.280625, 1.141250, 1.113750, 0.719375)));
+    initTabBlock(new BlockWorkZoneDevice("delineator_post",
+        new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
+    initTabBlock(new BlockWorkZoneDevice("delineator_post_yellow",
+        new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
+    initTabBlock(new BlockWorkZoneDevice("sand_barrel_array",
+        new AxisAlignedBB(0.064777, 0.000000, 0.064777, 0.935223, 0.862500, 0.935223)));
   }
 }
