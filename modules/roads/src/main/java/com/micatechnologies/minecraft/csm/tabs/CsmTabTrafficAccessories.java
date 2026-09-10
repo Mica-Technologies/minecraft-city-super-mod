@@ -728,9 +728,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockGuardrail("box_beam_guardrail_double",
         new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.737500, 0.950000), BOX_BEAM));
     initTabBlock(new BlockGuardrail("cable_barrier",
-        new AxisAlignedBB(0.000000, 0.000000, 0.118242, 1.000000, 0.850000, 0.306250), CABLE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.096875, 1.000000, 0.850000, 0.306250), CABLE));
     initTabBlock(new BlockGuardrail("cable_barrier_double",
-        new AxisAlignedBB(0.000000, 0.000000, 0.118242, 1.000000, 0.850000, 0.381758), CABLE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.096875, 1.000000, 0.850000, 0.403125), CABLE));
     initTabBlock(new BlockGuardrailEnd("cable_barrier_anchor",
         new AxisAlignedBB(0.000000, 0.000000, 0.012500, 0.537500, 0.887500, 0.287500), CABLE));
 
