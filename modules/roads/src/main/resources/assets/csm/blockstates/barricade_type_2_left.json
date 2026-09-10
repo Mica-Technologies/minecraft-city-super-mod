@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/shared_models/workzone_arrow_board.obj",
+    "model": "csm:trafficaccessories/shared_models/workzone_barricade_type2.obj",
     "custom": {
       "flip-v": true
     },
     "textures": {
-      "#body": "csm:blocks/trafficaccessories/workzone/workzone_arrow_board"
+      "#body": "csm:blocks/trafficaccessories/workzone/workzone_fold_rail_left"
     }
   },
   "variants": {
@@ -27,8 +27,7 @@
     ],
     "inventory": [
       {
-        "transform": "forge:default-block",
-        "model": "csm:trafficaccessories/shared_models/workzone_arrow_board_inv.obj"
+        "transform": "forge:default-block"
       }
     ]
   }
