@@ -1,7 +1,7 @@
 # Work Zone Accessories
 
 The channelizing devices a road crew puts out: cones, drums, channelizers, barricades, delineator
-posts, sand barrels and the arrow board. Twenty blocks in the Traffic Accessories tab, all
+posts, temporary pavement markers, sand barrels and the arrow board. Twenty-five blocks in the Traffic Accessories tab, all
 generated from one script, and all sharing one behaviour that nothing else in the mod has — they
 **settle onto the surface underneath them** instead of floating a cell above it.
 
@@ -23,7 +23,8 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `barricade_type_2_left`, `_right` | `BlockWorkZoneBarricadeFolding` | two rails on a folding A-frame, stands alone |
 | `barricade_type_3_left`, `_right` | `BlockWorkZoneBarricade` | three rails, joins into runs |
 | `delineator_post`, `delineator_post_yellow` | `BlockWorkZoneDevice` | |
-| `delineator_zebra` | `BlockWorkZoneDeviceRotatable` | the low rubber lane separator; runs the length of its cell so a line of them is continuous |
+| `delineator_zebra` | `BlockWorkZoneDeviceDiagonal` | the low rubber lane separator; runs the length of its cell so a line of them is continuous, and takes all eight facings |
+| `pavement_marker_white`, `_yellow`, `_blue`, `_green` | `BlockWorkZonePavementMarker` | the small folded tabs taped down a lane line; drawn fullbright |
 | `sand_barrel_array` | `BlockWorkZoneDevice` | |
 | `arrow_board` | `BlockWorkZoneArrowBoard` | trailer board with seven animated modes |
 
@@ -190,6 +191,51 @@ barricade gets a proportionately smaller sign rather than one hanging off its en
 `BarricadeGeometry` is **generated** alongside the models, so the renderer and the baked geometry
 cannot disagree about where the uprights and rails are.
 
+### Why the zebra delineator gets eight facings
+
+It is the only device here that does. Four facings are enough for anything that stands up and
+faces traffic, and not enough for something laid ALONG a line: a lane edge, a taper into a work
+zone or a bike lane running off the grid all need the in-between angles, and a line of long
+devices that can only lie north-south or east-west has to staircase across a diagonal instead of
+following it.
+
+The in-between facings are not quarter turns, so they cannot use a blockstate variant's own
+`y` shorthand -- that only takes right angles. They use an explicit `transform` rotation, which
+the OBJ loader accepts at any angle and which the eight-way blocks already in this tab use.
+
+### The temporary pavement markers
+
+A flat foot taped to the road, a panel standing up off the back of it, and a beaded reflective
+strip along the panel's top edge under a moulded lip. White, yellow, MUTCD/ADA blue and the FHWA
+green a bike lane is surfaced in.
+
+Unlike the zebra delineator these do **not** span their cell. Real ones are set out at intervals
+with clear road between them, so one small marker per block already gives a line the spacing it
+is supposed to have; stretching them to touch would turn a dotted line into a solid one.
+
+Foot, panel and lip each step in a little from the one behind and each finishes *inside* it.
+Three pieces the same width would put three pairs of faces in the same two planes, which
+z-fights along both ends of the marker.
+
+Their texture is deliberately not `band_image`: that shades across u with a sine, which reads as
+the round side of a lathed cone or drum and as a vignette on something flat. A marker is a
+moulded plastic tab, so its body is left flat and only the strip carries any texture -- sparse
+bright pixels, which is what separates a retroreflective strip from a painted stripe at
+distance.
+
+They are drawn at **full brightness** whatever the light around them, which is how the strip
+reads as retroreflective rather than painted. A marker that goes dark at night is one that is
+not doing its job, and these are put out precisely for the nights between milling a road and
+re-striping it.
+
+1.12 has no per-face emissive on a baked model, so that is the whole tab rather than the strip
+alone. Doing it properly means a tile entity renderer drawing the strip over the model, which is
+how every other lit thing in this mod works and costs a tile entity and a draw call per marker
+— which a device meant to be laid out in lines of dozens cannot afford. At this size the
+difference is not visible: the tab is small enough that a lit body reads as plastic catching
+headlights. It emits no light, so nothing around it is lit any differently, which is correct —
+a retroreflector returns a driver's own beam and illuminates nothing.
+
 ### The zebra delineator
 
 The low rubber lane separator laid nose to tail along a bike lane edge. It is the odd one out
@@ -264,9 +310,9 @@ pattern would suggest the board only ever shows that one.
 | `dev-env-utils/scripts/gen_work_zone_devices.py` | generates every model, texture and blockstate below, plus two Java constants files |
 | `src/main/java/…/codeutils/RoadSurfaceHeight.java` | the settle decision, in Core so any module can use it |
 | `…/codeutils/ICsmRoadSurfaceAware.java` | marks a block as settling; also what stops devices stacking their offsets |
-| `…/codeutils/AbstractBlockRoadSurface.java`, `AbstractBlockRoadSurfaceRotatableNSEW.java` | the two base classes that apply the offset to render and bounding box |
+| `…/codeutils/AbstractBlockRoadSurface.java`, `…RotatableNSEW.java`, `…RotatableHZEight.java` | the three base classes that apply the offset to render and bounding box |
 | `src/test/…/RoadSurfaceHeightTest.java` | 15 cases over the pure decision functions |
-| `modules/roads/…/trafficaccessories/BlockWorkZoneDevice.java`, `…Rotatable.java`, `…Flashing.java` | the plain devices, constructed per registry name from the tab |
+| `modules/roads/…/trafficaccessories/BlockWorkZoneDevice.java`, `…Rotatable.java`, `…Flashing.java`, `…Diagonal.java` | the plain devices, constructed per registry name from the tab |
 | `…/AbstractBlockWorkZoneBarricade.java` | what a barricade carries: signs, warning lights, and the shape questions |
 | `…/BlockWorkZoneBarricade.java` | the joining trestle barricades |
 | `…/BlockWorkZoneBarricadeFolding.java` | the Type II |
