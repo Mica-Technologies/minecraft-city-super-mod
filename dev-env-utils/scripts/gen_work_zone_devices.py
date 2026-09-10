@@ -510,6 +510,12 @@ ZEBRA_BANDS = [(c - ZEBRA_BAND_W / 2.0, c + ZEBRA_BAND_W / 2.0)
 # a wall has to do.
 WALL_X = (0.00, 16.00)
 
+# How far a device laid at forty-five degrees stands off its neighbour. A device spans one cell
+# and a diagonal step between cell centres is sqrt(2) cells, so a diagonal run leaves this much
+# air at every joint -- about 6.6 units, which is two thirds of a barricade's overhang and
+# impossible not to see. Devices that JOIN close it with a filler at their right-hand end.
+DIAGONAL_GAP = (2.0 ** 0.5 - 1.0) * 16.0
+
 # (half width, height) up one side of the cross-section, bottom to top.
 LCD_PROFILE = [(3.00, 0.00), (3.00, 1.30), (1.70, 4.60), (1.45, 9.60), (1.10, 11.00)]
 LCD_TOP_BAND = (9.60, 11.00)   # the white cap the top rail is moulded in
@@ -554,6 +560,7 @@ PSIG_ARM_CLEARANCE = 8 * 16.0        # underside of the LEVEL run, in 1/16 units
 # under a boom eight cells long reads as a mast someone left standing on a go-kart. On the
 # reference machines the deck is around a third of the overall height, and the wheels and jacks
 # are big enough to see from across the road.
+# The compact chassis, which the plain mast and pedestrian styles use.
 PSIG_BED = (-18.00, 26.00, 10.40, 20.40, 0.00, 16.00)   # x0, x1, y0, y1, z0, z1
 PSIG_TONGUE = (26.00, 46.00, 12.60, 17.00, 5.60, 10.40)
 PSIG_WHEEL = {"r": 9.20, "half": 3.00, "x": 1.00, "y": 9.20, "z": (-2.60, 18.60)}
@@ -561,6 +568,26 @@ PSIG_JACK_X = (-14.40, 22.40)
 PSIG_JACK_Z = (-1.20, 17.20)
 PSIG_JACK_HALF = 1.10
 PSIG_CABINET = (12.00, 24.00, 20.40, 38.00, 2.60, 13.40)  # the controller box beside the mast
+
+# --- the arm style's chassis -----------------------------------------------------------------
+# A boom eight cells long is a lever, and what stops the machine going over with it is the base
+# under it. On the compact chassis there was barely any: the deck was narrower than the boom was
+# long by a factor of eight, and the jacks stood inside the deck's own footprint.
+#
+# So the arm style gets its own, and every dimension of it is doing a job. The deck is longer and
+# a good deal wider. The axle carries twin wheels a side, which is what a trailer this size runs
+# on. And the jacks become OUTRIGGERS that reach well outside the body, because a jack directly
+# under the deck adds nothing to the tipping base -- the deck edge was already there.
+PSIG_ARM_BED = (-30.00, 34.00, 11.20, 22.40, -5.00, 21.00)
+PSIG_ARM_TONGUE = (34.00, 56.00, 13.60, 19.00, 5.20, 10.80)
+PSIG_ARM_WHEEL = {"r": 10.20, "half": 3.20, "x": 2.00, "y": 10.20,
+                  "z": (-8.40, -1.60, 17.60, 24.40)}
+PSIG_ARM_JACK_X = (-26.00, 30.00)
+PSIG_ARM_JACK_Z = (-11.00, 27.00)     # outside the deck: that is the whole point of an outrigger
+PSIG_ARM_JACK_HALF = 1.45
+PSIG_ARM_OUTRIGGER_Y = (13.00, 16.20)  # the arms the jacks hang off, reaching out from the bed
+PSIG_ARM_SOLAR = (-28.00, 2.00, -3.50, 19.50)   # x0, x1, z0, z1
+PSIG_ARM_CABINET = (14.00, 32.00, 22.40, 44.00, 0.40, 15.60)
 
 # --- the solar array -------------------------------------------------------------------------
 # The one part of a trailer that is not painted steel, and the only one worth a picture rather
@@ -632,9 +659,9 @@ PSIG_RAM_HALF = 1.45
 # a clear block above the head now, which is also where the winch and the beacon live on a real
 # one.
 PSIG_STYLES = {
-    "arm": {"mast_top": PSIG_PIVOT_Y + 14.0, "arm": PSIG_ARM_TIP_Z},
-    "mast": {"mast_top": 7 * 16.0 + 8.0, "arm": None},
-    "ped": {"mast_top": 4 * 16.0 + 8.0, "arm": None},
+    "arm": {"mast_top": PSIG_PIVOT_Y + 14.0, "arm": PSIG_ARM_TIP_Z, "heavy": True},
+    "mast": {"mast_top": 7 * 16.0 + 8.0, "arm": None, "heavy": False},
+    "ped": {"mast_top": 4 * 16.0 + 8.0, "arm": None, "heavy": False},
 }
 
 # --- the vertical panel --------------------------------------------------------------------------
@@ -1308,6 +1335,30 @@ def build_barricade_core(mesh, rails, top_y):
             mesh.quad_out(pts, normal, uvs)
 
 
+def build_barricade_fill(mesh, rails, top_y):
+    """The rails carried on past the cell's right-hand edge to meet a DIAGONAL neighbour.
+
+    No upright: the neighbour draws its own left-hand one, which is what keeps exactly one leg on
+    each joint of a run however it is laid.
+
+    The stripe continues across the filler by wrapping to the near edge of the same sprite, the
+    same trick the free end's overhang uses -- a fresh mapping would visibly restart the pattern
+    at the cell boundary, which is precisely where a run is supposed to look continuous.
+    """
+    hz = BARRICADE_RAIL_HALF_Z
+    inner = AXIS + BARRICADE_RAIL_HALF_X
+    outer = inner + DIAGONAL_GAP
+    fraction = DIAGONAL_GAP / (BARRICADE_RAIL_HALF_X * 2.0)
+    u_inner, u_outer = 0.0, SWATCH_U0 * fraction
+    for (y0, y1) in rails:
+        box(mesh, inner, outer, y0, y1, AXIS - hz, AXIS + hz, SWATCH_BAND_V,
+            faces=("y-", "y+"))
+        for z, normal in ((AXIS + hz, (0, 0, 1)), (AXIS - hz, (0, 0, -1))):
+            pts = [(inner, y0, z), (outer, y0, z), (outer, y1, z), (inner, y1, z)]
+            uvs = [(u_inner, 0.0), (u_outer, 0.0), (u_outer, 1.0), (u_inner, 1.0)]
+            mesh.quad_out(pts, normal, uvs)
+
+
 def build_barricade_end(mesh, rails, top_y, left):
     """An UNCONNECTED end: the rails overhanging past the upright, capped, plus the upright
     itself on the right-hand side.
@@ -1705,7 +1756,7 @@ def marker_emissive(body, body_shade, strip, strip_shade):
     return img
 
 
-def swept_wall(mesh, profile, swatch_v=SWATCH_BAND_V, cz=AXIS):
+def swept_wall(mesh, profile, swatch_v=SWATCH_BAND_V, cz=AXIS, x_range=None, u_range=(0.0, 1.0)):
     """A wall of constant cross-section running the length of the cell.
 
     ``profile`` is (half width, height) up ONE side, bottom to top; the other side is mirrored.
@@ -1716,7 +1767,8 @@ def swept_wall(mesh, profile, swatch_v=SWATCH_BAND_V, cz=AXIS):
     This is the CORE -- what every segment draws. The caps over its open ends are
     ``swept_wall_end``, and are added only where nothing connects.
     """
-    x0, x1 = WALL_X
+    x0, x1 = x_range if x_range is not None else WALL_X
+    u0, u1 = u_range
     t = uv_swatch(swatch_v)
     q = [t, t, t, t]
 
@@ -1730,7 +1782,7 @@ def swept_wall(mesh, profile, swatch_v=SWATCH_BAND_V, cz=AXIS):
             # segment would have to know which way each one leans.
             normal = (0.0, -(hz1 - hz0), sign * (y1 - y0))
             pts = [(x0, y0, z0), (x1, y0, z0), (x1, y1, z1), (x0, y1, z1)]
-            uvs = [uv_at(0.0, y0), uv_at(1.0, y0), uv_at(1.0, y1), uv_at(0.0, y1)]
+            uvs = [uv_at(u0, y0), uv_at(u1, y0), uv_at(u1, y1), uv_at(u0, y1)]
             mesh.quad_out(pts, normal, uvs)
 
     top_hz, top_y = profile[-1]
@@ -1742,6 +1794,23 @@ def swept_wall(mesh, profile, swatch_v=SWATCH_BAND_V, cz=AXIS):
                    (x1, 0.0, cz + base_hz), (x0, 0.0, cz + base_hz)], (0, -1, 0), q)
 
 
+
+
+def swept_wall_fill(mesh, profile, swatch_v=SWATCH_BAND_V, cz=AXIS):
+    """The length of wall that closes the gap to a DIAGONAL neighbour.
+
+    The same swept cross-section as the core, carried on past the cell's right-hand edge. It is
+    drawn only where this device joins one a diagonal step away, and only ever on the right, so
+    the two segments either side of a joint cannot both fill it and end up inside each other.
+
+    Its own end faces are left off for the same reason the core's are: the neighbour's core
+    begins exactly where this finishes, and two caps in one plane z-fight along the whole joint.
+    """
+    x1 = WALL_X[1]
+    span = WALL_X[1] - WALL_X[0]
+    swept_wall(mesh, profile, swatch_v, cz,
+               x_range=(x1, x1 + DIAGONAL_GAP),
+               u_range=(0.0, DIAGONAL_GAP / span))
 
 
 def swept_wall_end(mesh, profile, left, swatch_v=SWATCH_BAND_V, cz=AXIS):
@@ -1803,36 +1872,57 @@ def build_signal_trailer(mesh, style, tip_z=None, rigging=True):
     than an image at this size.
     """
     spec = PSIG_STYLES[style]
+    heavy = spec["heavy"]
 
-    bx0, bx1, by0, by1, bz0, bz1 = PSIG_BED
+    bed = PSIG_ARM_BED if heavy else PSIG_BED
+    tongue = PSIG_ARM_TONGUE if heavy else PSIG_TONGUE
+    wheel = PSIG_ARM_WHEEL if heavy else PSIG_WHEEL
+    jack_x = PSIG_ARM_JACK_X if heavy else PSIG_JACK_X
+    jack_z = PSIG_ARM_JACK_Z if heavy else PSIG_JACK_Z
+    jack_half = PSIG_ARM_JACK_HALF if heavy else PSIG_JACK_HALF
+    solar = PSIG_ARM_SOLAR if heavy else PSIG_SOLAR
+    cabinet = PSIG_ARM_CABINET if heavy else PSIG_CABINET
+
+    bx0, bx1, by0, by1, bz0, bz1 = bed
     box(mesh, bx0, bx1, by0, by1, bz0, bz1, SWATCH_BASE_V)
-    tx0, tx1, ty0, ty1, tz0, tz1 = PSIG_TONGUE
+    tx0, tx1, ty0, ty1, tz0, tz1 = tongue
     box(mesh, tx0, tx1, ty0, ty1, tz0, tz1, SWATCH_BASE_V)
 
-    # A single axle, which is what a trailer this size runs on.
-    w = PSIG_WHEEL
-    for wz in w["z"]:
-        lens_rim(mesh, w["x"], w["y"], wz - w["half"], wz + w["half"], w["r"], SWATCH_DARK_V,
-                 sides=10)
-        lens_disc(mesh, w["x"], w["y"], wz + w["half"], w["r"], (0, 0, 1), SWATCH_DARK_V, sides=10)
-        lens_disc(mesh, w["x"], w["y"], wz - w["half"], w["r"], (0, 0, -1), SWATCH_DARK_V,
-                  sides=10)
+    # One axle on the compact chassis; twin wheels a side on the heavy one, which is what a
+    # trailer carrying a boom this long actually runs on.
+    for wz in wheel["z"]:
+        lens_rim(mesh, wheel["x"], wheel["y"], wz - wheel["half"], wz + wheel["half"],
+                 wheel["r"], SWATCH_DARK_V, sides=10)
+        lens_disc(mesh, wheel["x"], wheel["y"], wz + wheel["half"], wheel["r"], (0, 0, 1),
+                  SWATCH_DARK_V, sides=10)
+        lens_disc(mesh, wheel["x"], wheel["y"], wz - wheel["half"], wheel["r"], (0, 0, -1),
+                  SWATCH_DARK_V, sides=10)
 
     # The levelling jacks a deployed trailer stands on. The leg starts inside its pad, so the two
     # never share a plane.
-    j = PSIG_JACK_HALF
-    for jx in PSIG_JACK_X:
-        for jz in PSIG_JACK_Z:
+    #
+    # On the heavy chassis they stand OUTSIDE the deck and reach it along an outrigger arm. A jack
+    # tucked under the deck does nothing for stability -- the deck edge was already the far side
+    # of the tipping base -- and a machine holding a boom eight cells out needs the base widened,
+    # not restated.
+    j = jack_half
+    for jx in jack_x:
+        for jz in jack_z:
+            if heavy:
+                oy0, oy1 = PSIG_ARM_OUTRIGGER_Y
+                reach_z0, reach_z1 = ((jz, bz0 + 1.0) if jz < bz0 else (bz1 - 1.0, jz))
+                box(mesh, jx - j * 0.9, jx + j * 0.9, oy0, oy1,
+                    min(reach_z0, reach_z1), max(reach_z0, reach_z1), SWATCH_BASE_V)
             box(mesh, jx - j, jx + j, 0.60, by0 + 1.0, jz - j, jz + j, SWATCH_BAND_V,
                 faces=("x-", "x+", "y+", "z-", "z+"))
             box(mesh, jx - j * 2.2, jx + j * 2.2, 0.0, 0.80, jz - j * 2.2, jz + j * 2.2,
                 SWATCH_BAND_V)
 
-    solar_array(mesh, by1)
+    solar_array(mesh, by1, solar)
 
     # Starts INSIDE the bed and skips its own underside, rather than sitting flush on it: flush
     # would put three faces in the plane of the bed's top and z-fight across all of them.
-    cx0, cx1, cy0, cy1, cz0, cz1 = PSIG_CABINET
+    cx0, cx1, cy0, cy1, cz0, cz1 = cabinet
     box(mesh, cx0, cx1, cy0 - 0.30, cy1, cz0, cz1, SWATCH_BASE_V,
         faces=("x-", "x+", "y+", "z-", "z+"))
 
@@ -1943,7 +2033,7 @@ def build_signal_trailer_inventory(mesh, style):
     fit_in_cell(mesh)
 
 
-def solar_array(mesh, deck_top):
+def solar_array(mesh, deck_top, footprint=None):
     """The tilted solar array on a trailer's deck.
 
     The panel is the one face on any of these devices that carries a picture rather than a flat
@@ -1953,8 +2043,8 @@ def solar_array(mesh, deck_top):
     It leans, which is why it is a prism and not a box. Everything else about a solar panel is
     negotiable; lying flat is not, because then it is not pointing at anything.
     """
-    x0, x1, z0, z1 = PSIG_SOLAR
-    y0 = PSIG_SOLAR_Y
+    x0, x1, z0, z1 = footprint if footprint is not None else PSIG_SOLAR
+    y0 = deck_top + (PSIG_SOLAR_Y - PSIG_BED[3])
     rise = PSIG_SOLAR_RISE
     t = PSIG_SOLAR_THICK
 
@@ -2473,8 +2563,10 @@ DEVICES = {
                 "core": lambda m: swept_wall(m, LCD_PROFILE),
                 "end_left": lambda m: swept_wall_end(m, LCD_PROFILE, True),
                 "end_right": lambda m: swept_wall_end(m, LCD_PROFILE, False),
+                "fill_right": lambda m: swept_wall_fill(m, LCD_PROFILE),
             },
             "properties": {"connectleft": "end_left", "connectright": "end_right"},
+            "fill_properties": {"diagfill": "fill_right"},
         },
         "texture": "workzone_channelizing_wall_orange",
         "texture_fn": lambda: wall_texture(ORANGE, ORANGE_DARK, LCD_TOP_BAND, WHITE, WHITE_DIM,
@@ -2490,8 +2582,10 @@ DEVICES = {
                 "core": lambda m: swept_wall(m, LCD_PROFILE),
                 "end_left": lambda m: swept_wall_end(m, LCD_PROFILE, True),
                 "end_right": lambda m: swept_wall_end(m, LCD_PROFILE, False),
+                "fill_right": lambda m: swept_wall_fill(m, LCD_PROFILE),
             },
             "properties": {"connectleft": "end_left", "connectright": "end_right"},
+            "fill_properties": {"diagfill": "fill_right"},
         },
         "texture": "workzone_channelizing_wall_white",
         "texture_fn": lambda: wall_texture(WHITE, WHITE_DIM, LCD_TOP_BAND, ORANGE, ORANGE_DARK,
@@ -2509,8 +2603,11 @@ DEVICES = {
                                                      swatch_v=SWATCH_BASE_V),
                 "end_right": lambda m: swept_wall_end(m, BARRIER_PROFILE, False,
                                                       swatch_v=SWATCH_BASE_V),
+                "fill_right": lambda m: swept_wall_fill(m, BARRIER_PROFILE,
+                                                        swatch_v=SWATCH_BASE_V),
             },
             "properties": {"connectleft": "end_left", "connectright": "end_right"},
+            "fill_properties": {"diagfill": "fill_right"},
         },
         "texture": "workzone_concrete_barrier",
         "texture_fn": lambda: wall_texture(CONCRETE, CONCRETE_DARK),
@@ -2529,7 +2626,7 @@ DEVICES = {
         # the arrow board's is. A box tall enough to hold the mast would also be a collision box
         # tall enough to wall the road off, and one long enough to hold the boom would have the
         # player selecting the trailer from half way across the road.
-        "bbox": (-18.0, 0.0, 0.0, 26.0, 21.6, 16.0),
+        "bbox": (-30.0, 0.0, -5.0, 34.0, 22.4, 21.0),
         "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "portable_signal_trailer": {
@@ -2853,9 +2950,15 @@ def write_joining_models(model_dir, spec):
         mesh.write(path, "%s_%s" % (stem, suffix), stem + ".mtl")
         written.append(path)
 
-    # An item has no neighbours to ask, so its model is every piece at once.
+    # An item has no neighbours to ask, so its model is every piece at once -- except the gap
+    # filler, which is not part of what a device looks like on its own. Leaving it in would put a
+    # stub of wall out of the side of the icon, and would grow the block's bounding box to the
+    # sqrt(2) cells the filler reaches, so a single wall would claim the cell beside it.
+    fillers = set(joining.get("fill_properties", {}).values())
     inv = Mesh()
-    for builder in joining["pieces"].values():
+    for suffix, builder in joining["pieces"].items():
+        if suffix in fillers:
+            continue
         builder(inv)
     check_uvs(inv, stem + "_inv")
     inv_path = os.path.join(model_dir, stem + "_inv.obj")
@@ -2887,6 +2990,10 @@ def joining_blockstate(spec):
     # The piece is on the FALSE side: it is drawn where nothing connects.
     for prop, piece in joining["properties"].items():
         variants[prop] = {"false": submodel(piece), "true": {}}
+    # The gap filler is the other way round: drawn only where this device DOES join, and only
+    # when the joint is diagonal.
+    for prop, piece in joining.get("fill_properties", {}).items():
+        variants[prop] = {"false": {}, "true": submodel(piece)}
     variants["normal"] = [{}]
     variants["inventory"] = [{"model": "%s_inv.obj" % model,
                               "custom": {"flip-v": True},
@@ -2918,6 +3025,7 @@ def write_barricade_models(model_dir):
             "core": lambda m, r=rails, t=top_y: build_barricade_core(m, r, t),
             "end_left": lambda m, r=rails, t=top_y: build_barricade_end(m, r, t, True),
             "end_right": lambda m, r=rails, t=top_y: build_barricade_end(m, r, t, False),
+            "fill_right": lambda m, r=rails, t=top_y: build_barricade_fill(m, r, t),
         }
         for suffix, builder in pieces.items():
             mesh = Mesh()
@@ -2962,6 +3070,8 @@ def barricade_blockstate(spec):
             # The end is on the FALSE side: it is drawn where nothing connects.
             "connectleft": {"false": submodel("end_left"), "true": {}},
             "connectright": {"false": submodel("end_right"), "true": {}},
+            # Drawn only where this barricade DOES join, and only when the joint is diagonal.
+            "diagfill": {"false": {}, "true": submodel("fill_right")},
             "normal": [{}],
             "inventory": [{"model": "%s_inv.obj" % model,
                            "custom": {"flip-v": True},

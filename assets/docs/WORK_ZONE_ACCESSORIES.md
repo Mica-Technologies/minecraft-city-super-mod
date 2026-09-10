@@ -223,11 +223,21 @@ cells meet at their corners rather than their faces. The mount kit could not fin
 the table of cells left free for heads would be wrong. The plain mast and pedestrian trailers
 carry no boom and do take all eight.
 
-Two things follow from eight facings that four never had to deal with:
+Three things follow from eight facings that four never had to deal with:
 
 - **A run joins diagonally.** `WorkZoneJoins` steps by the direction's own X and Z offsets rather
   than with `BlockPos.offset`, because a diagonal run continues into the block that shares only a
   *corner* with this one, and `EnumFacing` cannot name that block at all.
+- **Joining is not the same as looking joined.** A device spans one cell, and a diagonal step
+  between cell centres is sqrt(2) cells, so a diagonal run stands off itself by about four tenths
+  of a cell at every joint. Resolving the connection takes the end caps off and leaves a dotted
+  line. So a device joined DIAGONALLY grows a **filler** that bridges the gap — a length of wall
+  in the same swept section, or the barricade's rails carried on past the cell edge, wrapping to
+  the near edge of the same sprite so the stripe does not restart at the seam.
+
+  It is drawn on the **right-hand end only**, and never on both sides of one joint: two fillers in
+  the same air would z-fight down the whole seam. It is also kept out of the inventory model, or
+  the icon would grow a stub and the block's bounding box would claim the cell beside it.
 - **A bounding box at forty-five degrees is approximate.** `RotationUtils.rotateBoundingBoxByFacing`
   unions the two adjacent cardinal rotations rather than truly rotating the box, so a diagonal
   device selects and collides as something slightly wider than it looks. That is the established
@@ -457,6 +467,14 @@ together.
 arm intersection is built with its arm around ten blocks over the road; a temporary signal sits
 lower but not much, or traffic does not fit under it. So the level run's underside is eight blocks
 up and everything else follows.
+
+**The arm style gets a heavier chassis than the other two.** A boom eight cells long is a lever,
+and what stops the machine going over with it is the base underneath. On the compact chassis there
+was barely any: the deck was a fraction of the boom's reach and the jacks stood inside the deck's
+own footprint, where they add nothing — the deck edge was already the far side of the tipping base.
+So the arm style has a longer, wider deck, twin wheels a side, and jacks carried out on
+**outriggers** that reach well outside the body. The plain mast and pedestrian styles keep the
+compact one; a walk signal on a short mast needs none of it.
 
 **The chassis is then sized against the mast and boom, not against a real trailer.** Measured off
 a real trailer's own dimensions it comes out a toy: a deck two cells long under a boom eight cells

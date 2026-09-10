@@ -45,6 +45,14 @@ public class BlockWorkZoneBarricade extends AbstractBlockWorkZoneBarricade {
   public static final PropertyBool CONNECT_RIGHT = WorkZoneJoins.CONNECT_RIGHT;
 
   /**
+   * Whether this device closes the gap to a DIAGONAL neighbour on its right.
+   *
+   * @see WorkZoneJoins#DIAG_FILL
+   * @since 1.0
+   */
+  public static final PropertyBool DIAG_FILL = WorkZoneJoins.DIAG_FILL;
+
+  /**
    * Constructs a {@link BlockWorkZoneBarricade} instance.
    *
    * @param registryName the registry name of the barricade
@@ -58,13 +66,14 @@ public class BlockWorkZoneBarricade extends AbstractBlockWorkZoneBarricade {
     setDefaultState(this.blockState.getBaseState()
         .withProperty(FACING, DirectionEight.N)
         .withProperty(CONNECT_LEFT, false)
-        .withProperty(CONNECT_RIGHT, false));
+        .withProperty(CONNECT_RIGHT, false)
+        .withProperty(DIAG_FILL, false));
   }
 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, CONNECT_LEFT, CONNECT_RIGHT);
+    return new BlockStateContainer(this, FACING, CONNECT_LEFT, CONNECT_RIGHT, DIAG_FILL);
   }
 
   /**
