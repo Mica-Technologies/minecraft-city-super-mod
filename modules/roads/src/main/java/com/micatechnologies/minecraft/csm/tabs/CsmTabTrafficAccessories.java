@@ -636,17 +636,17 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_zebra",
         new AxisAlignedBB(0.068750, 0.000000, 0.340625, 0.931250, 0.190625, 0.659375)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_white",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("pavement_marker_white",
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_yellow",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("pavement_marker_yellow",
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_blue",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("pavement_marker_blue",
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_green",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("pavement_marker_green",
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_orange",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("pavement_marker_orange",
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_red",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("pavement_marker_red",
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
     initTabBlock(new BlockWorkZoneWall("channelizing_wall_orange",
         new AxisAlignedBB(0.000000, 0.000000, 0.312500, 1.000000, 0.687500, 0.687500)));

@@ -547,6 +547,11 @@ FENCE_STRAND = 0.42           # how much of that pitch is plastic rather than ho
 # Unlike the zebra delineator these do NOT span their cell. Real ones are set out at intervals
 # with clear road between them, so one small marker per block already gives the spacing a line of
 # them is supposed to have; stretching them to touch would turn a dotted line into a solid one.
+#
+# They DO take all eight facings, for the same reason the zebra delineator does: a line of them
+# marks a lane edge, and a lane edge does not always run with the block grid. A dotted line that
+# can only lie north-south or east-west has to staircase across a diagonal instead of following
+# it, which is worse on something this small than on something long.
 # Everything below is authored at a size that reads clearly on screen and then taken down by
 # MARKER_SCALE, because it read as too big beside the devices it shares a road with. The scale is
 # on the design dimensions only -- the clearances in the builder that stop two pieces sharing a
@@ -2031,7 +2036,7 @@ DEVICES = {
         "texture_fn": lambda: marker_texture(WHITE, WHITE_DIM, MARKER_SILVER, MARKER_SILVER_DARK),
         "emissive_fn": lambda: marker_emissive(WHITE, WHITE_DIM, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (White)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "pavement_marker_yellow": {
         "model": "workzone_pavement_marker", "build": None,
@@ -2039,7 +2044,7 @@ DEVICES = {
         "texture_fn": lambda: marker_texture(MARKER_YELLOW, MARKER_YELLOW_DARK, MARKER_GOLD, MARKER_GOLD_DARK),
         "emissive_fn": lambda: marker_emissive(MARKER_YELLOW, MARKER_YELLOW_DARK, MARKER_GOLD, MARKER_GOLD_DARK),
         "display": "Temporary Pavement Marker (Yellow)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "pavement_marker_blue": {
         "model": "workzone_pavement_marker", "build": None,
@@ -2047,7 +2052,7 @@ DEVICES = {
         "texture_fn": lambda: marker_texture(MARKER_BLUE, MARKER_BLUE_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "emissive_fn": lambda: marker_emissive(MARKER_BLUE, MARKER_BLUE_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (Blue)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "pavement_marker_green": {
         "model": "workzone_pavement_marker", "build": None,
@@ -2055,7 +2060,7 @@ DEVICES = {
         "texture_fn": lambda: marker_texture(MARKER_GREEN, MARKER_GREEN_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "emissive_fn": lambda: marker_emissive(MARKER_GREEN, MARKER_GREEN_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (Bike Lane Green)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "pavement_marker_orange": {
         "model": "workzone_pavement_marker", "build": None,
@@ -2063,7 +2068,7 @@ DEVICES = {
         "texture_fn": lambda: marker_texture(ORANGE, ORANGE_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "emissive_fn": lambda: marker_emissive(ORANGE, ORANGE_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (Construction Orange)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "pavement_marker_red": {
         "model": "workzone_pavement_marker", "build": None,
@@ -2071,7 +2076,7 @@ DEVICES = {
         "texture_fn": lambda: marker_texture(MARKER_RED, MARKER_RED_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "emissive_fn": lambda: marker_emissive(MARKER_RED, MARKER_RED_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (Red)",
-        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "channelizing_wall_orange": {
         "model": "workzone_channelizing_wall", "build": None,
