@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole.TRAFFIC_POLE_COLOR;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BarricadeGeometry;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockAlprCameraSolar;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockAlprCameraSolarWall;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
@@ -611,13 +612,13 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.217062, 0.000000, 0.217062, 0.782938, 0.975000, 0.782938)));
     initTabBlock(new BlockWorkZoneDeviceRotatable("channelizer_cade_right",
         new AxisAlignedBB(0.217062, 0.000000, 0.217062, 0.782938, 0.975000, 0.782938)));
-    initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_left",
+    initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_left", BarricadeGeometry.TYPE1_TOP,
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 0.810000, 0.719375)));
-    initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_right",
+    initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_right", BarricadeGeometry.TYPE1_TOP,
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 0.810000, 0.719375)));
-    initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_left",
+    initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_left", BarricadeGeometry.TYPE3_TOP,
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 1.113750, 0.719375)));
-    initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_right",
+    initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_right", BarricadeGeometry.TYPE3_TOP,
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 1.113750, 0.719375)));
     initTabBlock(new BlockWorkZoneDevice("delineator_post",
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
