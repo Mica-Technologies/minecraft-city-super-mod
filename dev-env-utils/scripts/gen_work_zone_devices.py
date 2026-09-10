@@ -106,6 +106,11 @@ MARKER_BLUE = (0, 89, 152)        # MUTCD/ADA blue
 MARKER_BLUE_DARK = (0, 66, 114)
 MARKER_GREEN = (0, 177, 64)       # the FHWA green a bike lane is surfaced in
 MARKER_GREEN_DARK = (0, 138, 50)
+STEEL = (132, 134, 138)           # the road plate's bare steel
+STEEL_DARK = (104, 106, 110)
+STEEL_LIGHT = (158, 160, 164)
+CONCRETE = (168, 168, 162)        # the temporary barrier's precast grey
+CONCRETE_DARK = (136, 136, 130)
 MARKER_RED = (178, 26, 44)        # MUTCD stop sign red
 MARKER_RED_DARK = (140, 18, 32)
 MARKER_SILVER = (206, 212, 220)   # the glass-beaded reflective strip along the top
@@ -476,6 +481,54 @@ ZEBRA_STATIONS = 18            # cross-sections along the length
 ZEBRA_BAND_W = 1.15
 ZEBRA_BANDS = [(c - ZEBRA_BAND_W / 2.0, c + ZEBRA_BAND_W / 2.0)
                for c in (3.40, 5.90, 8.40, 10.90, 13.40)]
+
+# --- the wall devices ----------------------------------------------------------------------------
+# Two devices that are walls: the interlocking plastic barrier filled with water on site, and the
+# precast concrete barrier that goes in for longer closures. Both run the length of their cell so
+# a line of them is a continuous wall.
+#
+# Both stop a HAIR short of the cell rather than spanning it exactly. Two segments meeting exactly
+# on the boundary would put their end faces in one plane and z-fight along the whole joint; the
+# barricades solve that by splitting the model and dropping the end where something connects,
+# which is worth it there because a barricade's ends carry an overhang and an upright. A wall's
+# ends carry nothing, and real ones of both kinds show a joint line every segment anyway, so the
+# gap is both cheaper and more accurate.
+WALL_X = (0.20, 15.80)
+
+# (half width, height) up one side of the cross-section, bottom to top.
+LCD_PROFILE = [(3.00, 0.00), (3.00, 1.30), (1.70, 4.60), (1.45, 9.60), (1.10, 11.00)]
+LCD_TOP_BAND = (9.60, 11.00)   # the white cap the top rail is moulded in
+LCD_RIBS = 6                   # moulded vertical ribs along the body
+
+# The New Jersey profile: a wide foot, a steep lower flare that turns a tyre back, and a near
+# vertical face above it.
+BARRIER_PROFILE = [(3.60, 0.00), (3.60, 1.40), (1.90, 4.20), (1.35, 12.20), (1.20, 13.00)]
+
+# --- the steel road plate ------------------------------------------------------------------------
+# The plate laid over an open trench so traffic can cross it before the trench is backfilled. It
+# is the one device here that is meant to be DRIVEN over rather than steered around, so it is
+# nearly the full cell and barely off the road.
+PLATE_HALF = 7.65
+PLATE_Y = 0.85
+PLATE_TEX_SIZE = 64
+PLATE_TREAD = 2.10        # pitch of the raised diamond tread, in world units
+
+# --- the orange safety fence ---------------------------------------------------------------------
+# The plastic mesh barrier fence that closes off the work area itself rather than channelizing
+# traffic. Its panel is a plane with the mesh cut out of the texture, not modelled: a mesh built
+# out of geometry is hundreds of faces for something read at two texels.
+#
+# The panel spans the whole cell so a run is continuous, and the stakes are inset from the edges
+# rather than sitting on them, so where two panels meet the joint shows the pair of stakes a real
+# run has instead of one shared post.
+FENCE_PANEL = (1.20, 13.50)   # y0, y1 of the mesh
+FENCE_HALF_Z = 0.06           # the two faces sit either side of the centre, not on it
+FENCE_POST_X = (0.90, 15.10)
+FENCE_POST_HALF = 0.42
+FENCE_POST_TOP = 14.20
+FENCE_TEX_SIZE = 128
+FENCE_MESH = 1.55             # pitch of the mesh, in world units
+FENCE_STRAND = 0.42           # how much of that pitch is plastic rather than hole
 
 # --- the temporary pavement markers --------------------------------------------------------------
 # The small folded plastic tabs taped down a lane line while the permanent markings are missing: a
@@ -1484,6 +1537,166 @@ def marker_emissive(body, body_shade, strip, strip_shade):
     return img
 
 
+def swept_wall(mesh, profile, swatch_v=SWATCH_BAND_V, cz=AXIS):
+    """A wall of constant cross-section running the length of the cell.
+
+    ``profile`` is (half width, height) up ONE side, bottom to top; the other side is mirrored.
+    The two long faces are mapped by height, so a texture drawn the way ``band_image`` draws one
+    puts its bands across the wall at the heights it names. Every other face takes the flat
+    swatch: the ends and the underside of a wall are moulded plastic or bare concrete, not
+    sheeting.
+    """
+    x0, x1 = WALL_X
+    t = uv_swatch(swatch_v)
+    q = [t, t, t, t]
+
+    for sign in (1, -1):
+        for (hz0, y0), (hz1, y1) in zip(profile, profile[1:]):
+            if abs(hz1 - hz0) < 1e-9 and abs(y1 - y0) < 1e-9:
+                continue
+            z0 = cz + sign * hz0
+            z1 = cz + sign * hz1
+            # Outward is perpendicular to the profile segment, in the yz plane. Naming it per
+            # segment would have to know which way each one leans.
+            normal = (0.0, -(hz1 - hz0), sign * (y1 - y0))
+            pts = [(x0, y0, z0), (x1, y0, z0), (x1, y1, z1), (x0, y1, z1)]
+            uvs = [uv_at(0.0, y0), uv_at(1.0, y0), uv_at(1.0, y1), uv_at(0.0, y1)]
+            mesh.quad_out(pts, normal, uvs)
+
+    top_hz, top_y = profile[-1]
+    mesh.quad_out([(x0, top_y, cz - top_hz), (x1, top_y, cz - top_hz),
+                   (x1, top_y, cz + top_hz), (x0, top_y, cz + top_hz)], (0, 1, 0), q)
+
+    base_hz = profile[0][0]
+    mesh.quad_out([(x0, 0.0, cz - base_hz), (x1, 0.0, cz - base_hz),
+                   (x1, 0.0, cz + base_hz), (x0, 0.0, cz + base_hz)], (0, -1, 0), q)
+
+    for x, nx in ((x0, -1), (x1, 1)):
+        for (hz0, y0), (hz1, y1) in zip(profile, profile[1:]):
+            if abs(hz1 - hz0) < 1e-9 and abs(y1 - y0) < 1e-9:
+                continue
+            mesh.quad_out([(x, y0, cz - hz0), (x, y0, cz + hz0),
+                           (x, y1, cz + hz1), (x, y1, cz - hz1)], (nx, 0, 0), q)
+
+
+def build_channelizing_wall(mesh):
+    """The plastic wall that is set out empty and filled with water on site."""
+    swept_wall(mesh, LCD_PROFILE)
+
+
+def build_concrete_barrier(mesh):
+    """The precast concrete barrier, in the New Jersey profile."""
+    swept_wall(mesh, BARRIER_PROFILE, swatch_v=SWATCH_BASE_V)
+
+
+def wall_texture(body, body_shade, band=None, band_color=None, band_shade=None, ribs=0):
+    """A wall's long faces: flat body, an optional band across it, and optional moulded ribs.
+
+    Flat rather than ``band_image``'s one-sided shading, which reads as the round side of a cone
+    and as a gradient down the length of something this long. The ribs are drawn instead of
+    modelled: a rib deep enough to catch the light is a rib deep enough to z-fight against the
+    face it stands on, and at this size it would be two texels wide anyway.
+    """
+    img = Image.new("RGBA", (TEX_SIZE, TEX_SIZE), body + (255,))
+    x0, x1 = WALL_X
+    for r in range(TEX_SIZE):
+        y = V_SPAN * (1.0 - (r + 0.5) / TEX_SIZE)
+        row = body
+        if band is not None and band[0] <= y <= band[1]:
+            row = band_color
+            if y - band[0] < 0.18:
+                row = band_shade
+        for c in range(TEX_SIZE):
+            u = (c + 0.5) / TEX_SIZE
+            if u > SWATCH_U0:
+                continue
+            color = row
+            if ribs:
+                # Where along the wall this column falls, and how close it is to a rib.
+                along = (u / SWATCH_U0) * ribs
+                if abs(along - round(along)) < 0.055 and round(along) not in (0, ribs):
+                    color = band_shade if row is band_color else body_shade
+            img.putpixel((c, r), color + (255,))
+
+    draw_swatches(img, body, band_color if band_color is not None else body, AMBER)
+    return img
+
+
+def build_road_plate(mesh):
+    """A steel plate, tread side up."""
+    h = PLATE_HALF
+    box(mesh, AXIS - h, AXIS + h, 0.0, PLATE_Y, AXIS - h, AXIS + h, SWATCH_BASE_V,
+        faces=("x-", "x+", "y-", "z-", "z+"))
+    # The tread face is mapped across the plate in BOTH directions rather than by height, which
+    # is what every other face here does. A plate is the one thing in this family whose pattern
+    # runs in two directions at once.
+    mesh.quad_out([(AXIS - h, PLATE_Y, AXIS - h), (AXIS + h, PLATE_Y, AXIS - h),
+                   (AXIS + h, PLATE_Y, AXIS + h), (AXIS - h, PLATE_Y, AXIS + h)],
+                  (0, 1, 0),
+                  [(0.0, 0.0), (SWATCH_U0, 0.0), (SWATCH_U0, 1.0), (0.0, 1.0)])
+
+
+def road_plate_texture():
+    """Bare steel with the raised diamond tread a road plate carries."""
+    img = Image.new("RGBA", (PLATE_TEX_SIZE, PLATE_TEX_SIZE), STEEL + (255,))
+    for r in range(PLATE_TEX_SIZE):
+        for c in range(PLATE_TEX_SIZE):
+            u = (c + 0.5) / PLATE_TEX_SIZE
+            if u > SWATCH_U0:
+                continue
+            # World position across the plate, so the tread keeps its pitch whatever the
+            # texture size is.
+            wx = (u / SWATCH_U0) * PLATE_HALF * 2.0
+            wz = ((r + 0.5) / PLATE_TEX_SIZE) * PLATE_HALF * 2.0
+            a = ((wx + wz) % PLATE_TREAD) / PLATE_TREAD
+            b = ((wx - wz) % PLATE_TREAD) / PLATE_TREAD
+            colour = STEEL
+            if a < 0.30:
+                colour = STEEL_LIGHT if a < 0.15 else STEEL_DARK
+            elif b < 0.30:
+                colour = STEEL_LIGHT if b < 0.15 else STEEL_DARK
+            img.putpixel((c, r), colour + (255,))
+    draw_swatches(img, STEEL, STEEL_DARK, STEEL_LIGHT)
+    return img
+
+
+def build_safety_fence(mesh):
+    """Two stakes and a mesh panel between them."""
+    for cx in FENCE_POST_X:
+        box(mesh, cx - FENCE_POST_HALF, cx + FENCE_POST_HALF, 0.0, FENCE_POST_TOP,
+            AXIS - FENCE_POST_HALF, AXIS + FENCE_POST_HALF, SWATCH_BAND_V)
+
+    y0, y1 = FENCE_PANEL
+    for z, normal in ((AXIS + FENCE_HALF_Z, (0, 0, 1)), (AXIS - FENCE_HALF_Z, (0, 0, -1))):
+        pts = [(0.0, y0, z), (16.0, y0, z), (16.0, y1, z), (0.0, y1, z)]
+        uvs = [uv_at(0.0, y0), uv_at(1.0, y0), uv_at(1.0, y1), uv_at(0.0, y1)]
+        mesh.quad_out(pts, normal, uvs)
+
+
+def safety_fence_texture():
+    """Orange mesh: plastic strands on transparency, drawn in world units.
+
+    The holes are real transparency rather than a dark pattern, which is why the block draws on
+    the cutout layer. A fence you cannot see through is a wall.
+    """
+    img = Image.new("RGBA", (FENCE_TEX_SIZE, FENCE_TEX_SIZE), (0, 0, 0, 0))
+    for r in range(FENCE_TEX_SIZE):
+        wy = V_SPAN * (1.0 - (r + 0.5) / FENCE_TEX_SIZE)
+        for c in range(FENCE_TEX_SIZE):
+            u = (c + 0.5) / FENCE_TEX_SIZE
+            if u > SWATCH_U0:
+                continue
+            wx = (u / SWATCH_U0) * 16.0
+            fx = (wx % FENCE_MESH) / FENCE_MESH
+            fy = (wy % FENCE_MESH) / FENCE_MESH
+            if fx < FENCE_STRAND:
+                img.putpixel((c, r), (ORANGE if fy > FENCE_STRAND else ORANGE_DARK) + (255,))
+            elif fy < FENCE_STRAND:
+                img.putpixel((c, r), ORANGE_DARK + (255,))
+    draw_swatches(img, ORANGE, ORANGE_DARK, WHITE)
+    return img
+
+
 def build_sand_barrel(mesh):
     lathe(mesh, SAND_BARREL_PROFILE, sides=SAND_BARREL_SIDES)
     disc(mesh, SAND_BARREL_LID_R, SAND_BARREL_HEIGHT, (0, 1, 0), SWATCH_BAND_V,
@@ -1803,6 +2016,42 @@ DEVICES = {
         "texture_fn": lambda: marker_texture(MARKER_RED, MARKER_RED_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "emissive_fn": lambda: marker_emissive(MARKER_RED, MARKER_RED_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (Red)",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "channelizing_wall_orange": {
+        "model": "workzone_channelizing_wall", "build": build_channelizing_wall,
+        "texture": "workzone_channelizing_wall_orange",
+        "texture_fn": lambda: wall_texture(ORANGE, ORANGE_DARK, LCD_TOP_BAND, WHITE, WHITE_DIM,
+                                           LCD_RIBS),
+        "display": "Water-Filled Barrier (Orange)",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "channelizing_wall_white": {
+        "model": "workzone_channelizing_wall", "build": None,
+        "texture": "workzone_channelizing_wall_white",
+        "texture_fn": lambda: wall_texture(WHITE, WHITE_DIM, LCD_TOP_BAND, ORANGE, ORANGE_DARK,
+                                           LCD_RIBS),
+        "display": "Water-Filled Barrier (White)",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "concrete_barrier": {
+        "model": "workzone_concrete_barrier", "build": build_concrete_barrier,
+        "texture": "workzone_concrete_barrier",
+        "texture_fn": lambda: wall_texture(CONCRETE, CONCRETE_DARK),
+        "display": "Temporary Concrete Barrier",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "road_plate": {
+        "model": "workzone_road_plate", "build": build_road_plate,
+        "texture": "workzone_road_plate",
+        "texture_fn": road_plate_texture,
+        "display": "Steel Road Plate",
+    },
+    "safety_fence": {
+        "model": "workzone_safety_fence", "build": build_safety_fence,
+        "texture": "workzone_safety_fence",
+        "texture_fn": safety_fence_texture,
+        "display": "Safety Fence",
         "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "arrow_board": {
