@@ -49,6 +49,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetN
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneArrowBoard;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneBarricade;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneBarricadeFolding;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDevice;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceFlashing;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceRotatable;
@@ -616,6 +617,12 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 0.810000, 0.719375)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_right", BarricadeGeometry.TYPE1_TOP,
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 0.810000, 0.719375)));
+    initTabBlock(new BlockWorkZoneBarricadeFolding("barricade_type_2_left",
+        BarricadeGeometry.FOLDING_TOP,
+        new AxisAlignedBB(0.109375, 0.000000, 0.290625, 0.890625, 0.928125, 0.709375)));
+    initTabBlock(new BlockWorkZoneBarricadeFolding("barricade_type_2_right",
+        BarricadeGeometry.FOLDING_TOP,
+        new AxisAlignedBB(0.109375, 0.000000, 0.290625, 0.890625, 0.928125, 0.709375)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_left", BarricadeGeometry.TYPE3_TOP,
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 1.113750, 0.719375)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_right", BarricadeGeometry.TYPE3_TOP,

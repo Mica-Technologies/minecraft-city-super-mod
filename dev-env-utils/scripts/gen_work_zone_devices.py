@@ -307,6 +307,58 @@ BARRICADE_RAIL_H = BARRICADE_TYPE1_RAILS[0][1] - BARRICADE_TYPE1_RAILS[0][0]
 # the far edge of the same sprite.
 BARRICADE_STRIPE = BARRICADE_RAIL_W / 4.0
 
+# --- the Type II folding barricade -----------------------------------------------------------
+# The plastic A-frame barricade that folds flat: a vertical panel of two striped rails on two
+# uprights, with a pair of legs hinged near the top that swings out behind it to stand it up.
+#
+# Unlike the trestle barricades this one does NOT join to its neighbours, so it is narrower than
+# a cell and its model is one baked shape with no ends to add or take away. A real one is a
+# self-contained unit that is carried in, opened and set down; a row of them is a row of separate
+# devices each on its own legs, not one continuous rail. Trying to join them would also have to
+# decide what happens to the legs at a seam, and the honest answer is that nothing does.
+#
+# It keeps the trestle barricades' stripe PITCH rather than their proportions, so a work zone
+# using both does not show two different stripe widths standing side by side.
+FOLD_TOP = 14.85                  # top of the uprights
+FOLD_UPRIGHT_X = 5.20             # half the spacing between the two uprights
+FOLD_UPRIGHT_HALF_X = 0.70
+# The rails run a little PAST the uprights, as they do on a real one, and not flush with
+# them: flush would put the rail's end face and the upright's outer face in the same plane,
+# which z-fights.
+FOLD_RAIL_HALF_X = FOLD_UPRIGHT_X + FOLD_UPRIGHT_HALF_X + 0.35
+FOLD_RAIL_HALF_Z = 0.30
+FOLD_RAILS = [(5.20, 8.30), (10.25, 13.35)]
+# The uprights sit BEHIND the rails, not around them: the striped face is what points at traffic
+# and a frame in front of it would interrupt the stripes. They start just inside the rails rather
+# than flush against them, so the two never share a plane.
+FOLD_FRAME_Z0 = AXIS + FOLD_RAIL_HALF_Z - 0.10
+FOLD_FRAME_Z1 = FOLD_FRAME_Z0 + 0.68
+FOLD_FRAME_CZ = 0.5 * (FOLD_FRAME_Z0 + FOLD_FRAME_Z1)
+FOLD_FOOT_HALF_X = 1.05
+FOLD_FOOT_HALF_Z = 1.10
+FOLD_FOOT_Y = 0.80
+FOLD_HINGE_Y = 13.70              # where the rear legs are pinned to the uprights
+FOLD_LEG_SPLAY = 4.60             # how far back the feet stand from the panel
+FOLD_LEG_HALF_X = 0.52
+FOLD_LEG_HALF_Z = 0.42
+FOLD_LEG_Y0 = 0.30                # the leg starts inside its pad, so they share no face
+FOLD_PAD_HALF_X = 0.95
+FOLD_PAD_HALF_Z = 1.00
+FOLD_PAD_Y = 0.75
+FOLD_BRACE_Y = 3.20               # the cross brace between the rear legs
+FOLD_BRACE_H = 0.55
+FOLD_RAIL_W = FOLD_RAIL_HALF_X * 2.0
+FOLD_RAIL_H = FOLD_RAILS[0][1] - FOLD_RAILS[0][0]
+# Everything above is authored with the panel on the block axis and the legs trailing off behind
+# it, which would leave the device sitting in the back half of its cell. It is shifted forward so
+# the WHOLE assembly is centred instead. That moves the panel off the axis, so where the panel
+# ends up is derived here and handed to the renderer: a warning light clamped to the axis and a
+# sign mounted on the axis would both float in front of a barricade that is no longer there.
+FOLD_Z_MIN = min(AXIS - FOLD_RAIL_HALF_Z, FOLD_FRAME_CZ - FOLD_FOOT_HALF_Z)
+FOLD_Z_MAX = FOLD_FRAME_CZ + FOLD_LEG_SPLAY + FOLD_PAD_HALF_Z
+FOLD_SHIFT_Z = AXIS - 0.5 * (FOLD_Z_MIN + FOLD_Z_MAX)
+FOLD_RAIL_CZ = AXIS + FOLD_SHIFT_Z
+
 # --- the arrow board -------------------------------------------------------------------------------
 # A trailer-mounted arrow board: a black 2:1 panel of amber lamps on a tall orange mast over a
 # small two-wheel trailer, measured off reference photographs.
@@ -665,6 +717,32 @@ def box(mesh, x0, x1, y0, y1, z0, z1, swatch_v, faces=("x-", "x+", "y-", "y+", "
         mesh.quad_out([(x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)], (0, 0, 1), q)
 
 
+def prism(mesh, bottom, top, swatch_v):
+    """A six-sided solid between two matching quads, for a member that leans.
+
+    ``box`` only makes axis-aligned solids, and a leg that leans is the one thing here that is
+    not. Each face's outward direction is taken from the solid's own centre rather than named, so
+    the winding comes out right whichever way the solid leans.
+    """
+    t = uv_swatch(swatch_v)
+    q = [t, t, t, t]
+    pts_all = list(bottom) + list(top)
+    centre = tuple(sum(p[i] for p in pts_all) / 8.0 for i in range(3))
+
+    def face(pts):
+        n = vcross(vsub(pts[1], pts[0]), vsub(pts[2], pts[0]))
+        mid = tuple(sum(p[i] for p in pts) / len(pts) for i in range(3))
+        if vdot(n, vsub(mid, centre)) < 0:
+            n = (-n[0], -n[1], -n[2])
+        mesh.quad_out(list(pts), n, q)
+
+    face(list(bottom))
+    face(list(top))
+    for i in range(4):
+        j = (i + 1) % 4
+        face([bottom[i], bottom[j], top[j], top[i]])
+
+
 def slotted_tab(mesh, spec, swatch_v, cx=AXIS, cz=AXIS):
     """The moulded grip handle every drum and channelizer carries: an upright flat tab with a
     slot through it, built as the four bars around the slot so the slot is a real hole rather
@@ -984,16 +1062,88 @@ def build_barricade_end(mesh, rails, top_y, left):
         mesh.quad_out(pts, (sign, 0, 0), [t, t, t, t])
 
 
+def _fold_leg_z(y):
+    """Where a rear leg's centre line is at height ``y``, from the hinge down to the floor."""
+    return FOLD_FRAME_CZ + FOLD_LEG_SPLAY * (1.0 - y / FOLD_HINGE_Y)
+
+
+def build_barricade_folding(mesh):
+    """The Type II folding barricade: a two-rail panel on a pair of legs that swing out behind.
+
+    The panel is built on the block axis and the whole assembly shifted forward at the end, so
+    the device is centred in its cell rather than crowded into the back of it. FOLD_RAIL_CZ is
+    where that leaves the panel, and it is what the renderer mounts lights and signs against.
+    """
+    # The uprights, each on a moulded foot. The upright starts inside the foot and skips its own
+    # underside, so the two do not meet in one plane.
+    for cx in (AXIS - FOLD_UPRIGHT_X, AXIS + FOLD_UPRIGHT_X):
+        box(mesh, cx - FOLD_FOOT_HALF_X, cx + FOLD_FOOT_HALF_X, 0.0, FOLD_FOOT_Y,
+            FOLD_FRAME_CZ - FOLD_FOOT_HALF_Z, FOLD_FRAME_CZ + FOLD_FOOT_HALF_Z, SWATCH_BAND_V)
+        box(mesh, cx - FOLD_UPRIGHT_HALF_X, cx + FOLD_UPRIGHT_HALF_X, FOLD_FOOT_Y - 0.20,
+            FOLD_TOP, FOLD_FRAME_Z0, FOLD_FRAME_Z1, SWATCH_BAND_V,
+            faces=("x-", "x+", "y+", "z-", "z+"))
+
+    # The rails. Their two broad faces carry the stripes; the ends and edges come from the flat
+    # swatch, so this shows sheeting only where a real one carries sheeting.
+    hx = FOLD_RAIL_HALF_X
+    hz = FOLD_RAIL_HALF_Z
+    for (y0, y1) in FOLD_RAILS:
+        box(mesh, AXIS - hx, AXIS + hx, y0, y1, AXIS - hz, AXIS + hz, SWATCH_BAND_V,
+            faces=("x-", "x+", "y-", "y+"))
+        for z, normal in ((AXIS + hz, (0, 0, 1)), (AXIS - hz, (0, 0, -1))):
+            pts = [(AXIS - hx, y0, z), (AXIS + hx, y0, z),
+                   (AXIS + hx, y1, z), (AXIS - hx, y1, z)]
+            uvs = [(0.0, 0.0), (SWATCH_U0, 0.0), (SWATCH_U0, 1.0), (0.0, 1.0)]
+            mesh.quad_out(pts, normal, uvs)
+
+    # The rear legs, and the pad each stands on.
+    lx = FOLD_LEG_HALF_X
+    lz = FOLD_LEG_HALF_Z
+    for cx in (AXIS - FOLD_UPRIGHT_X, AXIS + FOLD_UPRIGHT_X):
+        z_top = _fold_leg_z(FOLD_HINGE_Y)
+        z_bot = _fold_leg_z(FOLD_LEG_Y0)
+        prism(mesh,
+              [(cx - lx, FOLD_LEG_Y0, z_bot - lz), (cx + lx, FOLD_LEG_Y0, z_bot - lz),
+               (cx + lx, FOLD_LEG_Y0, z_bot + lz), (cx - lx, FOLD_LEG_Y0, z_bot + lz)],
+              [(cx - lx, FOLD_HINGE_Y, z_top - lz), (cx + lx, FOLD_HINGE_Y, z_top - lz),
+               (cx + lx, FOLD_HINGE_Y, z_top + lz), (cx - lx, FOLD_HINGE_Y, z_top + lz)],
+              SWATCH_BAND_V)
+        pad_z = _fold_leg_z(0.0)
+        box(mesh, cx - FOLD_PAD_HALF_X, cx + FOLD_PAD_HALF_X, 0.0, FOLD_PAD_Y,
+            pad_z - FOLD_PAD_HALF_Z, pad_z + FOLD_PAD_HALF_Z, SWATCH_BAND_V)
+
+    # The cross brace, run between the leg CENTRES so its ends finish inside them rather than
+    # against them.
+    brace_z = _fold_leg_z(FOLD_BRACE_Y)
+    box(mesh, AXIS - FOLD_UPRIGHT_X, AXIS + FOLD_UPRIGHT_X,
+        FOLD_BRACE_Y, FOLD_BRACE_Y + FOLD_BRACE_H,
+        brace_z - 0.30, brace_z + 0.30, SWATCH_BAND_V)
+
+    mesh.v[:] = [(p[0], p[1], p[2] + FOLD_SHIFT_Z) for p in mesh.v]
+    _minx, _miny, minz, _maxx, _maxy, maxz = mesh_bounds(mesh)
+    assert abs(0.5 * (minz + maxz) - AXIS) < 1e-6, (
+        "folding barricade is not centred in its cell: %r" % ((minz, maxz),))
+
+
 def build_arrow_board(mesh):
-    """The arrow board's CHASSIS only: trailer, tongue, wheels and jacks.
+    """The arrow board's CHASSIS only, at the size it stands in the world.
 
     Everything above the chassis -- mast, panel and the lamp grid -- is drawn by
     ``TileEntityArrowBoardRenderer`` instead, because the lamps have to animate and a baked model
-    cannot. Splitting it here rather than moving the whole board into the renderer keeps an
-    inventory icon and something solid in the world, and leaves the static part small enough to
-    sit inside its own cell, where it cannot pop when its chunk section is culled. The tall part
-    that would have popped is now tile entity geometry, which is culled by its own render
-    bounding box instead.
+    cannot. Splitting it here rather than moving the whole board into the renderer keeps
+    something solid in the world, and leaves the static part small enough to sit inside its own
+    cell, where it cannot pop when its chunk section is culled. The tall part that would have
+    popped is now tile entity geometry, which is culled by its own render bounding box instead.
+    """
+    _arrow_chassis(mesh)
+    scale_mesh(mesh, ARROW_SCALE)
+
+
+def _arrow_chassis(mesh):
+    """The trailer, tongue, wheels and jacks, unscaled.
+
+    Kept apart from ``build_arrow_board`` so the inventory model can start from the same
+    chassis at a different size, rather than from a second copy of these numbers.
     """
     cx0, cx1, cy0, cy1, cz0, cz1 = ARROW_CHASSIS
     box(mesh, cx0, cx1, cy0, cy1, cz0, cz1, SWATCH_BAND_V)
@@ -1018,7 +1168,45 @@ def build_arrow_board(mesh):
         box(mesh, jx - j * 2.2, jx + j * 2.2, 0.0, 0.28, AXIS - j * 2.2, AXIS + j * 2.2,
             SWATCH_DARK_V)
 
-    scale_mesh(mesh, ARROW_SCALE)
+
+def build_arrow_board_inventory(mesh):
+    """The WHOLE board -- chassis, mast, braces and a dark panel -- shrunk to fit one cell.
+
+    The placed block is deliberately four blocks wide, which is right in the world and useless as
+    an inventory icon: handed to ``forge:default-block`` it is drawn four times the size of its
+    slot and spills over the ones around it. So the icon is its own model, sized to the slot.
+
+    It carries the mast and panel the placed block leaves to the renderer, because an icon of the
+    trailer alone does not read as an arrow board. The panel is a plain dark face here: an icon
+    is one still frame, and a frozen lamp pattern would suggest the board only ever shows that
+    one.
+    """
+    _arrow_chassis(mesh)
+
+    h = ARROW_MAST_HALF
+    for mx in ARROW_MAST_X:
+        box(mesh, mx - h, mx + h, ARROW_MAST[0], ARROW_MAST[1], AXIS - h, AXIS + h,
+            SWATCH_BAND_V)
+    for by in ARROW_MAST_BRACE:
+        box(mesh, ARROW_MAST_X[0], ARROW_MAST_X[1], by, by + h * 1.4,
+            AXIS - h * 0.7, AXIS + h * 0.7, SWATCH_BAND_V)
+    px0, px1, py0, py1 = ARROW_PANEL
+    box(mesh, px0, px1, py0, py1, ARROW_PANEL_Z[0], ARROW_PANEL_Z[1], SWATCH_DARK_V)
+
+    fit_in_cell(mesh)
+
+
+def fit_in_cell(mesh, margin=0.5):
+    """Shrink a finished mesh until it fits inside its own cell, then stand it on the floor.
+
+    For inventory models of devices that are deliberately bigger than a block: the item transform
+    assumes what it is given fits in a unit cube, and silently draws anything larger over its
+    neighbours.
+    """
+    minx, miny, minz, maxx, maxy, maxz = mesh_bounds(mesh)
+    span = max(maxx - minx, maxy - miny, maxz - minz)
+    scale_mesh(mesh, (16.0 - 2.0 * margin) / span)
+    rest_on_floor(mesh)
 
 
 def build_delineator(mesh):
@@ -1247,7 +1435,7 @@ DEVICES = {
         "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "barricade_type_1_left": {
-        "barricade": "type1",
+        "barricade": "type1", "top": "BarricadeGeometry.TYPE1_TOP",
         "model": "workzone_barricade_type1",
         "texture": "workzone_rail_left",
         "texture_fn": lambda: diagonal_stripe_image(False, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
@@ -1255,15 +1443,31 @@ DEVICES = {
         "rotatable": True, "java": "BlockWorkZoneBarricade",
     },
     "barricade_type_1_right": {
-        "barricade": "type1",
+        "barricade": "type1", "top": "BarricadeGeometry.TYPE1_TOP",
         "model": "workzone_barricade_type1", "build": None,
         "texture": "workzone_rail_right",
         "texture_fn": lambda: diagonal_stripe_image(True, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
         "display": "Type I Barricade (Keep Right)",
         "rotatable": True, "java": "BlockWorkZoneBarricade",
     },
+    "barricade_type_2_left": {
+        "model": "workzone_barricade_type2", "build": build_barricade_folding,
+        "texture": "workzone_fold_rail_left",
+        "texture_fn": lambda: diagonal_stripe_image(False, FOLD_RAIL_W, FOLD_RAIL_H, BARRICADE_STRIPE),
+        "display": "Type II Folding Barricade (Keep Left)",
+        "rotatable": True, "java": "BlockWorkZoneBarricadeFolding",
+        "top": "BarricadeGeometry.FOLDING_TOP",
+    },
+    "barricade_type_2_right": {
+        "model": "workzone_barricade_type2", "build": None,
+        "texture": "workzone_fold_rail_right",
+        "texture_fn": lambda: diagonal_stripe_image(True, FOLD_RAIL_W, FOLD_RAIL_H, BARRICADE_STRIPE),
+        "display": "Type II Folding Barricade (Keep Right)",
+        "rotatable": True, "java": "BlockWorkZoneBarricadeFolding",
+        "top": "BarricadeGeometry.FOLDING_TOP",
+    },
     "barricade_type_3_left": {
-        "barricade": "type3",
+        "barricade": "type3", "top": "BarricadeGeometry.TYPE3_TOP",
         "model": "workzone_barricade_type3",
         "texture": "workzone_rail_left",
         "texture_fn": lambda: diagonal_stripe_image(False, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
@@ -1271,7 +1475,7 @@ DEVICES = {
         "rotatable": True, "java": "BlockWorkZoneBarricade",
     },
     "barricade_type_3_right": {
-        "barricade": "type3",
+        "barricade": "type3", "top": "BarricadeGeometry.TYPE3_TOP",
         "model": "workzone_barricade_type3", "build": None,
         "texture": "workzone_rail_right",
         "texture_fn": lambda: diagonal_stripe_image(True, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
@@ -1292,6 +1496,8 @@ DEVICES = {
     },
     "arrow_board": {
         "model": "workzone_arrow_board", "build": build_arrow_board,
+        "inventory_model": "workzone_arrow_board_inv",
+        "inventory_build": build_arrow_board_inventory,
         "texture": "workzone_arrow_board",
         "texture_fn": arrow_board_image,
         "display": "Arrow Board",
@@ -1344,7 +1550,14 @@ def blockstate_json(spec):
             "north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270},
         }
     variants["normal"] = [{}]
-    variants["inventory"] = [{"transform": "forge:default-block"}]
+    inventory = {"transform": "forge:default-block"}
+    if spec.get("inventory_model"):
+        # A device drawn bigger than a block needs its own icon model: the item transform assumes
+        # what it is handed fits in a unit cube and silently draws anything larger over the slots
+        # around it.
+        inventory["model"] = ("csm:trafficaccessories/shared_models/%s.obj"
+                              % spec["inventory_model"])
+    variants["inventory"] = [inventory]
     return {
         "forge_marker": 1,
         "defaults": {
@@ -1397,6 +1610,17 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
                 fh.write("\n")
             written.append(bs_path)
             continue
+        inv_model = spec.get("inventory_model")
+        if inv_model is not None and inv_model not in seen_models:
+            seen_models.add(inv_model)
+            set_v_span(spec.get("v_span", 16.0))
+            inv_mesh = Mesh()
+            spec["inventory_build"](inv_mesh)
+            check_uvs(inv_mesh, inv_model)
+            inv_path = os.path.join(model_dir, inv_model + ".obj")
+            inv_mesh.write(inv_path, inv_model, spec["model"] + ".mtl")
+            written.append(inv_path)
+
         model = spec["model"]
         if spec["build"] is not None and model not in seen_models:
             seen_models.add(model)
@@ -1446,13 +1670,11 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
             if b is None:
                 continue
             cls = spec.get("java", "BlockWorkZoneDevice")
-            if "barricade" in spec:
+            if "top" in spec:
                 # A barricade also takes its height, so the renderer knows where to clamp a
                 # warning light without having to guess the type from the registry name.
-                top = ("BarricadeGeometry.TYPE1_TOP" if spec["barricade"] == "type1"
-                       else "BarricadeGeometry.TYPE3_TOP")
                 fh.write('initTabBlock(new %s("%s", %s,\n    %s));\n'
-                         % (cls, registry, top, java_bbox(b)))
+                         % (cls, registry, spec["top"], java_bbox(b)))
             else:
                 fh.write('initTabBlock(new %s("%s",\n    %s));\n'
                          % (cls, registry, java_bbox(b)))
@@ -1546,9 +1768,15 @@ def write_barricade_geometry():
         ("LEFT_UPRIGHT_X", AXIS - BARRICADE_LEG_X),
         ("RIGHT_UPRIGHT_X", AXIS + BARRICADE_LEG_X),
         ("RAIL_HALF_Z", BARRICADE_RAIL_HALF_Z),
+        ("RAIL_CENTRE_Z", AXIS),
         ("TYPE1_TOP", BARRICADE_TYPE1_TOP),
         ("TYPE3_TOP", BARRICADE_TYPE3_TOP),
         ("LEG_HALF_X", BARRICADE_LEG_HALF_X),
+        ("FOLDING_LEFT_UPRIGHT_X", AXIS - FOLD_UPRIGHT_X),
+        ("FOLDING_RIGHT_UPRIGHT_X", AXIS + FOLD_UPRIGHT_X),
+        ("FOLDING_RAIL_HALF_Z", FOLD_RAIL_HALF_Z),
+        ("FOLDING_RAIL_CENTRE_Z", FOLD_RAIL_CZ),
+        ("FOLDING_TOP", FOLD_TOP),
     ]
     lines = [
         "package com.micatechnologies.minecraft.csm.trafficaccessories;",

@@ -72,11 +72,11 @@ public class TileEntityBarricadeRenderer
   /** The radius of the lens above it. */
   private static final float LENS_RADIUS = 1.35f;
 
-  /** The widest a mounted sign is drawn, in 1/16 units. */
-  private static final float SIGN_MAX_WIDTH = 13.0f;
+  /** The widest a mounted sign is drawn, as a fraction of the distance between the uprights. */
+  private static final float SIGN_MAX_WIDTH_FRACTION = 0.8125f;
 
-  /** The tallest a mounted sign is drawn. */
-  private static final float SIGN_MAX_HEIGHT = 11.0f;
+  /** The tallest a mounted sign is drawn, as a fraction of the barricade's height. */
+  private static final float SIGN_MAX_HEIGHT_FRACTION = 0.62f;
 
   /** How far a mounted sign stands proud of the rails it is bolted to. */
   private static final float SIGN_STANDOFF = 0.45f;
@@ -117,7 +117,7 @@ public class TileEntityBarricadeRenderer
     }
     IBlockState state = te.getWorld().getBlockState(te.getPos());
     Block block = state.getBlock();
-    if (!(block instanceof BlockWorkZoneBarricade)) {
+    if (!(block instanceof AbstractBlockWorkZoneBarricade)) {
       return;
     }
     BarricadeFlashers flashers = te.getFlashers();
@@ -130,7 +130,8 @@ public class TileEntityBarricadeRenderer
         ? state.getValue(AbstractBlockRotatableNSEW.FACING) : EnumFacing.NORTH;
     double settle = ((ICsmRoadSurfaceAware) block).getRoadSurfaceOffset(te.getWorld(),
         te.getPos());
-    float topY = ((BlockWorkZoneBarricade) block).getTopY();
+    AbstractBlockWorkZoneBarricade barricade = (AbstractBlockWorkZoneBarricade) block;
+    float topY = barricade.getTopY();
 
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
     int sky = (combinedLight >> 16) & 0xFFFF;
@@ -147,11 +148,11 @@ public class TileEntityBarricadeRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
     if (sign != null) {
-      renderSign(sign, topY, sky, blockLight);
+      renderSign(barricade, sign, topY, sky, blockLight);
     }
     if (flashers != BarricadeFlashers.NONE) {
       Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-      renderLamps(te, flashers, topY, partialTicks, sky, blockLight);
+      renderLamps(te, barricade, flashers, topY, partialTicks, sky, blockLight);
     }
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -164,12 +165,14 @@ public class TileEntityBarricadeRenderer
   /**
    * Draws a mounted sign, scaled to fit the barricade but keeping its own proportions.
    *
+   * @param barricade  the barricade block, which knows its own proportions
    * @param sign       the sign block
    * @param topY       the height of the barricade's uprights
    * @param sky        the sky light
    * @param blockLight the block light
    */
-  private void renderSign(Block sign, float topY, int sky, int blockLight) {
+  private void renderSign(AbstractBlockWorkZoneBarricade barricade, Block sign, float topY,
+      int sky, int blockLight) {
     SignPanel panel = panelFor(sign);
     if (panel == null) {
       return;
@@ -178,12 +181,16 @@ public class TileEntityBarricadeRenderer
     // Fit inside the mount box without distorting the sign: whichever axis runs out first sets
     // the scale. Stretching to fill would misdraw every sign that is not the box's shape, which
     // is most of them.
-    float scale = Math.min(SIGN_MAX_WIDTH / panel.width, SIGN_MAX_HEIGHT / panel.height);
+    float maxWidth = (barricade.getRightUprightX() - barricade.getLeftUprightX())
+        * SIGN_MAX_WIDTH_FRACTION;
+    float maxHeight = topY * SIGN_MAX_HEIGHT_FRACTION;
+    float scale = Math.min(maxWidth / panel.width, maxHeight / panel.height);
     float halfW = panel.width * scale * 0.5f;
     float halfH = panel.height * scale * 0.5f;
-    float cx = 8.0f;
+    float cx = 0.5f * (barricade.getLeftUprightX() + barricade.getRightUprightX());
     float cy = topY * SIGN_CENTRE_FRACTION;
-    float faceZ = 8.0f - BarricadeGeometry.RAIL_HALF_Z - SIGN_STANDOFF;
+    float railCz = barricade.getRailCentreZ();
+    float faceZ = railCz - barricade.getRailHalfZ() - SIGN_STANDOFF;
 
     // The straps bolting it to the rails, spanning the sign's own height. They start BEHIND the
     // sign's rear face rather than at its front one: a strap that reaches the front runs straight
@@ -192,7 +199,7 @@ public class TileEntityBarricadeRenderer
     for (float sx : new float[]{cx - halfW * 0.6f, cx + halfW * 0.6f}) {
       hardware.add(new RenderHelper.Box(
           new float[]{sx - 0.3f, cy - halfH, faceZ + SIGN_THICKNESS},
-          new float[]{sx + 0.3f, cy + halfH, 8.0f + BarricadeGeometry.RAIL_HALF_Z}));
+          new float[]{sx + 0.3f, cy + halfH, railCz + barricade.getRailHalfZ()}));
     }
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
@@ -273,33 +280,35 @@ public class TileEntityBarricadeRenderer
   /**
    * Draws the warning lights, and their glow when lit.
    *
-   * @param te           the barricade
+   * @param te           the barricade's tile entity
+   * @param barricade    the barricade block, which knows where its uprights are
    * @param flashers     which ends carry a light
    * @param topY         the height of the barricade's uprights
    * @param partialTicks the partial tick
    * @param sky          the sky light
    * @param blockLight   the block light
    */
-  private void renderLamps(TileEntityBarricade te, BarricadeFlashers flashers, float topY,
-      float partialTicks, int sky, int blockLight) {
+  private void renderLamps(TileEntityBarricade te, AbstractBlockWorkZoneBarricade barricade,
+      BarricadeFlashers flashers, float topY, float partialTicks, int sky, int blockLight) {
     List<Float> centres = new ArrayList<>();
     if (flashers.hasLeft()) {
-      centres.add(BarricadeGeometry.LEFT_UPRIGHT_X);
+      centres.add(barricade.getLeftUprightX());
     }
     if (flashers.hasRight()) {
-      centres.add(BarricadeGeometry.RIGHT_UPRIGHT_X);
+      centres.add(barricade.getRightUprightX());
     }
 
+    float railCz = barricade.getRailCentreZ();
     List<RenderHelper.Box> bodies = new ArrayList<>();
     List<RenderHelper.Box> lenses = new ArrayList<>();
     for (float cx : centres) {
       bodies.add(new RenderHelper.Box(
-          new float[]{cx - LAMP_HALF, topY, 8.0f - LAMP_HALF},
-          new float[]{cx + LAMP_HALF, topY + LAMP_HEIGHT, 8.0f + LAMP_HALF}));
+          new float[]{cx - LAMP_HALF, topY, railCz - LAMP_HALF},
+          new float[]{cx + LAMP_HALF, topY + LAMP_HEIGHT, railCz + LAMP_HALF}));
       lenses.add(new RenderHelper.Box(
-          new float[]{cx - LENS_RADIUS, topY + LAMP_HEIGHT, 8.0f - LENS_RADIUS * 0.55f},
+          new float[]{cx - LENS_RADIUS, topY + LAMP_HEIGHT, railCz - LENS_RADIUS * 0.55f},
           new float[]{cx + LENS_RADIUS, topY + LAMP_HEIGHT + LENS_RADIUS * 1.6f,
-              8.0f + LENS_RADIUS * 0.55f}));
+              railCz + LENS_RADIUS * 0.55f}));
     }
     if (bodies.isEmpty()) {
       return;

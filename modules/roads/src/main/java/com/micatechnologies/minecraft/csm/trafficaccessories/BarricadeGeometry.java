@@ -22,6 +22,9 @@ public final class BarricadeGeometry {
   /** rail half z, in 1/16 block units. */
   public static final float RAIL_HALF_Z = 0.3510f;
 
+  /** rail centre z, in 1/16 block units. */
+  public static final float RAIL_CENTRE_Z = 8.0000f;
+
   /** type1 top, in 1/16 block units. */
   public static final float TYPE1_TOP = 12.9600f;
 
@@ -30,6 +33,21 @@ public final class BarricadeGeometry {
 
   /** leg half x, in 1/16 block units. */
   public static final float LEG_HALF_X = 0.7425f;
+
+  /** folding left upright x, in 1/16 block units. */
+  public static final float FOLDING_LEFT_UPRIGHT_X = 2.8000f;
+
+  /** folding right upright x, in 1/16 block units. */
+  public static final float FOLDING_RIGHT_UPRIGHT_X = 13.2000f;
+
+  /** folding rail half z, in 1/16 block units. */
+  public static final float FOLDING_RAIL_HALF_Z = 0.3000f;
+
+  /** folding rail centre z, in 1/16 block units. */
+  public static final float FOLDING_RAIL_CENTRE_Z = 5.2100f;
+
+  /** folding top, in 1/16 block units. */
+  public static final float FOLDING_TOP = 14.8500f;
 
   private BarricadeGeometry() {
     throw new AssertionError("BarricadeGeometry is constants only");
