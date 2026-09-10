@@ -1067,4 +1067,5 @@ tile.barricade_type_2_right.name=Faltbarrikade Typ II (Rechts Halten)
 tile.barricade_type_3_left.name=Barrikade Typ III (Links Halten)
 tile.barricade_type_3_right.name=Barrikade Typ III (Rechts Halten)
 tile.traffic_cone_knocked.name=Verkehrskegel (Umgeworfen)
+tile.delineator_zebra.name=Zebra-Leitschwelle
 tile.arrow_board.name=Pfeiltafel

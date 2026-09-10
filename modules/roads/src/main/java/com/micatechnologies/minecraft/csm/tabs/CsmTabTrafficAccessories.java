@@ -631,6 +631,8 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
     initTabBlock(new BlockWorkZoneDevice("delineator_post_yellow",
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
+    initTabBlock(new BlockWorkZoneDeviceRotatable("delineator_zebra",
+        new AxisAlignedBB(0.068750, 0.000000, 0.340625, 0.931250, 0.190625, 0.659375)));
     initTabBlock(new BlockWorkZoneArrowBoard("arrow_board",
         new AxisAlignedBB(-1.388350, 0.000000, -0.379375, 2.573750, 0.603750, 1.379375)));
     initTabBlock(new BlockWorkZoneDevice("sand_barrel_array",

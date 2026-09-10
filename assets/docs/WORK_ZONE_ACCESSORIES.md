@@ -1,7 +1,7 @@
 # Work Zone Accessories
 
 The channelizing devices a road crew puts out: cones, drums, channelizers, barricades, delineator
-posts, sand barrels and the arrow board. Nineteen blocks in the Traffic Accessories tab, all
+posts, sand barrels and the arrow board. Twenty blocks in the Traffic Accessories tab, all
 generated from one script, and all sharing one behaviour that nothing else in the mod has — they
 **settle onto the surface underneath them** instead of floating a cell above it.
 
@@ -23,6 +23,7 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `barricade_type_2_left`, `_right` | `BlockWorkZoneBarricadeFolding` | two rails on a folding A-frame, stands alone |
 | `barricade_type_3_left`, `_right` | `BlockWorkZoneBarricade` | three rails, joins into runs |
 | `delineator_post`, `delineator_post_yellow` | `BlockWorkZoneDevice` | |
+| `delineator_zebra` | `BlockWorkZoneDeviceRotatable` | the low rubber lane separator; runs the length of its cell so a line of them is continuous |
 | `sand_barrel_array` | `BlockWorkZoneDevice` | |
 | `arrow_board` | `BlockWorkZoneArrowBoard` | trailer board with seven animated modes |
 
@@ -188,6 +189,25 @@ barricade gets a proportionately smaller sign rather than one hanging off its en
 
 `BarricadeGeometry` is **generated** alongside the models, so the renderer and the baked geometry
 cannot disagree about where the uprights and rails are.
+
+### The zebra delineator
+
+The low rubber lane separator laid nose to tail along a bike lane edge. It is the odd one out
+here in two ways.
+
+It is built as a run of arched cross-sections rather than as a lathe, because its section
+changes along its body: a lathe gives a shape of revolution, and this is wide in the middle and
+pointed at both ends. Each face's outward direction is taken from the body's own centre line
+rather than named, since every face leans a different way.
+
+And its texture is mapped the other way round from every other device here: **v runs along the
+body rather than up it**, and u runs around the arch. That is what lets `band_image` -- written
+for the collars on a cone -- draw bands *across* this one, and it also puts that function's
+one-sided lighting over the crown, where the highlight belongs.
+
+The moulded dimples are not decoration. Without them the body is a flat black shape whose only
+cue to its curve is that lighting, and it reads as a painted marking rather than as something
+standing off the road.
 
 ## The arrow board
 
