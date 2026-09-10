@@ -53,10 +53,23 @@ public class ItemGuardrailTool extends AbstractItem {
   private static final Map<String, String> NEXT_VARIANT = new LinkedHashMap<>();
 
   static {
-    NEXT_VARIANT.put("w_beam_guardrail", "w_beam_guardrail_wood");
-    NEXT_VARIANT.put("w_beam_guardrail_wood", "w_beam_guardrail_double");
-    NEXT_VARIANT.put("w_beam_guardrail_double", "w_beam_guardrail_wood_double");
-    NEXT_VARIANT.put("w_beam_guardrail_wood_double", "w_beam_guardrail");
+    // Each rail type cycles within its OWN family. Stepping from a W-beam to a thrie beam would
+    // change the rail rather than an option on it, and would break the run either side of the
+    // block the moment it happened — the rails no longer match.
+    ring("w_beam_guardrail", "w_beam_guardrail_wood",
+        "w_beam_guardrail_double", "w_beam_guardrail_wood_double");
+    ring("thrie_beam_guardrail", "thrie_beam_guardrail_wood",
+        "thrie_beam_guardrail_double", "thrie_beam_guardrail_wood_double");
+    // Neither of these is ever built on a wooden post, so their ring is just the sidedness.
+    ring("box_beam_guardrail", "box_beam_guardrail_double");
+    ring("cable_barrier", "cable_barrier_double");
+  }
+
+  /** Links each name to the next and the last back to the first. */
+  private static void ring(String... names) {
+    for (int i = 0; i < names.length; i++) {
+      NEXT_VARIANT.put(names[i], names[(i + 1) % names.length]);
+    }
   }
 
   @Override

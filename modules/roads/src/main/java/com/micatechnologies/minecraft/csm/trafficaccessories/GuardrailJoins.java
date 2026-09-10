@@ -51,12 +51,14 @@ final class GuardrailJoins {
     if (!(self instanceof ICsmGuardrailRail)) {
       return state;
     }
-    String kind = ((ICsmGuardrailRail) self).getRailKind();
+    ICsmGuardrailRail rail = (ICsmGuardrailRail) self;
     DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
 
-    int right = neighbourLevel(kind, access, pos, facing, facing.rotateY());
+    int right = neighbourLevel(rail, rail.getRailKindOnRight(), access, pos, facing,
+        facing.rotateY(), true);
     boolean joinsRight = right != NONE;
-    boolean joinsLeft = neighbourLevel(kind, access, pos, facing, facing.rotateYCCW()) != NONE;
+    boolean joinsLeft = neighbourLevel(rail, rail.getRailKindOnLeft(), access, pos, facing,
+        facing.rotateYCCW(), false) != NONE;
 
     // The slope is read off the RIGHT-hand neighbour alone, and that is enough for a whole run:
     // this cell ramps up to meet the one above it, and that cell in turn ramps up to the next, so
@@ -99,13 +101,56 @@ final class GuardrailJoins {
     if (!(self instanceof ICsmGuardrailRail)) {
       return state;
     }
-    String kind = ((ICsmGuardrailRail) self).getRailKind();
+    ICsmGuardrailRail rail = (ICsmGuardrailRail) self;
     DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
 
-    boolean runLeft = neighbourLevel(kind, access, pos, facing, facing.rotateYCCW()) != NONE;
-    boolean runRight = neighbourLevel(kind, access, pos, facing, facing.rotateY()) != NONE;
+    boolean runLeft = neighbourLevel(rail, rail.getRailKindOnLeft(), access, pos, facing,
+        facing.rotateYCCW(), false) != NONE;
+    boolean runRight = neighbourLevel(rail, rail.getRailKindOnRight(), access, pos, facing,
+        facing.rotateY(), true) != NONE;
 
     return state.withProperty(BlockGuardrailEnd.MIRRORED, runRight && !runLeft);
+  }
+
+  /**
+   * Whether the run on this block's LEFT is carrying {@code kind}.
+   *
+   * <p>How a transition piece works out which way round it is drawn: it was built to END with one
+   * of its two rails, so finding that rail on its left means the run reads through it backwards
+   * and the model wants mirroring.</p>
+   *
+   * @param kind   the rail to look for
+   * @param state  this block's resolved state, for its facing
+   * @param access the block access
+   * @param pos    this block's position
+   *
+   * @return true if a run carrying {@code kind} adjoins the left-hand end
+   *
+   * @since 1.0
+   */
+  static boolean presentsRailOnLeft(String kind, IBlockState state, IBlockAccess access,
+      BlockPos pos) {
+    // STRICT, unlike the join test: it asks what the neighbour actually presents, not what the
+    // two of them would tolerate. A transition accepts either of its rails, so going through the
+    // mutual test here would answer yes whichever way round the run reads, and the mirror would
+    // never flip.
+    DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
+    DirectionEight direction = facing.rotateYCCW();
+    BlockPos step = pos.add(direction.getOffsetX(), 0, direction.getOffsetZ());
+    for (int dy : new int[]{0, 1, -1}) {
+      IBlockState neighbour = access.getBlockState(step.up(dy));
+      ICsmGuardrailRail rail = railOf(neighbour.getBlock());
+      if (rail == null
+          || !neighbour.getPropertyKeys().contains(AbstractBlockRotatableHZEight.FACING)
+          || neighbour.getValue(AbstractBlockRotatableHZEight.FACING) != facing) {
+        continue;
+      }
+      // Its RIGHT-hand end is the one facing us.
+      if (kind.equals(rail.getRailKindOnRight())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Returned by {@link #neighbourLevel} when there is no guardrail that way at all. */
@@ -118,29 +163,44 @@ final class GuardrailJoins {
    * own continuation. An end treatment counts as a neighbour — a run joins INTO one — but this is
    * only ever asked of a rail, so nothing joins through it.</p>
    */
-  private static int neighbourLevel(String kind, IBlockAccess access, BlockPos pos,
-      DirectionEight facing, DirectionEight direction) {
+  private static int neighbourLevel(ICsmGuardrailRail self, String kind, IBlockAccess access,
+      BlockPos pos, DirectionEight facing, DirectionEight direction, boolean steppingRight) {
     BlockPos step = pos.add(direction.getOffsetX(), 0, direction.getOffsetZ());
     for (int dy : new int[]{0, 1, -1}) {
-      if (matches(kind, access, step.up(dy), facing)) {
+      if (matches(self, kind, access, step.up(dy), facing, steppingRight)) {
         return dy;
       }
     }
     return NONE;
   }
 
-  /** True if the block at {@code pos} is a guardrail carrying the same rail and facing the same way. */
-  private static boolean matches(String kind, IBlockAccess access, BlockPos pos,
-      DirectionEight facing) {
+  /**
+   * True if the block at {@code pos} is a guardrail facing the same way and presenting the same
+   * rail at the end that faces us.
+   *
+   * <p>Which of the neighbour's ends that is follows from which way we stepped: reaching to our
+   * RIGHT puts us against its left-hand end, and the other way round. Two blocks with the same
+   * facing lie head to tail, not head to head.</p>
+   */
+  private static boolean matches(ICsmGuardrailRail self, String kind, IBlockAccess access,
+      BlockPos pos, DirectionEight facing, boolean steppingRight) {
     IBlockState neighbour = access.getBlockState(pos);
     ICsmGuardrailRail rail = railOf(neighbour.getBlock());
-    if (rail == null || !kind.equals(rail.getRailKind())) {
+    if (rail == null
+        || !neighbour.getPropertyKeys().contains(AbstractBlockRotatableHZEight.FACING)
+        || neighbour.getValue(AbstractBlockRotatableHZEight.FACING) != facing) {
       return false;
     }
-    if (!neighbour.getPropertyKeys().contains(AbstractBlockRotatableHZEight.FACING)) {
-      return false;
-    }
-    return neighbour.getValue(AbstractBlockRotatableHZEight.FACING) == facing;
+    // Stepping to our RIGHT puts us against the neighbour's left-hand end, and puts our right-hand
+    // end against it. Two blocks with the same facing lie head to tail.
+    boolean theirEndIsLeft = steppingRight;
+    String theirKind = theirEndIsLeft ? rail.getRailKindOnLeft() : rail.getRailKindOnRight();
+
+    // Either accepting the other is enough. For a plain rail both clauses ask the same question,
+    // because it presents and accepts one section. A transition presents a fixed rail at each of
+    // its ends and those do NOT swap when it is drawn mirrored -- so when it is the one reaching
+    // out, the first clause fails and the second is what joins the run up.
+    return rail.acceptsRail(kind, theirEndIsLeft) || self.acceptsRail(theirKind, !steppingRight);
   }
 
   @Nullable
