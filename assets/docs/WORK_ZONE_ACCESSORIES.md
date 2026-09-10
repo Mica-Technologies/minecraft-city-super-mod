@@ -335,16 +335,23 @@ and its facing:
 
 | Cell | Head |
 |---|---|
-| any cell one to ten out, seven up | under the arm, the overhead head (arm style only) |
+| any cell one to eight out, seven up | under the arm, the overhead head (arm style only) |
 | one out, five up | against the mast, the near-side head |
 
 The near head sits lower than the overhead one, which is how these are rigged: the mast head is
 read from the stop line and the arm head from back down the lane.
 
-The arm is **ten cells long** -- about as long as the mast is tall, which is what lets one
+The arm is **eight cells long** -- nearly as long as the mast is tall, which is what lets one
 trailer signal the far lane of a road it is parked beside, and what the real ones look like. It
 tapers toward the tip and is held by two members, a stay under its root and a tie from the king
-post above it: a bar of even thickness ten cells out reads as scaffolding rather than as an arm.
+post above it: a bar of even thickness that far out reads as scaffolding rather than as an arm.
+
+A head hangs from the arm with the signal system's own **Overhead Mount**, set on the head with
+the Signal Head Configuration Tool. That mount type was added for this: the others all reach
+sideways or backwards to a pole beside the head, and none of them could describe a head that
+HANGS. It draws one bracket, at the top of the body, running straight up -- the vertical types
+put a bracket at each end, which reaching upward would run through the signal it is holding.
+It works on CSM's own mast arms too, not just here.
 
 **The scale is set by the signals, not by the trailer.** A signal head here is a block, and a
 mast arm intersection is built with its arm around ten blocks over the road; a temporary signal

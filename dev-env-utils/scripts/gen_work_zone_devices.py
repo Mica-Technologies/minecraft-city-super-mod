@@ -526,7 +526,7 @@ BARRIER_PROFILE = [(3.60, 0.00), (3.60, 1.40), (1.90, 4.20), (1.35, 12.20), (1.2
 PSIG_ARM_CLEARANCE = 8 * 16.0        # underside of the arm, in 1/16 units above the trailer's base
 
 # Relative to the trailer's own cell and its facing, the cells left free for heads are:
-#   any cell one to ten out, seven up -- under the arm, the overhead head   (arm style only)
+#   any cell one to eight out, seven up -- under the arm, the overhead head  (arm style only)
 #   one out, five up                  -- against the mast, the near-side head
 # The near head sits lower than the overhead one, which is how these are actually rigged: the mast
 # head is read from the stop line and the arm head from back down the lane.
@@ -544,11 +544,11 @@ PSIG_MAST_Z = 8.00
 PSIG_MAST_HALF = 2.40
 PSIG_ARM_THICK = 4.20
 PSIG_ARM_HALF_X = 2.00
-# Ten whole cells out. These arms are LONG -- on the real thing the arm is about as long as the
+# Eight whole cells out. These arms are LONG -- on the real thing the arm is nearly as long as the
 # mast is tall, which is what lets one trailer signal the far lane of a road it is parked beside.
 # It ends flush on a cell boundary, so a head hung in any cell under it meets the arm rather than
 # poking through it, and the tip cell is the natural place for the far one.
-PSIG_ARM_TIP_Z = -160.00
+PSIG_ARM_TIP_Z = -128.00
 PSIG_ARM_TIP_HALF_X = 1.15     # the arm tapers; a cantilever this long is not a constant section
 PSIG_ARM_TIP_THICK = 2.60
 PSIG_TIE_AT = 0.58             # where the tie from the king post meets the arm, along its span
@@ -1759,7 +1759,10 @@ def build_signal_trailer(mesh, style):
     mh = PSIG_MAST_HALF
     mx, mz = PSIG_MAST_X, PSIG_MAST_Z
     top = spec["mast_top"]
-    box(mesh, mx - mh, mx + mh, cy1 - 0.5, top, mz - mh, mz + mh, SWATCH_BASE_V,
+    # The mast runs from INSIDE the bed, not from the top of the cabinet. The cabinet stands
+    # beside the mast rather than under it, so starting there left the mast hanging in the air
+    # over the deck with a visible gap beneath it.
+    box(mesh, mx - mh, mx + mh, by1 - 1.20, top, mz - mh, mz + mh, SWATCH_BASE_V,
         faces=("x-", "x+", "y+", "z-", "z+"))
 
     if spec["arm"] is None:
