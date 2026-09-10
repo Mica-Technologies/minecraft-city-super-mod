@@ -106,6 +106,30 @@ final class WorkZoneJoins {
   }
 
   /**
+   * Sets ONLY the diagonal filler, for a device that needs no end pieces.
+   *
+   * <p>The safety fence is the case: its panel spans the whole cell and its stakes are inset from
+   * the edges, so a square run of them is already continuous and there is nothing to take off at
+   * a joint. A diagonal run is not continuous, because it leaves the same gap every other joining
+   * device leaves, so the fence wants the filler and nothing else.</p>
+   *
+   * @param self   the block asking, so only its own kind counts as a neighbour
+   * @param state  the block state
+   * @param access the block access
+   * @param pos    the block position
+   *
+   * @return the state with its filler set
+   *
+   * @since 1.0
+   */
+  static IBlockState resolveFill(Block self, IBlockState state, IBlockAccess access,
+      BlockPos pos) {
+    DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
+    return state.withProperty(DIAG_FILL,
+        facing.isDiagonal() && joins(self, access, pos, facing, facing.rotateY()));
+  }
+
+  /**
    * Sets all four side properties on a state from what abuts it, for a device laid in a patch
    * rather than a line.
    *
