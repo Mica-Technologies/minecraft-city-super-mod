@@ -34,14 +34,14 @@ public class BlockWorkZoneBarricade extends AbstractBlockWorkZoneBarricade {
    *
    * @since 1.0
    */
-  public static final PropertyBool CONNECT_LEFT = PropertyBool.create("connectleft");
+  public static final PropertyBool CONNECT_LEFT = WorkZoneJoins.CONNECT_LEFT;
 
   /**
    * Whether a matching barricade adjoins the model's right-hand end.
    *
    * @since 1.0
    */
-  public static final PropertyBool CONNECT_RIGHT = PropertyBool.create("connectright");
+  public static final PropertyBool CONNECT_RIGHT = WorkZoneJoins.CONNECT_RIGHT;
 
   /**
    * Constructs a {@link BlockWorkZoneBarricade} instance.
@@ -84,29 +84,6 @@ public class BlockWorkZoneBarricade extends AbstractBlockWorkZoneBarricade {
   @Nonnull
   public IBlockState getActualState(@Nonnull IBlockState state, @Nonnull IBlockAccess access,
       @Nonnull BlockPos pos) {
-    EnumFacing facing = state.getValue(FACING);
-    return state
-        .withProperty(CONNECT_LEFT, joinsAt(access, pos, facing, facing.rotateYCCW()))
-        .withProperty(CONNECT_RIGHT, joinsAt(access, pos, facing, facing.rotateY()));
-  }
-
-  /**
-   * Gets whether the block one step in the given direction is a barricade this one should join.
-   *
-   * @param access    the block access
-   * @param pos       this barricade's position
-   * @param facing    this barricade's facing
-   * @param direction the direction to look in
-   *
-   * @return true if the neighbour is the same barricade facing the same way
-   *
-   * @since 1.0
-   */
-  private boolean joinsAt(IBlockAccess access, BlockPos pos, EnumFacing facing,
-      EnumFacing direction) {
-    IBlockState neighbour = access.getBlockState(pos.offset(direction));
-    return neighbour.getBlock() == this
-        && neighbour.getPropertyKeys().contains(FACING)
-        && neighbour.getValue(FACING) == facing;
+    return WorkZoneJoins.resolve(this, state, access, pos);
   }
 }

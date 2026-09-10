@@ -54,6 +54,8 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDevice
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceDiagonal;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceFlashing;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceRotatable;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZonePlate;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneWall;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdoublemountunpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzsinglemountunpainted;
 import net.minecraft.block.Block;
@@ -646,14 +648,14 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
     initTabBlock(new BlockWorkZoneDeviceRotatable("pavement_marker_red",
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("channelizing_wall_orange",
-        new AxisAlignedBB(0.012500, 0.000000, 0.312500, 0.987500, 0.687500, 0.687500)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("channelizing_wall_white",
-        new AxisAlignedBB(0.012500, 0.000000, 0.312500, 0.987500, 0.687500, 0.687500)));
-    initTabBlock(new BlockWorkZoneDeviceRotatable("concrete_barrier",
-        new AxisAlignedBB(0.012500, 0.000000, 0.275000, 0.987500, 0.812500, 0.725000)));
-    initTabBlock(new BlockWorkZoneDevice("road_plate",
-        new AxisAlignedBB(0.021875, 0.000000, 0.021875, 0.978125, 0.053125, 0.978125)));
+    initTabBlock(new BlockWorkZoneWall("channelizing_wall_orange",
+        new AxisAlignedBB(0.000000, 0.000000, 0.312500, 1.000000, 0.687500, 0.687500)));
+    initTabBlock(new BlockWorkZoneWall("channelizing_wall_white",
+        new AxisAlignedBB(0.000000, 0.000000, 0.312500, 1.000000, 0.687500, 0.687500)));
+    initTabBlock(new BlockWorkZoneWall("concrete_barrier",
+        new AxisAlignedBB(0.000000, 0.000000, 0.275000, 1.000000, 0.812500, 0.725000)));
+    initTabBlock(new BlockWorkZonePlate("road_plate",
+        new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.053125, 1.000000)));
     initTabBlock(new BlockWorkZoneDeviceRotatable("safety_fence",
         new AxisAlignedBB(0.000000, 0.000000, 0.473750, 1.000000, 0.887500, 0.526250)));
     initTabBlock(new BlockWorkZoneArrowBoard("arrow_board",
