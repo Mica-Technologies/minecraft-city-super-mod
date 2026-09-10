@@ -459,6 +459,29 @@ So backplates are no longer drawn as chunk geometry at all. `AbstractBlockSignal
 which reads the neighbouring head's span offset through `AbstractBlockSignalBackplate.spanRiseOf`
 and applies it as a translation.
 
+### What that did to the emissive borders
+
+Eight backplate textures have `_e` companions in `shared_textures` -- the OptiFine emissive
+overlay for the coloured border, which is retroreflective on a real plate. They stopped taking
+effect when the drawing moved here.
+
+Two separate things are going on, and they are easy to conflate:
+
+- The mod has never shipped an `emissive.properties` of its own until recently, so any emissive
+  anyone saw on these came from a resource pack supplying the `suffix.emissive=_e` declaration.
+  Core ships that declaration now (`assets/minecraft/optifine/emissive.properties`), added for
+  the work zone pavement markers; it is global, so it covers these too. There is no per-texture
+  opt-in in OptiFine to add.
+- Whether the declaration is ENOUGH here is unverified. OptiFine's emissive pass patches
+  `BlockModelRenderer`, and this renderer does route through `renderModelFlat`, so the hook may
+  well still fire -- but from inside a tile entity renderer's GL state rather than the chunk
+  pass it was written for. It cannot be checked in a development environment, because OptiFine
+  does not load deobfuscated.
+
+If it turns out not to fire, the fix is a second pass in this renderer: stitch the `_e` sprites
+and draw the same quads again with them at a full-bright lightmap, which is what OptiFine would
+have done and what every other lit thing in this mod does by hand.
+
 The obvious design was the other one: derive an "is it shifted" property, swap in an empty model
 when true, and keep the cheap chunk batch for every plate that has not moved. It was tried and
 abandoned, and it is worth writing down why, because it looks like the better plan right up until
