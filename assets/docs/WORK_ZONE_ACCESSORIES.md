@@ -24,7 +24,7 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `barricade_type_3_left`, `_right` | `BlockWorkZoneBarricade` | three rails, joins into runs |
 | `delineator_post`, `delineator_post_yellow` | `BlockWorkZoneDevice` | |
 | `delineator_zebra` | `BlockWorkZoneDeviceDiagonal` | the low rubber lane separator; runs the length of its cell so a line of them is continuous, and takes all eight facings |
-| `pavement_marker_white`, `_yellow`, `_blue`, `_green` | `BlockWorkZonePavementMarker` | the small folded tabs taped down a lane line; drawn fullbright |
+| `pavement_marker_white`, `_yellow`, `_blue`, `_green` | `BlockWorkZoneDeviceRotatable` | the small folded tabs taped down a lane line |
 | `sand_barrel_array` | `BlockWorkZoneDevice` | |
 | `arrow_board` | `BlockWorkZoneArrowBoard` | trailer board with seven animated modes |
 
@@ -223,18 +223,23 @@ moulded plastic tab, so its body is left flat and only the strip carries any tex
 bright pixels, which is what separates a retroreflective strip from a painted stripe at
 distance.
 
-They are drawn at **full brightness** whatever the light around them, which is how the strip
-reads as retroreflective rather than painted. A marker that goes dark at night is one that is
-not doing its job, and these are put out precisely for the nights between milling a road and
-re-striping it.
+Their reflective strip is **emissive under OptiFine**, which is what makes it read as
+retroreflective rather than painted -- a marker that goes dark at night is one that is not doing
+its job, and these are put out precisely for the nights between milling a road and re-striping
+it. Each marker texture has a `_e` companion holding the strip alone on transparency, and
+Core's `assets/minecraft/optifine/emissive.properties` declares the `_e` suffix. Without
+OptiFine nothing references those files, nothing is stitched, and the marker draws normally.
 
-1.12 has no per-face emissive on a baked model, so that is the whole tab rather than the strip
-alone. Doing it properly means a tile entity renderer drawing the strip over the model, which is
-how every other lit thing in this mod works and costs a tile entity and a draw call per marker
-— which a device meant to be laid out in lines of dozens cannot afford. At this size the
-difference is not visible: the tab is small enough that a lit body reads as plastic catching
-headlights. It emits no light, so nothing around it is lit any differently, which is correct —
-a retroreflector returns a driver's own beam and illuminates nothing.
+**Do not do this with `getPackedLightmapCoords`.** Making the block report full brightness is
+not confined to the block: a neighbour's renderer asks the block across each face for its packed
+light to shade that face's own vertices, so a fullbright marker visibly brightens the road it is
+standing on. There is no way to distinguish drawing yourself from a neighbour sampling you. That
+was tried first and had to come out.
+
+The markers also carry a finer texture than the rest of the family, 128px against 32. Their
+strip is a little over half a world unit tall, which at the shared size is barely one texel row
+-- thin enough that the strip all but disappears and its emissive companion has nothing to
+cover.
 
 ### The zebra delineator
 

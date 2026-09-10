@@ -489,6 +489,11 @@ ZEBRA_BANDS = [(c - ZEBRA_BAND_W / 2.0, c + ZEBRA_BAND_W / 2.0)
 # plane are absolute, and shrinking those with the shape would eventually bring them back into
 # one plane.
 MARKER_SCALE = 0.70
+# The markers get a finer texture than the rest of the family. Their reflective strip is a
+# little over half a world unit tall, which at the shared 32px size is barely one texel row --
+# thin enough that the strip all but disappears and its emissive companion has nothing to
+# cover. At 128 it is nearly five rows, which is enough to read as applied sheeting.
+MARKER_TEX_SIZE = 128
 MARKER_HALF_X = 3.60 * MARKER_SCALE            # half the marker's width
 MARKER_PANEL_TOP = 3.15 * MARKER_SCALE         # top of the upright panel
 # The panel stands across the back of the foot, and the foot reaches forward from it.
@@ -1420,10 +1425,10 @@ def marker_texture(body, body_shade, strip, strip_shade):
     side of a lathed cone or drum and reads as a vignette on something flat. A marker is a
     moulded plastic tab, so its body is left flat and only the strip carries any texture.
     """
-    img = Image.new("RGBA", (TEX_SIZE, TEX_SIZE), body + (255,))
+    img = Image.new("RGBA", (MARKER_TEX_SIZE, MARKER_TEX_SIZE), body + (255,))
     band_y0, band_y1 = MARKER_BAND
-    for r in range(TEX_SIZE):
-        y = V_SPAN * (1.0 - (r + 0.5) / TEX_SIZE)
+    for r in range(MARKER_TEX_SIZE):
+        y = V_SPAN * (1.0 - (r + 0.5) / MARKER_TEX_SIZE)
         if band_y0 <= y <= band_y1:
             color = strip
             if y - band_y0 < 0.09 or band_y1 - y < 0.09:
@@ -1432,22 +1437,48 @@ def marker_texture(body, body_shade, strip, strip_shade):
             color = body_shade       # a shadow line just under the strip
         else:
             continue
-        for c in range(TEX_SIZE):
-            if (c + 0.5) / TEX_SIZE > SWATCH_U0:
+        for c in range(MARKER_TEX_SIZE):
+            if (c + 0.5) / MARKER_TEX_SIZE > SWATCH_U0:
                 continue
             img.putpixel((c, r), color + (255,))
 
     # The beading. Sparse bright pixels inside the strip only, which is what separates a
     # retroreflective strip from a painted stripe at this distance.
-    r0 = int(TEX_SIZE * (1.0 - band_y1 / V_SPAN))
-    r1 = int(TEX_SIZE * (1.0 - band_y0 / V_SPAN))
-    for r in range(max(0, r0 + 1), min(TEX_SIZE, r1 - 1)):
-        for c in range(TEX_SIZE):
-            if (c + 0.5) / TEX_SIZE > SWATCH_U0 or (r * 5 + c * 3) % 7:
+    r0 = int(MARKER_TEX_SIZE * (1.0 - band_y1 / V_SPAN))
+    r1 = int(MARKER_TEX_SIZE * (1.0 - band_y0 / V_SPAN))
+    for r in range(max(0, r0 + 1), min(MARKER_TEX_SIZE, r1 - 1)):
+        for c in range(MARKER_TEX_SIZE):
+            if (c + 0.5) / MARKER_TEX_SIZE > SWATCH_U0 or (r * 5 + c * 3) % 7:
                 continue
             img.putpixel((c, r), tuple(min(255, v + 34) for v in strip) + (255,))
 
     draw_swatches(img, body, strip, AMBER)
+    return img
+
+
+def marker_emissive(body, body_shade, strip, strip_shade):
+    """The OptiFine emissive overlay for a marker: the reflective strip alone, on transparency.
+
+    OptiFine draws a texture named ``<name>_e`` over its base at full brightness, which is the
+    only way to light PART of a baked model in 1.12. The alternative, making the whole block
+    report full brightness, is not confined to the block: a neighbour's renderer asks the block
+    across each face for its packed light to shade that face's own vertices, so a fullbright
+    marker visibly brightens the road it is standing on.
+
+    Everything but the strip is left transparent, so without OptiFine this file is simply never
+    referenced and the marker draws normally.
+    """
+    base = marker_texture(body, body_shade, strip, strip_shade)
+    img = Image.new("RGBA", base.size, (0, 0, 0, 0))
+    band_y0, band_y1 = MARKER_BAND
+    for r in range(MARKER_TEX_SIZE):
+        y = V_SPAN * (1.0 - (r + 0.5) / MARKER_TEX_SIZE)
+        if not band_y0 <= y <= band_y1:
+            continue
+        for c in range(MARKER_TEX_SIZE):
+            if (c + 0.5) / MARKER_TEX_SIZE > SWATCH_U0:
+                continue
+            img.putpixel((c, r), base.getpixel((c, r)))
     return img
 
 
@@ -1728,29 +1759,33 @@ DEVICES = {
         "model": "workzone_pavement_marker", "build": build_pavement_marker,
         "texture": "workzone_pavement_marker_white",
         "texture_fn": lambda: marker_texture(WHITE, WHITE_DIM, MARKER_SILVER, MARKER_SILVER_DARK),
+        "emissive_fn": lambda: marker_emissive(WHITE, WHITE_DIM, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (White)",
-        "rotatable": True, "java": "BlockWorkZonePavementMarker",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "pavement_marker_yellow": {
         "model": "workzone_pavement_marker", "build": None,
         "texture": "workzone_pavement_marker_yellow",
         "texture_fn": lambda: marker_texture(MARKER_YELLOW, MARKER_YELLOW_DARK, MARKER_GOLD, MARKER_GOLD_DARK),
+        "emissive_fn": lambda: marker_emissive(MARKER_YELLOW, MARKER_YELLOW_DARK, MARKER_GOLD, MARKER_GOLD_DARK),
         "display": "Temporary Pavement Marker (Yellow)",
-        "rotatable": True, "java": "BlockWorkZonePavementMarker",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "pavement_marker_blue": {
         "model": "workzone_pavement_marker", "build": None,
         "texture": "workzone_pavement_marker_blue",
         "texture_fn": lambda: marker_texture(MARKER_BLUE, MARKER_BLUE_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
+        "emissive_fn": lambda: marker_emissive(MARKER_BLUE, MARKER_BLUE_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (Blue)",
-        "rotatable": True, "java": "BlockWorkZonePavementMarker",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "pavement_marker_green": {
         "model": "workzone_pavement_marker", "build": None,
         "texture": "workzone_pavement_marker_green",
         "texture_fn": lambda: marker_texture(MARKER_GREEN, MARKER_GREEN_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
+        "emissive_fn": lambda: marker_emissive(MARKER_GREEN, MARKER_GREEN_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (Bike Lane Green)",
-        "rotatable": True, "java": "BlockWorkZonePavementMarker",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "arrow_board": {
         "model": "workzone_arrow_board", "build": build_arrow_board,
@@ -1910,6 +1945,11 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
         if tex_path not in written:
             spec["texture_fn"]().save(tex_path)
             written.append(tex_path)
+        if spec.get("emissive_fn") is not None:
+            # OptiFine picks this up by name; nothing references it otherwise.
+            emissive_path = os.path.join(texture_dir, spec["texture"] + "_e.png")
+            spec["emissive_fn"]().save(emissive_path)
+            written.append(emissive_path)
 
         bs_path = os.path.join(blockstate_dir, registry + ".json")
         with open(bs_path, "w", newline="\n") as fh:
