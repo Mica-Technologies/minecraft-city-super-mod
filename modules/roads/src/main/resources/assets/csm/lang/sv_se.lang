@@ -1072,4 +1072,6 @@ tile.pavement_marker_white.name=Tillfällig Vägmarkering (Vit)
 tile.pavement_marker_yellow.name=Tillfällig Vägmarkering (Gul)
 tile.pavement_marker_blue.name=Tillfällig Vägmarkering (Blå)
 tile.pavement_marker_green.name=Tillfällig Vägmarkering (Cykelbanegrön)
+tile.pavement_marker_orange.name=Tillfällig Vägmarkering (Byggorange)
+tile.pavement_marker_red.name=Tillfällig Vägmarkering (Röd)
 tile.arrow_board.name=Piltavla

@@ -106,6 +106,8 @@ MARKER_BLUE = (0, 89, 152)        # MUTCD/ADA blue
 MARKER_BLUE_DARK = (0, 66, 114)
 MARKER_GREEN = (0, 177, 64)       # the FHWA green a bike lane is surfaced in
 MARKER_GREEN_DARK = (0, 138, 50)
+MARKER_RED = (178, 26, 44)        # MUTCD stop sign red
+MARKER_RED_DARK = (140, 18, 32)
 MARKER_SILVER = (206, 212, 220)   # the glass-beaded reflective strip along the top
 MARKER_SILVER_DARK = (170, 176, 186)
 MARKER_GOLD = (250, 216, 96)      # the same strip on an amber marker
@@ -1785,6 +1787,22 @@ DEVICES = {
         "texture_fn": lambda: marker_texture(MARKER_GREEN, MARKER_GREEN_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "emissive_fn": lambda: marker_emissive(MARKER_GREEN, MARKER_GREEN_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
         "display": "Temporary Pavement Marker (Bike Lane Green)",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "pavement_marker_orange": {
+        "model": "workzone_pavement_marker", "build": None,
+        "texture": "workzone_pavement_marker_orange",
+        "texture_fn": lambda: marker_texture(ORANGE, ORANGE_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
+        "emissive_fn": lambda: marker_emissive(ORANGE, ORANGE_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
+        "display": "Temporary Pavement Marker (Construction Orange)",
+        "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
+    },
+    "pavement_marker_red": {
+        "model": "workzone_pavement_marker", "build": None,
+        "texture": "workzone_pavement_marker_red",
+        "texture_fn": lambda: marker_texture(MARKER_RED, MARKER_RED_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
+        "emissive_fn": lambda: marker_emissive(MARKER_RED, MARKER_RED_DARK, MARKER_SILVER, MARKER_SILVER_DARK),
+        "display": "Temporary Pavement Marker (Red)",
         "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "arrow_board": {

@@ -1072,4 +1072,6 @@ tile.pavement_marker_white.name=Marcador de Pavimento Temporal (Blanco)
 tile.pavement_marker_yellow.name=Marcador de Pavimento Temporal (Amarillo)
 tile.pavement_marker_blue.name=Marcador de Pavimento Temporal (Azul)
 tile.pavement_marker_green.name=Marcador de Pavimento Temporal (Verde Carril Bici)
+tile.pavement_marker_orange.name=Marcador de Pavimento Temporal (Naranja de Obra)
+tile.pavement_marker_red.name=Marcador de Pavimento Temporal (Rojo)
 tile.arrow_board.name=Panel de Flechas
