@@ -1076,6 +1076,25 @@ public class TileEntityTrafficSignalHeadRenderer extends
   // Block centre on any axis.
   private static final float BLOCK_CENTRE = 8.0f;
 
+  // --- Overhead hanger -------------------------------------------------------------------
+  // A head that HANGS is not held by the elbow bracket the other mount types draw. Those
+  // reach sideways or backwards to a pole standing beside the head, and their arm is aimed
+  // at the centre of the neighbouring block; an overhead arm is not in the neighbouring
+  // block at all, it is directly above, and how far above depends on how tall the body is.
+  //
+  // So the hanger is its own two pieces and needs none of that machinery:
+  //   a CAP sitting on top of the housing, running forward from the housing's rear shell
+  //   to the block's centre axis, and a POST rising from the cap to whatever is overhead.
+  //
+  // The post stands on the block's centre axis, which is also the axis the body tilt turns
+  // about, so it is invariant under that tilt and needs no compensation. The cap is drawn
+  // in body space and turns with the housing, which is what it should do.
+  private static final float HANGER_SIZE = 2.6f;      // square section of both pieces
+  private static final float HANGER_CAP_HEIGHT = 2.4f;
+  // How far the post carries on past the boundary it is reaching for, so it finishes INSIDE the
+  // arm above rather than exactly against its underside. Two faces meeting exactly in a plane
+  // leave a seam that flickers, and this is well within the arm's own depth either way.
+  private static final float HANGER_OVERSHOOT = 1.5f;
 
   private void renderMount(TileEntityTrafficSignalHead te, IBlockState blockState,
       int[] sectionSizes,
@@ -1113,6 +1132,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     TrafficSignalBodyColor color = te.getMountColor();
 
+    if (mountType == SignalHeadMountType.OVERHEAD) {
+      // A head with another head stacked directly on top of it hangs from that one, not from
+      // the arm — the pair shares a hanger, the same way the other types share a bracket.
+      if (!suppressHighEnd) {
+        renderOverheadHanger(topY, color, zPushBack, skyLight, blockLight);
+      }
+      return;
+    }
+
     // Map mount type + orientation → pole-leg direction. Same pole direction for both
     // end brackets; user-facing type is a single choice, not per-end.
     //
@@ -1127,16 +1155,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
         case REAR:  poleLeg = PoleLeg.REAR_POS_Z; break;
         case LEFT:  poleLeg = PoleLeg.DOWN_NEG_Y; break; // "left mount" in horizontal = pole below
         case RIGHT: poleLeg = PoleLeg.UP_POS_Y;   break; // "right mount" in horizontal = pole above
-        case OVERHEAD: poleLeg = PoleLeg.UP_POS_Y; break;
-        default: return;
+        default: return;  // OVERHEAD never reaches here — it returned above with its own hanger
       }
     } else {
       switch (mountType) {
         case REAR:  poleLeg = PoleLeg.REAR_POS_Z;  break;
         case LEFT:  poleLeg = PoleLeg.RIGHT_POS_X; break; // model +X → viewer's LEFT after facing rotation
         case RIGHT: poleLeg = PoleLeg.LEFT_NEG_X;  break; // model -X → viewer's RIGHT
-        case OVERHEAD: poleLeg = PoleLeg.UP_POS_Y; break;  // hanging from something above
-        default: return;
+        default: return;  // OVERHEAD never reaches here — it returned above with its own hanger
       }
     }
 
@@ -1146,11 +1172,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
     if (horizontal) {
       if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg, mountTiltAngle));
       if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg, mountTiltAngle));
-    } else if (mountType == SignalHeadMountType.OVERHEAD) {
-      // One bracket only, at the TOP. The other vertical types put a bracket at each end and
-      // reach sideways, which is fine when the pole is beside the head; reaching UP from both
-      // ends would run the lower bracket straight through the signal it is holding.
-      brackets.add(new BracketSpec(8.0f, topY, false, true, poleLeg, mountTiltAngle));
     } else {
       if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg, mountTiltAngle));
       if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg, mountTiltAngle));
@@ -1195,6 +1216,67 @@ public class TileEntityTrafficSignalHeadRenderer extends
       tessellator.draw();
       GL11.glPopMatrix();
     }
+  }
+
+  /**
+   * Draws the hanger for an {@link SignalHeadMountType#OVERHEAD} head: a cap across the top of
+   * the housing and a post rising from it to whatever the head hangs from.
+   *
+   * <p>How far up the post has to go is not a constant, because the body is not one block tall.
+   * A three-section head reaches 1.5 blocks above its own block and a single-section one 0.75,
+   * so the same post length either dangles in mid air under the arm or drives straight through
+   * it. What IS constant is that an arm — the trailer's, or one of CSM's own mast arm curves —
+   * has its underside on a block boundary. So the post reaches for the first boundary above the
+   * body and stops there, whatever the section count, and lands on the underside in every
+   * case.</p>
+   *
+   * <p>Both pieces are axis aligned and neither is tilted. The post stands on the block's centre
+   * axis, which is the axis the body tilt turns about, so an angle-mounted head keeps its post
+   * upright and under the arm rather than swinging it out from under it.</p>
+   *
+   * @param topY   top of the signal body in model space
+   * @param color  mount hardware colour
+   */
+  private void renderOverheadHanger(float topY, TrafficSignalBodyColor color, float zPushBack,
+      int skyLight, int blockLight) {
+    // First block boundary strictly above the body. Math.floor rather than Math.ceil so a body
+    // that happens to end exactly on a boundary still gets a post rather than a zero-length one.
+    float reachY = ((float) Math.floor(topY / 16.0f) + 1.0f) * 16.0f + HANGER_OVERSHOOT;
+
+    float half = HANGER_SIZE / 2.0f;
+    // The cap is drawn a little PROUD of the post on every side they share, and the post starts
+    // inside the cap rather than on top of it, so the two never put a face in the same plane.
+    // Flush would z-fight along all four of them.
+    float capHalf = half + 0.35f;
+    float capTop = topY + HANGER_CAP_HEIGHT;
+    float postBottom = topY + HANGER_CAP_HEIGHT * 0.3f;
+
+    // Everything here is drawn through the same zPushBack offset as the body, which is what
+    // keeps the cap sitting on the housing when a small-lens head is pushed back. The POST must
+    // not move with it though — it has to stand on the block's true centre axis to be under the
+    // arm — so its own z is authored back by the same amount, cancelling the offset out.
+    float postZ = BLOCK_CENTRE - zPushBack;
+
+    List<RenderHelper.Box> boxes = new ArrayList<>();
+    // Cap: along the housing's depth, from its rear shell forward to the centre axis. The mount
+    // bolts to the rear the way the elbow brackets do, but an arm overhead runs along the block's
+    // centre line, so something has to carry the load forward to meet it.
+    boxes.add(new RenderHelper.Box(
+        new float[]{BLOCK_CENTRE - capHalf, topY - 0.6f, postZ - capHalf},
+        new float[]{BLOCK_CENTRE + capHalf, capTop, BODY_Z_CENTER + capHalf}));
+    // Post: up the centre axis from inside the cap to the boundary above.
+    boxes.add(new RenderHelper.Box(
+        new float[]{BLOCK_CENTRE - half, postBottom, postZ - half},
+        new float[]{BLOCK_CENTRE + half, reachY, postZ + half}));
+
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(boxes, buffer,
+        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, zPushBack,
+        skyLight, blockLight);
+    tessellator.draw();
   }
 
   /**

@@ -27,7 +27,8 @@
     ],
     "inventory": [
       {
-        "transform": "forge:default-block"
+        "transform": "forge:default-block",
+        "model": "csm:trafficaccessories/shared_models/workzone_signal_trailer_ped_inv.obj"
       }
     ]
   }

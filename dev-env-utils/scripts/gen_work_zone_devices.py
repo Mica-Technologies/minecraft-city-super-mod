@@ -523,41 +523,84 @@ BARRIER_PROFILE = [(3.60, 0.00), (3.60, 1.40), (1.90, 4.20), (1.35, 12.20), (1.2
 # sits a little lower but not much, or traffic does not fit under it. So the arm's underside is
 # eight blocks up and everything else follows from that -- which makes the mast very tall against
 # a compact trailer, exactly as it is on the real thing.
-PSIG_ARM_CLEARANCE = 8 * 16.0        # underside of the arm, in 1/16 units above the trailer's base
+PSIG_ARM_CLEARANCE = 8 * 16.0        # underside of the LEVEL run, in 1/16 units above the base
 
 # Relative to the trailer's own cell and its facing, the cells left free for heads are:
-#   any cell one to eight out, seven up -- under the arm, the overhead head  (arm style only)
-#   one out, five up                  -- against the mast, the near-side head
-# The near head sits lower than the overhead one, which is how these are actually rigged: the mast
-# head is read from the stop line and the arm head from back down the lane.
-PSIG_BED = (-10.00, 22.00, 7.90, 14.60, 0.40, 15.60)   # x0, x1, y0, y1, z0, z1
-PSIG_TONGUE = (22.00, 37.00, 9.40, 12.60, 6.20, 9.80)
-PSIG_WHEEL = {"r": 7.10, "half": 2.90, "x": 0.00, "y": 7.10, "z": (-2.60, 18.60)}
-PSIG_JACK_X = (-7.20, 19.20)
-PSIG_JACK_Z = (-1.60, 17.60)
-PSIG_JACK_HALF = 0.86
-PSIG_SOLAR = (-5.00, 12.00, 14.60, 15.60, 1.80, 14.20)   # the deck panel
-PSIG_CABINET = (13.00, 21.00, 14.60, 26.00, 3.60, 12.40)  # the controller box beside the mast
+#   cells three to eight out, under the level run -- the overhead head       (arm style only)
+#   either cell to the SIDE, five up              -- the near-side head on the mast
+# The near head sits well below the overhead one, which is how these are actually rigged: the
+# mast head is read from the stop line and the boom head from back down the lane. It goes beside
+# the trailer rather than out along the boom because the head faces ACROSS the boom -- the boom
+# reaches over the road and the head looks up it -- which puts the mast squarely behind the head,
+# and a head with the pole behind it is what Rear Mount is for.
+#
+# Which cell the overhead head goes in depends on how many sections it has: the body reaches up
+# to 1.5 blocks above its own block, so a three-section head hangs SIX up and a single-section
+# one seven. Nothing here has to know that -- Overhead Mount measures its own body and reaches
+# for the first block boundary above it, which is where the level run's underside is.
+
+# --- the chassis ---------------------------------------------------------------------------
+# Sized against the mast and boom above it rather than against a real trailer's own dimensions.
+# The first version was measured off the trailer alone and came out a toy: a deck two cells long
+# under a boom eight cells long reads as a mast someone left standing on a go-kart. On the
+# reference machines the deck is around a third of the overall height, and the wheels and jacks
+# are big enough to see from across the road.
+PSIG_BED = (-18.00, 26.00, 10.40, 20.40, 0.00, 16.00)   # x0, x1, y0, y1, z0, z1
+PSIG_TONGUE = (26.00, 46.00, 12.60, 17.00, 5.60, 10.40)
+PSIG_WHEEL = {"r": 9.20, "half": 3.00, "x": 1.00, "y": 9.20, "z": (-2.60, 18.60)}
+PSIG_JACK_X = (-14.40, 22.40)
+PSIG_JACK_Z = (-1.20, 17.20)
+PSIG_JACK_HALF = 1.10
+PSIG_SOLAR = (-15.00, 2.00, 20.40, 21.60, 1.20, 14.80)    # the deck panel
+PSIG_CABINET = (12.00, 24.00, 20.40, 38.00, 2.60, 13.40)  # the controller box beside the mast
 
 PSIG_MAST_X = 8.00
 PSIG_MAST_Z = 8.00
-PSIG_MAST_HALF = 2.40
-PSIG_ARM_THICK = 4.20
-PSIG_ARM_HALF_X = 2.00
-# Eight whole cells out. These arms are LONG -- on the real thing the arm is nearly as long as the
-# mast is tall, which is what lets one trailer signal the far lane of a road it is parked beside.
-# It ends flush on a cell boundary, so a head hung in any cell under it meets the arm rather than
-# poking through it, and the tip cell is the natural place for the far one.
-PSIG_ARM_TIP_Z = -128.00
-PSIG_ARM_TIP_HALF_X = 1.15     # the arm tapers; a cantilever this long is not a constant section
-PSIG_ARM_TIP_THICK = 2.60
-PSIG_TIE_AT = 0.58             # where the tie from the king post meets the arm, along its span
-PSIG_BRACE = 0.62              # where the arm's stay meets the mast, as a fraction of its height
+PSIG_MAST_HALF = 3.00
 
-# Mast height per style. The mast style carries one head against the mast and needs no arm; the
-# pedestrian one is lower again, because a walk signal is read from the kerb and not from a car.
+# --- the boom ------------------------------------------------------------------------------
+# NOT a straight bar off the top of the mast. On every real one the boom PIVOTS near the top of
+# the mast and RISES to its working height over the first couple of cells, then runs level out
+# to the tip -- which is why the mast on these is so much shorter than the boom is high, and why
+# a straight bar at full height reads as a gantry rather than as a towed machine.
+#
+# The level run is also what the block grid wants. It is the part heads hang from, and it has to
+# be at ONE height over several cells or there is no row of cells to hang them in.
+PSIG_PIVOT_Y = 100.00          # boom centreline where it leaves the mast
+PSIG_ELBOW_Z = -32.00          # where the rise ends and the level run begins: two cells out
+# Eight whole cells out. These booms are LONG -- on the real thing the boom is nearly as long as
+# the whole machine is tall, which is what lets one trailer signal the far lane of a road it is
+# parked beside. It ends flush on a cell boundary, so a head hung in any cell under it meets the
+# boom rather than poking through it, and the tip cell is the natural place for the far one.
+PSIG_ARM_TIP_Z = -128.00
+# Half width and depth at each of the three stations. A cantilever this long is not a constant
+# section on the real thing and does not look like one here either.
+PSIG_BOOM_ROOT = (2.20, 5.20)
+PSIG_BOOM_ELBOW = (2.00, 4.20)
+PSIG_BOOM_TIP = (1.15, 2.60)
+
+PSIG_PIVOT_PLATE = (5.40, 1.00)   # half height/reach of the pivot gusset, and its thickness
+# The king post, and the tie from its top out along the level run. The tie is a ROD, not a wire:
+# the first version drew it 1.2 units across, which at this range is a single pixel and reads as
+# a cable someone strung between two points rather than as the thing holding the boom up.
+PSIG_KING_Z = -38.00
+PSIG_KING_RISE = 15.00         # how far the king post stands above the boom's top
+PSIG_KING_HALF = 1.25
+PSIG_TIE_AT = 0.66             # where the tie meets the level run, along its span
+PSIG_TIE_HALF = 1.10
+# The ram under the rising section, which on the real machine is what raises the boom. It sits
+# close under the pivot rather than reaching down to the middle of the mast -- a strut from half
+# way down the mast is a gantry's knee brace, not a boom's ram.
+PSIG_RAM_AT = 0.42             # where it meets the rising section, along the rise
+PSIG_RAM_DROP = 34.00          # how far below the pivot its foot sits on the mast
+PSIG_RAM_HALF = 1.45
+
+# Mast height per style. On the arm style the mast stops just above the pivot -- it does not
+# carry the boom's outer end, the tie does. The mast style carries one head against the mast and
+# needs no boom; the pedestrian one is lower again, because a walk signal is read from the kerb
+# and not from a car.
 PSIG_STYLES = {
-    "arm": {"mast_top": PSIG_ARM_CLEARANCE + 14.0, "arm": PSIG_ARM_TIP_Z},
+    "arm": {"mast_top": PSIG_PIVOT_Y + 14.0, "arm": PSIG_ARM_TIP_Z},
     "mast": {"mast_top": 6 * 16.0 + 10.0, "arm": None},
     "ped": {"mast_top": 4 * 16.0 + 8.0, "arm": None},
 }
@@ -922,12 +965,16 @@ def box(mesh, x0, x1, y0, y1, z0, z1, swatch_v, faces=("x-", "x+", "y-", "y+", "
         mesh.quad_out([(x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)], (0, 0, 1), q)
 
 
-def prism(mesh, bottom, top, swatch_v):
+def prism(mesh, bottom, top, swatch_v, ends=("bottom", "top")):
     """A six-sided solid between two matching quads, for a member that leans.
 
     ``box`` only makes axis-aligned solids, and a leg that leans is the one thing here that is
     not. Each face's outward direction is taken from the solid's own centre rather than named, so
     the winding comes out right whichever way the solid leans.
+
+    ``ends`` names which of the two end caps to draw. Drop one where two prisms meet on a shared
+    quad -- a bent member built as two prisms that both cap the joint puts two faces in the same
+    plane, which z-fights, and capping neither leaves the joint closed by the solids themselves.
     """
     t = uv_swatch(swatch_v)
     q = [t, t, t, t]
@@ -941,8 +988,10 @@ def prism(mesh, bottom, top, swatch_v):
             n = (-n[0], -n[1], -n[2])
         mesh.quad_out(list(pts), n, q)
 
-    face(list(bottom))
-    face(list(top))
+    if "bottom" in ends:
+        face(list(bottom))
+    if "top" in ends:
+        face(list(top))
     for i in range(4):
         j = (i + 1) % 4
         face([bottom[i], bottom[j], top[j], top[i]])
@@ -1714,8 +1763,8 @@ def wall_texture(body, body_shade, band=None, band_color=None, band_shade=None, 
     return img
 
 
-def build_signal_trailer(mesh, style):
-    """A portable signal trailer: chassis, deck, winch mast and, on the arm styles, the arm.
+def build_signal_trailer(mesh, style, tip_z=None, rigging=True):
+    """A portable signal trailer: chassis, deck, winch mast and, on the arm styles, the boom.
 
     Everything is flat swatch. There is nothing on a signal trailer that carries sheeting or a
     pattern, and the one part that is not painted steel -- the solar deck -- is a colour rather
@@ -1768,43 +1817,99 @@ def build_signal_trailer(mesh, style):
     if spec["arm"] is None:
         return
 
+    tip = spec["arm"] if tip_z is None else tip_z
     ay0 = PSIG_ARM_CLEARANCE
-    ay1 = ay0 + PSIG_ARM_THICK
-    ah = PSIG_ARM_HALF_X
-    tip = spec["arm"]
+    pivot = PSIG_PIVOT_Y
+    elbow = PSIG_ELBOW_Z
 
-    # The arm itself, tapering toward the tip. A cantilever this long is not a constant section on
-    # the real thing and does not look like one here either: a bar of even thickness ten cells out
-    # reads as scaffolding rather than as an arm.
-    th = PSIG_ARM_TIP_HALF_X
-    tt = PSIG_ARM_TIP_THICK
-    prism(mesh,
-          [(mx - ah, ay0, mz), (mx + ah, ay0, mz), (mx + ah, ay1, mz), (mx - ah, ay1, mz)],
-          [(mx - th, ay0, tip), (mx + th, ay0, tip),
-           (mx + th, ay0 + tt, tip), (mx - th, ay0 + tt, tip)],
-          SWATCH_BASE_V)
+    root_h, root_t = PSIG_BOOM_ROOT
+    elb_h, elb_t = PSIG_BOOM_ELBOW
+    tip_h, tip_t = PSIG_BOOM_TIP
 
-    # Two members hold it up, as the references have: a stay under the root, and a tie from the
-    # king post above the arm out to the middle of the span. Both run from INSIDE the mast to
-    # INSIDE the arm, so their ends finish within them rather than against them.
-    bh = ah * 0.50
-    brace_y = ay0 * PSIG_BRACE
-    brace_z = tip * 0.16
-    prism(mesh,
-          [(mx - bh, brace_y, mz - bh), (mx + bh, brace_y, mz - bh),
-           (mx + bh, brace_y, mz + bh), (mx - bh, brace_y, mz + bh)],
-          [(mx - bh, ay0 + 0.8, brace_z - bh), (mx + bh, ay0 + 0.8, brace_z - bh),
-           (mx + bh, ay0 + 0.8, brace_z + bh), (mx - bh, ay0 + 0.8, brace_z + bh)],
-          SWATCH_BASE_V)
+    def station(z, half_x, y0, y1):
+        """One cross-section of the boom, as a quad across the boom's own span axis."""
+        return [(mx - half_x, y0, z), (mx + half_x, y0, z),
+                (mx + half_x, y1, z), (mx - half_x, y1, z)]
 
-    tie_h = ah * 0.30
+    # The three stations. Cut square across Z rather than perpendicular to the member, which on
+    # the rising section makes it read very slightly deeper than it is -- a taper the eye takes
+    # for the thicker root a real boom has there anyway.
+    at_root = station(mz, root_h, pivot - root_t / 2.0, pivot + root_t / 2.0)
+    at_elbow = station(elbow, elb_h, ay0, ay0 + elb_t)
+    at_tip = station(tip, tip_h, ay0, ay0 + tip_t)
+
+    # The rise, then the level run. Neither caps the elbow: they share that quad exactly, so
+    # capping it twice would z-fight and capping it once would be a face inside the solid.
+    prism(mesh, at_root, at_elbow, SWATCH_BASE_V, ends=("bottom",))
+    prism(mesh, at_elbow, at_tip, SWATCH_BASE_V, ends=("top",))
+
+    # The pivot gusset: the plate the boom swings on, one either side of the mast. Each starts
+    # INSIDE the mast rather than flush on its face, so the two never share a plane.
+    plate_reach, plate_thick = PSIG_PIVOT_PLATE
+    for side in (-1.0, 1.0):
+        inner = mx + side * (mh - 0.40)
+        outer = mx + side * (mh + plate_thick)
+        box(mesh, min(inner, outer), max(inner, outer),
+            pivot - plate_reach, pivot + plate_reach,
+            mz - plate_reach, mz + plate_reach * 0.65, SWATCH_BASE_V)
+
+    if not rigging:
+        return
+
+    # The king post at the bend, and the tie from its top out along the level run. This is how
+    # the references are rigged and it is also the honest way to hold a cantilever this long:
+    # the mast stops just above the pivot and takes none of the outer end's load.
+    king_y = ay0 + elb_t + PSIG_KING_RISE
+    kh = PSIG_KING_HALF
+    box(mesh, mx - kh, mx + kh, ay0 + elb_t - 1.0, king_y,
+        PSIG_KING_Z - kh, PSIG_KING_Z + kh, SWATCH_BASE_V, faces=("x-", "x+", "y+", "z-", "z+"))
+
+    tie_h = PSIG_TIE_HALF
     tie_z = tip * PSIG_TIE_AT
     prism(mesh,
-          [(mx - tie_h, top - 2.4, mz - tie_h), (mx + tie_h, top - 2.4, mz - tie_h),
-           (mx + tie_h, top - 2.4, mz + tie_h), (mx - tie_h, top - 2.4, mz + tie_h)],
-          [(mx - tie_h, ay1 - 0.6, tie_z - tie_h), (mx + tie_h, ay1 - 0.6, tie_z - tie_h),
-           (mx + tie_h, ay1 - 0.6, tie_z + tie_h), (mx - tie_h, ay1 - 0.6, tie_z + tie_h)],
+          [(mx - tie_h, king_y - 2.4, PSIG_KING_Z - tie_h),
+           (mx + tie_h, king_y - 2.4, PSIG_KING_Z - tie_h),
+           (mx + tie_h, king_y - 2.4, PSIG_KING_Z + tie_h),
+           (mx - tie_h, king_y - 2.4, PSIG_KING_Z + tie_h)],
+          [(mx - tie_h, ay0 + elb_t - 0.8, tie_z - tie_h),
+           (mx + tie_h, ay0 + elb_t - 0.8, tie_z - tie_h),
+           (mx + tie_h, ay0 + elb_t - 0.8, tie_z + tie_h),
+           (mx - tie_h, ay0 + elb_t - 0.8, tie_z + tie_h)],
           SWATCH_BAND_V)
+
+    # The ram under the rise. Both ends finish INSIDE what they meet -- the mast at one end and
+    # the boom at the other -- so neither butts against a face.
+    ram_h = PSIG_RAM_HALF
+    ram_z = mz + (elbow - mz) * PSIG_RAM_AT
+    ram_y = pivot - root_t / 2.0 + (ay0 - (pivot - root_t / 2.0)) * PSIG_RAM_AT + 1.0
+    prism(mesh,
+          [(mx - ram_h, pivot - PSIG_RAM_DROP, mz - ram_h),
+           (mx + ram_h, pivot - PSIG_RAM_DROP, mz - ram_h),
+           (mx + ram_h, pivot - PSIG_RAM_DROP, mz + ram_h),
+           (mx - ram_h, pivot - PSIG_RAM_DROP, mz + ram_h)],
+          [(mx - ram_h, ram_y, ram_z - ram_h), (mx + ram_h, ram_y, ram_z - ram_h),
+           (mx + ram_h, ram_y, ram_z + ram_h), (mx - ram_h, ram_y, ram_z + ram_h)],
+          SWATCH_BAND_V)
+
+
+PSIG_ICON_TIP_Z = -72.00   # how much of the boom the icon carries
+
+
+def build_signal_trailer_inventory(mesh, style):
+    """The trailer shrunk to fit one cell, for the item icon.
+
+    The placed block is four cells long and eight and a half high, which is right in the world
+    and useless as an icon: handed to ``forge:default-block`` it is drawn many times the size of
+    its slot and spills over the ones around it.
+
+    The arm style's icon carries a SHORTENED boom and none of the rigging. A slot is sixteen
+    pixels; a boom drawn its true eight cells long shrinks the trailer under it to nothing, and a
+    tie rod an eighth of a pixel across is not there at all.
+    """
+    build_signal_trailer(mesh, style,
+                         tip_z=PSIG_ICON_TIP_Z if style == "arm" else None,
+                         rigging=False)
+    fit_in_cell(mesh)
 
 
 def trailer_texture():
@@ -2331,32 +2436,38 @@ DEVICES = {
     "portable_signal_trailer_arm": {
         "model": "workzone_signal_trailer_arm",
         "build": lambda m: build_signal_trailer(m, "arm"),
+        "inventory_model": "workzone_signal_trailer_arm_inv",
+        "inventory_build": lambda m: build_signal_trailer_inventory(m, "arm"),
         "texture": "workzone_signal_trailer",
         "texture_fn": trailer_texture,
         "display": "Portable Signal Trailer (Mast Arm)",
-        # The model reaches two cells out and eight up; its BOX is the TRAILER only, the way the
-        # arrow board's is. A box tall enough to hold the mast would also be a collision box tall
-        # enough to wall the road off, and one wide enough to hold the arm would have the player
-        # selecting the trailer from two cells away.
-        "bbox": (-10.0, 0.0, 0.40, 22.0, 15.0, 15.60),
+        # The model reaches eight cells out and eight up; its BOX is the TRAILER only, the way
+        # the arrow board's is. A box tall enough to hold the mast would also be a collision box
+        # tall enough to wall the road off, and one long enough to hold the boom would have the
+        # player selecting the trailer from half way across the road.
+        "bbox": (-18.0, 0.0, 0.0, 26.0, 21.6, 16.0),
         "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "portable_signal_trailer": {
         "model": "workzone_signal_trailer_mast",
         "build": lambda m: build_signal_trailer(m, "mast"),
+        "inventory_model": "workzone_signal_trailer_mast_inv",
+        "inventory_build": lambda m: build_signal_trailer_inventory(m, "mast"),
         "texture": "workzone_signal_trailer",
         "texture_fn": trailer_texture,
         "display": "Portable Signal Trailer",
-        "bbox": (-10.0, 0.0, 0.40, 22.0, 15.0, 15.60),
+        "bbox": (-18.0, 0.0, 0.0, 26.0, 21.6, 16.0),
         "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "portable_ped_signal_trailer": {
         "model": "workzone_signal_trailer_ped",
         "build": lambda m: build_signal_trailer(m, "ped"),
+        "inventory_model": "workzone_signal_trailer_ped_inv",
+        "inventory_build": lambda m: build_signal_trailer_inventory(m, "ped"),
         "texture": "workzone_signal_trailer",
         "texture_fn": trailer_texture,
         "display": "Portable Pedestrian Signal Trailer",
-        "bbox": (-10.0, 0.0, 0.40, 22.0, 15.0, 15.60),
+        "bbox": (-18.0, 0.0, 0.0, 26.0, 21.6, 16.0),
         "rotatable": True, "java": "BlockWorkZoneDeviceRotatable",
     },
     "vertical_panel_left": {

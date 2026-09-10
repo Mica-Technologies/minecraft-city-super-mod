@@ -333,36 +333,89 @@ hardware, so the trailer's job is to be the thing they mount ON. What it has to 
 therefore not the signals but the CELLS left free for them. Relative to the trailer's own cell
 and its facing:
 
-| Cell | Head |
-|---|---|
-| any cell one to eight out, seven up | under the arm, the overhead head (arm style only) |
-| one out, five up | against the mast, the near-side head |
+| Cell | Head | Mount type |
+|---|---|---|
+| three to eight cells out, under the level run | the overhead head (arm style only) | Overhead Mount |
+| either cell to the SIDE, five up | the near-side head, on the mast | Rear Mount |
 
-The near head sits lower than the overhead one, which is how these are rigged: the mast head is
-read from the stop line and the arm head from back down the lane.
+The near head goes **beside** the trailer rather than out along the boom because it faces ACROSS
+the boom: the boom reaches over the road and the head looks back up the lane at the driver, so
+the mast ends up squarely behind the head, and a head with its pole directly behind it is exactly
+what Rear Mount describes. It also sits well below the overhead one, which is how these are
+rigged -- the mast head is read from the stop line and the boom head from back down the lane.
 
-The arm is **eight cells long** -- nearly as long as the mast is tall, which is what lets one
-trailer signal the far lane of a road it is parked beside, and what the real ones look like. It
-tapers toward the tip and is held by two members, a stay under its root and a tie from the king
-post above it: a bar of even thickness that far out reads as scaffolding rather than as an arm.
+**Which cell out is the wrong question for the head's height.** A signal body is not one block
+tall: a three-section head reaches 1.5 blocks above its own block and a single-section one 0.75,
+so a three-section head hangs six up where a single-section one hangs seven. Nothing has to know
+that, because Overhead Mount measures the body it is on -- see below.
 
-A head hangs from the arm with the signal system's own **Overhead Mount**, set on the head with
+### The boom
+
+Not a straight bar off the top of the mast. On every real one the boom **pivots** near the top of
+the mast, rises to its working height over the first two cells, and then runs level out to the
+tip. The first version here was one straight bar at full height with a knee brace from half way
+down the mast, which is a gantry, not a towed machine.
+
+The level run is also what the block grid wants. It is the part heads hang from, and it has to be
+at ONE height across several cells or there is no row of cells to hang them in. So the rise takes
+cells one and two and the level run cells three to eight, and every hanging cell has the boom's
+underside at exactly eight blocks.
+
+The boom is **eight cells long** -- nearly as long as the whole machine is tall, which is what
+lets one trailer signal the far lane of a road it is parked beside. It tapers across three
+stations and is held the way the references are rigged: a **king post** at the bend with a tie rod
+out along the level run, and a **ram** close under the pivot. The mast stops just above the pivot
+and carries none of the outer end's load, which is why on the real thing it looks so much shorter
+than the boom is high.
+
+The tie is a **rod**, not a wire. The first version drew it 1.2 units across, which at eight
+cells' range is one pixel and reads as a cable someone strung between two points rather than as
+the thing holding the boom up.
+
+### Overhead Mount
+
+A head hangs from the boom with the signal system's own **Overhead Mount**, set on the head with
 the Signal Head Configuration Tool. That mount type was added for this: the others all reach
-sideways or backwards to a pole beside the head, and none of them could describe a head that
-HANGS. It draws one bracket, at the top of the body, running straight up -- the vertical types
-put a bracket at each end, which reaching upward would run through the signal it is holding.
-It works on CSM's own mast arms too, not just here.
+sideways or backwards to a pole beside the head, and none of them can describe a head that HANGS.
 
-**The scale is set by the signals, not by the trailer.** A signal head here is a block, and a
-mast arm intersection is built with its arm around ten blocks over the road; a temporary signal
-sits lower but not much, or traffic does not fit under it. So the arm's underside is eight blocks
-up and everything else follows, which makes the mast very tall against a compact trailer —
-exactly as it is on the real thing. Sizing it from the trailer instead gives something that looks
-right on its own and is a toy next to a signal, which is how the first version came out.
+It is not a bracket, and the first version's mistake was trying to make it one. The other types
+draw a stub, an elbow and an arm aimed at the centre of the **neighbouring block**, because that
+is where the pole they reach for stands. There is no pole in the neighbouring block here -- the
+boom is directly above, and how far above depends on how tall the body is. Aiming at the
+neighbouring block's centre put the elbow ABOVE the target on any head of three sections or more,
+so the arm came back down and forward, and the head hung under the boom with nothing joining the
+two.
+
+So the hanger is its own two pieces: a **cap** across the top of the housing, running forward from
+the housing's rear shell to the block's centre axis, and a **post** rising from the cap. The post
+reaches for the first **block boundary above the body**, whatever the section count, and a boom's
+underside always sits on a block boundary -- so it lands on it for a one-section head and a
+five-section head alike. The post also stands on the block's centre axis, which is the axis the
+body tilt turns about, so an angle-mounted head keeps its post upright and under the boom instead
+of swinging it out from under.
+
+It works on CSM's own mast arm curves too, not just here.
+
+**The scale is set by the signals, not by the trailer.** A signal head here is a block, and a mast
+arm intersection is built with its arm around ten blocks over the road; a temporary signal sits
+lower but not much, or traffic does not fit under it. So the level run's underside is eight blocks
+up and everything else follows.
+
+**The chassis is then sized against the mast and boom, not against a real trailer.** Measured off
+a real trailer's own dimensions it comes out a toy: a deck two cells long under a boom eight cells
+long reads as a mast someone left standing on a go-kart, which is how the first version came out.
+On the reference machines the deck is around a third of the overall height, so the deck here is
+nearly three cells long, with wheels and jacks big enough to see from across the road.
 
 Their bounding box is the **trailer only**, like the arrow board's. A box tall enough to hold the
-mast is also a collision box tall enough to wall the road off, and one wide enough to hold the
-arm would have the player selecting the trailer from two cells away.
+mast is also a collision box tall enough to wall the road off, and one long enough to hold the
+boom would have the player selecting the trailer from half way across the road.
+
+That size makes the item icon a separate problem, the same one the arrow board has: given a model
+this much bigger than a cube, `forge:default-block` draws it over the slots around it. So each
+style has its own icon model, shrunk to the slot. The arm style's carries a **shortened** boom and
+none of the rigging -- a slot is sixteen pixels, and a boom drawn its true eight cells long shrinks
+the trailer under it to nothing, while a tie rod an eighth of a pixel across is not there at all.
 
 ## The arrow board
 
