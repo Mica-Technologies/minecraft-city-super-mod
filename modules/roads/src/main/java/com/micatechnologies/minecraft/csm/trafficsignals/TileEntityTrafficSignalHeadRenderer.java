@@ -540,18 +540,31 @@ public class TileEntityTrafficSignalHeadRenderer extends
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA;
       }
 
-      RenderHelper.addBoxesToBufferLit(bodyData, buffer,
-          bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f,
-          xOffset, yOffset, zPushBack, skyLight, blockLight);
       List<RenderHelper.Box> shadeData = TrafficSignalVertexData.resolveBodyShadeData(
           sectionInfo.getBodyStyle(), horizontal, sectionSizes[i]);
-      if (shadeData != null) {
-        // Recesses and bevels, a shade darker: with no directional shading in this renderer that
-        // is the only thing that makes them read on a flat-coloured housing.
-        RenderHelper.addBoxesToBufferLit(shadeData, buffer,
-            bodyColor.getRed() * BODY_SHADE_FACTOR, bodyColor.getGreen() * BODY_SHADE_FACTOR,
-            bodyColor.getBlue() * BODY_SHADE_FACTOR, 1.0f,
+      float shadeR = bodyColor.getRed() * BODY_SHADE_FACTOR;
+      float shadeG = bodyColor.getGreen() * BODY_SHADE_FACTOR;
+      float shadeB = bodyColor.getBlue() * BODY_SHADE_FACTOR;
+      if (sectionInfo.getBodyStyle() == TrafficSignalBodyStyle.PV) {
+        // A programmed head is aimed as a unit, housing and visor together, so its housing
+        // takes the visor's downward tilt: the same shear about the door plane, which lifts the
+        // rear of the box and leaves the door, lens and visor exactly where they are.
+        addTiltedBodyBoxes(bodyData, buffer, bodyColor.getRed(), bodyColor.getGreen(),
+            bodyColor.getBlue(), xOffset, yOffset, zPushBack, skyLight, blockLight);
+        if (shadeData != null) {
+          addTiltedBodyBoxes(shadeData, buffer, shadeR, shadeG, shadeB, xOffset, yOffset,
+              zPushBack, skyLight, blockLight);
+        }
+      } else {
+        RenderHelper.addBoxesToBufferLit(bodyData, buffer,
+            bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f,
             xOffset, yOffset, zPushBack, skyLight, blockLight);
+        if (shadeData != null) {
+          // Recesses and bevels, a shade darker: with no directional shading in this renderer
+          // that is the only thing that makes them read on a flat-coloured housing.
+          RenderHelper.addBoxesToBufferLit(shadeData, buffer, shadeR, shadeG, shadeB, 1.0f,
+              xOffset, yOffset, zPushBack, skyLight, blockLight);
+        }
       }
       RenderHelper.addBoxesToBufferLit(doorData, buffer,
           doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f,
@@ -577,6 +590,31 @@ public class TileEntityTrafficSignalHeadRenderer extends
     addPvCouplings(buffer, sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
         horizontal, zPushBack, mountColor, skyLight, blockLight);
     tessellator.draw();
+  }
+
+  /**
+   * Emits housing boxes sheared about the door plane by the visor's tilt, one colour all over.
+   * The dual-colour tilted helper does the shear; with both colours the same it is a plain lit
+   * box pass with the visor's tilt applied.
+   */
+  private static void addTiltedBodyBoxes(List<RenderHelper.Box> boxes, BufferBuilder buffer,
+      float r, float g, float b, float xOffset, float yOffset, float zPushBack, int skyLight,
+      int blockLight) {
+    RenderHelper.addTiltedBoxesToBufferDualColorLit(boxes, buffer, r, g, b, r, g, b, 1.0f,
+        xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
+        VISOR_CENTER_X, VISOR_CENTER_Y, 0.0f, skyLight, blockLight);
+  }
+
+  /**
+   * How far the housing tilt lifts a point at the given model depth: the shear the PV housing
+   * and its hubs are drawn under, so hardware that has to meet the housing can allow for it.
+   *
+   * @param z model depth, before push-back
+   *
+   * @return the rise in model units; positive behind the door plane
+   */
+  private static float housingTiltRiseAt(float z) {
+    return (z - VISOR_PIVOT_Z) * (float) Math.tan(Math.toRadians(VISOR_TILT_DEGREES));
   }
 
   /**
@@ -1543,12 +1581,19 @@ public class TileEntityTrafficSignalHeadRenderer extends
       return 0.0f;
     }
     float inset;
-    switch (sectionInfos[section].getBodyStyle()) {
-      case BUBBLED: inset = BUBBLED_STUB_INSET; break;
-      case PV:      inset = PV_STUB_INSET; break;
-      default:      return 0.0f;
-    }
     int size = section < sectionSizes.length ? sectionSizes[section] : 12;
+    switch (sectionInfos[section].getBodyStyle()) {
+      case BUBBLED:
+        inset = BUBBLED_STUB_INSET;
+        break;
+      case PV:
+        // The PV housing is tilted, which lifts its rear; a stub at the hub depth has to reach
+        // that much further to stay buried in the lower face as well as the upper one.
+        inset = PV_STUB_INSET + housingTiltRiseAt(TrafficSignalVertexData.pvCouplingZ(12));
+        break;
+      default:
+        return 0.0f;
+    }
     return inset * (size / 12.0f);
   }
 
@@ -1637,8 +1682,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
       }
     }
     if (hubs != null && !hubs.isEmpty()) {
-      RenderHelper.addBoxesToBufferLit(hubs, buffer,
-          color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0, skyLight, blockLight);
+      // Under the same shear as the housings they bridge, so a flange stays flat against the
+      // tilted face it meets. The boxes already carry the push-back, so no offsets here.
+      RenderHelper.addTiltedBoxesToBufferDualColorLit(hubs, buffer,
+          color.getRed(), color.getGreen(), color.getBlue(),
+          color.getRed(), color.getGreen(), color.getBlue(), 1.0f,
+          0, 0, 0, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
+          VISOR_CENTER_X, VISOR_CENTER_Y, 0.0f, skyLight, blockLight);
     }
   }
 
