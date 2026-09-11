@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:lighting/shared_models/ltecdtd",
     "textures": {
-      "all": "csm:blocks/lighting/shared_textures/ltecdtd",
-      "particle": "csm:blocks/lighting/shared_textures/ltecdtd",
-      "0": "csm:blocks/lighting/shared_textures/ltecdtd"
+      "all": "csm:blocks/lighting/shared_textures/ltecdtd_off",
+      "particle": "csm:blocks/lighting/shared_textures/ltecdtd_off",
+      "0": "csm:blocks/lighting/shared_textures/ltecdtd_off"
     }
   },
   "variants": {
@@ -23,9 +23,19 @@
     },
     "state": {
       "0": {},
-      "1": {},
+      "1": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/ltecdtd",
+          "0": "csm:blocks/lighting/shared_textures/ltecdtd"
+        }
+      },
       "2": {},
-      "3": {}
+      "3": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/ltecdtd",
+          "0": "csm:blocks/lighting/shared_textures/ltecdtd"
+        }
+      }
     },
     "inventory": [
       {}

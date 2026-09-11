@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:lighting/shared_models/ltgcm_smartnode",
     "textures": {
-      "all": "csm:blocks/lighting/shared_textures/ltgcm_smartnode",
-      "particle": "csm:blocks/lighting/shared_textures/ltgcm_smartnode",
-      "0": "csm:blocks/lighting/shared_textures/ltgcm_smartnode"
+      "all": "csm:blocks/lighting/shared_textures/ltgcm_smartnode_off",
+      "particle": "csm:blocks/lighting/shared_textures/ltgcm_smartnode_off",
+      "0": "csm:blocks/lighting/shared_textures/ltgcm_smartnode_off"
     }
   },
   "variants": {
@@ -23,9 +23,19 @@
     },
     "state": {
       "0": {},
-      "1": {},
+      "1": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/ltgcm_smartnode",
+          "0": "csm:blocks/lighting/shared_textures/ltgcm_smartnode"
+        }
+      },
       "2": {},
-      "3": {}
+      "3": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/ltgcm_smartnode",
+          "0": "csm:blocks/lighting/shared_textures/ltgcm_smartnode"
+        }
+      }
     },
     "inventory": [
       {}

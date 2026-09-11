@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:lighting/shared_models/westinghouse_ov50",
     "textures": {
-      "all": "csm:blocks/lighting/shared_textures/westinghouse_ov50",
-      "particle": "csm:blocks/lighting/shared_textures/westinghouse_ov50",
-      "0": "csm:blocks/lighting/shared_textures/westinghouse_ov50"
+      "all": "csm:blocks/lighting/shared_textures/westinghouse_ov50_off",
+      "particle": "csm:blocks/lighting/shared_textures/westinghouse_ov50_off",
+      "0": "csm:blocks/lighting/shared_textures/westinghouse_ov50_off"
     }
   },
   "variants": {
@@ -23,9 +23,19 @@
     },
     "state": {
       "0": {},
-      "1": {},
+      "1": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/westinghouse_ov50",
+          "0": "csm:blocks/lighting/shared_textures/westinghouse_ov50"
+        }
+      },
       "2": {},
-      "3": {}
+      "3": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/westinghouse_ov50",
+          "0": "csm:blocks/lighting/shared_textures/westinghouse_ov50"
+        }
+      }
     },
     "inventory": [
       {}

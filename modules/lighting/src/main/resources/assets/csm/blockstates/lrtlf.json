@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:lighting/shared_models/lithonia_rtl_full",
     "textures": {
-      "all": "csm:blocks/lighting/shared_textures/troffers",
-      "particle": "csm:blocks/lighting/shared_textures/troffers",
-      "0": "csm:blocks/lighting/shared_textures/troffers"
+      "all": "csm:blocks/lighting/shared_textures/troffers_off",
+      "particle": "csm:blocks/lighting/shared_textures/troffers_off",
+      "0": "csm:blocks/lighting/shared_textures/troffers_off"
     }
   },
   "variants": {
@@ -23,9 +23,19 @@
     },
     "state": {
       "0": {},
-      "1": {},
+      "1": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/troffers",
+          "0": "csm:blocks/lighting/shared_textures/troffers"
+        }
+      },
       "2": {},
-      "3": {}
+      "3": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/troffers",
+          "0": "csm:blocks/lighting/shared_textures/troffers"
+        }
+      }
     },
     "inventory": [
       {}
