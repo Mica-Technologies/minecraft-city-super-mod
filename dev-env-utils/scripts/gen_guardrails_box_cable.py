@@ -480,7 +480,10 @@ ANCHOR_BACK_Y = 4.20                                 # raked low at the back
 
 # The steel anchor plate bolted to the concrete's front face, spanning the cluster of cables.
 ANCHOR_PLATE_X_HALF = 0.35
-ANCHOR_PLATE_Y = (geo.CABLE_HEIGHTS[0] - 1.60, geo.CABLE_HEIGHTS[-1] + 1.60)
+# Capped under the top of the concrete it is bolted to: the top cable is only a unit under the top
+# of the cell, and a plate carrying on 1.6 past it would stand out of both.
+ANCHOR_PLATE_Y = (geo.CABLE_HEIGHTS[0] - 1.60,
+                  min(geo.CABLE_HEIGHTS[-1] + 1.60, ANCHOR_FRONT_Y - 0.20))
 ANCHOR_PLATE_Z_HALF = ANCHOR_Z_HALF - 0.30
 
 # Each cable's own stub, reaching a little OUT of the block (into the cell the run occupies) and a
@@ -636,14 +639,15 @@ BULLNOSE_POSTS = (
     (BULLNOSE_APEX_X, BULLNOSE_CZ + BULLNOSE_RADIUS),
 )
 
-# The object marker on the nose, standing on top of the tube and facing the traffic the bullnose
-# is turned away from. Its foot is sunk INTO the tube rather than resting on it: a plate whose
-# underside sat exactly on the tube's top would share a plane with it, which is the one fault
-# every generator in this batch has to dodge.
-BULLNOSE_MARKER_X = (BULLNOSE_APEX_X - 0.30, BULLNOSE_APEX_X + 0.30)
-# Capped rather than simply hung off the rail: the rails were raised by MOUNT_LIFT and a marker
-# that followed them all the way up would stand out of the top of its own cell.
-BULLNOSE_MARKER_Y = (geo.BOX_RAIL_TOP_Y - 0.80, min(geo.BOX_RAIL_TOP_Y + 4.00, 15.60))
+# The object marker on the nose, bolted to the front of the post under it and facing the traffic
+# the bullnose is turned away from. It used to stand on top of the tube, which leaves it nowhere to
+# go now that the tube's top is the top of the cell (#192), so it hangs under the tube instead --
+# which is where a real one is mounted anyway. Its back is sunk into the post rather than laid on
+# the post's face, and its top is held clear of the tube's underside: either would share a plane,
+# the one fault every generator in this batch has to dodge.
+BULLNOSE_MARKER_X = (BULLNOSE_APEX_X + geo.POST_HALF_X - 0.20,
+                     BULLNOSE_APEX_X + geo.POST_HALF_X + 0.40)
+BULLNOSE_MARKER_Y = (geo.BOX_RAIL_BOTTOM_Y - 8.40, geo.BOX_RAIL_BOTTOM_Y - 0.40)
 BULLNOSE_MARKER_Z_HALF = 1.60
 
 BULLNOSE_TEXTURE = "guardrail_box_end"

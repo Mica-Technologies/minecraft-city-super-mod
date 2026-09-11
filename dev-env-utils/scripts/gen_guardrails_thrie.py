@@ -16,12 +16,13 @@ are *derived* rather than shared -- the block-out's margin above and below the r
 post stands proud of it -- are taken from the W-beam's own numbers so that a thrie post is the same
 hardware as a W post, just taller:
 
-    BLOCKOUT_MARGIN = RAIL_BOTTOM_Y - BLOCKOUT_Y0        the block-out overhangs the rail by this
-    POST_PROUD      = POST_TOP_Y   - RAIL_TOP_Y          the post stands this far above it
+    BLOCKOUT_MARGIN = RAIL_BOTTOM_Y - BLOCKOUT_Y0        the block-out overhangs the rail's bottom
+    BLOCKOUT_TUCK   = RAIL_TOP_Y    - BLOCKOUT_Y1        and stops this far under its top
+    POST_PROUD      = POST_TOP_Y    - RAIL_TOP_Y         the post stands this far above it (none)
 
-The thrie rail's BOTTOM is lower than the W's (4.00 against 6.20) and its top is higher, so a
-block-out sized for a W-beam would leave the top and bottom corrugations bolted to nothing. That is
-what those two derivations are for.
+The thrie rail's BOTTOM is lower than the W's (7.00 against 11.00), while the two share a top, so a
+block-out sized for a W-beam would leave the lower corrugations bolted to nothing. That is what
+those derivations are for.
 
 THE PROFILE MORPH, AND WHY BOTH PROFILES ARE RESAMPLED
 ------------------------------------------------------
@@ -131,6 +132,8 @@ TEXTURE_TIMBER = "guardrail_thrie_timber"
 #: How far the block-out overhangs the rail, top and bottom. Read off the W-beam rather than chosen
 #: again, so the spacer is the same part on both rails.
 BLOCKOUT_MARGIN = geo.RAIL_BOTTOM_Y - geo.BLOCKOUT_Y0
+#: How far under the rail's top the block-out stops; see ``guardrail_geometry.BLOCKOUT_TUCK``.
+BLOCKOUT_TUCK = geo.RAIL_TOP_Y - geo.BLOCKOUT_Y1
 #: How far the post stands above the rail it carries.
 POST_PROUD = geo.POST_TOP_Y - geo.RAIL_TOP_Y
 
@@ -312,7 +315,7 @@ def build_post(mesh, wood, double, slope, bottom_y, top_y):
     foot = min(geo.POST_BOTTOM_Y, lift)
     half = geo.BLOCKOUT_HALF_X
     y0 = bottom_y - BLOCKOUT_MARGIN + lift
-    y1 = top_y + BLOCKOUT_MARGIN + lift
+    y1 = top_y - BLOCKOUT_TUCK + lift
 
     # The block-out's back is buried in the post's front, so that face is left off rather than
     # drawn inside it. Its front is only mostly covered by the rail -- the block-out stands a
@@ -555,7 +558,7 @@ def thrie_rail_post(mesh, origin, swatch_v=SWATCH_BASE_V):
     dy = y - geo.THRIE_RAIL_BOTTOM_Y
     box(mesh, x - geo.BLOCKOUT_HALF_X, x + geo.BLOCKOUT_HALF_X,
         geo.THRIE_RAIL_BOTTOM_Y - BLOCKOUT_MARGIN + dy,
-        geo.THRIE_RAIL_TOP_Y + BLOCKOUT_MARGIN + dy,
+        geo.THRIE_RAIL_TOP_Y - BLOCKOUT_TUCK + dy,
         geo.BLOCKOUT_Z0 + dz, geo.BLOCKOUT_Z1 + dz, swatch_v)
     box(mesh, x - geo.POST_HALF_X, x + geo.POST_HALF_X,
         geo.POST_BOTTOM_Y, geo.THRIE_RAIL_TOP_Y + POST_PROUD + dy,

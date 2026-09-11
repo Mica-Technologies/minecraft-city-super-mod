@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRoadSurfaceAware;
 import com.micatechnologies.minecraft.csm.codeutils.RoadSurfaceHeight;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -203,7 +204,13 @@ final class GuardrailJoins {
    * A run laid across snow layers of different depths is at one Y and half a dozen heights.</p>
    */
   private static double settledHeight(IBlockAccess access, BlockPos pos) {
-    return pos.getY() + RoadSurfaceHeight.offsetFor(access, pos);
+    // Asked of the block itself where it can answer, so a guardrail stacked on another reports
+    // the settle it inherits from the one below rather than the bare surface rule.
+    Block block = access.getBlockState(pos).getBlock();
+    double offset = block instanceof ICsmRoadSurfaceAware
+        ? ((ICsmRoadSurfaceAware) block).getRoadSurfaceOffset(access, pos)
+        : RoadSurfaceHeight.offsetFor(access, pos);
+    return pos.getY() + offset;
   }
 
   /**

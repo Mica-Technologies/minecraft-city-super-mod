@@ -14,21 +14,24 @@ guardrail means the way the rail LOOKS, and the run is across it.
 
 CELL = 16.0
 
-# --- the W-beam rail ---------------------------------------------------------------------------
-# A real W-beam is 310 mm deep with its top 700 mm off the ground, so at a block to the metre the
-# rail is about a fifth of a cell tall sitting two thirds of the way up. Those two numbers are what
-# every other part is hung off.
-# How far every rail in the system stands above where it used to.
+# --- the height every rail stands at ----------------------------------------------------------
+# The top of every rail family, and of every post, is the TOP OF THE CELL (issue #192). A real
+# W-beam's top edge is about 790 mm up, 12.6 of these units, and that is where the rails stood
+# until builders asked for a little more height -- and for what a flush top gives: a guardrail
+# stacked on a guardrail continues its post, and a pole or sign stood on one meets steel.
 #
-# A real W-beam's top edge is about 790 mm off the ground, which is 12.6 of these units; it was
-# drawn at 11.2 and read low. Applied to the MOUNTING heights of all four rail families rather
-# than to one of them, so a run that changes rail part way along does not change height with it,
-# and so nothing that hangs off a rail -- block-out, post, end treatment, transition -- has to be
-# told about it separately.
-MOUNT_LIFT = 1.40
+# Set once, as the TOP, rather than as a lift applied to each family, so a run that changes rail
+# part way along does not change height with it, and nothing that hangs off a rail -- block-out,
+# post, end treatment, transition -- has to be told about it separately. Every family's other
+# heights are measured down from here. An upward face on the cell's top points OUT of the block,
+# so standing flush with it fights nothing.
+GUARDRAIL_TOP_Y = CELL
 
-RAIL_TOP_Y = 11.20 + MOUNT_LIFT
-RAIL_BOTTOM_Y = 6.20 + MOUNT_LIFT
+# --- the W-beam rail ---------------------------------------------------------------------------
+# A real W-beam is 310 mm deep, so at a block to the metre the rail is about a fifth of a cell.
+# Everything else is hung off its top and bottom.
+RAIL_TOP_Y = GUARDRAIL_TOP_Y
+RAIL_BOTTOM_Y = RAIL_TOP_Y - 5.00
 RAIL_HEIGHT = RAIL_TOP_Y - RAIL_BOTTOM_Y
 
 # The rail's own depth, front face toward traffic. Front is low z.
@@ -60,12 +63,16 @@ BLOCKOUT_Z0 = RAIL_BACK_Z
 BLOCKOUT_Z1 = 6.40
 BLOCKOUT_HALF_X = 1.60
 BLOCKOUT_Y0 = RAIL_BOTTOM_Y - 0.20
-BLOCKOUT_Y1 = RAIL_TOP_Y + 0.20
+# Tucked just UNDER the rail's top rather than standing proud of it. The rail and the post are
+# both flush with the top of the cell, and a block-out flush with them as well would share its top
+# face with the post that bites into it on the end treatments -- a coplanar overlap.
+BLOCKOUT_TUCK = 0.20
+BLOCKOUT_Y1 = RAIL_TOP_Y - BLOCKOUT_TUCK
 
 POST_Z0 = BLOCKOUT_Z1
 POST_Z1 = 9.60
 POST_HALF_X = 2.00
-POST_TOP_Y = RAIL_TOP_Y + 0.60      # a little proud of the rail, as they stand in reality
+POST_TOP_Y = RAIL_TOP_Y             # flush with the rail, at the top of the cell (#192)
 POST_BOTTOM_Y = 0.0
 
 # The mirrored half of a double-sided run: block-out and rail again on the far side of the post.
@@ -126,11 +133,11 @@ END_RAIL_BOTTOM_Y = RAIL_BOTTOM_Y
 END_RAIL_FRONT_Z = RAIL_FRONT_Z
 END_RAIL_BACK_Z = RAIL_BACK_Z
 
-# The chevron panel on the impact head, in the end block's own frame. Its top is CAPPED rather
-# than lifted with the rail: the panel was already most of a cell tall, and carrying it up with
-# MOUNT_LIFT would put its top face on the cell boundary, which z-fights against whatever is
-# stacked above.
-GLOVE_PANEL = (2.20, 13.80, 3.40 + MOUNT_LIFT, 15.70)    # x0, x1, y0, y1
+# The chevron panel on the impact head, in the end block's own frame. It keeps the height it has
+# always had and tops out flush with the rail, at the top of the cell. The rail stub stops at the
+# head's front face (GLOVE_STUB) rather than running on into it: a head flush with the rail would
+# otherwise share its top face with the rail's for the length the two overlap.
+GLOVE_PANEL = (2.20, 13.80, GUARDRAIL_TOP_Y - 10.90, GUARDRAIL_TOP_Y)    # x0, x1, y0, y1
 GLOVE_PANEL_Z = 1.20
 GLOVE_STRIPE_DEG = 45.0
 
@@ -140,10 +147,10 @@ GLOVE_STRIPE_DEG = 45.0
 # ground, so it is drawn nine units deep rather than thirteen -- deep enough to read as the bigger
 # rail beside a W-beam, shallow enough to still show daylight under it.
 #
-# The mounting height is the same as the W-beam's, because that is set by what the rail is for
-# rather than by how deep it is.
-THRIE_RAIL_TOP_Y = 13.00 + MOUNT_LIFT
-THRIE_RAIL_BOTTOM_Y = 4.00 + MOUNT_LIFT
+# The top is the W-beam's, at the top of the cell, so a run changing rail keeps its top line; the
+# extra depth all goes downward.
+THRIE_RAIL_TOP_Y = GUARDRAIL_TOP_Y
+THRIE_RAIL_BOTTOM_Y = THRIE_RAIL_TOP_Y - 9.00
 THRIE_RAIL_FRONT_Z = RAIL_FRONT_Z
 THRIE_RAIL_BACK_Z = RAIL_BACK_Z
 
@@ -181,9 +188,10 @@ BOX_BASE_PLATE = (3.40, 0.60)     # half width, thickness
 # system's lesson applies -- a member under about a unit across reads as a scratch rather than a
 # rope, so these are drawn a little fatter than scale.
 CABLE_POST_HALF = 0.90
-CABLE_POST_TOP_Y = 13.60 + MOUNT_LIFT
+CABLE_POST_TOP_Y = GUARDRAIL_TOP_Y
 CABLE_RADIUS = 0.55
-CABLE_HEIGHTS = tuple(y + MOUNT_LIFT for y in (8.40, 10.60, 12.60))
+# Measured down from the post top, so the top cable and its clip stay a unit clear of it.
+CABLE_HEIGHTS = tuple(CABLE_POST_TOP_Y - d for d in (5.20, 3.00, 1.00))
 CABLE_Z = 2.40                    # the plane the cables run in, in front of the post
 CABLE_BACK_Z = 5.60               # the mirrored plane, on a double-sided run
 
