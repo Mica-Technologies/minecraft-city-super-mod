@@ -749,21 +749,61 @@ MARKER_LIP_Z0 = AXIS + 0.62 * MARKER_SCALE     # the lip stands a little proud o
 MARKER_BAND = (MARKER_PANEL_TOP - MARKER_LIP_H, MARKER_PANEL_TOP)
 
 # --- the sand barrel ---------------------------------------------------------------------------
-SAND_BARREL_HEIGHT = 13.80
+# A moulded polyethylene sand-filled module, and the shape is not the drum's. Three things carry
+# it, all of them plain in the reference photographs and none of them a smooth taper:
+#
+#   1. It is WIDEST AT THE TOP. These are moulded to nest inside each other for transport, so the
+#      wall flares outward all the way up. Drawn the other way round -- a barrel narrowing toward
+#      its lid -- it reads as a bin.
+#   2. There is a pronounced RIB around the middle, where the moulding is stiffened and the
+#      capacity marking is embossed, and a narrower SKIRT at the foot below a step.
+#   3. The lid is a black cone with a fan of RADIAL RIBS and a brim overhanging the barrel's rim.
+#      It is the single most recognisable thing about the device and was a flat disc before.
 SAND_BARREL_SIDES = 16
+
+#: The yellow body, bottom to top, as (radius, y).
 SAND_BARREL_PROFILE = [
-    (7.10, 0.00),
-    (7.10, 0.60),
-    (6.90, 1.00),
-    (6.40, 5.50),
-    (5.70, 10.60),
-    (5.55, 12.20),
-    (5.75, 12.60),   # the lid's overhanging rim
-    (5.75, 13.15),
-    (5.30, 13.45),
-    (5.30, SAND_BARREL_HEIGHT),
+    (5.10, 0.00),
+    (5.10, 0.70),    # the foot skirt runs straight
+    (5.40, 1.00),    # and steps out onto the body
+    (5.60, 3.10),
+    (5.95, 5.70),    # flaring all the way, up to the mid rib
+    (6.10, 5.95),
+    (6.45, 6.25),    # the rib's crown, standing proud
+    (6.38, 6.75),
+    (6.60, 9.00),
+    (6.95, 11.50),
+    (7.15, 11.85),   # the rim turns out
+    (7.15, 12.50),
 ]
-SAND_BARREL_LID_R = 5.30
+SAND_BARREL_RIM_Y = 12.50
+SAND_BARREL_RIM_R = 7.15
+
+#: The black lid: the brim's underside, its skirt, then the cone up to a small boss.
+SAND_BARREL_LID_PROFILE = [
+    (SAND_BARREL_RIM_R, SAND_BARREL_RIM_Y),
+    (7.45, 12.60),   # the brim overhangs the rim
+    (7.45, 13.20),
+    (7.28, 13.45),   # the cone's shoulder
+    (0.90, 14.90),
+]
+SAND_BARREL_LID_BOSS_R = 0.90
+SAND_BARREL_HEIGHT = 14.90
+
+#: The fan of ribs pressed into the lid. Eight, the count in the reference, each a thin slab lying
+#: along the cone with its underside sunk INTO the surface rather than laid on it -- a rib flush on
+#: the cone would share its plane and z-fight.
+SAND_BARREL_LID_RIBS = 8
+SAND_BARREL_RIB_HALF_DEG = 3.2
+SAND_BARREL_RIB_PROUD = 0.26
+SAND_BARREL_RIB_SINK = 0.10
+SAND_BARREL_RIB_FROM = (7.20, 13.55)
+SAND_BARREL_RIB_TO = (1.35, 14.75)
+
+#: The lid's black, and the shade under its brim. Charcoal rather than true black, which at this
+#: scale is a hole.
+LID_BLACK = (48, 48, 50)
+LID_BLACK_DARK = (34, 34, 36)
 
 
 # --- mesh ---------------------------------------------------------------------------------------
@@ -2250,12 +2290,47 @@ def safety_fence_texture():
     return img
 
 
+def _sand_barrel_rib(mesh, angle):
+    """One radial rib on the lid, as a thin slab lying along the cone.
+
+    Built from the cone's own two stations rather than from an angle, so a rib follows the lid
+    whatever the lid's slope is, and displaced along the cone's outward NORMAL rather than
+    straight up -- a rib raised vertically would part company with the surface near the brim,
+    where the cone is shallowest.
+    """
+    (r0, y0), (r1, y1) = SAND_BARREL_RIB_FROM, SAND_BARREL_RIB_TO
+    dr, dy = r1 - r0, y1 - y0
+    length = math.hypot(dr, dy) or 1.0
+    # Outward normal of the cone at this slope, in the (radius, y) plane.
+    nr, ny = dy / length, -dr / length
+
+    half = math.radians(SAND_BARREL_RIB_HALF_DEG)
+    ring = []
+    for (r, y) in ((r0, y0), (r1, y1)):
+        for da in (-half, half):
+            a = angle + da
+            ring.append((r, y, a))
+
+    def at(r, y, a, push):
+        rr = r + nr * push
+        return (AXIS + rr * math.cos(a), y + ny * push, AXIS + rr * math.sin(a))
+
+    lo = [at(r, y, a, -SAND_BARREL_RIB_SINK) for (r, y, a) in
+          (ring[0], ring[1], ring[3], ring[2])]
+    hi = [at(r, y, a, SAND_BARREL_RIB_PROUD) for (r, y, a) in
+          (ring[0], ring[1], ring[3], ring[2])]
+    prism(mesh, lo, hi, SWATCH_BAND_V)
+
+
 def build_sand_barrel(mesh):
     lathe(mesh, SAND_BARREL_PROFILE, sides=SAND_BARREL_SIDES)
-    disc(mesh, SAND_BARREL_LID_R, SAND_BARREL_HEIGHT, (0, 1, 0), SWATCH_BAND_V,
+    lathe(mesh, SAND_BARREL_LID_PROFILE, sides=SAND_BARREL_SIDES)
+    disc(mesh, SAND_BARREL_LID_BOSS_R, SAND_BARREL_HEIGHT, (0, 1, 0), SWATCH_BAND_V,
          sides=SAND_BARREL_SIDES)
     disc(mesh, SAND_BARREL_PROFILE[0][0], 0.0, (0, -1, 0), SWATCH_DARK_V,
          sides=SAND_BARREL_SIDES)
+    for i in range(SAND_BARREL_LID_RIBS):
+        _sand_barrel_rib(mesh, 2.0 * math.pi * i / SAND_BARREL_LID_RIBS)
 
 
 # --- textures -------------------------------------------------------------------------------------
@@ -2387,9 +2462,13 @@ def arrow_board_image():
 
 def sand_barrel_texture():
     # A sand barrel carries no reflective banding of its own: it is a plain yellow module with a
-    # darker lid, and it is the array of them that channelizes rather than any marking on one.
-    return band_image(SAND_YELLOW, SAND_YELLOW_DARK, [(12.20, 13.15)], SAND_YELLOW_DARK,
-                      SAND_YELLOW_DARK, base_bottom=(BLACK, BLACK_LIGHT), bottom_to=0.60)
+    # black lid, and it is the array of them that channelizes rather than any marking on one. The
+    # one band is the LID, which is why it runs from the rim to the top of the cone rather than
+    # being a stripe part way up -- and there is no dark skirt at the foot, because the moulding
+    # is one colour all the way to the ground.
+    return band_image(SAND_YELLOW, SAND_YELLOW_DARK,
+                      [(SAND_BARREL_RIM_Y, SAND_BARREL_HEIGHT + 0.20)],
+                      LID_BLACK, LID_BLACK_DARK)
 
 
 # --- catalogue -------------------------------------------------------------------------------------
@@ -2507,12 +2586,19 @@ DEVICES = {
         "texture": "workzone_delineator_white",
         "texture_fn": lambda: delineator_texture(WHITE, WHITE_DIM),
         "display": "Delineator Post",
+        # A delineator is a flat BLADE, three units across and one deep, and its reflective band is
+        # on the two wide faces. Which way those face is the whole job of the thing, so it takes
+        # all eight like everything else set out along an edge that need not run with the grid.
+        # Index 0 of the eight is south, which is what an unrotated block already reads as, so
+        # every one already placed keeps the way it is standing.
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "delineator_post_yellow": {
         "model": "workzone_delineator", "build": None,
         "texture": "workzone_delineator_yellow",
         "texture_fn": lambda: delineator_texture(SAND_YELLOW, SAND_YELLOW_DARK),
         "display": "Delineator Post (Yellow)",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "delineator_zebra": {
         "model": "workzone_zebra_delineator", "build": build_zebra_delineator,
