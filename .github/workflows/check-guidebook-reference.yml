@@ -1,0 +1,54 @@
+name: Check Guidebook Block Reference
+
+# docs/reference/ -- the guidebook's block catalogue -- is generated from the mod's sources by
+# dev-env-utils/scripts/gen_wiki_reference.py, and the Pages deploy publishes it exactly as
+# committed; nothing regenerates it at deploy time. A block added without re-running the
+# generator is therefore simply missing from the public site, which is how 58 went missing
+# before this check existed. Fix a failure by running the generator and committing what it
+# changes.
+#
+# The job below is a REQUIRED status check on main, matched by its name. Rename it and every
+# pull request waits forever for a check that no longer reports -- update the branch protection
+# rule in the same change.
+on:
+  # Unfiltered on purpose. A required check has to report on every pull request: with a paths
+  # filter, a PR touching none of them would never get a result and could never merge.
+  pull_request:
+  # Filtered: an early warning on a working branch before any PR exists, without running on
+  # pushes that cannot have changed the catalogue. Blocks, their tabs, lang and stats all live
+  # under the source trees; the rest is the generator and its output.
+  push:
+    paths:
+      - 'src/main/**'
+      - 'modules/**'
+      - 'docs/reference/**'
+      - 'dev-env-utils/scripts/gen_wiki_reference.py'
+      - 'dev-env-utils/scripts/csm_block_index.py'
+      - '.github/workflows/check-guidebook-reference.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push makes an older run's answer irrelevant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  block_reference:
+    name: Guidebook Block Reference Up To Date
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      # Standard library only: no requirements file, no pip install.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check docs/reference/ matches the sources
+        run: python dev-env-utils/scripts/gen_wiki_reference.py --check
