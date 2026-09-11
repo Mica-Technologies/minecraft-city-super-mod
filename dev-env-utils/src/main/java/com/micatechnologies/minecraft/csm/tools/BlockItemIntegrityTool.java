@@ -1417,6 +1417,15 @@ public class BlockItemIntegrityTool {
         }
       }
     }
+    // Say out loud what was discovered, next to what is on disk. A discovery bug is then two
+    // numbers that disagree in the first lines of output instead of a silently short run: the
+    // tool once found 300 of 1,709 blocks and reported a clean tree, because nothing ever said
+    // how many it had looked for.
+    System.out.println("Discovered " + knownBlockIds.size() + " blocks and " + knownItemIds.size()
+        + " items from the creative tab registrations.");
+    System.out.println("On disk: " + blockstateFolder.walk(".json").size()
+        + " blockstate files across " + blockstateFolder.dirs().size() + " source tree(s).");
+
     Thread blocksThread = new Thread(() -> {
       for (CsmLayout.Registration registration : registrations) {
         if (registration.item) {
