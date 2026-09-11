@@ -62,7 +62,12 @@
               225,
               0
             ],
-            "scale": 0.4
+            "scale": 0.3128,
+            "translation": [
+              -0.2116,
+              0.0489,
+              0.0
+            ]
           },
           "fixed": {
             "rotation": [
