@@ -19,12 +19,11 @@
         "transform": {
           "gui": {
             "rotation": [25, 215, 0],
-            "translation": [0, -1.0, 0],
-            "scale": 0.18
+            "scale": 0.15
           },
           "fixed": {
             "rotation": [0, 90, 0],
-            "scale": 0.18
+            "scale": 0.15
           },
           "ground": {
             "scale": 0.16
