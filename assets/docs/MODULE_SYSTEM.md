@@ -350,6 +350,34 @@ simply skipped when Roads & Traffic is absent.
 **Versions are pinned.** All ten jars come from one release and pin each other exactly. A player
 mixing versions gets a startup failure, which is the intended outcome.
 
+**A module's reobfuscation needs Core's classes.** A release jar must name every Minecraft field and
+method by its SRG name, and RetroFuturaGradle's `reobf<Jar>` rule resolves an *inherited* member by
+walking the hierarchy of the class holding the reference -- which it can only do for classes on that
+task's reference classpath. A module block reaches `Block` only through Core's `AbstractBlock`, so
+without Core on the classpath every inherited member kept its dev name, and the first real-launcher
+test crashed with `NoSuchFieldError: blockState`. `modules.gradle` gives each module's reobf task
+Core's classes, plus those of any module it depends on. **Neither the dev client nor a green build
+can show this class of bug** -- the dev client runs dev names. Before tagging a release, run
+`dev-env-utils/scripts/check_reobf_refs.py` with the previous release's jars as the baseline, and
+try the release jars in a real launcher.
+
+**Reading a `csm` asset off the class path means reading every copy.** Each module jar carries its
+own `assets/csm/lang/en_us.lang`, and could carry other same-path files. `getResourceAsStream`
+returns whichever copy the class loader finds first, so Core code must enumerate them all with
+`ClassLoader.getResources`. `CsmBlockDisplayNames` once read a single lang file, and the Fabricator
+silently priced most blocks by their tab's generic rule -- a registry dump cannot see prices, so it
+slipped past every in-game check. `CsmBlockDisplayNamesTest` now guards the loader with names from
+four jars.
+
+**`@EventBusSubscriber` takes the module's own mod id.** FML registers an annotated class only for
+the container whose mod id matches the annotation's. CSM uses none today; a module that adds one
+must name its own id, not `csm`.
+
+**A local Core-only smoke run can hang on an old world.** With a `run/world` left behind by a fuller
+install, a Core-only `server-smoke-test.sh` waits on FML's missing-registry prompt and times out. CI
+always starts from a fresh world, so this is only a local trap: move the world aside, use a per-run
+`level-name`, or pass `-Dfml.queryResult=confirm`.
+
 ---
 
 ## Verifying a change
