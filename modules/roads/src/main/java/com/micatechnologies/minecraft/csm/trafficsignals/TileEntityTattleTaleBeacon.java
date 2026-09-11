@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +26,12 @@ public class TileEntityTattleTaleBeacon extends TileEntity {
     return new AxisAlignedBB(
         pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
         pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
+  }
+
+  /** Mirrors a signal head's state, so it stays in view as long as the head it mirrors. */
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    return AbstractTileEntity.LONG_RANGE_RENDER_DISTANCE_SQUARED;
   }
 
   private static final int LEFT_VAL = 0;

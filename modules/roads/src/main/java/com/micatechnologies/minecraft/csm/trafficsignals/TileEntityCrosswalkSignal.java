@@ -248,4 +248,10 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
         pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
         pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
   }
+
+  /** Same reach as the new-style crosswalk signal and the heads it shares a pole with. */
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+  }
 }

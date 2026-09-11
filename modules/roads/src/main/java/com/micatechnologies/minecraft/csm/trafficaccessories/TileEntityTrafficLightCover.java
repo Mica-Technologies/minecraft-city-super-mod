@@ -101,4 +101,10 @@ public class TileEntityTrafficLightCover extends AbstractTileEntity {
         pos.getX() - 4.0, pos.getY() - 4.0, pos.getZ() - 4.0,
         pos.getX() + 5.0, pos.getY() + 5.0, pos.getZ() + 5.0);
   }
+
+  /** A cover is on a head; it has to stay in view exactly as long as the head does. */
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+  }
 }
