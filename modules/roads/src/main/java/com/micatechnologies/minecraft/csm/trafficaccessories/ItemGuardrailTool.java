@@ -60,8 +60,10 @@ public class ItemGuardrailTool extends AbstractItem {
         "w_beam_guardrail_double", "w_beam_guardrail_wood_double");
     ring("thrie_beam_guardrail", "thrie_beam_guardrail_wood",
         "thrie_beam_guardrail_double", "thrie_beam_guardrail_wood_double");
-    // Neither of these is ever built on a wooden post, so their ring is just the sidedness.
-    ring("box_beam_guardrail", "box_beam_guardrail_double");
+    // Neither of these is ever built on a wooden post, so their ring is just the sidedness -- and,
+    // for box beam, one tube or two.
+    ring("box_beam_guardrail", "box_beam_guardrail_double",
+        "box_beam_guardrail_stacked", "box_beam_guardrail_stacked_double");
     ring("cable_barrier", "cable_barrier_double");
   }
 

@@ -11,6 +11,8 @@ own files would mean splitting the shared sweep/cap primitives too:
     box_beam_guardrail, box_beam_guardrail_double       a square steel tube on a BOLTED post --
                                                         the base plate is what tells it apart from
                                                         a driven post at a glance
+    box_beam_guardrail_stacked, ..._stacked_double      the same with a second tube half a cell
+                                                        under the first, for bridge rails (#191)
     cable_barrier, cable_barrier_double                 three tensioned cables on slim posts, not
                                                         a beam at all
     cable_barrier_anchor                                the raked block the cables terminate into
@@ -93,6 +95,8 @@ SCRATCH_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_guardra
 GENERATOR = os.path.basename(__file__)
 MODEL_PREFIX = "csm:%s" % geo.MODEL_SUBDIR
 RAIL_JAVA_CLASS = "BlockGuardrail"
+# Box beam's own subclass: it resolves the ``stacked`` property that drops the base plate.
+BOX_JAVA_CLASS = "BlockGuardrailBoxBeam"
 END_JAVA_CLASS = "BlockGuardrailEnd"
 
 # Where the post stands: the middle of the cell, across the run -- same convention as
@@ -190,15 +194,16 @@ def rail_sides(double):
 # ===================================================================================================
 # A. THE BOX BEAM RAIL
 # ===================================================================================================
-def box_rail_section(mirror=False):
+def box_rail_section(mirror=False, drop=0.0):
     """The rail's closed cross-section in (z, y): a plain rectangle, front face toward traffic.
 
     ``mirror`` reflects it about z = CELL / 2 -- the post's own centre line, since
     ``POST_CENTRE_Z`` in guardrail_geometry is exactly ``CELL / 2`` -- for the far rail of a
-    double-sided run, the same trick ``gen_guardrails.py``'s ``rail_section`` uses.
+    double-sided run, the same trick ``gen_guardrails.py``'s ``rail_section`` uses. ``drop``
+    lowers it by that much, for the second tube of the two-tube block.
     """
     z0, z1 = geo.BOX_RAIL_FRONT_Z, geo.BOX_RAIL_BACK_Z
-    y0, y1 = geo.BOX_RAIL_BOTTOM_Y, geo.BOX_RAIL_TOP_Y
+    y0, y1 = geo.BOX_RAIL_BOTTOM_Y - drop, geo.BOX_RAIL_TOP_Y - drop
     pts = [(z0, y0), (z1, y0), (z1, y1), (z0, y1)]
     if mirror:
         pts = [(geo.CELL - z, y) for (z, y) in pts]
@@ -213,51 +218,77 @@ def box_rail_cap_z(mirror):
     return geo.CELL - z1, geo.CELL - z0
 
 
-def build_box_post(mesh, double, slope):
-    """Post, block-out and BASE PLATE, at the height the rail passes the middle of the cell.
+def box_tube_drops(tubes):
+    """How far under the top tube each of a block's tubes runs: the top one, and on the two-tube
+    block (#191) a second one ``BOX_STACK_PITCH`` below it."""
+    return tuple(i * geo.BOX_STACK_PITCH for i in range(tubes))
+
+
+def build_box_post(mesh, double, slope, drops=(0.0,)):
+    """Post and a block-out per tube, at the height the rail passes the middle of the cell.
 
     Post and block-out are the shared steel C-section ``gen_guardrails.py`` builds for the
-    non-wood W-beam variant -- box beam is never built on a wooden post. What is new is the base
-    plate: a slab wider than the post standing under its foot, which is what says "bolted down"
-    rather than "driven" in the reference photograph. It sits UNDER the post rather than around
-    it, so the post's own foot is raised onto the plate's top face instead of burying itself in
-    the plate's volume -- coincident faces there are opposite-facing (the plate's top points up,
-    the post's underside points down) and so excused by the audit as a back-to-back seam, but
-    raising the post keeps them from sharing a plane by more than that one incidental face.
+    non-wood W-beam variant -- box beam is never built on a wooden post.
+
+    The post stands from the FLOOR with no bottom face, and the base plate is a piece of its own
+    (``build_box_plate``). A box beam stacked on another guardrail continues that one's post and
+    the blockstate leaves its plate off (#191), so the post has to reach the floor by itself
+    rather than start on top of the plate. Where the plate is drawn, the post's foot is simply
+    buried in it; without a bottom face the two share no plane.
     """
     lift = geo.slope_lift(slope, geo.POST_LIFT)
     foot = min(geo.POST_BOTTOM_Y, lift)
     half = geo.BLOCKOUT_HALF_X
-    y0, y1 = geo.BLOCKOUT_Y0 + lift, geo.BLOCKOUT_Y1 + lift
+    for drop in drops:
+        y0, y1 = geo.BLOCKOUT_Y0 + lift - drop, geo.BLOCKOUT_Y1 + lift - drop
+        box(mesh, CX - half, CX + half, y0, y1, geo.BLOCKOUT_Z0, geo.BLOCKOUT_Z1,
+            BOX_BLOCKOUT_SWATCH, faces=("x-", "x+", "y-", "y+", "z-"))
+        if double:
+            box(mesh, CX - half, CX + half, y0, y1, geo.BACK_BLOCKOUT_Z0, geo.BACK_BLOCKOUT_Z1,
+                BOX_BLOCKOUT_SWATCH, faces=("x-", "x+", "y-", "y+", "z+", "z-"))
 
-    box(mesh, CX - half, CX + half, y0, y1, geo.BLOCKOUT_Z0, geo.BLOCKOUT_Z1, BOX_BLOCKOUT_SWATCH,
-        faces=("x-", "x+", "y-", "y+", "z-"))
-    if double:
-        box(mesh, CX - half, CX + half, y0, y1, geo.BACK_BLOCKOUT_Z0, geo.BACK_BLOCKOUT_Z1,
-            BOX_BLOCKOUT_SWATCH, faces=("x-", "x+", "y-", "y+", "z+", "z-"))
-
-    plate_half, plate_thick = geo.BOX_BASE_PLATE
-    post_cz = (geo.POST_Z0 + geo.POST_Z1) * 0.5
-    plate_y0, plate_y1 = foot, foot + plate_thick
-    box(mesh, CX - plate_half, CX + plate_half, plate_y0, plate_y1,
-        post_cz - plate_half, post_cz + plate_half, BOX_PLATE_SWATCH)
-
-    post_foot = plate_y1
     top = geo.POST_TOP_Y + lift
     web_z1 = geo.POST_Z0 + POST_WALL
-    box(mesh, CX - geo.POST_HALF_X, CX + geo.POST_HALF_X, post_foot, top,
-        geo.POST_Z0, web_z1, BOX_POST_SWATCH)
+    box(mesh, CX - geo.POST_HALF_X, CX + geo.POST_HALF_X, foot, top,
+        geo.POST_Z0, web_z1, BOX_POST_SWATCH, faces=("x-", "x+", "y+", "z-", "z+"))
     for sign in (-1.0, 1.0):
         outer = CX + sign * geo.POST_HALF_X
         inner = outer - sign * POST_WALL
-        box(mesh, min(outer, inner), max(outer, inner), post_foot, top,
-            web_z1, geo.POST_Z1, BOX_POST_SWATCH, faces=("x-", "x+", "y-", "y+", "z+"))
+        box(mesh, min(outer, inner), max(outer, inner), foot, top,
+            web_z1, geo.POST_Z1, BOX_POST_SWATCH, faces=("x-", "x+", "y+", "z+"))
 
 
-def build_box_core(mesh, double, slope):
+def build_box_plate(mesh):
+    """The BASE PLATE: a slab wider than the post standing under its foot, which is what says
+    "bolted down" rather than "driven" in the reference photograph.
+
+    Always on the floor, whatever the slope -- a ramp is drawn in the lower of its two cells, so
+    no post's foot ever leaves it -- which is why one model serves all three slopes.
+    """
+    plate_half, plate_thick = geo.BOX_BASE_PLATE
+    post_cz = (geo.POST_Z0 + geo.POST_Z1) * 0.5
+    box(mesh, CX - plate_half, CX + plate_half, geo.POST_BOTTOM_Y, geo.POST_BOTTOM_Y + plate_thick,
+        post_cz - plate_half, post_cz + plate_half, BOX_PLATE_SWATCH)
+
+
+def build_box_core(mesh, double, slope, drops=(0.0,)):
+    """The tubes across the cell.
+
+    The top tube's open ends are capped by the connect-driven end pieces, as every rail's are. A
+    LOWER tube is capped at both ends right here, always: only the two-tube block has one, so a
+    run it joins may have no tube there to carry it on, and an open end would show as a hole.
+    Where two lower tubes do meet, their two caps face away from each other inside one
+    continuous tube, and nothing can see either.
+    """
     lift, grade = geo.slope_lift(slope, 0.0), geo.slope_grade(slope)
-    for mirror in rail_sides(double):
-        sweep_section(mesh, box_rail_section(mirror), BOX_RAIL_SWATCH, 0.0, geo.CELL, lift, grade)
+    lift_b = geo.slope_lift(slope, 1.0)
+    for drop in drops:
+        for mirror in rail_sides(double):
+            section = box_rail_section(mirror, drop)
+            sweep_section(mesh, section, BOX_RAIL_SWATCH, 0.0, geo.CELL, lift, grade)
+            if drop > 0.0:
+                cap_section(mesh, section, BOX_RAIL_SWATCH, 0.0, lift, -1.0)
+                cap_section(mesh, section, BOX_RAIL_SWATCH, geo.CELL, lift_b, 1.0)
 
 
 def build_box_end(mesh, double, slope, left):
@@ -270,31 +301,42 @@ def build_box_end(mesh, double, slope, left):
                    -1.0 if left else 1.0)
 
 
-def build_box_fill(mesh, double, slope):
+def build_box_fill(mesh, double, slope, drops=(0.0,)):
     lift = geo.slope_lift(slope, 1.0)
-    for mirror in rail_sides(double):
-        sweep_section(mesh, box_rail_section(mirror), BOX_RAIL_SWATCH,
-                      geo.CELL, geo.CELL + geo.DIAGONAL_GAP, lift, 0.0)
+    far = geo.CELL + geo.DIAGONAL_GAP
+    for drop in drops:
+        for mirror in rail_sides(double):
+            section = box_rail_section(mirror, drop)
+            sweep_section(mesh, section, BOX_RAIL_SWATCH, geo.CELL, far, lift, 0.0)
+            if drop > 0.0:
+                # The lower tube's far end, capped for the reason build_box_core gives.
+                cap_section(mesh, section, BOX_RAIL_SWATCH, far, lift, 1.0)
 
 
-def build_box_inventory(mesh, double):
-    build_box_core(mesh, double, "flat")
-    build_box_post(mesh, double, "flat")
+def build_box_inventory(mesh, spec):
+    double, drops = spec["double"], box_tube_drops(spec["tubes"])
+    build_box_core(mesh, double, "flat", drops)
+    build_box_post(mesh, double, "flat", drops)
+    build_box_plate(mesh)
     build_box_end(mesh, double, "flat", True)
     build_box_end(mesh, double, "flat", False)
 
 
 def box_model_pieces(spec):
-    double = spec["double"]
+    double, drops = spec["double"], box_tube_drops(spec["tubes"])
     pieces = {
-        "core": lambda m: build_box_core(m, double, "flat"),
+        "core": lambda m: build_box_core(m, double, "flat", drops),
         "end_left": lambda m: build_box_end(m, double, "flat", True),
+        "plate": build_box_plate,
     }
     for slope in geo.SLOPES:
         if slope != "flat":
-            pieces["core_%s" % slope] = (lambda s: lambda m: build_box_core(m, double, s))(slope)
-        pieces["post_%s" % slope] = (lambda s: lambda m: build_box_post(m, double, s))(slope)
-        pieces["fill_%s" % slope] = (lambda s: lambda m: build_box_fill(m, double, s))(slope)
+            pieces["core_%s" % slope] = (
+                (lambda s: lambda m: build_box_core(m, double, s, drops))(slope))
+        pieces["post_%s" % slope] = (
+            (lambda s: lambda m: build_box_post(m, double, s, drops))(slope))
+        pieces["fill_%s" % slope] = (
+            (lambda s: lambda m: build_box_fill(m, double, s, drops))(slope))
         pieces["end_right_%s" % slope] = (
             (lambda s: lambda m: build_box_end(m, double, s, False))(slope))
     return pieces
@@ -398,15 +440,24 @@ def cable_model_pieces(spec):
 
 
 # --- the rail catalogue, shared blockstate/model-piece logic for both families -------------------
-def _rail(registry, stem, texture, double, display):
-    return (registry, {"stem": stem, "texture": texture, "double": double, "display": display})
+def _rail(registry, stem, texture, double, display, **extra):
+    spec = {"stem": stem, "texture": texture, "double": double, "display": display}
+    spec.update(extra)
+    return (registry, spec)
 
 
+# Every box beam carries a separate base plate piece, dropped where it stands on another rail;
+# "tubes" is one, or two for the stacked blocks that make a bridge rail (#191).
 BOX_BLOCKS = dict([
     _rail(geo.BOX_RAIL_BLOCKS[0], "guardrail_box_beam", "guardrail_box_beam_steel",
-         False, "Box Beam Guardrail"),
+         False, "Box Beam Guardrail", tubes=1, plate=True),
     _rail(geo.BOX_RAIL_BLOCKS[1], "guardrail_box_beam_double", "guardrail_box_beam_steel",
-         True, "Box Beam Guardrail (Double Sided)"),
+         True, "Box Beam Guardrail (Double Sided)", tubes=1, plate=True),
+    _rail(geo.BOX_RAIL_BLOCKS[2], "guardrail_box_beam_stacked", "guardrail_box_beam_steel",
+         False, "Box Beam Guardrail (Stacked)", tubes=2, plate=True),
+    _rail(geo.BOX_RAIL_BLOCKS[3], "guardrail_box_beam_stacked_double",
+         "guardrail_box_beam_steel", True, "Box Beam Guardrail (Stacked, Double Sided)",
+         tubes=2, plate=True),
 ])
 
 CABLE_RAIL_BLOCKS = dict([
@@ -447,9 +498,17 @@ def rail_blockstate_json(spec):
     variants = {"facing": facing_variants({"diagonal": True})}
     variants["connectleft"] = {"false": submodel(end_left="end_left"), "true": {}}
     variants["connectright"] = {"false": {}, "true": {"submodel": {"end_right": None}}}
-    variants["post"] = {"false": {"submodel": {"post": None}}, "true": {}}
     variants["diagfill"] = {"false": {"submodel": {"fill": None}}, "true": {}}
     variants["slope"] = slope_variants
+    if spec.get("plate"):
+        # The base plate answers to two properties: gone with the post, and gone where the cell
+        # stands on another rail and its post carries on from that one's (#191). ``stacked`` --
+        # derived by BlockGuardrailBoxBeam -- supplies it, and ``post`` sorts BEFORE ``stacked``,
+        # so its null wins whenever there is no post to stand on a plate.
+        variants["post"] = {"false": {"submodel": {"post": None, "plate": None}}, "true": {}}
+        variants["stacked"] = {"false": submodel(plate="plate"), "true": {}}
+    else:
+        variants["post"] = {"false": {"submodel": {"post": None}}, "true": {}}
     variants["normal"] = [{}]
     variants["inventory"] = [{"model": "%s_inv.obj" % model,
                               "custom": {"flip-v": True},
@@ -856,7 +915,7 @@ def _write_rail_family(blocks, model_pieces_fn, build_inventory_fn, model_dir, t
             written.append(path)
 
         inv = Mesh()
-        build_inventory_fn(inv, spec["double"])
+        build_inventory_fn(inv, spec)
         inv_path = os.path.join(model_dir, stem + "_inv.obj")
         write_model(inv, inv_path, stem + "_inv", mtl_file)
         written.append(inv_path)
@@ -929,7 +988,8 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir):
 
     _write_rail_family(BOX_BLOCKS, box_model_pieces, build_box_inventory,
                        model_dir, texture_dir, blockstate_dir, written, bounds)
-    _write_rail_family(CABLE_RAIL_BLOCKS, cable_model_pieces, build_cable_inventory,
+    _write_rail_family(CABLE_RAIL_BLOCKS, cable_model_pieces,
+                       lambda mesh, spec: build_cable_inventory(mesh, spec["double"]),
                        model_dir, texture_dir, blockstate_dir, written, bounds)
 
     # C. The cable end anchor and D. the box beam bullnose: one fixed shape apiece, each with a
@@ -967,8 +1027,9 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir):
                  "// anchor's is its own extent clipped to the cell, since its cable stubs\n"
                  "// legitimately reach past x = 0.\n" % GENERATOR)
         for registry in list(BOX_BLOCKS) + list(CABLE_RAIL_BLOCKS):
+            cls = BOX_JAVA_CLASS if registry in BOX_BLOCKS else RAIL_JAVA_CLASS
             fh.write('initTabBlock(new %s("%s",\n    %s));\n'
-                     % (RAIL_JAVA_CLASS, registry, java_bbox(bounds[registry])))
+                     % (cls, registry, java_bbox(bounds[registry])))
         for registry in (anchor_registry, bullnose_registry):
             fh.write('initTabBlock(new %s("%s",\n    %s));\n'
                      % (END_JAVA_CLASS, registry, java_bbox(bounds[registry])))
