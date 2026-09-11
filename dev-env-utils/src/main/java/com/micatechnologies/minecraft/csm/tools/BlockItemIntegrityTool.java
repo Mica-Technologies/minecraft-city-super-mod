@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -173,6 +174,9 @@ public class BlockItemIntegrityTool {
   private static final List<File> usedBlockTexturesFiles = new ArrayList<>();
   private static final List<File> usedItemTexturesFiles = new ArrayList<>();
   private static final List<File> usedSoundFiles = new ArrayList<>();
+
+  /** Source files already scanned for meta text, so a many-times-registered class is read once. */
+  private static final Set<String> scannedSourceFiles = ConcurrentHashMap.newKeySet();
 
   private static final List<String> loggedErrorMessages = new ArrayList<String>();
 
@@ -666,19 +670,55 @@ public class BlockItemIntegrityTool {
     System.err.println("E" + errorCountString + ": " + error);
   }
 
+  /**
+   * Returns the material file an OBJ names in its {@code mtllib} line, resolved beside the model.
+   *
+   * @param modelFileObj the OBJ model
+   *
+   * @return the material file, or null if the model declares none
+   *
+   * @throws Exception if the model cannot be read
+   *
+   * @since 1.1
+   */
+  private static File materialFileOf(File modelFileObj) throws Exception {
+    for (String line : Files.readAllLines(modelFileObj.toPath())) {
+      String trimmed = line.trim();
+      if (trimmed.startsWith("mtllib")) {
+        String named = trimmed.substring("mtllib".length()).trim();
+        if (named.isEmpty()) {
+          return null;
+        }
+        return new File(modelFileObj.getParentFile(), named);
+      }
+    }
+    return null;
+  }
+
   public static void checkObjModelIntegrity(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
       AssetFolder customModelsFolder, AssetFolder blockTexturesFolder, AssetFolder itemTexturesFolder, File modelFileObj)
       throws Exception {
-    File modelFileMtl = new File(modelFileObj.getPath().replaceAll(".obj", ".mtl"));
     usedBlockModelFiles.add(modelFileObj);
-    usedBlockModelFiles.add(modelFileMtl);
     validationsCount.incrementAndGet(); // Increment validation count
     if (!modelFileObj.exists()) {
       logError("Model file does not exist: " + modelFileObj.getPath());
+      return;
     }
-    if (!modelFileMtl.exists()) {
 
-      logError("Model material file does not exist: " + modelFileMtl.getPath());
+    // The material file is whatever the OBJ's own mtllib line names, NOT <model>.mtl. Generated
+    // model families deliberately share one material: every guardrail_thrie_beam_*.obj says
+    // "mtllib guardrail_thrie_beam.mtl". Assuming the filename reported 51 missing materials that
+    // were all present under the name the model actually asks for.
+    File modelFileMtl = materialFileOf(modelFileObj);
+    if (modelFileMtl == null) {
+      // An OBJ with no mtllib line has no material to check, which is legal.
+      return;
+    }
+    usedBlockModelFiles.add(modelFileMtl);
+    if (!modelFileMtl.exists()) {
+      logError("Model material file does not exist: " + modelFileMtl.getPath()
+          + " (named by mtllib in " + modelFileObj.getName() + ")");
+      return;
     }
 
     if (usedBlockModelFiles.contains(modelFileObj)) {
@@ -860,7 +900,9 @@ public class BlockItemIntegrityTool {
               "Texture '" + textureValue + "' does not exist (" + textureFile.getPath() + ") in "
                   + validateFile.getPath());
         }
-      } else if (!textureValue.startsWith("minecraft:")) {
+      } else if (!textureValue.startsWith("minecraft:") && !textureValue.startsWith("#")) {
+        // A leading # is a MATERIAL PLACEHOLDER, not a texture path: the blockstate supplies
+        // the real texture for that key. It is how every OBJ model here is retextured.
         logError("Texture '" + textureValue + "' is not a valid texture value in "
             + validateFile.getPath());
       }
@@ -876,6 +918,32 @@ public class BlockItemIntegrityTool {
     }
   }
 
+
+  /**
+   * Scans a registration's own class for {@code I18n.format} keys, once per class.
+   *
+   * <p>Once, because a class is registered many times: {@code BlockTrafficSign} would otherwise be
+   * read and scanned 472 times, and every key it names counted 472 times over. A registration
+   * whose class could not be resolved has no source to scan and is simply skipped.
+   *
+   * @param registration the registration whose class to scan
+   *
+   * @since 1.1
+   */
+  private static void checkAndLogMetaTextOnce(CsmLayout.Registration registration) {
+    if (registration.source == null || registration.source.file == null) {
+      return;
+    }
+    if (!scannedSourceFiles.add(registration.source.file.getPath())) {
+      return;
+    }
+    try {
+      checkAndLogMetaText(Files.readString(registration.source.file.toPath()));
+    } catch (Exception e) {
+      logError("Unable to read source for " + registration.registryName + ": "
+          + registration.source.file.getPath());
+    }
+  }
 
   public static void checkAndLogMetaText(String fileContents) {
     // Regular expression pattern to match I18n.format("...") calls.
@@ -894,16 +962,14 @@ public class BlockItemIntegrityTool {
 
   public static void verifyItemIntegrity(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
       AssetFolder customModelsFolder, AssetFolder blockstateFolder, AssetFolder langFolder, AssetFolder blockTexturesFolder,
-      AssetFolder itemTexturesFolder, File sourceFile) {
+      AssetFolder itemTexturesFolder, CsmLayout.Registration registration) {
     try {
-      // Read file contents
-      String fileContents = Files.readString(sourceFile.toPath());
+      // The registry name comes from the tab, not the class -- ItemCraftingPart and
+      // ItemDecorativeFactory each stand behind many items and hold no literal of their own.
+      String itemId = registration.registryName;
 
-      // Get item ID from block code file
-      String itemId = getBlockItemIdFromSourceFileContents(sourceFile, fileContents, true);
-
-      // Check and log meta text
-      checkAndLogMetaText(fileContents);
+      // The class's own source, read once however many times that class is registered.
+      checkAndLogMetaTextOnce(registration);
 
       // Check for lang file entries
       checkLangEntry(langFolder, "item." + itemId + ".name", "item", itemId);
@@ -931,7 +997,7 @@ public class BlockItemIntegrityTool {
       }
     } catch (Exception e) {
 
-      logError("Failed to verify item file integrity: " + sourceFile.getPath());
+      logError("Failed to verify item integrity: " + registration);
       e.printStackTrace();
     }
   }
@@ -1029,16 +1095,14 @@ public class BlockItemIntegrityTool {
 
   public static void verifyBlockIntegrity(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
       AssetFolder customModelsFolder, AssetFolder blockstateFolder, AssetFolder langFolder, AssetFolder blockTexturesFolder,
-      AssetFolder itemTexturesFolder, File sourceFile) {
+      AssetFolder itemTexturesFolder, CsmLayout.Registration registration) {
     try {
-      // Read file contents
-      String fileContents = Files.readString(sourceFile.toPath());
+      // The registry name comes from the tab that registers it, not from the class: one class is
+      // registered under many names, and several are built by factories that have no literal.
+      String blockId = registration.registryName;
 
-      // Get block ID from block code file
-      String blockId = getBlockItemIdFromSourceFileContents(sourceFile, fileContents, false);
-
-      // Check and log meta text
-      checkAndLogMetaText(fileContents);
+      // The class's own source, read once however many times that class is registered.
+      checkAndLogMetaTextOnce(registration);
 
       // Check for blockstate file
       verifyBlockStateIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
@@ -1078,7 +1142,7 @@ public class BlockItemIntegrityTool {
 
 
     } catch (Exception e) {
-      logError("Failed to verify block file integrity: " + sourceFile.getPath());
+      logError("Failed to verify block integrity: " + registration);
       e.printStackTrace();
     }
   }
@@ -1135,10 +1199,29 @@ public class BlockItemIntegrityTool {
       modelFileName = strippedModelValue + ".json";
     }
 
+    // Only two of the branches above appended an extension, so "item/school_zone_beacon" and
+    // "block/foo" resolved to a path with none and could never exist. Normalise here instead, so
+    // adding a branch cannot reintroduce it.
+    if (!modelFileName.endsWith(".json") && !modelFileName.endsWith(".obj")) {
+      modelFileName = modelFileName + ".json";
+    }
+
     if (strippedModelValue.endsWith(".obj")) {
       modelFileName = strippedModelValue;
-      File modelFileMtl = modelFolder.file(modelFileName.replaceAll(".obj", ".mtl"));
-      resolved.add(modelFileMtl);
+      // The material is whatever the OBJ's mtllib line names, not <model>.mtl -- generated model
+      // families share one material file. Resolving it by filename put a path that never existed
+      // into the resolved list, and it was then reported as a missing MODEL.
+      File modelFileObj = modelFolder.file(modelFileName);
+      if (modelFileObj.exists()) {
+        try {
+          File modelFileMtl = materialFileOf(modelFileObj);
+          if (modelFileMtl != null) {
+            resolved.add(modelFileMtl);
+          }
+        } catch (Exception e) {
+          logError("Unable to read mtllib from " + modelFileObj.getPath());
+        }
+      }
     }
     resolved.add(modelFolder.file(modelFileName));
     return resolved;
@@ -1161,7 +1244,11 @@ public class BlockItemIntegrityTool {
         }
       } else if (element.isJsonObject()) {
         JsonObject obj = element.getAsJsonObject();
-        if (obj.has("model")) {
+        // "model": null is deliberate, not a mistake: in a Forge property-map blockstate it DROPS
+        // the base model so a per-state one replaces it rather than being drawn over it, and a
+        // null SUBMODEL occupies its key so a later property cannot fill it and is stripped before
+        // baking. Both are load-bearing in the guardrail blockstates.
+        if (obj.has("model") && !obj.get("model").isJsonNull()) {
           String modelValue = obj.get("model").getAsString();
           if (modelValue.startsWith(prefixCheck)) {
             modelFiles.addAll(resolveModelFiles(blockModelsFolder, itemModelsFolder,
@@ -1306,21 +1393,37 @@ public class BlockItemIntegrityTool {
     final AssetFolder itemTexturesFolder =
         AssetFolder.ofAsset(layout(devEnvironmentPath), ITEM_TEXTURES_FOLDER);
 
-    // Loop through source files
+    // Loop through the registrations the creative tabs actually make.
+    List<CsmLayout.Registration> registrations = layout(devEnvironmentPath).registrations();
+
+    // Seed the known-id lists up front. The unused-lang and unused-file checks read these, and
+    // they used to be filled a name at a time as each class was parsed -- so anything the parse
+    // could not see (a factory, a class registered many times) made every one of its lang keys
+    // look unused. 5,348 of 5,457 "unused" tile keys were this.
+    for (CsmLayout.Registration registration : registrations) {
+      if (registration.item) {
+        knownItemIds.add(registration.registryName);
+      } else {
+        knownBlockIds.add(registration.registryName);
+        if (registration.blockSet) {
+          blockSetBlockIds.add(registration.registryName);
+        }
+      }
+    }
     Thread blocksThread = new Thread(() -> {
-      for (File sourceFile : blockSourceFiles) {
-        // Skip excluded files
-        if (sourceExcludes.contains(sourceFile)) {
+      for (CsmLayout.Registration registration : registrations) {
+        if (registration.item) {
+          continue;
+        }
+        if (registration.source != null && sourceExcludes.contains(registration.source.file)) {
           if (DEBUG) {
-            System.out.println("Skipping excluded file: " + sourceFile.getPath());
+            System.out.println("Skipping excluded: " + registration);
           }
           continue;
         }
-
-        // Verify block/item integrity
         checkCount.incrementAndGet();
         verifyBlockIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
-            blockstateFolder, langFolder, blockTexturesFolder, itemTexturesFolder, sourceFile);
+            blockstateFolder, langFolder, blockTexturesFolder, itemTexturesFolder, registration);
       }
     });
     blocksThread.start();
@@ -1328,19 +1431,19 @@ public class BlockItemIntegrityTool {
       System.out.println("[THREADMGMT] Started block check thread.");
     }
     Thread itemsThread = new Thread(() -> {
-      for (File sourceFile : itemSourceFiles) {
-        // Skip excluded files
-        if (sourceExcludes.contains(sourceFile)) {
+      for (CsmLayout.Registration registration : registrations) {
+        if (!registration.item) {
+          continue;
+        }
+        if (registration.source != null && sourceExcludes.contains(registration.source.file)) {
           if (DEBUG) {
-            System.out.println("Skipping excluded file: " + sourceFile.getPath());
+            System.out.println("Skipping excluded: " + registration);
           }
           continue;
         }
-
-        // Verify block/item integrity
         checkCount.incrementAndGet();
         verifyItemIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
-            blockstateFolder, langFolder, blockTexturesFolder, itemTexturesFolder, sourceFile);
+            blockstateFolder, langFolder, blockTexturesFolder, itemTexturesFolder, registration);
       }
     });
     itemsThread.start();
@@ -1382,16 +1485,10 @@ public class BlockItemIntegrityTool {
 
     String blockId = getIdFromSourceFileContents(file, fileContents, filterMethodName);
 
-    if (asItem) {
-      knownItemIds.add(blockId);
-      if (DEBUG) {
-        System.out.println("Found item ID: " + blockId);
-      }
-    } else {
-      knownBlockIds.add(blockId);
-      if (DEBUG) {
-        System.out.println("Found block ID: " + blockId);
-      }
+    // Deliberately does NOT add to knownBlockIds/knownItemIds any more: those are seeded from the
+    // tab registrations, which is the only complete list.
+    if (DEBUG) {
+      System.out.println("Found " + (asItem ? "item" : "block") + " ID: " + blockId);
     }
     return blockId;
   }

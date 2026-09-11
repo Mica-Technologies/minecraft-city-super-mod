@@ -83,13 +83,13 @@ public class CsmLayout
     private static final Pattern ITEM_REGISTRY_NAME_RE = Pattern.compile(
             "public\\s+String\\s+getItemRegistryName\\(\\)\\s*\\{\\s*return\\s*\"([^\"]+)\"\\s*;");
     private static final Pattern TAB_CLASS_RE
-            = Pattern.compile("initTab(?:Block|Item)\\(\\s*([\\w.]+)\\.class");
+            = Pattern.compile("initTab(Block|Item)\\(\\s*([\\w.]+)\\.class");
     private static final Pattern TAB_CTOR_RE
-            = Pattern.compile("initTab(?:Block|Item)\\(\\s*new\\s+([\\w.]+)\\s*\\(\\s*(?:\"([^\"]+)\")?");
+            = Pattern.compile("initTab(Block|Item)\\(\\s*new\\s+([\\w.]+)\\s*\\(\\s*(?:\"([^\"]+)\")?");
     private static final Pattern TAB_CONST_RE
-            = Pattern.compile("initTab(?:Block|Item)\\(\\s*(\\w+)\\.(\\w+)\\s*\\)");
+            = Pattern.compile("initTab(Block|Item)\\(\\s*(\\w+)\\.(\\w+)\\s*\\)");
     private static final Pattern TAB_CLASS_IF_LOADED_RE
-            = Pattern.compile("initTab(?:Block|Item)IfLoaded\\(\\s*\"[^\"]*\"\\s*,\\s*\"([\\w.]+)\"");
+            = Pattern.compile("initTab(Block|Item)IfLoaded\\(\\s*\"[^\"]*\"\\s*,\\s*\"([\\w.]+)\"");
     private static final Pattern HOLDER_CONST_RE = Pattern.compile(
             "public\\s+static\\s+final\\s+\\w+\\s+(\\w+)\\s*=\\s*new\\s+[\\w.]+\\(\\s*\"([^\"]+)\"");
     private static final Pattern SOUND_CONST_RE
@@ -126,12 +126,62 @@ public class CsmLayout
     private Map< String, String > ownerByRegistryName = null;
 
     /**
+     * Every block and item as the tabs register it. Populated on first use.
+     *
+     * @since 1.1
+     */
+    private List< Registration > registrations = null;
+
+    /**
      * Sound event name to the module whose {@code sounds.json} declares it. Populated on first
      * use.
      *
      * @since 1.0
      */
     private Map< String, String > ownerBySoundName = null;
+
+    /**
+     * One block or item as a creative tab actually registers it.
+     *
+     * <p>This, not a scan of the block classes, is the answer to "what exists". A class is not a
+     * block: {@code BlockTrafficSign} is registered 472 times with a different registry name each
+     * time, several classes are built by factories, and the abstract bases are registered never.
+     * Registration order is also creative order, so a tab is the one place everything must appear.
+     *
+     * @since 1.1
+     */
+    public static class Registration
+    {
+        /** The registry name, without the {@code csm:} prefix. Never null. */
+        public final String registryName;
+        /** The simple name of the class that builds it, or null if it could not be resolved. */
+        public final String className;
+        /** The module whose tab registers it. */
+        public final String module;
+        /** What the source scan knows about {@link #className}, or null. */
+        public final SourceClass source;
+        /** True for {@code initTabItem}, false for {@code initTabBlock}. */
+        public final boolean item;
+        /** Whether this is the base name of an {@code AbstractBlockSetBasic}. */
+        public final boolean blockSet;
+
+        Registration( String registryName, String className, String module, SourceClass source,
+                      boolean item, boolean blockSet )
+        {
+            this.registryName = registryName;
+            this.className = className;
+            this.module = module;
+            this.source = source;
+            this.item = item;
+            this.blockSet = blockSet;
+        }
+
+        @Override
+        public String toString()
+        {
+            return registryName + " (" + className + ", " + module + ")";
+        }
+    }
 
     /**
      * What the source scan records about one Java class.
@@ -885,45 +935,11 @@ public class CsmLayout
             return ownerByRegistryName;
         }
         Map< String, String > owners = new HashMap<>();
-        Map< String, SourceClass > sources = classes();
-        for ( File tabFile : tabSourceFiles() ) {
-            String module = moduleOfFile( tabFile );
-            String text = normalize( readFileQuietly( tabFile ) );
-
-            Matcher byClass = TAB_CLASS_RE.matcher( text );
-            while ( byClass.find() ) {
-                addByClass( owners, sources, byClass.group( 1 ), module );
-            }
-            // initTabBlockIfLoaded names its class as a string precisely because that class
-            // ships in a different module from the tab: the class's own tree is the owner.
-            Matcher byIfLoaded = TAB_CLASS_IF_LOADED_RE.matcher( text );
-            while ( byIfLoaded.find() ) {
-                String named = byIfLoaded.group( 1 );
-                SourceClass info = sources.get( named.substring( named.lastIndexOf( '.' ) + 1 ) );
-                addByClass( owners, sources, named, info != null ? info.module : module );
-            }
-            Matcher byCtor = TAB_CTOR_RE.matcher( text );
-            while ( byCtor.find() ) {
-                if ( byCtor.group( 2 ) != null ) {
-                    owners.putIfAbsent( byCtor.group( 2 ), module );
-                }
-                else {
-                    addByClass( owners, sources, byCtor.group( 1 ), module );
-                }
-            }
-            Matcher byConst = TAB_CONST_RE.matcher( text );
-            while ( byConst.find() ) {
-                SourceClass holder = sources.get( byConst.group( 1 ) );
-                if ( holder != null ) {
-                    String registry = holder.constants.get( byConst.group( 2 ) );
-                    if ( registry != null ) {
-                        owners.putIfAbsent( registry, module );
-                    }
-                }
-            }
+        for ( Registration registration : registrations() ) {
+            owners.putIfAbsent( registration.registryName, registration.module );
         }
         // Anything the tabs never named still has a home: the tree that declares its class.
-        for ( SourceClass info : sources.values() ) {
+        for ( SourceClass info : classes().values() ) {
             if ( info.blockRegistryName != null ) {
                 owners.putIfAbsent( info.blockRegistryName, info.module );
             }
@@ -936,6 +952,94 @@ public class CsmLayout
     }
 
     /**
+     * Returns every block and item as the creative tabs actually register it, in tab order.
+     *
+     * <p>Ask this rather than scanning the block classes. A class is not a block — see
+     * {@link Registration} — and a tool that assumes otherwise sees a few hundred of this mod's
+     * seventeen hundred blocks and reports the rest of the tree as unused.
+     *
+     * <p>Five registration forms are recognised, all of them in use:
+     * {@code initTabBlock(Foo.class)}, {@code initTabBlock(new Foo("id", ...))},
+     * {@code initTabBlock(new Foo(...))} where the class names itself,
+     * {@code initTabBlock(Holder.CONSTANT)} for pre-built instances, and
+     * {@code initTabBlockIfLoaded("modid", "com.foo.Bar")}. Each has an {@code initTabItem} twin.
+     *
+     * @return the registrations, in the order the tabs make them
+     *
+     * @since 1.1
+     */
+    public List< Registration > registrations()
+    {
+        if ( registrations != null ) {
+            return registrations;
+        }
+        List< Registration > found = new ArrayList<>();
+        Map< String, SourceClass > sources = classes();
+        for ( File tabFile : tabSourceFiles() ) {
+            String module = moduleOfFile( tabFile );
+            String text = normalize( readFileQuietly( tabFile ) );
+
+            Matcher byClass = TAB_CLASS_RE.matcher( text );
+            while ( byClass.find() ) {
+                addByClass( found, sources, byClass.group( 2 ), module,
+                            isItem( byClass.group( 1 ) ) );
+            }
+            // initTabBlockIfLoaded names its class as a string precisely because that class
+            // ships in a different module from the tab: the class's own tree is the owner.
+            Matcher byIfLoaded = TAB_CLASS_IF_LOADED_RE.matcher( text );
+            while ( byIfLoaded.find() ) {
+                String named = byIfLoaded.group( 2 );
+                SourceClass info = sources.get( named.substring( named.lastIndexOf( '.' ) + 1 ) );
+                addByClass( found, sources, named, info != null ? info.module : module,
+                            isItem( byIfLoaded.group( 1 ) ) );
+            }
+            Matcher byCtor = TAB_CTOR_RE.matcher( text );
+            while ( byCtor.find() ) {
+                boolean item = isItem( byCtor.group( 1 ) );
+                String qualified = byCtor.group( 2 );
+                String explicit = byCtor.group( 3 );
+                if ( explicit != null ) {
+                    String simple = qualified.substring( qualified.lastIndexOf( '.' ) + 1 );
+                    found.add( new Registration( explicit, simple, module, sources.get( simple ),
+                                                 item, false ) );
+                }
+                else {
+                    // No-arg constructor: the class supplies its own registry name.
+                    addByClass( found, sources, qualified, module, item );
+                }
+            }
+            Matcher byConst = TAB_CONST_RE.matcher( text );
+            while ( byConst.find() ) {
+                String holderName = byConst.group( 2 );
+                SourceClass holder = sources.get( holderName );
+                if ( holder != null ) {
+                    String registry = holder.constants.get( byConst.group( 3 ) );
+                    if ( registry != null ) {
+                        found.add( new Registration( registry, holderName, module, holder,
+                                                     isItem( byConst.group( 1 ) ), false ) );
+                    }
+                }
+            }
+        }
+        registrations = found;
+        return found;
+    }
+
+    /**
+     * Whether an {@code initTab...} match was the item form.
+     *
+     * @param kindGroup the captured {@code Block} or {@code Item}
+     *
+     * @return true for an item registration
+     *
+     * @since 1.1
+     */
+    private static boolean isItem( String kindGroup )
+    {
+        return "Item".equals( kindGroup );
+    }
+
+    /**
      * Records the owner of the registry name(s) a tab entry resolves to through its class.
      *
      * @param owners  the map being built
@@ -945,9 +1049,9 @@ public class CsmLayout
      *
      * @since 1.0
      */
-    private static void addByClass( Map< String, String > owners,
+    private static void addByClass( List< Registration > found,
                                     Map< String, SourceClass > sources, String name,
-                                    String module )
+                                    String module, boolean item )
     {
         String simple = name.substring( name.lastIndexOf( '.' ) + 1 );
         SourceClass info = sources.get( simple );
@@ -955,15 +1059,19 @@ public class CsmLayout
             return;
         }
         if ( info.blockRegistryName != null ) {
-            owners.putIfAbsent( info.blockRegistryName, module );
+            found.add( new Registration( info.blockRegistryName, simple, module, info, false,
+                                         info.blockSet ) );
+            // A block set registers one name and ships four blocks.
             if ( info.blockSet ) {
                 for ( String suffix : BLOCK_SET_SUFFIXES ) {
-                    owners.putIfAbsent( info.blockRegistryName + suffix, module );
+                    found.add( new Registration( info.blockRegistryName + suffix, simple, module,
+                                                 info, false, false ) );
                 }
             }
         }
         if ( info.itemRegistryName != null ) {
-            owners.putIfAbsent( info.itemRegistryName, module );
+            found.add( new Registration( info.itemRegistryName, simple, module, info, true,
+                                         false ) );
         }
     }
 
