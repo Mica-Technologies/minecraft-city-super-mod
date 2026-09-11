@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:lighting/shared_models/ci_navion_alt",
     "textures": {
-      "all": "csm:blocks/lighting/shared_textures/ci_navion_alt",
-      "particle": "csm:blocks/lighting/shared_textures/ci_navion_alt",
-      "0": "csm:blocks/lighting/shared_textures/ci_navion_alt"
+      "all": "csm:blocks/lighting/shared_textures/ci_navion_alt_off",
+      "particle": "csm:blocks/lighting/shared_textures/ci_navion_alt_off",
+      "0": "csm:blocks/lighting/shared_textures/ci_navion_alt_off"
     }
   },
   "variants": {
@@ -23,9 +23,19 @@
     },
     "state": {
       "0": {},
-      "1": {},
+      "1": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/ci_navion_alt",
+          "0": "csm:blocks/lighting/shared_textures/ci_navion_alt"
+        }
+      },
       "2": {},
-      "3": {}
+      "3": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/ci_navion_alt",
+          "0": "csm:blocks/lighting/shared_textures/ci_navion_alt"
+        }
+      }
     },
     "inventory": [
       {}

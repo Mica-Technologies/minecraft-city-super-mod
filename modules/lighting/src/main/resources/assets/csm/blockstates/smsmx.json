@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:lighting/shared_models/solarmax_smx",
     "textures": {
-      "all": "csm:blocks/lighting/shared_textures/solarmax_smx",
-      "particle": "csm:blocks/lighting/shared_textures/solarmax_smx",
-      "0": "csm:blocks/lighting/shared_textures/solarmax_smx"
+      "all": "csm:blocks/lighting/shared_textures/solarmax_smx_off",
+      "particle": "csm:blocks/lighting/shared_textures/solarmax_smx_off",
+      "0": "csm:blocks/lighting/shared_textures/solarmax_smx_off"
     }
   },
   "variants": {
@@ -23,9 +23,19 @@
     },
     "state": {
       "0": {},
-      "1": {},
+      "1": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/solarmax_smx",
+          "0": "csm:blocks/lighting/shared_textures/solarmax_smx"
+        }
+      },
       "2": {},
-      "3": {}
+      "3": {
+        "textures": {
+          "all": "csm:blocks/lighting/shared_textures/solarmax_smx",
+          "0": "csm:blocks/lighting/shared_textures/solarmax_smx"
+        }
+      }
     },
     "inventory": [
       {}
