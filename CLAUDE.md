@@ -309,6 +309,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   go below the cable, the three different ways a payload hangs, box span tether clearance
 - `assets/docs/MAST_ARM_CURVE_SYSTEM.md` -- Realistically scaled signal mast arm upsweeps: why they are multi-block, the parabolic sweep, oblique end clipping
 - `assets/docs/WORK_ZONE_ACCESSORIES.md` -- Cones, drums, channelizers, barricades and the arrow board: how a device settles onto the road below it with no dependency on whatever built that road, barricade runs and their mounted signs, the animated arrow board
+- `assets/docs/GUARDRAIL_SYSTEM.md` -- Four rail families, their end treatments, the W-to-thrie transition and the crash cushion: why a run joins on the RAIL rather than on block identity, why the slope is read off where the rails actually are rather than off block positions, and why the end treatments are chiral
 - `assets/docs/PEDESTAL_POLE_SYSTEM.md` -- The pedestrian pedestal pole: one stackable block that decides base, cap or seamless joint per end from its neighbours, why the end properties are named in model space
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 

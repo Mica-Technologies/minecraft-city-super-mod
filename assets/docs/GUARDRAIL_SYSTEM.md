@@ -1,0 +1,176 @@
+# Guardrail System
+
+Four rail families, their end treatments, a W-to-thrie transition and a crash cushion, in the
+Roads module's `trafficaccessories` package. 23 blocks and one configuration tool, all of them
+joining blocks: each cell works out from its neighbours what to draw, and nothing carries a tile
+entity.
+
+Everything here is procedurally generated. Never hand-edit a model, texture or blockstate these
+scripts write.
+
+---
+
+## Overview
+
+| Block | Class | Notes |
+|---|---|---|
+| `w_beam_guardrail` `_wood` `_double` `_wood_double` | `BlockGuardrail` | the classic two-corrugation rail |
+| `thrie_beam_guardrail` `_wood` `_double` `_wood_double` | `BlockGuardrail` | three corrugations, deeper |
+| `box_beam_guardrail` `_double` | `BlockGuardrail` | square tube on a bolted base plate |
+| `cable_barrier` `_double` | `BlockGuardrail` | three tensioned cables with clips |
+| `w_beam_thrie_transition` | `BlockGuardrailTransition` | carries one rail into the other |
+| `guardrail_end_flared` `_boxing_glove` `_terminal` `_turndown` | `BlockGuardrailEnd` | W-beam ends |
+| `guardrail_end_flared_thrie` `_turndown_thrie` | `BlockGuardrailEnd` | the thrie's own folded shapes |
+| `guardrail_end_bullnose_box` | `BlockGuardrailEnd` | box beam's own end |
+| `cable_barrier_anchor` | `BlockGuardrailEnd` | a raked deadman, not a deflecting end |
+| `crash_cushion_nose` `_bay` | `BlockCrashCushion` | telescoping steel bays |
+| `guardrail_tool` | `ItemGuardrailTool` | right-click / sneak right-click |
+
+Generators: `guardrail_geometry.py` is the shared contract every other one imports;
+`gen_guardrails.py`, `gen_guardrail_ends.py`, `gen_guardrails_thrie.py`,
+`gen_guardrails_box_cable.py` and `gen_crash_cushion.py` write the models, textures, blockstates
+and the lang/tab fragments.
+
+## Options are sibling blocks, not state
+
+Post material, sidedness and rail family are **separate blocks**, swapped in place by the tool. A
+guardrail run is long; a tile entity per cell puts thousands of them on a highway, which is the
+cost pattern the performance work is trying to reduce elsewhere. Swapping a block for its sibling
+is stateless and free.
+
+Only the POST boolean is stored, in the one spare meta bit — eight facings take three of the four.
+`BlockGuardrail` overrides **both** `getMetaFromState` and `getStateFromMeta`: a block that writes
+a bit it cannot read back loses the post every time its chunk unloads.
+
+Everything else — both connections, the diagonal filler, the slope, an end's mirror — is derived in
+`getActualState` from the neighbours, so cutting a cell out of the middle of a run closes it up and
+re-grading the ground under one re-ramps it, with nothing to notify.
+
+## What joins what: the RAIL, not the block
+
+`GuardrailJoins` is separate from `WorkZoneJoins` rather than an option on it, because the two
+answer the question differently and both answers are right. A barricade joins only the identical
+block — its stripes slope toward the side traffic should pass, so a keep-left meeting a keep-right
+contradicts itself. A guardrail joins on the **rail**, so a run may change post material or pick up
+a second rail part way along and still read as one run. W-beam still refuses thrie: those are
+different sections, and a real transition between them is its own piece of hardware.
+
+`ICsmGuardrailRail` is how a block says what it presents. It asks what rail is at each **END**
+rather than what rail the block is, which exists entirely for the transition — see below.
+
+## Slopes, and settling onto the ground
+
+A run climbs rather than staircasing: `GuardrailSlope` is `flat` / `up` / `down`, read off the
+RIGHT-hand neighbour alone, which is enough for a whole run because each cell's right-hand end then
+lands on its neighbour's left-hand end all the way up.
+
+**The slope is chosen from where the rails actually ARE, not from block positions.** Guardrails are
+`ICsmRoadSurfaceAware` and settle onto whatever they stand on, so a cell on bare ground and one a
+block up on a snow layer are one block apart in Y and a couple of sixteenths apart in the world.
+Reading the block positions answers that with a whole block's ramp and dives the rail into the
+ground. `GuardrailSlope.forRise` takes a real height and picks whichever of the three is nearer.
+
+**Whole-block ramps only — this is a deliberate limit.** Finer ramps need a slope value per step,
+and SLOPE multiplies the whole block-state cross product: 1/8-block steps would take this family
+from 5,760 block states to 32,640. So a sub-block grade draws level and steps at each cell. The
+rail still SITS at each cell's own settled height, which is the part that matters.
+
+## The transition, and why the join test is mutual
+
+`w_beam_thrie_transition` is W-beam at one end and thrie at the other. That is the whole reason
+`ICsmGuardrailRail` asks per END: a block that is two different rails would otherwise match neither
+neighbour, and a run would stop dead at the very piece that exists to prevent it.
+
+Two guardrails join when **either accepts what the other presents** at the ends that meet. For a
+plain rail both clauses ask the same question, since it presents and accepts one section. Only a
+piece carrying two rails can answer yes on the second — which is exactly the transition, whose
+presented rails are fixed at its ends and do **not** swap when it is drawn mirrored.
+
+`presentsRailOnLeft` stays STRICT for that reason. It asks what the neighbour actually presents
+rather than what the two would tolerate; going through the mutual test there would answer yes
+whichever way round the run reads, and the mirror would never flip.
+
+## End treatments are chiral
+
+Both ends of a run carry the same facing — facing is the way the rail LOOKS, and the rail looks the
+same way along the whole run. So an end treatment is a mirror image of itself at the other end.
+`MIRRORED` is derived, not placed: the block finds the run and mirrors itself when the run lies to
+its RIGHT. With a run on both sides or on neither it stays unmirrored — a lone end has no hand to
+take, and one in the middle of a run is a mistake the player can see.
+
+The mirrored model is REFLECTED about x = 8, never rotated 180°. A rotation would flip z too and
+put the rail on the far side of the cell. A reflection reverses handedness, so the generators also
+negate the normals' x and reverse every face's winding; positions alone leave the model inside-out.
+
+`BlockGuardrailEnd` also reflects its bounding box, and sets `MIRRORED` false explicitly in its
+constructor — `PropertyBool`'s first allowed value is TRUE, so without that every end would default
+to its mirror image.
+
+## The crash cushion
+
+Laid the way a run is — a nose and as many bays as the site wants — because a real one is twenty to
+thirty feet long and a single block would read as a toy beside the rail it terminates.
+
+Joining is deliberately **one way**: `nose → bay → bay → any rail`. A bay accepts only
+`crash_cushion` on its left and anything but a nose on its right, which is what lets one cushion
+terminate all four rail families without a per-family backup, and what stops a run reading into the
+impact face from the wrong side.
+
+It is its own class rather than a `BlockGuardrail` subclass because a cushion has no post — and a
+state bit nothing draws is one somebody eventually toggles by accident. `ItemGuardrailTool` tests
+`instanceof BlockGuardrail`, so it passes over the cushion without needing to know about it.
+
+## Collision
+
+`GuardrailJoins.standTall` raises every guardrail, end and cushion to **1.5 blocks** of collision
+while the drawn and selectable box stays on the steel. A standing jump clears a block and a
+quarter and no rail here is drawn that tall, so a box stopping at the steel is a barrier you walk
+over. A vanilla fence solves it the same way and at the same height.
+
+It measures from the box's own FLOOR, not the cell's, so a run settled onto snow or a sloped road
+stands its full height above the ground the player is actually walking on.
+
+## Geometry
+
+`dev-env-utils/scripts/guardrail_geometry.py` holds every dimension shared between generators — rail
+profiles, the block-out, post, slope rise, the diagonal gap, the end-treatment mounting heights.
+Both the rails and the ends import it so they cannot disagree about where they meet. An end whose
+rail is two units off the run builds green, loads clean, and is wrong from one angle in game.
+
+`MOUNT_LIFT` raises the mounting heights of all four families at once. It is applied there rather
+than to one family so a run that changes rail part way along does not change height with it, and so
+the block-outs, posts, ends and transition follow without being told separately.
+
+A cell is one long and a diagonal step is √2, so a 45° run leaves `DIAGONAL_GAP` at every joint;
+the right-hand end of each connected block fills it. The filler is excluded from the inventory
+model on purpose — the inventory mesh is where the bounding boxes come from, and a 1.414-long
+filler would put the box a third of the way into the next cell.
+
+## Adding a rail family
+
+1. Add its profile and registry names to `guardrail_geometry.py`.
+2. Write or extend a generator against that contract; emit core / post / fill / end_left /
+   end_right pieces per slope, plus the inventory model.
+3. `python dev-env-utils/scripts/audit_obj_models.py <the new .obj files>` — 0 FAIL.
+4. Register in `CsmTabTrafficAccessories` with the bounding boxes the generator's tab fragment
+   emits, passing the rail-kind constant.
+5. Add it to `ItemGuardrailTool`'s ring if it has siblings.
+6. Lang in all four languages, then `validate_lang_translations.py`.
+7. `./gradlew build`, `check_module_assets.py`, then **check in game** — a facing, slope or mirror
+   bug compiles green and loads clean.
+
+## Traps
+
+- **A submodel's value in a Forge blockstate must be a full model OBJECT**, not the bare path
+  string. Forge parses that slot as a model definition; a string there fails the WHOLE blockstate
+  with `Not a JSON Object` and paints every state of the block purple, with only a log line to say
+  so.
+- **`refreshResources` (the MCMCP resource reload) is broken on this install** —
+  `IllegalArgumentException: MALFORMED` out of `ZipFile.getZipEntry`, from a mod jar in `run/mods`
+  with a non-UTF-8 entry name. The reload silently does nothing, so a model fix appears not to have
+  worked. Restart the client to test a blockstate change.
+- **Driving the tool's sneak gesture over MCMCP needs TWO MCP HTTP sessions.** One call blocks for
+  the whole key hold, so a single session serialises the hold and the click and the click lands
+  unsneaked — which silently reads as the plain gesture, not as a failure.
+- **Settle the geometry questions from directly overhead.** A steep ground-level view has misread
+  diagonal joins and post positions more than once.
