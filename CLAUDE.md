@@ -314,6 +314,9 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/GUARDRAIL_SYSTEM.md` -- Four rail families, their end treatments, the W-to-thrie transition and the crash cushion: why a run joins on the RAIL rather than on block identity, why the slope is read off where the rails actually are rather than off block positions, and why the end treatments are chiral
 - `assets/docs/PEDESTAL_POLE_SYSTEM.md` -- The pedestrian pedestal pole: one stackable block that decides base, cap or seamless joint per end from its neighbours, why the end properties are named in model space
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
+- `assets/docs/PERFORMANCE_AND_SECURITY.md` -- Where frame time and memory actually go (client frame time is
+  the whole story; the server tick is 0.4%), how to measure without fooling yourself, the rules render and
+  tick code follow, NBT short keys, and the conventions every network packet follows
 
 Agent progress/tracking docs are in `assets/docs/agent_progress/`.
 
