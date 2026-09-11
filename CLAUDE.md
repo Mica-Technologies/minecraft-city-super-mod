@@ -381,6 +381,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   recipe, or a changed display name or tab. `--ignore-class`, `--ignore-tab-index`,
   `--unordered-sounds` and `--unordered-hidden` waive the four differences the split legitimately
   causes
+- `check_reobf_refs.py` -- disassembles release jars and fails if they name a Minecraft member by its dev
+  (MCP) name where the previous release did not: the reobfuscation gap a dev client and a green build
+  both miss, and that crashed the first real launcher test of the module jars. Run it before tagging a release
 
 ### Render pass toggles (in game)
 
