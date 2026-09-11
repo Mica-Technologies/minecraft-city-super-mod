@@ -345,7 +345,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
       if (displayList != CsmDisplayListCache.NO_LIST) {
         GL11.glNewList(displayList, GL11.GL_COMPILE);
         renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
-            horizontal, zPushBack, worldSkyLight, worldBlockLight, viewAngle);
+            horizontal, zPushBack, worldSkyLight, worldBlockLight, viewAngle,
+            te.getMountColor());
         // Baked in here rather than drawn per frame. It is safe to sit in the list because it
         // draws geometry against the same WHITE_TEXTURE the static parts use and issues no
         // GlStateManager calls of its own -- the two conditions the dynamic sign attempt failed.
@@ -499,7 +500,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private void renderStaticParts(TrafficSignalSectionInfo[] sectionInfos,
       float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes,
       boolean horizontal, float zPushBack, int skyLight, int blockLight,
-      ViewAngleState viewAngle) {
+      ViewAngleState viewAngle, TrafficSignalBodyColor mountColor) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
@@ -571,6 +572,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
           1.0f, xOffset, yOffset, sectionSizes[i], zPushBack, skyLight, blockLight,
           louverTiltAdjustFor(viewAngle, i, yOffset));
     }
+    // The hubs PV sections are coupled through, in the gaps between their boxes. Baked with the
+    // body: they draw against the same white texture and change only with the head's data.
+    addPvCouplings(buffer, sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+        horizontal, zPushBack, mountColor, skyLight, blockLight);
     tessellator.draw();
   }
 
@@ -1549,6 +1554,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   private static float bodyRearAnchorZ(TrafficSignalSectionInfo[] sectionInfos,
       int[] sectionSizes) {
+    if (sectionInfos.length > 0 && allSectionsPv(sectionInfos)) {
+      // A head that is PV throughout bolts its brackets to the same hub line its sections are
+      // coupled through, so the stub sits directly over the couplings.
+      return TrafficSignalVertexData.pvCouplingZ(sectionSizes.length > 0 ? sectionSizes[0] : 12);
+    }
     float anchor = BODY_Z_CENTER;
     for (int i = 0; i < sectionInfos.length; i++) {
       if (sectionInfos[i].getBodyStyle() == TrafficSignalBodyStyle.PV) {
@@ -1559,6 +1569,136 @@ public class TileEntityTrafficSignalHeadRenderer extends
       }
     }
     return anchor;
+  }
+
+  private static boolean allSectionsPv(TrafficSignalSectionInfo[] sectionInfos) {
+    for (TrafficSignalSectionInfo info : sectionInfos) {
+      if (info.getBodyStyle() != TrafficSignalBodyStyle.PV) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // The hub a PV casting is joined through, for a 12-inch section: a square collar with a wider,
+  // thin flange where it meets a housing face. Between two sections the hub has a flange at each
+  // end and bridges the gap; on the outer face of an end section it is a boss the bracket bolts
+  // to, flange against the box and collar standing proud.
+  private static final float PV_HUB_COLLAR = 3.0f;
+  private static final float PV_HUB_FLANGE = 4.2f;
+  private static final float PV_HUB_FLANGE_THICKNESS = 0.35f;
+  private static final float PV_HUB_BOSS_HEIGHT = 1.0f;
+
+  /**
+   * Adds the coupling hubs of the head's PV sections: one bridging the gap between every pair
+   * of PV sections that sit one pitch apart along the stacking axis, and a boss on the outer
+   * face of a PV section that has nothing stacked beyond it. All at the boxes' mid-depth, in the
+   * mount hardware's colour. These are the joints the real castings are bolted together
+   * through, and what the bracket stub of an all-PV head lines up over.
+   */
+  private static void addPvCouplings(BufferBuilder buffer, TrafficSignalSectionInfo[] sectionInfos,
+      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes,
+      boolean horizontal, float zPushBack, TrafficSignalBodyColor color, int skyLight,
+      int blockLight) {
+    List<RenderHelper.Box> hubs = null;
+    for (int i = 0; i < sectionInfos.length; i++) {
+      if (sectionInfos[i].getBodyStyle() != TrafficSignalBodyStyle.PV) continue;
+      int size = sectionSizes[i];
+      float scale = size / 12.0f;
+      float boxHalf = TrafficSignalVertexData.pvBoxHalfExtent(size);
+      float axisCentre = horizontal
+          ? sectionXPositions[i] + 8.0f
+          : sectionYPositions[i] + 6.0f;
+      float crossCentre = horizontal
+          ? sectionYPositions[i] + 6.0f
+          : sectionXPositions[i] + 8.0f;
+      float z = TrafficSignalVertexData.pvCouplingZ(size) + zPushBack;
+
+      int above = neighbourAlong(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+          horizontal, i, +1);
+      int below = neighbourAlong(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+          horizontal, i, -1);
+      if (hubs == null) hubs = new ArrayList<>();
+
+      if (above >= 0) {
+        if (sectionInfos[above].getBodyStyle() == TrafficSignalBodyStyle.PV) {
+          // Bridge the gap to the PV section above: flange, collar, flange.
+          float aboveCentre = axisCentre + size;
+          addHub(hubs, horizontal, axisCentre + boxHalf, aboveCentre - boxHalf, crossCentre, z,
+              scale, true, true);
+        }
+      } else {
+        addHub(hubs, horizontal, axisCentre + boxHalf,
+            axisCentre + boxHalf + PV_HUB_BOSS_HEIGHT * scale, crossCentre, z, scale, true, false);
+      }
+      if (below < 0) {
+        addHub(hubs, horizontal, axisCentre - boxHalf - PV_HUB_BOSS_HEIGHT * scale,
+            axisCentre - boxHalf, crossCentre, z, scale, false, true);
+      }
+    }
+    if (hubs != null && !hubs.isEmpty()) {
+      RenderHelper.addBoxesToBufferLit(hubs, buffer,
+          color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0, skyLight, blockLight);
+    }
+  }
+
+  /**
+   * The index of the section exactly one pitch from section {@code i} along the stacking axis
+   * in the given direction and in line with it, or -1 if there is none.
+   */
+  private static int neighbourAlong(TrafficSignalSectionInfo[] sectionInfos,
+      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes,
+      boolean horizontal, int i, int direction) {
+    int size = sectionSizes[i];
+    for (int j = 0; j < sectionInfos.length; j++) {
+      if (j == i || sectionSizes[j] != size) continue;
+      float along = horizontal
+          ? sectionXPositions[j] - sectionXPositions[i]
+          : sectionYPositions[j] - sectionYPositions[i];
+      float across = horizontal
+          ? sectionYPositions[j] - sectionYPositions[i]
+          : sectionXPositions[j] - sectionXPositions[i];
+      if (Math.abs(along - direction * size) < 0.01f && Math.abs(across) < 0.01f) {
+        return j;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Emits one hub from {@code axisFrom} to {@code axisTo} along the stacking axis: a collar the
+   * whole way, and a flange at whichever ends meet a housing face.
+   */
+  private static void addHub(List<RenderHelper.Box> out, boolean horizontal, float axisFrom,
+      float axisTo, float crossCentre, float z, float scale, boolean flangeAtFrom,
+      boolean flangeAtTo) {
+    float collarHalf = PV_HUB_COLLAR / 2.0f * scale;
+    float flangeHalf = PV_HUB_FLANGE / 2.0f * scale;
+    float flangeThickness = PV_HUB_FLANGE_THICKNESS * scale;
+    float collarFrom = axisFrom + (flangeAtFrom ? flangeThickness : 0.0f);
+    float collarTo = axisTo - (flangeAtTo ? flangeThickness : 0.0f);
+    if (collarTo > collarFrom) {
+      out.add(hubBox(horizontal, collarFrom, collarTo, crossCentre, z, collarHalf));
+    }
+    if (flangeAtFrom) {
+      out.add(hubBox(horizontal, axisFrom, axisFrom + flangeThickness, crossCentre, z, flangeHalf));
+    }
+    if (flangeAtTo) {
+      out.add(hubBox(horizontal, axisTo - flangeThickness, axisTo, crossCentre, z, flangeHalf));
+    }
+  }
+
+  /** A box square in cross-section, spanning {@code from}..{@code to} along the stacking axis. */
+  private static RenderHelper.Box hubBox(boolean horizontal, float from, float to,
+      float crossCentre, float z, float half) {
+    if (horizontal) {
+      return new RenderHelper.Box(
+          new float[]{from, crossCentre - half, z - half},
+          new float[]{to, crossCentre + half, z + half});
+    }
+    return new RenderHelper.Box(
+        new float[]{crossCentre - half, from, z - half},
+        new float[]{crossCentre + half, to, z + half});
   }
 
   // --- Overhead hanger -------------------------------------------------------------------
