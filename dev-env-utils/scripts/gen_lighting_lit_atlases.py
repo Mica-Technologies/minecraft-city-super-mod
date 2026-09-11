@@ -117,6 +117,14 @@ OFF_SUFFIX = "_off"
 # Every one of those panels draws its dies in pure white, which is what makes this a list of one.
 WHITE_DIE = [(255, 255, 255)]
 
+#: The LED arrays want a harder dim than a flat diffuser, and it is a question of CONTRAST rather
+#: than of amount: a die taken from 255 to the default's 178 sits against a panel face that is
+#: already 220, so the dots stay about the value of the metal around them and the fixture barely
+#: changes. At ~133 the dies read clearly darker than their panel, which is what an unlit LED
+#: luminaire looks like -- a grid of dark dots on a light grey optic.
+LED_DIM = (0.52, 0.45)
+
+
 LENS = {
     # --- flat sheets, where the lit surface is a whole region ---------------------------------
     "troffers": {
@@ -153,39 +161,41 @@ LENS = {
     },
 
     # --- LED arrays: the panel, restricted to the dies ------------------------------------------
-    "ge_evolve_large": {"boxes": [(0, 0, 41, 30)], "colors": WHITE_DIE,
+    "ge_evolve_large": {"boxes": [(0, 0, 41, 30)], "colors": WHITE_DIE, "dim": LED_DIM,
                         "note": "the LED module's dies"},
-    "ge_evolve_small": {"boxes": [(0, 0, 31, 30)], "colors": WHITE_DIE,
+    "ge_evolve_small": {"boxes": [(0, 0, 31, 30)], "colors": WHITE_DIE, "dim": LED_DIM,
                         "note": "the LED module's dies"},
-    "ltgc1_v1": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE,
+    "ltgc1_v1": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE, "dim": LED_DIM,
                  "note": "the 8x8 LED array; the ribbed band below it is the heatsink"},
-    "ltgc1_v2": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE,
+    "ltgc1_v2": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE, "dim": LED_DIM,
                  "note": "the LED array; the ribbed band below it is the heatsink"},
     "ltgcm_v2": {"boxes": [(0, 0, 64, 63)],
                  "colors": [(255, 255, 255), (253, 252, 253), (250, 250, 250)],
-                 "note": "the two LED panels. This sheet shades its dies in three near-whites "
+                 "dim": LED_DIM,
+                     "note": "the two LED panels. This sheet shades its dies in three near-whites "
                          "rather than one, so all three are listed.",
     },
-    "ltgcj": {"boxes": [(0, 0, 38, 47)], "colors": WHITE_DIE, "note": "the LED array"},
-    "ltgcj_smartnode": {"boxes": [(0, 0, 38, 47)], "colors": WHITE_DIE,
+    "ltgcj": {"boxes": [(0, 0, 38, 47)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
+    "ltgcj_smartnode": {"boxes": [(0, 0, 38, 47)], "colors": WHITE_DIE, "dim": LED_DIM,
                         "note": "the LED array; the blue swatch is the smart node, not a lamp"},
-    "ltgcl": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE, "note": "the two LED arrays"},
-    "ltgcm": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE, "note": "the LED array"},
-    "ltgcm_smartnode": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE,
+    "ltgcl": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the two LED arrays"},
+    "ltgcm": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
+    "ltgcm_smartnode": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE, "dim": LED_DIM,
                         "note": "the LED array; the blue swatch is the smart node, not a lamp"},
-    "ae_autobahn_atb0": {"boxes": [(0, 0, 56, 30)], "colors": WHITE_DIE,
+    "ae_autobahn_atb0": {"boxes": [(0, 0, 56, 30)], "colors": WHITE_DIE, "dim": LED_DIM,
                          "note": "the five LED modules"},
-    "ae_autobahn_atb2": {"boxes": [(0, 0, 56, 53)], "colors": WHITE_DIE,
+    "ae_autobahn_atb2": {"boxes": [(0, 0, 56, 53)], "colors": WHITE_DIE, "dim": LED_DIM,
                          "note": "the four LED modules"},
-    "ci_navion": {"boxes": [(0, 0, 41, 31)], "colors": WHITE_DIE, "note": "the LED array"},
-    "ci_navion_alt": {"boxes": [(0, 0, 60, 31)], "colors": WHITE_DIE, "note": "the LED array"},
-    "cree_ledway": {"boxes": [(0, 0, 45, 31)], "colors": WHITE_DIE, "note": "the LED array"},
-    "cree_ledway_small": {"boxes": [(0, 0, 24, 31)], "colors": WHITE_DIE, "note": "the LED array"},
-    "cree_xsp": {"boxes": [(0, 0, 30, 31)], "colors": WHITE_DIE, "note": "the LED array"},
-    "ltec": {"boxes": [(0, 0, 56, 30)], "colors": WHITE_DIE, "note": "the LED array"},
-    "ltecdtd": {"boxes": [(0, 0, 26, 30)], "colors": WHITE_DIE, "note": "the LED array"},
+    "ci_navion": {"boxes": [(0, 0, 41, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
+    "ci_navion_alt": {"boxes": [(0, 0, 60, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
+    "cree_ledway": {"boxes": [(0, 0, 45, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
+    "cree_ledway_small": {"boxes": [(0, 0, 24, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
+    "cree_xsp": {"boxes": [(0, 0, 30, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
+    "ltec": {"boxes": [(0, 0, 56, 30)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
+    "ltecdtd": {"boxes": [(0, 0, 26, 30)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
     "solarmax_smx": {"boxes": [(0, 0, 44, 64)],
                      "colors": [(255, 255, 255), (254, 253, 247)],
+                     "dim": LED_DIM,
                      "note": "the LED dies and the lit band across the middle of the panel"},
 }
 
@@ -194,8 +204,9 @@ LENS = {
 #: levels from the decorative family's own lens_opal_off (176, 178, 176).
 DIM_DEFAULT = (0.70, 0.45)
 
-#: Per-atlas overrides. An unlit high-pressure sodium lamp is a grey ceramic tube, not a pale peach
-#: one, so the amber wants taking down further than a white diffuser does.
+#: Per-atlas overrides, for anything the shared default flatters badly. An unlit high-pressure
+#: sodium lamp is a grey ceramic tube, not a pale peach one, so the amber wants taking down further
+#: than a white diffuser does. A catalogue entry may also carry its own ``dim`` key, which wins.
 DIM_OVERRIDES = {
     "ge_hps_fixtures": (0.55, 0.30),
 }
@@ -388,7 +399,8 @@ def unlit_atlas(ref, spec):
     """The original with only the catalogued lamp pixels pulled down."""
     image = Image.open(resolve("textures", ref, ".png")).convert("RGBA")
     out = image.copy()
-    value_mul, sat_mul = DIM_OVERRIDES.get(ref.split("/")[-1], DIM_DEFAULT)
+    value_mul, sat_mul = spec.get("dim") or DIM_OVERRIDES.get(ref.split("/")[-1],
+                                                            DIM_DEFAULT)
     for (x, y) in lens_pixels(spec, image):
         out.putpixel((x, y), dim(image.getpixel((x, y)), value_mul, sat_mul))
     return out
