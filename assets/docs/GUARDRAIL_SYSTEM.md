@@ -170,9 +170,27 @@ profiles, the block-out, post, slope rise, the diagonal gap, the end-treatment m
 Both the rails and the ends import it so they cannot disagree about where they meet. An end whose
 rail is two units off the run builds green, loads clean, and is wrong from one angle in game.
 
-`MOUNT_LIFT` raises the mounting heights of all four families at once. It is applied there rather
-than to one family so a run that changes rail part way along does not change height with it, and so
-the block-outs, posts, ends and transition follow without being told separately.
+`GUARDRAIL_TOP_Y` is the top of every rail family and every post: the top of the cell (issue #192).
+It is set once, as the top, rather than as a lift applied to each family, so a run that changes
+rail part way along keeps its top line, and the block-outs, posts, ends and transition follow
+without being told separately. Every family's other heights are measured down from it. An upward
+face on the cell's top points out of the block, so standing flush with it fights nothing; what the
+flush top does need is the block-out tucked 0.2 under the rail (`BLOCKOUT_TUCK`), since on the end
+treatments the post bites into it and two top faces would otherwise share the plane. The impact
+head's rail stub stops at the head's face for the same reason, and the bullnose's object marker
+moved from the top of the tube to the post under the nose.
+
+The crash cushion is not raised. It is its own hardware, and its heights do not come from here.
+
+### Stacking
+
+With every top at the top of its cell, a guardrail placed on a guardrail continues its posts, so
+two cells of rail read as one taller barrier. The upper one takes the lower one's facing
+(`inheritsFacingFrom`), and it settles by exactly as much as the one it stands on
+(`getRoadSurfaceOffset`) — by the ordinary rule a surface-aware block below counts as nothing to
+settle onto, and a stack on a snow layer or a sloped road would open a gap at the joint. On a
+grade the lower cell's post reaches half a cell into the upper one, where the upper post also
+stands; the two are the same part in the same texture, so the overlap does not read.
 
 A cell is one long and a diagonal step is √2, so a 45° run leaves `DIAGONAL_GAP` at every joint;
 the right-hand end of each connected block fills it. The filler is excluded from the inventory

@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPostPassesThrough;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
+import com.micatechnologies.minecraft.csm.codeutils.RoadSurfaceHeight;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -176,10 +177,40 @@ public class BlockGuardrail extends AbstractBlockRoadSurfaceRotatableHZEight
   /**
    * {@inheritDoc}
    *
+   * <p>A guardrail stacked on a guardrail settles by exactly as much as the one it stands on.
+   * Every rail and post tops out at the top of its cell, so a stacked pair reads as one taller
+   * barrier — but only if the upper one follows the lower one down onto a snow layer or a sloped
+   * road. Left to the ordinary rule it would not settle at all, since a surface-aware block below
+   * counts as nothing to settle onto, and the stack would open a gap at the joint.</p>
+   */
+  @Override
+  public double getRoadSurfaceOffset(IBlockAccess world, BlockPos pos) {
+    BlockPos below = pos.down();
+    IBlockState belowState = world.getBlockState(below);
+    if (belowState.getBlock() instanceof BlockGuardrail) {
+      return ((BlockGuardrail) belowState.getBlock()).getRoadSurfaceOffset(world, below);
+    }
+    return RoadSurfaceHeight.offsetFor(world, pos);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Any guardrail rail on any other: a stacked pair is one barrier, whichever rail each carries,
+   * and should read along the same line.</p>
+   */
+  @Override
+  protected boolean inheritsFacingFrom(IBlockState below) {
+    return below.getBlock() instanceof BlockGuardrail;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
    * <p>Taller than the rail is drawn, which is the same thing a vanilla fence does and for the
-   * same reason: a barrier the player can hop over is not a barrier. A guardrail's rail tops out
-   * around three quarters of a block, well inside a standing jump, so the box carries on up past
-   * where anything is drawn.</p>
+   * same reason: a barrier the player can hop over is not a barrier. A guardrail tops out at the
+   * top of its cell, well inside a standing jump, so the box carries on up past where anything is
+   * drawn.</p>
    *
    * <p>Measured from the box's own FLOOR rather than from the cell's, so a run settled onto a snow
    * layer or a sloped road stands its full height above the ground the player is actually walking

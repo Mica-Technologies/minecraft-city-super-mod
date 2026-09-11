@@ -114,7 +114,7 @@ GLOVE_X0, GLOVE_X1, GLOVE_Y0, GLOVE_Y1 = geom.GLOVE_PANEL
 GLOVE_DEPTH = 7.20
 GLOVE_Z0 = geom.GLOVE_PANEL_Z
 GLOVE_Z1 = GLOVE_Z0 + GLOVE_DEPTH
-GLOVE_STUB = 4.60              # how far the rail runs before it disappears into the head
+GLOVE_STUB = GLOVE_X0          # the rail stops at the head's face; see GLOVE_PANEL's comment
 GLOVE_LEG_HALF = 0.95
 GLOVE_LEGS = (4.60, 11.40)
 GLOVE_LEG_Z = (2.60, 6.90)
@@ -124,7 +124,10 @@ GLOVE_LEG_Z = (2.60, 6.90)
 # it cannot steal a click from the block next door.
 TERM_LEN = 30.00
 TERM_BACK = 2.80
-TERM_DROP = 4.80
+# Where the rail's bottom edge comes to rest at the ramp. Fixed, with the drop derived from it, so
+# raising the run (#192) steepens the run-out instead of lifting it off the ramp it lands on.
+TERM_END_BOTTOM_Y = 2.80
+TERM_DROP = geom.END_RAIL_BOTTOM_Y - TERM_END_BOTTOM_Y
 TERM_DROP_POW = 2.20
 TERM_POSTS = (0.10, 0.30)
 TERM_RAMP_X = (12.00, 32.00)
