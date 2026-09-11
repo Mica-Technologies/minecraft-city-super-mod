@@ -35,6 +35,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorVantageVector;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficSignalController;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSensorZoneTool;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalVisibilityProgrammer;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalConfigurationTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalHeadConfigTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
@@ -229,5 +230,7 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // SignalConfigurationTool
     initTabItem(ItemSignalHeadConfigTool.class,
         fmlPreInitializationEvent); // SignalHeadConfigTool
+    initTabItem(ItemSignalVisibilityProgrammer.class,
+        fmlPreInitializationEvent); // SignalVisibilityProgrammer
   }
 }

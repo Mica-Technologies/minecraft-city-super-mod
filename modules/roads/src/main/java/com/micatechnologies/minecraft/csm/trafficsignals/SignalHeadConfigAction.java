@@ -18,5 +18,7 @@ public enum SignalHeadConfigAction {
   CYCLE_MOUNT_TYPE,
   CYCLE_MOUNT_COLOR,
   // Appended (not inserted) so existing button-id/packet ordinals stay stable.
-  CYCLE_BODY_STYLE
+  CYCLE_BODY_STYLE,
+  /** Forgets the programmed visibility area; programming one is the visibility tool's job. */
+  CLEAR_VISIBILITY_AREA
 }

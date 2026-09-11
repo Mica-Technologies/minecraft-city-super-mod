@@ -38,6 +38,18 @@ public final class CsmRenderToggles {
   /** Skip the traffic signal head's mount/bracket pass. Measurement only -- mounts vanish. */
   public static boolean skipSignalMount = false;
 
+  /**
+   * Skip the per-frame visor interior wash of louvered and programmable-visibility sections. Only
+   * heads with such a section draw it at all; skipping leaves their lit interiors black.
+   */
+  public static boolean skipSignalVisibilityWash = false;
+
+  /**
+   * Skip the per-frame lens mask of louvered and programmable-visibility sections, so their lenses
+   * look fully lit from every angle. Only heads with such a section draw it at all.
+   */
+  public static boolean skipSignalVisibilityMask = false;
+
   /** Skip the traffic signal head's cached body/door/visor display list. Measurement only. */
   public static boolean skipSignalBody = false;
 
@@ -135,6 +147,8 @@ public final class CsmRenderToggles {
     values.put("signalVisorInteriors", skipSignalVisorInteriors);
     values.put("signalMount", skipSignalMount);
     values.put("signalBody", skipSignalBody);
+    values.put("signalVisibilityWash", skipSignalVisibilityWash);
+    values.put("signalVisibilityMask", skipSignalVisibilityMask);
     values.put("visorInteriorsPerFrame", visorInteriorsPerFrame);
     values.put("bulbsPerFrame", bulbsPerFrame);
     values.put("crosswalkArms", skipCrosswalkArms);
@@ -172,6 +186,10 @@ public final class CsmRenderToggles {
       skipSignalMount = skipped;
     } else if ("signalBody".equalsIgnoreCase(name)) {
       skipSignalBody = skipped;
+    } else if ("signalVisibilityWash".equalsIgnoreCase(name)) {
+      skipSignalVisibilityWash = skipped;
+    } else if ("signalVisibilityMask".equalsIgnoreCase(name)) {
+      skipSignalVisibilityMask = skipped;
     } else if ("visorInteriorsPerFrame".equalsIgnoreCase(name)) {
       visorInteriorsPerFrame = skipped;
     } else if ("bulbsPerFrame".equalsIgnoreCase(name)) {
@@ -218,6 +236,8 @@ public final class CsmRenderToggles {
     skipSignalVisorInteriors = false;
     skipSignalMount = false;
     skipSignalBody = false;
+    skipSignalVisibilityWash = false;
+    skipSignalVisibilityMask = false;
     visorInteriorsPerFrame = false;
     bulbsPerFrame = false;
     skipCrosswalkArms = false;

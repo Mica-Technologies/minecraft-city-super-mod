@@ -1365,3 +1365,64 @@ real visor construction. `addBoxesInnerFacesToBuffer*` overlay only the inner fa
 fullbright for the lit reflected-light effect. The `addon` body color `YELLOW` ships as
 `(0.957, 0.667, 0.0)` in `TrafficSignalBodyColor` (a traffic-yellow tuned toward RAL 1023;
 earlier iterations used `(0.969, 0.710, 0.0)` and `(0.996, 0.749, 0.008)`).
+
+### Louvered and programmable visibility visors
+
+Three visor types exist to *not* be seen from the wrong place: vertical louvers hide the lens
+from anyone off to the side, horizontal louvers hide it from anyone outside a band of elevation
+(the far approach, the adjacent intersection), and the **Programmable Visibility** visor (3M /
+McCain "PV") is masked so the lens is lit only from a patch of road. At a sixteenth scale the
+slat geometry cannot do this on its own, so the renderer works out, per section and per frame,
+how visible the lens is from the viewer's eye — a factor from 0 to 1 — and applies it to the
+lit-visor wash and to the lens itself.
+
+**The gate.** Every bit of this is behind one null check in
+`TileEntityTrafficSignalHeadRenderer.render()`: `computeViewAngleState` returns `null` for a
+head with no view-angle-sensitive section (`TrafficSignalVisorType.isViewAngleSensitive()`),
+and every consumer then takes exactly the path it always took — same display list key, same
+baked passes, no extra draws. Only heads that actually use louvers or PV pay for them.
+
+**The maths** lives in `logic/SignalVisibility` (pure Java, unit tested; every tunable is a
+named constant there) and the programmed area in `logic/SignalVisibilityArea`:
+
+* Frames: the head's rotation is the angle `glRotatef(rot, 0, 1, 0)` gets — facing *plus* body
+  tilt — so a head turned by its tilt setting carries its louvers with it. The model faces −Z;
+  azimuth is positive to the head's right, elevation positive above the lens. Each section's
+  lens is found by running its model-space centre through the same transform the GL stack
+  applies; the eye is the render view entity's position plus eye height.
+* Vertical louvers: full within ±8° of azimuth, gone by ±20°.
+* Horizontal louvers: full inside an elevation band, fading over 5° outside it. Unprogrammed,
+  the band is what the modelled slats pass geometrically (slat angle ± atan(gap/depth)), so
+  existing worlds look as they did. Programmed, the band runs from the eye of a driver at the
+  area's farthest vertex to one at its nearest, padded 2°, and the slats are re-aimed at the
+  band's centre (static geometry: it changes only when the area is reprogrammed, through the
+  dirty flag).
+* Programmable: the eye is projected through the lens onto the area's eye plane (road + 1.6);
+  inside the polygon is lit, then a 9° fade past the edge as seen from the lens, then dark apart
+  from a residual leak (25% at the lens, gone by 8 blocks) for someone standing under the head.
+  An unprogrammed PV head is unmasked, like one fresh from the factory.
+* Night floor: after dark the wash of any lit angle-sensitive section is never below 30% (scaled
+  by darkness), because a lit signal spills light round its visor and that is visible from the
+  side even when the lens is masked. The lens mask ignores the floor.
+
+**How the factor is applied.** For angle-sensitive lit sections the body list bakes the visor
+interior *black* and the wash is drawn per frame at fullbright × factor (the baked interior
+pass skips those sections). The lens mask is the section's *unlit* lens texture drawn 0.05
+units in front of the lit one with alpha `1 − factor`, so a masked lens looks unlit rather than
+black. PV sections go further: their lens is always drawn per frame from `atlas_pv.png` — the
+light atlas with every tile smoothed by `dev-env-utils/scripts/gen_pv_lens_atlas.py` (an
+edge-preserving filter: the LED dot texture goes, legends and the lens rim stay crisp, and
+nothing is pushed past the disc's alpha, which is what leaked past the visor the first time) —
+with the LED bulb style forced, since the optical system is built round the LED array. Two
+`/csm renderpass` toggles, `signalVisibilityWash` and `signalVisibilityMask`, turn the passes
+off for A/B work.
+
+**Programming an area.** One area per head (`TileEntityTrafficSignalHead.getVisibilityArea`,
+NBT key `vA`, an int array of block triples) serves both the PV mask and the horizontal louver
+aim. The **Signal Visibility Programmer** item: right-click the head, right-click up to eight
+road blocks in order round the area (two make a rectangle), then right-click the head again to
+apply (sneak + right-click anywhere also applies); sneak + right-click the head clears it. While
+the programmer is held, every head with an area draws its polygon on the road with a post at each
+vertex and a line from the head to the polygon's centre. The head config GUI shows the area's
+point count and clears it on click; the appearance clipboard does not copy it, since an area is
+a place rather than a look.

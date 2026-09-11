@@ -1,0 +1,32 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_roads"
+    }
+  ],
+  "pattern": [
+    " O ",
+    "SCS",
+    " W "
+  ],
+  "key": {
+    "O": {
+      "item": "csm:part_optical_sensor"
+    },
+    "S": {
+      "item": "csm:part_sheet_metal"
+    },
+    "C": {
+      "item": "csm:part_control_board"
+    },
+    "W": {
+      "item": "csm:part_wiring_harness"
+    }
+  },
+  "result": {
+    "item": "csm:signalvisibilityprogrammer",
+    "count": 1
+  }
+}
