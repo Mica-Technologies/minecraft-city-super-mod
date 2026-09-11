@@ -405,6 +405,13 @@ public class BlockItemIntegrityTool {
               }
             }
 
+            // A comment or a blank line is not an entry. A section header such as
+            // "# --- staged traffic signs ---" was being reported as an unused key.
+            String trimmedLine = line.trim();
+            if (trimmedLine.isEmpty() || trimmedLine.startsWith("#") || !trimmedLine.contains("=")) {
+              continue;
+            }
+
             // Check if for meta
             if (unused) {
               for (String metaLang : knownMetaLangs) {
@@ -946,11 +953,11 @@ public class BlockItemIntegrityTool {
   }
 
   public static void checkAndLogMetaText(String fileContents) {
-    // Regular expression pattern to match I18n.format("...") calls.
-    // It accounts for any characters (including new lines and spaces) between 'I18n.format(' and
-    // the next ')'
-    // and captures the string literal argument inside the parentheses.
-    String regex = "I18n\\.format\\(\\s*\"([^\"]*)\"\\s*\\)";
+    // The KEY is the FIRST string argument of an I18n.format call, and it is not necessarily the
+    // only one: a formatted string takes arguments after it, as
+    // I18n.format("csm.signalcontroller.timing.green", seconds). Insisting on a closing paren
+    // straight after the literal missed every formatted key and reported all of them as unused.
+    String regex = "I18n\\.format\\(\\s*\"([^\"]*)\"";
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(fileContents);
 
