@@ -21,6 +21,7 @@
         "transform": {
           "gui": {
             "rotation": [ 30, 225, 0 ],
+            "translation": [ -0.4581, 0.2706, 0 ],
             "scale": 0.62
           },
           "fixed": {
