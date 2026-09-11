@@ -726,11 +726,14 @@ public class TrafficSignalVertexData {
    * off in plan view. Shares the door frame plane and hinge hardware with the standard housing;
    * doors, visors, bulbs, and mounts are untouched.
    */
+  /** Depth of the bubbled housing at its belly, behind the door plane, for a 12-inch section. */
+  public static final float BUBBLED_BELLY_DEPTH = 7.6f;
+
   private static List<Box> buildBubbledBody() {
     final float faceZ = 11.0f;       // door frame plane; nothing renders in front of it
     final float half = 6.0f;         // face half-extent (12x12 section) — never exceeded
     final float edgeDepth = 1.6f;    // depth remaining at the seam flange (top/bottom edges)
-    final float bellyDepth = 7.6f;   // depth at the section's belly (the bubble apex)
+    final float bellyDepth = BUBBLED_BELLY_DEPTH; // depth at the belly (the bubble apex)
     // Half-band edges outward from the section centerline (y=6); mirrored below center.
     final float[] bandEdges = {0.0f, 1.0f, 2.4f, 3.8f, 4.8f, 5.6f, 6.0f};
     // Rear taper steps per band: {fraction of the band's depth, x half-extent} — the lobe
@@ -993,6 +996,30 @@ public class TrafficSignalVertexData {
       return BODY_FACE_Z + PV_BODY_DEPTH * (sectionSize / 12.0f);
     }
     return 16.0f;
+  }
+
+  /**
+   * The deepest point of a section's housing geometry, in model z, whatever it is used for: the
+   * standard housing's back face, the bubbled dome's belly, the PV box's rear. This is what says
+   * whether a housing reaches into the block behind the head, which a rear mount has to know to
+   * aim for a pole that can actually stand there.
+   *
+   * @param style       the section's housing style
+   * @param sectionSize the section size in inches
+   *
+   * @return the housing's maximum z
+   */
+  public static float bodyMaxZ(TrafficSignalBodyStyle style, int sectionSize) {
+    float scale = sectionSize / 12.0f;
+    switch (style) {
+      case BUBBLED:
+        return BODY_FACE_Z + BUBBLED_BELLY_DEPTH * scale;
+      case PV:
+        return BODY_FACE_Z + PV_BODY_DEPTH * scale;
+      case STANDARD:
+      default:
+        return 16.0f;
+    }
   }
 
   /** Picks the 12-, 8- or 4-inch variant of a visor for the given section size. */

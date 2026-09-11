@@ -1616,6 +1616,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
     return anchor;
   }
 
+  /** Whether any section's housing geometry extends past the block's back face at z = 16. */
+  private static boolean housingEntersBlockBehind(TrafficSignalSectionInfo[] sectionInfos,
+      int[] sectionSizes) {
+    for (int i = 0; i < sectionInfos.length; i++) {
+      int size = i < sectionSizes.length ? sectionSizes[i] : 12;
+      if (TrafficSignalVertexData.bodyMaxZ(sectionInfos[i].getBodyStyle(), size) > 16.01f) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private static boolean allSectionsPv(TrafficSignalSectionInfo[] sectionInfos) {
     for (TrafficSignalSectionInfo info : sectionInfos) {
       if (info.getBodyStyle() != TrafficSignalBodyStyle.PV) {
@@ -1852,12 +1864,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Collect bracket specs so we can (a) batch all stub + elbow boxes into one draw, and
     // (b) issue one additional draw per bracket with a glRotatef that tilts just the arm.
     List<BracketSpec> brackets = new ArrayList<>();
+    // A housing that reaches past the block's back face (the PV box, the bubbled dome's belly)
+    // occupies the block behind the head, so the pole a rear mount reaches for stands two blocks
+    // back, not one. Only the rear leg cares; side and overhead poles are beside or above the
+    // head where the housing's depth changes nothing.
+    float rearReachBlocks = housingEntersBlockBehind(styles, sectionSizes) ? 2.0f : 1.0f;
+
     if (horizontal) {
-      if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg, mountTiltAngle, bodyRearAnchorZ, highInset));
-      if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg, mountTiltAngle, bodyRearAnchorZ, lowInset));
+      if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg, mountTiltAngle, bodyRearAnchorZ, highInset, rearReachBlocks));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg, mountTiltAngle, bodyRearAnchorZ, lowInset, rearReachBlocks));
     } else {
-      if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg, mountTiltAngle, bodyRearAnchorZ, highInset));
-      if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg, mountTiltAngle, bodyRearAnchorZ, lowInset));
+      if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg, mountTiltAngle, bodyRearAnchorZ, highInset, rearReachBlocks));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg, mountTiltAngle, bodyRearAnchorZ, lowInset, rearReachBlocks));
     }
 
     if (brackets.isEmpty()) return;
@@ -2005,10 +2023,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
      * @param stubInset how far the stub reaches back INTO the housing past its nominal edge, so
      *                  it meets a housing whose rear falls away at the seam (the bubbled style)
      *                  instead of starting in the air behind it. Zero for a flat-topped housing.
+     * @param rearReachBlocks how many blocks behind the head the pole of a REAR mount stands:
+     *                  one, or two when a PV housing occupies the first block behind.
      */
     BracketSpec(float bodyCenterX, float bodyCenterY, boolean horizontalSignal,
         boolean isHighEnd, PoleLeg poleLeg, float tiltAngleDeg, float bodyRearAnchorZ,
-        float stubInset) {
+        float stubInset, float rearReachBlocks) {
       this.stubSign = isHighEnd ? 1f : -1f;
       if (horizontalSignal) {
         this.crossAxisIdx1 = 1;  // Y
@@ -2069,7 +2089,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
           : (tubeAxisIdx == 1) ? BLOCK_CENTRE + tubeSign * 16f
           : BLOCK_CENTRE;
       float targetZ = (stubAxisIdx == 2) ? elbowZ
-          : (tubeAxisIdx == 2) ? BLOCK_CENTRE + tubeSign * 16f
+          : (tubeAxisIdx == 2) ? BLOCK_CENTRE + tubeSign * 16f * rearReachBlocks
           : BLOCK_CENTRE;
 
       // Tilt compensation. The signal body tilt rotates the whole local frame around Y
