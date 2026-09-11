@@ -448,6 +448,24 @@ list then samples whatever the block atlas holds at the white pixel's UV.
 `/csm renderpass skip spanWireCable` removes the whole pass; `spanWireCablePerFrame` draws it
 without the display list, for A/B measurement inside one session.
 
+### What it costs
+
+Measured on a deliberate stress scene: three 64-block spans carrying 189 attachments, all in frame
+at once, with the time, weather and daylight cycle pinned (a light change invalidates every display
+list) and the frame cap lifted, because a figure taken at the cap means nothing.
+
+| State | Frame time | Cable pass costs |
+|---|---|---|
+| Pass skipped | 1.56 ms | — |
+| Baked (display list) | 1.92 ms | **0.36 ms** |
+| Per frame (list bypassed) | 3.97 ms | **2.41 ms** |
+
+The display list cuts the pass's cost by 85%: 1.9 us per visible attachment baked, against
+12.8 us drawn per frame. The baked leg is noisy (roughly 15% spread, GC-driven) and the per-frame
+leg is not, so a *small* baked delta is not measurable this way; this conclusion is safe only
+because the two legs do not overlap at all. A real intersection carries four to eight attachments,
+which puts the pass around 0.015 ms. `/csm displaylists` reports one compiled list per attachment.
+
 ## Backplates follow a risen signal
 
 A signal that rises to meet a cable used to leave its backplate behind, stranded at the block grid.
@@ -590,6 +608,31 @@ treatment**: a property-map variant may be `{}`, but a combined-key one may not.
 combined-key variant by peeking its first sub-entry, so an empty one throws at model load and takes
 the whole blockstate down with it -- those keep an explicit `model` plus their `x`/`y`.
 
+## Considered and not built
+
+**The tether is not pinned to the bottom of each signal.** It is strung anchor to anchor like the
+messenger. Pinning it would mean the span wire package knowing where each payload's bottom is,
+which is the dependency on the signal package that `ISpanWireHangable` exists to avoid, and it
+would have to cope with heads of different heights on one span. Clearance is measured from the
+deepest payload instead, and the ties reach down to each payload's actual underside.
+
+**No anti-chafe loop over the clamp.** Real installs route one, but the conductor coil occupies
+exactly the spot it would, and an arc on top of the coil reads as clutter at any distance a span
+is viewed from. Held back on purpose, not forgotten.
+
+**Cluster heads stay blocks.** Real clusters hang heads around one point facing several ways, and
+the only arrangement that matches the photographs exactly is heads drawn by the mount at sub-block
+positions. That was rejected: heads would stop being blocks and lose their controller wiring,
+hitboxes and per-head configuration. What shipped is a line along the wire with every head facing
+freely and the bracket trimmed to the columns that hold something. A plus shape around the drop,
+or a 2x2 under the mount, would keep heads as blocks and are the options if a tighter cluster is
+ever wanted.
+
+**The old per-block wire blocks are not reused.** `metalwirecenter`, `metalwirecentertop`,
+`metalwireoffset` and `metalwireoffsettop` are straight tubes a block long, with no sag and no
+linking. The tether is drawn by the same renderer as the messenger, so it needs none of them.
+They stay registered for decorative use.
+
 ## Deliberately not carried over from Immersive Engineering
 
 The cable is **purely visual**: no collision, no damage, no energy, no network semantics. All
@@ -604,3 +647,8 @@ crashing: the solver's endpoints and arc length, its stability across six orders
 slack, the sag ratio holding at every span length, the NBT round trip including negative
 coordinates, the tether's sag ratio and minimum clearance, and that a sideways offset moves the
 whole span without moving anything along it.
+
+**Building a test scene in game:** MCMCP's `server_set_block` bypasses the block-place event, so a
+mount placed that way does not join a span even when it sits right under the cable -- its state
+reports `linked=false`. Re-string the span with the tool afterwards and it picks the mounts up; the
+tool's "N hangers" message is the confirmation.
