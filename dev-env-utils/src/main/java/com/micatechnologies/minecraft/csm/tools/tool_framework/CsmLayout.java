@@ -85,7 +85,11 @@ public class CsmLayout
     private static final Pattern TAB_CLASS_RE
             = Pattern.compile("initTab(Block|Item)\\(\\s*([\\w.]+)\\.class");
     private static final Pattern TAB_CTOR_RE
-            = Pattern.compile("initTab(Block|Item)\\(\\s*new\\s+([\\w.]+)\\s*\\(\\s*(?:\"([^\"]+)\")?");
+            = Pattern.compile("initTab(Block|Item)\\(\\s*new\\s+([\\w.]+)\\s*\\(\\s*"
+                              + "(?:\"([^\"]+)\"|(\\w+)\\.(\\w+))?");
+    /** {@code public static final String NAME = "value";} in a constant holder such as CsmParts. */
+    private static final Pattern STRING_CONST_RE = Pattern.compile(
+            "public\\s+static\\s+final\\s+String\\s+(\\w+)\\s*=\\s*\"([^\"]+)\"");
     private static final Pattern TAB_CONST_RE
             = Pattern.compile("initTab(Block|Item)\\(\\s*(\\w+)\\.(\\w+)\\s*\\)");
     private static final Pattern TAB_CLASS_IF_LOADED_RE
@@ -998,6 +1002,11 @@ public class CsmLayout
                 boolean item = isItem( byCtor.group( 1 ) );
                 String qualified = byCtor.group( 2 );
                 String explicit = byCtor.group( 3 );
+                if ( explicit == null && byCtor.group( 4 ) != null ) {
+                    // The name is a constant, not a literal: the crafting parts are all registered
+                    // as new ItemCraftingPart(CsmParts.SHEET_METAL, ...).
+                    explicit = stringConstant( byCtor.group( 4 ), byCtor.group( 5 ) );
+                }
                 if ( explicit != null ) {
                     String simple = qualified.substring( qualified.lastIndexOf( '.' ) + 1 );
                     found.add( new Registration( explicit, simple, module, sources.get( simple ),
@@ -1037,6 +1046,31 @@ public class CsmLayout
     private static boolean isItem( String kindGroup )
     {
         return "Item".equals( kindGroup );
+    }
+
+    /**
+     * Resolves {@code Holder.CONSTANT} to the string it is declared as, or null.
+     *
+     * @param holderName   the holder class's simple name
+     * @param constantName the constant's name
+     *
+     * @return the declared string, or null if either cannot be resolved
+     *
+     * @since 1.1
+     */
+    private String stringConstant( String holderName, String constantName )
+    {
+        SourceClass holder = classes().get( holderName );
+        if ( holder == null || holder.file == null ) {
+            return null;
+        }
+        Matcher match = STRING_CONST_RE.matcher( normalize( readFileQuietly( holder.file ) ) );
+        while ( match.find() ) {
+            if ( match.group( 1 ).equals( constantName ) ) {
+                return match.group( 2 );
+            }
+        }
+        return null;
     }
 
     /**
