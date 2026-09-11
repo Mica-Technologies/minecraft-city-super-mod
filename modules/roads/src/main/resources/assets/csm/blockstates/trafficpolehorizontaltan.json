@@ -12,6 +12,14 @@
     "inventory": [
       {}
     ],
+    "extenddown": {
+      "false": {
+        "submodel": {
+          "extension": null
+        }
+      },
+      "true": {}
+    },
     "facing": {
       "north": {},
       "east": {
@@ -24,10 +32,44 @@
         "y": 270
       },
       "up": {
-        "x": 270
+        "x": 270,
+        "submodel": {
+          "extension": {
+            "model": "csm:trafficaccessories/shared_models/small",
+            "textures": {
+              "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            },
+            "transform": {
+              "translation": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            }
+          }
+        }
       },
       "down": {
-        "x": 90
+        "x": 90,
+        "submodel": {
+          "extension": {
+            "model": "csm:trafficaccessories/shared_models/small",
+            "textures": {
+              "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            },
+            "transform": {
+              "translation": [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            }
+          }
+        }
       }
     },
     "mounteast": {

@@ -86,6 +86,25 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
   public static final PropertyBool MOUNT_DOWN = PropertyBool.create("mountdown");
 
   /**
+   * Whether a vertical pole draws one more block of itself reaching down through the block under
+   * it, to the ground.
+   *
+   * <p>Set when the pole stands on an {@link ICsmPostPassesThrough} block — a guardrail — which
+   * stops short of the top of its cell. Without it the pole starts at the top of that cell and
+   * hovers a block above the ground every other pole stands on. Derived in
+   * {@link #getActualState}, never stored.</p>
+   *
+   * <p>Only the plain vertical poles carry it; a subclass that builds its own state container
+   * leaves it out, and {@link #getActualState} only sets it where it exists. Named to sort
+   * before {@code facing}: the blockstate supplies the extension from the two vertical facing
+   * variants, because which way along the pole is DOWN depends on the facing, and a
+   * {@code null} submodel from this property is what switches it off.</p>
+   *
+   * @since 2026.9
+   */
+  public static final PropertyBool EXTEND_DOWN = PropertyBool.create("extenddown");
+
+  /**
    * The list of global ignore blocks. Matched by assignability, so an entry covers its subclasses
    * as well.
    *
@@ -226,7 +245,8 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN);
+    return new BlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN,
+        EXTEND_DOWN);
   }
 
   /**
@@ -276,8 +296,17 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
         ignoreBlock);
 
     // Update the block state with the presence of blocks in each direction
-    return state.withProperty(MOUNT_EAST, isBlockToEast).withProperty(MOUNT_WEST, isBlockToWest)
+    IBlockState actual = state.withProperty(MOUNT_EAST, isBlockToEast)
+        .withProperty(MOUNT_WEST, isBlockToWest)
         .withProperty(MOUNT_UP, isBlockAbove).withProperty(MOUNT_DOWN, isBlockBelow);
+    if (actual.getPropertyKeys().contains(EXTEND_DOWN)) {
+      // Only a pole standing upright reaches down: lying on its side, nothing under it is
+      // something it would stand on.
+      boolean upright = facing == EnumFacing.UP || facing == EnumFacing.DOWN;
+      actual = actual.withProperty(EXTEND_DOWN, upright
+          && worldIn.getBlockState(pos.down()).getBlock() instanceof ICsmPostPassesThrough);
+    }
+    return actual;
   }
 
   /**

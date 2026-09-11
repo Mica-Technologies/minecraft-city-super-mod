@@ -166,17 +166,34 @@ public abstract class AbstractBlockRotatableHZEight extends AbstractBlock {
   @Nonnull
   public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
       float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-    // Check if the block below is the same type and has a FACING property
+    // Stacked on the same kind of block, take its facing, so the two read as one assembly
     IBlockState belowState = worldIn.getBlockState(pos.down());
-    if (belowState.getBlock() instanceof AbstractBlockRotatableHZEight && belowState.getProperties()
-        .containsKey(FACING)) {
-      // If so, use the same direction
+    if (belowState.getProperties().containsKey(FACING) && inheritsFacingFrom(belowState)) {
       return this.getDefaultState().withProperty(FACING, belowState.getValue(FACING));
     } else {
       // Otherwise, determine the direction based on placer's orientation
       DirectionEight direction = getDirectionFromPlacer(placer);
       return this.getDefaultState().withProperty(FACING, direction);
     }
+  }
+
+  /**
+   * Whether this block, placed on top of {@code below}, takes its facing instead of the placer's.
+   *
+   * <p>This is for STACKING like on like — a sign on the post under it — where the two are one
+   * assembly and turning the upper one by hand to match would be a chore. It used to answer yes
+   * for any eight-way block at all, so a sign put up on a guardrail silently turned to face the
+   * way the rail does. The default is now the same class only, and a family that stacks across
+   * classes widens it.</p>
+   *
+   * @param below the state of the block directly below, which carries {@link #FACING}
+   *
+   * @return true to copy the facing of {@code below}
+   *
+   * @since 2026.9
+   */
+  protected boolean inheritsFacingFrom(IBlockState below) {
+    return below.getBlock().getClass() == getClass();
   }
 
   /**

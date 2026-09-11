@@ -304,8 +304,12 @@ Values 0-7 for 8 directions. Uses full meta range -- no room for additional prop
 
 ### Special: Stacking Behavior
 
-When placed on top of another block of the same type, inherits the lower block's facing
-direction. Otherwise, calculates 8-direction from player yaw in 22.5-degree increments.
+When placed on top of a block that `inheritsFacingFrom` accepts, inherits the lower block's
+facing direction. Otherwise, calculates 8-direction from player yaw in 22.5-degree increments.
+
+The default accepts the same class only; `AbstractBlockSign` widens it to any sign block, so a
+sign stacks onto its post. It used to accept any eight-way block at all, which turned a sign
+placed on a guardrail to face the way the rail does.
 
 ## AbstractPoweredBlockRotatableNSEWUD (6-Dir + Redstone)
 

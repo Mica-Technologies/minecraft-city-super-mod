@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRoadSurfaceRotatableHZEight;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmPostPassesThrough;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,7 +44,8 @@ import net.minecraft.world.IBlockAccess;
  * @since 2026.9
  */
 public class BlockCrashCushion extends AbstractBlockRoadSurfaceRotatableHZEight
-    implements ICsmGuardrailRail, ICsmNoSnowAccumulation, ICsmTrafficPoleIgnored {
+    implements ICsmGuardrailRail, ICsmNoSnowAccumulation, ICsmTrafficPoleIgnored,
+    ICsmPostPassesThrough {
 
   /** The section a cushion presents to its own kind, at both ends of a bay. */
   public static final String CUSHION = "crash_cushion";
