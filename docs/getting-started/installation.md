@@ -7,6 +7,7 @@
 | **Minecraft** | 1.12.2 |
 | **Mod loader** | [Forge for 1.12.2](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html) |
 | **Java** | Whatever your Forge 1.12.2 profile already uses (Java 8) |
+| **Memory** | At least **2 GB** for the game client with every module installed. At 1.5 GB it runs out of memory while loading block models, before the title screen. Launchers often default lower: raise it with `-Xmx2G` or more in the profile's JVM arguments |
 
 ## The mod comes in pieces
 
