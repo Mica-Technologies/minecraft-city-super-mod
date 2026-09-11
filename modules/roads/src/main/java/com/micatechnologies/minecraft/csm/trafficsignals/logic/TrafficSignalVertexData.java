@@ -797,6 +797,31 @@ public class TrafficSignalVertexData {
   public static final float PV_BODY_REAR_Z = BODY_FACE_Z + PV_BODY_DEPTH;
 
   /**
+   * Where the coupling hubs between PV sections sit in depth, and where the mounts of an all-PV
+   * head bolt on: the middle of the box's depth, which is where the real housings join through
+   * their top and bottom and where the bracket bolts to the same hub.
+   *
+   * @param sectionSize the section size in inches
+   *
+   * @return the hub's centre z in model units
+   */
+  public static float pvCouplingZ(int sectionSize) {
+    return BODY_FACE_Z + PV_BODY_DEPTH * (sectionSize / 12.0f) / 2.0f;
+  }
+
+  /**
+   * The extent of the PV box from the section's centre along its height or width: half the frame
+   * less the inset. Where the coupling between two sections starts and ends.
+   *
+   * @param sectionSize the section size in inches
+   *
+   * @return the half-extent in model units
+   */
+  public static float pvBoxHalfExtent(int sectionSize) {
+    return (6.0f - PV_BOX_INSET) * (sectionSize / 12.0f);
+  }
+
+  /**
    * How far the PV box steps in from the door frame on every side. This is what puts a visible
    * lip at the frame and a gap between one section's box and the next, which is how a stack of
    * programmed heads reads from the side: separate castings bolted together at their frames.
