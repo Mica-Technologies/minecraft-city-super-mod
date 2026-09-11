@@ -24,10 +24,13 @@ Each has an IntelliJ run configuration, and per-tool documentation in `dev-env-u
     It rewrites the bounding boxes of **every mapped block**, not just the one you are working on.
     Diff-check afterwards and revert unrelated files.
 
-!!! note "The integrity tool has a baseline"
+!!! note "Compile the integrity tool before running it"
 
-    A clean tree reports roughly 65 pre-existing errors. Grep the output for your own file rather
-    than reading the total.
+    `mvn exec:java` does not rebuild, so always run it as `mvn -q clean compile exec:java`. A clean
+    tree reports **0 errors**, so any error it prints is worth investigating. It also reports 196
+    "unused files" that are expected: emissive companions, signal lens textures tiled into an atlas
+    at runtime, and assets named from code rather than from a blockstate. Do not delete on its
+    say-so. The full breakdown is in `dev-env-utils/docs/BlockItemIntegrityTool.md`.
 
 ## Python generators
 
