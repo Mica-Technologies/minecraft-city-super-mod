@@ -18,8 +18,17 @@ CELL = 16.0
 # A real W-beam is 310 mm deep with its top 700 mm off the ground, so at a block to the metre the
 # rail is about a fifth of a cell tall sitting two thirds of the way up. Those two numbers are what
 # every other part is hung off.
-RAIL_TOP_Y = 11.20
-RAIL_BOTTOM_Y = 6.20
+# How far every rail in the system stands above where it used to.
+#
+# A real W-beam's top edge is about 790 mm off the ground, which is 12.6 of these units; it was
+# drawn at 11.2 and read low. Applied to the MOUNTING heights of all four rail families rather
+# than to one of them, so a run that changes rail part way along does not change height with it,
+# and so nothing that hangs off a rail -- block-out, post, end treatment, transition -- has to be
+# told about it separately.
+MOUNT_LIFT = 1.40
+
+RAIL_TOP_Y = 11.20 + MOUNT_LIFT
+RAIL_BOTTOM_Y = 6.20 + MOUNT_LIFT
 RAIL_HEIGHT = RAIL_TOP_Y - RAIL_BOTTOM_Y
 
 # The rail's own depth, front face toward traffic. Front is low z.
@@ -102,8 +111,11 @@ END_RAIL_BOTTOM_Y = RAIL_BOTTOM_Y
 END_RAIL_FRONT_Z = RAIL_FRONT_Z
 END_RAIL_BACK_Z = RAIL_BACK_Z
 
-# The chevron panel on the impact head, in the end block's own frame.
-GLOVE_PANEL = (2.20, 13.80, 3.40, 14.60)    # x0, x1, y0, y1
+# The chevron panel on the impact head, in the end block's own frame. Its top is CAPPED rather
+# than lifted with the rail: the panel was already most of a cell tall, and carrying it up with
+# MOUNT_LIFT would put its top face on the cell boundary, which z-fights against whatever is
+# stacked above.
+GLOVE_PANEL = (2.20, 13.80, 3.40 + MOUNT_LIFT, 15.70)    # x0, x1, y0, y1
 GLOVE_PANEL_Z = 1.20
 GLOVE_STRIPE_DEG = 45.0
 
@@ -115,8 +127,8 @@ GLOVE_STRIPE_DEG = 45.0
 #
 # The mounting height is the same as the W-beam's, because that is set by what the rail is for
 # rather than by how deep it is.
-THRIE_RAIL_TOP_Y = 13.00
-THRIE_RAIL_BOTTOM_Y = 4.00
+THRIE_RAIL_TOP_Y = 13.00 + MOUNT_LIFT
+THRIE_RAIL_BOTTOM_Y = 4.00 + MOUNT_LIFT
 THRIE_RAIL_FRONT_Z = RAIL_FRONT_Z
 THRIE_RAIL_BACK_Z = RAIL_BACK_Z
 
@@ -154,9 +166,9 @@ BOX_BASE_PLATE = (3.40, 0.60)     # half width, thickness
 # system's lesson applies -- a member under about a unit across reads as a scratch rather than a
 # rope, so these are drawn a little fatter than scale.
 CABLE_POST_HALF = 0.90
-CABLE_POST_TOP_Y = 13.60
+CABLE_POST_TOP_Y = 13.60 + MOUNT_LIFT
 CABLE_RADIUS = 0.55
-CABLE_HEIGHTS = (8.40, 10.60, 12.60)
+CABLE_HEIGHTS = tuple(y + MOUNT_LIFT for y in (8.40, 10.60, 12.60))
 CABLE_Z = 2.40                    # the plane the cables run in, in front of the post
 CABLE_BACK_Z = 5.60               # the mirrored plane, on a double-sided run
 

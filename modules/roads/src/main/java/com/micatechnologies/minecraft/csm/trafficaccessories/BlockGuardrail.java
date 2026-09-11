@@ -171,6 +171,25 @@ public class BlockGuardrail extends AbstractBlockRoadSurfaceRotatableHZEight
     return boundingBox;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Taller than the rail is drawn, which is the same thing a vanilla fence does and for the
+   * same reason: a barrier the player can hop over is not a barrier. A guardrail's rail tops out
+   * around three quarters of a block, well inside a standing jump, so the box carries on up past
+   * where anything is drawn.</p>
+   *
+   * <p>Measured from the box's own FLOOR rather than from the cell's, so a run settled onto a snow
+   * layer or a sloped road stands its full height above the ground the player is actually walking
+   * on instead of losing that much of it.</p>
+   */
+  @Override
+  @Nullable
+  public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockState state,
+      @Nonnull IBlockAccess source, @Nonnull BlockPos pos) {
+    return GuardrailJoins.standTall(getBoundingBox(state, source, pos));
+  }
+
   @Override
   public boolean getBlockIsOpaqueCube(IBlockState state) {
     return false;

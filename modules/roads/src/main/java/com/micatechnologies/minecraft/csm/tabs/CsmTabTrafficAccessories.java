@@ -636,9 +636,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 1.113750, 0.719375)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_right", BarricadeGeometry.TYPE3_TOP,
         new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 1.113750, 0.719375)));
-    initTabBlock(new BlockWorkZoneDevice("delineator_post",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_post",
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
-    initTabBlock(new BlockWorkZoneDevice("delineator_post_yellow",
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_post_yellow",
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_zebra",
         new AxisAlignedBB(0.068750, 0.000000, 0.340625, 0.931250, 0.190625, 0.659375)));
@@ -688,54 +688,54 @@ public class CsmTabTrafficAccessories extends CsmTab {
     // guardrail run is long and a tile entity per cell would put thousands along a highway. The
     // Guardrail Tool swaps a block for its sibling, which costs nothing to store.
     initTabBlock(new BlockGuardrail("w_beam_guardrail",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.737500, 0.600000)));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.825000, 0.600000)));
     initTabBlock(new BlockGuardrail("w_beam_guardrail_wood",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.737500, 0.600000)));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.825000, 0.600000)));
     initTabBlock(new BlockGuardrail("w_beam_guardrail_double",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.737500, 0.950000)));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.825000, 0.950000)));
     initTabBlock(new BlockGuardrail("w_beam_guardrail_wood_double",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.737500, 0.950000)));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.825000, 0.950000)));
     initTabBlock(new BlockGuardrailEnd("guardrail_end_flared",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 0.827622, 0.737199, 0.730165)));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 0.827622, 0.824699, 0.730165)));
     initTabBlock(new BlockGuardrailEnd("guardrail_end_boxing_glove",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 0.862500, 0.912500, 0.525000)));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 0.862500, 0.981250, 0.525000)));
     initTabBlock(new BlockGuardrailEnd("guardrail_end_terminal",
-        new AxisAlignedBB(0.000000, 0.000000, 0.025000, 1.000000, 0.737500, 0.607322)));
+        new AxisAlignedBB(0.000000, 0.000000, 0.025000, 1.000000, 0.825000, 0.607322)));
     initTabBlock(new BlockGuardrailEnd("guardrail_end_turndown",
-        new AxisAlignedBB(0.000000, 0.000000, 0.018750, 0.987562, 0.735629, 0.600000)));
+        new AxisAlignedBB(0.000000, 0.000000, 0.018750, 1.000000, 0.822682, 0.600000)));
     // The RAIL KIND is what a run joins on, and it is the one thing the generators cannot know.
     // Left off, every family would default to w_beam and a box beam would happily join a W-beam
     // run — two rails of different depths meeting with a step and calling themselves one run.
     initTabBlock(new BlockGuardrail("thrie_beam_guardrail",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.850000, 0.600000), THRIE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.937500, 0.600000), THRIE));
     initTabBlock(new BlockGuardrail("thrie_beam_guardrail_wood",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.850000, 0.600000), THRIE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.937500, 0.600000), THRIE));
     initTabBlock(new BlockGuardrail("thrie_beam_guardrail_double",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.850000, 0.950000), THRIE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.937500, 0.950000), THRIE));
     initTabBlock(new BlockGuardrail("thrie_beam_guardrail_wood_double",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.850000, 0.950000), THRIE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.937500, 0.950000), THRIE));
     initTabBlock(new BlockGuardrailEnd("guardrail_end_flared_thrie",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 0.862829, 0.849699, 0.730165), THRIE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 0.862829, 0.937199, 0.730165), THRIE));
     initTabBlock(new BlockGuardrailEnd("guardrail_end_turndown_thrie",
-        new AxisAlignedBB(0.000000, 0.000000, 0.018750, 1.000000, 0.848833, 0.600000), THRIE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.018750, 1.000000, 0.935885, 0.600000), THRIE));
     // W-beam at one end and thrie at the other, which is why it needs a class of its own: a block
     // that is two rails matches neither neighbour under the ordinary rule.
     initTabBlock(new BlockGuardrailTransition("w_beam_thrie_transition",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.812500, 0.600000),
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.900000, 0.600000),
         W_BEAM, THRIE));
 
     initTabBlock(new BlockGuardrail("box_beam_guardrail",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.737500, 0.712500), BOX_BEAM));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.825000, 0.712500), BOX_BEAM));
     initTabBlock(new BlockGuardrail("box_beam_guardrail_double",
-        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.737500, 0.950000), BOX_BEAM));
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.825000, 0.950000), BOX_BEAM));
     initTabBlock(new BlockGuardrail("cable_barrier",
-        new AxisAlignedBB(0.000000, 0.000000, 0.096875, 1.000000, 0.850000, 0.306250), CABLE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.096875, 1.000000, 0.937500, 0.306250), CABLE));
     initTabBlock(new BlockGuardrail("cable_barrier_double",
-        new AxisAlignedBB(0.000000, 0.000000, 0.096875, 1.000000, 0.850000, 0.403125), CABLE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.096875, 1.000000, 0.937500, 0.403125), CABLE));
     initTabBlock(new BlockGuardrailEnd("guardrail_end_bullnose_box",
-        new AxisAlignedBB(0.000000, 0.000000, 0.012500, 0.618750, 0.950000, 0.800000), BOX_BEAM));
+        new AxisAlignedBB(0.000000, 0.000000, 0.012500, 0.618750, 0.975000, 0.800000), BOX_BEAM));
     initTabBlock(new BlockGuardrailEnd("cable_barrier_anchor",
-        new AxisAlignedBB(0.000000, 0.000000, 0.012500, 0.537500, 0.887500, 0.287500), CABLE));
+        new AxisAlignedBB(0.000000, 0.000000, 0.012500, 0.537500, 0.975000, 0.287500), CABLE));
 
     initTabBlock(new BlockCrashCushion("crash_cushion_nose",
         new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 0.843750, 0.500000), true));

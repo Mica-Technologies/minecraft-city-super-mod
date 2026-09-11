@@ -641,7 +641,9 @@ BULLNOSE_POSTS = (
 # underside sat exactly on the tube's top would share a plane with it, which is the one fault
 # every generator in this batch has to dodge.
 BULLNOSE_MARKER_X = (BULLNOSE_APEX_X - 0.30, BULLNOSE_APEX_X + 0.30)
-BULLNOSE_MARKER_Y = (geo.BOX_RAIL_TOP_Y - 0.80, geo.BOX_RAIL_TOP_Y + 4.00)
+# Capped rather than simply hung off the rail: the rails were raised by MOUNT_LIFT and a marker
+# that followed them all the way up would stand out of the top of its own cell.
+BULLNOSE_MARKER_Y = (geo.BOX_RAIL_TOP_Y - 0.80, min(geo.BOX_RAIL_TOP_Y + 4.00, 15.60))
 BULLNOSE_MARKER_Z_HALF = 1.60
 
 BULLNOSE_TEXTURE = "guardrail_box_end"
