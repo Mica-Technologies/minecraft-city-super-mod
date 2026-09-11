@@ -103,4 +103,13 @@ public class TileEntityArrowBoard extends AbstractTileEntity {
         pos.getX() - 3.0, pos.getY() - 1.0, pos.getZ() - 3.0,
         pos.getX() + 4.0, pos.getY() + 6.0, pos.getZ() + 4.0);
   }
+
+  /**
+   * An arrow board is the first thing a driver should see of a closure, from as far as the
+   * signals beyond it; vanilla's 64-block cutoff had it appear after the heads behind it.
+   */
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+  }
 }

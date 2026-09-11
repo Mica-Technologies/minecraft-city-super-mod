@@ -119,4 +119,10 @@ public class TileEntityTrafficLightMountKit extends AbstractTileEntity {
         pos.getX() - 4.0, pos.getY() - 4.0, pos.getZ() - 4.0,
         pos.getX() + 5.0, pos.getY() + 5.0, pos.getZ() + 5.0);
   }
+
+  /** The bracket holds a head; a head still drawn on a bracket that is not is the wrong picture. */
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+  }
 }

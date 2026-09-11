@@ -32,4 +32,10 @@ public class TileEntityTrafficBeacon extends AbstractTileEntity {
         pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
         pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
   }
+
+  /** A beacon is a warning meant to be seen from a distance; it draws as far as a signal. */
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+  }
 }

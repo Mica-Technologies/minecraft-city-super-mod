@@ -144,4 +144,10 @@ public class TileEntityBarricade extends AbstractTileEntity {
         pos.getX() - 1.0, pos.getY(), pos.getZ() - 1.0,
         pos.getX() + 2.0, pos.getY() + 4.0, pos.getZ() + 2.0);
   }
+
+  /** Drawn as far as the signals and the arrow board it stands with. */
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+  }
 }
