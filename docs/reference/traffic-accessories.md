@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "266 blocks in this tab"
+!!! info "325 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Arrow Board | `csm:arrow_board` | 0.6 | 3 | pickaxe | 0 |
 | Black Angled Thin Traffic Pole | `csm:trafficpolehorizontalangleblack` | 2 | 10 | pickaxe | 1 |
 | Black Double Horizontal Traffic Pole | `csm:trafficpolehorzdblblack` |  | 10 | pickaxe | 1 |
 | Black Double Vertical Traffic Pole | `csm:trafficpolevertdblblack` |  | 10 | pickaxe | 1 |
@@ -30,8 +31,22 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Black Vertical Traffic Pole with Light Mount | `csm:trafficpoleverticallightmountblack` |  | 10 | pickaxe | 1 |
 | Black Vertical Traffic Pole with Quad Mount | `csm:trafficpoleverticalquadmountblack` |  | 10 | pickaxe | 1 |
 | Black Vertical Traffic Pole with Signal Mount | `csm:trafficpoleverticalsignalmountblack` |  | 10 | pickaxe | 1 |
+| Box Beam Guardrail | `csm:box_beam_guardrail` | 1.2 | 6 | pickaxe | 0 |
+| Box Beam Guardrail (Double Sided) | `csm:box_beam_guardrail_double` | 1.2 | 6 | pickaxe | 0 |
+| Box Beam Guardrail End (Bullnose) | `csm:guardrail_end_bullnose_box` | 1.2 | 6 | pickaxe | 0 |
+| Cable Barrier | `csm:cable_barrier` | 1.2 | 6 | pickaxe | 0 |
+| Cable Barrier (Double Sided) | `csm:cable_barrier_double` | 1.2 | 6 | pickaxe | 0 |
+| Cable Barrier Anchor | `csm:cable_barrier_anchor` | 1.2 | 6 | pickaxe | 0 |
+| Channelizer | `csm:channelizer_tube` | 0.6 | 3 | pickaxe | 0 |
+| Channelizer (Lime) | `csm:channelizer_tube_lime` | 0.6 | 3 | pickaxe | 0 |
+| Channelizer-Cade (Keep Left) | `csm:channelizer_cade_left` | 0.6 | 3 | pickaxe | 0 |
+| Channelizer-Cade (Keep Right) | `csm:channelizer_cade_right` | 0.6 | 3 | pickaxe | 0 |
 | Concrete Double Horizontal Traffic Pole | `csm:trafficpolehorzdblconcrete` |  | 10 | pickaxe | 1 |
 | Concrete Double Vertical Traffic Pole | `csm:trafficpolevertdblconcrete` |  | 10 | pickaxe | 1 |
+| Crash Cushion (Bay) | `csm:crash_cushion_bay` | 1.2 | 6 | pickaxe | 0 |
+| Crash Cushion (Nose) | `csm:crash_cushion_nose` | 1.2 | 6 | pickaxe | 0 |
+| Delineator Post | `csm:delineator_post` | 0.6 | 3 | pickaxe | 0 |
+| Delineator Post (Yellow) | `csm:delineator_post_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Doghouse Signal Border (Black/Black) | `csm:tldoghouseborderblackblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Black/Blue) | `csm:tldoghouseborderblackblue` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Black/Pink) | `csm:tldoghouseborderblackpink` | 2 | 10 | pickaxe | 1 |
@@ -91,8 +106,13 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Pole-Mount Control Box Small (White) | `csm:controlboxsmallwhite` |  | 10 | pickaxe | 1 |
 | Pole-Mount Variable Speed Limit Sign | `csm:polemount_speed_limit_sign` | 2 | 10 | pickaxe | 1 |
 | Portable Changeable Message Sign | `csm:portable_message_sign` | 2 | 10 | pickaxe | 1 |
+| Portable Pedestrian Signal Trailer | `csm:portable_ped_signal_trailer` | 0.6 | 3 | pickaxe | 0 |
+| Portable Signal Trailer | `csm:portable_signal_trailer` | 0.6 | 3 | pickaxe | 0 |
+| Portable Signal Trailer (Mast Arm) | `csm:portable_signal_trailer_arm` | 0.6 | 3 | pickaxe | 0 |
 | Portable Variable Speed Limit Sign | `csm:portable_speed_limit_sign` | 2 | 10 | pickaxe | 1 |
 | Radar Speed Feedback Sign | `csm:radar_speed_sign` | 2 | 10 | pickaxe | 1 |
+| Safety Fence | `csm:safety_fence` | 0.6 | 3 | pickaxe | 0 |
+| Sand Barrel | `csm:sand_barrel_array` | 0.6 | 3 | pickaxe | 0 |
 | School Zone Beacon Assembly | `csm:school_zone_beacon` | 2 | 10 | pickaxe | 1 |
 | Silver Angled Thin Traffic Pole | `csm:trafficpolehorizontalanglesilver` | 2 | 10 | pickaxe | 1 |
 | Silver Double Horizontal Traffic Pole | `csm:trafficpolehorzdblsilver` |  | 10 | pickaxe | 1 |
@@ -122,6 +142,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Span Wire Anchor | `csm:spanwireanchor` | 2 | 10 | pickaxe | 1 |
 | Span Wire Disconnect Box | `csm:spanwiredisconnectbox` |  | 10 | pickaxe | 1 |
 | Span Wire Guy Anchor | `csm:spanwireguyanchor` | 2 | 10 | pickaxe | 1 |
+| Steel Road Plate | `csm:road_plate` | 0.6 | 3 | pickaxe | 0 |
 | Street Name Sign | `csm:trafficstreetnamesign` | 2 | 10 | pickaxe | 1 |
 | Street Name Sign (Double) | `csm:trafficstreetnamesigndouble` | 2 | 10 | pickaxe | 1 |
 | Street Name Sign Mount | `csm:trafficstreetnamesignmount` | 2 | 10 | pickaxe | 1 |
@@ -144,10 +165,28 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Tan Vertical Traffic Pole with Light Mount | `csm:trafficpoleverticallightmounttan` |  | 10 | pickaxe | 1 |
 | Tan Vertical Traffic Pole with Quad Mount | `csm:trafficpoleverticalquadmounttan` |  | 10 | pickaxe | 1 |
 | Tan Vertical Traffic Pole with Signal Mount | `csm:trafficpoleverticalsignalmounttan` |  | 10 | pickaxe | 1 |
+| Temporary Concrete Barrier | `csm:concrete_barrier` | 0.6 | 3 | pickaxe | 0 |
+| Temporary Pavement Marker (Bike Lane Green) | `csm:pavement_marker_green` | 0.6 | 3 | pickaxe | 0 |
+| Temporary Pavement Marker (Blue) | `csm:pavement_marker_blue` | 0.6 | 3 | pickaxe | 0 |
+| Temporary Pavement Marker (Construction Orange) | `csm:pavement_marker_orange` | 0.6 | 3 | pickaxe | 0 |
+| Temporary Pavement Marker (Red) | `csm:pavement_marker_red` | 0.6 | 3 | pickaxe | 0 |
+| Temporary Pavement Marker (White) | `csm:pavement_marker_white` | 0.6 | 3 | pickaxe | 0 |
+| Temporary Pavement Marker (Yellow) | `csm:pavement_marker_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Thick Traffic Pole | `csm:trafficpolevertical` | 2 | 10 | pickaxe | 1 |
 | Thick Traffic Pole (Unpainted) | `csm:trafficpoleverticalunpainted` | 2 | 10 | pickaxe | 1 |
 | Thin Traffic Pole | `csm:trafficpolehorizontal` | 2 | 10 | pickaxe | 1 |
 | Thin Traffic Pole (Unpainted) | `csm:trafficpolehorzunpainted` | 2 | 10 | pickaxe | 1 |
+| Thrie-Beam Guardrail | `csm:thrie_beam_guardrail` | 1.2 | 6 | pickaxe | 0 |
+| Thrie-Beam Guardrail (Double Sided) | `csm:thrie_beam_guardrail_double` | 1.2 | 6 | pickaxe | 0 |
+| Thrie-Beam Guardrail (Wood Post) | `csm:thrie_beam_guardrail_wood` | 1.2 | 6 | pickaxe | 0 |
+| Thrie-Beam Guardrail (Wood Post, Double Sided) | `csm:thrie_beam_guardrail_wood_double` | 1.2 | 6 | pickaxe | 0 |
+| Thrie-Beam Guardrail End (Flared) | `csm:guardrail_end_flared_thrie` | 1.2 | 6 | pickaxe | 0 |
+| Thrie-Beam Guardrail End (Turndown) | `csm:guardrail_end_turndown_thrie` | 1.2 | 6 | pickaxe | 0 |
+| Traffic Cone | `csm:traffic_cone` | 0.6 | 3 | pickaxe | 0 |
+| Traffic Cone (Knocked Over) | `csm:traffic_cone_knocked` | 0.6 | 3 | pickaxe | 0 |
+| Traffic Cone (Lime) | `csm:traffic_cone_lime` | 0.6 | 3 | pickaxe | 0 |
+| Traffic Drum | `csm:traffic_drum` | 0.6 | 3 | pickaxe | 0 |
+| Traffic Drum (No Light) | `csm:traffic_drum_unlit` | 0.6 | 3 | pickaxe | 0 |
 | Traffic Light Controller (Black) | `csm:tlcontrollerblack` |  | 10 | pickaxe | 1 |
 | Traffic Light Controller (Matte White) | `csm:tlcontrollermattewhite` |  | 10 | pickaxe | 1 |
 | Traffic Light Controller (Silver) | `csm:tlcontrollersilver` |  | 10 | pickaxe | 1 |
@@ -172,6 +211,12 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Traffic Signal Mast Fatigue Mitigator (Style 4) | `csm:tlfatiguemitigator4` | 2 | 10 | pickaxe | 1 |
 | Traffic Signal Pole Mount (Style 2) | `csm:signalpolemount2` |  | 10 | pickaxe | 1 |
 | Traffic Signal Preemption Beacon (Red) | `csm:tlpreemptbeacon` | 2 | 10 | pickaxe | 1 |
+| Type I Barricade (Keep Left) | `csm:barricade_type_1_left` | 0.6 | 3 | pickaxe | 0 |
+| Type I Barricade (Keep Right) | `csm:barricade_type_1_right` | 0.6 | 3 | pickaxe | 0 |
+| Type II Folding Barricade (Keep Left) | `csm:barricade_type_2_left` | 0.6 | 3 | pickaxe | 0 |
+| Type II Folding Barricade (Keep Right) | `csm:barricade_type_2_right` | 0.6 | 3 | pickaxe | 0 |
+| Type III Barricade (Keep Left) | `csm:barricade_type_3_left` | 0.6 | 3 | pickaxe | 0 |
+| Type III Barricade (Keep Right) | `csm:barricade_type_3_right` | 0.6 | 3 | pickaxe | 0 |
 | Unpainted Angled Thin Traffic Pole | `csm:trafficpolehorizontalangleunpainted` | 2 | 10 | pickaxe | 1 |
 | Unpainted Double Horizontal Traffic Pole | `csm:trafficpolehorzdblunpainted` |  | 10 | pickaxe | 1 |
 | Unpainted Double Vertical Traffic Pole | `csm:trafficpolevertdblunpainted` |  | 10 | pickaxe | 1 |
@@ -204,6 +249,8 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Vertical Add-On Signal Border (Pink/Black) | `csm:tlborderaddonpinkblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (White/Black) | `csm:tlborderaddonwhiteblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Yellow/Black) | `csm:tlborderaddonyellowblack` | 2 | 10 | pickaxe | 1 |
+| Vertical Panel (Keep Left) | `csm:vertical_panel_left` | 0.6 | 3 | pickaxe | 0 |
+| Vertical Panel (Keep Right) | `csm:vertical_panel_right` | 0.6 | 3 | pickaxe | 0 |
 | Vertical Signal Border (Black/Black) | `csm:tlborderblackblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Black/Black) (8 Inch) | `csm:tlborderblackblack8inch` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Black/Black) (8-8-12 Inch) | `csm:tlborderblackblack8812inch` | 2 | 10 | pickaxe | 1 |
@@ -255,6 +302,17 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Vertical Traffic Pole with Signal Mount | `csm:trafficpoleverticalsignalmount` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Signal Mount (Concrete) | `csm:trafficpoleverticalsignalmountconcrete` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Signal Mount (Unpainted) | `csm:trafficpoleverticalsignalmountunpainted` |  | 10 | pickaxe | 1 |
+| W-Beam Guardrail | `csm:w_beam_guardrail` | 1.2 | 6 | pickaxe | 0 |
+| W-Beam Guardrail (Double Sided) | `csm:w_beam_guardrail_double` | 1.2 | 6 | pickaxe | 0 |
+| W-Beam Guardrail (Wood Post) | `csm:w_beam_guardrail_wood` | 1.2 | 6 | pickaxe | 0 |
+| W-Beam Guardrail (Wood Post, Double Sided) | `csm:w_beam_guardrail_wood_double` | 1.2 | 6 | pickaxe | 0 |
+| W-Beam Guardrail End (Flared) | `csm:guardrail_end_flared` | 1.2 | 6 | pickaxe | 0 |
+| W-Beam Guardrail End (Impact Head) | `csm:guardrail_end_boxing_glove` | 1.2 | 6 | pickaxe | 0 |
+| W-Beam Guardrail End (Terminal) | `csm:guardrail_end_terminal` | 1.2 | 6 | pickaxe | 0 |
+| W-Beam Guardrail End (Turndown) | `csm:guardrail_end_turndown` | 1.2 | 6 | pickaxe | 0 |
+| W-Beam to Thrie-Beam Transition | `csm:w_beam_thrie_transition` | 1.2 | 6 | pickaxe | 0 |
+| Water-Filled Barrier (Orange) | `csm:channelizing_wall_orange` | 0.6 | 3 | pickaxe | 0 |
+| Water-Filled Barrier (White) | `csm:channelizing_wall_white` | 0.6 | 3 | pickaxe | 0 |
 | White Angled Thin Traffic Pole | `csm:trafficpolehorizontalanglewhite` | 2 | 10 | pickaxe | 1 |
 | White Double Horizontal Traffic Pole | `csm:trafficpolehorzdblwhite` |  | 10 | pickaxe | 1 |
 | White Double Vertical Traffic Pole | `csm:trafficpolevertdblwhite` |  | 10 | pickaxe | 1 |
@@ -277,5 +335,6 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Wire Mount (Horizontal Signal) | `csm:tlitehorzwiremount` |  | 10 | pickaxe | 1 |
 | Wire Mount (Signal Cluster) | `csm:spanwireclustermount` |  | 10 | pickaxe | 1 |
 | Wire Mount (Vertical Signal) | `csm:tlitevertwiremount` |  | 10 | pickaxe | 1 |
+| Zebra Delineator | `csm:delineator_zebra` | 0.6 | 3 | pickaxe | 0 |
 
 </div>
