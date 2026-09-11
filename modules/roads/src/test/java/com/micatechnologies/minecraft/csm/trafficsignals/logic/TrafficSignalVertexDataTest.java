@@ -178,6 +178,58 @@ class TrafficSignalVertexDataTest {
 
   // endregion
 
+  // region: PV housing
+
+  @Test
+  void pvBodyIsAsDeepAsItIsTallAndStartsAtTheDoorPlane() {
+    float minZ = Float.MAX_VALUE;
+    float maxZ = -Float.MAX_VALUE;
+    List<Box> all = new ArrayList<>(TrafficSignalVertexData.SIGNAL_BODY_PV_VERTEX_DATA);
+    all.addAll(TrafficSignalVertexData.SIGNAL_BODY_PV_SHADE_VERTEX_DATA);
+    for (Box box : all) {
+      // The hinge hardware sits slightly in front of the door plane, like the standard housing's.
+      if (box.from[0] < 2.0f) {
+        continue;
+      }
+      minZ = Math.min(minZ, box.from[2]);
+      maxZ = Math.max(maxZ, box.to[2]);
+    }
+    assertEquals(TrafficSignalVertexData.BODY_FACE_Z, minZ, 1e-6);
+    assertEquals(TrafficSignalVertexData.PV_BODY_REAR_Z, maxZ, 1e-6);
+    assertEquals(12.0f, maxZ - minZ, 1e-6);
+  }
+
+  @Test
+  void pvBodyVariantsMatchTheTwelveInchBoxCount() {
+    int count = TrafficSignalVertexData.SIGNAL_BODY_PV_VERTEX_DATA.size();
+    assertTrue(count > 0);
+    assertEquals(count, TrafficSignalVertexData.SIGNAL_BODY_PV_HORIZONTAL_VERTEX_DATA.size());
+    assertEquals(count, TrafficSignalVertexData.SIGNAL_BODY_PV_8INCH_VERTEX_DATA.size());
+    assertEquals(count, TrafficSignalVertexData.SIGNAL_BODY_PV_4INCH_VERTEX_DATA.size());
+  }
+
+  @Test
+  void resolveBodyDataPicksTheStyleAndSize() {
+    assertSame(TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA,
+        TrafficSignalVertexData.resolveBodyData(TrafficSignalBodyStyle.STANDARD, false, 12));
+    assertSame(TrafficSignalVertexData.SIGNAL_BODY_BUBBLED_8INCH_VERTEX_DATA,
+        TrafficSignalVertexData.resolveBodyData(TrafficSignalBodyStyle.BUBBLED, false, 8));
+    assertSame(TrafficSignalVertexData.SIGNAL_BODY_PV_4INCH_VERTEX_DATA,
+        TrafficSignalVertexData.resolveBodyData(TrafficSignalBodyStyle.PV, false, 4));
+    assertSame(TrafficSignalVertexData.SIGNAL_BODY_PV_HORIZONTAL_VERTEX_DATA,
+        TrafficSignalVertexData.resolveBodyData(TrafficSignalBodyStyle.PV, true, 12));
+  }
+
+  @Test
+  void bodyRearIsTheBlockFaceExceptForPv() {
+    assertEquals(16.0f, TrafficSignalVertexData.bodyRearZ(TrafficSignalBodyStyle.STANDARD, 12), 1e-6);
+    assertEquals(16.0f, TrafficSignalVertexData.bodyRearZ(TrafficSignalBodyStyle.BUBBLED, 8), 1e-6);
+    assertEquals(23.0f, TrafficSignalVertexData.bodyRearZ(TrafficSignalBodyStyle.PV, 12), 1e-6);
+    assertEquals(19.0f, TrafficSignalVertexData.bodyRearZ(TrafficSignalBodyStyle.PV, 8), 1e-6);
+  }
+
+  // endregion
+
   // region: Scaled variants preserve box count
 
   @Test

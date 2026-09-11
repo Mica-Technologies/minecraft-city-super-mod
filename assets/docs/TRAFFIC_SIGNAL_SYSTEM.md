@@ -480,7 +480,7 @@ Configurable properties:
 | Door paint color | `TrafficSignalBodyColor` | |
 | Visor paint color | `TrafficSignalBodyColor` | Tinted at render time so true black stays distinct from glossy black |
 | Visor type | `TrafficSignalVisorType` | Circle / Tunnel / Cutaway / Louvered (H/V/Both) / Barlo / None |
-| Body style | `TrafficSignalBodyStyle` | Standard (flat back) / Bubbled (Eagle-style rounded casting). Per-section; swaps only the housing geometry (`SIGNAL_BODY_BUBBLED_*_VERTEX_DATA`) — doors, visors, bulbs, and mounts are shared |
+| Body style | `TrafficSignalBodyStyle` | Standard (flat back) / Bubbled (Eagle-style rounded casting) / PV (the deep housing of an optically programmed head: as deep behind the door as it is tall, ribbed sides, chamfered rear, reaching 7 units into the block behind). Per-section; swaps only the housing geometry (`TrafficSignalVertexData.resolveBodyData`) — doors, visors and bulbs are shared. The mounts bolt to the deepest section's rear (`bodyRearZ`), and a bracket on a bubbled end sinks 1.5 units into the housing so it meets the dome rather than starting in the air behind the pinched seam |
 | Body tilt | `TrafficSignalBodyTilt` | `LEFT_ANGLE` / `LEFT_TILT` / `NONE` / `RIGHT_TILT` / `RIGHT_ANGLE` (±45° / ±22.5°) |
 | Bulb style | `TrafficSignalBulbStyle` | `getEnforcedBulbStyle()` can lock a style for bi-modal signals |
 | Bulb type | `TrafficSignalBulbType` | Ball / Arrow / Other (affects texture lookup + rotation) |

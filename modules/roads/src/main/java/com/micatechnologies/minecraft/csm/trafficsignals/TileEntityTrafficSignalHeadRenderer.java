@@ -472,7 +472,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
     float mountTiltAngle = bodyDirection.getRotation() - getBaseFacingAngle(facing);
     if (!CsmRenderToggles.skipSignalMount) {
       renderMount(te, blockState, sectionSizes, sectionYPositions, sectionXPositions, horizontal,
-          zPushBack, mountTiltAngle, worldSkyLight, worldBlockLight);
+          zPushBack, mountTiltAngle, worldSkyLight, worldBlockLight,
+          bodyRearAnchorZ(sectionInfos, sectionSizes));
     }
 
     GL11.glPopMatrix();
@@ -522,32 +523,35 @@ public class TileEntityTrafficSignalHeadRenderer extends
       boolean is8Inch = sectionSizes[i] == 8;
       boolean is4Inch = sectionSizes[i] == 4;
 
-      // The housing style only swaps the body geometry — doors, visors, bulbs, and mounts are
-      // shared between the standard flat-back and the bubbled Eagle-style castings.
-      boolean bubbled = sectionInfo.getBodyStyle() == TrafficSignalBodyStyle.BUBBLED;
-      List<RenderHelper.Box> bodyData;
+      // The housing style only swaps the body geometry — doors, visors and bulbs are shared
+      // between the standard flat-back, the bubbled Eagle-style and the deep PV castings. The
+      // mounts notice a PV rear, but that is decided per head in render(), not here.
+      List<RenderHelper.Box> bodyData = TrafficSignalVertexData.resolveBodyData(
+          sectionInfo.getBodyStyle(), horizontal, sectionSizes[i]);
       List<RenderHelper.Box> doorData;
       if (horizontal) {
-        bodyData = bubbled ? TrafficSignalVertexData.SIGNAL_BODY_BUBBLED_HORIZONTAL_VERTEX_DATA
-            : TrafficSignalVertexData.SIGNAL_BODY_HORIZONTAL_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_HORIZONTAL_VERTEX_DATA;
       } else if (is4Inch) {
-        bodyData = bubbled ? TrafficSignalVertexData.SIGNAL_BODY_BUBBLED_4INCH_VERTEX_DATA
-            : TrafficSignalVertexData.SIGNAL_BODY_4INCH_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_4INCH_VERTEX_DATA;
       } else if (is8Inch) {
-        bodyData = bubbled ? TrafficSignalVertexData.SIGNAL_BODY_BUBBLED_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_8INCH_VERTEX_DATA;
       } else {
-        bodyData = bubbled ? TrafficSignalVertexData.SIGNAL_BODY_BUBBLED_VERTEX_DATA
-            : TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA;
       }
 
       RenderHelper.addBoxesToBufferLit(bodyData, buffer,
           bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f,
           xOffset, yOffset, zPushBack, skyLight, blockLight);
+      List<RenderHelper.Box> shadeData = TrafficSignalVertexData.resolveBodyShadeData(
+          sectionInfo.getBodyStyle(), horizontal, sectionSizes[i]);
+      if (shadeData != null) {
+        // Recesses and bevels, a shade darker: with no directional shading in this renderer that
+        // is the only thing that makes them read on a flat-coloured housing.
+        RenderHelper.addBoxesToBufferLit(shadeData, buffer,
+            bodyColor.getRed() * BODY_SHADE_FACTOR, bodyColor.getGreen() * BODY_SHADE_FACTOR,
+            bodyColor.getBlue() * BODY_SHADE_FACTOR, 1.0f,
+            xOffset, yOffset, zPushBack, skyLight, blockLight);
+      }
       RenderHelper.addBoxesToBufferLit(doorData, buffer,
           doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f,
           xOffset, yOffset, zPushBack, skyLight, blockLight);
@@ -718,6 +722,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float VISOR_INNER_R = 0.0f;
   private static final float VISOR_INNER_G = 0.0f;
   private static final float VISOR_INNER_B = 0.0f;
+
+  // How much darker a housing's recessed parts (the PV grooves and rear chamfer) are drawn than
+  // the body colour. Strong enough to read on yellow; on a black housing nothing reads anyway.
+  private static final float BODY_SHADE_FACTOR = 0.7f;
 
   // Visor tint parameters — proportional shift so dark colors get a gentler nudge while
   // lighter colors still have enough distinction.  Result: min(1, channel * SCALE + BASE).
@@ -1492,6 +1500,53 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float BODY_Z_CENTER = 14.0f;
   // Block centre on any axis.
   private static final float BLOCK_CENTRE = 8.0f;
+  // How far in front of a housing's rear plane the mount bolts on. Two units back from the
+  // standard housing's z=16 rear is the BODY_Z_CENTER above; a deeper housing keeps the same
+  // setback from its own rear.
+  private static final float MOUNT_SETBACK_FROM_REAR = 16.0f - BODY_Z_CENTER;
+
+  /**
+   * Where this head's mount hardware bolts on, in model z: {@link #BODY_Z_CENTER} for every head
+   * that has always had it, or the same setback from the rear of the deepest PV section for a
+   * head that has one, so the bracket meets the housing rather than floating inside it.
+   */
+  /**
+   * How far a bracket stub must reach into the end section's housing to meet it, for a 12-inch
+   * bubbled section. The Eagle dome pinches to a 1.6-unit depth at the seam while the stub sits
+   * 2.75 to 5.25 units behind the door plane, so at the seam itself the stub is over air; the
+   * dome is deep enough under the whole stub only 1.2 units in from the seam. A little more than
+   * that so the join is buried rather than tangent.
+   */
+  private static final float BUBBLED_STUB_INSET = 1.5f;
+
+  /**
+   * How far the bracket at one end of the head sinks into that end's housing: nothing for the
+   * flat-topped standard and PV housings, {@link #BUBBLED_STUB_INSET} scaled with the section
+   * for a bubbled one.
+   */
+  private static float stubInsetFor(TrafficSignalSectionInfo[] sectionInfos, int[] sectionSizes,
+      int section) {
+    if (section < 0 || section >= sectionInfos.length
+        || sectionInfos[section].getBodyStyle() != TrafficSignalBodyStyle.BUBBLED) {
+      return 0.0f;
+    }
+    int size = section < sectionSizes.length ? sectionSizes[section] : 12;
+    return BUBBLED_STUB_INSET * (size / 12.0f);
+  }
+
+  private static float bodyRearAnchorZ(TrafficSignalSectionInfo[] sectionInfos,
+      int[] sectionSizes) {
+    float anchor = BODY_Z_CENTER;
+    for (int i = 0; i < sectionInfos.length; i++) {
+      if (sectionInfos[i].getBodyStyle() == TrafficSignalBodyStyle.PV) {
+        int size = i < sectionSizes.length ? sectionSizes[i] : 12;
+        anchor = Math.max(anchor,
+            TrafficSignalVertexData.bodyRearZ(TrafficSignalBodyStyle.PV, size)
+                - MOUNT_SETBACK_FROM_REAR);
+      }
+    }
+    return anchor;
+  }
 
   // --- Overhead hanger -------------------------------------------------------------------
   // A head that HANGS is not held by the elbow bracket the other mount types draw. Those
@@ -1516,22 +1571,29 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private void renderMount(TileEntityTrafficSignalHead te, IBlockState blockState,
       int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
-      float zPushBack, float mountTiltAngle, int skyLight, int blockLight) {
+      float zPushBack, float mountTiltAngle, int skyLight, int blockLight,
+      float bodyRearAnchorZ) {
     SignalHeadMountType mountType = te.getMountType();
     if (mountType == SignalHeadMountType.NONE) return;
 
-    // Signal body envelope from section placements.
+    // Signal body envelope from section placements, remembering which section forms each end so
+    // the bracket there can be sunk into that section's housing by however much its style falls
+    // away at the seam.
     float topY = -Float.MAX_VALUE, bottomY = Float.MAX_VALUE;
     float leftX = Float.MAX_VALUE, rightX = -Float.MAX_VALUE;
+    int topSection = 0, bottomSection = 0, leftSection = 0, rightSection = 0;
     for (int i = 0; i < sectionSizes.length; i++) {
       float half = sectionSizes[i] / 2.0f;
       float yCenter = sectionYPositions[i] + 6.0f; // body center Y in model space
       float xCenter = sectionXPositions[i] + 8.0f; // body center X in model space
-      topY = Math.max(topY, yCenter + half);
-      bottomY = Math.min(bottomY, yCenter - half);
-      leftX = Math.min(leftX, xCenter - half);
-      rightX = Math.max(rightX, xCenter + half);
+      if (yCenter + half > topY) { topY = yCenter + half; topSection = i; }
+      if (yCenter - half < bottomY) { bottomY = yCenter - half; bottomSection = i; }
+      if (xCenter - half < leftX) { leftX = xCenter - half; leftSection = i; }
+      if (xCenter + half > rightX) { rightX = xCenter + half; rightSection = i; }
     }
+    TrafficSignalSectionInfo[] styles = te.getSectionInfos();
+    float highInset = stubInsetFor(styles, sectionSizes, horizontal ? rightSection : topSection);
+    float lowInset = stubInsetFor(styles, sectionSizes, horizontal ? leftSection : bottomSection);
 
     // Adjacent-signal detection for mount-edge suppression. If another signal head sits on
     // this signal's attachment axis (above/below for vertical, left/right for horizontal),
@@ -1553,7 +1615,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
       // A head with another head stacked directly on top of it hangs from that one, not from
       // the arm — the pair shares a hanger, the same way the other types share a bracket.
       if (!suppressHighEnd) {
-        renderOverheadHanger(topY, color, zPushBack, skyLight, blockLight);
+        renderOverheadHanger(topY, color, zPushBack, skyLight, blockLight, bodyRearAnchorZ,
+            highInset);
       }
       return;
     }
@@ -1587,11 +1650,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // (b) issue one additional draw per bracket with a glRotatef that tilts just the arm.
     List<BracketSpec> brackets = new ArrayList<>();
     if (horizontal) {
-      if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg, mountTiltAngle));
-      if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg, mountTiltAngle));
+      if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg, mountTiltAngle, bodyRearAnchorZ, highInset));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg, mountTiltAngle, bodyRearAnchorZ, lowInset));
     } else {
-      if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg, mountTiltAngle));
-      if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg, mountTiltAngle));
+      if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg, mountTiltAngle, bodyRearAnchorZ, highInset));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg, mountTiltAngle, bodyRearAnchorZ, lowInset));
     }
 
     if (brackets.isEmpty()) return;
@@ -1655,7 +1718,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * @param color  mount hardware colour
    */
   private void renderOverheadHanger(float topY, TrafficSignalBodyColor color, float zPushBack,
-      int skyLight, int blockLight) {
+      int skyLight, int blockLight, float bodyRearAnchorZ, float stubInset) {
     // First block boundary strictly above the body. Math.floor rather than Math.ceil so a body
     // that happens to end exactly on a boundary still gets a post rather than a zero-length one.
     float reachY = ((float) Math.floor(topY / 16.0f) + 1.0f) * 16.0f + HANGER_OVERSHOOT;
@@ -1678,9 +1741,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Cap: along the housing's depth, from its rear shell forward to the centre axis. The mount
     // bolts to the rear the way the elbow brackets do, but an arm overhead runs along the block's
     // centre line, so something has to carry the load forward to meet it.
+    // The cap sinks into the housing by the stub inset for the same reason the brackets do: a
+    // bubbled seam has fallen away to almost nothing where the cap's rear half would rest.
     boxes.add(new RenderHelper.Box(
-        new float[]{BLOCK_CENTRE - capHalf, topY - 0.6f, postZ - capHalf},
-        new float[]{BLOCK_CENTRE + capHalf, capTop, BODY_Z_CENTER + capHalf}));
+        new float[]{BLOCK_CENTRE - capHalf, topY - 0.6f - stubInset, postZ - capHalf},
+        new float[]{BLOCK_CENTRE + capHalf, capTop, bodyRearAnchorZ + capHalf}));
     // Post: up the centre axis from inside the cap to the boundary above.
     boxes.add(new RenderHelper.Box(
         new float[]{BLOCK_CENTRE - half, postBottom, postZ - half},
@@ -1733,8 +1798,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Angle in degrees for the tilt rotation.
     final float tiltAngleDegrees;
 
+    /**
+     * @param stubInset how far the stub reaches back INTO the housing past its nominal edge, so
+     *                  it meets a housing whose rear falls away at the seam (the bubbled style)
+     *                  instead of starting in the air behind it. Zero for a flat-topped housing.
+     */
     BracketSpec(float bodyCenterX, float bodyCenterY, boolean horizontalSignal,
-        boolean isHighEnd, PoleLeg poleLeg, float tiltAngleDeg) {
+        boolean isHighEnd, PoleLeg poleLeg, float tiltAngleDeg, float bodyRearAnchorZ,
+        float stubInset) {
       this.stubSign = isHighEnd ? 1f : -1f;
       if (horizontalSignal) {
         this.crossAxisIdx1 = 1;  // Y
@@ -1745,10 +1816,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
         this.crossAxisIdx2 = 2;  // Z
         this.stubAxisIdx = 1;    // Y
       }
-      this.housingEdge = horizontalSignal ? bodyCenterX : bodyCenterY;
+      float nominalEdge = horizontalSignal ? bodyCenterX : bodyCenterY;
+      // The elbow keeps its place off the nominal edge; only the stub's start moves inward.
+      this.housingEdge = nominalEdge - stubSign * stubInset;
       this.crossCenter1 = horizontalSignal ? 6.0f : 8.0f;
-      this.crossCenter2 = BODY_Z_CENTER;
-      this.stubEnd = housingEdge + stubSign * STUB_LENGTH;
+      this.crossCenter2 = bodyRearAnchorZ;
+      this.stubEnd = nominalEdge + stubSign * STUB_LENGTH;
 
       // Pole-leg direction → axis + sign.
       switch (poleLeg) {
