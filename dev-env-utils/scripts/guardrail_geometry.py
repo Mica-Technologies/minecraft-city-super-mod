@@ -78,21 +78,36 @@ BACK_RAIL_FRONT_Z = BACK_BLOCKOUT_Z1 + (RAIL_BACK_Z - RAIL_FRONT_Z)
 BACK_RAIL_BACK_Z = BACK_BLOCKOUT_Z1
 
 # --- slopes ------------------------------------------------------------------------------------
-# A run on a grade ramps rather than staircases. `up` means the rail RISES across this cell toward
-# its right-hand end, which is the direction WorkZoneJoins already calls right. One cell of rise
-# per cell of run is the steepest a block grid can express and is what a 45 degree bank gives.
+# A run on a grade ramps rather than staircases. One cell of rise per cell of run is the steepest a
+# block grid can express and is what a 45 degree bank gives.
+#
+# Both ramps live in the LOWER of the two cells, and that is not a matter of taste. The higher cell
+# is standing on something solid, and a rail ramping DOWN out of it would spend the last part of
+# its run inside that block -- drawn, then hidden, so the ramp appears to come up out of the top of
+# the wall while the lower run butts into its side (issue #193). The lower cell has nothing but air
+# above its own rail, so a ramp drawn there is always seen whole.
+#
+#   up    rises across this cell toward its RIGHT-hand end, to meet a neighbour a block up there
+#   down  falls across this cell FROM a neighbour a block up at its LEFT-hand end
+#
+# "Right" is the direction WorkZoneJoins already calls right. So `down` starts a whole block high
+# and finishes level, which makes it exactly the reflection of `up` about the middle of the cell.
 SLOPE_RISE = CELL
 SLOPES = ("flat", "up", "down")
 
-# How much a sloped cell lifts the rail at a given fraction along its run, for `up`. Negative it
-# for `down`. The post stands at the middle of the cell, so it meets the rail half a rise up.
+
 def slope_lift(slope, fraction):
     """Rail lift at `fraction` along the cell (0 at the left edge, 1 at the right)."""
     if slope == "up":
         return SLOPE_RISE * fraction
     if slope == "down":
-        return -SLOPE_RISE * fraction
+        return SLOPE_RISE * (1.0 - fraction)
     return 0.0
+
+
+def slope_grade(slope):
+    """How much the rail lifts per unit of run: `slope_lift` is linear, so this is its gradient."""
+    return (slope_lift(slope, 1.0) - slope_lift(slope, 0.0)) / CELL
 
 
 POST_LIFT = 0.5   # the post sits mid-cell, so it meets the rail at half the cell's rise

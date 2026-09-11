@@ -181,7 +181,7 @@ def sweep_box(mesh, z0, z1, y0, y1, x0, x1, lift, grade, swatch_v, caps=(False, 
                 faces=("x-",) if sign < 0.0 else ("x+",))
 
 
-def sheared_box(mesh, x0, x1, y0, y1, z0, z1, grade, swatch_v,
+def sheared_box(mesh, x0, x1, y0, y1, z0, z1, base, grade, swatch_v,
                 faces=("x-", "x+", "y-", "y+", "z-", "z+")):
     """``box``, but leaning by ``grade`` along X, and able to leave a named face off.
 
@@ -192,7 +192,7 @@ def sheared_box(mesh, x0, x1, y0, y1, z0, z1, grade, swatch_v,
     """
     t = uv_swatch(swatch_v)
     q = [t, t, t, t]
-    a, b = grade * x0, grade * x1
+    a, b = base + grade * x0, base + grade * x1
 
     def corners(y_at_x0, y_at_x1):
         return ((x0, y_at_x0 + a, z0), (x1, y_at_x1 + b, z0),
@@ -226,11 +226,16 @@ def panel_planes():
 
 
 def grade_of(slope):
-    return geo.slope_lift(slope, 1.0) / CELL
+    return geo.slope_grade(slope)
+
+
+def base_of(slope):
+    """The lift at the cell's LEFT-hand end: zero, except on ``down``, which starts a block up."""
+    return geo.slope_lift(slope, 0.0)
 
 
 # --- the bay ------------------------------------------------------------------------------------
-def build_bay_shell(mesh, slope, x0=0.0, x1=CELL, lift=0.0):
+def build_bay_shell(mesh, slope, x0=0.0, x1=CELL, lift=None):
     """The side panels and their capping rails: everything a cushion shows above the ground.
 
     Split out from the frame because the diagonal filler wants this and not that, the same way a
@@ -239,6 +244,8 @@ def build_bay_shell(mesh, slope, x0=0.0, x1=CELL, lift=0.0):
     it is supposed to continue.
     """
     grade = grade_of(slope)
+    if lift is None:
+        lift = base_of(slope) + grade * x0
     for (z0, z1) in panel_planes():
         sweep_box(mesh, z0, z1, PANEL_SILL_Y, PANEL_TOP_Y, x0, x1, lift, grade, PANEL_SWATCH)
         # The capping rail, standing proud on the outside so the panel reads as sheet under a rail
@@ -253,7 +260,7 @@ def build_bay_shell(mesh, slope, x0=0.0, x1=CELL, lift=0.0):
 def build_frame(mesh, slope, caps=(False, False)):
     """The frame the bays slide along, on the ground down the cushion's centre line."""
     sweep_box(mesh, FRAME_CZ - FRAME_Z_HALF, FRAME_CZ + FRAME_Z_HALF, 0.0, FRAME_TOP_Y,
-              0.0, CELL, 0.0, grade_of(slope), FRAME_SWATCH, caps=caps)
+              0.0, CELL, base_of(slope), grade_of(slope), FRAME_SWATCH, caps=caps)
 
 
 def build_bay_core(mesh, slope):
@@ -275,7 +282,8 @@ def build_bay_lap(mesh, slope):
         lap_z0 = z0 - LAP_PROUD if traffic_side else z0 + LAP_BITE
         lap_z1 = z1 - LAP_BITE if traffic_side else z1 + LAP_PROUD
         sweep_box(mesh, lap_z0, lap_z1, PANEL_SILL_Y + LAP_INSET, PANEL_TOP_Y - LAP_INSET,
-                  LAP_X0, LAP_X1, grade * LAP_X0, grade, LAP_SWATCH, caps=(True, True))
+                  LAP_X0, LAP_X1, base_of(slope) + grade * LAP_X0, grade, LAP_SWATCH,
+                  caps=(True, True))
 
 
 def build_bay(mesh, slope):
@@ -290,7 +298,7 @@ def build_bay_end(mesh, slope, left):
     field is bolted to the rail or the pier behind it. On the left it is the same plate closing a
     cushion that has been laid without a nose.
     """
-    lift = 0.0 if left else geo.slope_lift(slope, 1.0)
+    lift = geo.slope_lift(slope, 0.0 if left else 1.0)
     x = BACKUP_SETBACK if left else CELL - BACKUP_SETBACK
     x0, x1 = (x, x + BACKUP_THICK) if left else (x - BACKUP_THICK, x)
     (near_z0, near_z1), (far_z0, far_z1) = panel_planes()
@@ -318,7 +326,7 @@ def build_bay_inventory(mesh):
 
 
 # --- the nose -----------------------------------------------------------------------------------
-def taper_panel(mesh, nose_z0, nose_z1, back_z0, back_z1, grade):
+def taper_panel(mesh, nose_z0, nose_z1, back_z0, back_z1, base, grade):
     """One tapering side panel, as a solid between its plan outline at sill and cap height.
 
     ``prism`` rather than ``sweep_box``: this is the one part of the cushion whose section is not
@@ -337,8 +345,8 @@ def taper_panel(mesh, nose_z0, nose_z1, back_z0, back_z1, grade):
 
     plan = [(start, at(nose_z0, back_z0)), (CELL, back_z0),
             (CELL, back_z1), (start, at(nose_z1, back_z1))]
-    bottom = [(x, PANEL_SILL_Y + grade * x, z) for (x, z) in plan]
-    top = [(x, PANEL_TOP_Y + grade * x, z) for (x, z) in plan]
+    bottom = [(x, PANEL_SILL_Y + base + grade * x, z) for (x, z) in plan]
+    top = [(x, PANEL_TOP_Y + base + grade * x, z) for (x, z) in plan]
     prism(mesh, bottom, top, PANEL_SWATCH)
 
 
@@ -360,10 +368,10 @@ def build_nose(mesh, slope):
     neighbour -- and a nose that ignored it would leave a visible step exactly where it joins the
     first bay, which is the one part of a cushion a player is standing next to.
     """
-    grade = grade_of(slope)
+    grade, base = grade_of(slope), base_of(slope)
     (front_z0, front_z1), (back_z0, back_z1) = panel_planes()
-    taper_panel(mesh, NOSE_Z0, NOSE_Z0 + PANEL_THICK, front_z0, front_z1, grade)
-    taper_panel(mesh, NOSE_Z1 - PANEL_THICK, NOSE_Z1, back_z0, back_z1, grade)
+    taper_panel(mesh, NOSE_Z0, NOSE_Z0 + PANEL_THICK, front_z0, front_z1, base, grade)
+    taper_panel(mesh, NOSE_Z1 - PANEL_THICK, NOSE_Z1, back_z0, back_z1, base, grade)
 
     # The frame runs the length of the nose cell too, so the nose is carried on the same rail the
     # bays slide along rather than floating at the front of one. Capped at the cell face, which is
@@ -374,10 +382,10 @@ def build_nose(mesh, slope):
     # Striped on the face traffic meets, plain steel on the five it does not -- so the x- face is
     # left off here and drawn as the striped quad below, rather than drawn twice in one plane.
     sheared_box(mesh, NOSE_PLATE_X0, NOSE_PLATE_X1, NOSE_PLATE_Y0, NOSE_PLATE_Y1,
-                NOSE_Z0, NOSE_Z1, grade, PANEL_SWATCH,
+                NOSE_Z0, NOSE_Z1, base, grade, PANEL_SWATCH,
                 faces=("x+", "y-", "y+", "z-", "z+"))
 
-    face_lift = grade * NOSE_PLATE_X0
+    face_lift = base + grade * NOSE_PLATE_X0
     striped_quad(mesh,
                  [(NOSE_PLATE_X0, NOSE_PLATE_Y0 + face_lift, NOSE_Z0),
                   (NOSE_PLATE_X0, NOSE_PLATE_Y1 + face_lift, NOSE_Z0),

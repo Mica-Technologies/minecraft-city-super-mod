@@ -47,18 +47,17 @@ For a FLAT transition the mirrored model is exactly ``mirror_mesh`` of the unmir
 reflection about x = 8, the run axis -- and the self-check in ``_verify_mirror_identity`` asserts
 that vertex for vertex, so this file cannot drift from ``gen_guardrail_ends.mirror_mesh``.
 
-On a grade it is NOT. ``slope_lift`` is anchored at the cell's left edge, so an ``up`` cell runs
-from lift 0 to lift +16; reflecting it gives a cell running from +16 down to 0, which is a ``down``
-cell hoisted a whole block. The mirrored sloped cores are therefore built directly, by running the
-profile blend the other way along a rail that still climbs left to right. The identity being relied
-on is::
+On a grade the reflection also swaps the slope: an ``up`` cell runs from lift 0 to +16, and its
+reflection runs from +16 back to 0, which is exactly a ``down`` cell. The mirrored cores are built
+directly anyway, by running the profile blend the other way along the cell's own slope, and the
+identity::
 
-    mirrored(s) = reflect(core(opposite s)) translated up by slope_lift(s, 1)
+    mirrored(s) = reflect(core(opposite s))
 
-and building it directly is the same shape with one less place to get the bookkeeping wrong. The
-diagonal filler and the end caps have to be built directly in any case: ``diagfill`` names the
-world side a filler grows on, so it stays off the RIGHT-hand end in both hands rather than being
-carried to the left by the reflection.
+is asserted for all three slopes by ``_verify_mirror_identity``, so the two constructions cannot
+drift apart. The diagonal filler and the end caps have to be built directly in any case:
+``diagfill`` names the world side a filler grows on, so it stays off the RIGHT-hand end in both
+hands rather than being carried to the left by the reflection.
 
 THE BLOCKSTATE
 --------------
@@ -306,9 +305,8 @@ def build_post(mesh, wood, double, slope, bottom_y, top_y):
     would leave the outer corrugations bolted to thin air, and a post that stopped at the W's top
     would disappear behind the rail it is supposed to stand proud of.
 
-    Which end grows on a slope is the W-beam's rule unchanged. Climbing, the rail is above the cell
-    at mid span and the post reaches up to it from the cell floor. Descending, the rail -- and the
-    ground it stands on -- is below the cell there, so the foot goes down with it.
+    On a slope it is the W-beam's rule unchanged: a ramp is always drawn in the lower of its two
+    cells, so the rail is above the cell at mid span and the post reaches up to it from the floor.
     """
     lift = geo.slope_lift(slope, geo.POST_LIFT)
     foot = min(geo.POST_BOTTOM_Y, lift)
@@ -353,13 +351,8 @@ def _thrie_front(_x):
     return THRIE_FRONT
 
 
-def _grade(slope):
-    return geo.slope_lift(slope, 1.0) / geo.CELL
-
-
-def _lift_along(slope, x0=0.0):
-    grade = _grade(slope)
-    return lambda x: grade * (x - x0)
+def _lift_along(slope):
+    return lambda x: geo.slope_lift(slope, x / geo.CELL)
 
 
 def thrie_core(mesh, double, slope):
@@ -369,9 +362,9 @@ def thrie_core(mesh, double, slope):
 
 
 def thrie_end(mesh, double, slope, left):
-    """The cap over an open end. The left-hand end is at the foot of the rise on every slope, so
-    only the right-hand cap needs one model per slope."""
-    lift = 0.0 if left else geo.slope_lift(slope, 1.0)
+    """The cap over an open end. Only the right-hand cap needs one model per slope: the left-hand
+    end is off the floor only on ``down``, whose left end is always joined."""
+    lift = geo.slope_lift(slope, 0.0 if left else 1.0)
     x = 0.0 if left else geo.CELL
     for mirror in rail_sides(double):
         cap(mesh, THRIE_FRONT, x, lift, -1.0 if left else 1.0, mirror)
@@ -427,8 +420,8 @@ def _transition_front(hand):
 
     ``hand`` false runs W-beam at x = 0 to thrie at x = 16, which is the piece a run meets going
     left to right. ``hand`` true runs the blend the other way -- and *only* the blend: the rail
-    still climbs toward its right-hand end, because ``slope`` is a property of the run, not of the
-    piece's chirality.
+    keeps the cell's own slope, because ``slope`` is a property of the run, not of the piece's
+    chirality.
     """
     if hand:
         return lambda x: blended_front(1.0 - x / geo.CELL)
@@ -447,7 +440,7 @@ def transition_core(mesh, slope, hand):
 
 
 def transition_end(mesh, slope, hand, left):
-    lift = 0.0 if left else geo.slope_lift(slope, 1.0)
+    lift = geo.slope_lift(slope, 0.0 if left else 1.0)
     x = 0.0 if left else geo.CELL
     cap(mesh, _transition_edge_front(hand, left), x, lift, -1.0 if left else 1.0)
 
@@ -508,26 +501,29 @@ def transition_pieces():
 
 
 def _verify_mirror_identity():
-    """Assert that the flat mirrored core really is the reflection the end treatments use.
+    """Assert that each mirrored core really is the reflection the end treatments use.
 
     The mirrored transition is built by running the blend the other way rather than by reflecting a
-    finished mesh, because on a grade a reflection is a cell of the OPPOSITE slope hoisted a block
-    (``slope_lift`` is anchored at the left edge, so ``up`` runs 0 to +16 and its reflection runs
-    +16 to 0). Flat is the case where the two constructions must agree exactly, and this is what
-    stops the direct construction from quietly drifting away from ``mirror_mesh``.
+    finished mesh. A reflection about x = 8 also swaps ``up`` for ``down`` -- one runs 0 to +16,
+    the other +16 to 0 -- so the identity is checked slope by slope against the OPPOSITE slope's
+    unmirrored core. This is what stops the direct construction from quietly drifting away from
+    ``mirror_mesh``, and what would catch the two slopes' lifts no longer being reflections.
     """
-    direct = Mesh()
-    transition_core(direct, "flat", True)
-    reflected = Mesh()
-    transition_core(reflected, "flat", False)
-    mirror_mesh(reflected)
+    opposite = {"flat": "flat", "up": "down", "down": "up"}
 
     def key(mesh):
         return sorted(tuple(round(c, 5) for c in p) for p in mesh.v)
 
-    assert key(direct) == key(reflected), (
-        "the mirrored transition core is no longer the reflection of the unmirrored one about "
-        "x = %.1f; one of the two constructions has drifted" % (geo.CELL * 0.5))
+    for slope in geo.SLOPES:
+        direct = Mesh()
+        transition_core(direct, slope, True)
+        reflected = Mesh()
+        transition_core(reflected, opposite[slope], False)
+        mirror_mesh(reflected)
+        assert key(direct) == key(reflected), (
+            "the mirrored %s transition core is no longer the reflection of the unmirrored %s one "
+            "about x = %.1f; one of the two constructions has drifted"
+            % (slope, opposite[slope], geo.CELL * 0.5))
 
 
 # --- the thrie end treatments -----------------------------------------------------------------------
