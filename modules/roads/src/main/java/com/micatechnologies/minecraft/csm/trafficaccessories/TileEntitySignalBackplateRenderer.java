@@ -163,7 +163,7 @@ public class TileEntitySignalBackplateRenderer
       GL11.glCallList(displayList);
     }
 
-    emitRetroreflection(te, pos, renderState, rise, partialTicks, facing);
+    emitRetroreflection(te, pos, renderState, rise, partialTicks, facing, tilt);
 
     GlStateManager.enableLighting();
     GlStateManager.popMatrix();
@@ -189,8 +189,9 @@ public class TileEntitySignalBackplateRenderer
    * {@code glColor} rather than on the vertices.
    */
   private void emitRetroreflection(TileEntitySignalBackplate te, BlockPos pos,
-      IBlockState renderState, float rise, float partialTicks, EnumFacing facing) {
-    final float strength = glowStrength(te, pos, facing, partialTicks);
+      IBlockState renderState, float rise, float partialTicks, EnumFacing facing,
+      TrafficSignalBodyTilt tilt) {
+    final float strength = glowStrength(te, pos, facing, tilt, partialTicks);
     if (strength < GLOW_CUTOFF) {
       return;
     }
@@ -267,9 +268,14 @@ public class TileEntitySignalBackplateRenderer
    * <p>Two terms. How squarely the plate is being looked at, because sheeting returns light along
    * the line it came in on. And how dark it is, because a retroreflector in daylight is just a
    * yellow stripe -- the effect people picture is the one they have seen at night.
+   *
+   * <p>The plate's normal is the direction it is actually drawn facing, which is the head's tilted
+   * facing, not the blockstate's cardinal one. {@link #applyTilt} turns the plate by the tilt, so
+   * measuring alignment against the untilted facing made an angled plate glow as though it were
+   * square to the road: brightest from the wrong lane, and dim from the one it was turned toward.
    */
   private float glowStrength(TileEntitySignalBackplate te, BlockPos pos, EnumFacing facing,
-      float partialTicks) {
+      TrafficSignalBodyTilt tilt, float partialTicks) {
     if (te.getWorld() == null) {
       return 0.0f;
     }
@@ -283,9 +289,21 @@ public class TileEntitySignalBackplateRenderer
     }
 
     // The band is on the face the plate points at, so anyone behind it sees nothing come back.
-    final double alignment = (toCameraX * facing.getXOffset()
-        + toCameraY * facing.getYOffset()
-        + toCameraZ * facing.getZOffset()) / distance;
+    double normalX = facing.getXOffset();
+    double normalY = facing.getYOffset();
+    double normalZ = facing.getZOffset();
+    if (tilt != TrafficSignalBodyTilt.NONE && facing.getAxis() != EnumFacing.Axis.Y) {
+      // Same rotation applyTilt draws the plate under. glRotate about +Y takes the model's
+      // forward (0, 0, -1) to (-sin θ, 0, -cos θ): north is θ=0, east is θ=270.
+      final double radians = Math.toRadians(
+          AbstractBlockControllableSignalHead.getTiltedFacing(tilt, facing).getRotation());
+      normalX = -Math.sin(radians);
+      normalY = 0.0;
+      normalZ = -Math.cos(radians);
+    }
+    final double alignment = (toCameraX * normalX
+        + toCameraY * normalY
+        + toCameraZ * normalZ) / distance;
     if (alignment <= 0.0) {
       return 0.0f;
     }
