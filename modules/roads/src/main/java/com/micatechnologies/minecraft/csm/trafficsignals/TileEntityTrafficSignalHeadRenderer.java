@@ -723,9 +723,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float VISOR_INNER_G = 0.0f;
   private static final float VISOR_INNER_B = 0.0f;
 
-  // How much darker a housing's recessed parts (the PV grooves and rear chamfer) are drawn than
-  // the body colour. Strong enough to read on yellow; on a black housing nothing reads anyway.
-  private static final float BODY_SHADE_FACTOR = 0.7f;
+  // How much darker a housing's recessed parts (the PV side ridges and rear chamfer) are drawn
+  // than the body colour. Subtle: the ridges should read as texture from close up and vanish
+  // into a plain side from the road. On a black housing nothing reads anyway.
+  private static final float BODY_SHADE_FACTOR = 0.82f;
 
   // Visor tint parameters — proportional shift so dark colors get a gentler nudge while
   // lighter colors still have enough distinction.  Result: min(1, channel * SCALE + BASE).
@@ -1520,18 +1521,30 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float BUBBLED_STUB_INSET = 1.5f;
 
   /**
+   * How far a bracket stub sinks into a PV end section: the box steps in from the frame by
+   * {@link TrafficSignalVertexData#PV_BOX_INSET}, so a stub starting at the frame's top would
+   * float that far above the box's top; a little more than the inset buries the join.
+   */
+  private static final float PV_STUB_INSET = TrafficSignalVertexData.PV_BOX_INSET + 0.2f;
+
+  /**
    * How far the bracket at one end of the head sinks into that end's housing: nothing for the
-   * flat-topped standard and PV housings, {@link #BUBBLED_STUB_INSET} scaled with the section
-   * for a bubbled one.
+   * flat-topped standard housing, {@link #BUBBLED_STUB_INSET} for a bubbled one and
+   * {@link #PV_STUB_INSET} for a PV one, each scaled with the section.
    */
   private static float stubInsetFor(TrafficSignalSectionInfo[] sectionInfos, int[] sectionSizes,
       int section) {
-    if (section < 0 || section >= sectionInfos.length
-        || sectionInfos[section].getBodyStyle() != TrafficSignalBodyStyle.BUBBLED) {
+    if (section < 0 || section >= sectionInfos.length) {
       return 0.0f;
     }
+    float inset;
+    switch (sectionInfos[section].getBodyStyle()) {
+      case BUBBLED: inset = BUBBLED_STUB_INSET; break;
+      case PV:      inset = PV_STUB_INSET; break;
+      default:      return 0.0f;
+    }
     int size = section < sectionSizes.length ? sectionSizes[section] : 12;
-    return BUBBLED_STUB_INSET * (size / 12.0f);
+    return inset * (size / 12.0f);
   }
 
   private static float bodyRearAnchorZ(TrafficSignalSectionInfo[] sectionInfos,

@@ -797,61 +797,83 @@ public class TrafficSignalVertexData {
   public static final float PV_BODY_REAR_Z = BODY_FACE_Z + PV_BODY_DEPTH;
 
   /**
-   * Builds the PV housing: a squared-off box as deep as it is tall, with three shallow horizontal
-   * grooves along each side running front to back and a two-step chamfer on the rear edges --
-   * the silhouette of an optically programmed head seen from the side. The face plane, door and
-   * hinge hardware match the standard housing so the styles read as siblings on one head.
+   * How far the PV box steps in from the door frame on every side. This is what puts a visible
+   * lip at the frame and a gap between one section's box and the next, which is how a stack of
+   * programmed heads reads from the side: separate castings bolted together at their frames.
+   */
+  public static final float PV_BOX_INSET = 0.7f;
+
+  /**
+   * Builds the PV housing: a full-size frame plate directly behind the door, then a box inset on
+   * every side and as deep as the section is tall, finely ridged along its sides and chamfered
+   * on its rear edges -- the silhouette of an optically programmed head seen from the side. The
+   * face plane, door and hinge hardware match the standard housing so the styles read as
+   * siblings on one head.
    *
-   * <p>Built as touching, never overlapping, boxes: the grooves are bands inset from the sides,
-   * not cuts, and the chamfer is two successively narrower rear slices. Grooves sit at a quarter,
-   * half and three quarters of the height, clear of the hinge hardware at the top and bottom.</p>
+   * <p>Built as touching, never overlapping, boxes. The ridges are one-unit bands up the box's
+   * height, alternating a raised band with a slightly recessed one, so the side reads as the
+   * extruded fins of the real casting from close up and as a plain side from the road. The
+   * chamfer is two successively narrower rear slices.</p>
    *
    * <p>Two lists come out of one layout. The signal renderer draws with world light and no
    * directional shading, so a recess that is only geometry is invisible on a flat-coloured
-   * housing; the grooves and the chamfer are therefore returned separately and drawn a shade
-   * darker than the body, which is what makes them read as a recess and a bevel.</p>
+   * housing; the recessed bands and the chamfer are therefore returned separately and drawn a
+   * shade darker than the body, which is what makes them read as a recess and a bevel.</p>
    *
-   * @param shadedParts false for the body proper (front band, full-width bands, hinges), true
-   *                    for the parts drawn darker (groove bands, chamfer slices)
+   * @param shadedParts false for the body proper (frame plate, raised bands, hinges), true for
+   *                    the parts drawn darker (recessed bands, chamfer slices)
    */
   private static List<Box> buildPvBody(boolean shadedParts) {
     final float faceZ = BODY_FACE_Z;
     final float rearZ = PV_BODY_REAR_Z;
-    final float frontBand = 1.0f;     // plain band behind the door frame, before the grooves start
-    final float grooveHalf = 0.35f;   // half-height of a groove
-    final float grooveInset = 0.3f;   // how far a groove sits in from the side
+    final float framePlate = 1.0f;    // full-size plate behind the door frame
+    final float inset = PV_BOX_INSET; // the box steps in this much from the frame on every side
+    final float ridgePitch = 1.0f;    // one raised + one recessed band per pitch, up the box
+    final float ridgeRecess = 0.4f;   // height of the recessed band within each pitch
+    final float ridgeDepth = 0.15f;   // how far the recessed band sits in from the box side
     final float chamferStep = 0.4f;   // each of the two rear chamfer slices, in z and in inset
-    final float left = 2.0f;
-    final float right = 14.0f;
-    final float bottom = 0.0f;
-    final float top = 12.0f;
-    final float[] grooveCentres = {3.0f, 6.0f, 9.0f};
+    final float frameLeft = 2.0f;
+    final float frameRight = 14.0f;
+    final float frameBottom = 0.0f;
+    final float frameTop = 12.0f;
 
     List<Box> body = new ArrayList<>();
     List<Box> shaded = new ArrayList<>();
-    // Plain band directly behind the door frame.
-    body.add(new Box(new float[]{left, bottom, faceZ}, new float[]{right, top, faceZ + frontBand}));
+    // Frame plate directly behind the door frame, the full section size.
+    body.add(new Box(new float[]{frameLeft, frameBottom, faceZ},
+        new float[]{frameRight, frameTop, faceZ + framePlate}));
 
-    // Ribbed body: full-width bands alternating with inset groove bands, up the height.
-    float ribbedFrom = faceZ + frontBand;
-    float ribbedTo = rearZ - 2 * chamferStep;
+    // The box proper, inset from the frame, from the plate back to where the chamfer starts.
+    float left = frameLeft + inset;
+    float right = frameRight - inset;
+    float bottom = frameBottom + inset;
+    float top = frameTop - inset;
+    float boxFrom = faceZ + framePlate;
+    float boxTo = rearZ - 2 * chamferStep;
+
+    // Ridged sides: raised full-width bands alternating with recessed ones, one pitch each,
+    // starting and ending on a raised band so the box's top and bottom edges are clean.
     float y = bottom;
-    for (float centre : grooveCentres) {
-      float grooveBottom = centre - grooveHalf;
-      float grooveTop = centre + grooveHalf;
-      body.add(new Box(new float[]{left, y, ribbedFrom}, new float[]{right, grooveBottom, ribbedTo}));
-      shaded.add(new Box(new float[]{left + grooveInset, grooveBottom, ribbedFrom},
-          new float[]{right - grooveInset, grooveTop, ribbedTo}));
-      y = grooveTop;
+    while (y < top - 1e-4f) {
+      float raisedTop = Math.min(top, y + (ridgePitch - ridgeRecess));
+      body.add(new Box(new float[]{left, y, boxFrom}, new float[]{right, raisedTop, boxTo}));
+      float recessTop = Math.min(top, raisedTop + ridgeRecess);
+      if (recessTop - raisedTop > 1e-4f && recessTop < top - 1e-4f) {
+        shaded.add(new Box(new float[]{left + ridgeDepth, raisedTop, boxFrom},
+            new float[]{right - ridgeDepth, recessTop, boxTo}));
+      } else if (recessTop - raisedTop > 1e-4f) {
+        // A recess would be the last band; make it raised instead so the top edge is square.
+        body.add(new Box(new float[]{left, raisedTop, boxFrom}, new float[]{right, recessTop, boxTo}));
+      }
+      y = recessTop;
     }
-    body.add(new Box(new float[]{left, y, ribbedFrom}, new float[]{right, top, ribbedTo}));
 
-    // Rear chamfer: two slices, each a step further in on every edge.
+    // Rear chamfer: two slices, each a step further in on every edge of the box.
     shaded.add(new Box(
-        new float[]{left + chamferStep, bottom + chamferStep, ribbedTo},
-        new float[]{right - chamferStep, top - chamferStep, ribbedTo + chamferStep}));
+        new float[]{left + chamferStep, bottom + chamferStep, boxTo},
+        new float[]{right - chamferStep, top - chamferStep, boxTo + chamferStep}));
     shaded.add(new Box(
-        new float[]{left + 2 * chamferStep, bottom + 2 * chamferStep, ribbedTo + chamferStep},
+        new float[]{left + 2 * chamferStep, bottom + 2 * chamferStep, boxTo + chamferStep},
         new float[]{right - 2 * chamferStep, top - 2 * chamferStep, rearZ}));
 
     // Same door-hinge hardware as the standard housing.
