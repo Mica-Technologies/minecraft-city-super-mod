@@ -285,7 +285,13 @@ CADE_PANEL_H = CADE_PANEL[2] - CADE_PANEL[1]
 # Type I carries one striped rail, Type III three.
 #
 # BARRICADE_SCALE stretches the assembly's HEIGHT and its members about its feet. A real Type III
-# is four to eight feet long and about five feet tall, so even scaled up it is under-sized.
+# is four to eight feet long and about five feet tall with rails eight to twelve inches deep. At
+# 1.35 it stood about 1.1 blocks with 8-inch rails and read undersized next to everything else on
+# the road; at 1.82 (a further 35%) the Type III tops out at about a block and a half -- five feet
+# -- with rails about eleven inches deep, and the Type I scales with it.
+#
+# The scale also carries the free-end OVERHANG, so a lone barricade grows wider with it (about 1.5
+# blocks end to end) while a joined one does not grow along the run at all: see below.
 #
 # The rails, though, span EXACTLY one cell, and that is what makes barricades connect. Abutting
 # runs need their rails to meet at the cell boundary: overhanging rails would overlap a
@@ -296,7 +302,7 @@ CADE_PANEL_H = CADE_PANEL[2] - CADE_PANEL[1]
 #
 # The legs are centred ON the cell edges rather than inside them, so where two barricades meet
 # the single shared upright sits on the seam instead of beside it.
-BARRICADE_SCALE = 1.35
+BARRICADE_SCALE = 1.82
 _BARRICADE_RAIL_HALF_Z = 0.26
 _BARRICADE_LEG_HALF_X = 0.55
 _BARRICADE_LEG_HALF_Z = 0.42

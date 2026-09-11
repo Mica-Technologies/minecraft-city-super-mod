@@ -20,19 +20,19 @@ public final class BarricadeGeometry {
   public static final float RIGHT_UPRIGHT_X = 16.0000f;
 
   /** rail half z, in 1/16 block units. */
-  public static final float RAIL_HALF_Z = 0.3510f;
+  public static final float RAIL_HALF_Z = 0.4732f;
 
   /** rail centre z, in 1/16 block units. */
   public static final float RAIL_CENTRE_Z = 8.0000f;
 
   /** type1 top, in 1/16 block units. */
-  public static final float TYPE1_TOP = 12.9600f;
+  public static final float TYPE1_TOP = 17.4720f;
 
   /** type3 top, in 1/16 block units. */
-  public static final float TYPE3_TOP = 17.8200f;
+  public static final float TYPE3_TOP = 24.0240f;
 
   /** leg half x, in 1/16 block units. */
-  public static final float LEG_HALF_X = 0.7425f;
+  public static final float LEG_HALF_X = 1.0010f;
 
   /** folding left upright x, in 1/16 block units. */
   public static final float FOLDING_LEFT_UPRIGHT_X = 2.8000f;

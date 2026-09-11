@@ -624,9 +624,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockWorkZoneDeviceDiagonal("channelizer_cade_right",
         new AxisAlignedBB(0.217062, 0.000000, 0.217062, 0.782938, 0.975000, 0.782938)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_left", BarricadeGeometry.TYPE1_TOP,
-        new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 0.810000, 0.719375)));
+        new AxisAlignedBB(-0.257075, 0.000000, 0.204250, 1.257075, 1.092000, 0.795750)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_1_right", BarricadeGeometry.TYPE1_TOP,
-        new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 0.810000, 0.719375)));
+        new AxisAlignedBB(-0.257075, 0.000000, 0.204250, 1.257075, 1.092000, 0.795750)));
     initTabBlock(new BlockWorkZoneBarricadeFolding("barricade_type_2_left",
         BarricadeGeometry.FOLDING_TOP,
         new AxisAlignedBB(0.109375, 0.000000, 0.290625, 0.890625, 0.928125, 0.709375)));
@@ -634,9 +634,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
         BarricadeGeometry.FOLDING_TOP,
         new AxisAlignedBB(0.109375, 0.000000, 0.290625, 0.890625, 0.928125, 0.709375)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_left", BarricadeGeometry.TYPE3_TOP,
-        new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 1.113750, 0.719375)));
+        new AxisAlignedBB(-0.257075, 0.000000, 0.204250, 1.257075, 1.501500, 0.795750)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_right", BarricadeGeometry.TYPE3_TOP,
-        new AxisAlignedBB(-0.190687, 0.000000, 0.280625, 1.190687, 1.113750, 0.719375)));
+        new AxisAlignedBB(-0.257075, 0.000000, 0.204250, 1.257075, 1.501500, 0.795750)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_post",
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_post_yellow",
