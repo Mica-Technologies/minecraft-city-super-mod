@@ -402,11 +402,16 @@ def main():
         m = builder()
         m.write(_out_path(base + ".obj"), mtl_name)
         _report(base, m)
-        # Inventory copy centred on the origin so item-frame/GUI rotation (which pivots about the
-        # model origin) keeps it in view -- same trick the furniture/Miovision OBJs use.
+        # Inventory copy re-centred on the BLOCK CENTRE (0.5, 0.5, 0.5), which is where the item
+        # camera transform actually pivots: RenderItem.renderItem does translate(-0.5,-0.5,-0.5)
+        # INSIDE the transform, so model (0.5,0.5,0.5) is the origin the gui/fixed rotation and
+        # scale act about. Centring an inventory copy on (0,0,0) instead -- as several older CSM
+        # OBJs do -- leaves the model half a (scaled) block down and to one side of its slot, which
+        # is what pushed this one out of its inventory box.
         inv = builder()
         cx, cy, cz = _center(inv)
-        inv.write(_out_path(base + "_inv.obj"), mtl_name, offset=(-cx, -cy, -cz))
+        inv.write(_out_path(base + "_inv.obj"), mtl_name,
+                  offset=(0.5 - cx, 0.5 - cy, 0.5 - cz))
 
 
 if __name__ == "__main__":
