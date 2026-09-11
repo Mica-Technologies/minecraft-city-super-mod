@@ -60,9 +60,20 @@ rather than what rail the block is, which exists entirely for the transition —
 
 ## Slopes, and settling onto the ground
 
-A run climbs rather than staircasing: `GuardrailSlope` is `flat` / `up` / `down`, read off the
-RIGHT-hand neighbour alone, which is enough for a whole run because each cell's right-hand end then
-lands on its neighbour's left-hand end all the way up.
+A run climbs rather than staircasing: `GuardrailSlope` is `flat` / `up` / `down`. `up` rises across
+the cell to a neighbour a block up on its RIGHT; `down` falls across it from a neighbour a block up
+on its LEFT, finishing level.
+
+**The ramp is always drawn in the LOWER of the two cells.** It used to be read off the right-hand
+neighbour alone, so a run descending to the right ramped down out of the HIGHER cell — and the
+higher cell stands on something solid. The last part of that ramp was drawn inside the block under
+it: the ramp seemed to rise out of the top of the wall and the lower run butted into its side, on
+two of the four facings (issue #193). The lower cell has nothing but air above its rail, so a ramp
+drawn there is always seen whole. `down` is exactly the reflection of `up` about the middle of the
+cell, which the transition generator now asserts for every slope.
+
+A single cell in a dip, with a higher neighbour on both sides, can ramp to only one of them: the
+right-hand one wins and the left-hand joint stays a step.
 
 **The slope is chosen from where the rails actually ARE, not from block positions.** Guardrails are
 `ICsmRoadSurfaceAware` and settle onto whatever they stand on, so a cell on bare ground and one a

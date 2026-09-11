@@ -255,15 +255,15 @@ def build_box_post(mesh, double, slope):
 
 
 def build_box_core(mesh, double, slope):
-    grade = geo.slope_lift(slope, 1.0) / geo.CELL
+    lift, grade = geo.slope_lift(slope, 0.0), geo.slope_grade(slope)
     for mirror in rail_sides(double):
-        sweep_section(mesh, box_rail_section(mirror), BOX_RAIL_SWATCH, 0.0, geo.CELL, 0.0, grade)
+        sweep_section(mesh, box_rail_section(mirror), BOX_RAIL_SWATCH, 0.0, geo.CELL, lift, grade)
 
 
 def build_box_end(mesh, double, slope, left):
     """The cap over an open end. Like the W-beam, only the right-hand cap needs one per slope --
-    the left-hand end is at the foot of the rise on every slope."""
-    lift = 0.0 if left else geo.slope_lift(slope, 1.0)
+    the left-hand end is off the floor only on ``down``, whose left end is always joined."""
+    lift = geo.slope_lift(slope, 0.0 if left else 1.0)
     x = 0.0 if left else geo.CELL
     for mirror in rail_sides(double):
         cap_section(mesh, box_rail_section(mirror), BOX_RAIL_SWATCH, x, lift,
@@ -344,15 +344,15 @@ def build_cable_clips(mesh, double, lift):
 
 
 def build_cable_core(mesh, double, slope):
-    grade = geo.slope_lift(slope, 1.0) / geo.CELL
+    lift, grade = geo.slope_lift(slope, 0.0), geo.slope_grade(slope)
     for z in cable_planes(double):
         for cy in geo.CABLE_HEIGHTS:
             section = polygon_section(z, cy, geo.CABLE_RADIUS, CABLE_SIDES)
-            sweep_section(mesh, section, CABLE_SWATCH, 0.0, geo.CELL, 0.0, grade)
+            sweep_section(mesh, section, CABLE_SWATCH, 0.0, geo.CELL, lift, grade)
 
 
 def build_cable_end(mesh, double, slope, left):
-    lift = 0.0 if left else geo.slope_lift(slope, 1.0)
+    lift = geo.slope_lift(slope, 0.0 if left else 1.0)
     x = 0.0 if left else geo.CELL
     outward = -1.0 if left else 1.0
     for z in cable_planes(double):

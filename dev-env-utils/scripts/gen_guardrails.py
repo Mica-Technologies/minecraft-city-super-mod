@@ -26,12 +26,14 @@ Exactly the machinery the work zone barriers use, so the primitives are imported
 
 SLOPES, AND WHY THE FILLER IS LEVEL
 -----------------------------------
-``up`` rises a full block across the cell, so a run climbing one block per cell is continuous: this
-segment's right-hand end is at exactly the height the next block's left-hand end starts at. The
-DIAGONAL filler bridges the extra ``DIAGONAL_GAP`` between two cells that meet at a corner -- and
-across that gap there is no rise left to make, because the core already made all of it inside its
-own cell. So ``fill_up`` is the flat filler carried at the top of the rise and ``fill_down`` at the
-bottom of the fall. There are still three of them, and they are still not interchangeable.
+``up`` rises a full block across the cell toward its right-hand end, and ``down`` falls a full block
+across it from its left-hand end, so either way a run changing level by one block per cell is
+continuous. Both are drawn in the LOWER of the two cells -- see ``guardrail_geometry``'s slope
+section for why a ramp drawn in the higher one disappears into the block under it. The DIAGONAL
+filler bridges the extra ``DIAGONAL_GAP`` between two cells that meet at a corner -- and across that
+gap there is no rise left to make, because the core already made all of it inside its own cell. So
+``fill_up`` is the flat filler carried at the top of the rise, and ``fill_down``, whose right-hand
+end is back at the cell's own level, is the same shape as ``fill_flat``.
 
 THE ONE BLOCKSTATE TRICK WORTH KNOWING
 --------------------------------------
@@ -193,12 +195,9 @@ def build_post(mesh, wood, double, slope):
     """Post plus block-out, at the height the rail passes the middle of the cell.
 
     The post stands mid-cell, so on a sloped segment it meets the rail ``POST_LIFT`` of the way up
-    the rise and has to be that much taller.
-
-    Which end grows depends on which way the grade runs. Climbing, the rail is above the cell at
-    mid span and the post reaches UP to it from the cell floor. Descending, the rail is below the
-    cell there -- and so is the ground it is built on -- so the foot goes down with it. Leaving the
-    foot on the floor in that case would hang the block-out in the air below a stub of post.
+    the rise and has to be that much taller. A ramp is always drawn in the lower of its two cells,
+    whichever way it runs, so the rail is above the cell there and the post always reaches UP to it
+    from the cell floor.
     """
     lift = geo.slope_lift(slope, geo.POST_LIFT)
     foot = min(geo.POST_BOTTOM_Y, lift)
@@ -240,15 +239,18 @@ def build_post(mesh, wood, double, slope):
 
 # --- the pieces -------------------------------------------------------------------------------------
 def build_core(mesh, double, slope):
-    grade = geo.slope_lift(slope, 1.0) / geo.CELL
+    lift, grade = geo.slope_lift(slope, 0.0), geo.slope_grade(slope)
     for mirror in rail_sides(double):
-        sweep_rail(mesh, mirror, 0.0, geo.CELL, 0.0, grade)
+        sweep_rail(mesh, mirror, 0.0, geo.CELL, lift, grade)
 
 
 def build_end(mesh, double, slope, left):
-    """The cap over an open end. The left-hand end is at the foot of the rise on every slope --
-    ``slope_lift`` is zero there -- so only the right-hand cap needs one model per slope."""
-    lift = 0.0 if left else geo.slope_lift(slope, 1.0)
+    """The cap over an open end, at whatever height the core reaches there.
+
+    Only the right-hand cap needs one model per slope. The left-hand end is off the floor only on
+    ``down``, and a cell only slopes down because its LEFT neighbour joins it a block up -- so a
+    ``down`` cell's left end is never open and its cap is never drawn."""
+    lift = geo.slope_lift(slope, 0.0 if left else 1.0)
     x = 0.0 if left else geo.CELL
     for mirror in rail_sides(double):
         rail_cap(mesh, mirror, x, lift, -1.0 if left else 1.0)
@@ -258,9 +260,9 @@ def build_fill(mesh, double, slope):
     """The length of rail that closes the gap to a DIAGONAL neighbour, off the right-hand end.
 
     Level, at whatever height the core's right-hand end reached: the neighbour's cell is a block up
-    for ``up`` and a block down for ``down``, and its own core starts at its own ``RAIL_BOTTOM_Y``,
-    which is exactly where this one stopped. All the rise happens inside a cell; none of it is left
-    for the joint.
+    for ``up`` and level for ``down``, and its own core starts at its own ``RAIL_BOTTOM_Y``, which is
+    exactly where this one stopped. All the rise happens inside a cell; none of it is left for the
+    joint.
     """
     lift = geo.slope_lift(slope, 1.0)
     for mirror in rail_sides(double):
@@ -362,8 +364,8 @@ def blockstate_json(spec):
         occupies the key, so ``slope``'s own entry for it is never merged in, and is then dropped
         before anything is baked (``ForgeBlockStateV1`` line ``submodels.values().removeIf``).
 
-    ``connectleft`` needs none of that: the left-hand end of a segment is at the foot of the rise
-    on every slope, so one cap serves all three.
+    ``connectleft`` needs none of that: the left-hand end of a segment is only off the floor on
+    ``down``, and a ``down`` segment is always joined on its left, so one cap serves all three.
     """
     stem = spec["stem"]
     model = "%s/%s" % (MODEL_PREFIX, stem)

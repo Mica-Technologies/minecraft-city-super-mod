@@ -57,26 +57,28 @@ final class GuardrailJoins {
     DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
 
     DirectionEight toRight = facing.rotateY();
+    DirectionEight toLeft = facing.rotateYCCW();
     int right = neighbourLevel(rail, rail.getRailKindOnRight(), access, pos, facing,
         toRight, true);
+    int left = neighbourLevel(rail, rail.getRailKindOnLeft(), access, pos, facing,
+        toLeft, false);
     boolean joinsRight = right != NONE;
-    boolean joinsLeft = neighbourLevel(rail, rail.getRailKindOnLeft(), access, pos, facing,
-        facing.rotateYCCW(), false) != NONE;
+    boolean joinsLeft = left != NONE;
 
-    // The slope is read off the RIGHT-hand neighbour alone, and that is enough for a whole run:
-    // this cell ramps up to meet the one above it, and that cell in turn ramps up to the next, so
-    // each rail's right-hand end lands exactly on its neighbour's left-hand end all the way up.
+    // A ramp is drawn in the LOWER cell of the two it joins, whichever side the higher one is on:
+    // UP when it is to the right, DOWN when it is to the left. The higher cell stands on something
+    // solid, and a rail ramping down out of it would finish inside that block — drawn and then
+    // hidden, so the ramp seemed to rise out of the top of the wall while the lower run butted
+    // into its side. The lower cell has only air above its rail, so a ramp there is seen whole.
     //
-    // It is read as a real HEIGHT, not as a difference of block positions. A guardrail settles
+    // Heights are read as real HEIGHTS, not as differences of block positions. A guardrail settles
     // onto whatever it stands on, so a cell on bare ground and its neighbour a block up on a snow
     // layer are one block apart in Y and a couple of sixteenths apart in the world. Asking the
     // block positions answers that with a whole block's ramp, which is the rail diving into the
     // ground that this replaced.
-    GuardrailSlope slope = GuardrailSlope.FLAT;
-    if (joinsRight) {
-      BlockPos neighbour = pos.add(toRight.getOffsetX(), right, toRight.getOffsetZ());
-      slope = GuardrailSlope.forRise(settledHeight(access, neighbour) - settledHeight(access, pos));
-    }
+    double here = settledHeight(access, pos);
+    GuardrailSlope slope = GuardrailSlope.forRises(
+        riseTo(access, pos, toRight, right, here), riseTo(access, pos, toLeft, left, here));
 
     return state
         .withProperty(WorkZoneJoins.CONNECT_LEFT, joinsLeft)
@@ -202,6 +204,19 @@ final class GuardrailJoins {
    */
   private static double settledHeight(IBlockAccess access, BlockPos pos) {
     return pos.getY() + RoadSurfaceHeight.offsetFor(access, pos);
+  }
+
+  /**
+   * How far above {@code here} the rail joined one step in {@code direction} sits, or negative
+   * infinity when nothing joins on that side.
+   */
+  private static double riseTo(IBlockAccess access, BlockPos pos, DirectionEight direction,
+      int level, double here) {
+    if (level == NONE) {
+      return Double.NEGATIVE_INFINITY;
+    }
+    BlockPos neighbour = pos.add(direction.getOffsetX(), level, direction.getOffsetZ());
+    return settledHeight(access, neighbour) - here;
   }
 
   /** Returned by {@link #neighbourLevel} when there is no guardrail that way at all. */
