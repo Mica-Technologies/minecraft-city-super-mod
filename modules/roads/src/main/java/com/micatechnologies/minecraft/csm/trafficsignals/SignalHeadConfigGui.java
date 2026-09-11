@@ -98,7 +98,8 @@ public class SignalHeadConfigGui extends GuiScreen {
       "Horizontal",
       "Mount Type",
       "Mount Color",
-      "Body Style"
+      "Body Style",
+      "Visibility Area"
   };
 
   /**
@@ -333,6 +334,12 @@ public class SignalHeadConfigGui extends GuiScreen {
         return tileEntity.getMountColor().getFriendlyName();
       case CYCLE_BODY_STYLE:
         return infos[0].getBodyStyle().getFriendlyName();
+      case CLEAR_VISIBILITY_AREA:
+        // Clicking clears; programming is done in the world with the visibility programmer, so
+        // the button reads as status with the one action it can take.
+        return tileEntity.hasVisibilityArea()
+            ? tileEntity.getVisibilityArea().pointCount() + " pts (click to clear)"
+            : "Not programmed";
       default:
         return "N/A";
     }

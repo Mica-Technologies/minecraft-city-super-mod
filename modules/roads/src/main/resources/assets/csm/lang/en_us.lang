@@ -7,6 +7,7 @@ item.ewsignallinker.name=Sensor Zone Tool
 item.nssignallinker.name=Signal Link Tool
 item.signalconfigurationtool.name=Traffic Signal Configuration Tool
 item.signalheadconfigtool.name=Signal Head Configuration Tool
+item.signalvisibilityprogrammer.name=Signal Visibility Programmer
 item.spanwiretool.name=Span Wire Tool
 itemGroup.tabroadsigns=CSM: Road Signs
 itemGroup.tabtrafficaccessories=CSM: Traffic Accessories

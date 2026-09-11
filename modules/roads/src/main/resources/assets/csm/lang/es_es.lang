@@ -7,6 +7,7 @@ item.ewsignallinker.name=Herramienta de Zona de Sensor
 item.nssignallinker.name=Herramienta de Enlace de Semáforo
 item.signalconfigurationtool.name=Herramienta de Configuración de Semáforo
 item.signalheadconfigtool.name=Herramienta de Configuración de Cabezal de Semáforo
+item.signalvisibilityprogrammer.name=Programador de Visibilidad de Semáforo
 item.spanwiretool.name=Herramienta de Cable de Suspensión
 itemGroup.tabroadsigns=CSM: Señales Viales
 itemGroup.tabtrafficaccessories=CSM: Accesorios de Tráfico

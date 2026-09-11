@@ -12,7 +12,13 @@ public enum TrafficSignalVisorType implements IStringSerializable {
   BOTH_LOUVERED("louvered_both", "Vertical and Horizontal Louvered"),
   NONE("none", "None"),
   BARLO("barlo", "Barlo Safety Beam (Horizontal)"),
-  BARLO_VERTICAL("barlo_vertical", "Barlo Safety Beam (Vertical)");
+  BARLO_VERTICAL("barlo_vertical", "Barlo Safety Beam (Vertical)"),
+  /**
+   * The optically programmed head (3M / McCain "PV"): a full-tube visor over a lens that is only
+   * lit from the ground area programmed with the visibility programmer tool. Appended so the
+   * ordinals stored in existing worlds keep their meaning.
+   */
+  PROGRAMMABLE("programmable", "Programmable Visibility");
 
   // Instance fields
   private final String name;          // The identifier used for serialization
@@ -36,6 +42,27 @@ public enum TrafficSignalVisorType implements IStringSerializable {
   // Getter for the friendly name
   public String getFriendlyName() {
     return friendlyName;
+  }
+
+  /**
+   * Whether how lit this visor's section looks depends on where the viewer stands. True for the
+   * louvers and the programmable visor; the renderer does extra per-frame work only for a head
+   * that has at least one such section, and takes its ordinary path otherwise.
+   *
+   * @return true if the section's apparent brightness is view-angle dependent
+   */
+  public boolean isViewAngleSensitive() {
+    return this == VERTICAL_LOUVERED || this == HORIZONTAL_LOUVERED || this == BOTH_LOUVERED
+        || this == PROGRAMMABLE;
+  }
+
+  /**
+   * Whether this visor carries horizontal louver slats, whose aim follows the programmed area.
+   *
+   * @return true for the horizontal and the combined louvers
+   */
+  public boolean hasHorizontalLouvers() {
+    return this == HORIZONTAL_LOUVERED || this == BOTH_LOUVERED;
   }
 
   // Method to get the next enum value in the sequence

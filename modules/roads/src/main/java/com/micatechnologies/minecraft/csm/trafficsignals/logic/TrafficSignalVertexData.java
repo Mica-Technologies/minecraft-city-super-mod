@@ -11,7 +11,8 @@ public class TrafficSignalVertexData {
   // Combined with the 9° visor tilt and the ~6° gap/depth ratio, this yields a visibility
   // cutoff around 23° from horizontal — blocking signals beyond ~20 blocks when mounted
   // 10 blocks above road level.
-  private static final float HORIZONTAL_LOUVER_EXTRA_TILT = 15.0f;
+  // Public because the renderer aims a programmed louver by adjusting FROM this authored value.
+  public static final float HORIZONTAL_LOUVER_EXTRA_TILT = 15.0f;
   // New: Generate optimized circle visor (segmented ring)
   public static List<Box> getOptimizedCircleVisor() {
     List<Box> boxes = new ArrayList<>();
@@ -830,6 +831,11 @@ public class TrafficSignalVertexData {
         return selectVisorData(TUNNEL_VISOR_VERTEX_DATA, TUNNEL_VISOR_8INCH_VERTEX_DATA,
             TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
       case BARLO_VERTICAL:
+        return selectVisorData(CIRCLE_VISOR_VERTEX_DATA, CIRCLE_VISOR_8INCH_VERTEX_DATA,
+            CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case PROGRAMMABLE:
+        // The full-tube shell of a programmed head; what makes it programmable is the mask the
+        // signal renderer draws over the lens, not the visor.
         return selectVisorData(CIRCLE_VISOR_VERTEX_DATA, CIRCLE_VISOR_8INCH_VERTEX_DATA,
             CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
       case NONE:

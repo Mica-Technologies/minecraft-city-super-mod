@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireHa
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireManager;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalVisibilityArea;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
@@ -399,6 +400,22 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private static final String LEGACY_MOUNT_COLOR_KEY = "mountColor";
   private TrafficSignalBodyColor mountColor = TrafficSignalBodyColor.FLAT_BLACK;
 
+  /**
+   * The ground area this head has been programmed to be seen from, as one int array of block
+   * triples. Written only when set, so a head nobody has programmed keeps the tags it always had.
+   */
+  private static final String VISIBILITY_AREA_KEY = "vA";
+
+  /**
+   * Where a programmable visibility visor lights, and where a horizontal louver aims. One per head
+   * rather than per section because that is what a real install has: the technician masks every
+   * section of a head for the same lane. {@code null} until programmed with the visibility
+   * programmer tool. Not part of the copy/paste appearance clipboard, since an area is a place
+   * and not a look.
+   */
+  @javax.annotation.Nullable
+  private SignalVisibilityArea visibilityArea;
+
   private boolean dirty = true;
   private boolean powerLossOff = true;
 
@@ -512,6 +529,11 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       mountColor = TrafficSignalBodyColor.fromNBT(compound.getInteger(LEGACY_MOUNT_COLOR_KEY));
     }
 
+    // Get the programmed visibility area; absent or malformed means none
+    visibilityArea = compound.hasKey(VISIBILITY_AREA_KEY)
+        ? SignalVisibilityArea.fromIntArray(compound.getIntArray(VISIBILITY_AREA_KEY))
+        : null;
+
     // Get aging settings
     if (compound.hasKey(AGING_ENABLED_KEY)) {
       agingEnabled = compound.getBoolean(AGING_ENABLED_KEY);
@@ -611,6 +633,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     compound.setBoolean(HORIZONTAL_FLIP_KEY, horizontalFlip);
     compound.setInteger(MOUNT_TYPE_KEY, mountType.toNBT());
     compound.setInteger(MOUNT_COLOR_KEY, mountColor.toNBT());
+    if (visibilityArea != null) {
+      compound.setIntArray(VISIBILITY_AREA_KEY, visibilityArea.toIntArray());
+    }
 
     // Set aging settings
     compound.setBoolean(AGING_ENABLED_KEY, agingEnabled);
@@ -970,6 +995,36 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     mountColor = mountColor.getNextColor();
     markDirtySync(world, pos, true);
     return mountColor;
+  }
+
+  /**
+   * The ground area this head is programmed to be seen from, or {@code null} if it has not been
+   * programmed. Read by the renderer for the programmable visibility visor and the horizontal
+   * louvers; see {@link SignalVisibilityArea}.
+   *
+   * @return the area, or null
+   */
+  @javax.annotation.Nullable
+  public SignalVisibilityArea getVisibilityArea() {
+    return visibilityArea;
+  }
+
+  /**
+   * Programs (or, with {@code null}, clears) the area this head is seen from. Syncs to clients and
+   * flags the renderer, because the horizontal louver slats are aimed at the area and live in the
+   * compiled geometry.
+   *
+   * @param area the new area, or null to clear
+   */
+  public void setVisibilityArea(@javax.annotation.Nullable SignalVisibilityArea area) {
+    this.visibilityArea = area;
+    dirty = true;
+    markDirtySync(world, pos, true);
+  }
+
+  /** @return whether a visibility area has been programmed. */
+  public boolean hasVisibilityArea() {
+    return visibilityArea != null;
   }
 
   /**

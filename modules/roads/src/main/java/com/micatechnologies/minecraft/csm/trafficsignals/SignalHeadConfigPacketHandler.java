@@ -74,6 +74,11 @@ public class SignalHeadConfigPacketHandler implements
         case CYCLE_BODY_STYLE:
           signalHead.getNextBodyStyle();
           break;
+        case CLEAR_VISIBILITY_AREA:
+          if (signalHead.hasVisibilityArea()) {
+            signalHead.setVisibilityArea(null);
+          }
+          break;
       }
     });
     return null;
