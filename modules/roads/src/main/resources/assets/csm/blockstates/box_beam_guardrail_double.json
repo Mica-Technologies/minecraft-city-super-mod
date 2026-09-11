@@ -142,14 +142,6 @@
         }
       }
     },
-    "post": {
-      "false": {
-        "submodel": {
-          "post": null
-        }
-      },
-      "true": {}
-    },
     "diagfill": {
       "false": {
         "submodel": {
@@ -254,6 +246,31 @@
           }
         }
       }
+    },
+    "post": {
+      "false": {
+        "submodel": {
+          "post": null,
+          "plate": null
+        }
+      },
+      "true": {}
+    },
+    "stacked": {
+      "false": {
+        "submodel": {
+          "plate": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_double_plate.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
+            }
+          }
+        }
+      },
+      "true": {}
     },
     "normal": [
       {}

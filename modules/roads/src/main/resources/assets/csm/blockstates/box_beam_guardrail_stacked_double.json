@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_core.obj",
+    "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_core.obj",
     "custom": {
       "flip-v": true
     },
     "textures": {
-      "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+      "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
     }
   },
   "variants": {
@@ -122,12 +122,12 @@
       "false": {
         "submodel": {
           "end_left": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_end_left.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_end_left.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           }
         }
@@ -154,94 +154,94 @@
       "flat": {
         "submodel": {
           "post": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_post_flat.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_post_flat.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           },
           "fill": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_fill_flat.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_fill_flat.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           },
           "end_right": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_end_right_flat.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_end_right_flat.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           }
         }
       },
       "up": {
-        "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_core_up.obj",
+        "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_core_up.obj",
         "submodel": {
           "post": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_post_up.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_post_up.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           },
           "fill": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_fill_up.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_fill_up.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           },
           "end_right": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_end_right_up.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_end_right_up.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           }
         }
       },
       "down": {
-        "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_core_down.obj",
+        "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_core_down.obj",
         "submodel": {
           "post": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_post_down.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_post_down.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           },
           "fill": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_fill_down.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_fill_down.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           },
           "end_right": {
-            "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_end_right_down.obj",
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_end_right_down.obj",
             "custom": {
               "flip-v": true
             },
             "textures": {
-              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
             }
           }
         }
@@ -250,7 +250,24 @@
     "post": {
       "false": {
         "submodel": {
-          "post": null
+          "post": null,
+          "plate": null
+        }
+      },
+      "true": {}
+    },
+    "stacked": {
+      "false": {
+        "submodel": {
+          "plate": {
+            "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_plate.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
+            }
+          }
         }
       },
       "true": {}
@@ -260,12 +277,12 @@
     ],
     "inventory": [
       {
-        "model": "csm:trafficaccessories/shared_models/guardrail_cable_barrier_double_inv.obj",
+        "model": "csm:trafficaccessories/shared_models/guardrail_box_beam_stacked_double_inv.obj",
         "custom": {
           "flip-v": true
         },
         "textures": {
-          "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_cable_barrier_steel"
+          "#body": "csm:blocks/trafficaccessories/guardrail/guardrail_box_beam_steel"
         },
         "transform": "forge:default-block"
       }

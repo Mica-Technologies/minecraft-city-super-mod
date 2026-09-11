@@ -1,7 +1,7 @@
 # Guardrail System
 
 Four rail families, their end treatments, a W-to-thrie transition and a crash cushion, in the
-Roads module's `trafficaccessories` package. 23 blocks and one configuration tool, all of them
+Roads module's `trafficaccessories` package. 25 blocks and one configuration tool, all of them
 joining blocks: each cell works out from its neighbours what to draw, and nothing carries a tile
 entity.
 
@@ -16,7 +16,7 @@ scripts write.
 |---|---|---|
 | `w_beam_guardrail` `_wood` `_double` `_wood_double` | `BlockGuardrail` | the classic two-corrugation rail |
 | `thrie_beam_guardrail` `_wood` `_double` `_wood_double` | `BlockGuardrail` | three corrugations, deeper |
-| `box_beam_guardrail` `_double` | `BlockGuardrail` | square tube on a bolted base plate |
+| `box_beam_guardrail` `_double` `_stacked` `_stacked_double` | `BlockGuardrailBoxBeam` | square tube on a bolted base plate; the stacked pair carries a second tube half a block under it |
 | `cable_barrier` `_double` | `BlockGuardrail` | three tensioned cables with clips |
 | `w_beam_thrie_transition` | `BlockGuardrailTransition` | carries one rail into the other |
 | `guardrail_end_flared` `_boxing_glove` `_terminal` `_turndown` | `BlockGuardrailEnd` | W-beam ends |
@@ -191,6 +191,21 @@ two cells of rail read as one taller barrier. The upper one takes the lower one'
 settle onto, and a stack on a snow layer or a sloped road would open a gap at the joint. On a
 grade the lower cell's post reaches half a cell into the upper one, where the upper post also
 stands; the two are the same part in the same texture, so the overlap does not read.
+
+Box beam is the one rail whose post stands on a visible base plate, and a plate half way up a
+stacked post reads as a splice nobody would build. So the box beam blocks are their own subclass,
+`BlockGuardrailBoxBeam`, which derives `stacked` — true when the block below is a guardrail cell
+with a post — and the plate is a separate submodel that `stacked` supplies only when false. `post`
+sorts before `stacked`, so a cell with no post nulls the plate first. The post itself stands from
+the floor with no bottom face, so it reaches down to the post below without the plate. Only box
+beam carries the property; it would double every other family's state count for nothing.
+
+The two-tube `box_beam_guardrail_stacked` (and `_double`) carries a second tube `BOX_STACK_PITCH`,
+half a block, under the first (issue #191). A two-tube block on a one-tube one makes three evenly
+spaced tubes, and two two-tube blocks make four, so there is no three- or four-tube block. The
+lower tube is capped at both ends in the core rather than by the connect-driven end pieces: a run
+it joins may have no lower tube to carry it on, and where two do meet, the caps face away from
+each other inside one continuous tube.
 
 A cell is one long and a diagonal step is √2, so a 45° run leaves `DIAGONAL_GAP` at every joint;
 the right-hand end of each connected block fills it. The filler is excluded from the inventory

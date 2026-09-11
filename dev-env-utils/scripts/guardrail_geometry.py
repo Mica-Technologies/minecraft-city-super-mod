@@ -182,6 +182,10 @@ BOX_RAIL_BOTTOM_Y = BOX_RAIL_TOP_Y - 3.20
 BOX_RAIL_FRONT_Z = RAIL_FRONT_Z
 BOX_RAIL_BACK_Z = BOX_RAIL_FRONT_Z + 3.20
 BOX_BASE_PLATE = (3.40, 0.60)     # half width, thickness
+# The two-tube box beam (#191) carries a second tube this far under the first: half a cell. So a
+# two-tube block stacked on a one-tube block makes three evenly spaced tubes, and two two-tube
+# blocks make four -- which is the bridge rail the issue asks for, without a block per count.
+BOX_STACK_PITCH = CELL * 0.5
 
 # --- the cable barrier -----------------------------------------------------------------------------
 # Not a beam at all: tensioned cables on slim posts. The cables are thin enough that the span wire
@@ -229,6 +233,8 @@ THRIE_RAIL_BLOCKS = (
 BOX_RAIL_BLOCKS = (
     "box_beam_guardrail",
     "box_beam_guardrail_double",
+    "box_beam_guardrail_stacked",
+    "box_beam_guardrail_stacked_double",
 )
 
 CABLE_BLOCKS = (

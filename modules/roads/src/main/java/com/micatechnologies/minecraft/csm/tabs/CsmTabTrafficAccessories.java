@@ -49,6 +49,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetN
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockCrashCushion;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrail;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailBoxBeam;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailEnd;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailTransition;
 import com.micatechnologies.minecraft.csm.trafficaccessories.ItemGuardrailTool;
@@ -724,9 +725,15 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 1.000000, 0.600000),
         W_BEAM, THRIE));
 
-    initTabBlock(new BlockGuardrail("box_beam_guardrail",
+    initTabBlock(new BlockGuardrailBoxBeam("box_beam_guardrail",
         new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 1.000000, 0.712500), BOX_BEAM));
-    initTabBlock(new BlockGuardrail("box_beam_guardrail_double",
+    initTabBlock(new BlockGuardrailBoxBeam("box_beam_guardrail_double",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 1.000000, 0.950000), BOX_BEAM));
+    // Two tubes half a block apart, for bridges (#191): a stacked block on a single one makes
+    // three evenly spaced tubes, and two stacked blocks make four.
+    initTabBlock(new BlockGuardrailBoxBeam("box_beam_guardrail_stacked",
+        new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 1.000000, 0.712500), BOX_BEAM));
+    initTabBlock(new BlockGuardrailBoxBeam("box_beam_guardrail_stacked_double",
         new AxisAlignedBB(0.000000, 0.000000, 0.050000, 1.000000, 1.000000, 0.950000), BOX_BEAM));
     initTabBlock(new BlockGuardrail("cable_barrier",
         new AxisAlignedBB(0.000000, 0.000000, 0.096875, 1.000000, 1.000000, 0.306250), CABLE));

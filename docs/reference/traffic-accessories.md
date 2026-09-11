@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "325 blocks in this tab"
+!!! info "327 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -33,6 +33,8 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Black Vertical Traffic Pole with Signal Mount | `csm:trafficpoleverticalsignalmountblack` |  | 10 | pickaxe | 1 |
 | Box Beam Guardrail | `csm:box_beam_guardrail` | 1.2 | 6 | pickaxe | 0 |
 | Box Beam Guardrail (Double Sided) | `csm:box_beam_guardrail_double` | 1.2 | 6 | pickaxe | 0 |
+| Box Beam Guardrail (Stacked) | `csm:box_beam_guardrail_stacked` | 1.2 | 6 | pickaxe | 0 |
+| Box Beam Guardrail (Stacked, Double Sided) | `csm:box_beam_guardrail_stacked_double` | 1.2 | 6 | pickaxe | 0 |
 | Box Beam Guardrail End (Bullnose) | `csm:guardrail_end_bullnose_box` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier | `csm:cable_barrier` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier (Double Sided) | `csm:cable_barrier_double` | 1.2 | 6 | pickaxe | 0 |

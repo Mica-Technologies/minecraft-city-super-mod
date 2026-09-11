@@ -142,14 +142,6 @@
         }
       }
     },
-    "post": {
-      "false": {
-        "submodel": {
-          "post": null
-        }
-      },
-      "true": {}
-    },
     "diagfill": {
       "false": {
         "submodel": {
@@ -254,6 +246,14 @@
           }
         }
       }
+    },
+    "post": {
+      "false": {
+        "submodel": {
+          "post": null
+        }
+      },
+      "true": {}
     },
     "normal": [
       {}
