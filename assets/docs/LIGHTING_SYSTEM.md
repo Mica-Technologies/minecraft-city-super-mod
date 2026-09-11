@@ -261,9 +261,9 @@ family instead overrides `#lens` per state: STATE 1 and 3 (redstone-on and manua
 `lens_*_on`, STATE 0 and 2 get `lens_*_off`. Two lens families exist, `lens_opal_*` for glass
 shades and `lens_bulb_*` for exposed bulbs.
 
-Retrofitting this to the other 83 fixtures is a separate job: they share 28 atlas textures with
-the lens baked in, so it needs an `<atlas>_off.png` per texture rather than a blockstate change
-alone.
+The other 81 fixtures now do this too, by a different route — they share 27 atlas textures with the
+lamp painted in, so they swap the whole atlas per state rather than a `#lens` material. See
+[Lit and Unlit Textures on the Older Fixtures](#lit-and-unlit-textures-on-the-older-fixtures).
 
 ### Authoring notes
 
@@ -335,3 +335,63 @@ models were deleted.
 - A pendant hung below a `pendchain` still shows its ceiling canopy mid-air. It reads acceptably
   as chain hardware; removing it would need a canopy-less model variant selected from the block
   above.
+
+## Lit and Unlit Textures on the Older Fixtures
+
+The 81 fixtures that predate the decorative family reach the same result by a different route, and
+it is worth knowing which, because the two families are authored in opposite directions.
+
+The decorative family draws both lens textures from scratch and swaps a `#lens` material. The older
+fixtures could not: each wears **one atlas across every face**, through three texture keys (`0`,
+`all`, `particle`), with the lamp painted into the sheet. So they swap the WHOLE atlas per state
+instead — which reaches the lens without anything being re-materialled, and is why **not one model
+file changed** in the retrofit.
+
+```jsonc
+"defaults": { "textures": { "all": "…/ge_hps_fixtures_off", "particle": "…_off", "0": "…_off" } },
+"state": {
+  "0": {},                                            // inherits the unlit default
+  "1": { "textures": { "all": "…/ge_hps_fixtures", "0": "…/ge_hps_fixtures" } },
+  "2": {},
+  "3": { "textures": { "all": "…/ge_hps_fixtures", "0": "…/ge_hps_fixtures" } }
+}
+```
+
+**The artwork that was already there is the LIT state.** That is measured, not assumed: on 24 of
+the 27 atlases the lamp is drawn in pure white with no headroom to brighten at all, and only the
+olive refractors (`merc_fixtures`, `westinghouse_ov50`) and the amber HPS lamp have any. It is
+exactly why an unlit fixture used to look lit. So states 1 and 3 point at the original sheet and a
+lit fixture looks as it always has; what the retrofit added is the missing half, a dimmed
+`<atlas>_off.png` for states 0 and 2. `particle` stays on the unlit sheet — it is only the
+break/step particle colour, and a lit fixture has no business showering bright particles.
+
+Because `defaults` is the unlit sheet, the creative-menu icon and a freshly placed fixture read
+unlit, which is what a block placed in `STATE_RS_OFF` should look like.
+
+### Regenerating them
+
+`dev-env-utils/scripts/gen_lighting_lit_atlases.py` owns both halves — the 27 `_off` sheets and the
+81 blockstates — and is idempotent, so it can be re-run after re-tuning anything.
+
+- **`--overlay`** draws each atlas at 8x with every candidate UV rect outlined and labelled by face
+  count. This is the classification aid; the models carry explicit per-face UV rects, so the
+  candidates are known exactly (140 across the 27 sheets, 2–9 each).
+- **`LENS`** is the catalogue: per atlas, the pixel boxes that are the lamp, optionally narrowed to
+  an exact colour set, each with a note saying what the region is.
+- **`--check`** asserts every generated sheet is pixel-identical to its original **everywhere
+  outside the catalogued lamp pixels**, and fails the run. The original artwork is never modified;
+  this is what makes that a guarantee rather than a habit.
+
+### Three things that will catch you out
+
+- **Which rect is the lamp cannot be detected.** The obvious heuristic is wrong in both directions:
+  on `troffers` the lens is the MOST-used rect (1390 faces — a troffer's whole underside is the
+  diffuser), and on `ge_hps_fixtures` it is the rarest (3 of 348). Two atlases could not be read off
+  the sheet at all and were settled by rendering the fixture through `preview_block_model.py`.
+- **Verify from BELOW.** These are downlights; the lens is on the underside. An above-angle render
+  shows nothing changing and reads as a false pass. Use `--pitch 30` or greater.
+- **The LED arrays need a harder dim than the flat lenses**, and it is a question of contrast rather
+  than amount. Their dies are pure white sitting on a panel face already at 220, so the shared
+  default (which lands a white diffuser on ~178, matching the decorative family's `lens_opal_off`)
+  left the dots the same value as the metal around them. `LED_DIM` takes them to ~133, where they
+  read as dark dots on a light optic — which is what an unlit LED luminaire looks like.
