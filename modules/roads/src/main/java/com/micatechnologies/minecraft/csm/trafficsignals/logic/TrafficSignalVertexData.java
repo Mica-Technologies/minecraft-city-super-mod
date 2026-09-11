@@ -780,6 +780,174 @@ public class TrafficSignalVertexData {
   public static final List<Box> SIGNAL_BODY_BUBBLED_4INCH_VERTEX_DATA =
       scaleBoxes(SIGNAL_BODY_BUBBLED_VERTEX_DATA, SCALE_4_INCH, true);
 
+  // --- PV (programmable visibility) section housing ---
+
+  /**
+   * How deep the PV housing runs behind the door plane, in model units for a 12-inch section: as
+   * deep as the section is tall, which is what the photographs of 3M and McCain heads show. The
+   * rear therefore sits at z = 23, seven units past the block's back face; a deep casting really
+   * does reach into whatever is behind it, and the render box already covers a block each way.
+   */
+  public static final float PV_BODY_DEPTH = 12.0f;
+
+  /** The door plane every housing style starts at. */
+  public static final float BODY_FACE_Z = 11.0f;
+
+  /** The PV housing's rear plane for a 12-inch section. */
+  public static final float PV_BODY_REAR_Z = BODY_FACE_Z + PV_BODY_DEPTH;
+
+  /**
+   * Builds the PV housing: a squared-off box as deep as it is tall, with three shallow horizontal
+   * grooves along each side running front to back and a two-step chamfer on the rear edges --
+   * the silhouette of an optically programmed head seen from the side. The face plane, door and
+   * hinge hardware match the standard housing so the styles read as siblings on one head.
+   *
+   * <p>Built as touching, never overlapping, boxes: the grooves are bands inset from the sides,
+   * not cuts, and the chamfer is two successively narrower rear slices. Grooves sit at a quarter,
+   * half and three quarters of the height, clear of the hinge hardware at the top and bottom.</p>
+   *
+   * <p>Two lists come out of one layout. The signal renderer draws with world light and no
+   * directional shading, so a recess that is only geometry is invisible on a flat-coloured
+   * housing; the grooves and the chamfer are therefore returned separately and drawn a shade
+   * darker than the body, which is what makes them read as a recess and a bevel.</p>
+   *
+   * @param shadedParts false for the body proper (front band, full-width bands, hinges), true
+   *                    for the parts drawn darker (groove bands, chamfer slices)
+   */
+  private static List<Box> buildPvBody(boolean shadedParts) {
+    final float faceZ = BODY_FACE_Z;
+    final float rearZ = PV_BODY_REAR_Z;
+    final float frontBand = 1.0f;     // plain band behind the door frame, before the grooves start
+    final float grooveHalf = 0.35f;   // half-height of a groove
+    final float grooveInset = 0.3f;   // how far a groove sits in from the side
+    final float chamferStep = 0.4f;   // each of the two rear chamfer slices, in z and in inset
+    final float left = 2.0f;
+    final float right = 14.0f;
+    final float bottom = 0.0f;
+    final float top = 12.0f;
+    final float[] grooveCentres = {3.0f, 6.0f, 9.0f};
+
+    List<Box> body = new ArrayList<>();
+    List<Box> shaded = new ArrayList<>();
+    // Plain band directly behind the door frame.
+    body.add(new Box(new float[]{left, bottom, faceZ}, new float[]{right, top, faceZ + frontBand}));
+
+    // Ribbed body: full-width bands alternating with inset groove bands, up the height.
+    float ribbedFrom = faceZ + frontBand;
+    float ribbedTo = rearZ - 2 * chamferStep;
+    float y = bottom;
+    for (float centre : grooveCentres) {
+      float grooveBottom = centre - grooveHalf;
+      float grooveTop = centre + grooveHalf;
+      body.add(new Box(new float[]{left, y, ribbedFrom}, new float[]{right, grooveBottom, ribbedTo}));
+      shaded.add(new Box(new float[]{left + grooveInset, grooveBottom, ribbedFrom},
+          new float[]{right - grooveInset, grooveTop, ribbedTo}));
+      y = grooveTop;
+    }
+    body.add(new Box(new float[]{left, y, ribbedFrom}, new float[]{right, top, ribbedTo}));
+
+    // Rear chamfer: two slices, each a step further in on every edge.
+    shaded.add(new Box(
+        new float[]{left + chamferStep, bottom + chamferStep, ribbedTo},
+        new float[]{right - chamferStep, top - chamferStep, ribbedTo + chamferStep}));
+    shaded.add(new Box(
+        new float[]{left + 2 * chamferStep, bottom + 2 * chamferStep, ribbedTo + chamferStep},
+        new float[]{right - 2 * chamferStep, top - 2 * chamferStep, rearZ}));
+
+    // Same door-hinge hardware as the standard housing.
+    body.add(new Box(new float[]{1.80f, 1.20f, 10.80f}, new float[]{2.40f, 1.60f, 11.50f}));
+    body.add(new Box(new float[]{1.80f, 10.20f, 10.80f}, new float[]{2.40f, 10.60f, 11.50f}));
+    return shadedParts ? shaded : body;
+  }
+
+  public static final List<Box> SIGNAL_BODY_PV_VERTEX_DATA = buildPvBody(false);
+  public static final List<Box> SIGNAL_BODY_PV_HORIZONTAL_VERTEX_DATA =
+      rotateBoxes90Z(SIGNAL_BODY_PV_VERTEX_DATA);
+  public static final List<Box> SIGNAL_BODY_PV_8INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_PV_VERTEX_DATA, SCALE_8_INCH, true);
+  public static final List<Box> SIGNAL_BODY_PV_4INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_PV_VERTEX_DATA, SCALE_4_INCH, true);
+
+  /** The PV housing's grooves and rear chamfer, drawn a shade darker than the body. */
+  public static final List<Box> SIGNAL_BODY_PV_SHADE_VERTEX_DATA = buildPvBody(true);
+  public static final List<Box> SIGNAL_BODY_PV_SHADE_HORIZONTAL_VERTEX_DATA =
+      rotateBoxes90Z(SIGNAL_BODY_PV_SHADE_VERTEX_DATA);
+  public static final List<Box> SIGNAL_BODY_PV_SHADE_8INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_PV_SHADE_VERTEX_DATA, SCALE_8_INCH, true);
+  public static final List<Box> SIGNAL_BODY_PV_SHADE_4INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_PV_SHADE_VERTEX_DATA, SCALE_4_INCH, true);
+
+  /**
+   * The part of a housing drawn a shade darker than the rest, so recesses read under the flat
+   * lighting the signal renderer uses, or {@code null} for a style that has none.
+   *
+   * @param style       the section's housing style
+   * @param horizontal  whether the head is in horizontal orientation
+   * @param sectionSize the section size in inches: 12, 8 or 4
+   *
+   * @return the shaded boxes, or null
+   */
+  public static List<Box> resolveBodyShadeData(TrafficSignalBodyStyle style, boolean horizontal,
+      int sectionSize) {
+    if (style != TrafficSignalBodyStyle.PV) {
+      return null;
+    }
+    if (horizontal) return SIGNAL_BODY_PV_SHADE_HORIZONTAL_VERTEX_DATA;
+    return selectVisorData(SIGNAL_BODY_PV_SHADE_VERTEX_DATA,
+        SIGNAL_BODY_PV_SHADE_8INCH_VERTEX_DATA, SIGNAL_BODY_PV_SHADE_4INCH_VERTEX_DATA,
+        sectionSize);
+  }
+
+  /**
+   * Resolves the housing geometry for a body style, orientation and section size.
+   *
+   * <p>Horizontal heads are 12-inch only, as the door and body data for them are; the size is
+   * ignored for them, matching how the renderer has always chosen.</p>
+   *
+   * @param style       the section's housing style
+   * @param horizontal  whether the head is in horizontal orientation
+   * @param sectionSize the section size in inches: 12, 8 or 4
+   *
+   * @return the body boxes, never null
+   */
+  public static List<Box> resolveBodyData(TrafficSignalBodyStyle style, boolean horizontal,
+      int sectionSize) {
+    switch (style) {
+      case BUBBLED:
+        if (horizontal) return SIGNAL_BODY_BUBBLED_HORIZONTAL_VERTEX_DATA;
+        return selectVisorData(SIGNAL_BODY_BUBBLED_VERTEX_DATA,
+            SIGNAL_BODY_BUBBLED_8INCH_VERTEX_DATA, SIGNAL_BODY_BUBBLED_4INCH_VERTEX_DATA,
+            sectionSize);
+      case PV:
+        if (horizontal) return SIGNAL_BODY_PV_HORIZONTAL_VERTEX_DATA;
+        return selectVisorData(SIGNAL_BODY_PV_VERTEX_DATA, SIGNAL_BODY_PV_8INCH_VERTEX_DATA,
+            SIGNAL_BODY_PV_4INCH_VERTEX_DATA, sectionSize);
+      case STANDARD:
+      default:
+        if (horizontal) return SIGNAL_BODY_HORIZONTAL_VERTEX_DATA;
+        return selectVisorData(SIGNAL_BODY_VERTEX_DATA, SIGNAL_BODY_8INCH_VERTEX_DATA,
+            SIGNAL_BODY_4INCH_VERTEX_DATA, sectionSize);
+    }
+  }
+
+  /**
+   * Where a section's housing ends at the back, in model units, for a style and size: the plane
+   * the mount hardware bolts to. Standard and bubbled housings report the block's back face, as
+   * the mounts have always assumed; a PV housing reports its own deeper rear, scaled with the
+   * section like its geometry is.
+   *
+   * @param style       the section's housing style
+   * @param sectionSize the section size in inches
+   *
+   * @return the rear plane's z
+   */
+  public static float bodyRearZ(TrafficSignalBodyStyle style, int sectionSize) {
+    if (style == TrafficSignalBodyStyle.PV) {
+      return BODY_FACE_Z + PV_BODY_DEPTH * (sectionSize / 12.0f);
+    }
+    return 16.0f;
+  }
+
   /** Picks the 12-, 8- or 4-inch variant of a visor for the given section size. */
   private static List<Box> selectVisorData(List<Box> data12, List<Box> data8, List<Box> data4,
       int sectionSize) {

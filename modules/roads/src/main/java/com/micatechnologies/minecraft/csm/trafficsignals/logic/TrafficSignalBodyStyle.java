@@ -6,15 +6,19 @@ import org.jetbrains.annotations.NotNull;
 /**
  * The housing (body) style of a traffic signal section. {@code STANDARD} is the modern
  * flat-back/trapezoidal polycarbonate housing; {@code BUBBLED} is the classic rounded
- * Eagle-style casting whose sections swell past the door frame and pinch at the seams.
- * Purely cosmetic — doors, visors, bulbs, and mounts are unaffected.
+ * Eagle-style casting whose sections swell past the door frame and pinch at the seams;
+ * {@code PV} is the deep housing of an optically programmed (3M / McCain programmable
+ * visibility) head, as deep behind the door as it is tall. Cosmetic: doors, visors and bulbs are
+ * unaffected, and only the mount hardware notices the PV rear (it bolts to the housing's back).
  *
  * @author Mica Technologies
  * @since 2026.7
  */
 public enum TrafficSignalBodyStyle implements IStringSerializable {
   STANDARD("standard", "Standard (Flat Back)"),
-  BUBBLED("bubbled", "Bubbled (Eagle)");
+  BUBBLED("bubbled", "Bubbled (Eagle)"),
+  /** Appended so the ordinals stored in existing worlds keep their meaning. */
+  PV("pv", "PV (Deep)");
 
   // Instance fields
   private final String name;          // The identifier used for serialization
