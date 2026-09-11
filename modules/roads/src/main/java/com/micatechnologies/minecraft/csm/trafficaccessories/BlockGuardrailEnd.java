@@ -158,6 +158,19 @@ public class BlockGuardrailEnd extends AbstractBlockRoadSurfaceRotatableHZEight
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * <p>Stands as tall as the run it terminates, so a player cannot step over the end of a
+   * guardrail and walk in behind it. See {@link GuardrailJoins#standTall}.</p>
+   */
+  @Override
+  @Nullable
+  public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockState state,
+      @Nonnull IBlockAccess source, @Nonnull BlockPos pos) {
+    return GuardrailJoins.standTall(getBoundingBox(state, source, pos));
+  }
+
+  /**
    * Whether this end is drawn mirrored, resolved from the run rather than read off the stored
    * state — which does not carry it, because the mirror is derived.
    */

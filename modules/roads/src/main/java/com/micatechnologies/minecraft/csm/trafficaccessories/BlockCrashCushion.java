@@ -163,6 +163,20 @@ public class BlockCrashCushion extends AbstractBlockRoadSurfaceRotatableHZEight
     return boundingBox;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A cushion is a steel box on a frame, so it stops the player at the same height the rails it
+   * terminates do rather than at the height of its own panels. See
+   * {@link GuardrailJoins#standTall}.</p>
+   */
+  @Override
+  @Nullable
+  public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockState state,
+      @Nonnull IBlockAccess source, @Nonnull BlockPos pos) {
+    return GuardrailJoins.standTall(getBoundingBox(state, source, pos));
+  }
+
   @Override
   public boolean getBlockIsOpaqueCube(IBlockState state) {
     return false;

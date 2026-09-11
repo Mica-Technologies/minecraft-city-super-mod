@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
@@ -158,6 +159,38 @@ final class GuardrailJoins {
       }
     }
     return false;
+  }
+
+  /**
+   * How tall a guardrail stops the player, in blocks, whatever height its rail is drawn at.
+   *
+   * <p>A standing jump clears a block and a quarter, and no rail in this system is drawn that
+   * tall, so a box that stopped where the steel does would be a barrier you walk over. A vanilla
+   * fence solves it the same way and at the same height.</p>
+   *
+   * @since 1.0
+   */
+  private static final double COLLISION_HEIGHT = 1.5;
+
+  /**
+   * Raises a drawn bounding box to the height a guardrail actually stops the player at.
+   *
+   * <p>Measured from the box's own floor, not the cell's. A run settled onto a snow layer or a
+   * sloped road has a box that starts below its cell, and measuring from the cell would give that
+   * run a lower barrier than the one beside it on bare ground.</p>
+   *
+   * @param drawn the box the block is drawn and selected at
+   *
+   * @return the box the player collides with
+   *
+   * @since 1.0
+   */
+  static AxisAlignedBB standTall(AxisAlignedBB drawn) {
+    double top = drawn.minY + COLLISION_HEIGHT;
+    if (top <= drawn.maxY) {
+      return drawn;
+    }
+    return new AxisAlignedBB(drawn.minX, drawn.minY, drawn.minZ, drawn.maxX, top, drawn.maxZ);
   }
 
   /**
