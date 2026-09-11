@@ -95,6 +95,14 @@ Every block subclass must implement these:
 | `getBlockConnectsRedstone(state, access, pos, facing)` | `boolean` | Can redstone wire connect? |
 | `getBlockRenderLayer()` | `BlockRenderLayer` | Render pass (`SOLID`, `CUTOUT`, `CUTOUT_MIPPED`, `TRANSLUCENT`) |
 
+> **`AbstractBlock` does NOT override `getMetaFromState`, and the vanilla default THROWS** for any
+> state it was not told how to encode. A non-rotatable block that adds properties of its own — even
+> actual-state-only ones resolved from neighbours — must say `getMetaFromState → 0` itself. Leaving
+> it out does not break that one block: it fails the whole mod's pre-init, and the symptom is a
+> crash to desktop with nothing pointing at the block that caused it. (Cost exactly that on the
+> road plate.) The rotatable subclasses below all handle it, so this only bites blocks extending
+> `AbstractBlock` directly.
+
 ### Tile Entity Support
 
 Any block can support a tile entity by implementing `ICsmTileEntityProvider`:
