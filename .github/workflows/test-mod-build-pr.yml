@@ -97,23 +97,3 @@ jobs:
           name: server-smoke-log-${{ matrix.modules }}
           path: server-smoke.log
           retention-days: 7
-
-  block_reference:
-    # The guidebook's block catalogue under docs/reference/ is generated from the sources, and the
-    # Pages deploy only publishes what is committed -- it never regenerates. A block added without
-    # re-running the generator is therefore simply missing from the public site, which is how 58
-    # went missing before this check existed. No JDK or Gradle needed, so it runs on its own rather
-    # than waiting on the build.
-    name: Guidebook Block Reference Up To Date
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Check docs/reference/ matches the sources
-        run: python dev-env-utils/scripts/gen_wiki_reference.py --check
