@@ -59,7 +59,7 @@ In `dev-env-utils/scripts/`, run directly. Pillow required for the image ones.
 | Script | Answers |
 |---|---|
 | `csm_block_index.py` | Every block's registry name, package, base class and creative tab, from the sources. Importable — the shared source of truth for the recipe tooling and the docs generator |
-| `gen_wiki_reference.py` | Rebuilds `docs/reference/` for this site |
+| `gen_wiki_reference.py` | Rebuilds `docs/reference/` for this site; `--check` fails if it is out of date, and runs on every pull request |
 | `audit_fabricator_costs.py` | What every block costs in the Fabricator, without launching the game |
 | `audit_obj_models.py` | The OBJ faults that only show up in game — coplanar overlapping faces, faces on a block boundary, inconsistent winding, open boundary edges |
 | `preview_block_model.py` | Renders a model against its texture offline, with Minecraft's winding and UV origin, so stretched UVs and transparent bleed are caught without launching |

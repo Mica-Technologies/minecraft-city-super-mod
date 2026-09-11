@@ -23,8 +23,17 @@ an abstract base. So stats are resolved by walking the ``extends`` chain until a
 every road sign, for example, gets its hardness from ``AbstractBlockSign`` four levels up. Where no
 call can be found the columns are left blank rather than guessed at: a wrong number in a reference
 is worse than an absent one.
+
+Keeping it current
+------------------
+
+The site publishes only what is committed; nothing regenerates this at deploy time. So a block added
+without re-running this is simply missing from the guidebook -- 58 were, before ``--check`` existed.
+``--check`` writes nothing and exits 1 if ``docs/reference/`` differs from what the sources would
+produce, and every pull request runs it.
 """
 
+import argparse
 import io
 import os
 import re
@@ -194,7 +203,7 @@ def escape(text):
     return text.replace("|", "\\|")
 
 
-def write_page(tab_id, entries, names, classes, stats):
+def render_page(tab_id, entries, names, classes, stats):
     slug, title, blurb = TABS[tab_id]
     lines = [
         "# {0}".format(title),
@@ -232,13 +241,10 @@ def write_page(tab_id, entries, names, classes, stats):
     lines.append("")
     lines.append("</div>")
     lines.append("")
-    with io.open(os.path.join(OUT_DIR, slug + ".md"), "w", encoding="utf-8",
-                 newline="\n") as handle:
-        handle.write("\n".join(lines))
-    return len(entries)
+    return slug + ".md", "\n".join(lines), len(entries)
 
 
-def write_index(counts, total):
+def render_index(counts, total):
     lines = [
         "# Block Reference",
         "",
@@ -273,12 +279,43 @@ def write_index(counts, total):
         "they are zero.",
         "",
     ]
-    with io.open(os.path.join(OUT_DIR, "index.md"), "w", encoding="utf-8",
-                 newline="\n") as handle:
-        handle.write("\n".join(lines))
+    return "index.md", "\n".join(lines)
 
 
-def main():
+def check(pages):
+    """Compare what would be generated against the tree. Returns the exit status.
+
+    Line endings are ignored: a Windows checkout with ``core.autocrlf`` holds these pages as CRLF
+    while this writes LF, and a byte comparison would fail on every such machine with nothing
+    actually out of date.
+    """
+    stale = []
+    for filename in sorted(pages):
+        try:
+            with io.open(os.path.join(OUT_DIR, filename), encoding="utf-8",
+                         newline="") as handle:
+                current = handle.read().replace("\r\n", "\n")
+        except OSError:
+            stale.append(filename + "  (missing)")
+            continue
+        if current != pages[filename]:
+            stale.append(filename)
+    if stale:
+        print("docs/reference/ is out of date with the sources. Regenerate it with\n"
+              "    python dev-env-utils/scripts/gen_wiki_reference.py\n"
+              "and commit the result. Stale:\n  " + "\n  ".join(stale))
+        return 1
+    print("docs/reference/ is up to date ({0} pages)".format(len(pages)))
+    return 0
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("--check", action="store_true",
+                        help="write nothing; exit 1 if docs/reference/ differs from what the "
+                             "sources would generate")
+    args = parser.parse_args(argv)
+
     index, tabs, classes = index_tool.build_index()
     names = read_lang()
     stats = read_class_stats()
@@ -292,29 +329,41 @@ def main():
     for class_name, info in classes.items():
         merged.setdefault(class_name, info)
 
-    os.makedirs(OUT_DIR, exist_ok=True)
+    pages = {}
     counts = {}
     total = 0
     for tab_id in PAGE_ORDER:
         entries = sorted((r for r in index if page_tab(index[r]["tab"]) == tab_id),
                          key=lambda r: (names.get(r, r).lower(), r))
-        counts[tab_id] = write_page(tab_id, entries, names, merged, stats)
+        filename, text, counts[tab_id] = render_page(tab_id, entries, names, merged, stats)
+        pages[filename] = text
         total += counts[tab_id]
-
-    write_index(counts, total)
+    filename, text = render_index(counts, total)
+    pages[filename] = text
 
     unknown = sorted({index[r]["tab"] for r in index} - set(TABS))
     named = sum(1 for r in index if r in names)
     statted = sum(1 for r in index
                   if resolve_stats(index[r]["class"], classes, stats))
 
-    print("Blocks written      : {0}".format(total))
+    print("Blocks              : {0}".format(total))
     print("With a display name : {0}  ({1} missing a lang entry)".format(named, total - named))
     print("With resolved stats : {0}  ({1} left blank)".format(statted, total - statted))
     if unknown:
         print("Tabs with no page of their own, listed under Unlisted: {0}"
               .format(", ".join(unknown)))
 
+    if args.check:
+        return check(pages)
+
+    os.makedirs(OUT_DIR, exist_ok=True)
+    for filename, text in pages.items():
+        with io.open(os.path.join(OUT_DIR, filename), "w", encoding="utf-8",
+                     newline="\n") as handle:
+            handle.write(text)
+    print("Wrote {0} pages to docs/reference/".format(len(pages)))
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

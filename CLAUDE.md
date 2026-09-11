@@ -216,6 +216,8 @@ or `src/main/…` for Core's own (Materials) content. Paths below are relative t
 5. Add lang entry to that module's `resources/assets/csm/lang/en_us.lang`: `tile.<registry_name>.name=Human Name`
 6. Register the block in that module's `tabs/CsmTab*.java` via `initTabBlock(BlockExample.class, event)`
 7. If the blockstate has no `inventory` variant, create `resources/assets/csm/models/item/<registry_name>.json`
+8. Re-run `python dev-env-utils/scripts/gen_wiki_reference.py` and commit the regenerated `docs/reference/`
+   pages (the guidebook's block catalogue). Pull requests fail its `--check` if you forget
 
 If the block reuses a model or texture that already lives in Core's tree, leave it there — a shared
 asset stays in Core so every partial install resolves it.
@@ -329,6 +331,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_part_textures.py` -- crafting part textures, item models and recipes; validates ingredients before writing
 - `gen_fabricator_textures.py` -- CSM Fabricator block textures
 - `csm_block_index.py` -- resolves every block to its registry name, package and creative tab by parsing the sources; importable as a module by other scripts
+- `gen_wiki_reference.py` -- the guidebook's block catalogue under `docs/reference/`, generated from that index.
+  The site publishes only what is committed, so `--check` (writes nothing, exits 1 on drift) runs on every pull request
 - `audit_fabricator_costs.py` -- mirrors the Fabricator cost rules against that index to sanity check what every block costs, without launching the game
 - `gen_firealarm_obj.py` -- generates the OBJ models for the fire alarm appliances with round strobe lenses (the System Sensor L-Series LED family and the beacons); traces each enclosure's silhouette and measures each lens circle off the texture rather than hard-coding either
 - `gen_dynamic_street_sign_texture.py` -- inventory/particle texture for the dynamic street sign block

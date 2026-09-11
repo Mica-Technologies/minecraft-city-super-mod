@@ -83,4 +83,5 @@ integrity checking, bounding box extraction, atlas generation, and the generator
 !!! tip "The block reference is generated"
 
     `dev-env-utils/scripts/gen_wiki_reference.py` rebuilds `docs/reference/` from the Java sources
-    and the lang file. Run it after adding blocks; never hand-edit those pages.
+    and the lang file. Run it after adding blocks and commit the result; never hand-edit those
+    pages. Pull requests fail its `--check` if the committed pages have fallen behind.

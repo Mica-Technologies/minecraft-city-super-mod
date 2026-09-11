@@ -57,7 +57,8 @@
   a brand-new creative tab, or a block that is a genuinely new *kind* of equipment, needs
   `CsmFabricatorCosts.java` touched. See [Survival & Crafting](../guides/survival-and-crafting.md).
 - **No registration call.** The constructor does it.
-- **No wiki edit.** Re-run the reference generator (below).
+- **No wiki edit** -- but do re-run the reference generator (below). A pull request fails if
+  you forget.
 
 ## Adding an item
 
@@ -100,13 +101,18 @@ The [block reference](../reference/index.md) on this site is generated. After ad
 python3 dev-env-utils/scripts/gen_wiki_reference.py
 ```
 
-It prints what it wrote and how much it resolved:
+It prints what it found and how much it resolved:
 
 ```
-Blocks written      : 1639
-With a display name : 1639  (0 missing a lang entry)
-With resolved stats : 1385  (254 left blank)
+Blocks              : 1709
+With a display name : 1709  (0 missing a lang entry)
+With resolved stats : 1454  (255 left blank)
+Wrote 15 pages to docs/reference/
 ```
+
+Commit the pages it changes. Pull requests run it with `--check`, which writes nothing and fails if
+`docs/reference/` differs from what the sources would generate. The site only ever publishes what
+is committed, so a forgotten regeneration is a block missing from this guidebook.
 
 A block missing a display name means a missing lang entry — worth fixing before committing.
 
