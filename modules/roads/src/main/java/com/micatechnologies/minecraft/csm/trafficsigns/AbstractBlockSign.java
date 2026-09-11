@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmPostPassesThrough;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import com.micatechnologies.minecraft.csm.codeutils.SignShift;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ISpanWireHangable;
@@ -110,7 +111,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     SignShift shift = state.getValue(SHIFT);
-    double minY = state.getValue(DOWNWARD) ? -0.5 : 0.0;
+    double minY = reachesIntoSlab(state, source, pos) ? -0.5 : 0.0;
 
     switch (shift) {
       case SETBACK:
@@ -136,7 +137,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
       case BACKTOBACK:
         return NULL_AABB;
       case SETBACK:
-        double minY = actualState.getValue(DOWNWARD) ? -0.5 : 0.0;
+        double minY = reachesIntoSlab(actualState, worldIn, pos) ? -0.5 : 0.0;
         AxisAlignedBB bb = new AxisAlignedBB(0, minY, 0.75, 1, 1, 0.8125);
         return RotationUtils.rotateBoundingBoxByFacing(bb, actualState.getValue(FACING));
       default:
@@ -209,6 +210,45 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     return source.getBlockState(pos.down()).getBlock() instanceof BlockSlab;
   }
 
+  /**
+   * Whether the block below is a low barrier — a guardrail — that this sign's post passes down
+   * through to the ground rather than stopping on.
+   *
+   * @param source the block access
+   * @param pos    the position of this sign
+   *
+   * @return true if the post should reach one block further down, through the block below
+   *
+   * @see ICsmPostPassesThrough
+   * @since 2026.9
+   */
+  public boolean getBlockBelowPassesPostThrough(IBlockAccess source, BlockPos pos) {
+    return source.getBlockState(pos.down()).getBlock() instanceof ICsmPostPassesThrough;
+  }
+
+  /**
+   * Whether the box should reach half a block down into a slab below.
+   *
+   * <p>{@link #DOWNWARD} draws the post reaching down onto a slab or through a guardrail, but only
+   * the slab's case extends the BOX: a guardrail has a box of its own in that cell, and a sign box
+   * lapping over it would take the clicks meant for the rail.</p>
+   */
+  private boolean reachesIntoSlab(IBlockState state, @Nullable IBlockAccess source, BlockPos pos) {
+    return state.getValue(DOWNWARD) && source != null && getBlockBelowIsSlab(source, pos);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Any sign block on any other: a sign on its post, and a post on a post, are one assembly.
+   * Nothing else passes its facing up — a sign put up on a guardrail faces the road the player
+   * chose, not the way the rail happens to.</p>
+   */
+  @Override
+  protected boolean inheritsFacingFrom(IBlockState below) {
+    return below.getBlock() instanceof AbstractBlockSign;
+  }
+
   public boolean getBlockIsInFrontOfSignalArm(IBlockAccess source, BlockPos pos) {
     IBlockState sourceBlockState = source.getBlockState(pos);
     if (!(sourceBlockState.getBlock() instanceof AbstractBlockSign)) {
@@ -279,7 +319,8 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     }
     Block blockBelow = source.getBlockState(pos.down()).getBlock();
     if (blockBelow instanceof BlockSlab || blockBelow instanceof AbstractBlockSign
-        || blockBelow instanceof AbstractBlockTrafficPole) {
+        || blockBelow instanceof AbstractBlockTrafficPole
+        || blockBelow instanceof ICsmPostPassesThrough) {
       return false;
     }
     DirectionEight facing = state.getValue(FACING);
@@ -374,8 +415,9 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     } else {
       shift = SignShift.NONE;
     }
-    return state.withProperty(DOWNWARD,
-            shift != SignShift.BACKTOBACK && getBlockBelowIsSlab(worldIn, pos))
-        .withProperty(SHIFT, shift);
+    // The post reaches down onto a slab, and through a guardrail to the ground beneath it.
+    boolean downward = shift != SignShift.BACKTOBACK && (getBlockBelowIsSlab(worldIn, pos)
+        || getBlockBelowPassesPostThrough(worldIn, pos));
+    return state.withProperty(DOWNWARD, downward).withProperty(SHIFT, shift);
   }
 }

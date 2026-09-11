@@ -196,6 +196,11 @@ automatically.
 
 ## Stacking Behavior
 
-Signs inherit facing from the sign directly below them (from `AbstractBlockRotatableHZEight`).
-This means placing a sign on top of another sign automatically aligns them. Players only need
-to set the facing on the bottom sign.
+Signs inherit facing from the sign directly below them (from `AbstractBlockRotatableHZEight`,
+through `AbstractBlockSign.inheritsFacingFrom`). This means placing a sign on top of another sign
+automatically aligns them. Players only need to set the facing on the bottom sign. Only a sign
+block passes its facing up: a sign on a guardrail faces the way the player chose.
+
+A sign standing on a guardrail (any `ICsmPostPassesThrough` block) sets `downward`, the same
+property the slab extension uses, and draws its post one block further down to the ground. Only
+the slab case also extends the sign's bounding box; see `GUARDRAIL_SYSTEM.md`.

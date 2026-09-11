@@ -141,6 +141,28 @@ over. A vanilla fence solves it the same way and at the same height.
 It measures from the box's own FLOOR, not the cell's, so a run settled onto snow or a sloped road
 stands its full height above the ground the player is actually walking on.
 
+## Poles and signs stood on a guardrail
+
+A builder puts a sign or a pole up behind the rail by placing it on top of the run, and a post
+that stopped on the rail would hover a block above the ground everything else stands on (issue
+#190). Every guardrail, end and cushion carries Core's `ICsmPostPassesThrough` marker, and the
+two things that stand on it look for that marker below them:
+
+- A vertical `AbstractBlockTrafficPole` (the thick and thin poles) sets `extenddown` and draws
+  one more block of itself reaching down through the rail. The extension is supplied by the two
+  VERTICAL facing variants in the pole's blockstate, because which way along the pole is down
+  depends on its facing; `extenddown` sorts before `facing`, so its `false` branch nulls the
+  extension with the same merge trick the rails use. The pedestal and diagonal poles build their
+  own state containers and do not take part.
+- A sign sets `DOWNWARD`, the property it already used to reach onto a slab, and draws its post
+  one block further down. Only the slab case extends the sign's BOX: a guardrail has its own box
+  in that cell, and a sign box lapping over it would take the rail's clicks.
+
+A sign placed on a guardrail also no longer takes the rail's facing. `AbstractBlockRotatableHZEight`
+copied the facing of ANY eight-way block below, which was meant for stacking a sign on its own
+post; it now asks `inheritsFacingFrom`, which is the same class by default and any sign block for
+signs.
+
 ## Geometry
 
 `dev-env-utils/scripts/guardrail_geometry.py` holds every dimension shared between generators — rail
