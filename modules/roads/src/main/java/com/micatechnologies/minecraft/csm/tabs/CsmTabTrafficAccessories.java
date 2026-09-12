@@ -251,6 +251,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonblackpink"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonwhiteblack"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonyellowblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonblackgreen"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addongreenblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonyellowyellow"));
 
     // --- Backplate factory blocks: TLBorderAddOn ---
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonblackblack"));
@@ -263,6 +266,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonblackpink"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonwhiteblack"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonyellowblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonblackgreen"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddongreenblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonyellowyellow"));
 
     // --- Backplate factory blocks: TLBorder (standard 3-section) ---
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackblack"));
@@ -275,6 +281,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderpinkblack"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackblue"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackpink"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackgreen"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordergreenblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderyellowyellow"));
 
     // --- Backplate factory blocks: TLBorderSingle ---
     initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblackblack"));
@@ -287,6 +296,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblackpink"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblueblack"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersinglepinkblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblackgreen"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersinglegreenblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleyellowyellow"));
 
     // --- Backplate factory blocks: TLBorder remaining color combos ---
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderwhiteblack"));
@@ -301,6 +313,10 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblueblack8812inch"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborderpinkblack8812inch"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlbordergraygray8812inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordergreenblack8inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordergreenblack8812inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderyellowyellow8inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderyellowyellow8812inch"));
 
     // --- NSEWUD factory blocks: TL Controllers ---
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlcontroller", BB_TL_CONTROLLER, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
@@ -324,6 +340,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderblackpink"));
     initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderwhiteblack"));
     initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderyellowblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderblackgreen"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghousebordergreenblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderyellowyellow"));
 
     // --- Backplate fitted factory blocks: Hawk ---
     initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderblackblack"));
@@ -336,6 +355,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderblackpink"));
     initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderwhiteblack"));
     initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderyellowblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderblackgreen"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkbordergreenblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderyellowyellow"));
 
     // --- Backplate factory blocks: TLHBorder ---
 

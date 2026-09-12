@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "327 blocks in this tab"
+!!! info "349 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -51,14 +51,17 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Delineator Post (Yellow) | `csm:delineator_post_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Doghouse Signal Border (Black/Black) | `csm:tldoghouseborderblackblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Black/Blue) | `csm:tldoghouseborderblackblue` | 2 | 10 | pickaxe | 1 |
+| Doghouse Signal Border (Black/Green) | `csm:tldoghouseborderblackgreen` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Black/Pink) | `csm:tldoghouseborderblackpink` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Black/White) | `csm:tldoghouseborderblackwhite` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Black/Yellow) | `csm:tldoghouseborderblackyellow` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Blue/Black) | `csm:tldoghouseborderblueblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Gray/Gray) | `csm:tldoghousebordergraygray` | 2 | 10 | pickaxe | 1 |
+| Doghouse Signal Border (Green/Black) | `csm:tldoghousebordergreenblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Pink/Black) | `csm:tldoghouseborderpinkblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (White/Black) | `csm:tldoghouseborderwhiteblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Yellow/Black) | `csm:tldoghouseborderyellowblack` | 2 | 10 | pickaxe | 1 |
+| Doghouse Signal Border (Yellow/Yellow) | `csm:tldoghouseborderyellowyellow` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Cover | `csm:tldcover` |  | 10 | pickaxe | 1 |
 | Dynamic Highway Guide Sign | `csm:dynamic_guide_sign` | 2 | 10 | pickaxe | 1 |
 | Dynamic Signal Cover | `csm:tlvcover` | 2.0 | 10.0 | pickaxe | 1 |
@@ -68,14 +71,17 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Hanging Signal Mount Kit (Vertical) | `csm:tlhangmount` |  | 10 | pickaxe | 1 |
 | Hawk Signal Border (Black/Black) | `csm:tlhawkborderblackblack` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Black/Blue) | `csm:tlhawkborderblackblue` | 2 | 10 | pickaxe | 1 |
+| Hawk Signal Border (Black/Green) | `csm:tlhawkborderblackgreen` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Black/Pink) | `csm:tlhawkborderblackpink` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Black/White) | `csm:tlhawkborderblackwhite` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Black/Yellow) | `csm:tlhawkborderblackyellow` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Blue/Black) | `csm:tlhawkborderblueblack` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Gray/Gray) | `csm:tlhawkbordergraygray` | 2 | 10 | pickaxe | 1 |
+| Hawk Signal Border (Green/Black) | `csm:tlhawkbordergreenblack` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Pink/Black) | `csm:tlhawkborderpinkblack` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (White/Black) | `csm:tlhawkborderwhiteblack` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Yellow/Black) | `csm:tlhawkborderyellowblack` | 2 | 10 | pickaxe | 1 |
+| Hawk Signal Border (Yellow/Yellow) | `csm:tlhawkborderyellowyellow` | 2 | 10 | pickaxe | 1 |
 | Horizontal Signal Mount Kit | `csm:tlhmountkit` |  | 10 | pickaxe | 1 |
 | Horizontal Traffic Pole with Double Mount (Unpainted) | `csm:trafficpolehorzdoublemountunpainted` | 2 | 10 | pickaxe | 1 |
 | Horizontal Traffic Pole with Single Mount (Unpainted) | `csm:trafficpolehorzsinglemountunpainted` | 2 | 10 | pickaxe | 1 |
@@ -130,14 +136,17 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Silver Vertical Traffic Pole with Double Connector | `csm:trafficpoleverticalconnectordoublesilver` |  | 10 | pickaxe | 1 |
 | Single Signal Border (Black/Black) | `csm:tlbordersingleblackblack` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (Black/Blue) | `csm:tlbordersingleblackblue` | 2 | 10 | pickaxe | 1 |
+| Single Signal Border (Black/Green) | `csm:tlbordersingleblackgreen` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (Black/Pink) | `csm:tlbordersingleblackpink` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (Black/White) | `csm:tlbordersingleblackwhite` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (Black/Yellow) | `csm:tlbordersingleblackyellow` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (Blue/Black) | `csm:tlbordersingleblueblack` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (Gray/Gray) | `csm:tlbordersinglelargegray` | 2 | 10 | pickaxe | 1 |
+| Single Signal Border (Green/Black) | `csm:tlbordersinglegreenblack` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (Pink/Black) | `csm:tlbordersinglepinkblack` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (White/Black) | `csm:tlbordersinglewhiteblack` | 2 | 10 | pickaxe | 1 |
 | Single Signal Border (Yellow/Black) | `csm:tlbordersingleyellowblack` | 2 | 10 | pickaxe | 1 |
+| Single Signal Border (Yellow/Yellow) | `csm:tlbordersingleyellowyellow` | 2 | 10 | pickaxe | 1 |
 | Snow Emergency Beacon | `csm:tlsnowbeacon` | 2 | 10 | pickaxe | 1 |
 | Solar ALPR Camera (Pole) | `csm:alprcamerasolar` | 2 | 10 | pickaxe | 1 |
 | Solar ALPR Camera (Wall Mount) | `csm:alprcamerasolarwall` | 2 | 10 | pickaxe | 1 |
@@ -233,30 +242,37 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Unpainted Vertical Traffic Pole with Double Connector | `csm:trafficpoleverticalconnectordoubleunpainted` |  | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Black/Black) | `csm:tlborder5addonblackblack` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Black/Blue) | `csm:tlborder5addonblackblue` | 2 | 10 | pickaxe | 1 |
+| Vertical 5-Tall Add-On Signal Border (Black/Green) | `csm:tlborder5addonblackgreen` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Black/Pink) | `csm:tlborder5addonblackpink` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Black/White) | `csm:tlborder5addonblackwhite` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Black/Yellow) | `csm:tlborder5addonblackyellow` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Blue/Black) | `csm:tlborder5addonblueblack` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Gray/Gray) | `csm:tlborder5addonlargegray` | 2 | 10 | pickaxe | 1 |
+| Vertical 5-Tall Add-On Signal Border (Green/Black) | `csm:tlborder5addongreenblack` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Pink/Black) | `csm:tlborder5addonpinkblack` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (White/Black) | `csm:tlborder5addonwhiteblack` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Yellow/Black) | `csm:tlborder5addonyellowblack` | 2 | 10 | pickaxe | 1 |
+| Vertical 5-Tall Add-On Signal Border (Yellow/Yellow) | `csm:tlborder5addonyellowyellow` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Black) | `csm:tlborderaddonblackblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Black/Blue) | `csm:tlborderaddonblackblue` | 2 | 10 | pickaxe | 1 |
+| Vertical Add-On Signal Border (Black/Green) | `csm:tlborderaddonblackgreen` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Black/Pink) | `csm:tlborderaddonblackpink` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Black/White) | `csm:tlborderaddonblackwhite` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Black/Yellow) | `csm:tlborderaddonblackyellow` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Blue/Black) | `csm:tlborderaddonblueblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Gray/Gray) | `csm:tlborderaddonlargegray` | 2 | 10 | pickaxe | 1 |
+| Vertical Add-On Signal Border (Green/Black) | `csm:tlborderaddongreenblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Pink/Black) | `csm:tlborderaddonpinkblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (White/Black) | `csm:tlborderaddonwhiteblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Add-On Signal Border (Yellow/Black) | `csm:tlborderaddonyellowblack` | 2 | 10 | pickaxe | 1 |
+| Vertical Add-On Signal Border (Yellow/Yellow) | `csm:tlborderaddonyellowyellow` | 2 | 10 | pickaxe | 1 |
 | Vertical Panel (Keep Left) | `csm:vertical_panel_left` | 0.6 | 3 | pickaxe | 0 |
 | Vertical Panel (Keep Right) | `csm:vertical_panel_right` | 0.6 | 3 | pickaxe | 0 |
 | Vertical Signal Border (Black/Black) | `csm:tlborderblackblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Black/Black) (8 Inch) | `csm:tlborderblackblack8inch` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Black/Black) (8-8-12 Inch) | `csm:tlborderblackblack8812inch` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Black/Blue) | `csm:tlborderblackblue` | 2 | 10 | pickaxe | 1 |
+| Vertical Signal Border (Black/Green) | `csm:tlborderblackgreen` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Black/Pink) | `csm:tlborderblackpink` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Black/White) | `csm:tlborderblackwhite` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Black/Yellow) | `csm:tlborderblackyellow` | 2 | 10 | pickaxe | 1 |
@@ -266,6 +282,9 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Vertical Signal Border (Gray/Gray) | `csm:tlborderlargegray` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Gray/Gray) (8 Inch) | `csm:tlbordergraygray8inch` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Gray/Gray) (8-8-12 Inch) | `csm:tlbordergraygray8812inch` | 2 | 10 | pickaxe | 1 |
+| Vertical Signal Border (Green/Black) | `csm:tlbordergreenblack` | 2 | 10 | pickaxe | 1 |
+| Vertical Signal Border (Green/Black) (8 Inch) | `csm:tlbordergreenblack8inch` | 2 | 10 | pickaxe | 1 |
+| Vertical Signal Border (Green/Black) (8-8-12 Inch) | `csm:tlbordergreenblack8812inch` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Pink/Black) | `csm:tlborderpinkblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Pink/Black) (8 Inch) | `csm:tlborderpinkblack8inch` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Pink/Black) (8-8-12 Inch) | `csm:tlborderpinkblack8812inch` | 2 | 10 | pickaxe | 1 |
@@ -275,6 +294,9 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Vertical Signal Border (Yellow/Black) | `csm:tlborderyellowblack` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Yellow/Black) (8 Inch) | `csm:tlborderyellowblack8inch` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Border (Yellow/Black) (8-8-12 Inch) | `csm:tlborderyellowblack8812inch` | 2 | 10 | pickaxe | 1 |
+| Vertical Signal Border (Yellow/Yellow) | `csm:tlborderyellowyellow` | 2 | 10 | pickaxe | 1 |
+| Vertical Signal Border (Yellow/Yellow) (8 Inch) | `csm:tlborderyellowyellow8inch` | 2 | 10 | pickaxe | 1 |
+| Vertical Signal Border (Yellow/Yellow) (8-8-12 Inch) | `csm:tlborderyellowyellow8812inch` | 2 | 10 | pickaxe | 1 |
 | Vertical Signal Mount Kit | `csm:tlvmountkit` |  | 10 | pickaxe | 1 |
 | Vertical Signal Mount Kit (8 Inch) | `csm:tlvmountkit8inch` |  | 10 | pickaxe | 1 |
 | Vertical Signal Mount Kit (8-8-12 or 12-8-8 Inch) | `csm:tlvmountkit8812inch` |  | 10 | pickaxe | 1 |

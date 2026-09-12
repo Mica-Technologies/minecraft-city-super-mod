@@ -1,0 +1,48 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_1",
+    "textures": {
+      "all": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackblackgreen",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackblackgreen",
+      "0": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackblackgreen"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "modelvariant": {
+      "v_none": {},
+      "v_left_tilt": {},
+      "v_right_tilt": {},
+      "v_left_angle": {},
+      "v_right_angle": {},
+      "h_none": {
+        "model": "csm:trafficsignals/shared_models/signal_backplate_horizontal_addon_1"
+      },
+      "h_left_tilt": {},
+      "h_right_tilt": {},
+      "h_left_angle": {},
+      "h_right_angle": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

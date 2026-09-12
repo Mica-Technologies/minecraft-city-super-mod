@@ -20,10 +20,10 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Power Grid](power-grid.md) | 46 | Utility poles, transformers and the Forge Energy that runs through them. |
 | [Road Signs](road-signs.md) | 574 | The MUTCD sign set, grouped the way the manual groups it. |
 | [Technology](technology.md) | 37 | Servers, routers, screens and consumer electronics. |
-| [Traffic Accessories](traffic-accessories.md) | 327 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
+| [Traffic Accessories](traffic-accessories.md) | 349 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Unlisted](unlisted.md) | 112 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **1711** | |
+| **Total** | **1733** | |
 
 ## How to read the table
 

@@ -479,7 +479,7 @@ and applies it as a translation.
 
 ### What that did to the emissive borders
 
-Eight backplate textures have `_e` companions in `shared_textures` -- the OptiFine emissive
+Eleven backplate textures have `_e` companions in `shared_textures` -- the OptiFine emissive
 overlay for the coloured border, which is retroreflective on a real plate. They stopped taking
 effect when the drawing moved here.
 
