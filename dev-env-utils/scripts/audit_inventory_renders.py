@@ -43,6 +43,15 @@ TRANSLATION UNITS
     16 gui px across and one block spans it, so one gui pixel is 1/16 of a translation unit, which
     is the conversion ``--fix`` applies.
 
+WRITING
+    ``--fix`` edits the translation and scale where they sit in the file rather than re-serialising
+    it. Most of these blockstates -- 81 of the 283 at the time of writing, nearly all of the
+    furnishings module -- are written in a compact style that a ``json.dump`` round trip would
+    reformat wholesale, burying a one-line change in fifty lines of whitespace. An inserted array
+    is written inline or expanded to match the arrays already in that object. Every edit is checked
+    by parsing the result and comparing it against the intended structure, so a text edit cannot
+    quietly change anything but the values it meant to.
+
 ITERATING
     A resource reload does NOT rebake these item models, so a correction needs a rebuild and a
     client restart before it can be re-measured. Stopping the Gradle task does not stop the game:
@@ -396,6 +405,103 @@ def overflow(m):
 
 # ---- correcting ----------------------------------------------------------------------------
 
+def _num(v):
+    """A JSON number written the short way: 0 rather than 0.0, 0.4978 rather than 0.49780000."""
+    v = round(float(v), 4)
+    return str(int(v)) if v == int(v) else ("%.4f" % v).rstrip("0").rstrip(".")
+
+
+def _match(text, i):
+    """Index just past the bracket or brace opened at ``i``, skipping over strings."""
+    close = {"{": "}", "[": "]"}[text[i]]
+    depth = 0
+    while i < len(text):
+        c = text[i]
+        if c == '"':
+            i += 1
+            while text[i] != '"':
+                i += 2 if text[i] == "\\" else 1
+        elif c in "{[":
+            depth += 1
+        elif c in "}]":
+            depth -= 1
+            if depth == 0:
+                return i + 1
+        i += 1
+    raise ValueError("unbalanced %s" % close)
+
+
+def _members(text, obj):
+    """Every ``key -> (key_start, value_start, value_end)`` directly inside the object at ``obj``."""
+    out, i = {}, obj + 1
+    end = _match(text, obj) - 1
+    while i < end:
+        c = text[i]
+        if c == '"':
+            key_start = i
+            i += 1
+            while text[i] != '"':
+                i += 2 if text[i] == "\\" else 1
+            key = text[key_start + 1:i]
+            i = text.index(":", i) + 1
+            while text[i] in " \t\r\n":
+                i += 1
+            value_start = i
+            if text[i] in "{[":
+                i = _match(text, i)
+            else:
+                while i < end and text[i] not in ",}\r\n":
+                    i += 1
+            out[key] = (key_start, value_start, i)
+        elif c in "{[":
+            i = _match(text, i)
+        else:
+            i += 1
+    return out
+
+
+def _set_member(text, obj, key, literal):
+    """Set ``key`` inside the object at ``obj`` to ``literal``, leaving all other bytes alone.
+
+    Replaces the value where the key exists. Where it does not, the member is inserted ahead of
+    the first existing one, indented and punctuated like it -- so a file written in a compact
+    style keeps that style instead of being re-serialised wholesale.
+    """
+    members = _members(text, obj)
+    if key in members:
+        _, value_start, value_end = members[key]
+        return text[:value_start] + literal + text[value_end:]
+    if not members:
+        raise ValueError("cannot place %s in an empty object" % key)
+    first = min(m[0] for m in members.values())
+    line_start = text.rfind("\n", 0, first) + 1
+    indent = text[line_start:first]
+    return text[:first] + '"%s": %s,\n%s' % (key, literal, indent) + text[first:]
+
+
+def _array_literal(text, obj, values):
+    """An array written the way arrays are already written in this object -- inline or expanded."""
+    sibling = next((v for k, v in _members(text, obj).items() if text[v[1]] == "["), None)
+    raw = text[sibling[1]:sibling[2]] if sibling else ""
+    if sibling and "\n" in raw:
+        line_start = text.rfind("\n", 0, sibling[0]) + 1
+        indent = text[line_start:sibling[0]]
+        inner = indent + "  "
+        return "[\n" + ",\n".join(inner + _num(v) for v in values) + "\n" + indent + "]"
+    if sibling and raw.startswith("[ "):
+        return "[ " + ", ".join(_num(v) for v in values) + " ]"
+    return "[" + ", ".join(_num(v) for v in values) + "]"
+
+
+def _gui_object_start(text):
+    """Index of the ``{`` opening the inventory variant's gui transform, for in-place editing."""
+    variants = _members(text, text.index("{"))["variants"]
+    inv = _members(text, variants[1])["inventory"]
+    entry = text.index("{", inv[1])
+    transform = _members(text, entry)["transform"]
+    return _members(text, transform[1])["gui"][1]
+
+
 def gui_transform_of(bs):
     """The inventory variant's gui transform, materialised if it was inherited or named."""
     inv = bs["variants"]["inventory"][0]
@@ -436,12 +542,36 @@ def correct(record):
     else:
         gui["translation"] = t
 
-    rewritten = json.dumps(bs, indent=2) + "\n"
-    if json.dumps(json.loads(original), indent=2) + "\n" != original:
-        print("  %-32s NOT written -- this file is not in canonical 2-space JSON, so rewriting it\n"
-              "%-34s would reformat the whole thing. Apply by hand: scale %s, translation %s"
-              % (record["reg"], "", gui.get("scale"), gui.get("translation")))
+    # Edit the values where they sit rather than re-serialising: most of these blockstates are
+    # written in a compact style that a json.dump round trip would reformat wholesale, burying a
+    # one-line change in fifty lines of whitespace.
+    try:
+        rewritten = original
+        if "transform" not in json.loads(original)["variants"]["inventory"][0] \
+                or isinstance(json.loads(original)["variants"]["inventory"][0]["transform"], str) \
+                or "gui" not in json.loads(original)["variants"]["inventory"][0]["transform"] \
+                or isinstance(json.loads(original)["variants"]["inventory"][0]["transform"].get(
+                    "gui"), str):
+            # Nothing to edit in place: the transform was inherited or named rather than spelled
+            # out, so the materialised one has to be written out in full.
+            rewritten = json.dumps(bs, indent=2) + "\n"
+        else:
+            obj = _gui_object_start(rewritten)
+            if "scale" in gui:
+                rewritten = _set_member(rewritten, obj, "scale", _num(gui["scale"]))
+            obj = _gui_object_start(rewritten)
+            if "translation" in gui:
+                rewritten = _set_member(rewritten, obj, "translation",
+                                        _array_literal(rewritten, obj, gui["translation"]))
+        # An in-place text edit must never change anything but the values it meant to. Comparing
+        # the parsed result against the structure built above is what makes that checkable.
+        if json.loads(rewritten) != bs:
+            raise ValueError("in-place edit changed something it should not have")
+    except (ValueError, KeyError, IndexError) as exc:
+        print("  %-32s NOT written (%s). Apply by hand: scale %s, translation %s"
+              % (record["reg"], exc, gui.get("scale"), gui.get("translation")))
         return False
+
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write(rewritten)
     print("  %-32s scale %-10s translation %s" % (
