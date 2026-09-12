@@ -177,11 +177,18 @@ public class TileEntitySignalBackplateRenderer
    * plate's own geometry again, added on top of itself, scaled by how squarely it is being looked
    * at and how dark it is.
    *
-   * <p><b>Why adding the whole plate is right, and not a cheat.</b> Sheeting returns a fraction of
+   * <p><b>Why adding the whole face is right, and not a cheat.</b> Sheeting returns a fraction of
    * what lands on it, so how brightly a patch comes back is its own colour -- which is exactly what
    * addition does. The black body adds nothing because black is nothing, and the band brightens
    * because it is bright. Nothing has to know which quads are the band, so this works on all
    * nineteen models and every colour pairing without a list of which is which.
+   *
+   * <p><b>Only the front, though.</b> The sheeting is applied to the face of the plate; the back
+   * and the edges are paint. That distinction was invisible while every plate had a black back,
+   * but the all-yellow plate is yellow on both sides and only retroreflective on one, and drawing
+   * its whole model here made the edges catch the light at a glance and the back at a grazing
+   * angle. So the pass keeps only the quads that face the way the plate faces -- a direction
+   * test, not a list of quads, so it still needs nothing per model.
    *
    * <p><b>Cost.</b> Nothing at all in daylight or off-axis, which is nearly always: the factor
    * falls under the cutoff and the method returns before touching GL. When it does draw it is one
@@ -215,7 +222,7 @@ public class TileEntitySignalBackplateRenderer
     GlStateManager.pushMatrix();
     GlStateManager.translate(0.0, rise / MODEL_UNITS_PER_BLOCK, 0.0);
     emitGlow(Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(renderState),
-        renderState, strength);
+        renderState, facing, strength);
     GlStateManager.popMatrix();
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -230,7 +237,7 @@ public class TileEntitySignalBackplateRenderer
   }
 
   /**
-   * The plate again, in one buffer, with the strength written into the vertex colours.
+   * The plate's front again, in one buffer, with the strength written into the vertex colours.
    *
    * <p>This is vanilla's {@code renderModelBrightnessColor} with the batching it does not do.
    * That method begins and draws a buffer <em>per quad</em>, which for a plate is around fifty
@@ -242,19 +249,29 @@ public class TileEntitySignalBackplateRenderer
    * also why the geometry cannot simply live in a display list -- the colour it is compiled with
    * would be frozen into it, and the whole point is that the colour changes as you move.
    */
-  private void emitGlow(IBakedModel model, IBlockState renderState, float strength) {
+  private void emitGlow(IBakedModel model, IBlockState renderState, EnumFacing front,
+      float strength) {
     final Tessellator tessellator = Tessellator.getInstance();
     final BufferBuilder buffer = tessellator.getBuffer();
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
     for (EnumFacing side : EnumFacing.values()) {
-      appendGlowQuads(buffer, model.getQuads(renderState, side, 0L), strength);
+      appendGlowQuads(buffer, model.getQuads(renderState, side, 0L), front, strength);
     }
-    appendGlowQuads(buffer, model.getQuads(renderState, null, 0L), strength);
+    appendGlowQuads(buffer, model.getQuads(renderState, null, 0L), front, strength);
     tessellator.draw();
   }
 
-  private static void appendGlowQuads(BufferBuilder buffer, List<BakedQuad> quads, float strength) {
+  /**
+   * Appends the quads that face {@code front}. A model's front is its north face, and the
+   * blockstate turns that to the block's facing, so a baked quad's own face is the test: the
+   * face of the plate is exactly the set of quads pointing the way the block does.
+   */
+  private static void appendGlowQuads(BufferBuilder buffer, List<BakedQuad> quads,
+      EnumFacing front, float strength) {
     for (BakedQuad quad : quads) {
+      if (quad.getFace() != front) {
+        continue;
+      }
       buffer.addVertexData(quad.getVertexData());
       buffer.putColorRGB_F4(strength, strength, strength);
       final Vec3i normal = quad.getFace().getDirectionVec();

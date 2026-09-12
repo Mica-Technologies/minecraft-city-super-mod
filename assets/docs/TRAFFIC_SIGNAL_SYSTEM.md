@@ -1131,6 +1131,43 @@ life behind a `shaderCompatibilityMode` config gate, but the white-tint bug occu
 shaders too (any time display-list compile order leaves `white1px` bound), so the bind is no
 longer gated. Any reference to a `shaderCompatibilityMode` option is legacy.
 
+## Signal Backplate Colourways
+
+Every backplate block is one of six model families -- `tlborder` (3-section, plus `8inch` and
+`8812inch` sizes), `tlbordersingle`, `tlborderaddon`, `tlborder5addon`, `tldoghouseborder` and
+`tlhawkborder` -- times a colourway. The family's block class takes only a registry name
+(`BlockTrafficAccessoryBackplate`, or `BlockTrafficAccessoryBackplateFitted` for doghouse and
+hawk), so a colourway is a blockstate, a texture and a lang line, nothing more.
+
+A block is named `<family><outer><inner>`: `tlborderblackyellow` is a black rim around a wide
+yellow band, `tlborderyellowblack` a thin yellow rim around black. The texture it points at is
+named the other way round and carries a third colour for the back,
+`signalbackplate<back><inner><outer>`, and is a 128x128 swatch sheet that every model in the
+family samples by quadrant:
+
+| Quadrant | What samples it |
+|---|---|
+| top-left | the front (`north`) faces of the inner band |
+| bottom half | the front faces of the outer rim |
+| top-right | every side and back face of every element |
+
+So a colourway is three flat 64-pixel squares. The `_e` companion is the OptiFine emissive
+overlay: the sheeting colour where the front is coloured, transparent everywhere else, so under
+a shader pack only the front reflects.
+
+The colourways are black/white, black/yellow, black/blue, black/pink and each of those reversed,
+gray/gray, black/black, and two added for bike facilities and full-sheeting plates:
+
+- **Green** (`*blackgreen`, `*greenblack`, plus the `8inch`/`8812inch` sizes of `greenblack`):
+  bike-lane green, the FHWA pavement green, for plates on bicycle signals. Same two orders as
+  every other colour.
+- **Yellow/Yellow** (`*yellowyellow`, all sizes): retroreflective yellow across the whole front.
+  The back and edges are painted yellow rather than sheeting -- a duller swatch in the
+  top-right quadrant -- and `TileEntitySignalBackplateRenderer` draws its retroreflection pass
+  only on the quads that face the block's `FACING`, so the front catches headlights and the back
+  never does. That front-only rule applies to every plate; it simply had nothing to exclude while
+  every back was black.
+
 ## Horizontal Signal Backplates
 
 The backplate blocks (`trafficaccessories/AbstractBlockSignalBackplate.java`) auto-detect

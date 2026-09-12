@@ -106,7 +106,10 @@ Configuration Tool**, sneak-click to change mode and click a head to apply it:
 | Mount type | How it attaches to what carries it |
 | Nudge forward/back, left/right | Fine placement, a sixteenth of a block at a time |
 
-Backplates follow the head automatically — tilt a head and its plate tilts with it.
+Backplates follow the head automatically — tilt a head and its plate tilts with it. Every plate
+family comes in the usual colour pairs — black with a yellow, white, blue, pink or green
+retroreflective band, or the reverse — plus gray and an all-yellow plate whose whole front is
+retroreflective. Green is bike-lane green, for plates on bicycle signals.
 
 ## Where signals can hang
 
