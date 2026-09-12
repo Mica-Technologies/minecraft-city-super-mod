@@ -360,9 +360,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `audit_inventory_renders.py` -- measures, in a running dev client, how far every OBJ-backed item
   actually sits inside its 16px inventory slot, by putting each one alone in a hotbar slot and
   differencing the frame against the empty slot (the slot rectangle calibrated off a vanilla cube).
-  `--fix` recentres and rescales the ones that hang out. Whether an inventory render fits cannot be
-  read off the blockstate -- an offline estimate of this was wrong on most of the tree -- and the
-  translation in a Forge blockstate transform is in BLOCK units, not the 1/16 a vanilla
+  `--fix` recentres and rescales the ones that hang out, editing the values where they sit so the
+  compact JSON style most of these blockstates use survives. Whether an inventory render fits
+  cannot be read off the blockstate -- an offline estimate of this was wrong on most of the tree --
+  and the translation in a Forge blockstate transform is in BLOCK units, not the 1/16 a vanilla
   `models/item` display uses. A correction needs a rebuild AND a client restart to re-measure: a
   resource reload does not rebake these, and stopping the Gradle task leaves the game JVM holding
   the MCMCP port, so the next run silently measures the stale client
