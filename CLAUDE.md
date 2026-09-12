@@ -357,6 +357,15 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   tapered base with its access door and the clamp bracket as OBJ, and emits the five
   blockstates plus lang/tab fragments; `--check` fails if the tree has drifted from the script
 - `preview_block_model.py` -- renders a Forge JSON element model or an OBJ against its texture offline, with Minecraft's face winding and UV origin, so stretched UVs and transparent bleed can be caught without launching the game
+- `audit_inventory_renders.py` -- measures, in a running dev client, how far every OBJ-backed item
+  actually sits inside its 16px inventory slot, by putting each one alone in a hotbar slot and
+  differencing the frame against the empty slot (the slot rectangle calibrated off a vanilla cube).
+  `--fix` recentres and rescales the ones that hang out. Whether an inventory render fits cannot be
+  read off the blockstate -- an offline estimate of this was wrong on most of the tree -- and the
+  translation in a Forge blockstate transform is in BLOCK units, not the 1/16 a vanilla
+  `models/item` display uses. A correction needs a rebuild AND a client restart to re-measure: a
+  resource reload does not rebake these, and stopping the Gradle task leaves the game JVM holding
+  the MCMCP port, so the next run silently measures the stale client
 - `csm_bench.py` -- builds a dense grid of CSM content in a throwaway world and measures client
   frame time against it over MCMCP (`build` / `measure` / `compare`). It pins the time, weather and
   view distance, and refuses to report a figure taken while the frame rate is sitting at the
