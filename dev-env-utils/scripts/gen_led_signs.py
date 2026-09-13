@@ -92,6 +92,15 @@ CATALOGUE = [
     ('signarrowplaquefloyellowdownrightflashingled', 'signarrowplaquefloyellowdownright',
      'arrow_sign_plaque_down_right_fluorescent_yellow', 'rect_eight', 2.0, AMBER_LEDS,
      'Arrow Sign (Plaque) (Down Right) (Fluorescent Yellow, Flashing LED)'),
+    # The pedestrian companions from gen_gap_signs.py: the school pentagon, the in-street
+    # paddle and the yield-here sign, all amber as the real LED units are
+    ('signschoolcrossingflashingled', 'signschoolcrossing', 'signschoolcrossing',
+     'pentagon_ten', 1.0, AMBER_LEDS, 'School Crossing Sign (Flashing LED)'),
+    ('signstatelawstopforpedsflashingled', 'signstatelawstopforpeds', 'signstatelawstopforpeds',
+     'rect_eight', 16.0 / 21.0, AMBER_LEDS,
+     'State Law Stop For Pedestrians In Crosswalk Sign (Flashing LED)'),
+    ('signyieldheretopedsflashingled', 'signyieldheretopeds', 'signyieldheretopeds',
+     'rect_eight', 16.0 / 21.0, AMBER_LEDS, 'Yield Here To Pedestrians Sign (Flashing LED)'),
 ]
 
 
@@ -179,7 +188,36 @@ def layout(kind, mask, aspect):
         apothem = (SIZE - 1) / 2.0 / math.sqrt(2)
         return with_edge_midpoints(inset_polygon(diamond_vertices(mask), EDGE_INSET + 0.5,
                                                  apothem))
+    if kind == 'pentagon_ten':
+        return with_edge_midpoints(inset_pentagon(pentagon_vertices(mask), EDGE_INSET + 0.5))
     raise ValueError(kind)
+
+
+def pentagon_vertices(mask):
+    """The school sign's five points: the apex on the top edge, the two shoulders where the
+    sides reach the texture edge, and the bottom corners."""
+    # The pentagon is drawn inset from the texture edge, so read its outline off the first
+    # and last opaque rows and columns rather than the texture's own edges.
+    rows = np.where(mask.any(axis=1))[0]
+    cols = np.where(mask.any(axis=0))[0]
+    top_y, bottom_y = rows.min(), rows.max()
+    left_x, right_x = cols.min(), cols.max()
+    top = np.where(mask[top_y])[0]
+    bottom = np.where(mask[bottom_y])[0]
+    left = np.where(mask[:, left_x])[0]
+    right = np.where(mask[:, right_x])[0]
+    return [((top.min() + top.max()) / 2.0, top_y), (right_x, right.min()),
+            (bottom.max(), bottom_y), (bottom.min(), bottom_y), (left_x, left.min())]
+
+
+def inset_pentagon(points, inset):
+    """Move each vertex toward the shape's centroid so its edges come in by about ``inset``.
+    The pentagon is not regular, so this uses the mean centre-to-edge distance."""
+    cx = sum(x for x, _ in points) / len(points)
+    cy = sum(y for _, y in points) / len(points)
+    apothem = sum(math.hypot(x - cx, y - cy) for x, y in points) / len(points) * 0.85
+    s = 1.0 - inset / apothem
+    return [(cx + (x - cx) * s, cy + (y - cy) * s) for x, y in points]
 
 
 # A pixel the LED layer covers at least this much is part of the emissive overlay. The
