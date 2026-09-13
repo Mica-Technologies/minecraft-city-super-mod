@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "581 blocks in this tab"
+!!! info "613 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -12,18 +12,28 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | 1 Hr Truck Parking | `csm:1hrtruckparkingsign` | 2 | 10 | pickaxe | 1 |
+| 1000 Feet Sign (Plaque) | `csm:sign1000feet` | 2 | 10 | pickaxe | 1 |
 | 14ft 4in Sign | `csm:sign14_4` | 2 | 10 | pickaxe | 1 |
 | 2 Hour Parking 8:30a-5:30a Sign | `csm:twohourpark830530` | 2 | 10 | pickaxe | 1 |
 | 24 Hour Parking Sign | `csm:sign24hrparking` | 2 | 10 | pickaxe | 1 |
 | 3-Way T-Intersection Sign | `csm:sign3wayt` | 2 | 10 | pickaxe | 1 |
 | 4-Way Intersection Sign | `csm:sign4way` | 2 | 10 | pickaxe | 1 |
 | 4-Way Sign (Plaque) | `csm:signpost4way` | 2 | 10 | pickaxe | 1 |
+| 500 Feet Sign (Plaque) | `csm:sign500feet` | 2 | 10 | pickaxe | 1 |
 | 99 Cents Only Price Sign (New) | `csm:99onlypricesignnew` | 2 | 10 | pickaxe | 1 |
 | 99 Cents Only Price Sign (Old) | `csm:99onlypricesignold` | 2 | 10 | pickaxe | 1 |
 | A Careless Person Is Just An Accident Going Someplace To Happen | `csm:carelesspersonsign` | 2 | 10 | pickaxe | 1 |
 | Absolutely Nothing Sign | `csm:absolutelynothingsign` | 2 | 10 | pickaxe | 1 |
 | Added Lane Sign (Left) | `csm:signaddleft` | 2 | 10 | pickaxe | 1 |
 | Added Lane Sign (Right) | `csm:signaddright` | 2 | 10 | pickaxe | 1 |
+| Advisory Speed 10 MPH Sign (Plaque) | `csm:signadvisoryspeed10` | 2 | 10 | pickaxe | 1 |
+| Advisory Speed 15 MPH Sign (Plaque) | `csm:signadvisoryspeed15` | 2 | 10 | pickaxe | 1 |
+| Advisory Speed 20 MPH Sign (Plaque) | `csm:signadvisoryspeed20` | 2 | 10 | pickaxe | 1 |
+| Advisory Speed 25 MPH Sign (Plaque) | `csm:signadvisoryspeed25` | 2 | 10 | pickaxe | 1 |
+| Advisory Speed 30 MPH Sign (Plaque) | `csm:signadvisoryspeed30` | 2 | 10 | pickaxe | 1 |
+| Advisory Speed 35 MPH Sign (Plaque) | `csm:signadvisoryspeed35` | 2 | 10 | pickaxe | 1 |
+| Advisory Speed 40 MPH Sign (Plaque) | `csm:signadvisoryspeed40` | 2 | 10 | pickaxe | 1 |
+| Advisory Speed 45 MPH Sign (Plaque) | `csm:signadvisoryspeed45` | 2 | 10 | pickaxe | 1 |
 | Ahead + Left Sign | `csm:signupleft` | 2 | 10 | pickaxe | 1 |
 | Ahead + Right Sign | `csm:signupright` | 2 | 10 | pickaxe | 1 |
 | Ahead + Slight Left Sign | `csm:signupslightleft` | 2 | 10 | pickaxe | 1 |
@@ -54,6 +64,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | ATV Sign | `csm:signatv` | 2 | 10 | pickaxe | 1 |
 | Axle Weight Limit 5 Tons Sign | `csm:signaxle5tonlimit` | 2 | 10 | pickaxe | 1 |
 | Base Station Radios Only | `csm:basestationradiosign` | 2 | 10 | pickaxe | 1 |
+| Be Prepared To Stop Sign | `csm:signbepreparedtostop` | 2 | 10 | pickaxe | 1 |
 | Beach Closed Sign | `csm:beachclosedsign` | 2 | 10 | pickaxe | 1 |
 | Bear Crossing | `csm:bearcrossingsign` | 2 | 10 | pickaxe | 1 |
 | Begin Freeway | `csm:beginfwysign` | 2 | 10 | pickaxe | 1 |
@@ -105,6 +116,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Commercial Vehicles Excluded Sign | `csm:signcommercialexclude` | 2 | 10 | pickaxe | 1 |
 | Cow Sign | `csm:signcow` | 2 | 10 | pickaxe | 1 |
 | Cross Only at Crosswalks Sign | `csm:signcrossatcrosswalks` | 2 | 10 | pickaxe | 1 |
+| Cross Traffic Does Not Stop Sign (Plaque) | `csm:signcrosstrafficdoesnotstop` | 2 | 10 | pickaxe | 1 |
 | Crossover 1/4 Mile Sign | `csm:signcrossoverquartermile` | 2 | 10 | pickaxe | 1 |
 | Crossover Left Arrow Sign | `csm:signcrossoverleft` | 2 | 10 | pickaxe | 1 |
 | Curve 15 MPH Sign | `csm:signcurve15` | 2 | 10 | pickaxe | 1 |
@@ -162,6 +174,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Except Bus Sign | `csm:signexceptbus` | 2 | 10 | pickaxe | 1 |
 | Exit 25 MPH Sign | `csm:signexit25` | 2 | 10 | pickaxe | 1 |
 | Exit Closed Sign | `csm:signexitclosed` | 2 | 10 | pickaxe | 1 |
+| Falling Rocks Sign | `csm:signfallingrocks` | 2 | 10 | pickaxe | 1 |
 | Fallout Shelter Sign | `csm:falloutsheltersign` | 2 | 10 | pickaxe | 1 |
 | Fallout Shelter Sign (Alternate) | `csm:falloutsheltersignalt` | 2 | 10 | pickaxe | 1 |
 | Family Sign | `csm:signfamily` | 2 | 10 | pickaxe | 1 |
@@ -190,6 +203,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Hiking Sign (Green) | `csm:signhiking` | 2 | 10 | pickaxe | 1 |
 | Hill Sign | `csm:signhill` | 2 | 10 | pickaxe | 1 |
 | Honorary General Blissgreen Memorial HWY | `csm:hgblissgreenhwysign` | 2 | 10 | pickaxe | 1 |
+| Horse Crossing Sign | `csm:signhorse` | 2 | 10 | pickaxe | 1 |
 | Hospital Sign | `csm:signhospital` | 2 | 10 | pickaxe | 1 |
 | HOV 2 or More Per Vehicle Sign | `csm:signhov2ormorepervehicle` | 2 | 10 | pickaxe | 1 |
 | HOV 2+ Only 6a-9a Sign | `csm:signhov6a9a` | 2 | 10 | pickaxe | 1 |
@@ -209,6 +223,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | JCT Sign | `csm:signjct` | 2 | 10 | pickaxe | 1 |
 | Kathie Evans For Sale Sign | `csm:kathieevanssign` | 2 | 10 | pickaxe | 1 |
 | Kayak Sign | `csm:signkayak` | 2 | 10 | pickaxe | 1 |
+| Keep Left Sign | `csm:signpostkeepleft` | 2 | 10 | pickaxe | 1 |
 | Keep off Median Sign | `csm:signkeepoffmedian` | 2 | 10 | pickaxe | 1 |
 | Keep Right (1) Sign | `csm:signkeepright1` | 2 | 10 | pickaxe | 1 |
 | Keep Right (2) Sign | `csm:signkeepright2` | 2 | 10 | pickaxe | 1 |
@@ -254,6 +269,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Lights Out No Power Sign | `csm:lightsoutnopowersign` | 2 | 10 | pickaxe | 1 |
 | Littering is Illegal Sign | `csm:signlitteringillegal` | 2 | 10 | pickaxe | 1 |
 | Lodging/Hotel/Motel Sign | `csm:signlodging` | 2 | 10 | pickaxe | 1 |
+| Loose Gravel Sign | `csm:signloosegravel` | 2 | 10 | pickaxe | 1 |
 | Lowest Prices Guaranteed | `csm:99onlypricesignnew2` | 2 | 10 | pickaxe | 1 |
 | MassDOT Heavy Merge Ahead | `csm:massdotheavymergesign` | 2 | 10 | pickaxe | 1 |
 | MassDOT Heavy Merge Ahead (Work Zone) | `csm:massdotheavymergesignrw` | 2 | 10 | pickaxe | 1 |
@@ -270,6 +286,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Narrow Bridge Sign | `csm:signnarrowbridge` | 2 | 10 | pickaxe | 1 |
 | Nautical Sign | `csm:signboats` | 2 | 10 | pickaxe | 1 |
 | New Signal Ahead Sign | `csm:signnewsignal` | 2 | 10 | pickaxe | 1 |
+| Next 2 Miles Sign (Plaque) | `csm:signnext2miles` | 2 | 10 | pickaxe | 1 |
 | No Bikes Sign | `csm:signnobikes` | 2 | 10 | pickaxe | 1 |
 | No Dumping Sign | `csm:signnodumping` | 2 | 10 | pickaxe | 1 |
 | No Fishing from Bridge Sign | `csm:signnobridgefishing` | 2 | 10 | pickaxe | 1 |
@@ -282,6 +299,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | No Hitchhiking Sign (Symbol) | `csm:signnohitchhiker` | 2 | 10 | pickaxe | 1 |
 | No Hitchhiking Sign (Text) | `csm:signnohitchhiking` | 2 | 10 | pickaxe | 1 |
 | No Left on Red Sign | `csm:signnoleftred` | 2 | 10 | pickaxe | 1 |
+| No Left Turn or U-Turn Sign | `csm:signnoleftoruturn` | 2 | 10 | pickaxe | 1 |
 | No Left Turn Sign | `csm:signnoleftturn` | 2 | 10 | pickaxe | 1 |
 | No Motor Vehicles Sign | `csm:signnomotorvehicles` | 2 | 10 | pickaxe | 1 |
 | No Outlet Sign | `csm:signnooutlet` | 2 | 10 | pickaxe | 1 |
@@ -302,6 +320,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | No Parking on Pavement Sign | `csm:signnoparkingonpave` | 2 | 10 | pickaxe | 1 |
 | No Parking Sign | `csm:signnoparking` | 2 | 10 | pickaxe | 1 |
 | No Parkway Access | `csm:nopkwyaccesssign` | 2 | 10 | pickaxe | 1 |
+| No Passing Zone Sign | `csm:signnopassingzone` | 2 | 10 | pickaxe | 1 |
 | No Pedestrians Sign | `csm:signnopedestrians` | 2 | 10 | pickaxe | 1 |
 | No Right on Red Sign | `csm:signnorightred` | 2 | 10 | pickaxe | 1 |
 | No Right Turn Sign | `csm:signnorightturn` | 2 | 10 | pickaxe | 1 |
@@ -375,6 +394,10 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Rest Area 1 Mile Sign | `csm:signrestarea1mile` | 2 | 10 | pickaxe | 1 |
 | Rest Area Right Arrow Sign | `csm:signrestarearight` | 2 | 10 | pickaxe | 1 |
 | Restricted Area No Trespassing Warning | `csm:restrictedareasign` | 2 | 10 | pickaxe | 1 |
+| Reverse Curve Left Sign | `csm:signreversecurveleft` | 2 | 10 | pickaxe | 1 |
+| Reverse Curve Right Sign | `csm:signreversecurveright` | 2 | 10 | pickaxe | 1 |
+| Reverse Turn Left Sign | `csm:signreverseturnleft` | 2 | 10 | pickaxe | 1 |
+| Reverse Turn Right Sign | `csm:signreverseturnright` | 2 | 10 | pickaxe | 1 |
 | RGR Ahead | `csm:rgraheadsign` | 2 | 10 | pickaxe | 1 |
 | RGR Baby Ahead | `csm:rgrbabysign` | 2 | 10 | pickaxe | 1 |
 | RGR Chicken Ahead | `csm:rgrchickensign` | 2 | 10 | pickaxe | 1 |
@@ -390,6 +413,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Right Lane Bus Only 7AM-7PM Mon-Fri | `csm:rightlanebussign` | 2 | 10 | pickaxe | 1 |
 | Right Lane Ends Sign | `csm:signrightlaneends` | 2 | 10 | pickaxe | 1 |
 | Right Lane Freeway Only | `csm:rightlanefreewayonlysign` | 2 | 10 | pickaxe | 1 |
+| Right Lane Must Turn Right Sign | `csm:signrightmustturnright` | 2 | 10 | pickaxe | 1 |
 | Right Only Sign | `csm:signrightonly` | 2 | 10 | pickaxe | 1 |
 | Right Plaque Sign | `csm:signrightplaque` | 2 | 10 | pickaxe | 1 |
 | Right Shift Sign | `csm:signrightshift` | 2 | 10 | pickaxe | 1 |
@@ -402,6 +426,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Road Ends In Water | `csm:roadendsinwatersign` | 2 | 10 | pickaxe | 1 |
 | Road Ends Sign | `csm:signroadends` | 2 | 10 | pickaxe | 1 |
 | Road Floods High Tide Sign | `csm:signhightideroadflood` | 2 | 10 | pickaxe | 1 |
+| Road Narrows Sign | `csm:signroadnarrows` | 2 | 10 | pickaxe | 1 |
 | Road Not Maintained By UIA County | `csm:notmaintainedroadsign` | 2 | 10 | pickaxe | 1 |
 | Road Split Sign | `csm:signroadsplit` | 2 | 10 | pickaxe | 1 |
 | Road Work 2 Lanes Shift Left Sign | `csm:rwrkshiftleft2lanes` | 2 | 10 | pickaxe | 1 |
@@ -423,7 +448,11 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Road Work Shift Right Single Lane Sign | `csm:signrwrkshiftrightsingle` | 2 | 10 | pickaxe | 1 |
 | Road Work Signal Ahead Sign | `csm:rwrksignalahead` | 2 | 10 | pickaxe | 1 |
 | Road Work Stop Ahead Sign | `csm:rwrkstopahead` | 2 | 10 | pickaxe | 1 |
+| Rough Road Sign | `csm:signroughroad` | 2 | 10 | pickaxe | 1 |
+| Roundabout Directional Arrow Sign | `csm:signroundaboutdirectional` | 2 | 10 | pickaxe | 1 |
 | Roundabout Sign | `csm:signroundabout` | 2 | 10 | pickaxe | 1 |
+| Roundabout Sign (Plaque) | `csm:signroundaboutplaque` | 2 | 10 | pickaxe | 1 |
+| Runaway Truck Ramp Sign | `csm:signrunawaytruckramp` | 2 | 10 | pickaxe | 1 |
 | Rural Intersection Ahead | `csm:rualintersectionsign` | 2 | 10 | pickaxe | 1 |
 | Rural Road | `csm:ruralroadsign` | 2 | 10 | pickaxe | 1 |
 | RV/Camper Sign | `csm:signcamper` | 2 | 10 | pickaxe | 1 |
@@ -488,6 +517,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Special Event Ahead | `csm:specialeventsign` | 2 | 10 | pickaxe | 1 |
 | Speed Bump Sign | `csm:signspeedhump` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 0 Sign | `csm:signspeed0` | 2 | 10 | pickaxe | 1 |
+| Speed Limit 10 Sign | `csm:signspeed10` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 15 Sign | `csm:signspeed15` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 20 Sign | `csm:signspeed20` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 25 Sign | `csm:signspeed25` | 2 | 10 | pickaxe | 1 |
@@ -499,7 +529,9 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Speed Limit 50 Minimum 30 Sign | `csm:signpost50min30` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 50 Sign | `csm:signpostspeed50` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 55 Sign | `csm:signpostspeed55` | 2 | 10 | pickaxe | 1 |
+| Speed Limit 60 Sign | `csm:signspeed60` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 65 Sign | `csm:signspeed65` | 2 | 10 | pickaxe | 1 |
+| Speed Limit 70 Sign | `csm:signspeed70` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 75 Sign | `csm:signspeed75` | 2 | 10 | pickaxe | 1 |
 | Speed Zone Ahead Sign | `csm:signpostspeedzoneahead` | 2 | 10 | pickaxe | 1 |
 | State Property No Trespassing Sign | `csm:signstatepropertynotrasspassing` | 2 | 10 | pickaxe | 1 |
