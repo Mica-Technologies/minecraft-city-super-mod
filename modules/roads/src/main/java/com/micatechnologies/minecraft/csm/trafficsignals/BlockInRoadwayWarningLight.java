@@ -148,6 +148,18 @@ public class BlockInRoadwayWarningLight extends AbstractBlockControllableSignal
     return true;
   }
 
+  /**
+   * Like the RRFB it flashes for exactly as long as it is called, so when linked as a pedestrian
+   * beacon the requestable controller brings it on with the WALK rather than with a HAWK's
+   * approach.
+   *
+   * @return always {@code true}
+   */
+  @Override
+  public boolean isFlashOnCallBeacon() {
+    return true;
+  }
+
   @Override
   public String getBlockRegistryName() {
     return "in_roadway_warning_light";

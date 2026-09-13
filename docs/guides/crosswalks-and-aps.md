@@ -87,6 +87,12 @@ It links to a controller as a **pedestrian beacon**, exactly as a HAWK does — 
 linker, right-click the controller, right-click the RRFB. Put the crossing's button in
 **requestable** mode and the button is what calls it.
 
+The controller knows it is not a HAWK. A HAWK announces itself — flashing yellow, steady yellow,
+steady red — before the crossing gets its WALK; an RRFB has no approach, so it comes on the
+moment the WALK starts and goes dark when the pedestrian clearance ends. And if the main street has
+nothing on it but RRFBs, there is nothing to bring to a stop, so the controller skips the yellow and
+all-red entirely: press the button and the beacons and the WALK start together.
+
 The flash is the sequence FHWA Interim Approval IA-21 actually specifies: left, right, left, right,
 then **two flashes with both lamps lit**, then a pause, 75 times a minute. An RRFB is not a strictly
 alternating wig-wag, which is the detail everyone gets wrong. Every RRFB in a world runs in step, so

@@ -355,6 +355,44 @@ these values — cycle button, typed field, clipboard paste — inherits the gua
 moves the whole window upward has to send the maximum first (see
 `SignalControllerVisualGui.pasteRequestableServiceTimes`).
 
+### What is linked decides the requestable sequence
+
+The full requestable sequence is: main street flashing don't walk → HAWK pre-flash (flashing
+yellow) → main street yellow → all-red → service (WALK) → service flashing don't walk → wig-wag →
+served street yellow → all-red → default green. It was written for a signalised crossing, and
+every step exists to clear one kind of device. `RequestableCircuitNeeds` reads off the circuits
+which of those devices are actually linked, and `TrafficSignalControllerTicker.requestableNextPhaseIndex`
+takes a step only when something needs it:
+
+| Step | Taken when |
+|---|---|
+| Flashing don't walk (default side) | circuit 1 has pedestrian signals or accessories |
+| HAWK pre-flash | circuit 1 has a HAWK-style beacon |
+| Yellow + all-red (default side) | circuit 1 has vehicle heads, or a HAWK |
+| Yellow + all-red (service side) | a served circuit has vehicle heads, or a HAWK |
+
+The two "flashing don't walk + HAWK" phases are always entered after their flashing don't walk,
+HAWK or not: each carries the last `yellowTime` of the clearance interval, and skipping it would
+cut the clearance short.
+
+The distinction that makes this work is between the two kinds of pedestrian beacon, which link on
+the same `PEDESTRIAN_BEACON` side. A HAWK runs an approach of its own and is driven through the
+phases as before. A **flash-on-call** beacon — the RRFB, the in-roadway warning light,
+`AbstractBlockControllableSignal.isFlashOnCallBeacon()` — has no approach: a real one is dark until
+the button is pressed and then flashes for exactly the crossing interval. The requestable phases
+split each circuit's beacons with `getHawkBeaconSignals(world)` / `getFlashOnCallBeaconSignals(world)`
+and hold the flash-on-call ones OFF everywhere except service green and its pedestrian clearance,
+where they are YELLOW (the colour every flash-on-call block lights on). So an RRFB comes on with
+the WALK and goes off with the end of the clearance, and a crossing with nothing on the main
+street but RRFBs and nothing served but buttons reduces to: press, serve, clear, return.
+
+Two consequences worth knowing. A HAWK-only crossing no longer returns to steady red after its
+wig-wag — it goes dark, which is what a HAWK does. And because phases are cached in NBT and only
+rebuilt on a link change, the cache carries a format stamp (`tcPhF`,
+`TileEntityTrafficSignalController.CACHED_PHASES_FORMAT_CURRENT`); a controller saved under older
+rules rebuilds once on its first tick. Bump the stamp whenever `TrafficSignalPhases` changes what
+it puts in a phase.
+
 ## Connecting Devices to a Controller
 
 ### Linking Workflow

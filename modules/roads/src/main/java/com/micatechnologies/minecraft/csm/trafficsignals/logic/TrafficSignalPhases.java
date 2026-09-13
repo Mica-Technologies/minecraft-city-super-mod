@@ -626,12 +626,20 @@ public class TrafficSignalPhases {
     }
     phases[PHASE_INDEX_RAMP_METER_FLASH_2] = rampMeterFlash2Phase;
 
+    // The requestable phases tell the two kinds of pedestrian beacon apart. A HAWK runs the
+    // approach these phases were written for: flashing yellow, steady yellow, steady red, then
+    // its wig-wag over the pedestrian clearance. A flash-on-call beacon (an RRFB, an in-roadway
+    // light) has no approach: it is called for exactly the crossing interval -- the walk and its
+    // clearance -- and dark at every other point, so it comes on with the WALK, which is when a
+    // real one is pressed into life. Yellow is the colour that lights every flash-on-call block.
     // Create a new TrafficSignalPhase object for requestable default green phase
     TrafficSignalPhase requestableDefaultGreenPhase = new TrafficSignalPhase(
         TrafficSignalPhase.CIRCUIT_NOT_APPLICABLE, null,
         TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_GREEN);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableDefaultGreenPhase.addOffSignals(circuit.getFlashingLeftSignals());
@@ -640,7 +648,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenPhase.addGreenSignals(circuit.getRightSignals());
         requestableDefaultGreenPhase.addGreenSignals(circuit.getThroughSignals());
         requestableDefaultGreenPhase.addGreenSignals(circuit.getProtectedSignals());
-        requestableDefaultGreenPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+        requestableDefaultGreenPhase.addOffSignals(hawkBeacons);
+        requestableDefaultGreenPhase.addOffSignals(flashOnCallBeacons);
         requestableDefaultGreenPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenPhase.addWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenPhase.addWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -655,7 +664,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultGreenPhase.addRedSignals(circuit.getProtectedSignals());
         requestableDefaultGreenPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultGreenPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
+        requestableDefaultGreenPhase.addRedSignals(hawkBeacons);
+        requestableDefaultGreenPhase.addOffSignals(flashOnCallBeacons);
         requestableDefaultGreenPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableDefaultGreenPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
@@ -671,6 +681,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_GREEN_FLASH_DW);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableDefaultGreenFlashDwPhase.addOffSignals(circuit.getFlashingLeftSignals());
@@ -680,7 +692,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwPhase.addGreenSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwPhase.addGreenSignals(circuit.getProtectedSignals());
         requestableDefaultGreenFlashDwPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultGreenFlashDwPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+        requestableDefaultGreenFlashDwPhase.addOffSignals(hawkBeacons);
+        requestableDefaultGreenFlashDwPhase.addOffSignals(flashOnCallBeacons);
         requestableDefaultGreenFlashDwPhase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwPhase.addFlashDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
@@ -695,7 +708,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwPhase.addRedSignals(circuit.getProtectedSignals());
         requestableDefaultGreenFlashDwPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultGreenFlashDwPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
+        requestableDefaultGreenFlashDwPhase.addGreenSignals(hawkBeacons);
+        requestableDefaultGreenFlashDwPhase.addOffSignals(flashOnCallBeacons);
         requestableDefaultGreenFlashDwPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwPhase.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
@@ -713,6 +727,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableDefaultGreenFlashDwHawkPhase1.addOffSignals(circuit.getFlashingLeftSignals());
@@ -722,8 +738,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase1.addGreenSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addGreenSignals(circuit.getProtectedSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultGreenFlashDwHawkPhase1.addYellowSignals(
-            circuit.getPedestrianBeaconSignals());
+        requestableDefaultGreenFlashDwHawkPhase1.addYellowSignals(hawkBeacons);
+        requestableDefaultGreenFlashDwHawkPhase1.addOffSignals(flashOnCallBeacons);
         requestableDefaultGreenFlashDwHawkPhase1.addFlashDontWalkSignals(
             circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addFlashDontWalkSignals(
@@ -740,8 +756,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase1.addRedSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addRedSignals(circuit.getProtectedSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultGreenFlashDwHawkPhase1.addGreenSignals(
-            circuit.getPedestrianBeaconSignals());
+        requestableDefaultGreenFlashDwHawkPhase1.addGreenSignals(hawkBeacons);
+        requestableDefaultGreenFlashDwHawkPhase1.addOffSignals(flashOnCallBeacons);
         requestableDefaultGreenFlashDwHawkPhase1.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
@@ -761,6 +777,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(circuit.getFlashingLeftSignals());
@@ -770,8 +788,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase2.addGreenSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addGreenSignals(circuit.getProtectedSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(
-            circuit.getPedestrianBeaconSignals());
+        requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(hawkBeacons);
+        requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(flashOnCallBeacons);
         requestableDefaultGreenFlashDwHawkPhase2.addFlashDontWalkSignals(
             circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addFlashDontWalkSignals(
@@ -788,8 +806,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase2.addRedSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addRedSignals(circuit.getProtectedSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultGreenFlashDwHawkPhase2.addGreenSignals(
-            circuit.getPedestrianBeaconSignals());
+        requestableDefaultGreenFlashDwHawkPhase2.addGreenSignals(hawkBeacons);
+        requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(flashOnCallBeacons);
         requestableDefaultGreenFlashDwHawkPhase2.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
@@ -807,6 +825,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_YELLOW);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableDefaultYellowPhase.addYellowSignals(circuit.getFlashingLeftSignals());
@@ -816,7 +836,8 @@ public class TrafficSignalPhases {
         requestableDefaultYellowPhase.addYellowSignals(circuit.getThroughSignals());
         requestableDefaultYellowPhase.addYellowSignals(circuit.getProtectedSignals());
         requestableDefaultYellowPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultYellowPhase.addYellowSignals(circuit.getPedestrianBeaconSignals());
+        requestableDefaultYellowPhase.addYellowSignals(hawkBeacons);
+        requestableDefaultYellowPhase.addOffSignals(flashOnCallBeacons);
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableDefaultYellowPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
@@ -830,7 +851,8 @@ public class TrafficSignalPhases {
         requestableDefaultYellowPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultYellowPhase.addRedSignals(circuit.getProtectedSignals());
         requestableDefaultYellowPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultYellowPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
+        requestableDefaultYellowPhase.addGreenSignals(hawkBeacons);
+        requestableDefaultYellowPhase.addOffSignals(flashOnCallBeacons);
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableDefaultYellowPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
@@ -845,6 +867,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_RED);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableDefaultRedPhase.addRedSignals(circuit.getFlashingLeftSignals());
@@ -854,7 +878,8 @@ public class TrafficSignalPhases {
         requestableDefaultRedPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultRedPhase.addRedSignals(circuit.getProtectedSignals());
         requestableDefaultRedPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultRedPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
+        requestableDefaultRedPhase.addRedSignals(hawkBeacons);
+        requestableDefaultRedPhase.addOffSignals(flashOnCallBeacons);
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableDefaultRedPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
@@ -868,7 +893,8 @@ public class TrafficSignalPhases {
         requestableDefaultRedPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultRedPhase.addRedSignals(circuit.getProtectedSignals());
         requestableDefaultRedPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableDefaultRedPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
+        requestableDefaultRedPhase.addGreenSignals(hawkBeacons);
+        requestableDefaultRedPhase.addOffSignals(flashOnCallBeacons);
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableDefaultRedPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
@@ -883,6 +909,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableServiceGreenPhase.addRedSignals(circuit.getFlashingLeftSignals());
@@ -892,7 +920,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceGreenPhase.addRedSignals(circuit.getProtectedSignals());
         requestableServiceGreenPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceGreenPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
+        requestableServiceGreenPhase.addRedSignals(hawkBeacons);
+        requestableServiceGreenPhase.addYellowSignals(flashOnCallBeacons);
         requestableServiceGreenPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableServiceGreenPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
@@ -906,7 +935,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenPhase.addGreenSignals(circuit.getThroughSignals());
         requestableServiceGreenPhase.addGreenSignals(circuit.getProtectedSignals());
         requestableServiceGreenPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceGreenPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+        requestableServiceGreenPhase.addOffSignals(hawkBeacons);
+        requestableServiceGreenPhase.addYellowSignals(flashOnCallBeacons);
         requestableServiceGreenPhase.addWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenPhase.addWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableServiceGreenPhase.addGreenSignals(circuit.getNoTurnBlankoutSignals());
@@ -922,6 +952,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN_FLASH_DW);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableServiceGreenFlashDwPhase.addRedSignals(circuit.getFlashingLeftSignals());
@@ -931,7 +963,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwPhase.addRedSignals(circuit.getProtectedSignals());
         requestableServiceGreenFlashDwPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceGreenFlashDwPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
+        requestableServiceGreenFlashDwPhase.addGreenSignals(hawkBeacons);
+        requestableServiceGreenFlashDwPhase.addYellowSignals(flashOnCallBeacons);
         requestableServiceGreenFlashDwPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwPhase.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
@@ -946,7 +979,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwPhase.addGreenSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwPhase.addGreenSignals(circuit.getProtectedSignals());
         requestableServiceGreenFlashDwPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceGreenFlashDwPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+        requestableServiceGreenFlashDwPhase.addOffSignals(hawkBeacons);
+        requestableServiceGreenFlashDwPhase.addYellowSignals(flashOnCallBeacons);
         requestableServiceGreenFlashDwPhase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwPhase.addFlashDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
@@ -964,6 +998,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableServiceGreenFlashDwHawkPhase1.addRedSignals(circuit.getFlashingLeftSignals());
@@ -973,8 +1009,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase1.addRedSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwHawkPhase1.addRedSignals(circuit.getProtectedSignals());
         requestableServiceGreenFlashDwHawkPhase1.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceGreenFlashDwHawkPhase1.addGreenSignals(
-            circuit.getPedestrianBeaconSignals());
+        requestableServiceGreenFlashDwHawkPhase1.addGreenSignals(hawkBeacons);
+        requestableServiceGreenFlashDwHawkPhase1.addYellowSignals(flashOnCallBeacons);
         requestableServiceGreenFlashDwHawkPhase1.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwHawkPhase1.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
@@ -990,8 +1026,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase1.addGreenSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwHawkPhase1.addGreenSignals(circuit.getProtectedSignals());
         requestableServiceGreenFlashDwHawkPhase1.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceGreenFlashDwHawkPhase1.addYellowSignals(
-            circuit.getPedestrianBeaconSignals());
+        requestableServiceGreenFlashDwHawkPhase1.addYellowSignals(hawkBeacons);
+        requestableServiceGreenFlashDwHawkPhase1.addYellowSignals(flashOnCallBeacons);
         requestableServiceGreenFlashDwHawkPhase1.addFlashDontWalkSignals(
             circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwHawkPhase1.addFlashDontWalkSignals(
@@ -1012,6 +1048,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableServiceGreenFlashDwHawkPhase2.addRedSignals(circuit.getFlashingLeftSignals());
@@ -1021,8 +1059,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase2.addRedSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwHawkPhase2.addRedSignals(circuit.getProtectedSignals());
         requestableServiceGreenFlashDwHawkPhase2.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceGreenFlashDwHawkPhase2.addGreenSignals(
-            circuit.getPedestrianBeaconSignals());
+        requestableServiceGreenFlashDwHawkPhase2.addGreenSignals(hawkBeacons);
+        requestableServiceGreenFlashDwHawkPhase2.addYellowSignals(flashOnCallBeacons);
         requestableServiceGreenFlashDwHawkPhase2.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwHawkPhase2.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
@@ -1038,8 +1076,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase2.addGreenSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwHawkPhase2.addGreenSignals(circuit.getProtectedSignals());
         requestableServiceGreenFlashDwHawkPhase2.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceGreenFlashDwHawkPhase2.addOffSignals(
-            circuit.getPedestrianBeaconSignals());
+        requestableServiceGreenFlashDwHawkPhase2.addOffSignals(hawkBeacons);
+        requestableServiceGreenFlashDwHawkPhase2.addYellowSignals(flashOnCallBeacons);
         requestableServiceGreenFlashDwHawkPhase2.addFlashDontWalkSignals(
             circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwHawkPhase2.addFlashDontWalkSignals(
@@ -1058,6 +1096,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_YELLOW);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableServiceYellowPhase.addRedSignals(circuit.getFlashingLeftSignals());
@@ -1067,7 +1107,8 @@ public class TrafficSignalPhases {
         requestableServiceYellowPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceYellowPhase.addRedSignals(circuit.getProtectedSignals());
         requestableServiceYellowPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceYellowPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
+        requestableServiceYellowPhase.addGreenSignals(hawkBeacons);
+        requestableServiceYellowPhase.addOffSignals(flashOnCallBeacons);
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableServiceYellowPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
@@ -1081,7 +1122,8 @@ public class TrafficSignalPhases {
         requestableServiceYellowPhase.addYellowSignals(circuit.getThroughSignals());
         requestableServiceYellowPhase.addYellowSignals(circuit.getProtectedSignals());
         requestableServiceYellowPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceYellowPhase.addYellowSignals(circuit.getPedestrianBeaconSignals());
+        requestableServiceYellowPhase.addYellowSignals(hawkBeacons);
+        requestableServiceYellowPhase.addOffSignals(flashOnCallBeacons);
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableServiceYellowPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
@@ -1096,6 +1138,8 @@ public class TrafficSignalPhases {
         TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_RED);
     circuitIndex = 1;
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
+      List<BlockPos> hawkBeacons = circuit.getHawkBeaconSignals(world);
+      List<BlockPos> flashOnCallBeacons = circuit.getFlashOnCallBeaconSignals(world);
       // Handle the first circuit
       if (circuitIndex == 1) {
         requestableServiceRedPhase.addRedSignals(circuit.getFlashingLeftSignals());
@@ -1105,7 +1149,8 @@ public class TrafficSignalPhases {
         requestableServiceRedPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceRedPhase.addRedSignals(circuit.getProtectedSignals());
         requestableServiceRedPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceRedPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
+        requestableServiceRedPhase.addGreenSignals(hawkBeacons);
+        requestableServiceRedPhase.addOffSignals(flashOnCallBeacons);
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableServiceRedPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
@@ -1119,7 +1164,8 @@ public class TrafficSignalPhases {
         requestableServiceRedPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceRedPhase.addRedSignals(circuit.getProtectedSignals());
         requestableServiceRedPhase.addOffSignals(circuit.getBeaconSignals());
-        requestableServiceRedPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
+        requestableServiceRedPhase.addRedSignals(hawkBeacons);
+        requestableServiceRedPhase.addOffSignals(flashOnCallBeacons);
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         requestableServiceRedPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());

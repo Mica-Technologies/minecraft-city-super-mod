@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -385,6 +386,68 @@ public class TrafficSignalControllerCircuit {
    */
   public List<BlockPos> getPedestrianBeaconSignals() {
     return pedestrianBeaconSignals;
+  }
+
+  /**
+   * The pedestrian beacons that run an approach sequence of their own -- HAWKs -- plus any beacon
+   * whose block cannot be read (no world, or the position no longer holds a controllable signal),
+   * which is treated the way every pedestrian beacon was before the distinction existed.
+   *
+   * @param world the world the beacons are in, or {@code null}
+   *
+   * @return the HAWK-style pedestrian beacons, a new list
+   *
+   * @see AbstractBlockControllableSignal#isFlashOnCallBeacon()
+   * @since 2026.9
+   */
+  public List<BlockPos> getHawkBeaconSignals(World world) {
+    return partitionPedestrianBeacons(world, false);
+  }
+
+  /**
+   * The pedestrian beacons that simply flash while called -- RRFBs and in-roadway warning lights
+   * -- and so belong on with the WALK rather than with a HAWK's approach.
+   *
+   * @param world the world the beacons are in, or {@code null}
+   *
+   * @return the flash-on-call pedestrian beacons, a new list
+   *
+   * @see AbstractBlockControllableSignal#isFlashOnCallBeacon()
+   * @since 2026.9
+   */
+  public List<BlockPos> getFlashOnCallBeaconSignals(World world) {
+    return partitionPedestrianBeacons(world, true);
+  }
+
+  private List<BlockPos> partitionPedestrianBeacons(World world, boolean flashOnCall) {
+    List<BlockPos> matching = new ArrayList<>();
+    for (BlockPos pos : pedestrianBeaconSignals) {
+      boolean isFlashOnCall = false;
+      if (world != null) {
+        Block block = world.getBlockState(pos).getBlock();
+        isFlashOnCall = block instanceof AbstractBlockControllableSignal
+            && ((AbstractBlockControllableSignal) block).isFlashOnCallBeacon();
+      }
+      if (isFlashOnCall == flashOnCall) {
+        matching.add(pos);
+      }
+    }
+    return matching;
+  }
+
+  /**
+   * Whether the circuit has any vehicle signal heads at all -- left, right, through, protected
+   * or flashing-arrow -- which is what decides whether it needs a yellow and an all-red to be
+   * brought to a stop.
+   *
+   * @return {@code true} if any vehicle head is linked
+   *
+   * @since 2026.9
+   */
+  public boolean hasVehicleSignals() {
+    return !(flashingLeftSignals.isEmpty() && flashingRightSignals.isEmpty()
+        && leftSignals.isEmpty() && rightSignals.isEmpty() && throughSignals.isEmpty()
+        && protectedSignals.isEmpty());
   }
 
   /**
