@@ -46,6 +46,8 @@ BOOK_URL = 'https://mutcd.fhwa.dot.gov/SHSe/%s.pdf'
 INTERIM_URL = 'https://mutcd.fhwa.dot.gov/shsm_interim/zip_files/%s.zip'
 RENDER_DPI = 300
 MIN_FILL_PT = 6.0   # anything smaller than this is a dimension arrowhead, not sign
+MIN_SIGN_PT = 20.0  # no sign on these pages is drawn smaller than this; arrowheads are 6 pt
+MAX_MARK_AREA_PT = 80.0  # a white dimension bar is 1 pt wide; no white sign element is this small
 DEFAULT_TEX = 128
 
 
@@ -152,13 +154,60 @@ def _path_bbox(d, matrix):
                      max(p[0] for p in pts), max(p[1] for p in pts))
 
 
+def _path_area(d, matrix):
+    """The area (page units) enclosed by an SVG path's straight-line subpaths through
+    ``matrix``; curves are taken through their control points, which is close enough to
+    tell a hairline bar from a shape."""
+    a, b, c, dd, e, f = matrix
+    total = 0.0
+    pts = []
+
+    def close():
+        nonlocal total, pts
+        if len(pts) >= 3:
+            s = 0.0
+            for i in range(len(pts)):
+                x0, y0 = pts[i]
+                x1, y1 = pts[(i + 1) % len(pts)]
+                s += x0 * y1 - x1 * y0
+            total += abs(s) / 2.0
+        pts = []
+
+    cmd = None
+    nums = []
+    for t in re.findall(r'[MLHVCZmlhvcz]|' + _NUM_RE.pattern, d):
+        if t.isalpha():
+            if cmd in ('M', 'L', 'C'):
+                for i in range(0, len(nums) - 1, 2):
+                    pts.append((nums[i], nums[i + 1]))
+            elif cmd == 'H':
+                for v in nums:
+                    pts.append((v, pts[-1][1] if pts else 0.0))
+            elif cmd == 'V':
+                for v in nums:
+                    pts.append((pts[-1][0] if pts else 0.0, v))
+            nums = []
+            cmd = t.upper()
+            if cmd == 'Z':
+                close()
+            elif cmd == 'M':
+                close()
+        else:
+            nums.append(float(t))
+    if cmd in ('L', 'C', 'M'):
+        for i in range(0, len(nums) - 1, 2):
+            pts.append((nums[i], nums[i + 1]))
+    close()
+    return total * abs(a * dd - b * c)
+
+
 # SeriesB2000 ... SeriesF2000 and HighwayC98 ...: the Highway Gothic faces the legends are set
 # in. Everything else on a page (captions, reference letters, dimensions) is Nimbus Sans.
 LEGEND_FONT_PREFIXES = ('Series', 'Highway')
 
 
-def _legend_glyph_origins(page, rect):
-    """Origins of every character set in a legend font inside ``rect``."""
+def _legend_spans(page, rect):
+    """Every run of legend-font text inside ``rect``: (text, [(ox, oy), ...], bbox)."""
     out = []
     for block in page.get_text('rawdict')['blocks']:
         for line in block.get('lines', []):
@@ -166,11 +215,53 @@ def _legend_glyph_origins(page, rect):
                 font = span['font'].split('+', 1)[-1]
                 if not font.startswith(LEGEND_FONT_PREFIXES):
                     continue
-                for ch in span['chars']:
-                    ox, oy = ch['origin']
-                    if rect.contains(fitz.Point(ox, oy)):
-                        out.append((ox, oy))
+                chars = [ch for ch in span['chars'] if rect.contains(fitz.Point(*ch['origin']))]
+                if not chars:
+                    continue
+                bbox = fitz.Rect(chars[0]['bbox'])
+                for ch in chars[1:]:
+                    bbox |= fitz.Rect(ch['bbox'])
+                out.append((''.join(ch['c'] for ch in chars).strip(),
+                            [tuple(ch['origin']) for ch in chars], bbox))
     return out
+
+
+_GLYPH_DEF_RE = re.compile(r'<path id="(font_[^"]+)" d="([^"]*)"')
+
+
+def _legend_span_boxes(page, rect, text):
+    """The drawn extent (page units) of each legend run reading ``text``: the union of its
+    glyph outlines through their placement, which is the cap height the numerals really have
+    -- the raw text box is the font's full ascender-to-descender and far too tall."""
+    svg = page.get_svg_image()
+    head_end = svg.index('</defs>')
+    defs = {m.group(1): m.group(2) for m in _GLYPH_DEF_RE.finditer(svg[:head_end])}
+    uses = {}
+    for m in _USE_RE.finditer(svg[head_end:]):
+        nums = [float(v) for v in m.group(2).split(',')]
+        uses.setdefault((round(nums[4], 2), round(nums[5], 2)), (m.group(1), nums))
+    boxes = []
+    for t, origins, _bbox in _legend_spans(page, rect):
+        if t != text:
+            continue
+        box = None
+        for ox, oy in origins:
+            hit = uses.get((round(ox, 2), round(oy, 2)))
+            if hit is None:
+                continue
+            gb = _path_bbox(defs.get(hit[0], ''), hit[1])
+            if gb is not None:
+                box = gb if box is None else box | gb
+        if box is not None:
+            boxes.append(box)
+    return boxes
+
+
+def _legend_glyph_origins(page, rect, drop=None):
+    """Origins of every character set in a legend font inside ``rect``, less the spans whose
+    text is ``drop``."""
+    return [o for text, origins, _bbox in _legend_spans(page, rect)
+            if text != drop for o in origins]
 
 
 def _inset_rects(page, rect, fills):
@@ -200,7 +291,7 @@ def _inset_rects(page, rect, fills):
     return insets
 
 
-def _filtered_svg(page, rect, only_inside=True):
+def _filtered_svg(page, rect, only_inside=True, drop=None):
     """The page's SVG reduced to the sign inside ``rect``: filled paths above the arrowhead
     threshold, undashed strokes heavier than a dimension line (their width taken through the
     path's own transform, which is where a scaled-up outline like the W10-1's X keeps its
@@ -208,6 +299,7 @@ def _filtered_svg(page, rect, only_inside=True):
     svg = page.get_svg_image()
     head_end = svg.index('</defs>') + len('</defs>')
     kept = []
+    fill_boxes = []   # of the fills kept so far, to recognise their own outlines
     insets = _inset_rects(page, rect, _sign_fills(page)) if only_inside else []
     body = svg[head_end:]   # the defs hold the page clip as a <path> too
     for m in _PATH_RE.finditer(body):
@@ -226,6 +318,12 @@ def _filtered_svg(page, rect, only_inside=True):
         if fill:
             if bbox.width < MIN_FILL_PT and bbox.height < MIN_FILL_PT:
                 continue
+            # Dimension marks over a black symbol are drawn as white 1 pt bars and 5 pt
+            # arrowheads (the break lines on a Keep Right hood, the ticks across a curve
+            # arrow); a white shape that encloses next to nothing is one of those
+            if (attrs.get('fill', '').lower() in ('#ffffff', '#fff', 'white')
+                    and _path_area(attrs.get('d', ''), nums) < MAX_MARK_AREA_PT):
+                continue
         elif stroke:
             width = float(attrs.get('stroke-width', '1')) * scale
             if width < MIN_SIGN_STROKE_PT or 'stroke-dasharray' in attrs:
@@ -233,9 +331,15 @@ def _filtered_svg(page, rect, only_inside=True):
             # dimension marks drawn over a black symbol are white strokes; no sign outline is
             if attrs.get('stroke', '').lower() in ('#ffffff', '#fff', 'white'):
                 continue
-            # A closed, sign-sized outline drawn as a stroke alone is a white panel on the
-            # page's white -- a crossbuck's arms -- so it is given the white it relies on
             if attrs.get('d', '').rstrip().upper().endswith('Z') and bbox.width >= 40 and bbox.height >= 40:
+                # Every panel is drawn as its fill and then the same outline as a stroke;
+                # the stroke adds nothing, and painted white it would cover the panel's
+                # margin outside the border. Drop it when its fill was kept.
+                if any(abs(bbox.x0 - fb.x0) < 1.5 and abs(bbox.y0 - fb.y0) < 1.5 and
+                       abs(bbox.x1 - fb.x1) < 1.5 and abs(bbox.y1 - fb.y1) < 1.5 for fb in fill_boxes):
+                    continue
+                # A closed, sign-sized outline drawn as a stroke alone is a white panel on the
+                # page's white -- a crossbuck's arms -- so it is given the white it relies on
                 el = el.replace('fill="none"', 'fill="#ffffff"', 1)
         else:
             continue
@@ -244,11 +348,13 @@ def _filtered_svg(page, rect, only_inside=True):
             continue
         if any(ins.contains(centre) for ins in insets):
             continue
+        if fill:
+            fill_boxes.append(bbox)
         kept.append(el)
     # Legend glyphs are the ones set in a Series (Highway Gothic) font; captions, reference
     # letters and dimensions are all Nimbus Sans. Match each SVG glyph to the raw text's
     # per-character origins to tell them apart -- the SVG itself does not name the font.
-    legend_origins = _legend_glyph_origins(page, rect)
+    legend_origins = _legend_glyph_origins(page, rect, drop)
     for m in _USE_RE.finditer(body):
         nums = [float(v) for v in m.group(2).split(',')]
         e, f = nums[4], nums[5]
@@ -258,8 +364,8 @@ def _filtered_svg(page, rect, only_inside=True):
     return svg[:head_end] + '\n' + '\n'.join(kept) + '\n</svg>'
 
 
-def _render_svg(page, rect, only_inside=True, dpi=RENDER_DPI):
-    doc = fitz.open('svg', _filtered_svg(page, rect, only_inside).encode('utf-8'))
+def _render_svg(page, rect, only_inside=True, dpi=RENDER_DPI, drop=None):
+    doc = fitz.open('svg', _filtered_svg(page, rect, only_inside, drop).encode('utf-8'))
     return _render_clip(doc[0], rect, dpi)
 
 
@@ -269,7 +375,7 @@ def _outer_rects(fills):
     outer = []
     for d in sorted(fills, key=lambda d: -(d['rect'].width * d['rect'].height)):
         r = d['rect']
-        if r.width < MIN_FILL_PT or r.height < MIN_FILL_PT:   # a leader line, not a sign
+        if r.width < MIN_SIGN_PT or r.height < MIN_SIGN_PT:   # an arrowhead or leader, not a sign
             continue
         if any(o.contains(r) for o in outer):
             continue
@@ -294,7 +400,7 @@ def _outer_rects(fills):
     return outer
 
 
-def book_sign(chapter, page, pick=0, only_inside=True, inner=None):
+def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None):
     """One sign from a book page, rendered with alpha and cropped to its outline.
 
     ``pick`` chooses among the page's outermost sign rects, sorted top to bottom then left to
@@ -302,7 +408,9 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None):
     ``only_inside`` keeps only the fills that lie within the chosen rect (the other sign's
     fills otherwise bleed in when two signs share a page). ``inner`` instead crops to the
     n-th largest fill inside the chosen outer rect -- the panel of an in-street sign drawn
-    with its post, say.
+    with its post, say. ``replace=(old, new)`` drops the legend run reading ``old`` (the one
+    size of numeral the book draws: "50" on the Speed Limit page) and sets ``new`` in its
+    place at the same cap height, in the mod's Highway Gothic.
     """
     p = book_page(chapter, page)
     fills = _sign_fills(p)
@@ -313,7 +421,43 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None):
         inside = sorted((d['rect'] for d in fills if rect.contains(d['rect']) and d['rect'] != rect),
                         key=lambda r: -(r.width * r.height))
         rect = fitz.Rect(inside[inner])
-    return _render_svg(p, rect, only_inside)
+    if replace is None:
+        return _render_svg(p, rect, only_inside)
+    old, new = replace
+    boxes = _legend_span_boxes(p, rect, old)
+    if not boxes:
+        raise SystemExit('%s p%d: no legend run reads %r (have %s)' % (
+            chapter, page, old, [t for t, _o, _b in _legend_spans(p, rect)]))
+    img = _render_svg(p, rect, only_inside, drop=old)
+    scale = RENDER_DPI / 72.0
+    for box in boxes:
+        px = ((box.x0 - rect.x0) * scale, (box.y0 - rect.y0) * scale,
+              (box.x1 - rect.x0) * scale, (box.y1 - rect.y0) * scale)
+        _set_legend(img, new, px)
+    return img
+
+
+def _set_legend(img, text, box, colour=(31, 26, 23, 255)):
+    """Draw ``text`` centred on ``box`` (pixels) with the digits' cap height matching the
+    box, in the mod's sign font; the colour is the book's black so recolour() maps it."""
+    from PIL import ImageDraw, ImageFont
+    import render_sign as rs
+    x0, y0, x1, y1 = box
+    target = y1 - y0
+    size = max(8, int(target))
+    f = ImageFont.truetype(rs.FONT_PATH, size)
+    bb = f.getbbox('0')
+    size = max(8, int(round(size * target / (bb[3] - bb[1]))))
+    f = ImageFont.truetype(rs.FONT_PATH, size)
+    bb = f.getbbox(text)
+    # a longer legend ("100" for "50") keeps the old run's side margins rather than the panel
+    max_w = img.width - 2 * min(x0, img.width - x1)
+    if bb[2] - bb[0] > max_w:
+        f = ImageFont.truetype(rs.FONT_PATH, max(8, int(size * max_w / (bb[2] - bb[0]))))
+        bb = f.getbbox(text)
+    d = ImageDraw.Draw(img)
+    d.text(((x0 + x1) / 2 - (bb[2] + bb[0]) / 2, (y0 + y1) / 2 - (bb[3] + bb[1]) / 2),
+           text, font=f, fill=colour)
 
 
 def interim_sign(code, variant=None):
@@ -342,21 +486,70 @@ def recolour(img, mapping, tol=60):
     return Image.fromarray(out.astype(np.uint8), 'RGBA')
 
 
-def fit_plate(face, aspect, size=DEFAULT_TEX, margin=0.02):
+# The mod's sign palette, as render_sign.py and the sign generators draw it. YELLOW is the
+# real MUTCD yellow (Pantone 116); the drawings print an artist's approximation of each.
+MOD_COLOURS = {
+    'yellow': (252, 209, 22, 255),
+    'orange': (255, 98, 0, 255),
+    'red': (196, 30, 38, 255),
+    'black': (20, 20, 20, 255),
+    'white': (245, 245, 245, 255),
+    'fyg': (186, 255, 41, 255),   # fluorescent yellow-green, the pedestrian / school family
+}
+
+# The drawings' printed colours onto that palette: the book's and the interim files' yellow,
+# the book's orange and red, the interim red, the blacks (the book's, pure, the interim's),
+# white, and the interim files' fluorescent yellow-green.
+SHS_PALETTE = {
+    (255, 245, 0): MOD_COLOURS['yellow'], (255, 208, 70): MOD_COLOURS['yellow'],
+    (232, 120, 26): MOD_COLOURS['orange'],
+    (217, 38, 28): MOD_COLOURS['red'], (191, 48, 26): MOD_COLOURS['red'],
+    (31, 26, 23): MOD_COLOURS['black'], (0, 0, 0): MOD_COLOURS['black'],
+    (35, 31, 32): MOD_COLOURS['black'],
+    (255, 255, 255): MOD_COLOURS['white'],
+    (190, 215, 61): MOD_COLOURS['fyg'],
+}
+
+
+def official_face(face, aspect, mirror=False, palette=None, size=DEFAULT_TEX):
+    """A rendered drawing onto a sign texture: palette-mapped, optionally mirrored (the
+    left-hand version of a symbol the book draws right-handed only), fitted to the plate."""
+    mapping = dict(SHS_PALETTE)
+    mapping.update(palette or {})
+    face = recolour(face, mapping)
+    if mirror:
+        face = face.transpose(Image.FLIP_LEFT_RIGHT)
+    return fit_plate(face, aspect, size)
+
+
+def back_texture(face, gray=(150, 150, 150, 255)):
+    """The back of a silhouette sign: the face's outline in unpainted gray, mirrored as the
+    back face's UVs are."""
+    back = Image.new('RGBA', face.size, gray)
+    back.putalpha(face.getchannel('A'))
+    return back.transpose(Image.FLIP_LEFT_RIGHT)
+
+
+def fit_plate(face, aspect, size=DEFAULT_TEX, margin=0.0, stretch_tol=0.12):
     """Squish a sign face to the square texture its plate stretches back to ``aspect``.
 
-    The face is placed on a transparent square scaled so that, once the plate's stretch is
-    applied, it keeps its true proportions and fills the plate less ``margin``.
+    The plate models come in a handful of proportions and the real signs in many more, so a
+    face whose proportions are within ``stretch_tol`` of the plate's is stretched to fill it
+    edge to edge (a 24 x 30 sign on the 16 x 21 plate is 5% off -- invisible in the world,
+    where a gap of bare plate around the face is not). A face further off than that keeps
+    its true proportions, centred, with ``margin`` of transparent plate around it.
     """
     w, h = face.size
-    # in plate units: the plate is aspect wide by 1 tall; the sign is w/h wide by 1 tall
     sign_aspect = w / float(h)
-    if sign_aspect / aspect >= 1.0:        # width-limited
+    ratio = sign_aspect / aspect
+    if abs(ratio - 1.0) <= stretch_tol:
+        pw = ph = 1.0 - 2 * margin
+    elif ratio > 1.0:                        # width-limited
         pw = 1.0 - 2 * margin
-        ph = pw * aspect / sign_aspect
-    else:                                   # height-limited
+        ph = pw / ratio
+    else:                                    # height-limited
         ph = 1.0 - 2 * margin
-        pw = ph * sign_aspect / aspect
+        pw = ph * ratio
     # supersample, then down to the texture size
     ss = 4
     canvas = Image.new('RGBA', (size * ss, size * ss), (0, 0, 0, 0))

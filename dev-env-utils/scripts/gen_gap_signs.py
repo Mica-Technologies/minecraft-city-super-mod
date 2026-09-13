@@ -50,12 +50,11 @@ BS_DIR = layout.asset_dir_for_write(OWNER, 'blockstates')
 LANG_DIR = layout.asset_dir_for_write(OWNER, 'lang')
 TAB = layout.resolve_source('tabs/CsmTabRoadSigns.java')
 
-YELLOW = (252, 209, 22, 255)
-WHITE = (245, 245, 245, 255)
-BLACK = (20, 20, 20, 255)
-RED = (196, 30, 38, 255)
-BACK_GRAY = (150, 150, 150, 255)
-BACK_EDGE = (110, 110, 110, 255)
+YELLOW = shs.MOD_COLOURS['yellow']
+WHITE = shs.MOD_COLOURS['white']
+BLACK = shs.MOD_COLOURS['black']
+RED = shs.MOD_COLOURS['red']
+FYG = shs.MOD_COLOURS['fyg']
 
 SHAPES = {
     'diamond': ('signbump', 1.0),
@@ -129,40 +128,19 @@ def text_sign(shape, lines, bg, fg):
 # Everything whose design FHWA publishes is rendered from the Standard Highway Signs drawings
 # (shs_signs.py) rather than drawn here; only the legends the book does not carry at the
 # mod's wording (1000 FT, NEXT 2 MILES, the lane closures with AHEAD, ...) are set in text.
-
-FYG = (186, 255, 41, 255)  # fluorescent yellow-green, as the mod's pedestrian diamond
-
-# The drawings' printed colours onto the mod's sign palette. The book prints yellow as
-# #fff500 and the interim files as #ffd046; the mod's YELLOW is the real MUTCD yellow.
-SHS_PALETTE = {
-    (255, 245, 0): YELLOW, (255, 208, 70): YELLOW,
-    (232, 120, 26): rs.ORANGE,
-    (217, 38, 28): RED, (191, 48, 26): RED,
-    (31, 26, 23): BLACK, (0, 0, 0): BLACK, (35, 31, 32): BLACK,
-    (255, 255, 255): WHITE,
-    (190, 215, 61): FYG,
-}
-
-
-def _official(shape, face, mirror=False, palette=None):
-    mapping = dict(SHS_PALETTE)
-    mapping.update(palette or {})
-    face = shs.recolour(face, mapping)
-    if mirror:
-        face = face.transpose(Image.FLIP_LEFT_RIGHT)
-    return shs.fit_plate(face, SHAPES[shape][1])
-
+# The palette mapping and the plate fit live in shs_signs.official_face.
 
 def SHS(shape, chapter, page, pick=0, mirror=False, palette=None):
     """A face from a page of the 2004 SHS book (0-based page; ``pick`` for pages with more
     than one sign). ``mirror`` makes the left-hand version of a symbol sign the book draws
     right-handed only."""
-    return lambda: _official(shape, shs.book_sign(chapter, page, pick), mirror, palette)
+    return lambda: shs.official_face(shs.book_sign(chapter, page, pick), SHAPES[shape][1],
+                                     mirror, palette)
 
 
 def SHSI(shape, code, variant=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
-    return lambda: _official(shape, shs.interim_sign(code, variant))
+    return lambda: shs.official_face(shs.interim_sign(code, variant), SHAPES[shape][1])
 
 
 # ----------------------------------------------------------------------------- catalogue
@@ -174,10 +152,7 @@ def T(shape, lines, bg=YELLOW, fg=BLACK):
 
 def gray_back(face):
     """The back of a silhouette sign: the face's outline in unpainted gray."""
-    alpha = face.getchannel('A')
-    back = Image.new('RGBA', face.size, BACK_GRAY)
-    back.putalpha(alpha)
-    return back.transpose(Image.FLIP_LEFT_RIGHT)
+    return shs.back_texture(face)
 
 
 CATALOGUE = [
