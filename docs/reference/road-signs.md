@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "579 blocks in this tab"
+!!! info "581 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -47,7 +47,9 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Ambulance/Medical Sign | `csm:signambulance` | 2 | 10 | pickaxe | 1 |
 | Archery Sign | `csm:signarchery` | 2 | 10 | pickaxe | 1 |
 | Arrow Sign (Plaque) (Down Left) (Fluorescent Yellow) | `csm:signarrowplaquefloyellowdownleft` | 2 | 10 | pickaxe | 1 |
+| Arrow Sign (Plaque) (Down Left) (Fluorescent Yellow, Flashing LED) | `csm:signarrowplaquefloyellowdownleftflashingled` | 2 | 10 | pickaxe | 1 |
 | Arrow Sign (Plaque) (Down Right) (Fluorescent Yellow) | `csm:signarrowplaquefloyellowdownright` | 2 | 10 | pickaxe | 1 |
+| Arrow Sign (Plaque) (Down Right) (Fluorescent Yellow, Flashing LED) | `csm:signarrowplaquefloyellowdownrightflashingled` | 2 | 10 | pickaxe | 1 |
 | ARV Sign | `csm:signarv` | 2 | 10 | pickaxe | 1 |
 | ATV Sign | `csm:signatv` | 2 | 10 | pickaxe | 1 |
 | Axle Weight Limit 5 Tons Sign | `csm:signaxle5tonlimit` | 2 | 10 | pickaxe | 1 |

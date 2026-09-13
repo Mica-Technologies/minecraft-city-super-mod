@@ -478,7 +478,9 @@ public class CsmTabRoadSigns extends CsmTab {
     // --- Pedestrian and bicycle signs: including the fluorescent yellow-green series ---
     initTabBlock(new BlockTrafficSign("signaheadplaquefloyellow"));
     initTabBlock(new BlockTrafficSign("signarrowplaquefloyellowdownleft"));
+    initTabBlock(new BlockTrafficSign("signarrowplaquefloyellowdownleftflashingled"));
     initTabBlock(new BlockTrafficSign("signarrowplaquefloyellowdownright"));
+    initTabBlock(new BlockTrafficSign("signarrowplaquefloyellowdownrightflashingled"));
     initTabBlock(new BlockTrafficSign("signbeginleftlaneyieldbikes"));
     initTabBlock(new BlockTrafficSign("signbeginrightlaneyieldbikes"));
     initTabBlock(new BlockTrafficSign("signbicycle"));

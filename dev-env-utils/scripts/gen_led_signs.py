@@ -85,6 +85,13 @@ CATALOGUE = [
      'rect_eight', 1.0, RED_LEDS, 'Do Not Enter Sign (Flashing LED)'),
     ('signpedestrianflashingled', 'signpedestrian', 'pole_pedestrian',
      'diamond_eight', 1.0, AMBER_LEDS, 'Pedestrian Sign (Flashing LED)'),
+    # The W16-7P arrow plaques that hang under the pedestrian diamond, on a 16 x 8 plate
+    ('signarrowplaquefloyellowdownleftflashingled', 'signarrowplaquefloyellowdownleft',
+     'arrow_sign_plaque_down_left_fluorescent_yellow', 'rect_eight', 2.0, AMBER_LEDS,
+     'Arrow Sign (Plaque) (Down Left) (Fluorescent Yellow, Flashing LED)'),
+    ('signarrowplaquefloyellowdownrightflashingled', 'signarrowplaquefloyellowdownright',
+     'arrow_sign_plaque_down_right_fluorescent_yellow', 'rect_eight', 2.0, AMBER_LEDS,
+     'Arrow Sign (Plaque) (Down Right) (Fluorescent Yellow, Flashing LED)'),
 ]
 
 
@@ -147,23 +154,25 @@ def along_perimeter(points, spacing):
     return out
 
 
-def rect_eight(mask, inset):
-    """Four corners and four side midpoints of the panel, inset from its opaque bounds."""
+def rect_eight(mask, inset, aspect):
+    """Four corners and four side midpoints of the panel, inset from its opaque bounds. A plate
+    wider than it is tall squashes the texture's rows, so the vertical inset is scaled up by the
+    aspect to come out the same distance from the edge in the world as the horizontal one."""
     ys, xs = np.where(mask)
     x0, x1 = xs.min() + inset, xs.max() - inset
-    y0, y1 = ys.min() + inset, ys.max() - inset
+    y0, y1 = ys.min() + inset * aspect, ys.max() - inset * aspect
     xm, ym = (x0 + x1) / 2.0, (y0 + y1) / 2.0
     return [(x0, y0), (xm, y0), (x1, y0), (x1, ym), (x1, y1), (xm, y1), (x0, y1), (x0, ym)]
 
 
-def layout(kind, mask):
+def layout(kind, mask, aspect):
     if kind == 'octagon_vertices':
         return inset_polygon(octagon_vertices(mask), EDGE_INSET + 1.0)
     if kind == 'octagon_dense':
         return along_perimeter(inset_polygon(octagon_vertices(mask), EDGE_INSET),
                                DENSE_SPACING)
     if kind == 'rect_eight':
-        return rect_eight(mask, EDGE_INSET)
+        return rect_eight(mask, EDGE_INSET, aspect)
     if kind == 'diamond_eight':
         # A vertex inset from both of its edges lands further from the tip than an edge
         # midpoint does from its edge, which is how the real ones sit.
@@ -262,7 +271,7 @@ def main():
         if base.size != (SIZE, SIZE):
             raise SystemExit('%s is %s, expected %dx%d' % (base_texture, base.size, SIZE, SIZE))
         mask = np.array(base)[:, :, 3] > 127
-        dots = layout(kind, mask)
+        dots = layout(kind, mask, aspect)
 
         strip = Image.new('RGBA', (SIZE, SIZE * 2), (0, 0, 0, 0))
         strip.paste(draw_dots(base, dots, aspect, colours, False), (0, 0))
