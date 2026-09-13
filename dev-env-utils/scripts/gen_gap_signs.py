@@ -77,9 +77,9 @@ def _canvas(aspect):
     return Image.new('RGBA', (w, h), (0, 0, 0, 0))
 
 
-def _finish(img):
+def _finish(img, size=128):
     """Squish the aspect canvas to the square texture the plate stretches back out."""
-    return img.resize((128, 128), Image.LANCZOS)
+    return img.resize((size, size), Image.LANCZOS)
 
 
 def _rounded_panel(img, bg, fg, radius=7):
@@ -121,7 +121,7 @@ def text_sign(shape, lines, bg, fg):
     img = _canvas(aspect)
     _d, box = _rounded_panel(img, bg, fg)
     rs._draw_text(img, lines, fg, box)
-    return _finish(img)
+    return _finish(img, _size(shape))
 
 
 # ----------------------------------------------------------------------------- official faces
@@ -135,18 +135,25 @@ def _stretch(shape):
     return 0.0 if shape == 'silhouette' else 0.25
 
 
+def _size(shape):
+    # A 16 x 8 plaque squishes a 2:1 face into a square texture, leaving a small two-line
+    # legend 8 px per plate unit across; it blurs a few blocks away at 128, so plaques are 256
+    return 256 if shape == 'plaque' else shs.DEFAULT_TEX
+
+
 def SHS(shape, chapter, page, pick=0, mirror=False, palette=None, replace=None):
     """A face from a page of the 2004 SHS book (0-based page; ``pick`` for pages with more
     than one sign). ``mirror`` makes the left-hand version of a symbol sign the book draws
     right-handed only; ``replace=('50', '10')`` re-sets the one numeral the page draws."""
     return lambda: shs.official_face(shs.book_sign(chapter, page, pick, replace=replace),
-                                     SHAPES[shape][1], mirror, palette, stretch_tol=_stretch(shape))
+                                     SHAPES[shape][1], mirror, palette, size=_size(shape),
+                                     stretch_tol=_stretch(shape))
 
 
 def SHSI(shape, code, variant=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: shs.official_face(shs.interim_sign(code, variant), SHAPES[shape][1],
-                                     stretch_tol=_stretch(shape))
+                                     size=_size(shape), stretch_tol=_stretch(shape))
 
 
 # ----------------------------------------------------------------------------- catalogue

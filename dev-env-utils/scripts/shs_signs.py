@@ -48,6 +48,7 @@ RENDER_DPI = 300
 MIN_FILL_PT = 6.0   # anything smaller than this is a dimension arrowhead, not sign
 MIN_SIGN_PT = 20.0  # no sign on these pages is drawn smaller than this; arrowheads are 6 pt
 MAX_MARK_AREA_PT = 80.0  # a white dimension bar is 1 pt wide; no white sign element is this small
+SHEET_MARGIN_PT = 20.0   # a sign's edge outline sits within this of its outermost fill
 DEFAULT_TEX = 128
 
 
@@ -264,6 +265,25 @@ def _legend_glyph_origins(page, rect, drop=None):
             if text != drop for o in origins]
 
 
+def _sheet_rect(page, rect):
+    """The sign's own edge, when the page draws it: a closed stroke-only outline (any
+    width) enclosing the outermost fill by a few points on every side. The white margin
+    between it and the border is the sign's sheet, not the page."""
+    best = None
+    for d in page.get_drawings():
+        r = d['rect']
+        if d.get('fill') is not None or d.get('color') is None:
+            continue
+        if str(d.get('dashes') or '[] 0') != '[] 0':
+            continue
+        margins = (rect.x0 - r.x0, rect.y0 - r.y0, r.x1 - rect.x1, r.y1 - rect.y1)
+        if not all(-0.5 <= m <= SHEET_MARGIN_PT for m in margins) or max(margins) < 1.5:
+            continue
+        if best is None or r.width * r.height < best.width * best.height:
+            best = fitz.Rect(r)
+    return best
+
+
 def _inset_rects(page, rect, fills):
     """Small same-colour panels inside the sign's rect that are not the sign: the reduced
     left-hand copy the W1 pages draw beside the right-hand one, whose corner falls inside the
@@ -326,18 +346,27 @@ def _filtered_svg(page, rect, only_inside=True, drop=None):
                 continue
         elif stroke:
             width = float(attrs.get('stroke-width', '1')) * scale
-            if width < MIN_SIGN_STROKE_PT or 'stroke-dasharray' in attrs:
+            closed = attrs.get('d', '').rstrip().upper().endswith('Z')
+            encloses = (closed and bbox.x0 <= rect.x0 + 1 and bbox.y0 <= rect.y0 + 1
+                        and bbox.x1 >= rect.x1 - 1 and bbox.y1 >= rect.y1 - 1)
+            if 'stroke-dasharray' in attrs or (width < MIN_SIGN_STROKE_PT and not encloses):
+                continue
+            # Every panel is drawn as its fill and then the same outline as a stroke; the
+            # stroke adds nothing, and painted white it would fringe the panel's edge
+            if closed and any(abs(bbox.x0 - fb.x0) < 1.5 and abs(bbox.y0 - fb.y0) < 1.5 and
+                              abs(bbox.x1 - fb.x1) < 1.5 and abs(bbox.y1 - fb.y1) < 1.5
+                              for fb in fill_boxes):
+                continue
+            if encloses:
+                # The sign's own edge: the sheet, white, behind everything the page drew
+                # inside it (the margin outside a regulatory sign's border is white sheet)
+                el = el.replace('fill="none"', 'fill="#ffffff"', 1).replace(' stroke=', ' data-stroke=', 1)
+                kept.insert(0, el)
                 continue
             # dimension marks drawn over a black symbol are white strokes; no sign outline is
             if attrs.get('stroke', '').lower() in ('#ffffff', '#fff', 'white'):
                 continue
-            if attrs.get('d', '').rstrip().upper().endswith('Z') and bbox.width >= 40 and bbox.height >= 40:
-                # Every panel is drawn as its fill and then the same outline as a stroke;
-                # the stroke adds nothing, and painted white it would cover the panel's
-                # margin outside the border. Drop it when its fill was kept.
-                if any(abs(bbox.x0 - fb.x0) < 1.5 and abs(bbox.y0 - fb.y0) < 1.5 and
-                       abs(bbox.x1 - fb.x1) < 1.5 and abs(bbox.y1 - fb.y1) < 1.5 for fb in fill_boxes):
-                    continue
+            if closed and bbox.width >= 40 and bbox.height >= 40:
                 # A closed, sign-sized outline drawn as a stroke alone is a white panel on the
                 # page's white -- a crossbuck's arms -- so it is given the white it relies on
                 el = el.replace('fill="none"', 'fill="#ffffff"', 1)
@@ -421,6 +450,9 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None)
         inside = sorted((d['rect'] for d in fills if rect.contains(d['rect']) and d['rect'] != rect),
                         key=lambda r: -(r.width * r.height))
         rect = fitz.Rect(inside[inner])
+    sheet = _sheet_rect(p, rect)
+    if sheet is not None:
+        rect = sheet
     if replace is None:
         return _render_svg(p, rect, only_inside)
     old, new = replace
