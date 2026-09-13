@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "631 blocks in this tab"
+!!! info "633 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -116,6 +116,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Center Lane Turns Only Sign | `csm:signcenterlaneturnsonly` | 2 | 10 | pickaxe | 1 |
 | City Speed Limit 35 Sign | `csm:signcityspeed35` | 2 | 10 | pickaxe | 1 |
 | Commercial Vehicles Excluded Sign | `csm:signcommercialexclude` | 2 | 10 | pickaxe | 1 |
+| Construction Ahead Road Use Restricted Sign | `csm:signconstructionaheadliability` | 2 | 10 | pickaxe | 1 |
 | Cow Sign | `csm:signcow` | 2 | 10 | pickaxe | 1 |
 | Cross Only at Crosswalks Sign | `csm:signcrossatcrosswalks` | 2 | 10 | pickaxe | 1 |
 | Cross Traffic Does Not Stop Sign (Plaque) | `csm:signcrosstrafficdoesnotstop` | 2 | 10 | pickaxe | 1 |
@@ -486,7 +487,8 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Shelter Sign | `csm:signshelter` | 2 | 10 | pickaxe | 1 |
 | Sheriff Station | `csm:sheriffstation` | 2 | 10 | pickaxe | 1 |
 | Shoulder Work Sign | `csm:signshoulderwork` | 2 | 10 | pickaxe | 1 |
-| Sidewalk Closed Sign | `csm:signpostsidewalkclosed` | 2 | 10 | pickaxe | 1 |
+| Sidewalk Closed Sign (Left) | `csm:signpostsidewalkclosed` | 2 | 10 | pickaxe | 1 |
+| Sidewalk Closed Sign (Right) | `csm:signpostsidewalkclosedright` | 2 | 10 | pickaxe | 1 |
 | Sign Back w/ Pole | `csm:signmetalpost` | 2 | 10 | pickaxe | 1 |
 | Sign Back w/o Pole | `csm:sign` | 2 | 10 | pickaxe | 1 |
 | Sign Pole | `csm:signpost` | 2 | 10 | pickaxe | 1 |
