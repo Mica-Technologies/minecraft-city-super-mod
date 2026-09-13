@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "613 blocks in this tab"
+!!! info "621 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -165,6 +165,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | End Land Work | `csm:endlandworksign` | 2 | 10 | pickaxe | 1 |
 | End Road Sign | `csm:roadend` | 2 | 10 | pickaxe | 1 |
 | End Road Work Sign | `csm:signendroadwork` | 2 | 10 | pickaxe | 1 |
+| End School Zone Sign | `csm:signendschoolzone` | 2 | 10 | pickaxe | 1 |
 | End Sign | `csm:signend` | 2 | 10 | pickaxe | 1 |
 | End Sign (Plaque) | `csm:signendplaque` | 2 | 10 | pickaxe | 1 |
 | Ends Sign (Plaque) | `csm:signendsplaque` | 2 | 10 | pickaxe | 1 |
@@ -458,6 +459,9 @@ The MUTCD sign set, grouped the way the manual groups it.
 | RV/Camper Sign | `csm:signcamper` | 2 | 10 | pickaxe | 1 |
 | Scenic Overlook 2 Miles Sign | `csm:signscenicoverlook2miles` | 2 | 10 | pickaxe | 1 |
 | Scenic Overlook Right Arrow Sign | `csm:signscenicoverlookright` | 2 | 10 | pickaxe | 1 |
+| School Bus Stop Ahead Sign | `csm:signschoolbusstopahead` | 2 | 10 | pickaxe | 1 |
+| School Crossing Sign | `csm:signschoolcrossing` | 2 | 10 | pickaxe | 1 |
+| School Crossing Sign (Flashing LED) | `csm:signschoolcrossingflashingled` | 2 | 10 | pickaxe | 1 |
 | School Safety Zone Sign | `csm:schoolsafetyzonesign` | 2 | 10 | pickaxe | 1 |
 | School Street Sweeping Friday Sign | `csm:streetsweepfrischool` | 2 | 10 | pickaxe | 1 |
 | School Street Sweeping Monday Sign | `csm:streetsweepmonschool` | 2 | 10 | pickaxe | 1 |
@@ -534,6 +538,8 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Speed Limit 70 Sign | `csm:signspeed70` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 75 Sign | `csm:signspeed75` | 2 | 10 | pickaxe | 1 |
 | Speed Zone Ahead Sign | `csm:signpostspeedzoneahead` | 2 | 10 | pickaxe | 1 |
+| State Law Stop For Pedestrians In Crosswalk Sign | `csm:signstatelawstopforpeds` | 2 | 10 | pickaxe | 1 |
+| State Law Stop For Pedestrians In Crosswalk Sign (Flashing LED) | `csm:signstatelawstopforpedsflashingled` | 2 | 10 | pickaxe | 1 |
 | State Property No Trespassing Sign | `csm:signstatepropertynotrasspassing` | 2 | 10 | pickaxe | 1 |
 | Stop Ahead Sign | `csm:signpsotstopahead` | 2 | 10 | pickaxe | 1 |
 | STOP and Enter Gate Code Sign | `csm:signgatecode` | 2 | 10 | pickaxe | 1 |
@@ -624,5 +630,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Y-Intersection Sign | `csm:signyintersection` | 2 | 10 | pickaxe | 1 |
 | Yield | `csm:yieldsign` | 2 | 10 | pickaxe | 1 |
 | Yield Ahead Sign | `csm:signyieldahead` | 2 | 10 | pickaxe | 1 |
+| Yield Here To Pedestrians Sign | `csm:signyieldheretopeds` | 2 | 10 | pickaxe | 1 |
+| Yield Here To Pedestrians Sign (Flashing LED) | `csm:signyieldheretopedsflashingled` | 2 | 10 | pickaxe | 1 |
 
 </div>

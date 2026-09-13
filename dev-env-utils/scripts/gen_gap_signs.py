@@ -282,6 +282,83 @@ def D(shape, sym, bg=YELLOW, fg=BLACK, **kw):
     return make
 
 
+FYG = (186, 255, 41, 255)  # fluorescent yellow-green, as the mod's pedestrian diamond
+
+
+def _walker(d, img, cx, cy, h, color=BLACK, stride=1.0):
+    """The MUTCD walking figure, ``h`` tall (fraction of canvas height), centred on (cx, cy)."""
+    P = lambda x, y: _P(img, x, y)
+    top = cy - h / 2
+    r = h * 0.11
+    hx, hy = P(cx, top + r)
+    d.ellipse((hx - r * SIZE, hy - r * SIZE, hx + r * SIZE, hy + r * SIZE), fill=color)
+    torso_top, torso_bot = top + 2.3 * r, top + h * 0.56
+    d.polygon([P(cx - h * 0.09, torso_top), P(cx + h * 0.09, torso_top),
+               P(cx + h * 0.07, torso_bot), P(cx - h * 0.07, torso_bot)], fill=color)
+    # arms swung, legs mid-stride
+    w = h * 0.045
+    _stroke(d, img, [(cx + h * 0.05, torso_top + h * 0.04), (cx + h * 0.20 * stride, torso_top + h * 0.22)], w, color)
+    _stroke(d, img, [(cx - h * 0.05, torso_top + h * 0.04), (cx - h * 0.16 * stride, torso_top + h * 0.20)], w, color)
+    _stroke(d, img, [(cx - h * 0.03, torso_bot), (cx - h * 0.17 * stride, top + h)], w * 1.3, color)
+    _stroke(d, img, [(cx + h * 0.03, torso_bot), (cx + h * 0.14 * stride, top + h * 0.98)], w * 1.3, color)
+
+
+def sym_yield_here_to_peds(img):
+    """R1-5: YIELD HERE TO, the walking figure, and the arrow pointing down at the line."""
+    d = ImageDraw.Draw(img)
+    rs._draw_text(img, ['YIELD', 'HERE TO'], BLACK,
+                  (img.width * 0.12, img.height * 0.08, img.width * 0.88, img.height * 0.38))
+    _walker(d, img, 0.42, 0.60, 0.34)
+    _stroke(d, img, [(0.72, 0.46), (0.72, 0.66)], 0.05)
+    _arrowhead(d, img, (0.72, 0.78), (0, 1), 0.10)
+
+
+def sym_state_law_paddle(img):
+    """R1-6: STATE LAW / STOP FOR [figure] / WITHIN CROSSWALK, on the in-street paddle."""
+    d = ImageDraw.Draw(img)
+    W, H = img.width, img.height
+    rs._draw_text(img, ['STATE', 'LAW'], BLACK, (W * 0.10, H * 0.06, W * 0.90, H * 0.26))
+    # the STOP legend in its own red octagon
+    cx, cy, r = W * 0.30, H * 0.44, H * 0.11
+    pts = [(cx + r * math.cos(math.radians(22.5 + 45 * i)),
+            cy + r * math.sin(math.radians(22.5 + 45 * i))) for i in range(8)]
+    d.polygon(pts, fill=RED)
+    rs._draw_text(img, ['STOP'], WHITE, (cx - r * 0.8, cy - r * 0.45, cx + r * 0.8, cy + r * 0.45))
+    rs._draw_text(img, ['FOR'], BLACK, (W * 0.46, H * 0.36, W * 0.62, H * 0.52))
+    _walker(d, img, 0.76, 0.44, 0.24)
+    rs._draw_text(img, ['WITHIN', 'CROSSWALK'], BLACK, (W * 0.10, H * 0.62, W * 0.90, H * 0.90))
+
+
+def pentagon(img, bg, fg):
+    """The school-sign pentagon, point up, on a bare silhouette plate."""
+    d = ImageDraw.Draw(img)
+    m = 4 * SS
+    poly = [(SIZE / 2, m), (SIZE - m, SIZE * 0.40), (SIZE - m, SIZE - m), (m, SIZE - m),
+            (m, SIZE * 0.40)]
+    d.polygon(poly, fill=bg)
+    d.polygon(poly, outline=fg, width=3 * SS)
+    return d
+
+
+def school_crossing():
+    """S1-1: two figures walking, on the fluorescent yellow-green pentagon."""
+    img = _canvas(1.0)
+    d = pentagon(img, FYG, BLACK)
+    _walker(d, img, 0.40, 0.58, 0.46)
+    _walker(d, img, 0.62, 0.64, 0.34)
+    return _finish(img)
+
+
+def school_bus_stop_ahead():
+    """S3-1: the pentagon with the legend."""
+    img = _canvas(1.0)
+    pentagon(img, FYG, BLACK)
+    # the box stays under the shoulders, where the pentagon is full width
+    rs._draw_text(img, ['SCHOOL', 'BUS', 'STOP', 'AHEAD'], BLACK,
+                  (SIZE * 0.24, SIZE * 0.42, SIZE * 0.76, SIZE * 0.90))
+    return _finish(img)
+
+
 def pennant_no_passing():
     """W14-3: the yellow pennant, point to the right, on a bare silhouette plate."""
     img = _canvas(1.0)
@@ -384,6 +461,24 @@ CATALOGUE = [
     ('signnext2miles', ('Next 2 Miles Sign (Plaque)', 'Señal de Próximas 2 Millas (Placa)',
                         'Nächste 2 Meilen Schild (Zusatzschild)', 'Nästa 2 Miles-Vägmärke (Tilläggsskylt)'),
      'plaque', T('plaque', ['NEXT 2 MILES']), 'signnewsignal'),
+    # --- pedestrian and school (Phase 2)
+    ('signyieldheretopeds', ('Yield Here To Pedestrians Sign', 'Señal de Ceda el Paso Aquí a Peatones',
+                             'Hier Fußgängern Vorfahrt Gewähren Schild', 'Lämna Företräde Här för Fotgängare-Vägmärke'),
+     'portrait', D('portrait', sym_yield_here_to_peds, WHITE, BLACK), 'signusecrosswalkright'),
+    ('signendschoolzone', ('End School Zone Sign', 'Señal de Fin de Zona Escolar',
+                           'Ende Schulzone Schild', 'Slut på Skolzon-Vägmärke'),
+     'square', T('square', ['END', 'SCHOOL', 'ZONE'], WHITE, BLACK), 'signyieldheretopeds'),
+    ('signschoolbusstopahead', ('School Bus Stop Ahead Sign', 'Señal de Parada de Autobús Escolar Adelante',
+                                'Schulbushaltestelle Voraus Schild', 'Skolbusshållplats Framför-Vägmärke'),
+     'silhouette', school_bus_stop_ahead, 'signendschoolzone'),
+    ('signschoolcrossing', ('School Crossing Sign', 'Señal de Cruce Escolar',
+                            'Schulweg Schild', 'Skolövergång-Vägmärke'),
+     'silhouette', school_crossing, 'signschoolbusstopahead'),
+    ('signstatelawstopforpeds', ('State Law Stop For Pedestrians In Crosswalk Sign',
+                                 'Señal de Ley Estatal Deténgase por Peatones en el Cruce',
+                                 'Landesgesetz Für Fußgänger im Zebrastreifen Anhalten Schild',
+                                 'Delstatslag Stanna för Fotgängare på Övergångsstället-Vägmärke'),
+     'portrait', D('portrait', sym_state_law_paddle, FYG, BLACK), 'signslowschool'),
 ]
 for _mph, _after in ((10, 'signaddright'), (15, 'signadvisoryspeed10'), (20, 'signadvisoryspeed15'),
                      (25, 'signadvisoryspeed20'), (30, 'signadvisoryspeed25'), (35, 'signadvisoryspeed30'),

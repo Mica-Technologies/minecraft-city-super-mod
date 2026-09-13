@@ -208,8 +208,9 @@ the slab case also extends the sign's bounding box; see `GUARDRAIL_SYSTEM.md`.
 ## LED-Enhanced Flashing Signs
 
 `signpoststopsignflashingled`, `signpoststopsignflashingleddense`, `signwrongwayflashingled`,
-`signdonotenterflashingled`, `signpedestrianflashingled` and the two
-`signarrowplaquefloyellowdown{left,right}flashingled` plaques are the solar LED-enhanced signs
+`signdonotenterflashingled`, `signpedestrianflashingled`, the two
+`signarrowplaquefloyellowdown{left,right}flashingled` plaques, `signschoolcrossingflashingled`,
+`signstatelawstopforpedsflashingled` and `signyieldheretopedsflashingled` are the solar LED-enhanced signs
 (MUTCD 2A.07): the plain sign with a ring of LEDs on its face along the border, blinking once a
 second -- red on the regulatory signs, amber on the pedestrian warning diamond and its W16-7P
 arrow plaques, as on the real units. They are ordinary `BlockTrafficSign` blocks with no control

@@ -539,6 +539,8 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signrightlanebikeonly"));
     initTabBlock(new BlockTrafficSign("signslowdownpedestriantraffic"));
     initTabBlock(new BlockTrafficSign("signslowschool"));
+    initTabBlock(new BlockTrafficSign("signstatelawstopforpeds"));
+    initTabBlock(new BlockTrafficSign("signstatelawstopforpedsflashingled"));
     initTabBlock(new BlockTrafficSign("thicklysettledspeedlimit25mphsign"));
     initTabBlock(new BlockTrafficSign("trailheadcrossingssign"));
     initTabBlock(new BlockTrafficSign("signturnleftyieldpedbike"));
@@ -549,6 +551,12 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signturningvehiclesyieldtoped"));
     initTabBlock(new BlockTrafficSign("signusecrosswalkleft"));
     initTabBlock(new BlockTrafficSign("signusecrosswalkright"));
+    initTabBlock(new BlockTrafficSign("signyieldheretopeds"));
+    initTabBlock(new BlockTrafficSign("signyieldheretopedsflashingled"));
+    initTabBlock(new BlockTrafficSign("signendschoolzone"));
+    initTabBlock(new BlockTrafficSign("signschoolbusstopahead"));
+    initTabBlock(new BlockTrafficSign("signschoolcrossing"));
+    initTabBlock(new BlockTrafficSign("signschoolcrossingflashingled"));
 
     // --- School zone signs: fluorescent yellow-green pentagons and plaques ---
     initTabBlock(new BlockTrafficSign("schoolsafetyzonesign"));
