@@ -70,6 +70,7 @@ SHAPES = {
     # the in-street paddle: its own model (in_street_sign, 8 x 24 double sided on a low base)
     # and its own blockstate, so the shape clones itself
     'paddle': ('signstatelawstopforpeds', 8 / 24),
+    'landscape': ('signrdclosed', 32 / 24),   # the 48 x 36 rectangles (ROAD CLOSED)
 }
 LANGS = ('en_us', 'es_es', 'de_de', 'sv_se')
 
@@ -145,14 +146,18 @@ def _size(shape):
     # A 16 x 8 plaque squishes a 2:1 face into a square texture, leaving a small two-line
     # legend 8 px per plate unit across; it blurs a few blocks away at 128, so plaques are 256
     # The 1:3 paddle has it worse the other way: 5 px per unit down its 24-unit face
-    return 256 if shape in ('plaque', 'paddle') else shs.DEFAULT_TEX
+    return 256 if shape in ('plaque', 'paddle', 'landscape') else shs.DEFAULT_TEX
 
 
-def SHS(shape, chapter, page, pick=0, mirror=False, palette=None, replace=None):
+def SHS(shape, chapter, page, pick=0, mirror=False, palette=None, replace=None,
+        mirror_symbols=False):
     """A face from a page of the 2004 SHS book (0-based page; ``pick`` for pages with more
     than one sign). ``mirror`` makes the left-hand version of a symbol sign the book draws
-    right-handed only; ``replace=('50', '10')`` re-sets the one numeral the page draws."""
-    return lambda: shs.official_face(shs.book_sign(chapter, page, pick, replace=replace),
+    right-handed only; ``mirror_symbols`` does the same for a sign with a legend, flipping
+    the arrow but not the words; ``replace=('50', '10')`` re-sets the one numeral the page
+    draws."""
+    return lambda: shs.official_face(shs.book_sign(chapter, page, pick, replace=replace,
+                                                   mirror_symbols=mirror_symbols),
                                      SHAPES[shape][1], mirror, palette, size=_size(shape),
                                      stretch_tol=_stretch(shape))
 
@@ -161,6 +166,51 @@ def SHSI(shape, code, variant=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: shs.official_face(shs.interim_sign(code, variant), SHAPES[shape][1],
                                      size=_size(shape), stretch_tol=_stretch(shape))
+
+
+# ----------------------------------------------------------------------------- custom legends
+# Signs no drawing exists for, set line by line from a photograph.
+
+def _legend_line(img, text, cy, cap_h, max_w, colour=BLACK, condense=1.0):
+    """One line of Highway Gothic centred at ``cy`` with the given cap height (canvas px),
+    condensed horizontally by ``condense`` -- the shipped face is Series E(M)-wide, and a
+    narrower series is that face squeezed -- and never wider than ``max_w``."""
+    from PIL import ImageFont
+    f = ImageFont.truetype(rs.FONT_PATH, int(cap_h * 1.4))
+    bb = f.getbbox('H')
+    f = ImageFont.truetype(rs.FONT_PATH, max(8, int(round(int(cap_h * 1.4) * cap_h / (bb[3] - bb[1])))))
+    bb = f.getbbox(text)
+    w, h = bb[2] - bb[0], bb[3] - bb[1]
+    line = Image.new('RGBA', (w + 4, h + 4), (0, 0, 0, 0))
+    ImageDraw.Draw(line).text((2 - bb[0], 2 - bb[1]), text, font=f, fill=colour)
+    tw = min(int(round(line.width * condense)), int(max_w))
+    line = line.resize((tw, line.height), Image.LANCZOS)
+    img.alpha_composite(line, (int(img.width / 2 - tw / 2), int(cy - line.height / 2)))
+
+
+def ct_construction_ahead():
+    """Connecticut's construction-zone liability sign (Conn. Gen. Stat. 13a-115 / 13a-145):
+    a 48 x 36 orange rectangle with a black border and six lines in three sizes, as
+    photographed on the state's work zones."""
+    img = _canvas(SHAPES['landscape'][1])
+    W, H = img.width, img.height
+    d = ImageDraw.Draw(img)
+    m = int(H * 0.012)
+    d.rounded_rectangle((m, m, W - m, H - m), radius=int(H * 0.04), fill=rs.ORANGE)
+    inset, stroke = int(H * 0.035), int(H * 0.022)
+    d.rounded_rectangle((inset, inset, W - inset, H - inset), radius=int(H * 0.03),
+                        outline=BLACK, width=stroke)
+    max_w = W * 0.86
+    # (text, centre y, cap height, condense) as fractions of the height
+    for text, cy, cap, cond in (
+            ('CONSTRUCTION', 0.190, 0.095, 0.78),
+            ('AHEAD', 0.345, 0.095, 0.78),
+            ('ROAD  USE  RESTRICTED', 0.500, 0.072, 0.74),
+            ('STATE  LIABILITY  LIMITED', 0.625, 0.072, 0.74),
+            ('GENERAL  STATUTES      SEC.  13a-115,13a-145', 0.745, 0.046, 0.72),
+            ('COMMISSIONER  OF  TRANSPORTATION', 0.845, 0.046, 0.72)):
+        _legend_line(img, text, cy * H, cap * H, max_w, condense=cond)
+    return _finish(img, _size('landscape'))
 
 
 # ----------------------------------------------------------------------------- catalogue
@@ -305,6 +355,15 @@ CATALOGUE = [
                                  'Landesgesetz Für Fußgänger im Zebrastreifen Anhalten Schild',
                                  'Delstatslag Stanna för Fotgängare på Övergångsstället-Vägmärke'),
      'paddle', SHSI('paddle', 'r01_06c'), 'signslowschool'),
+    ('signpostsidewalkclosedright', ('Sidewalk Closed Sign (Right)', 'Señal de Acera Cerrada (Derecha)',
+                                     'Gehweg Gesperrt Schild (Rechts)', 'Trottoar Stängd-Vägmärke (Höger)'),
+     'plaque', SHS('plaque', 'Regulatory', 127, mirror_symbols=True), 'signpostsidewalkclosed'),
+    # --- custom (photographed, no SHS drawing)
+    ('signconstructionaheadliability', ('Construction Ahead Road Use Restricted Sign',
+                                        'Señal de Construcción Adelante Uso de Carretera Restringido',
+                                        'Baustelle Voraus Straßennutzung Eingeschränkt Schild',
+                                        'Vägarbete Framför Begränsad Väganvändning-Vägmärke'),
+     'landscape', ct_construction_ahead, 'signbridgeout'),
 ]
 for _mph, _after in ((10, 'signaddright'), (15, 'signadvisoryspeed10'), (20, 'signadvisoryspeed15'),
                      (25, 'signadvisoryspeed20'), (30, 'signadvisoryspeed25'), (35, 'signadvisoryspeed30'),

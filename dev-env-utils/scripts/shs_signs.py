@@ -341,7 +341,8 @@ def _inset_rects(page, rect, fills):
     return insets
 
 
-def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff'):
+def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff',
+                  mirror_symbols=False):
     """The page's SVG reduced to the sign inside ``rect``: filled paths above the arrowhead
     threshold, undashed strokes heavier than a dimension line (their width taken through the
     path's own transform, which is where a scaled-up outline like the W10-1's X keeps its
@@ -415,17 +416,27 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
     # letters and dimensions are all Nimbus Sans. Match each SVG glyph to the raw text's
     # per-character origins to tell them apart -- the SVG itself does not name the font.
     legend_origins = _legend_glyph_origins(page, rect, drop)
+    n_glyphs = 0
     for m in _USE_RE.finditer(body):
         nums = [float(v) for v in m.group(2).split(',')]
         e, f = nums[4], nums[5]
         if not any(abs(e - ox) < 0.75 and abs(f - oy) < 0.75 for ox, oy in legend_origins):
             continue
         kept.append(m.group(0))
+        n_glyphs += 1
+    if mirror_symbols:
+        # The paths (panel, border, arrow) flipped about the sign's centre line; the glyphs,
+        # which came last into ``kept``, left as they are so the legend still reads
+        n_paths = len(kept) - n_glyphs
+        kept = (['<g transform="matrix(-1,0,0,1,%s,0)">' % (rect.x0 + rect.x1)]
+                + kept[:n_paths] + ['</g>'] + kept[n_paths:])
     return svg[:head_end] + '\n' + '\n'.join(kept) + '\n</svg>'
 
 
-def _render_svg(page, rect, only_inside=True, dpi=RENDER_DPI, drop=None, sheet_colour='#ffffff'):
-    doc = fitz.open('svg', _filtered_svg(page, rect, only_inside, drop, sheet_colour).encode('utf-8'))
+def _render_svg(page, rect, only_inside=True, dpi=RENDER_DPI, drop=None, sheet_colour='#ffffff',
+                mirror_symbols=False):
+    doc = fitz.open('svg', _filtered_svg(page, rect, only_inside, drop, sheet_colour,
+                                         mirror_symbols).encode('utf-8'))
     return _render_clip(doc[0], rect, dpi)
 
 
@@ -460,7 +471,8 @@ def _outer_rects(fills):
     return outer
 
 
-def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None):
+def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
+              mirror_symbols=False):
     """One sign from a book page, rendered with alpha and cropped to its outline.
 
     ``pick`` chooses among the page's outermost sign rects, sorted top to bottom then left to
@@ -470,7 +482,9 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None)
     n-th largest fill inside the chosen outer rect -- the panel of an in-street sign drawn
     with its post, say. ``replace=(old, new)`` drops the legend run reading ``old`` (the one
     size of numeral the book draws: "50" on the Speed Limit page) and sets ``new`` in its
-    place at the same cap height, in the mod's Highway Gothic.
+    place at the same cap height, in the mod's Highway Gothic. ``mirror_symbols`` flips the
+    page's paths -- the arrow, the panel -- about the sign's centre line but not its glyphs:
+    the right-hand version of a sign the book draws left-handed with a legend.
     """
     p = book_page(chapter, page)
     fills = _sign_fills(p)
@@ -486,13 +500,15 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None)
     if sheet is not None:
         rect = sheet
     if replace is None:
-        return _render_svg(p, rect, only_inside, sheet_colour=sheet_colour)
+        return _render_svg(p, rect, only_inside, sheet_colour=sheet_colour,
+                           mirror_symbols=mirror_symbols)
     old, new = replace
     boxes = _legend_span_boxes(p, rect, old)
     if not boxes:
         raise SystemExit('%s p%d: no legend run reads %r (have %s)' % (
             chapter, page, old, [t for t, _o, _b in _legend_spans(p, rect)]))
-    img = _render_svg(p, rect, only_inside, drop=old, sheet_colour=sheet_colour)
+    img = _render_svg(p, rect, only_inside, drop=old, sheet_colour=sheet_colour,
+                      mirror_symbols=mirror_symbols)
     scale = RENDER_DPI / 72.0
     for box in boxes:
         px = ((box.x0 - rect.x0) * scale, (box.y0 - rect.y0) * scale,

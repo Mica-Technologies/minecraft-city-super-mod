@@ -111,7 +111,7 @@ CATALOGUE = [
     ('signwalkleft', SHS(R, 116), 'R9-1'),
     ('signcrossatcrosswalks', SHS(R, 116, pick=1), 'R9-2'),
     ('signnohitchhiking', SHS(R, 120), 'R9-4a'),
-    ('signpostsidewalkclosed', SHS(R, 126), 'R9-10'),
+    ('signpostsidewalkclosed', SHS(R, 127), 'R9-11a'),   # left arrow; the right one is a gap sign
     ('signleftongreenarrow', SHS(R, 135), 'R10-5'),
     ('signpostdonotblock', SHS(R, 137), 'R10-7'),
     ('signuselanewithgreenarrow', SHS(R, 138), 'R10-8'),
