@@ -97,7 +97,7 @@ CATALOGUE = [
     ('signschoolcrossingflashingled', 'signschoolcrossing', 'signschoolcrossing',
      'pentagon_ten', 1.0, AMBER_LEDS, 'School Crossing Sign (Flashing LED)'),
     ('signstatelawstopforpedsflashingled', 'signstatelawstopforpeds', 'signstatelawstopforpeds',
-     'rect_eight', 16.0 / 21.0, AMBER_LEDS,
+     'rect_eight', 8.0 / 24.0, AMBER_LEDS,
      'State Law Stop For Pedestrians In Crosswalk Sign (Flashing LED)'),
     ('signyieldheretopedsflashingled', 'signyieldheretopeds', 'signyieldheretopeds',
      'rect_eight', 1.0, AMBER_LEDS, 'Yield Here To Pedestrians Sign (Flashing LED)'),
