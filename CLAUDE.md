@@ -339,8 +339,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `audit_fabricator_costs.py` -- mirrors the Fabricator cost rules against that index to sanity check what every block costs, without launching the game
 - `gen_firealarm_obj.py` -- generates the OBJ models for the fire alarm appliances with round strobe lenses (the System Sensor L-Series LED family and the beacons); traces each enclosure's silhouette and measures each lens circle off the texture rather than hard-coding either
 - `gen_dynamic_street_sign_texture.py` -- inventory/particle texture for the dynamic street sign block
-- `gen_led_signs.py` -- the LED-enhanced flashing STOP / WRONG WAY / DO NOT ENTER signs: composites
-  the border LEDs into the plain sign's face texture as a two-frame strip (one 100 ms blink a
+- `gen_led_signs.py` -- the LED-enhanced flashing STOP / WRONG WAY / DO NOT ENTER / PEDESTRIAN
+  signs: composites the border LEDs into the plain sign's face texture as a two-frame strip (one 100 ms blink a
   second, timed by the `.mcmeta` so every sign in the world blinks in step), writes the OptiFine
   `_e` companion on the same clock, and clones the plain sign's blockstate, so no model changes.
   The LED positions are read off each base texture's own outline, not hard-coded

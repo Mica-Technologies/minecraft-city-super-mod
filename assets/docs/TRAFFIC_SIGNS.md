@@ -207,10 +207,12 @@ the slab case also extends the sign's bounding box; see `GUARDRAIL_SYSTEM.md`.
 
 ## LED-Enhanced Flashing Signs
 
-`signpoststopsignflashingled`, `signpoststopsignflashingleddense`, `signwrongwayflashingled` and
-`signdonotenterflashingled` are the solar LED-enhanced signs (MUTCD 2A.07): the plain sign with
-a ring of red LEDs on its face along the border, blinking once a second. They are ordinary
-`BlockTrafficSign` blocks with no control -- the real units run whenever they are installed.
+`signpoststopsignflashingled`, `signpoststopsignflashingleddense`, `signwrongwayflashingled`,
+`signdonotenterflashingled` and `signpedestrianflashingled` are the solar LED-enhanced signs
+(MUTCD 2A.07): the plain sign with a ring of LEDs on its face along the border, blinking once a
+second -- red on the regulatory signs, amber on the pedestrian warning diamond, as on the real
+units. They are ordinary `BlockTrafficSign` blocks with no control -- the real units run whenever
+they are installed.
 
 Nothing about them is geometry. The LEDs are composited into the sign's own face texture as a
 two-frame strip (dark, lit) and the `.mcmeta` gives the lit frame 2 ticks of a 20-tick cycle:
@@ -230,6 +232,7 @@ dev client, so the emissive path can only be checked in a packaged install.
 All of it -- textures, `.mcmeta`, companions, blockstates -- comes from
 `dev-env-utils/scripts/gen_led_signs.py`, which reads the LED positions off each base texture's
 own outline (the octagon's vertices are where its edge meets the texture edge; a rectangle's
-panel is its opaque bounds) rather than hard-coding them, and pre-stretches the WRONG WAY dots
+panel is its opaque bounds; the diamond's points are where it meets each texture edge, its
+edges inset by the diamond's own apothem) rather than hard-coding them, and pre-stretches the WRONG WAY dots
 by the wide plate's 22:16 aspect so they come out round in the world. The lang lines and tab
 registrations it prints are added by hand next to the plain sign's own.

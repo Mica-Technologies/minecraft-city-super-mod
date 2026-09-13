@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "578 blocks in this tab"
+!!! info "579 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -347,6 +347,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Pay To Cross Street Wait For Pedestrian | `csm:paytocrosssign` | 2 | 10 | pickaxe | 1 |
 | PCH Route Sign | `csm:signpostca_pch` | 2 | 10 | pickaxe | 1 |
 | Pedestrian Sign | `csm:signpedestrian` | 2 | 10 | pickaxe | 1 |
+| Pedestrian Sign (Flashing LED) | `csm:signpedestrianflashingled` | 2 | 10 | pickaxe | 1 |
 | Pedestrians Prohibited Sign | `csm:signpedestrianprohibit` | 2 | 10 | pickaxe | 1 |
 | Permit Resident Parking Sign | `csm:signresidentnormal` | 2 | 10 | pickaxe | 1 |
 | Photo Enforced Sign | `csm:signphotoenforced` | 2 | 10 | pickaxe | 1 |

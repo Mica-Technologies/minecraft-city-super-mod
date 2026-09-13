@@ -66,22 +66,25 @@ DOT_R = 2.1
 EDGE_INSET = 5.5          # dot centre this far inside the panel edge: on the white border
 DENSE_SPACING = 5.5       # centre-to-centre along the border for the dense ring
 
-LED_DARK = (74, 20, 16, 255)
-LED_DARK_EDGE = (40, 12, 10, 255)
-LED_LIT = (255, 72, 48, 255)
-LED_LIT_CORE = (255, 238, 228, 255)
-LED_HALO = (255, 60, 40)
+# LED colours: (dark, dark edge, lit, lit core, halo). Regulatory signs carry red LEDs; the
+# warning diamonds carry amber, matching the sign's own colour family.
+RED_LEDS = ((74, 20, 16, 255), (40, 12, 10, 255), (255, 72, 48, 255), (255, 238, 228, 255),
+            (255, 60, 40))
+AMBER_LEDS = ((70, 46, 10, 255), (38, 24, 6, 255), (255, 186, 40, 255), (255, 244, 205, 255),
+              (255, 176, 30))
 
-# name, base sign, layout, plate aspect (width / height in block units), display name
+# name, base sign, layout, plate aspect (width / height in block units), LED colours, display
 CATALOGUE = [
     ('signpoststopsignflashingled', 'signpoststopsign', 'pole_stop',
-     'octagon_vertices', 1.0, 'Stop Sign (Flashing LED)'),
+     'octagon_vertices', 1.0, RED_LEDS, 'Stop Sign (Flashing LED)'),
     ('signpoststopsignflashingleddense', 'signpoststopsign', 'pole_stop',
-     'octagon_dense', 1.0, 'Stop Sign (Flashing LED, Dense)'),
+     'octagon_dense', 1.0, RED_LEDS, 'Stop Sign (Flashing LED, Dense)'),
     ('signwrongwayflashingled', 'signwrongway', 'wrong_way',
-     'rect_eight', 22.0 / 16.0, 'Wrong Way Sign (Flashing LED)'),
+     'rect_eight', 22.0 / 16.0, RED_LEDS, 'Wrong Way Sign (Flashing LED)'),
     ('signdonotenterflashingled', 'signdonotenter', 'pole_do_not_enter',
-     'rect_eight', 1.0, 'Do Not Enter Sign (Flashing LED)'),
+     'rect_eight', 1.0, RED_LEDS, 'Do Not Enter Sign (Flashing LED)'),
+    ('signpedestrianflashingled', 'signpedestrian', 'pole_pedestrian',
+     'diamond_eight', 1.0, AMBER_LEDS, 'Pedestrian Sign (Flashing LED)'),
 ]
 
 
@@ -96,12 +99,37 @@ def octagon_vertices(mask):
             (bottom.max(), last), (bottom.min(), last), (0, left.max()), (0, left.min())]
 
 
-def inset_polygon(points, inset):
-    """Shrink a polygon about the texture centre so every edge moves inward by ``inset``."""
+def diamond_vertices(mask):
+    """The four points of a warning diamond: where its outline meets each texture edge."""
+    top = np.where(mask[0])[0]
+    right = np.where(mask[:, -1])[0]
+    bottom = np.where(mask[-1])[0]
+    left = np.where(mask[:, 0])[0]
+    last = SIZE - 1
+    return [((top.min() + top.max()) / 2.0, 0), (last, (right.min() + right.max()) / 2.0),
+            ((bottom.min() + bottom.max()) / 2.0, last), (0, (left.min() + left.max()) / 2.0)]
+
+
+def inset_polygon(points, inset, apothem=None):
+    """Shrink a regular polygon about the texture centre so every edge moves inward by
+    ``inset``. The apothem is the centre-to-edge distance: half the texture for a shape whose
+    flats touch the edge (the octagon), and that over root two for the diamond, whose edges run
+    corner to corner."""
     c = (SIZE - 1) / 2.0
-    apothem = c  # the octagon's flats touch the texture edge
+    if apothem is None:
+        apothem = c
     s = 1.0 - inset / apothem
     return [(c + (x - c) * s, c + (y - c) * s) for x, y in points]
+
+
+def with_edge_midpoints(points):
+    """The polygon's vertices with the midpoint of each edge slotted in after it."""
+    out = []
+    for i, (x0, y0) in enumerate(points):
+        x1, y1 = points[(i + 1) % len(points)]
+        out.append((x0, y0))
+        out.append(((x0 + x1) / 2.0, (y0 + y1) / 2.0))
+    return out
 
 
 def along_perimeter(points, spacing):
@@ -136,6 +164,12 @@ def layout(kind, mask):
                                DENSE_SPACING)
     if kind == 'rect_eight':
         return rect_eight(mask, EDGE_INSET)
+    if kind == 'diamond_eight':
+        # A vertex inset from both of its edges lands further from the tip than an edge
+        # midpoint does from its edge, which is how the real ones sit.
+        apothem = (SIZE - 1) / 2.0 / math.sqrt(2)
+        return with_edge_midpoints(inset_polygon(diamond_vertices(mask), EDGE_INSET + 0.5,
+                                                 apothem))
     raise ValueError(kind)
 
 
@@ -146,8 +180,9 @@ def layout(kind, mask):
 EMISSIVE_MIN_ALPHA = 24
 
 
-def led_layer(dots, aspect, lit):
+def led_layer(dots, aspect, colours, lit):
     """Just the LEDs, on transparency, supersampled so a 4 px dot comes out round."""
+    dark, dark_edge, lit_colour, lit_core, halo = colours
     layer = Image.new('RGBA', (SIZE * SS, SIZE * SS), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
 
@@ -160,32 +195,32 @@ def led_layer(dots, aspect, lit):
         # Halo first, in two soft steps, then the lamp over it.
         for r, alpha in ((DOT_R * 3.0, 70), (DOT_R * 2.0, 150)):
             for cx, cy in dots:
-                ellipse(cx, cy, r, LED_HALO + (alpha,))
+                ellipse(cx, cy, r, halo + (alpha,))
     for cx, cy in dots:
         if lit:
-            ellipse(cx, cy, DOT_R, LED_LIT)
-            ellipse(cx, cy, DOT_R * 0.7, LED_LIT_CORE)
+            ellipse(cx, cy, DOT_R, lit_colour)
+            ellipse(cx, cy, DOT_R * 0.7, lit_core)
         else:
-            ellipse(cx, cy, DOT_R, LED_DARK, LED_DARK_EDGE)
+            ellipse(cx, cy, DOT_R, dark, dark_edge)
     return layer.resize((SIZE, SIZE), Image.LANCZOS)
 
 
-def draw_dots(base, dots, aspect, lit):
+def draw_dots(base, dots, aspect, colours, lit):
     """The base with the LEDs composited on. The result keeps the base's own alpha: nothing,
     not even the lit halo, is drawn off the panel, because the sign renders as a cutout and a
-    solid red blob past the edge would not read as light."""
+    solid blob past the edge would not read as light."""
     out = base.copy()
-    out.alpha_composite(led_layer(dots, aspect, lit))
+    out.alpha_composite(led_layer(dots, aspect, colours, lit))
     out.putalpha(base.getchannel('A'))
     return out
 
 
-def draw_emissive(base, dots, aspect):
+def draw_emissive(base, dots, aspect, colours):
     """The lit frame's LEDs alone: the composited result where the LED layer reaches, opaque,
     and transparent everywhere else -- the shape of overlay ``marker_emissive`` makes for the
     pavement markers."""
-    lit = draw_dots(base, dots, aspect, True)
-    coverage = np.array(led_layer(dots, aspect, True))[:, :, 3]
+    lit = draw_dots(base, dots, aspect, colours, True)
+    coverage = np.array(led_layer(dots, aspect, colours, True))[:, :, 3]
     keep = (coverage >= EMISSIVE_MIN_ALPHA) & (np.array(base)[:, :, 3] > 127)
     px = np.array(lit)
     px[:, :, 3] = np.where(keep, 255, 0)
@@ -222,7 +257,7 @@ def main():
         raise SystemExit('run from the repo root: %s not found' % TEXTURES)
 
     lang, tab = [], []
-    for name, base_name, base_texture, kind, aspect, display in CATALOGUE:
+    for name, base_name, base_texture, kind, aspect, colours, display in CATALOGUE:
         base = Image.open(os.path.join(TEXTURES, base_texture + '.png')).convert('RGBA')
         if base.size != (SIZE, SIZE):
             raise SystemExit('%s is %s, expected %dx%d' % (base_texture, base.size, SIZE, SIZE))
@@ -230,8 +265,8 @@ def main():
         dots = layout(kind, mask)
 
         strip = Image.new('RGBA', (SIZE, SIZE * 2), (0, 0, 0, 0))
-        strip.paste(draw_dots(base, dots, aspect, False), (0, 0))
-        strip.paste(draw_dots(base, dots, aspect, True), (0, SIZE))
+        strip.paste(draw_dots(base, dots, aspect, colours, False), (0, 0))
+        strip.paste(draw_dots(base, dots, aspect, colours, True), (0, SIZE))
         png = os.path.join(TEXTURES, name + '.png')
         strip.save(png)
         write_mcmeta(png + '.mcmeta')
@@ -239,7 +274,7 @@ def main():
         # The emissive companion on the same clock: nothing while dark, the lit LEDs alone
         # while lit.
         emissive = Image.new('RGBA', (SIZE, SIZE * 2), (0, 0, 0, 0))
-        emissive.paste(draw_emissive(base, dots, aspect), (0, SIZE))
+        emissive.paste(draw_emissive(base, dots, aspect, colours), (0, SIZE))
         png_e = os.path.join(TEXTURES, name + '_e.png')
         emissive.save(png_e)
         write_mcmeta(png_e + '.mcmeta')

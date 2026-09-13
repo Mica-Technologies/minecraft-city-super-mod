@@ -477,6 +477,7 @@ tile.signpavementends.name=Vägbanan Slutar-Vägmärke
 tile.signpeddetourleft.name=Vägarbete Fotgängare Omväg Vänsterpil-Vägmärke
 tile.signpeddetourright.name=Vägarbete Fotgängare Omväg Högerpil-Vägmärke
 tile.signpedestrian.name=Fotgängare-Vägmärke
+tile.signpedestrianflashingled.name=Fotgängare-Vägmärke (Blinkande LED)
 tile.signpedestrianprohibit.name=Fotgängare Förbjudna-Vägmärke
 tile.signphone.name=Telefon/Mynttelefon-Vägmärke
 tile.signphotoenforced.name=Fotoövervakning-Vägmärke
