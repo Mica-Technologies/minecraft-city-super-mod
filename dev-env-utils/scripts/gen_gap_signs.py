@@ -130,17 +130,23 @@ def text_sign(shape, lines, bg, fg):
 # mod's wording (1000 FT, NEXT 2 MILES, the lane closures with AHEAD, ...) are set in text.
 # The palette mapping and the plate fit live in shs_signs.official_face.
 
-def SHS(shape, chapter, page, pick=0, mirror=False, palette=None):
+def _stretch(shape):
+    # a silhouette IS its outline; every other plate is filled edge to edge
+    return 0.0 if shape == 'silhouette' else 0.25
+
+
+def SHS(shape, chapter, page, pick=0, mirror=False, palette=None, replace=None):
     """A face from a page of the 2004 SHS book (0-based page; ``pick`` for pages with more
     than one sign). ``mirror`` makes the left-hand version of a symbol sign the book draws
-    right-handed only."""
-    return lambda: shs.official_face(shs.book_sign(chapter, page, pick), SHAPES[shape][1],
-                                     mirror, palette)
+    right-handed only; ``replace=('50', '10')`` re-sets the one numeral the page draws."""
+    return lambda: shs.official_face(shs.book_sign(chapter, page, pick, replace=replace),
+                                     SHAPES[shape][1], mirror, palette, stretch_tol=_stretch(shape))
 
 
 def SHSI(shape, code, variant=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
-    return lambda: shs.official_face(shs.interim_sign(code, variant), SHAPES[shape][1])
+    return lambda: shs.official_face(shs.interim_sign(code, variant), SHAPES[shape][1],
+                                     stretch_tol=_stretch(shape))
 
 
 # ----------------------------------------------------------------------------- catalogue
@@ -162,13 +168,13 @@ CATALOGUE = [
      'portrait', SHS('portrait', 'Regulatory', 71), 'signpostkeepright'),
     ('signspeed10', ('Speed Limit 10 Sign', 'Señal de Límite de Velocidad 10',
                      'Geschwindigkeitsbegrenzung 10 Schild', 'Hastighetsbegränsning 10-Vägmärke'),
-     'portrait', T('portrait', ['SPEED', 'LIMIT', '10'], WHITE, BLACK), 'signspeed0'),
+     'portrait', SHS('portrait', 'Regulatory', 11, replace=('50', '10')), 'signspeed0'),
     ('signspeed60', ('Speed Limit 60 Sign', 'Señal de Límite de Velocidad 60',
                      'Geschwindigkeitsbegrenzung 60 Schild', 'Hastighetsbegränsning 60-Vägmärke'),
-     'portrait', T('portrait', ['SPEED', 'LIMIT', '60'], WHITE, BLACK), 'signpostspeed55'),
+     'portrait', SHS('portrait', 'Regulatory', 11, replace=('50', '60')), 'signpostspeed55'),
     ('signspeed70', ('Speed Limit 70 Sign', 'Señal de Límite de Velocidad 70',
                      'Geschwindigkeitsbegrenzung 70 Schild', 'Hastighetsbegränsning 70-Vägmärke'),
-     'portrait', T('portrait', ['SPEED', 'LIMIT', '70'], WHITE, BLACK), 'signspeed65'),
+     'portrait', SHS('portrait', 'Regulatory', 11, replace=('50', '70')), 'signspeed65'),
     ('signrightmustturnright', ('Right Lane Must Turn Right Sign',
                                 'Señal de Carril Derecho Debe Girar a la Derecha',
                                 'Rechte Spur Muss Rechts Abbiegen Schild',
