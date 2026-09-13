@@ -175,6 +175,19 @@ public class BlockInRoadwayWarningLight extends AbstractBlockControllableSignal
     return false;
   }
 
+  /**
+   * No block light in any state, like the RRFB: a pavement fixture does not light the road, and
+   * the constant 15 the base class provides lit the asphalt around a dark one. What makes the
+   * flash read as light at night is the OptiFine emissive companion of each lens strip
+   * ({@code irwl_lens_*_e}), which carries the lit lens alone, frame by frame.
+   *
+   * @return always 0
+   */
+  @Override
+  public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+    return 0;
+  }
+
   @Override
   public boolean getBlockIsFullCube(IBlockState state) {
     return false;
