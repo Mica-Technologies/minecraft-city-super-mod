@@ -178,7 +178,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Except Bus Sign | `csm:signexceptbus` | 2 | 10 | pickaxe | 1 |
 | Exit 25 MPH Sign | `csm:signexit25` | 2 | 10 | pickaxe | 1 |
 | Exit Closed Sign | `csm:signexitclosed` | 2 | 10 | pickaxe | 1 |
-| Falling Rocks Sign | `csm:signfallingrocks` | 2 | 10 | pickaxe | 1 |
+| Fallen Rocks Sign | `csm:signfallingrocks` | 2 | 10 | pickaxe | 1 |
 | Fallout Shelter Sign | `csm:falloutsheltersign` | 2 | 10 | pickaxe | 1 |
 | Fallout Shelter Sign (Alternate) | `csm:falloutsheltersignalt` | 2 | 10 | pickaxe | 1 |
 | Family Sign | `csm:signfamily` | 2 | 10 | pickaxe | 1 |
