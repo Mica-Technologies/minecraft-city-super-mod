@@ -183,7 +183,10 @@ def sign_info(registry):
 def render(source, info):
     face, mirror, palette = source()
     # a silhouette sign (one with a _back texture) IS its outline: never squash it to fill
+    # a 2:1 plaque squishes its legend to 8 px per plate unit across at 128; 256 keeps it
+    # readable a few blocks away
     return shs.official_face(face, info['aspect'], mirror, palette,
+                             size=256 if info['aspect'] >= 1.8 else shs.DEFAULT_TEX,
                              stretch_tol=0.0 if info['back'] else 0.25)
 
 
