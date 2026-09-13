@@ -129,14 +129,19 @@ def octagon_vertices(mask):
 
 
 def diamond_vertices(mask):
-    """The four points of a warning diamond: where its outline meets each texture edge."""
-    top = np.where(mask[0])[0]
-    right = np.where(mask[:, -1])[0]
-    bottom = np.where(mask[-1])[0]
-    left = np.where(mask[:, 0])[0]
-    last = SIZE - 1
-    return [((top.min() + top.max()) / 2.0, 0), (last, (right.min() + right.max()) / 2.0),
-            ((bottom.min() + bottom.max()) / 2.0, last), (0, (left.min() + left.max()) / 2.0)]
+    """The four points of a warning diamond: the middle of its outline's first and last opaque
+    rows and columns. Read off the opaque extent rather than the texture edge, because a
+    diamond with rounded tips (the official drawings) does not reach the edge with any
+    opaque pixel."""
+    rows = np.where(mask.any(axis=1))[0]
+    cols = np.where(mask.any(axis=0))[0]
+    top_y, bottom_y, left_x, right_x = rows.min(), rows.max(), cols.min(), cols.max()
+    top = np.where(mask[top_y])[0]
+    right = np.where(mask[:, right_x])[0]
+    bottom = np.where(mask[bottom_y])[0]
+    left = np.where(mask[:, left_x])[0]
+    return [((top.min() + top.max()) / 2.0, top_y), (right_x, (right.min() + right.max()) / 2.0),
+            ((bottom.min() + bottom.max()) / 2.0, bottom_y), (left_x, (left.min() + left.max()) / 2.0)]
 
 
 def inset_polygon(points, inset, apothem=None):
