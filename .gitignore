@@ -129,3 +129,5 @@ dev-env-utils/scripts/__pycache__/
 
 # Scratch output from the dev-env-utils asset generators (--scratch / --check).
 dev-env-utils/scripts/_*_out/
+# FHWA Standard Highway Signs drawings, fetched on demand by shs_signs.py (8 MB a chapter).
+dev-env-utils/scripts/_shs_cache/

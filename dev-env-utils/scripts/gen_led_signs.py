@@ -100,7 +100,7 @@ CATALOGUE = [
      'rect_eight', 16.0 / 21.0, AMBER_LEDS,
      'State Law Stop For Pedestrians In Crosswalk Sign (Flashing LED)'),
     ('signyieldheretopedsflashingled', 'signyieldheretopeds', 'signyieldheretopeds',
-     'rect_eight', 16.0 / 21.0, AMBER_LEDS, 'Yield Here To Pedestrians Sign (Flashing LED)'),
+     'rect_eight', 1.0, AMBER_LEDS, 'Yield Here To Pedestrians Sign (Flashing LED)'),
 ]
 
 

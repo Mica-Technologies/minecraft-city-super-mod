@@ -39,6 +39,7 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
 import render_sign as rs  # noqa: E402
+import shs_signs as shs  # noqa: E402
 
 SS = rs.SS
 SIZE = rs.SIZE  # supersampled square canvas
@@ -123,142 +124,44 @@ def text_sign(shape, lines, bg, fg):
     return _finish(img)
 
 
-# ----------------------------------------------------------------------------- symbols
-# Coordinates are fractions of the canvas; every stroke is drawn at 4x and comes out smooth.
+# ----------------------------------------------------------------------------- official faces
+# Everything whose design FHWA publishes is rendered from the Standard Highway Signs drawings
+# (shs_signs.py) rather than drawn here; only the legends the book does not carry at the
+# mod's wording (1000 FT, NEXT 2 MILES, the lane closures with AHEAD, ...) are set in text.
 
-def _P(img, fx, fy):
-    return (fx * img.width, fy * img.height)
+FYG = (186, 255, 41, 255)  # fluorescent yellow-green, as the mod's pedestrian diamond
 
-
-def _stroke(d, img, pts, width, color=BLACK):
-    d.line([_P(img, x, y) for x, y in pts], fill=color, width=int(width * SIZE), joint='curve')
-
-
-def _arrowhead(d, img, tip, direction, size, color=BLACK):
-    """Triangular head with its tip at ``tip``; direction is a unit (dx, dy)."""
-    tx, ty = _P(img, *tip)
-    dx, dy = direction
-    L = size * SIZE
-    bx, by = tx - dx * L, ty - dy * L
-    px, py = -dy, dx
-    hw = L * 0.6
-    d.polygon([(tx, ty), (bx + px * hw, by + py * hw), (bx - px * hw, by - py * hw)],
-              fill=color)
+# The drawings' printed colours onto the mod's sign palette. The book prints yellow as
+# #fff500 and the interim files as #ffd046; the mod's YELLOW is the real MUTCD yellow.
+SHS_PALETTE = {
+    (255, 245, 0): YELLOW, (255, 208, 70): YELLOW,
+    (232, 120, 26): rs.ORANGE,
+    (217, 38, 28): RED, (191, 48, 26): RED,
+    (31, 26, 23): BLACK, (0, 0, 0): BLACK, (35, 31, 32): BLACK,
+    (255, 255, 255): WHITE,
+    (190, 215, 61): FYG,
+}
 
 
-def _bezier(p0, p1, p2, p3, n=40):
-    out = []
-    for i in range(n + 1):
-        t = i / n
-        u = 1 - t
-        out.append((u**3 * p0[0] + 3 * u**2 * t * p1[0] + 3 * u * t**2 * p2[0] + t**3 * p3[0],
-                    u**3 * p0[1] + 3 * u**2 * t * p1[1] + 3 * u * t**2 * p2[1] + t**3 * p3[1]))
-    return out
+def _official(shape, face, mirror=False, palette=None):
+    mapping = dict(SHS_PALETTE)
+    mapping.update(palette or {})
+    face = shs.recolour(face, mapping)
+    if mirror:
+        face = face.transpose(Image.FLIP_LEFT_RIGHT)
+    return shs.fit_plate(face, SHAPES[shape][1])
 
 
-def sym_reverse_curve(img, right, sharp):
-    """W1-4 (curve) / W1-3 (turn): the road bends one way then back, ending offset. Drawn
-    bottom to top with the head pointing up."""
-    d = ImageDraw.Draw(img)
-    s = 1 if right else -1
-    x0, x1 = 0.5 - s * 0.09, 0.5 + s * 0.09
-    if sharp:
-        pts = [(x0, 0.74), (x0, 0.56), (x1, 0.46), (x1, 0.30)]
-    else:
-        pts = _bezier((x0, 0.74), (x0, 0.52), (x1, 0.52), (x1, 0.30))
-    _stroke(d, img, pts, 0.055)
-    _arrowhead(d, img, (x1, 0.24), (0, -1), 0.10)
+def SHS(shape, chapter, page, pick=0, mirror=False, palette=None):
+    """A face from a page of the 2004 SHS book (0-based page; ``pick`` for pages with more
+    than one sign). ``mirror`` makes the left-hand version of a symbol sign the book draws
+    right-handed only."""
+    return lambda: _official(shape, shs.book_sign(chapter, page, pick), mirror, palette)
 
 
-def sym_road_narrows(img):
-    """W5-1: the road's two edges converging ahead."""
-    d = ImageDraw.Draw(img)
-    for s in (-1, 1):
-        _stroke(d, img, [(0.5 + s * 0.20, 0.74), (0.5 + s * 0.20, 0.56), (0.5 + s * 0.09, 0.40),
-                         (0.5 + s * 0.09, 0.26)], 0.05)
-
-
-def sym_falling_rocks(img):
-    """W8-14: a cliff on the right shedding rocks onto the road."""
-    d = ImageDraw.Draw(img)
-    d.polygon([_P(img, 0.62, 0.26), _P(img, 0.74, 0.26), _P(img, 0.74, 0.74),
-               _P(img, 0.64, 0.74), _P(img, 0.60, 0.50)], fill=BLACK)
-    for cx, cy, r in ((0.50, 0.36, 0.03), (0.44, 0.47, 0.025), (0.52, 0.55, 0.035),
-                      (0.40, 0.62, 0.03), (0.50, 0.70, 0.028), (0.34, 0.72, 0.022)):
-        x, y = _P(img, cx, cy)
-        d.ellipse((x - r * SIZE, y - r * SIZE, x + r * SIZE, y + r * SIZE), fill=BLACK)
-
-
-def sym_horse(img):
-    """W11-7: horse and rider, in profile, walking left."""
-    d = ImageDraw.Draw(img)
-    P = lambda x, y: _P(img, x, y)
-    # body
-    d.ellipse((*P(0.34, 0.44), *P(0.68, 0.62)), fill=BLACK)
-    # neck: a thick stroke rising from the shoulder; head: an angled muzzle, ears up
-    _stroke(d, img, [(0.42, 0.50), (0.31, 0.34)], 0.075)
-    d.polygon([P(0.19, 0.40), P(0.29, 0.30), P(0.35, 0.36), P(0.24, 0.45)], fill=BLACK)
-    d.polygon([P(0.29, 0.31), P(0.31, 0.23), P(0.35, 0.31)], fill=BLACK)
-    # legs
-    for x0, x1, y1 in ((0.40, 0.37, 0.76), (0.45, 0.47, 0.76), (0.58, 0.55, 0.76),
-                       (0.64, 0.67, 0.76)):
-        _stroke(d, img, [(x0, 0.58), (x1, y1)], 0.045)
-    # tail
-    _stroke(d, img, [(0.67, 0.48), (0.74, 0.62)], 0.035)
-    # rider
-    x, y = P(0.51, 0.27)
-    d.ellipse((x - 0.045 * SIZE, y - 0.045 * SIZE, x + 0.045 * SIZE, y + 0.045 * SIZE),
-              fill=BLACK)
-    d.polygon([P(0.47, 0.32), P(0.55, 0.32), P(0.58, 0.50), P(0.45, 0.50)], fill=BLACK)
-    _stroke(d, img, [(0.47, 0.48), (0.43, 0.62)], 0.035)
-
-
-def sym_keep_side(img, keep_right):
-    """R4-7 / R4-8: an obstruction bar, and an arrow that starts below it and passes it on the
-    side to keep to."""
-    d = ImageDraw.Draw(img)
-    s = 1 if keep_right else -1
-    bx = 0.5 - s * 0.13
-    d.rounded_rectangle((*_P(img, bx - 0.06, 0.20), *_P(img, bx + 0.06, 0.60)),
-                        radius=int(0.025 * SIZE), fill=BLACK)
-    ax0, ax1 = 0.5 - s * 0.04, 0.5 + s * 0.16
-    pts = [(ax0, 0.86)] + _bezier((ax0, 0.76), (ax0, 0.56), (ax1, 0.66), (ax1, 0.46)) \
-        + [(ax1, 0.28)]
-    _stroke(d, img, pts, 0.065)
-    _arrowhead(d, img, (ax1, 0.16), (0, -1), 0.12)
-
-
-def sym_no_left_or_uturn(img):
-    """R3-18: a left-turn arrow and a U-turn arrow under one prohibition circle."""
-    d = ImageDraw.Draw(img)
-    # left turn: up then left
-    _stroke(d, img, [(0.40, 0.78), (0.40, 0.46), (0.30, 0.46)], 0.06)
-    _arrowhead(d, img, (0.16, 0.46), (-1, 0), 0.11)
-    # u-turn: up, over the top, down
-    pts = [(0.54, 0.78), (0.54, 0.40)] + _bezier((0.54, 0.40), (0.54, 0.20), (0.78, 0.20),
-                                                 (0.78, 0.40)) + [(0.78, 0.50)]
-    _stroke(d, img, pts, 0.06)
-    _arrowhead(d, img, (0.78, 0.64), (0, 1), 0.11)
-    # prohibition ring and slash
-    r = 0.38 * SIZE
-    cx, cy = _P(img, 0.5, 0.5)
-    d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=RED, width=int(0.06 * SIZE))
-    k = r / math.sqrt(2)
-    d.line([(cx - k, cy - k), (cx + k, cy + k)], fill=RED, width=int(0.06 * SIZE))
-
-
-def sym_roundabout_arrow(img):
-    """R6-4: the circulating arrow, counter-clockwise, on a wide panel."""
-    d = ImageDraw.Draw(img)
-    cx, cy = img.width * 0.5, img.height * 0.5
-    r = img.height * 0.30
-    d.arc((cx - r, cy - r, cx + r, cy + r), start=40, end=290, fill=BLACK,
-          width=int(0.07 * SIZE))
-    # head at the end of the arc (290 degrees), pointing the way the arc was travelling:
-    # PIL's angles increase clockwise on screen, so the tangent is (-sin a, cos a)
-    a = math.radians(290)
-    tip = ((cx + r * math.cos(a)) / img.width, (cy + r * math.sin(a)) / img.height)
-    _arrowhead(d, img, tip, (-math.sin(a), math.cos(a)), 0.13)
+def SHSI(shape, code, variant=None):
+    """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
+    return lambda: _official(shape, shs.interim_sign(code, variant))
 
 
 # ----------------------------------------------------------------------------- catalogue
@@ -266,151 +169,6 @@ def sym_roundabout_arrow(img):
 
 def T(shape, lines, bg=YELLOW, fg=BLACK):
     return lambda: text_sign(shape, lines, bg, fg)
-
-
-def D(shape, sym, bg=YELLOW, fg=BLACK, **kw):
-    """A symbol sign: the panel for the shape, then the drawer on top."""
-    def make():
-        aspect = SHAPES[shape][1]
-        if shape == 'diamond':
-            img = _canvas(1.0)
-            _diamond_panel(img, bg, fg)
-        else:
-            img = _canvas(aspect)
-            _rounded_panel(img, bg, fg)
-        sym(img, **kw)
-        return _finish(img)
-    return make
-
-
-FYG = (186, 255, 41, 255)  # fluorescent yellow-green, as the mod's pedestrian diamond
-
-
-def _walker(d, img, cx, cy, h, color=BLACK, stride=1.0):
-    """The MUTCD walking figure, ``h`` tall (fraction of canvas height), centred on (cx, cy)."""
-    P = lambda x, y: _P(img, x, y)
-    top = cy - h / 2
-    r = h * 0.11
-    hx, hy = P(cx, top + r)
-    d.ellipse((hx - r * SIZE, hy - r * SIZE, hx + r * SIZE, hy + r * SIZE), fill=color)
-    torso_top, torso_bot = top + 2.3 * r, top + h * 0.56
-    d.polygon([P(cx - h * 0.09, torso_top), P(cx + h * 0.09, torso_top),
-               P(cx + h * 0.07, torso_bot), P(cx - h * 0.07, torso_bot)], fill=color)
-    # arms swung, legs mid-stride
-    w = h * 0.045
-    _stroke(d, img, [(cx + h * 0.05, torso_top + h * 0.04), (cx + h * 0.20 * stride, torso_top + h * 0.22)], w, color)
-    _stroke(d, img, [(cx - h * 0.05, torso_top + h * 0.04), (cx - h * 0.16 * stride, torso_top + h * 0.20)], w, color)
-    _stroke(d, img, [(cx - h * 0.03, torso_bot), (cx - h * 0.17 * stride, top + h)], w * 1.3, color)
-    _stroke(d, img, [(cx + h * 0.03, torso_bot), (cx + h * 0.14 * stride, top + h * 0.98)], w * 1.3, color)
-
-
-def sym_yield_here_to_peds(img):
-    """R1-5: YIELD HERE TO, the walking figure, and the arrow pointing down at the line."""
-    d = ImageDraw.Draw(img)
-    rs._draw_text(img, ['YIELD', 'HERE TO'], BLACK,
-                  (img.width * 0.12, img.height * 0.08, img.width * 0.88, img.height * 0.38))
-    _walker(d, img, 0.42, 0.60, 0.34)
-    _stroke(d, img, [(0.72, 0.46), (0.72, 0.66)], 0.05)
-    _arrowhead(d, img, (0.72, 0.78), (0, 1), 0.10)
-
-
-def sym_state_law_paddle(img):
-    """R1-6: STATE LAW / STOP FOR [figure] / WITHIN CROSSWALK, on the in-street paddle."""
-    d = ImageDraw.Draw(img)
-    W, H = img.width, img.height
-    rs._draw_text(img, ['STATE', 'LAW'], BLACK, (W * 0.10, H * 0.06, W * 0.90, H * 0.26))
-    # the STOP legend in its own red octagon
-    cx, cy, r = W * 0.30, H * 0.44, H * 0.11
-    pts = [(cx + r * math.cos(math.radians(22.5 + 45 * i)),
-            cy + r * math.sin(math.radians(22.5 + 45 * i))) for i in range(8)]
-    d.polygon(pts, fill=RED)
-    rs._draw_text(img, ['STOP'], WHITE, (cx - r * 0.8, cy - r * 0.45, cx + r * 0.8, cy + r * 0.45))
-    rs._draw_text(img, ['FOR'], BLACK, (W * 0.46, H * 0.36, W * 0.62, H * 0.52))
-    _walker(d, img, 0.76, 0.44, 0.24)
-    rs._draw_text(img, ['WITHIN', 'CROSSWALK'], BLACK, (W * 0.10, H * 0.62, W * 0.90, H * 0.90))
-
-
-def pentagon(img, bg, fg):
-    """The school-sign pentagon, point up, on a bare silhouette plate."""
-    d = ImageDraw.Draw(img)
-    m = 4 * SS
-    poly = [(SIZE / 2, m), (SIZE - m, SIZE * 0.40), (SIZE - m, SIZE - m), (m, SIZE - m),
-            (m, SIZE * 0.40)]
-    d.polygon(poly, fill=bg)
-    d.polygon(poly, outline=fg, width=3 * SS)
-    return d
-
-
-def school_crossing():
-    """S1-1: two figures walking, on the fluorescent yellow-green pentagon."""
-    img = _canvas(1.0)
-    d = pentagon(img, FYG, BLACK)
-    _walker(d, img, 0.40, 0.58, 0.46)
-    _walker(d, img, 0.62, 0.64, 0.34)
-    return _finish(img)
-
-
-def school_bus_stop_ahead():
-    """S3-1: the pentagon with the legend."""
-    img = _canvas(1.0)
-    pentagon(img, FYG, BLACK)
-    # the box stays under the shoulders, where the pentagon is full width
-    rs._draw_text(img, ['SCHOOL', 'BUS', 'STOP', 'AHEAD'], BLACK,
-                  (SIZE * 0.24, SIZE * 0.42, SIZE * 0.76, SIZE * 0.90))
-    return _finish(img)
-
-
-def crossbuck():
-    """R15-1: the two white arms crossed at 90 degrees, RAILROAD on one and CROSSING on the
-    other, on a bare silhouette plate. Each arm is drawn upright with its legend and rotated
-    into place, so the letters run along the arm as they do on the sign."""
-    img = _canvas(1.0)
-    arm_w, arm_h = int(SIZE * 1.20), int(SIZE * 0.17)
-    # Each word is split around the crossing, as on the real sign, so neither arm's legend is
-    # buried under the other where they cross
-    for angle, (first, second) in ((45, ('RAIL', 'ROAD')), (-45, ('CROS', 'SING'))):
-        arm = Image.new('RGBA', (arm_w, arm_h), (0, 0, 0, 0))
-        d = ImageDraw.Draw(arm)
-        d.rectangle((0, 0, arm_w - 1, arm_h - 1), fill=WHITE)
-        d.rectangle((SS, SS, arm_w - 1 - SS, arm_h - 1 - SS), outline=BLACK, width=2 * SS)
-        rs._draw_text(arm, [first], BLACK, (arm_h * 0.6, arm_h * 0.2, arm_w * 0.40, arm_h * 0.8))
-        rs._draw_text(arm, [second], BLACK, (arm_w * 0.60, arm_h * 0.2, arm_w - arm_h * 0.6, arm_h * 0.8))
-        arm = arm.rotate(angle, expand=True, resample=Image.BICUBIC)
-        img.alpha_composite(arm, ((SIZE - arm.width) // 2, (SIZE - arm.height) // 2))
-    # the corners of a 1.2-wide arm poke past the square: keep to the plate
-    img = img.crop(((img.width - SIZE) // 2, (img.height - SIZE) // 2,
-                    (img.width + SIZE) // 2, (img.height + SIZE) // 2))
-    return _finish(img)
-
-
-def rr_advance():
-    """W10-1: the round yellow advance warning, a black X with R either side."""
-    img = _canvas(1.0)
-    d = ImageDraw.Draw(img)
-    m = 3 * SS
-    d.ellipse((m, m, SIZE - m, SIZE - m), fill=YELLOW)
-    d.ellipse((m + 2 * SS, m + 2 * SS, SIZE - m - 2 * SS, SIZE - m - 2 * SS), outline=BLACK,
-              width=3 * SS)
-    w = 0.055
-    _stroke(d, img, [(0.28, 0.28), (0.72, 0.72)], w)
-    _stroke(d, img, [(0.72, 0.28), (0.28, 0.72)], w)
-    rs._draw_text(img, ['R'], BLACK, (SIZE * 0.13, SIZE * 0.36, SIZE * 0.30, SIZE * 0.64))
-    rs._draw_text(img, ['R'], BLACK, (SIZE * 0.70, SIZE * 0.36, SIZE * 0.87, SIZE * 0.64))
-    return _finish(img)
-
-
-def pennant_no_passing():
-    """W14-3: the yellow pennant, point to the right, on a bare silhouette plate."""
-    img = _canvas(1.0)
-    d = ImageDraw.Draw(img)
-    m = 4 * SS
-    top, bot = SIZE * 0.20, SIZE * 0.80
-    poly = [(m, top), (SIZE - m, SIZE / 2), (m, bot)]
-    d.polygon(poly, fill=YELLOW)
-    d.polygon(poly, outline=BLACK, width=3 * SS)
-    rs._draw_text(img, ['NO', 'PASSING', 'ZONE'], BLACK,
-                  (SIZE * 0.08, SIZE * 0.30, SIZE * 0.50, SIZE * 0.70))
-    return _finish(img)
 
 
 def gray_back(face):
@@ -425,7 +183,7 @@ CATALOGUE = [
     # --- regulatory
     ('signpostkeepleft', ('Keep Left Sign', 'Señal de Mantenerse a la Izquierda',
                           'Links Halten Schild', 'Håll Vänster-Vägmärke'),
-     'portrait', D('portrait', sym_keep_side, WHITE, BLACK, keep_right=False), 'signpostkeepright'),
+     'portrait', SHS('portrait', 'Regulatory', 71), 'signpostkeepright'),
     ('signspeed10', ('Speed Limit 10 Sign', 'Señal de Límite de Velocidad 10',
                      'Geschwindigkeitsbegrenzung 10 Schild', 'Hastighetsbegränsning 10-Vägmärke'),
      'portrait', T('portrait', ['SPEED', 'LIMIT', '10'], WHITE, BLACK), 'signspeed0'),
@@ -439,94 +197,94 @@ CATALOGUE = [
                                 'Señal de Carril Derecho Debe Girar a la Derecha',
                                 'Rechte Spur Muss Rechts Abbiegen Schild',
                                 'Höger Körfält Måste Svänga Höger-Vägmärke'),
-     'square', T('square', ['RIGHT LANE', 'MUST', 'TURN RIGHT'], WHITE, BLACK), 'signrightahead'),
+     'square', SHS('square', 'Regulatory', 32), 'signrightahead'),
     ('signnoleftoruturn', ('No Left Turn or U-Turn Sign', 'Señal de Prohibido Girar a la Izquierda o en U',
                            'Kein Linksabbiegen oder Wenden Schild', 'Förbjuden Vänstersväng eller U-sväng-Vägmärke'),
-     'square', D('square', sym_no_left_or_uturn, WHITE, BLACK), 'signnoleftturn'),
+     'square', SHS('square', 'Regulatory', 61), 'signnoleftturn'),
     ('signroundaboutdirectional', ('Roundabout Directional Arrow Sign', 'Señal de Flecha Direccional de Rotonda',
                                    'Kreisverkehr Richtungspfeil Schild', 'Rondell Riktningspil-Vägmärke'),
-     'wide', D('wide', sym_roundabout_arrow, WHITE, BLACK), 'signr105a'),
+     'wide', SHSI('wide', 'r06_04'), 'signr105a'),
     ('signroundaboutplaque', ('Roundabout Sign (Plaque)', 'Señal de Rotonda (Placa)',
                               'Kreisverkehr Schild (Zusatzschild)', 'Rondell-Vägmärke (Tilläggsskylt)'),
      'plaque', T('plaque', ['ROUNDABOUT'], WHITE, BLACK), 'signroundaboutdirectional'),
     # --- warning
     ('signbepreparedtostop', ('Be Prepared To Stop Sign', 'Señal de Prepárese para Detenerse',
                               'Bremsbereit Sein Schild', 'Var Beredd att Stanna-Vägmärke'),
-     'diamond', T('diamond', ['BE', 'PREPARED', 'TO STOP']), 'basestationradiosign'),
+     'diamond', SHS('diamond', 'Warning', 25), 'basestationradiosign'),
     ('signfallingrocks', ('Falling Rocks Sign', 'Señal de Caída de Rocas',
                           'Steinschlag Schild', 'Stenras-Vägmärke'),
-     'diamond', D('diamond', sym_falling_rocks), 'signexit25'),
+     'diamond', SHSI('diamond', 'w08_14', '24x24'), 'signexit25'),
     ('signhorse', ('Horse Crossing Sign', 'Señal de Cruce de Caballos',
                    'Reiter Schild', 'Ridande-Vägmärke'),
-     'diamond', D('diamond', sym_horse), 'signhill'),
+     'diamond', SHS('diamond', 'Warning', 97), 'signhill'),
     ('signloosegravel', ('Loose Gravel Sign', 'Señal de Gravilla Suelta',
                          'Rollsplitt Schild', 'Löst Grus-Vägmärke'),
-     'diamond', T('diamond', ['LOOSE', 'GRAVEL']), 'signleftrightarrow'),
+     'diamond', SHS('diamond', 'Warning', 64), 'signleftrightarrow'),
     ('signreversecurveleft', ('Reverse Curve Left Sign', 'Señal de Curva Inversa a la Izquierda',
                               'Doppelkurve Links Schild', 'Dubbelkurva Vänster-Vägmärke'),
-     'diamond', D('diamond', sym_reverse_curve, right=False, sharp=False), 'signrampsignalahead'),
+     'diamond', SHS('diamond', 'Warning', 4, mirror=True), 'signrampsignalahead'),
     ('signreversecurveright', ('Reverse Curve Right Sign', 'Señal de Curva Inversa a la Derecha',
                                'Doppelkurve Rechts Schild', 'Dubbelkurva Höger-Vägmärke'),
-     'diamond', D('diamond', sym_reverse_curve, right=True, sharp=False), 'signreversecurveleft'),
+     'diamond', SHS('diamond', 'Warning', 4), 'signreversecurveleft'),
     ('signreverseturnleft', ('Reverse Turn Left Sign', 'Señal de Giro Inverso a la Izquierda',
                              'Doppelkurve Scharf Links Schild', 'Skarp Dubbelkurva Vänster-Vägmärke'),
-     'diamond', D('diamond', sym_reverse_curve, right=False, sharp=True), 'signreversecurveright'),
+     'diamond', SHS('diamond', 'Warning', 3, mirror=True), 'signreversecurveright'),
     ('signreverseturnright', ('Reverse Turn Right Sign', 'Señal de Giro Inverso a la Derecha',
                               'Doppelkurve Scharf Rechts Schild', 'Skarp Dubbelkurva Höger-Vägmärke'),
-     'diamond', D('diamond', sym_reverse_curve, right=True, sharp=True), 'signreverseturnleft'),
+     'diamond', SHS('diamond', 'Warning', 3), 'signreverseturnleft'),
     ('signroadnarrows', ('Road Narrows Sign', 'Señal de Estrechamiento de Calzada',
                          'Fahrbahnverengung Schild', 'Avsmalnande Väg-Vägmärke'),
-     'diamond', D('diamond', sym_road_narrows), 'signhightideroadflood'),
+     'diamond', SHS('diamond', 'Warning', 35), 'signhightideroadflood'),
     ('signroughroad', ('Rough Road Sign', 'Señal de Calzada Irregular',
                        'Unebene Fahrbahn Schild', 'Ojämn Väg-Vägmärke'),
-     'diamond', T('diamond', ['ROUGH', 'ROAD']), 'signroadsplit'),
+     'diamond', SHS('diamond', 'Warning', 65), 'signroadsplit'),
     ('signrunawaytruckramp', ('Runaway Truck Ramp Sign', 'Señal de Rampa de Escape para Camiones',
                               'Notfallspur Schild', 'Nödficka för Lastbilar-Vägmärke'),
-     'diamond', T('diamond', ['RUNAWAY', 'TRUCK', 'RAMP']), 'signroundabout'),
+     'wide', SHS('wide', 'Warning', 53), 'signroundabout'),
     ('signnopassingzone', ('No Passing Zone Sign', 'Señal de Zona de Prohibido Adelantar',
                            'Überholverbot Schild', 'Omkörningsförbud-Vägmärke'),
-     'silhouette', pennant_no_passing, 'signnooutlet'),
+     'silhouette', SHS('silhouette', 'Warning', 118), 'signnooutlet'),
     # --- plaques
     ('signcrosstrafficdoesnotstop', ('Cross Traffic Does Not Stop Sign (Plaque)',
                                      'Señal de Tráfico Transversal No Se Detiene (Placa)',
                                      'Querverkehr Hält Nicht Schild (Zusatzschild)',
                                      'Korsande Trafik Stannar Inte-Vägmärke (Tilläggsskylt)'),
-     'plaque', T('plaque', ['CROSS TRAFFIC', 'DOES NOT STOP']), 'signcow'),
+     'plaque', SHS('plaque', 'Warning', 32), 'signcow'),
     ('sign500feet', ('500 Feet Sign (Plaque)', 'Señal de 500 Pies (Placa)',
                      '500 Fuß Schild (Zusatzschild)', '500 Fot-Vägmärke (Tilläggsskylt)'),
-     'plaque', T('plaque', ['500 FEET']), 'sign4way'),
+     'plaque', SHS('plaque', 'Warning', 122), 'sign4way'),
     ('sign1000feet', ('1000 Feet Sign (Plaque)', 'Señal de 1000 Pies (Placa)',
                       '1000 Fuß Schild (Zusatzschild)', '1000 Fot-Vägmärke (Tilläggsskylt)'),
-     'plaque', T('plaque', ['1000 FEET']), 'sign500feet'),
+     'plaque', T('plaque', ['1000 FT']), 'sign500feet'),
     ('signnext2miles', ('Next 2 Miles Sign (Plaque)', 'Señal de Próximas 2 Millas (Placa)',
                         'Nächste 2 Meilen Schild (Zusatzschild)', 'Nästa 2 Miles-Vägmärke (Tilläggsskylt)'),
      'plaque', T('plaque', ['NEXT 2 MILES']), 'signnewsignal'),
     # --- pedestrian and school (Phase 2)
     ('signyieldheretopeds', ('Yield Here To Pedestrians Sign', 'Señal de Ceda el Paso Aquí a Peatones',
                              'Hier Fußgängern Vorfahrt Gewähren Schild', 'Lämna Företräde Här för Fotgängare-Vägmärke'),
-     'portrait', D('portrait', sym_yield_here_to_peds, WHITE, BLACK), 'signusecrosswalkright'),
+     'square', SHS('square', 'Regulatory', 6), 'signusecrosswalkright'),
     ('signendschoolzone', ('End School Zone Sign', 'Señal de Fin de Zona Escolar',
                            'Ende Schulzone Schild', 'Slut på Skolzon-Vägmärke'),
-     'square', T('square', ['END', 'SCHOOL', 'ZONE'], WHITE, BLACK), 'signyieldheretopeds'),
+     'portrait', SHS('portrait', 'School', 11), 'signyieldheretopeds'),
     ('signschoolbusstopahead', ('School Bus Stop Ahead Sign', 'Señal de Parada de Autobús Escolar Adelante',
                                 'Schulbushaltestelle Voraus Schild', 'Skolbusshållplats Framför-Vägmärke'),
-     'silhouette', school_bus_stop_ahead, 'signendschoolzone'),
+     'silhouette', SHSI('silhouette', 's03_01'), 'signendschoolzone'),
     ('signschoolcrossing', ('School Crossing Sign', 'Señal de Cruce Escolar',
                             'Schulweg Schild', 'Skolövergång-Vägmärke'),
-     'silhouette', school_crossing, 'signschoolbusstopahead'),
+     'silhouette', SHS('silhouette', 'School', 0, palette={(255, 245, 0): FYG}), 'signschoolbusstopahead'),
     # --- rail crossing (Phase 4)
     ('signrailroadcrossbuck', ('Railroad Crossing Sign (Crossbuck)', 'Señal de Cruce Ferroviario (Cruz de San Andrés)',
                                'Bahnübergang Andreaskreuz Schild', 'Järnvägskorsning Kryssmärke-Vägmärke'),
-     'silhouette', crossbuck, 'signphotoenforced'),
+     'silhouette', SHS('silhouette', 'Regulatory', 172), 'signphotoenforced'),
     ('signrailroadtracks2', ('2 Tracks Sign (Plaque)', 'Señal de 2 Vías (Placa)',
                              '2 Gleise Schild (Zusatzschild)', '2 Spår-Vägmärke (Tilläggsskylt)'),
      'plaque', T('plaque', ['2 TRACKS'], WHITE, BLACK), 'signrailroadcrossbuck'),
     ('signdonotstopontracks', ('Do Not Stop On Tracks Sign', 'Señal de No Detenerse Sobre las Vías',
                                'Nicht auf den Gleisen Anhalten Schild', 'Stanna Inte på Spåret-Vägmärke'),
-     'square', T('square', ['DO NOT', 'STOP ON', 'TRACKS'], WHITE, BLACK), 'signdonotpass'),
+     'portrait', SHS('portrait', 'Regulatory', 113), 'signdonotpass'),
     ('signrailroadadvance', ('Railroad Crossing Advance Warning Sign', 'Señal de Advertencia Anticipada de Cruce Ferroviario',
                              'Bahnübergang Vorwarnung Schild', 'Järnvägskorsning Förvarning-Vägmärke'),
-     'circle', rr_advance, 'signradioradiation'),
+     'circle', SHS('circle', 'Warning', 75), 'signradioradiation'),
     # --- work zone (Phase 3): the lane-closure family, all legends
     ('signleftlaneclosedahead', ('Left Lane Closed Ahead Sign', 'Señal de Carril Izquierdo Cerrado Adelante',
                                  'Linke Spur Gesperrt Voraus Schild', 'Vänster Körfält Avstängt Framför-Vägmärke'),
@@ -539,10 +297,10 @@ CATALOGUE = [
      'diamond', T('diamond', ['ONE LANE', 'ROAD', 'AHEAD'], rs.ORANGE), 'noguardrailssignrr'),
     ('signutilityworkahead', ('Utility Work Ahead Sign', 'Señal de Trabajos de Servicios Adelante',
                               'Versorgungsarbeiten Voraus Schild', 'Ledningsarbete Framför-Vägmärke'),
-     'diamond', T('diamond', ['UTILITY', 'WORK', 'AHEAD'], rs.ORANGE), 'signunmarkedpavement'),
+     'diamond', SHS('diamond', 'Warning', 158), 'signunmarkedpavement'),
     ('signshoulderwork', ('Shoulder Work Sign', 'Señal de Trabajos en el Arcén',
                           'Arbeiten am Seitenstreifen Schild', 'Vägrensarbete-Vägmärke'),
-     'diamond', T('diamond', ['SHOULDER', 'WORK'], rs.ORANGE), 'signsignalworkahead'),
+     'diamond', SHS('diamond', 'Warning', 154), 'signsignalworkahead'),
     ('signbridgeout', ('Bridge Out Sign', 'Señal de Puente Fuera de Servicio',
                        'Brücke Gesperrt Schild', 'Bro Avstängd-Vägmärke'),
      'wide', T('wide', ['BRIDGE', 'OUT'], WHITE, BLACK), 'signblastingzone'),
@@ -550,7 +308,7 @@ CATALOGUE = [
                                  'Señal de Ley Estatal Deténgase por Peatones en el Cruce',
                                  'Landesgesetz Für Fußgänger im Zebrastreifen Anhalten Schild',
                                  'Delstatslag Stanna för Fotgängare på Övergångsstället-Vägmärke'),
-     'portrait', D('portrait', sym_state_law_paddle, FYG, BLACK), 'signslowschool'),
+     'portrait', SHSI('portrait', 'r01_06c'), 'signslowschool'),
 ]
 for _mph, _after in ((10, 'signaddright'), (15, 'signadvisoryspeed10'), (20, 'signadvisoryspeed15'),
                      (25, 'signadvisoryspeed20'), (30, 'signadvisoryspeed25'), (35, 'signadvisoryspeed30'),

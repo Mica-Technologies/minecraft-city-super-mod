@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsigns/ahead_straight_arrow_sign",
+    "model": "csm:trafficsigns/bikes_use_ped_signal_sign",
     "textures": {
       "all": "csm:blocks/trafficsigns/signdonotstopontracks",
       "particle": "csm:blocks/trafficsigns/signdonotstopontracks",
@@ -141,10 +141,10 @@
     "shift": {
       "none": {},
       "setback": {
-        "model": "csm:trafficsigns/metal_signpostback_sign_setback"
+        "model": "csm:trafficsigns/metal_signpostback_tall_sign_setback"
       },
       "backtoback": {
-        "model": "csm:trafficsigns/metal_signpostback_sign_back_to_back"
+        "model": "csm:trafficsigns/metal_signpostback_tall_sign_back_to_back"
       }
     },
     "normal": [
