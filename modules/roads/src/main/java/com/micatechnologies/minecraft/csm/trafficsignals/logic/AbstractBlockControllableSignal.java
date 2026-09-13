@@ -281,6 +281,25 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
 
   public abstract boolean doesFlash();
 
+  /**
+   * Whether this device is a flash-on-call beacon: one that simply flashes for as long as the
+   * controller calls it and has no approach sequence of its own -- an RRFB, or an in-roadway
+   * warning light -- as opposed to a HAWK, which runs flashing yellow, steady yellow and steady
+   * red before the crossing is served.
+   *
+   * <p>Both link as a {@link SIGNAL_SIDE#PEDESTRIAN_BEACON}; this is how the requestable
+   * controller tells them apart, so a flash-on-call beacon comes on with the WALK rather than at
+   * the head of a HAWK's approach, and so a crossing with nothing but these on the main street
+   * needs no yellow or all-red clearance at all.</p>
+   *
+   * @return {@code true} for a beacon that only flashes while called
+   *
+   * @since 2026.9
+   */
+  public boolean isFlashOnCallBeacon() {
+    return false;
+  }
+
   public enum SIGNAL_SIDE {
     FLASHING_LEFT,
     FLASHING_RIGHT,

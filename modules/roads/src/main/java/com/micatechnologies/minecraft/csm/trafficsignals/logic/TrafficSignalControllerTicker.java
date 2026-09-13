@@ -263,158 +263,181 @@ public class TrafficSignalControllerTicker {
       long minRequestableServiceTime,
       long maxRequestableServiceTime,
       long minGreenTime) {
-    // Create variable to store next phase (null phase indicates no change)
-    TrafficSignalPhase nextPhase = null;
+    TrafficSignalPhaseApplicability current =
+        originalPhase == null ? null : originalPhase.getApplicability();
 
-    // If original phase is null, switch to default green phase
-    if (originalPhase == null) {
-      nextPhase = cachedPhases.getPhase(TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN);
+    // Only what has to be read from the world is read here -- whether a button has been pressed,
+    // whether the served street still has traffic waiting, and what kinds of device are linked
+    // -- and only in the phases that act on it. The sequencing itself is pure, in
+    // requestableNextPhaseIndex, so it can be tested without a world.
+    boolean requestPending = false;
+    if (current == TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_GREEN
+        && timeSinceLastPhaseApplicabilityChange >= minGreenTime) {
+      requestPending = circuits.getCircuits()
+          .stream()
+          .mapToInt(value -> value.getPedestrianAccessoriesRequestCount(world))
+          .sum() > 0;
     }
-    // If currently in default green phase, time met, and request count is greater than zero,
-    // start switch to
-    // service phasing
-    else if (originalPhase.getApplicability()
-        == TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_GREEN &&
-        timeSinceLastPhaseApplicabilityChange >= minGreenTime &&
-        (circuits.getCircuits()
-            .stream()
-            .mapToInt(value -> value.getPedestrianAccessoriesRequestCount(world))
-            .sum() > 0)) {
+    int serviceDemand = 0;
+    if (current == TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN
+        && timeSinceLastPhaseApplicabilityChange >= minRequestableServiceTime) {
+      ArrayList<TrafficSignalControllerCircuit> circuitsList = circuits.getCircuits();
+      for (int i = 1; i < circuitsList.size(); i++) {
+        serviceDemand += circuitsList.get(i).getSensorsWaitingSummary(world).getStandardTotal();
+      }
+    }
+    RequestableCircuitNeeds needs = null;
+    if (requestPending
+        || current == TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK
+        || current == TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK) {
+      needs = RequestableCircuitNeeds.of(world, circuits);
+    }
 
-      // Check if flashing don't walk phase is needed
-      boolean flashingDontWalkNeeded = true;
-      boolean flashingBeaconNeeded = true;
-      if (circuits.getCircuitCount() > 0) {
-        flashingDontWalkNeeded = circuits.getCircuit(0).getPedestrianSignals().size() > 0;
-        flashingBeaconNeeded = circuits.getCircuit(0).getPedestrianBeaconSignals().size() > 0;
-      }
+    int nextIndex = requestableNextPhaseIndex(current, timeSinceLastPhaseApplicabilityChange,
+        alternatingFlash, requestPending, serviceDemand, needs, yellowTime, flashDontWalkTime,
+        allRedTime, minRequestableServiceTime, maxRequestableServiceTime, minGreenTime);
+    if (nextIndex == REQUESTABLE_NO_CHANGE) {
+      return null;
+    }
 
-      // Switch to flashing don't walk phase if needed
-      if (flashingDontWalkNeeded) {
-        nextPhase = cachedPhases.getPhase(
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW);
-      }
-      // Skip to flashing yellow pedestrian beacon phase if no pedestrian signals
-      else if (flashingBeaconNeeded) {
-        nextPhase = cachedPhases.getPhase(alternatingFlash ?
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_1 :
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_2);
-      }
-      // Skip to yellow phase if flashing dont walk or flashing beacon not needed
-      else {
-        nextPhase = cachedPhases.getPhase(
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_YELLOW);
-      }
+    // Leaving the service green is what consumes the requests that called it
+    if (current == TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN) {
+      circuits.getCircuits().forEach(value -> value.resetPedestrianAccessoriesRequestCount(world));
     }
-    // If currently in default green phase + flashing don't walk and time met, switch to next phase
-    else if (originalPhase.getApplicability() ==
-        TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_GREEN_FLASH_DW &&
-        timeSinceLastPhaseApplicabilityChange >= (flashDontWalkTime - yellowTime)) {
-      nextPhase = cachedPhases.getPhase(alternatingFlash ?
-          TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_1 :
-          TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_2);
-    }
-    // If currently in default green phase + flashing don't walk + flashing yellow hawk check
-    // time or flash
-    else if (originalPhase.getApplicability() ==
-        TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK) {
-      // If time met, switch to next phase
-      if (timeSinceLastPhaseApplicabilityChange >= yellowTime) {
-        nextPhase = cachedPhases.getPhase(
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_YELLOW);
-      }
-      // Otherwise, set proper flashing yellow hawk phase
-      else {
-        nextPhase = cachedPhases.getPhase(alternatingFlash ?
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_1 :
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_2);
-      }
-    }
-    // If currently in default yellow phase, and time met, switch to next phase
-    else if (originalPhase.getApplicability()
-        == TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_YELLOW &&
-        timeSinceLastPhaseApplicabilityChange >= yellowTime) {
-      nextPhase = cachedPhases.getPhase(TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_RED);
-    }
-    // If currently in default red phase, and time met, switch to next phase
-    else if (
-        originalPhase.getApplicability() == TrafficSignalPhaseApplicability.REQUESTABLE_DEFAULT_RED
-            &&
-            timeSinceLastPhaseApplicabilityChange >= allRedTime) {
-      nextPhase = cachedPhases.getPhase(TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN);
-    }
-    // If currently in service green phase, and time met, check sensors and switch to next phase
-    // if applicable
-    else if (originalPhase.getApplicability()
-        == TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN &&
-        timeSinceLastPhaseApplicabilityChange >= minRequestableServiceTime) {
+    return cachedPhases.getPhase(nextIndex);
+  }
 
-      // Switch to next phase if max time met
-      if (timeSinceLastPhaseApplicabilityChange >= maxRequestableServiceTime) {
-        nextPhase = cachedPhases.getPhase(
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN_FLASH_DW);
-      } else {
-        // Otherwise, check for sensor entity count
-        int entityCount = 0;
-        ArrayList<TrafficSignalControllerCircuit> circuitsList = circuits.getCircuits();
-        for (int i = 1; i < circuitsList.size(); i++) {
-          entityCount += circuitsList.get(i).getSensorsWaitingSummary(world).getStandardTotal();
+  /**
+   * The value {@link #requestableNextPhaseIndex} returns when the phase should not change.
+   *
+   * @since 2026.9
+   */
+  static final int REQUESTABLE_NO_CHANGE = -1;
+
+  /**
+   * Decides the next requestable phase from the current one, the timers, and what the crossing
+   * actually needs, with no world in sight.
+   *
+   * <p>The sequence is the one the mode has always run -- main street pedestrian clearance, HAWK
+   * pre-flash, yellow, all-red, service, service pedestrian clearance, wig-wag, yellow, all-red --
+   * but each step that clears a specific kind of device is taken only when such a device is
+   * linked, per {@code needs}. The two pedestrian-clearance steps are the exception: the
+   * "flashing don't walk + HAWK" phase is entered after every flashing don't walk whether or not
+   * there is a HAWK, because it carries the last {@code yellowTime} of the clearance interval and
+   * skipping it would cut the clearance short.</p>
+   *
+   * <p>With nothing on the main street but flash-on-call beacons and nothing on the served
+   * circuits but pedestrian devices, this reduces to: request, serve, clear, return -- the beacons
+   * coming on with the WALK and going off with the end of its clearance.</p>
+   *
+   * @param current                   the current phase's applicability, or {@code null} at start
+   * @param timeInApplicability       ticks since the applicability last changed
+   * @param alternatingFlash          the controller's flash alternator, for the wig-wag phases
+   * @param requestPending            whether a request is waiting (only read in default green)
+   * @param serviceDemand             vehicles waiting on the served circuits (only read in service
+   *                                  green)
+   * @param needs                     what is linked; only read where a step can be skipped, and
+   *                                  may be {@code null} elsewhere
+   * @param yellowTime                the yellow time
+   * @param flashDontWalkTime         the flashing don't walk time
+   * @param allRedTime                the all-red time
+   * @param minRequestableServiceTime the minimum service green
+   * @param maxRequestableServiceTime the maximum service green
+   * @param minGreenTime              the minimum default green before a request is honoured
+   *
+   * @return the index of the next phase, or {@link #REQUESTABLE_NO_CHANGE}
+   *
+   * @since 2026.9
+   */
+  static int requestableNextPhaseIndex(TrafficSignalPhaseApplicability current,
+      long timeInApplicability,
+      boolean alternatingFlash,
+      boolean requestPending,
+      int serviceDemand,
+      RequestableCircuitNeeds needs,
+      long yellowTime,
+      long flashDontWalkTime,
+      long allRedTime,
+      long minRequestableServiceTime,
+      long maxRequestableServiceTime,
+      long minGreenTime) {
+    int defaultHawkFlash = alternatingFlash
+        ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_1
+        : TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_2;
+    int serviceHawkFlash = alternatingFlash
+        ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK_1
+        : TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK_2;
+
+    if (current == null) {
+      return TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN;
+    }
+    switch (current) {
+      case REQUESTABLE_DEFAULT_GREEN:
+        if (timeInApplicability < minGreenTime || !requestPending) {
+          return REQUESTABLE_NO_CHANGE;
         }
-
-        // If request count is zero, switch to next phase
-        if (entityCount == 0) {
-          nextPhase = cachedPhases.getPhase(
-              TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN_FLASH_DW);
+        if (needs.needsFlashDontWalk()) {
+          return TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW;
         }
-      }
+        if (needs.needsHawkPreflash()) {
+          return defaultHawkFlash;
+        }
+        return needs.needsDefaultClearance()
+            ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_YELLOW
+            : TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN;
 
-      // If switch to next phase, reset request count
-      if (nextPhase != null) {
-        circuits.getCircuits()
-            .forEach(value -> value.resetPedestrianAccessoriesRequestCount(world));
-      }
+      case REQUESTABLE_DEFAULT_GREEN_FLASH_DW:
+        // The HAWK phase finishes the clearance interval whether or not there is a HAWK
+        return timeInApplicability >= (flashDontWalkTime - yellowTime)
+            ? defaultHawkFlash : REQUESTABLE_NO_CHANGE;
 
-    }
-    // If currently in service green phase + flashing don't walk and time met, switch to next phase
-    else if (originalPhase.getApplicability() ==
-        TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN_FLASH_DW &&
-        timeSinceLastPhaseApplicabilityChange >= (flashDontWalkTime - yellowTime)) {
-      nextPhase = cachedPhases.getPhase(alternatingFlash ?
-          TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK_1 :
-          TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK_2);
-    }
-    // If currently in service green phase + flashing don't walk + flashing yellow hawk check
-    // time or flash
-    else if (originalPhase.getApplicability() ==
-        TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK) {
-      // If time met, switch to next phase
-      if (timeSinceLastPhaseApplicabilityChange >= yellowTime) {
-        nextPhase = cachedPhases.getPhase(
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_YELLOW);
-      }
-      // Otherwise, set proper flashing yellow hawk phase
-      else {
-        nextPhase = cachedPhases.getPhase(alternatingFlash ?
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK_1 :
-            TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK_2);
-      }
-    }
-    // If currently in service yellow phase, and time met, switch to next phase
-    else if (originalPhase.getApplicability()
-        == TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_YELLOW &&
-        timeSinceLastPhaseApplicabilityChange >= yellowTime) {
-      nextPhase = cachedPhases.getPhase(TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_RED);
-    }
-    // If currently in service red phase, and time met, switch to back default/start phase
-    else if (
-        originalPhase.getApplicability() == TrafficSignalPhaseApplicability.REQUESTABLE_SERVICE_RED
-            &&
-            timeSinceLastPhaseApplicabilityChange >= allRedTime) {
-      nextPhase = cachedPhases.getPhase(TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN);
-    }
+      case REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK:
+        if (timeInApplicability >= yellowTime) {
+          return needs.needsDefaultClearance()
+              ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_YELLOW
+              : TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN;
+        }
+        return defaultHawkFlash;
 
-    // Return next phase (null phase indicates no change)
-    return nextPhase;
+      case REQUESTABLE_DEFAULT_YELLOW:
+        return timeInApplicability >= yellowTime
+            ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_RED : REQUESTABLE_NO_CHANGE;
+
+      case REQUESTABLE_DEFAULT_RED:
+        return timeInApplicability >= allRedTime
+            ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN : REQUESTABLE_NO_CHANGE;
+
+      case REQUESTABLE_SERVICE_GREEN:
+        if (timeInApplicability < minRequestableServiceTime) {
+          return REQUESTABLE_NO_CHANGE;
+        }
+        return (timeInApplicability >= maxRequestableServiceTime || serviceDemand == 0)
+            ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_GREEN_FLASH_DW
+            : REQUESTABLE_NO_CHANGE;
+
+      case REQUESTABLE_SERVICE_GREEN_FLASH_DW:
+        return timeInApplicability >= (flashDontWalkTime - yellowTime)
+            ? serviceHawkFlash : REQUESTABLE_NO_CHANGE;
+
+      case REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK:
+        if (timeInApplicability >= yellowTime) {
+          return needs.needsServiceClearance()
+              ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_YELLOW
+              : TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN;
+        }
+        return serviceHawkFlash;
+
+      case REQUESTABLE_SERVICE_YELLOW:
+        return timeInApplicability >= yellowTime
+            ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_SERVICE_RED : REQUESTABLE_NO_CHANGE;
+
+      case REQUESTABLE_SERVICE_RED:
+        return timeInApplicability >= allRedTime
+            ? TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN : REQUESTABLE_NO_CHANGE;
+
+      default:
+        return REQUESTABLE_NO_CHANGE;
+    }
   }
 
   /**

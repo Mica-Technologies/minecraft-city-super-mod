@@ -111,6 +111,17 @@ public class BlockControllableRrfb extends AbstractBlockControllableSignal
     return true;
   }
 
+  /**
+   * An RRFB has no approach sequence: it flashes from the moment the crossing is served to the end
+   * of the pedestrian clearance, and is dark otherwise.
+   *
+   * @return always {@code true}
+   */
+  @Override
+  public boolean isFlashOnCallBeacon() {
+    return true;
+  }
+
   @Override
   public String getBlockRegistryName() {
     return "controllablerrfb";

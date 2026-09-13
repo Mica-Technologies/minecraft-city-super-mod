@@ -123,6 +123,26 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private TrafficSignalPhases cachedPhases = new TrafficSignalPhases(getWorld(), circuits);
 
   /**
+   * The format of the phase-building rules in force. Bump it whenever {@link TrafficSignalPhases}
+   * changes what it puts in a phase, so a controller saved under the old rules rebuilds its cache
+   * on its first tick instead of running the old phases until something is relinked.
+   *
+   * <p>1: pedestrian beacons split into HAWK-style and flash-on-call in the requestable
+   * phases.</p>
+   *
+   * @since 2026.9
+   */
+  private static final int CACHED_PHASES_FORMAT_CURRENT = 1;
+
+  /**
+   * The format the cached phases were built under, from NBT; {@code 0} for a controller saved
+   * before the format was recorded.
+   *
+   * @since 2026.9
+   */
+  private int cachedPhasesFormat = CACHED_PHASES_FORMAT_CURRENT;
+
+  /**
    * The time of the last phase change for the traffic signal controller.
    *
    * @since 2.0
@@ -607,8 +627,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Place the entire tick event in a try/catch block to catch any exceptions and enter fault
     // state
     try {
-      // Verify integrity of cached phases and reset controller if necessary
-      if (!cachedPhases.verifyPhaseCount()) {
+      // Verify integrity of cached phases and reset controller if necessary. A cache built under
+      // older phase rules is rebuilt the same way, once.
+      if (!cachedPhases.verifyPhaseCount()
+          || cachedPhasesFormat != CACHED_PHASES_FORMAT_CURRENT) {
+        cachedPhasesFormat = CACHED_PHASES_FORMAT_CURRENT;
         resetController(true, false);
       }
 
@@ -858,7 +881,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       paused = compound.getBoolean(TrafficSignalControllerNBTKeys.LEGACY_PAUSED);
     }
 
-    // Load the traffic signal controller cached phases
+    // Load the traffic signal controller cached phases, and the rules they were built under
+    // (absent before the format was recorded, which reads as 0 and forces one rebuild)
+    cachedPhasesFormat = compound.getInteger(TrafficSignalControllerNBTKeys.CACHED_PHASES_FORMAT);
     if (compound.hasKey(TrafficSignalControllerNBTKeys.CACHED_PHASES)) {
       cachedPhases = TrafficSignalPhases.fromNBT(
           compound.getCompoundTag(TrafficSignalControllerNBTKeys.CACHED_PHASES));
@@ -1119,8 +1144,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Write the paused state to NBT
     compound.setBoolean(TrafficSignalControllerNBTKeys.PAUSED, paused);
 
-    // Write the cached phases to NBT
+    // Write the cached phases to NBT, with the rules they were built under
     compound.setTag(TrafficSignalControllerNBTKeys.CACHED_PHASES, cachedPhases.toNBT());
+    compound.setInteger(TrafficSignalControllerNBTKeys.CACHED_PHASES_FORMAT, cachedPhasesFormat);
 
     // Write the last phase change time to NBT
     compound.setLong(TrafficSignalControllerNBTKeys.LAST_PHASE_CHANGE_TIME, lastPhaseChangeTime);

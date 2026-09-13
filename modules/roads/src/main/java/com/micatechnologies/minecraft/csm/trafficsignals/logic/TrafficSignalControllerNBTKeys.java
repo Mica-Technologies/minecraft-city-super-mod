@@ -70,6 +70,15 @@ public class TrafficSignalControllerNBTKeys {
   public static final String CACHED_PHASES = "tcPh";
 
   /**
+   * The key for the format of the cached phases: which rules built them. A controller whose
+   * stored format is older than the current one rebuilds its cache on its first tick, which is
+   * how a change to how phases are built reaches controllers linked before the change.
+   *
+   * @since 2026.9
+   */
+  public static final String CACHED_PHASES_FORMAT = "tcPhF";
+
+  /**
    * The key for storing and retrieving the traffic signal controller's last phase change time from
    * NBT data.
    *
