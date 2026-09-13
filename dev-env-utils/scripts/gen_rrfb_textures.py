@@ -55,25 +55,28 @@ SEQUENCE = [
 ]
 CYCLE_FRAMES = len(SEQUENCE)
 
-# The block model's face is 15 x 4 block units and samples uv [0.5, 6, 15.5, 10] of 16,
-# which at 4 px per unit is exactly x 2..61, y 24..39 -- so the unit maps to the face one
-# texture pixel per model pixel, with no stretch. Wide and shallow, with the lamps pushed
-# out to the ends and a broad dark centre, the way a real bar is built. Half a unit of
-# inset each side keeps the housing off the block boundary, where coplanar faces z-fight.
-BAND_LEFT = 2
-BAND_RIGHT = 61
+# The block model's face is 18.75 x 4.4 block units (x -1.375..17.375, y 5.8..10.2), wider
+# than the block so it overhangs each side, and samples uv [0, 6, 16, 9.75] of 16. That is
+# the full 64 px of width over 18.75 units, 3.41 px per unit, and 15 px of height over 4.4
+# units -- the same density both ways, so the texture is not stretched. The texture cannot
+# keep 4 px per unit at this width, because a uv cannot reach past the edge of the image.
+# Wide and shallow, with the lamps pushed out to the ends and a dark centre, the way a real
+# bar is built. The ends sit well clear of the block boundary, so no face there z-fights.
+BAND_LEFT = 0
+BAND_RIGHT = 63
 BAND_TOP = 24
-BAND_BOTTOM = 39
+BAND_BOTTOM = 38
 
 # Solid housing swatch in the frame's top-left corner, sampled by the model's side, top and
 # bottom faces (uv [0, 0, 1, 1]). Kept well outside the band so it is never near a lamp.
 SWATCH = 4
 
-# Lamp rectangles at each end of the bar. The gap between them is deliberately wide -- on a
-# real unit the middle carries the maker's plate, not lamps.
-LENS_W = 14
-LENS_H = 8
-LENS_PAD = 4
+# Lamp rectangles at each end of the bar, as large as the housing allows while still leaving
+# a visible frame round each one: 20 x 11 px is about 5.9 x 3.2 units. The gap between them
+# stays wide -- on a real unit the middle carries the maker's plate, not lamps.
+LENS_W = 20
+LENS_H = 11
+LENS_PAD = 3
 LENS_Y = BAND_TOP + (BAND_BOTTOM - BAND_TOP + 1 - LENS_H) // 2
 LENS_X_LEFT = BAND_LEFT + LENS_PAD
 LENS_X_RIGHT = BAND_RIGHT - LENS_PAD - LENS_W + 1
@@ -138,7 +141,7 @@ def draw_lens(left_lit, right_lit):
         box = [x, LENS_Y, x + LENS_W - 1, LENS_Y + LENS_H - 1]
         if lit:
             d.rectangle(box, fill=LENS_LIT, outline=LENS_DARK_EDGE)
-            d.rectangle([x + 3, LENS_Y + 2, x + LENS_W - 4, LENS_Y + LENS_H - 3],
+            d.rectangle([x + 4, LENS_Y + 3, x + LENS_W - 5, LENS_Y + LENS_H - 4],
                         fill=LENS_LIT_CORE)
         else:
             d.rectangle(box, fill=LENS_DARK, outline=LENS_DARK_EDGE)

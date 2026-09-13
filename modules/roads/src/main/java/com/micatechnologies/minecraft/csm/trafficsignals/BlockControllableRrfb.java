@@ -117,13 +117,14 @@ public class BlockControllableRrfb extends AbstractBlockControllableSignal
   }
 
   /**
-   * Matches the housing drawn by the model: the 15 x 4 unit bar held against the back of the
-   * block, rather than the whole cube. Sitting at the back is what lets the unit be placed
-   * flush on a wall or a mount, with nothing of it hanging into the block behind.
+   * Matches the housing drawn by the model: the 18.75 x 4.4 unit bar held against the back of
+   * the block, rather than the whole cube. The bar is wider than the block, so the box overhangs
+   * it by 1.375 units each side, as the model does. Sitting at the back is what lets the unit be
+   * placed flush on a wall or a mount, with nothing of it hanging into the block behind.
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0.03125D, 0.375D, 0.80625D, 0.96875D, 0.625D, 0.99875D);
+    return new AxisAlignedBB(-0.0859375D, 0.3625D, 0.80625D, 1.0859375D, 0.6375D, 0.99875D);
   }
 
   @Override
