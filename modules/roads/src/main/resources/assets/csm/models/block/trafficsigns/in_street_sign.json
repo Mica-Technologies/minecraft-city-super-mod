@@ -1,0 +1,45 @@
+{
+  "__comment": "In-street pedestrian sign (R1-6 family): a 12 x 36 paddle on a low base, double sided. At the plate scale of the other signs (24 in = 16 units) the face is 8 x 24 units.",
+  "textures": {
+    "0": "csm:blocks/trafficsigns/absolutely_nothing_sign"
+  },
+  "elements": [
+    {
+      "__comment": "the face, painted both sides",
+      "from": [4, 2, 0],
+      "to": [12, 26, 0.5],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#1"},
+        "south": {"uv": [16, 0, 0, 16], "texture": "#1"},
+        "east": {"uv": [0, 0, 1, 16], "texture": "#0"},
+        "west": {"uv": [0, 0, 1, 16], "texture": "#0"},
+        "up": {"uv": [0, 0, 16, 1], "texture": "#0"},
+        "down": {"uv": [0, 0, 16, 1], "texture": "#0"}
+      }
+    },
+    {
+      "__comment": "the flexible base it springs back from",
+      "from": [3, 0, -1.5],
+      "to": [13, 1, 2],
+      "faces": {
+        "north": {"uv": [0, 0, 10, 1], "texture": "#0"},
+        "south": {"uv": [0, 0, 10, 1], "texture": "#0"},
+        "east": {"uv": [0, 0, 4, 1], "texture": "#0"},
+        "west": {"uv": [0, 0, 4, 1], "texture": "#0"},
+        "up": {"uv": [0, 0, 10, 4], "texture": "#0"},
+        "down": {"uv": [0, 0, 10, 4], "texture": "#0"}
+      }
+    },
+    {
+      "__comment": "the stem between base and face",
+      "from": [7, 1, -0.25],
+      "to": [9, 2, 0.75],
+      "faces": {
+        "north": {"uv": [0, 0, 2, 1], "texture": "#0"},
+        "south": {"uv": [0, 0, 2, 1], "texture": "#0"},
+        "east": {"uv": [0, 0, 1, 1], "texture": "#0"},
+        "west": {"uv": [0, 0, 1, 1], "texture": "#0"}
+      }
+    }
+  ]
+}

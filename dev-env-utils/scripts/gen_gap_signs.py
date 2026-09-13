@@ -26,6 +26,9 @@ out at the right proportions. The shapes and the sibling whose blockstate is clo
     silhouette 23 x 23  yieldsign           anything whose outline is none of the above: the
                                             yield model draws the texture's own alpha on a bare
                                             plate, with a gray back texture on slot "2"
+    paddle     8 x 24   (itself)            the in-street pedestrian sign, a 12 x 36 face on a
+                                            low base (model in_street_sign, double sided); no
+                                            pole, so the shift and downward variants are inert
 
 Run from the repo root:  python dev-env-utils/scripts/gen_gap_signs.py [--apply] [--check]
 """
@@ -64,6 +67,9 @@ SHAPES = {
     'plaque': ('signaheadplaque', 2.0),
     'silhouette': ('yieldsign', 1.0),
     'circle': ('signfdcstandpipe', 1.0),
+    # the in-street paddle: its own model (in_street_sign, 8 x 24 double sided on a low base)
+    # and its own blockstate, so the shape clones itself
+    'paddle': ('signstatelawstopforpeds', 8 / 24),
 }
 LANGS = ('en_us', 'es_es', 'de_de', 'sv_se')
 
@@ -297,7 +303,7 @@ CATALOGUE = [
                                  'Señal de Ley Estatal Deténgase por Peatones en el Cruce',
                                  'Landesgesetz Für Fußgänger im Zebrastreifen Anhalten Schild',
                                  'Delstatslag Stanna för Fotgängare på Övergångsstället-Vägmärke'),
-     'portrait', SHSI('portrait', 'r01_06c'), 'signslowschool'),
+     'paddle', SHSI('paddle', 'r01_06c'), 'signslowschool'),
 ]
 for _mph, _after in ((10, 'signaddright'), (15, 'signadvisoryspeed10'), (20, 'signadvisoryspeed15'),
                      (25, 'signadvisoryspeed20'), (30, 'signadvisoryspeed25'), (35, 'signadvisoryspeed30'),
