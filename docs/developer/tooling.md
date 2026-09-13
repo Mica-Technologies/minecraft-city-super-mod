@@ -48,6 +48,7 @@ In `dev-env-utils/scripts/`, run directly. Pillow required for the image ones.
 | `gen_signs.py`, `recreate_signs.py` | Road sign faces |
 | `gen_gap_signs.py` | The signs the 2026-09 catalogue review added, from one catalogue: the official FHWA face where the drawing exists, Highway Gothic text where it does not; `--check` fails on drift |
 | `shs_signs.py` | Accurate sign faces from the FHWA Standard Highway Signs drawings — fetched on demand into a gitignored cache, the dimensioned page stripped down to the sign, rendered with alpha |
+| `gen_official_faces.py` | Swaps an existing road sign's face for its SHS drawing, texture only, the plate read from the sign's own blockstate; `--sheet` for the before/after review, `--check` for drift |
 | `gen_dynamic_street_sign_texture.py` | The street sign block's inventory texture |
 
 !!! tip "Generators own everything they touch"

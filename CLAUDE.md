@@ -358,6 +358,14 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   with alpha. `recolour` maps the drawings' print colours onto the mod's palette, `fit_plate`
   squishes a face to the square texture its plate stretches back out. `find` locates a sign's
   page by legend; the page map lives in `gen_gap_signs.py`'s catalogue
+- `gen_official_faces.py` -- swaps an EXISTING road sign's face for its SHS drawing: reads the
+  sign's own blockstate for the plate model and the texture it paints (slot `1`, often not
+  named after the registry), measures the plate's aspect off the model's `#1` faces, and
+  writes that texture and nothing else -- registration and blockstates are untouched, so
+  `--check` is a byte comparison and a batch reverts with `git checkout`. `--sheet` makes the
+  before/after contact sheet a batch is reviewed on; `--verify-sheet` puts each unverified
+  match-table guess beside its cited book page. `replace=('50', '35')` re-sets the one numeral
+  a page draws
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →
