@@ -204,3 +204,32 @@ block passes its facing up: a sign on a guardrail faces the way the player chose
 A sign standing on a guardrail (any `ICsmPostPassesThrough` block) sets `downward`, the same
 property the slab extension uses, and draws its post one block further down to the ground. Only
 the slab case also extends the sign's bounding box; see `GUARDRAIL_SYSTEM.md`.
+
+## LED-Enhanced Flashing Signs
+
+`signpoststopsignflashingled`, `signpoststopsignflashingleddense`, `signwrongwayflashingled` and
+`signdonotenterflashingled` are the solar LED-enhanced signs (MUTCD 2A.07): the plain sign with
+a ring of red LEDs on its face along the border, blinking once a second. They are ordinary
+`BlockTrafficSign` blocks with no control -- the real units run whenever they are installed.
+
+Nothing about them is geometry. The LEDs are composited into the sign's own face texture as a
+two-frame strip (dark, lit) and the `.mcmeta` gives the lit frame 2 ticks of a 20-tick cycle:
+one 100 ms blink per second. Putting the clock in the texture rather than in a tile entity is
+the same choice the RRFB makes, and for the same reason -- Minecraft advances every sprite
+animation off the global tick counter, so every LED sign in the world blinks in step, as a bank
+of them on one solar controller does. The blockstate is the plain sign's with the texture paths
+swapped, so shift, downward and stacking all carry over untouched.
+
+Each strip has an OptiFine emissive companion (`<name>_e.png`, declared by suffix in Core's
+`assets/minecraft/optifine/emissive.properties`) animated on the same timing: an empty frame
+while dark, the lit LEDs and their bloom alone while lit. Under OptiFine that frame draws at
+full brightness, so the blink reads as light at night; without it the base strip's lit frame
+still blinks, just shaded like the rest of the sign. OptiFine does not run in the deobfuscated
+dev client, so the emissive path can only be checked in a packaged install.
+
+All of it -- textures, `.mcmeta`, companions, blockstates -- comes from
+`dev-env-utils/scripts/gen_led_signs.py`, which reads the LED positions off each base texture's
+own outline (the octagon's vertices are where its edge meets the texture edge; a rectangle's
+panel is its opaque bounds) rather than hard-coding them, and pre-stretches the WRONG WAY dots
+by the wide plate's 22:16 aspect so they come out round in the world. The lang lines and tab
+registrations it prints are added by hand next to the plain sign's own.
