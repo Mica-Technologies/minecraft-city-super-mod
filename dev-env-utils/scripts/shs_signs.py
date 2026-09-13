@@ -511,15 +511,17 @@ SHS_PALETTE = {
 }
 
 
-def official_face(face, aspect, mirror=False, palette=None, size=DEFAULT_TEX):
+def official_face(face, aspect, mirror=False, palette=None, size=DEFAULT_TEX, stretch_tol=0.25):
     """A rendered drawing onto a sign texture: palette-mapped, optionally mirrored (the
-    left-hand version of a symbol the book draws right-handed only), fitted to the plate."""
+    left-hand version of a symbol the book draws right-handed only), fitted to the plate.
+    ``stretch_tol=0`` keeps the face's true proportions whatever the plate -- a silhouette
+    sign (pennant, pentagon, crossbuck) IS its outline, so it must not be squashed to fill."""
     mapping = dict(SHS_PALETTE)
     mapping.update(palette or {})
     face = recolour(face, mapping)
     if mirror:
         face = face.transpose(Image.FLIP_LEFT_RIGHT)
-    return fit_plate(face, aspect, size)
+    return fit_plate(face, aspect, size, stretch_tol=stretch_tol)
 
 
 def back_texture(face, gray=(150, 150, 150, 255)):
@@ -530,14 +532,15 @@ def back_texture(face, gray=(150, 150, 150, 255)):
     return back.transpose(Image.FLIP_LEFT_RIGHT)
 
 
-def fit_plate(face, aspect, size=DEFAULT_TEX, margin=0.0, stretch_tol=0.12):
+def fit_plate(face, aspect, size=DEFAULT_TEX, margin=0.0, stretch_tol=0.25):
     """Squish a sign face to the square texture its plate stretches back to ``aspect``.
 
     The plate models come in a handful of proportions and the real signs in many more, so a
     face whose proportions are within ``stretch_tol`` of the plate's is stretched to fill it
-    edge to edge (a 24 x 30 sign on the 16 x 21 plate is 5% off -- invisible in the world,
-    where a gap of bare plate around the face is not). A face further off than that keeps
-    its true proportions, centred, with ``margin`` of transparent plate around it.
+    edge to edge (a 24 x 30 sign on the 16 x 21 plate is 5% off, the 1 MILE runaway ramp
+    rectangle on the 22 x 16 plate 18% -- neither shows in the world, where a gap of bare
+    plate around the face does). A face further off than that -- the 1:3 in-street paddle
+    -- keeps its true proportions, centred, with ``margin`` of transparent plate around it.
     """
     w, h = face.size
     sign_aspect = w / float(h)

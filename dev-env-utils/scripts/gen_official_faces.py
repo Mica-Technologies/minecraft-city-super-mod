@@ -56,7 +56,71 @@ def SHSI(code, variant=None, palette=None):
 # ----------------------------------------------------------------------------- catalogue
 # registry, source, SHS code (for the sheet caption)
 
+R = 'Regulatory'
 CATALOGUE = [
+    # --- Phase 1: Regulatory, the confident exact matches. Not here, and why: signahead is
+    # the up-arrow plaque, not the AHEAD legend; onewaytlsignright is the arrow-shaped R6-1;
+    # signphotoenforced carries a signal head the R10-19 legend does not; signhovlaneends
+    # is drawn portrait on a plate the wide R3-14 would sit small on (a plate change to ask).
+    ('signpoststopsign', SHS(R, 0), 'R1-1'),
+    ('yieldsign', SHS(R, 1), 'R1-2'),
+    ('signpost4way', SHS(R, 3), 'R1-3'),
+    ('signpostallway', SHS(R, 4), 'R1-4'),
+    ('signpostspeed50', SHS(R, 11), 'R2-1'),
+    ('signpostmin40', SHS(R, 17), 'R2-4'),
+    ('signnorightturn', SHS(R, 22), 'R3-1'),
+    ('signnoleftturn', SHS(R, 24), 'R3-2'),
+    ('signnoturns', SHS(R, 26), 'R3-3'),
+    ('signnouturn', SHS(R, 27), 'R3-4'),
+    ('signbuslane', SHS(R, 30, pick=3), 'R3-5b'),
+    ('signleftmustturnleft', SHS(R, 31), 'R3-7L'),
+    ('buslaneahead', SHS(R, 44), 'R3-10a'),
+    ('signhovlaneahead', SHS(R, 58), 'R3-15'),
+    ('signaheadplaque', SHS(R, 60, pick=1), 'R3-17a'),
+    ('signendsplaque', SHS(R, 60, pick=2), 'R3-17b'),
+    ('signdonotpass', SHS(R, 62), 'R4-1'),
+    ('signpasswithcare', SHS(R, 63), 'R4-2'),
+    ('signslowertraffickeepright', SHS(R, 64), 'R4-3'),
+    ('signtrucksuserightlanes', SHS(R, 66), 'R4-5'),
+    ('signtrucklane500ft', SHS(R, 67), 'R4-6'),
+    ('signpostkeepright', SHS(R, 68), 'R4-7'),
+    ('signdonotenter', SHS(R, 74), 'R5-1'),
+    ('signwrongway', SHS(R, 75), 'R5-1a'),
+    ('signnotrucks', SHS(R, 77), 'R5-2'),
+    ('signnomotorvehicles', SHS(R, 79), 'R5-3'),
+    ('signcommercialexclude', SHS(R, 80), 'R5-4'),
+    ('signvehiclelugsprohibit', SHS(R, 81), 'R5-5'),
+    ('signmotorcycleprohibit', SHS(R, 84), 'R5-8'),
+    ('signpedestrianprohibit', SHS(R, 86, pick=1), 'R5-10b'),
+    ('signloadzonenoparking', SHS(R, 93, pick=1), 'R7-6'),
+    ('signbusstopnoparking', SHS(R, 93, pick=2), 'R7-7'),
+    ('signnoparkingbikelane', SHS(R, 95), 'R7-9'),
+    ('signtowawayzone', SHS(R, 100), 'R7-201'),
+    ('signnoparkingonpave', SHS(R, 102), 'R8-1'),
+    ('signnoparkingexceptshoulder', SHS(R, 103), 'R8-2'),
+    ('signnoparkingtext', SHS(R, 104), 'R8-3'),
+    ('signnoparking', SHS(R, 105), 'R8-3a'),
+    ('signemergencyparkingonly', SHS(R, 109), 'R8-4'),
+    ('signnostoppingpavement', SHS(R, 110), 'R8-5'),
+    ('signnostoppingexceptshoulder', SHS(R, 111), 'R8-6'),
+    ('signemergencystoppingonly', SHS(R, 112), 'R8-7'),
+    ('signstophereflashing', SHS(R, 115), 'R8-10'),
+    ('signwalkleft', SHS(R, 116), 'R9-1'),
+    ('signcrossatcrosswalks', SHS(R, 116, pick=1), 'R9-2'),
+    ('signnohitchhiking', SHS(R, 120), 'R9-4a'),
+    ('signpostsidewalkclosed', SHS(R, 126), 'R9-10'),
+    ('signleftongreenarrow', SHS(R, 135), 'R10-5'),
+    ('signpostdonotblock', SHS(R, 137), 'R10-7'),
+    ('signuselanewithgreenarrow', SHS(R, 138), 'R10-8'),
+    ('signleftturnsignal', SHS(R, 139), 'R10-10L'),
+    ('signpostleftturnyieldgreen', SHS(R, 143), 'R10-12'),
+    ('signesignal', SHS(R, 144), 'R10-13'),
+    ('signr1016', SHS(R, 146), 'R10-16'),
+    ('signkeepoffmedian', SHS(R, 153), 'R11-1'),
+    ('signrdclosed', SHS(R, 154), 'R11-2'),
+    ('signrdclosedthrutraffic', SHS(R, 156), 'R11-4'),
+    ('signweightlimit10ton', SHS(R, 157), 'R12-1'),
+    ('signaxle5tonlimit', SHS(R, 159), 'R12-2'),
 ]
 
 
@@ -116,9 +180,11 @@ def sign_info(registry):
     }
 
 
-def render(source, aspect):
+def render(source, info):
     face, mirror, palette = source()
-    return shs.official_face(face, aspect, mirror, palette)
+    # a silhouette sign (one with a _back texture) IS its outline: never squash it to fill
+    return shs.official_face(face, info['aspect'], mirror, palette,
+                             stretch_tol=0.0 if info['back'] else 0.25)
 
 
 # ----------------------------------------------------------------------------- sheets
@@ -143,7 +209,7 @@ def contact_sheet(entries, out, cols=3):
         x0, y0 = (i % cols) * cell_w, (i // cols) * cell_h
         before = _at_aspect(Image.open(info['texture']), info['aspect']) \
             if os.path.exists(info['texture']) else None
-        after = _at_aspect(render(source, info['aspect']), info['aspect'])
+        after = _at_aspect(render(source, info), info['aspect'])
         if before is not None:
             sheet.alpha_composite(before, (x0 + 10 + (200 - before.width) // 2, y0 + 10))
         sheet.alpha_composite(after, (x0 + 210 + (200 - after.width) // 2, y0 + 10))
@@ -220,7 +286,7 @@ def main():
     drift = []
     for registry, source, code in entries:
         info = sign_info(registry)
-        face = render(source, info['aspect'])
+        face = render(source, info)
         targets = [(info['texture'], face)]
         if info['back']:
             targets.append((info['back'], shs.back_texture(face)))
