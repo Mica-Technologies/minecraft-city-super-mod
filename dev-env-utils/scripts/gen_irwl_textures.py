@@ -22,6 +22,8 @@ shared_textures/:
     irwl_lens_<pattern>_a.png.mcmeta
     irwl_lens_<pattern>_b.png    the same, half a cycle later
     irwl_lens_<pattern>_b.png.mcmeta
+    irwl_lens_<pattern>_?_e.png  the OptiFine emissive companion of each strip (+ .mcmeta):
+                                 the lit lens alone, on the same clock
     irwl_body.png                the pavement-coloured housing the lens sits in
 
 Run from the repo root:  python dev-env-utils/scripts/gen_irwl_textures.py
@@ -65,18 +67,37 @@ def draw_frame(lit):
     return img
 
 
+def draw_frame_lit_only(lit):
+    """The lit lens alone on transparency, or nothing: one frame of the OptiFine emissive
+    companion. Under OptiFine the lens glows on exactly the frames it is lit and the housing
+    never does; the block itself emits no light, so this is what makes the flash read as light
+    at night."""
+    img = Image.new('RGBA', (FRAME, FRAME), (0, 0, 0, 0))
+    if lit:
+        ImageDraw.Draw(img).rectangle([LENS_X1 + 1, LENS_Y1 + 1, LENS_X2 - 1, LENS_Y2 - 1],
+                                      fill=LENS_LIT)
+    return img
+
+
 def write_strip(name, lit_by_frame):
     # Sized from the list, not from the RRFB's frame count: the slower patterns are longer,
     # and a fixed height silently clipped them to the RRFB's 16 frames.
     frames = len(lit_by_frame)
     strip = Image.new('RGBA', (FRAME, FRAME * frames), (0, 0, 0, 0))
+    emissive = Image.new('RGBA', (FRAME, FRAME * frames), (0, 0, 0, 0))
     for i, lit in enumerate(lit_by_frame):
         strip.paste(draw_frame(lit), (0, i * FRAME))
+        emissive.paste(draw_frame_lit_only(lit), (0, i * FRAME))
     path = os.path.join(OUT_DIR, name + '.png')
     strip.save(path)
-    with open(path + '.mcmeta', 'w', encoding='utf-8', newline='\n') as handle:
-        handle.write(MCMETA)
-    print('wrote %s  %dx%d  (%d frames)' % (path, strip.width, strip.height, frames))
+    # The companion carries the same timing; sprites tick from one counter, so they stay in step.
+    emissive_path = os.path.join(OUT_DIR, name + '_e.png')
+    emissive.save(emissive_path)
+    for p in (path, emissive_path):
+        with open(p + '.mcmeta', 'w', encoding='utf-8', newline='\n') as handle:
+            handle.write(MCMETA)
+    print('wrote %s  %dx%d  (%d frames) and its _e companion'
+          % (path, strip.width, strip.height, frames))
 
 
 def even_flash_frames():

@@ -102,6 +102,11 @@ Two settings, on the signal head configuration tool: **housing colour**, from th
 as the signal heads, and **single-sided**, which drops the rear lamps for a unit mounted flat
 against something.
 
+It gives off no light of its own — a real one does not light the street — so at night the bursts
+read as light through OptiFine's emissive textures, which carry just the lit lamps on the same
+clock as the flash. Without OptiFine the lamps still flash; they are simply shaded like the rest
+of the housing.
+
 ## In-roadway warning lights
 
 The fixtures set flush into the pavement at a crossing, flashing up and along the road at
@@ -127,6 +132,9 @@ mode you put them in**:
 
 The difference matters: don't-walk and "not called" are the same colour on the wire, and a row that
 lit up on don't-walk would be telling people to cross when they must not.
+
+Like the RRFB, a fixture emits no block light; under OptiFine the lens glows on exactly the frames
+it is lit, and nothing around it does.
 
 ### Flash pattern
 

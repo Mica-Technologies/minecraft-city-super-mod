@@ -138,6 +138,20 @@ public class BlockControllableRrfb extends AbstractBlockControllableSignal
     return new AxisAlignedBB(-0.0859375D, 0.3625D, 0.80625D, 1.0859375D, 0.6375D, 0.99875D);
   }
 
+  /**
+   * No block light in any state. An RRFB does not light the street; what makes its bursts read
+   * as light at night is the OptiFine emissive companion of the lens strip
+   * ({@code rrfb_lens_flash_e}), which carries only the lit lamps frame by frame. Block light
+   * could not follow the 50 ms sequence anyway, and the constant 15 the base class provides lit
+   * the pavement around a dark beacon.
+   *
+   * @return always 0
+   */
+  @Override
+  public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+    return 0;
+  }
+
   @Override
   public boolean getBlockIsOpaqueCube(IBlockState state) {
     return false;

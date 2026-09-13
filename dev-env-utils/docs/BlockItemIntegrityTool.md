@@ -158,12 +158,12 @@ Uses `AtomicInteger` counters for thread-safe error/warning reporting.
 A clean tree reports:
 
 ```
-Discovered 1709 blocks and 37 items from the creative tab registrations.
-On disk: 1724 blockstate files across 10 source tree(s).
-Total Checked: 1761
+Discovered 1737 blocks and 38 items from the creative tab registrations.
+On disk: 1752 blockstate files across 10 source tree(s).
+Total Checked: 1790
 Total Errors: 0
 Total Unused Lang Entries: 0
-Total Unused Files: 196
+Total Unused Files: 222
 ```
 
 **0 errors is the bar. Any error it prints now is worth investigating** — that was not true before
@@ -173,12 +173,13 @@ The first two lines exist so that a discovery bug is two numbers that disagree r
 silently short run. The 15-file gap is blockstates for block-set siblings and is expected; a gap of
 hundreds is the tool failing to find blocks.
 
-**The 196 unused files are the expected steady state and are fully accounted for. Do not delete on
+**The 222 unused files are the expected steady state and are fully accounted for. Do not delete on
 the tool's say-so:**
 
 | Count | What they are | Why the tool cannot see the use |
 |---|---|---|
-| 18 | OptiFine `_e` emissive companions | Declared by *suffix* in `emissive.properties`, so nothing names the file |
+| 29 | OptiFine `_e` emissive companions | Declared by *suffix* in `emissive.properties`, so nothing names the file |
+| 15 | `.png.mcmeta` timing files of the animated companions and the LED sign strips | An `.mcmeta` rides on its texture; nothing names it either |
 | 63 | Signal lens, blankout and crosswalk textures | Tiled into `atlas.png` and read at runtime by `TrafficSignalTextureMap`, never by a model |
 | 110 | Named by a Java class or a generator script | The reference is in code, not in a blockstate |
 | 5 | Genuinely orphaned model JSONs | Left in place deliberately, pending a human call — `alto_round_lot_light`, `trafficpolecamera_modern`, `signal_backplate_888_vertical`, `signal_backplate_8812_vertical`, `signal_backplate_hawk_full` |

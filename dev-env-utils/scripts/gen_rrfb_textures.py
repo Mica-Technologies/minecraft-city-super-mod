@@ -148,6 +148,19 @@ def draw_lens(left_lit, right_lit):
     return img
 
 
+def draw_lens_lit_only(left_lit, right_lit):
+    """The lit lamps alone, opaque, transparent everywhere else -- the emissive overlay for one
+    frame. A dark lamp leaves nothing here, which is what keeps it dark under OptiFine."""
+    img = Image.new('RGBA', (FRAME, FRAME), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for x, lit in ((LENS_X_LEFT, left_lit), (LENS_X_RIGHT, right_lit)):
+        if lit:
+            d.rectangle([x, LENS_Y, x + LENS_W - 1, LENS_Y + LENS_H - 1], fill=LENS_LIT)
+            d.rectangle([x + 4, LENS_Y + 3, x + LENS_W - 5, LENS_Y + LENS_H - 4],
+                        fill=LENS_LIT_CORE)
+    return img
+
+
 def main():
     if not os.path.isdir(REPO_TEXTURES):
         raise SystemExit('run from the repo root: %s not found' % REPO_TEXTURES)
@@ -162,16 +175,26 @@ def main():
     print('wrote %s' % off_path)
 
     strip = Image.new('RGBA', (FRAME, FRAME * CYCLE_FRAMES), (0, 0, 0, 0))
+    # The OptiFine emissive companion, on the same clock: only the lit lamps, frame by frame,
+    # so under OptiFine the bursts glow at night and the dark lamps and housing do not. The
+    # block itself emits no light -- an RRFB does not light the street -- so this is the only
+    # thing that makes the flash read as light.
+    emissive = Image.new('RGBA', (FRAME, FRAME * CYCLE_FRAMES), (0, 0, 0, 0))
     for i, (left, right) in enumerate(SEQUENCE):
         strip.paste(draw_lens(left, right), (0, i * FRAME))
+        emissive.paste(draw_lens_lit_only(left, right), (0, i * FRAME))
     strip_path = os.path.join(REPO_TEXTURES, 'rrfb_lens_flash.png')
     strip.save(strip_path)
-    print('wrote %s  %dx%d  (%d frames)'
+    emissive_path = os.path.join(REPO_TEXTURES, 'rrfb_lens_flash_e.png')
+    emissive.save(emissive_path)
+    print('wrote %s  %dx%d  (%d frames) and its _e companion'
           % (strip_path, strip.width, strip.height, CYCLE_FRAMES))
 
-    # frametime 1 = one tick = 50 ms, which is the pulse width the sequence is built on.
-    with open(strip_path + '.mcmeta', 'w', encoding='utf-8', newline='\n') as fh:
-        fh.write('{\n  "animation": {\n    "frametime": 1\n  }\n}\n')
+    # frametime 1 = one tick = 50 ms, which is the pulse width the sequence is built on. The
+    # companion carries the same timing; sprites tick from one counter, so they stay in step.
+    for path in (strip_path, emissive_path):
+        with open(path + '.mcmeta', 'w', encoding='utf-8', newline='\n') as fh:
+            fh.write('{\n  "animation": {\n    "frametime": 1\n  }\n}\n')
 
     # Check the sequence against IA-21 rather than against an idea of what it should be.
     assert CYCLE_FRAMES * 50 == 800, 'sequence must be 800 ms, got %d' % (CYCLE_FRAMES * 50)
