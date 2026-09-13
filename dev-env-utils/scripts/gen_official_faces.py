@@ -61,7 +61,7 @@ CATALOGUE = [
     # --- Phase 1: Regulatory, the confident exact matches. Not here, and why: signahead is
     # the up-arrow plaque, not the AHEAD legend; onewaytlsignright is the arrow-shaped R6-1;
     # signphotoenforced carries a signal head the R10-19 legend does not; signhovlaneends
-    # is drawn portrait on a plate the wide R3-14 would sit small on (a plate change to ask).
+    # was drawn portrait; its plate is now the wide one, so it is back in.
     ('signpoststopsign', SHS(R, 0), 'R1-1'),
     ('yieldsign', SHS(R, 1), 'R1-2'),
     ('signpost4way', SHS(R, 3), 'R1-3'),
@@ -75,6 +75,7 @@ CATALOGUE = [
     ('signbuslane', SHS(R, 30, pick=3), 'R3-5b'),
     ('signleftmustturnleft', SHS(R, 31), 'R3-7L'),
     ('buslaneahead', SHS(R, 44), 'R3-10a'),
+    ('signhovlaneends', SHS(R, 51), 'R3-14'),   # plate changed to wide for it (2026-09-13)
     ('signhovlaneahead', SHS(R, 58), 'R3-15'),
     ('signaheadplaque', SHS(R, 60, pick=1), 'R3-17a'),
     ('signendsplaque', SHS(R, 60, pick=2), 'R3-17b'),
