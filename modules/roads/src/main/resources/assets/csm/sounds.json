@@ -241,5 +241,14 @@
         "stream": false
       }
     ]
+  },
+  "railroad_crossing_bell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:railroad_crossing_bell",
+        "stream": false
+      }
+    ]
   }
 }

@@ -529,6 +529,14 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlinterconnectmodule2", BB_TL_INTERCONNECT_MODULE_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(BlockPreemptBeacon.class, fmlPreInitializationEvent);
     initTabBlock(BlockSnowBeacon.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockRailroadCrossingFlasher.class,
+        fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockRailroadCrossingGate.OneLane.class,
+        fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockRailroadCrossingGate.TwoLane.class,
+        fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockRailroadCrossingGate.ThreeLane.class,
+        fmlPreInitializationEvent);
 
     // --- Class-based: Street Name Signs (NSEW, not NSEWUD) ---
     initTabBlock(BlockTrafficStreetNameSign.class, fmlPreInitializationEvent);

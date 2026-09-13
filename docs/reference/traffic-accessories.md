@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "350 blocks in this tab"
+!!! info "351 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -120,6 +120,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Portable Signal Trailer (Mast Arm) | `csm:portable_signal_trailer_arm` | 0.6 | 3 | pickaxe | 0 |
 | Portable Variable Speed Limit Sign | `csm:portable_speed_limit_sign` | 2 | 10 | pickaxe | 1 |
 | Radar Speed Feedback Sign | `csm:radar_speed_sign` | 2 | 10 | pickaxe | 1 |
+| Railroad Crossing Flasher | `csm:railroad_crossing_flasher` | 2 | 10 | pickaxe | 1 |
 | Safety Fence | `csm:safety_fence` | 0.6 | 3 | pickaxe | 0 |
 | Sand Barrel | `csm:sand_barrel_array` | 0.6 | 3 | pickaxe | 0 |
 | School Zone Beacon Assembly | `csm:school_zone_beacon` | 2 | 10 | pickaxe | 1 |
