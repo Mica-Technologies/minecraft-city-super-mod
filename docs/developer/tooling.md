@@ -27,7 +27,7 @@ Each has an IntelliJ run configuration, and per-tool documentation in `dev-env-u
 !!! note "Compile the integrity tool before running it"
 
     `mvn exec:java` does not rebuild, so always run it as `mvn -q clean compile exec:java`. A clean
-    tree reports **0 errors**, so any error it prints is worth investigating. It also reports 222
+    tree reports **0 errors**, so any error it prints is worth investigating. It also reports 236
     "unused files" that are expected: emissive companions and their `.mcmeta` timing files, signal lens textures tiled into an atlas
     at runtime, and assets named from code rather than from a blockstate. Do not delete on its
     say-so. The full breakdown is in `dev-env-utils/docs/BlockItemIntegrityTool.md`.

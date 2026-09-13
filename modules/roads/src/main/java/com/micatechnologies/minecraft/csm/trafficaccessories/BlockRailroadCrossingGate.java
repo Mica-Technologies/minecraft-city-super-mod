@@ -12,8 +12,9 @@ import net.minecraft.world.World;
  * The crossing gate: the mechanism cabinet is the block, the arm is drawn by the tile entity's
  * renderer, swinging between raised and lowered over several seconds as a real one does. The
  * arm extends to the block's right as you face it, across the lanes it closes; the three
- * lengths are three blocks so the arm's reach is fixed by what was placed rather than
- * configured.
+ * lengths are three blocks ({@link BlockRailroadCrossingGate1} to {@code 3}, one class each
+ * as the source-scanning tools expect) so the arm's reach is fixed by what was placed rather
+ * than configured.
  *
  * @author Mica Technologies
  * @since 2026.9
@@ -56,44 +57,5 @@ public abstract class BlockRailroadCrossingGate extends AbstractBlockRailroadCro
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     return new AxisAlignedBB(0.25D, 0.0D, 0.25D, 0.75D, 0.75D, 0.75D);
-  }
-
-  /** One lane. */
-  public static class OneLane extends BlockRailroadCrossingGate {
-    @Override
-    public int getLanes() {
-      return 1;
-    }
-
-    @Override
-    public String getBlockRegistryName() {
-      return "railroad_crossing_gate_1";
-    }
-  }
-
-  /** Two lanes. */
-  public static class TwoLane extends BlockRailroadCrossingGate {
-    @Override
-    public int getLanes() {
-      return 2;
-    }
-
-    @Override
-    public String getBlockRegistryName() {
-      return "railroad_crossing_gate_2";
-    }
-  }
-
-  /** Three lanes. */
-  public static class ThreeLane extends BlockRailroadCrossingGate {
-    @Override
-    public int getLanes() {
-      return 3;
-    }
-
-    @Override
-    public String getBlockRegistryName() {
-      return "railroad_crossing_gate_3";
-    }
   }
 }

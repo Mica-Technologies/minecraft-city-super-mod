@@ -158,12 +158,12 @@ Uses `AtomicInteger` counters for thread-safe error/warning reporting.
 A clean tree reports:
 
 ```
-Discovered 1737 blocks and 38 items from the creative tab registrations.
-On disk: 1752 blockstate files across 10 source tree(s).
-Total Checked: 1790
+Discovered 1795 blocks and 38 items from the creative tab registrations.
+On disk: 1810 blockstate files across 10 source tree(s).
+Total Checked: 1848
 Total Errors: 0
 Total Unused Lang Entries: 0
-Total Unused Files: 222
+Total Unused Files: 236
 ```
 
 **0 errors is the bar. Any error it prints now is worth investigating** — that was not true before
@@ -173,7 +173,7 @@ The first two lines exist so that a discovery bug is two numbers that disagree r
 silently short run. The 15-file gap is blockstates for block-set siblings and is expected; a gap of
 hundreds is the tool failing to find blocks.
 
-**The 222 unused files are the expected steady state and are fully accounted for. Do not delete on
+**The 236 unused files (2026-09-13 evening; 222 that morning, before the LED pedestrian signs and the rail crossing flasher added their companions and timing files) are the expected steady state and are fully accounted for. Do not delete on
 the tool's say-so:**
 
 | Count | What they are | Why the tool cannot see the use |
