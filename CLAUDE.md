@@ -344,11 +344,20 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_dynamic_street_sign_texture.py` -- inventory/particle texture for the dynamic street sign block
 - `gen_gap_signs.py` -- the signs that filled the 2026-09 catalogue review's gaps (Keep Left,
   Speed Limit 10/60/70, reverse curves, advisory-speed and distance plaques, No Passing pennant,
-  ...): one catalogue of registry + four-language display name + plate shape + drawing, rendered
-  through `render_sign.py` at the plate's aspect, blockstate cloned from a same-shape sibling,
-  `--apply` inserts the lang lines and tab lines after each sign's sibling; `--check` fails on
-  drift. Silhouettes that are none of the eight shapes use the `yield_sign` model with a gray
-  `_back` texture on slot `2`
+  ...): one catalogue of registry + four-language display name + plate shape + face, the face
+  either the official FHWA drawing through `shs_signs.py` or, where the book has no sign at the
+  mod's wording, Highway Gothic text through `render_sign.py`; fitted at the plate's aspect,
+  blockstate cloned from a same-shape sibling, `--apply` inserts the lang lines and tab lines
+  after each sign's sibling; `--check` fails on drift. Silhouettes that are none of the eight
+  shapes use the `yield_sign` model with a gray `_back` texture on slot `2`
+- `shs_signs.py` -- accurate sign faces from the FHWA Standard Highway Signs drawings (public
+  domain): fetches the 2004 book chapters and the interim per-sign ZIPs into the gitignored
+  `_shs_cache/` on first use (~8 MB a chapter, so a fresh clone's `--check` needs the network
+  once), then strips a dimensioned book page down to the sign -- the filled paths, the strokes
+  heavier than a dimension line and the glyphs set in a Highway Gothic font -- and renders it
+  with alpha. `recolour` maps the drawings' print colours onto the mod's palette, `fit_plate`
+  squishes a face to the square texture its plate stretches back out. `find` locates a sign's
+  page by legend; the page map lives in `gen_gap_signs.py`'s catalogue
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →
