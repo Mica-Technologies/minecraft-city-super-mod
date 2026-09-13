@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Generate the signs that fill the gaps found by the 2026-09 catalogue review.
 
-One catalogue, one command. Each entry names a sign, the shape of plate it goes on, how its
-face is drawn (Highway Gothic text through render_sign, or a symbol drawn here), the plain
-sign it sits beside in the creative tab, and its display name in the four shipped languages.
+One catalogue, one command. Each entry names a sign, the shape of plate it goes on, where its
+face comes from (the official FHWA drawing through shs_signs, or Highway Gothic text through
+render_sign where the book has no sign at the mod's wording), the plain sign it sits beside in
+the creative tab, and its display name in the four shipped languages.
 From that the script writes:
 
     textures/blocks/trafficsigns/<registry>.png          128 x 128, drawn at the plate's aspect
@@ -211,7 +212,7 @@ CATALOGUE = [
     ('signbepreparedtostop', ('Be Prepared To Stop Sign', 'Señal de Prepárese para Detenerse',
                               'Bremsbereit Sein Schild', 'Var Beredd att Stanna-Vägmärke'),
      'diamond', SHS('diamond', 'Warning', 25), 'basestationradiosign'),
-    ('signfallingrocks', ('Falling Rocks Sign', 'Señal de Caída de Rocas',
+    ('signfallingrocks', ('Fallen Rocks Sign', 'Señal de Rocas Caídas',
                           'Steinschlag Schild', 'Stenras-Vägmärke'),
      'diamond', SHSI('diamond', 'w08_14', '24x24'), 'signexit25'),
     ('signhorse', ('Horse Crossing Sign', 'Señal de Cruce de Caballos',
