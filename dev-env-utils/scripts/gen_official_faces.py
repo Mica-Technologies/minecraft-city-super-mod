@@ -57,6 +57,8 @@ def SHSI(code, variant=None, palette=None):
 # registry, source, SHS code (for the sheet caption)
 
 R = 'Regulatory'
+W = 'Warning'
+FYG_FACE = {(255, 245, 0): shs.MOD_COLOURS['fyg']}   # the book's yellow onto fluorescent yellow-green
 CATALOGUE = [
     # --- Phase 1: Regulatory, the confident exact matches. Not here, and why: signahead is
     # the up-arrow plaque, not the AHEAD legend; onewaytlsignright is the arrow-shaped R6-1;
@@ -122,6 +124,46 @@ CATALOGUE = [
     ('signrdclosedthrutraffic', SHS(R, 156), 'R11-4'),
     ('signweightlimit10ton', SHS(R, 157), 'R12-1'),
     ('signaxle5tonlimit', SHS(R, 159), 'R12-2'),
+    # --- Phase 2: Warning, the confident exact matches. Not here: signtruckhalf is a TRUCK
+    # legend, not the W11-10 symbol; signleftrightarrow is the two-headed W1-7, not W16-5p.
+    ('signpsotstopahead', SHS(W, 19), 'W3-1'),
+    ('signyieldahead', SHS(W, 21), 'W3-2'),
+    ('signsignalahead', SHS(W, 23), 'W3-3'),
+    ('signpostspeed55', SHS(R, 11, replace=('50', '55')), 'R2-1 (55)'),
+    ('signaddleft', SHS(W, 31, pick=1), 'W4-3L'),
+    ('signaddright', SHS(W, 31), 'W4-3R'),
+    ('signnarrowbridge', SHS(W, 36), 'W5-2'),
+    ('signonelanebridge', SHS(W, 37), 'W5-3'),
+    ('signdivhw', SHS(W, 41), 'W6-1a'),
+    ('signdividedroad', SHS(W, 42), 'W6-1b'),
+    ('signdivhwend', SHS(W, 44), 'W6-2a'),
+    ('signdividedhwstart', SHS(W, 40), 'W6-1'),    # the symbol pair; the worded ones are above
+    ('signdividedhwend', SHS(W, 43), 'W6-2'),
+    ('signtwowaytraffic', SHS(W, 46), 'W6-3'),
+    ('signtruckhill', SHS(W, 47), 'W7-1'),
+    ('signhill', SHS(W, 48), 'W7-1a'),
+    ('signtruck8grade', SHS(W, 49), 'W7-1b'),
+    ('signbump', SHS(W, 58), 'W8-1'),
+    ('signdip', SHS(W, 59), 'W8-2'),
+    ('signpavementends', SHS(W, 60), 'W8-3'),
+    ('signsoftshoulder', SHS(W, 61), 'W8-4'),
+    ('signtruckcrossing', SHS(W, 63), 'W8-6'),
+    ('signunevenlanes', SHS(W, 69), 'W8-11'),
+    # the mod's pedestrian family is fluorescent yellow-green, as the current MUTCD allows
+    ('signbicycle', SHS(W, 90, palette=FYG_FACE), 'W11-1'),
+    ('signpedestrian', SHS(W, 91, palette=FYG_FACE), 'W11-2'),
+    ('signdeer', SHS(W, 92), 'W11-3'),
+    ('signexit25', SHS(W, 109), 'W13-2'),
+    ('signcurve25', SHS(W, 113), 'W13-5'),
+    ('signdeadend', SHS(W, 115), 'W14-1'),
+    ('signnooutlet', SHS(W, 117), 'W14-2'),
+    ('signplayground', SHS(W, 119), 'W15-1'),
+    ('signshareroad', SHS(W, 120), 'W16-1'),
+    ('signnosigns', SHS(W, 133), 'W18-1'),
+    ('signoncominghasextendedgreen', SHS(W, 134), 'W25-1'),
+    ('signoncomingmayextendedgreen', SHS(W, 135), 'W25-2'),
+    ('signendroadwork', SHS(W, 168, pick=2), 'G20-2'),
+    ('signexitclosed', SHS(W, 169, pick=2), 'E5-2a'),
 ]
 
 

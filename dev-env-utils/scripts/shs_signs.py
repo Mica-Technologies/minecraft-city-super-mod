@@ -155,6 +155,20 @@ def _path_bbox(d, matrix):
                      max(p[0] for p in pts), max(p[1] for p in pts))
 
 
+def _is_light(colour):
+    """Whether an SVG colour (``#rrggbb`` / ``#rgb`` / ``white``) is light enough to be a
+    dimension mark drawn over a dark shape rather than sign artwork."""
+    c = colour.strip().lower()
+    if c == 'white':
+        return True
+    if not c.startswith('#') or len(c) not in (4, 7):
+        return False
+    if len(c) == 4:
+        c = '#' + ''.join(ch * 2 for ch in c[1:])
+    r, g, b = (int(c[i:i + 2], 16) for i in (1, 3, 5))
+    return 0.299 * r + 0.587 * g + 0.114 * b > 200
+
+
 def _path_area(d, matrix):
     """The area (page units) enclosed by an SVG path's straight-line subpaths through
     ``matrix``; curves are taken through their control points, which is close enough to
@@ -265,6 +279,22 @@ def _legend_glyph_origins(page, rect, drop=None):
             if text != drop for o in origins]
 
 
+def _sheet_colour(fills, rect):
+    """What the margin between a sign's outermost fill and its edge outline is: the sign's own
+    background where the outermost fill is that background (a yellow diamond's edge is
+    yellow), and white where the outermost fill is a dark border (a regulatory sign's white
+    sheet shows outside its black border)."""
+    for d in fills:
+        r = d['rect']
+        if d.get('fill') is None or abs(r.x0 - rect.x0) > 1.5 or abs(r.y0 - rect.y0) > 1.5                 or abs(r.x1 - rect.x1) > 1.5 or abs(r.y1 - rect.y1) > 1.5:
+            continue
+        red, green, blue = d['fill'][:3]
+        if 0.299 * red + 0.587 * green + 0.114 * blue < 0.3:
+            return '#ffffff'
+        return '#%02x%02x%02x' % (int(round(red * 255)), int(round(green * 255)), int(round(blue * 255)))
+    return '#ffffff'
+
+
 def _sheet_rect(page, rect):
     """The sign's own edge, when the page draws it: a closed stroke-only outline (any
     width) enclosing the outermost fill by a few points on every side. The white margin
@@ -311,7 +341,7 @@ def _inset_rects(page, rect, fills):
     return insets
 
 
-def _filtered_svg(page, rect, only_inside=True, drop=None):
+def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff'):
     """The page's SVG reduced to the sign inside ``rect``: filled paths above the arrowhead
     threshold, undashed strokes heavier than a dimension line (their width taken through the
     path's own transform, which is where a scaled-up outline like the W10-1's X keeps its
@@ -360,11 +390,12 @@ def _filtered_svg(page, rect, only_inside=True, drop=None):
             if encloses:
                 # The sign's own edge: the sheet, white, behind everything the page drew
                 # inside it (the margin outside a regulatory sign's border is white sheet)
-                el = el.replace('fill="none"', 'fill="#ffffff"', 1).replace(' stroke=', ' data-stroke=', 1)
+                el = el.replace('fill="none"', 'fill="%s"' % sheet_colour, 1).replace(' stroke=', ' data-stroke=', 1)
                 kept.insert(0, el)
                 continue
-            # dimension marks drawn over a black symbol are white strokes; no sign outline is
-            if attrs.get('stroke', '').lower() in ('#ffffff', '#fff', 'white'):
+            # dimension marks drawn over a black symbol or border are white or light-grey
+            # strokes; no sign outline is lighter than its background
+            if _is_light(attrs.get('stroke', '')):
                 continue
             if closed and bbox.width >= 40 and bbox.height >= 40:
                 # A closed, sign-sized outline drawn as a stroke alone is a white panel on the
@@ -393,8 +424,8 @@ def _filtered_svg(page, rect, only_inside=True, drop=None):
     return svg[:head_end] + '\n' + '\n'.join(kept) + '\n</svg>'
 
 
-def _render_svg(page, rect, only_inside=True, dpi=RENDER_DPI, drop=None):
-    doc = fitz.open('svg', _filtered_svg(page, rect, only_inside, drop).encode('utf-8'))
+def _render_svg(page, rect, only_inside=True, dpi=RENDER_DPI, drop=None, sheet_colour='#ffffff'):
+    doc = fitz.open('svg', _filtered_svg(page, rect, only_inside, drop, sheet_colour).encode('utf-8'))
     return _render_clip(doc[0], rect, dpi)
 
 
@@ -451,16 +482,17 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None)
                         key=lambda r: -(r.width * r.height))
         rect = fitz.Rect(inside[inner])
     sheet = _sheet_rect(p, rect)
+    sheet_colour = _sheet_colour(fills, rect)
     if sheet is not None:
         rect = sheet
     if replace is None:
-        return _render_svg(p, rect, only_inside)
+        return _render_svg(p, rect, only_inside, sheet_colour=sheet_colour)
     old, new = replace
     boxes = _legend_span_boxes(p, rect, old)
     if not boxes:
         raise SystemExit('%s p%d: no legend run reads %r (have %s)' % (
             chapter, page, old, [t for t, _o, _b in _legend_spans(p, rect)]))
-    img = _render_svg(p, rect, only_inside, drop=old)
+    img = _render_svg(p, rect, only_inside, drop=old, sheet_colour=sheet_colour)
     scale = RENDER_DPI / 72.0
     for box in boxes:
         px = ((box.x0 - rect.x0) * scale, (box.y0 - rect.y0) * scale,
