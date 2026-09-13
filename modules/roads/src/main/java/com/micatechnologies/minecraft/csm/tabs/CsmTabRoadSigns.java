@@ -151,6 +151,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signdividedhw2"));
     initTabBlock(new BlockTrafficSign("signpostdonotblock"));
     initTabBlock(new BlockTrafficSign("signdonotenter"));
+    initTabBlock(new BlockTrafficSign("signdonotenterflashingled"));
     initTabBlock(new BlockTrafficSign("signdonotpass"));
     initTabBlock(new BlockTrafficSign("signdontthinkparking"));
     initTabBlock(new BlockTrafficSign("signdoubleoneway"));
@@ -311,6 +312,8 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signstophereflashred2"));
     initTabBlock(new BlockTrafficSign("stopbridgeclearancesign"));
     initTabBlock(new BlockTrafficSign("signpoststopsign"));
+    initTabBlock(new BlockTrafficSign("signpoststopsignflashingled"));
+    initTabBlock(new BlockTrafficSign("signpoststopsignflashingleddense"));
     initTabBlock(new BlockTrafficSign("streetsweepfri"));
     initTabBlock(new BlockTrafficSign("streetsweepmon"));
     initTabBlock(new BlockTrafficSign("streetsweepthurs"));
@@ -341,6 +344,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signweightlimit2peraxle"));
     initTabBlock(new BlockTrafficSign("signwest"));
     initTabBlock(new BlockTrafficSign("signwrongway"));
+    initTabBlock(new BlockTrafficSign("signwrongwayflashingled"));
     initTabBlock(new BlockTrafficSign("yieldsign"));
 
     // --- Warning signs: yellow diamonds and their supplemental plaques ---

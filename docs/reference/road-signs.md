@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "574 blocks in this tab"
+!!! info "578 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -129,6 +129,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Divided Road Starts Sign | `csm:signdividedhwstart` | 2 | 10 | pickaxe | 1 |
 | Do Not Block Intersection Sign | `csm:signpostdonotblock` | 2 | 10 | pickaxe | 1 |
 | Do Not Enter Sign | `csm:signdonotenter` | 2 | 10 | pickaxe | 1 |
+| Do Not Enter Sign (Flashing LED) | `csm:signdonotenterflashingled` | 2 | 10 | pickaxe | 1 |
 | Do Not Pass Sign | `csm:signdonotpass` | 2 | 10 | pickaxe | 1 |
 | Dog Sign | `csm:signdog` | 2 | 10 | pickaxe | 1 |
 | Don't Block The Box Sign | `csm:signdontblockthebox` | 2 | 10 | pickaxe | 1 |
@@ -510,6 +511,8 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Stop Here When Flashing Sign (Right Arrow) | `csm:signstophereflashred2` | 2 | 10 | pickaxe | 1 |
 | Stop Low Clearance Do Not Hit This Bridge | `csm:stopbridgeclearancesign` | 2 | 10 | pickaxe | 1 |
 | Stop Sign | `csm:signpoststopsign` | 2 | 10 | pickaxe | 1 |
+| Stop Sign (Flashing LED) | `csm:signpoststopsignflashingled` | 2 | 10 | pickaxe | 1 |
+| Stop Sign (Flashing LED, Dense) | `csm:signpoststopsignflashingleddense` | 2 | 10 | pickaxe | 1 |
 | Street Sweeping Friday Sign | `csm:streetsweepfri` | 2 | 10 | pickaxe | 1 |
 | Street Sweeping Monday Sign | `csm:streetsweepmon` | 2 | 10 | pickaxe | 1 |
 | Street Sweeping Thursday Sign | `csm:streetsweepthurs` | 2 | 10 | pickaxe | 1 |
@@ -582,6 +585,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | West Sign | `csm:signwest` | 2 | 10 | pickaxe | 1 |
 | Windsurfing Sign | `csm:signwindsurf` | 2 | 10 | pickaxe | 1 |
 | Wrong Way Sign | `csm:signwrongway` | 2 | 10 | pickaxe | 1 |
+| Wrong Way Sign (Flashing LED) | `csm:signwrongwayflashingled` | 2 | 10 | pickaxe | 1 |
 | Y-Intersection Sign | `csm:signyintersection` | 2 | 10 | pickaxe | 1 |
 | Yield | `csm:yieldsign` | 2 | 10 | pickaxe | 1 |
 | Yield Ahead Sign | `csm:signyieldahead` | 2 | 10 | pickaxe | 1 |
