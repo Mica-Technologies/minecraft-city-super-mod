@@ -477,6 +477,7 @@ tile.signpavementends.name=Señal de Fin del Pavimento
 tile.signpeddetourleft.name=Señal de Obras: Desvío Peatonal, Flecha a la Izquierda
 tile.signpeddetourright.name=Señal de Obras: Desvío Peatonal, Flecha a la Derecha
 tile.signpedestrian.name=Señal de Peatón
+tile.signpedestrianflashingled.name=Señal de Peatón (LED Intermitente)
 tile.signpedestrianprohibit.name=Señal de Peatones Prohibidos
 tile.signphone.name=Señal de Teléfono/Teléfono Público
 tile.signphotoenforced.name=Señal de Vigilancia por Cámara

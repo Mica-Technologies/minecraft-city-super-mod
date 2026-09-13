@@ -477,6 +477,7 @@ tile.signpavementends.name=Pavement Ends Sign
 tile.signpeddetourleft.name=Road Work Pedestrian Detour Left Arrow Sign
 tile.signpeddetourright.name=Road Work Pedestrian Detour Right Arrow Sign
 tile.signpedestrian.name=Pedestrian Sign
+tile.signpedestrianflashingled.name=Pedestrian Sign (Flashing LED)
 tile.signpedestrianprohibit.name=Pedestrians Prohibited Sign
 tile.signphone.name=Telephone/Payphone Sign
 tile.signphotoenforced.name=Photo Enforced Sign

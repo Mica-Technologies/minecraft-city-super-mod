@@ -477,6 +477,7 @@ tile.signpavementends.name=Straßenbelag Endet Schild
 tile.signpeddetourleft.name=Baustelle: Fußgängerumleitung Linkspfeil Schild
 tile.signpeddetourright.name=Baustelle: Fußgängerumleitung Rechtspfeil Schild
 tile.signpedestrian.name=Fußgänger-Schild
+tile.signpedestrianflashingled.name=Fußgänger-Schild (Blinkende LED)
 tile.signpedestrianprohibit.name=Fußgänger Verboten Schild
 tile.signphone.name=Telefon/Münztelefon-Schild
 tile.signphotoenforced.name=Fotoüberwacht Schild
