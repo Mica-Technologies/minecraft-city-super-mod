@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "621 blocks in this tab"
+!!! info "627 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -89,6 +89,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Blasting Zone Sign | `csm:signblastingzone` | 2 | 10 | pickaxe | 1 |
 | Blinding Dust Storms Sign | `csm:signduststor` | 2 | 10 | pickaxe | 1 |
 | Blue Stop Sign (Hawaii, Non Compliant) | `csm:signbluestop` | 2 | 10 | pickaxe | 1 |
+| Bridge Out Sign | `csm:signbridgeout` | 2 | 10 | pickaxe | 1 |
 | Bridge Weight Limit Sign | `csm:signpostweightlimit` | 2 | 10 | pickaxe | 1 |
 | Bump Sign | `csm:signbump` | 2 | 10 | pickaxe | 1 |
 | Bus Lane Ahead Sign | `csm:buslaneahead` | 2 | 10 | pickaxe | 1 |
@@ -251,6 +252,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Left Chevron Sign | `csm:signleftchevron` | 2 | 10 | pickaxe | 1 |
 | Left Curve Sign | `csm:signleftcurve` | 2 | 10 | pickaxe | 1 |
 | Left Hairpin Turn Sign | `csm:signhairpinleft` | 2 | 10 | pickaxe | 1 |
+| Left Lane Closed Ahead Sign | `csm:signleftlaneclosedahead` | 2 | 10 | pickaxe | 1 |
 | Left Lane Ends Sign | `csm:signleftlaneends` | 2 | 10 | pickaxe | 1 |
 | Left Lane Must Turn Left Sign | `csm:signleftmustturnleft` | 2 | 10 | pickaxe | 1 |
 | Left on Green Arrow Only Sign | `csm:signleftongreenarrow` | 2 | 10 | pickaxe | 1 |
@@ -346,6 +348,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Oncoming Traffic May Have Extended Green Sign | `csm:signoncomingmayextendedgreen` | 2 | 10 | pickaxe | 1 |
 | One Hour Parking 9a-7p Sign | `csm:signonehrparking97` | 2 | 10 | pickaxe | 1 |
 | One Lane Bridge Sign | `csm:signonelanebridge` | 2 | 10 | pickaxe | 1 |
+| One Lane Road Ahead Sign | `csm:signonelaneroadahead` | 2 | 10 | pickaxe | 1 |
 | One Vehicle Per Green Each Lane Sign | `csm:signonecarpergreeneachlane` | 2 | 10 | pickaxe | 1 |
 | One Vehicle Per Green Sign | `csm:signonecarpergreen` | 2 | 10 | pickaxe | 1 |
 | One Way (Right Arrow) | `csm:onewaytlsignright` | 2 | 10 | pickaxe | 1 |
@@ -412,6 +415,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Right Hairpin-Turn Sign | `csm:signhairpinright` | 2 | 10 | pickaxe | 1 |
 | Right Lane Bikes Only Sign | `csm:signrightlanebikeonly` | 2 | 10 | pickaxe | 1 |
 | Right Lane Bus Only 7AM-7PM Mon-Fri | `csm:rightlanebussign` | 2 | 10 | pickaxe | 1 |
+| Right Lane Closed Ahead Sign | `csm:signrightlaneclosedahead` | 2 | 10 | pickaxe | 1 |
 | Right Lane Ends Sign | `csm:signrightlaneends` | 2 | 10 | pickaxe | 1 |
 | Right Lane Freeway Only | `csm:rightlanefreewayonlysign` | 2 | 10 | pickaxe | 1 |
 | Right Lane Must Turn Right Sign | `csm:signrightmustturnright` | 2 | 10 | pickaxe | 1 |
@@ -477,6 +481,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Sharp Right Ahead Sign | `csm:signaheadsharpright` | 2 | 10 | pickaxe | 1 |
 | Shelter Sign | `csm:signshelter` | 2 | 10 | pickaxe | 1 |
 | Sheriff Station | `csm:sheriffstation` | 2 | 10 | pickaxe | 1 |
+| Shoulder Work Sign | `csm:signshoulderwork` | 2 | 10 | pickaxe | 1 |
 | Sidewalk Closed Sign | `csm:signpostsidewalkclosed` | 2 | 10 | pickaxe | 1 |
 | Sign Back w/ Pole | `csm:signmetalpost` | 2 | 10 | pickaxe | 1 |
 | Sign Back w/o Pole | `csm:sign` | 2 | 10 | pickaxe | 1 |
@@ -608,6 +613,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Use Crosswalk Right Arrow Sign | `csm:signusecrosswalkright` | 2 | 10 | pickaxe | 1 |
 | Use Lane with Green Arrow Sign | `csm:signuselanewithgreenarrow` | 2 | 10 | pickaxe | 1 |
 | Utility Vehicles Only | `csm:utilityvehiclesonlysign` | 2 | 10 | pickaxe | 1 |
+| Utility Work Ahead Sign | `csm:signutilityworkahead` | 2 | 10 | pickaxe | 1 |
 | Vehicles with Lugs Prohibited Sign | `csm:signvehiclelugsprohibit` | 2 | 10 | pickaxe | 1 |
 | Visitor Parking No Long Term Parking Sign | `csm:signvisitornolongtermparking` | 2 | 10 | pickaxe | 1 |
 | Walk Left Facing Traffic Sign | `csm:signwalkleft` | 2 | 10 | pickaxe | 1 |

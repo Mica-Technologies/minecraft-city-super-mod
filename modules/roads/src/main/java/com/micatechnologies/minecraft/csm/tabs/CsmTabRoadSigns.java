@@ -569,6 +569,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("alwaysroadworksign"));
     initTabBlock(new BlockTrafficSign("beachclosedsign"));
     initTabBlock(new BlockTrafficSign("signblastingzone"));
+    initTabBlock(new BlockTrafficSign("signbridgeout"));
     initTabBlock(new BlockTrafficSign("safetyglassesandfaceshieldsign"));
     initTabBlock(new BlockTrafficSign("dangerousroadcurvesrr"));
     initTabBlock(new BlockTrafficSign("castraightdetoursign"));
@@ -579,14 +580,17 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("freewaydetoursign"));
     initTabBlock(new BlockTrafficSign("buildathoneventsign"));
     initTabBlock(new BlockTrafficSign("landworkaheadsign"));
+    initTabBlock(new BlockTrafficSign("signleftlaneclosedahead"));
     initTabBlock(new BlockTrafficSign("massdotheavymergesignrw"));
     initTabBlock(new BlockTrafficSign("noguardrailssignrr"));
+    initTabBlock(new BlockTrafficSign("signonelaneroadahead"));
     initTabBlock(new BlockTrafficSign("signworkpulloffleft"));
     initTabBlock(new BlockTrafficSign("signworkpulloffright"));
     initTabBlock(new BlockTrafficSign("signrampclosedahead"));
     initTabBlock(new BlockTrafficSign("rgraheadsign"));
     initTabBlock(new BlockTrafficSign("rgrbabysign"));
     initTabBlock(new BlockTrafficSign("rgrchickensign"));
+    initTabBlock(new BlockTrafficSign("signrightlaneclosedahead"));
     initTabBlock(new BlockTrafficSign("signrdclosed"));
     initTabBlock(new BlockTrafficSign("signrdclosedthrutraffic"));
     initTabBlock(new BlockTrafficSign("roadendsinwatersign"));
@@ -611,6 +615,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("rwrkstopahead"));
     initTabBlock(new BlockTrafficSign("seniorsafetyzonesign"));
     initTabBlock(new BlockTrafficSign("signsignalworkahead"));
+    initTabBlock(new BlockTrafficSign("signshoulderwork"));
     initTabBlock(new BlockTrafficSign("conezonesign"));
     initTabBlock(new BlockTrafficSign("specialeventsign"));
     initTabBlock(new BlockTrafficSign("signstreetworkahead"));
@@ -618,6 +623,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signworkturnlaneright"));
     initTabBlock(new BlockTrafficSign("signturnoff2way"));
     initTabBlock(new BlockTrafficSign("signunmarkedpavement"));
+    initTabBlock(new BlockTrafficSign("signutilityworkahead"));
 
     // --- Guide and route signs: green: destinations, routes, parking ---
     initTabBlock(new BlockTrafficSign("1hrtruckparkingsign"));

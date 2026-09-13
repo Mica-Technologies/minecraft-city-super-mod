@@ -693,6 +693,8 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(0.368750, 0.000000, 0.397500, 0.631250, 0.887500, 0.685000)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("vertical_panel_right",
         new AxisAlignedBB(0.368750, 0.000000, 0.397500, 0.631250, 0.887500, 0.685000)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("flagger_paddle",
+        new AxisAlignedBB(0.350000, 0.000000, 0.428125, 0.650000, 0.800000, 0.571875)));
     initTabBlock(new BlockWorkZonePlate("road_plate",
         new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.053125, 1.000000)));
     initTabBlock(new BlockWorkZoneFence("safety_fence",

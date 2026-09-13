@@ -689,6 +689,16 @@ VPANEL_POST_CZ = AXIS + VPANEL_PANEL_HALF_Z + VPANEL_POST_HALF - 0.10
 VPANEL_W = VPANEL_PANEL[0] * 2.0
 VPANEL_H = VPANEL_PANEL[2] - VPANEL_PANEL[1]
 
+# The flagger's STOP/SLOW paddle: an 18 in octagon on a staff, STOP on one face and the
+# SLOW diamond on the other, standing in a rubber foot the way one is parked at the taper
+# when the flagger steps away. 2.4 units of half-width is 18 in at the family's 8 in/unit.
+PADDLE_R = 2.4
+PADDLE_CY = 10.4                 # centre height of the octagon
+PADDLE_HALF_Z = 0.16
+PADDLE_STAFF_HALF = 0.28
+PADDLE_FOOT = (1.15, 0.50, 1.15)
+PADDLE_TEX_SIZE = 128            # a STOP legend needs more than the family's 32 px
+
 # --- the steel road plate ------------------------------------------------------------------------
 # The plate laid over an open trench so traffic can cross it before the trench is backfilled. It
 # is the one device here that is meant to be DRIVEN over rather than steered around, so it is
@@ -2164,6 +2174,106 @@ def build_vertical_panel(mesh):
         mesh.quad_out(pts, normal, uvs)
 
 
+def _octagon_outline(r):
+    """A regular octagon's corners, half-width ``r`` across the flats, counter-clockwise."""
+    c = r * (math.sqrt(2.0) - 1.0)
+    return [(-r, -c), (-r, c), (-c, r), (c, r), (r, c), (r, -c), (c, -r), (-c, -r)]
+
+
+def build_flagger_paddle(mesh):
+    """The STOP/SLOW paddle on its staff and foot.
+
+    The octagon is three quads -- two trapezoids and the middle -- on each face, the front
+    mapped to the top half of the sprite's panel column (STOP) and the back to the bottom half
+    (SLOW), with the back's u mirrored so its legend reads the right way round from behind.
+    The rim between them and the staff wear the aluminium swatch; the foot the black one.
+    """
+    fx, fy, fz = PADDLE_FOOT
+    box(mesh, AXIS - fx, AXIS + fx, 0.0, fy, AXIS - fz, AXIS + fz, SWATCH_DARK_V)
+    r = PADDLE_R
+    outline = _octagon_outline(r)
+    cy = PADDLE_CY
+    box(mesh, AXIS - PADDLE_STAFF_HALF, AXIS + PADDLE_STAFF_HALF, fy - 0.10, cy - r + 0.30,
+        AXIS - PADDLE_STAFF_HALF, AXIS + PADDLE_STAFF_HALF, SWATCH_BAND_V,
+        faces=("x-", "x+", "z-", "z+"))
+
+    c = r * (math.sqrt(2.0) - 1.0)
+    pieces = [[(-r, -c), (-r, c), (-c, r), (-c, -r)],
+              [(-c, -r), (c, -r), (c, r), (-c, r)],
+              [(c, -r), (r, -c), (r, c), (c, r)]]
+    hz = PADDLE_HALF_Z
+    for z, normal, v0, v1, mirror in ((AXIS + hz, (0, 0, 1), 0.5, 1.0, False),
+                                      (AXIS - hz, (0, 0, -1), 0.0, 0.5, True)):
+        for piece in pieces:
+            pts = [(AXIS + x, cy + y, z) for x, y in piece]
+            uvs = []
+            for x, y in piece:
+                u = (r - x) if mirror else (x + r)
+                uvs.append((SWATCH_U0 * u / (2.0 * r), v0 + (v1 - v0) * (y + r) / (2.0 * r)))
+            mesh.quad_out(pts, normal, uvs)
+
+    t = uv_swatch(SWATCH_BAND_V)
+    for i in range(8):
+        (ax, ay), (bx, by) = outline[i], outline[(i + 1) % 8]
+        mx, my = (ax + bx) / 2.0, (ay + by) / 2.0
+        mesh.quad_out([(AXIS + ax, cy + ay, AXIS + hz), (AXIS + bx, cy + by, AXIS + hz),
+                       (AXIS + bx, cy + by, AXIS - hz), (AXIS + ax, cy + ay, AXIS - hz)],
+                      (mx, my, 0.0), [t, t, t, t])
+
+
+def paddle_texture():
+    """Both paddle faces in the panel column: STOP in the top half, the SLOW diamond in the
+    bottom half, each drawn square and squished to the half-height it gets, since the octagon
+    face stretches it back out. Legends in Highway Gothic, as the signs are."""
+    from PIL import ImageFont
+    from render_sign import FONT_PATH  # the same face every rendered sign uses
+
+    size = PADDLE_TEX_SIZE
+    panel_w = int(size * SWATCH_U0)
+    half_h = size // 2
+    sq = 512  # supersampled square for one face
+    red, orange, white, black = (196, 30, 38, 255), (238, 96, 20, 255), WHITE + (255,), BLACK + (255,)
+
+    def octagon_pts(cx, cy, r):
+        return [(cx + x, cy + y) for x, y in _octagon_outline(r)]
+
+    def legend(img, text, colour, box_frac):
+        d = ImageDraw.Draw(img)
+        x0, y0, x1, y1 = [v * sq for v in box_frac]
+        lo, hi, best = 8, 400, 8
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            f = ImageFont.truetype(FONT_PATH, mid)
+            bb = f.getbbox(text)
+            if bb[2] - bb[0] <= x1 - x0 and bb[3] - bb[1] <= y1 - y0:
+                best, lo = mid, mid + 1
+            else:
+                hi = mid - 1
+        f = ImageFont.truetype(FONT_PATH, best)
+        bb = f.getbbox(text)
+        d.text(((x0 + x1) / 2 - (bb[2] - bb[0]) / 2 - bb[0], (y0 + y1) / 2 - (bb[3] - bb[1]) / 2 - bb[1]),
+               text, font=f, fill=colour)
+
+    # STOP face
+    stop = Image.new("RGBA", (sq, sq), red)
+    d = ImageDraw.Draw(stop)
+    d.polygon(octagon_pts(sq / 2, sq / 2, sq * 0.48), outline=white, width=int(sq * 0.035))
+    legend(stop, "STOP", white, (0.12, 0.34, 0.88, 0.66))
+    # SLOW face: the orange paddle with the diamond legend
+    slow = Image.new("RGBA", (sq, sq), orange)
+    d = ImageDraw.Draw(slow)
+    dm = sq * 0.44
+    d.polygon([(sq / 2, sq / 2 - dm), (sq / 2 + dm, sq / 2), (sq / 2, sq / 2 + dm), (sq / 2 - dm, sq / 2)],
+              outline=black, width=int(sq * 0.035))
+    legend(slow, "SLOW", black, (0.20, 0.36, 0.80, 0.64))
+
+    img = Image.new("RGBA", (size, size), (120, 120, 125, 255))
+    img.paste(stop.resize((panel_w, half_h), Image.LANCZOS), (0, 0))
+    img.paste(slow.resize((panel_w, size - half_h), Image.LANCZOS), (0, half_h))
+    draw_swatches(img, (120, 120, 125), (205, 205, 208), AMBER)
+    return img
+
+
 def build_road_plate_core(mesh):
     """A steel plate's faces, tread side up, without its rims.
 
@@ -2771,6 +2881,13 @@ DEVICES = {
         "texture": "workzone_vpanel_right",
         "texture_fn": lambda: diagonal_stripe_image(True, VPANEL_W, VPANEL_H, BARRICADE_STRIPE),
         "display": "Vertical Panel (Keep Right)",
+        "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
+    },
+    "flagger_paddle": {
+        "model": "workzone_flagger_paddle", "build": build_flagger_paddle,
+        "texture": "workzone_flagger_paddle",
+        "texture_fn": paddle_texture,
+        "display": "Flagger STOP/SLOW Paddle",
         "diagonal": True, "java": "BlockWorkZoneDeviceDiagonal",
     },
     "road_plate": {

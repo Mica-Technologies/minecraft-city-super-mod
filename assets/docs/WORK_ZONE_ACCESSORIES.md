@@ -30,6 +30,7 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `road_plate` | `BlockWorkZonePlate` | steel plate over an open trench |
 | `safety_fence` | `BlockWorkZoneDeviceDiagonal` | orange mesh fence closing off the work area |
 | `vertical_panel_left`, `_right` | `BlockWorkZoneDeviceDiagonal` | narrow striped panel for places too tight for a barricade |
+| `flagger_paddle` | `BlockWorkZoneDeviceDiagonal` | the STOP/SLOW paddle parked in a rubber foot: STOP on one face, the SLOW diamond on the other, both drawn into halves of one 128 px sprite since the family's 32 px cannot carry a legend |
 | `portable_signal_trailer_arm` | `BlockWorkZoneDeviceRotatable` | towed signal; carries no heads of its own. The one device here kept to four facings — see below |
 | `portable_signal_trailer`, `portable_ped_signal_trailer` | `BlockWorkZoneDeviceDiagonal` | the boomless styles, which take all eight |
 | `sand_barrel_array` | `BlockWorkZoneDevice` | |

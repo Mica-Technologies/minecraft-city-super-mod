@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "349 blocks in this tab"
+!!! info "350 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -67,6 +67,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Dynamic Signal Cover | `csm:tlvcover` | 2.0 | 10.0 | pickaxe | 1 |
 | Dynamic Signal Mount Kit | `csm:trafficlightmountkit` | 2.0 | 10.0 | pickaxe | 1 |
 | Dynamic Street Sign | `csm:dynamic_street_sign` | 2 | 10 | pickaxe | 1 |
+| Flagger STOP/SLOW Paddle | `csm:flagger_paddle` | 0.6 | 3 | pickaxe | 0 |
 | Freeway Call Box | `csm:freewaycallbox` |  | 10 | pickaxe | 1 |
 | Hanging Signal Mount Kit (Vertical) | `csm:tlhangmount` |  | 10 | pickaxe | 1 |
 | Hawk Signal Border (Black/Black) | `csm:tlhawkborderblackblack` | 2 | 10 | pickaxe | 1 |
