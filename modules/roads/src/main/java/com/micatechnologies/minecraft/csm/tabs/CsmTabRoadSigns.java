@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockPoweredTrafficSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpost;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostmount;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockInStreetSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockTrafficSign;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -543,8 +544,8 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signrightlanebikeonly"));
     initTabBlock(new BlockTrafficSign("signslowdownpedestriantraffic"));
     initTabBlock(new BlockTrafficSign("signslowschool"));
-    initTabBlock(new BlockTrafficSign("signstatelawstopforpeds"));
-    initTabBlock(new BlockTrafficSign("signstatelawstopforpedsflashingled"));
+    initTabBlock(new BlockInStreetSign("signstatelawstopforpeds"));
+    initTabBlock(new BlockInStreetSign("signstatelawstopforpedsflashingled"));
     initTabBlock(new BlockTrafficSign("thicklysettledspeedlimit25mphsign"));
     initTabBlock(new BlockTrafficSign("trailheadcrossingssign"));
     initTabBlock(new BlockTrafficSign("signturnleftyieldpedbike"));

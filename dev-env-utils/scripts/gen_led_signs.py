@@ -30,7 +30,7 @@ The wide WRONG WAY plate is not square (22 x 16 units for a square texture), so 
 are drawn taller than they are wide by that ratio to come out round on the block.
 
 Writes:
-    modules/roads/.../textures/blocks/trafficsigns/<name>.png         128 x 256, two frames
+    modules/roads/.../textures/blocks/trafficsigns/<name>.png         two frames, one above the other
     modules/roads/.../textures/blocks/trafficsigns/<name>.png.mcmeta   the blink timing
     modules/roads/.../textures/blocks/trafficsigns/<name>_e.png       the emissive companion
     modules/roads/.../textures/blocks/trafficsigns/<name>_e.png.mcmeta the same timing
@@ -51,7 +51,7 @@ ROADS = os.path.join('modules', 'roads', 'src', 'main', 'resources', 'assets', '
 TEXTURES = os.path.join(ROADS, 'textures', 'blocks', 'trafficsigns')
 BLOCKSTATES = os.path.join(ROADS, 'blockstates')
 
-SIZE = 128        # every sign face texture is 128 x 128
+SIZE = 128        # the face texture's side; set per sign by configure(), plaques and the paddle are 256
 SS = 4            # supersampling for round dots at this resolution
 
 # One blink per second: a 20-tick cycle with the lit frame holding for 2 ticks (100 ms).
@@ -62,9 +62,22 @@ LIT_TICKS = 2
 # larger than the real thing in proportion, deliberately, because a red point on a red
 # panel disappears at any distance otherwise. The lit dot is mostly white-hot core with the
 # red carried by the bloom round it, which is how a lens photographs anyway.
-DOT_R = 2.1
-EDGE_INSET = 5.5          # dot centre this far inside the panel edge: on the white border
-DENSE_SPACING = 5.5       # centre-to-centre along the border for the dense ring
+BASE_SIZE = 128
+BASE_DOT_R = 2.1
+BASE_EDGE_INSET = 5.5     # dot centre this far inside the panel edge: on the white border
+BASE_DENSE_SPACING = 5.5  # centre-to-centre along the border for the dense ring
+DOT_R = BASE_DOT_R
+EDGE_INSET = BASE_EDGE_INSET
+DENSE_SPACING = BASE_DENSE_SPACING
+
+
+def configure(size):
+    """Scale the dot geometry to a face texture of ``size`` px a side, so a 256 px base gets
+    dots the same size in the world as a 128 px one."""
+    global SIZE, DOT_R, EDGE_INSET, DENSE_SPACING
+    k = size / float(BASE_SIZE)
+    SIZE, DOT_R = size, BASE_DOT_R * k
+    EDGE_INSET, DENSE_SPACING = BASE_EDGE_INSET * k, BASE_DENSE_SPACING * k
 
 # LED colours: (dark, dark edge, lit, lit core, halo). Regulatory signs carry red LEDs; the
 # warning diamonds carry amber, matching the sign's own colour family.
@@ -306,8 +319,9 @@ def main():
     lang, tab = [], []
     for name, base_name, base_texture, kind, aspect, colours, display in CATALOGUE:
         base = Image.open(os.path.join(TEXTURES, base_texture + '.png')).convert('RGBA')
-        if base.size != (SIZE, SIZE):
-            raise SystemExit('%s is %s, expected %dx%d' % (base_texture, base.size, SIZE, SIZE))
+        if base.size[0] != base.size[1]:
+            raise SystemExit('%s is %s, expected square' % (base_texture, base.size))
+        configure(base.size[0])
         mask = np.array(base)[:, :, 3] > 127
         dots = layout(kind, mask, aspect)
 

@@ -144,7 +144,8 @@ def _stretch(shape):
 def _size(shape):
     # A 16 x 8 plaque squishes a 2:1 face into a square texture, leaving a small two-line
     # legend 8 px per plate unit across; it blurs a few blocks away at 128, so plaques are 256
-    return 256 if shape == 'plaque' else shs.DEFAULT_TEX
+    # The 1:3 paddle has it worse the other way: 5 px per unit down its 24-unit face
+    return 256 if shape in ('plaque', 'paddle') else shs.DEFAULT_TEX
 
 
 def SHS(shape, chapter, page, pick=0, mirror=False, palette=None, replace=None):
@@ -409,7 +410,7 @@ def main():
         needle = 'new BlockTrafficSign("%s")' % after
         line = '    initTabBlock(new BlockTrafficSign("%s"));' % registry
         added = insert_after(TAB, lambda l: needle in l, line,
-                             lambda l: 'new BlockTrafficSign("%s")' % registry in l)
+                             lambda l: '("%s")' % registry in l)   # any Block subclass
         print('tab: %s %s' % (registry, 'inserted after ' + after if added else 'already present'))
     for code in LANGS:
         path = os.path.join(LANG_DIR, code + '.lang')

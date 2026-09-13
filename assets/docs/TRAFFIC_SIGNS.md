@@ -19,7 +19,9 @@ AbstractBlock
         ├── BlockBeachClosedSign
         ├── BlockLHSStopSign
         ├── BlockSpeedLimit25Sign
-        └── ... (472 concrete sign blocks)
+        ├── ... (472 concrete sign blocks)
+        └── BlockTrafficSign           ← one class, registry name per instance
+            └── BlockInStreetSign      ← the R1-6 paddle; settles onto the road below
 ```
 
 Every concrete sign block is minimal -- just a registry name:
@@ -204,6 +206,23 @@ block passes its facing up: a sign on a guardrail faces the way the player chose
 A sign standing on a guardrail (any `ICsmPostPassesThrough` block) sets `downward`, the same
 property the slab extension uses, and draws its post one block further down to the ground. Only
 the slab case also extends the sign's bounding box; see `GUARDRAIL_SYSTEM.md`.
+
+## The In-Street Pedestrian Sign
+
+`signstatelawstopforpeds` (and its LED twin) is the R1-6 paddle: a 12 x 36 face on a flexible
+base standing in the roadway at a crosswalk, not a plate on a post. It has its own model,
+`trafficsigns/in_street_sign` -- an 8 x 24 face at the other signs' scale, painted on both
+sides, on a low base -- and its own block class, `BlockInStreetSign`. That subclass of
+`BlockTrafficSign` is `ICsmRoadSurfaceAware`: because the paddle stands on the road rather
+than on a post, it settles onto a partial-height surface below it (a road that climbs, a slab,
+a snow layer) exactly as the work-zone devices do, applying the same offset to its render
+offset, its selection box and its collision box (see `WORK_ZONE_ACCESSORIES.md`, "Settling
+onto the road below"). The shift and downward variants exist on it, since every traffic sign
+carries those properties, but its blockstate maps them all to the same model: there is no
+post to set back or extend.
+
+Its face is written at 256 px: a 1:3 face squished into a square texture has only 5 px per
+plate unit down its long side at 128, and it blurred a few blocks away.
 
 ## LED-Enhanced Flashing Signs
 
