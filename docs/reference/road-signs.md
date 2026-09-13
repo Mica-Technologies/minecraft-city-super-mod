@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "627 blocks in this tab"
+!!! info "631 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -15,6 +15,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | 1000 Feet Sign (Plaque) | `csm:sign1000feet` | 2 | 10 | pickaxe | 1 |
 | 14ft 4in Sign | `csm:sign14_4` | 2 | 10 | pickaxe | 1 |
 | 2 Hour Parking 8:30a-5:30a Sign | `csm:twohourpark830530` | 2 | 10 | pickaxe | 1 |
+| 2 Tracks Sign (Plaque) | `csm:signrailroadtracks2` | 2 | 10 | pickaxe | 1 |
 | 24 Hour Parking Sign | `csm:sign24hrparking` | 2 | 10 | pickaxe | 1 |
 | 3-Way T-Intersection Sign | `csm:sign3wayt` | 2 | 10 | pickaxe | 1 |
 | 4-Way Intersection Sign | `csm:sign4way` | 2 | 10 | pickaxe | 1 |
@@ -146,6 +147,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Do Not Enter Sign | `csm:signdonotenter` | 2 | 10 | pickaxe | 1 |
 | Do Not Enter Sign (Flashing LED) | `csm:signdonotenterflashingled` | 2 | 10 | pickaxe | 1 |
 | Do Not Pass Sign | `csm:signdonotpass` | 2 | 10 | pickaxe | 1 |
+| Do Not Stop On Tracks Sign | `csm:signdonotstopontracks` | 2 | 10 | pickaxe | 1 |
 | Dog Sign | `csm:signdog` | 2 | 10 | pickaxe | 1 |
 | Don't Block The Box Sign | `csm:signdontblockthebox` | 2 | 10 | pickaxe | 1 |
 | Don't Think of Parking Here Sign | `csm:signdontthinkparking` | 2 | 10 | pickaxe | 1 |
@@ -385,6 +387,8 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Pull Off Left Sign | `csm:signworkpulloffleft` | 2 | 10 | pickaxe | 1 |
 | Pull Off Right Sign | `csm:signworkpulloffright` | 2 | 10 | pickaxe | 1 |
 | Radio Frequency Field Sign | `csm:signradioradiation` | 2 | 10 | pickaxe | 1 |
+| Railroad Crossing Advance Warning Sign | `csm:signrailroadadvance` | 2 | 10 | pickaxe | 1 |
+| Railroad Crossing Sign (Crossbuck) | `csm:signrailroadcrossbuck` | 2 | 10 | pickaxe | 1 |
 | Ramp 15 MPH Sign | `csm:signramp15` | 2 | 10 | pickaxe | 1 |
 | Ramp 25 MPH Sign | `csm:signramp25` | 2 | 10 | pickaxe | 1 |
 | Ramp 35 MPH Sign | `csm:signramp35` | 2 | 10 | pickaxe | 1 |

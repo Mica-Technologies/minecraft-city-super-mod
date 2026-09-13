@@ -62,6 +62,7 @@ SHAPES = {
     'wide': ('signwrongway', 22 / 16),
     'plaque': ('signaheadplaque', 2.0),
     'silhouette': ('yieldsign', 1.0),
+    'circle': ('signfdcstandpipe', 1.0),
 }
 LANGS = ('en_us', 'es_es', 'de_de', 'sv_se')
 
@@ -359,6 +360,45 @@ def school_bus_stop_ahead():
     return _finish(img)
 
 
+def crossbuck():
+    """R15-1: the two white arms crossed at 90 degrees, RAILROAD on one and CROSSING on the
+    other, on a bare silhouette plate. Each arm is drawn upright with its legend and rotated
+    into place, so the letters run along the arm as they do on the sign."""
+    img = _canvas(1.0)
+    arm_w, arm_h = int(SIZE * 1.20), int(SIZE * 0.17)
+    # Each word is split around the crossing, as on the real sign, so neither arm's legend is
+    # buried under the other where they cross
+    for angle, (first, second) in ((45, ('RAIL', 'ROAD')), (-45, ('CROS', 'SING'))):
+        arm = Image.new('RGBA', (arm_w, arm_h), (0, 0, 0, 0))
+        d = ImageDraw.Draw(arm)
+        d.rectangle((0, 0, arm_w - 1, arm_h - 1), fill=WHITE)
+        d.rectangle((SS, SS, arm_w - 1 - SS, arm_h - 1 - SS), outline=BLACK, width=2 * SS)
+        rs._draw_text(arm, [first], BLACK, (arm_h * 0.6, arm_h * 0.2, arm_w * 0.40, arm_h * 0.8))
+        rs._draw_text(arm, [second], BLACK, (arm_w * 0.60, arm_h * 0.2, arm_w - arm_h * 0.6, arm_h * 0.8))
+        arm = arm.rotate(angle, expand=True, resample=Image.BICUBIC)
+        img.alpha_composite(arm, ((SIZE - arm.width) // 2, (SIZE - arm.height) // 2))
+    # the corners of a 1.2-wide arm poke past the square: keep to the plate
+    img = img.crop(((img.width - SIZE) // 2, (img.height - SIZE) // 2,
+                    (img.width + SIZE) // 2, (img.height + SIZE) // 2))
+    return _finish(img)
+
+
+def rr_advance():
+    """W10-1: the round yellow advance warning, a black X with R either side."""
+    img = _canvas(1.0)
+    d = ImageDraw.Draw(img)
+    m = 3 * SS
+    d.ellipse((m, m, SIZE - m, SIZE - m), fill=YELLOW)
+    d.ellipse((m + 2 * SS, m + 2 * SS, SIZE - m - 2 * SS, SIZE - m - 2 * SS), outline=BLACK,
+              width=3 * SS)
+    w = 0.055
+    _stroke(d, img, [(0.28, 0.28), (0.72, 0.72)], w)
+    _stroke(d, img, [(0.72, 0.28), (0.28, 0.72)], w)
+    rs._draw_text(img, ['R'], BLACK, (SIZE * 0.13, SIZE * 0.36, SIZE * 0.30, SIZE * 0.64))
+    rs._draw_text(img, ['R'], BLACK, (SIZE * 0.70, SIZE * 0.36, SIZE * 0.87, SIZE * 0.64))
+    return _finish(img)
+
+
 def pennant_no_passing():
     """W14-3: the yellow pennant, point to the right, on a bare silhouette plate."""
     img = _canvas(1.0)
@@ -474,6 +514,19 @@ CATALOGUE = [
     ('signschoolcrossing', ('School Crossing Sign', 'Señal de Cruce Escolar',
                             'Schulweg Schild', 'Skolövergång-Vägmärke'),
      'silhouette', school_crossing, 'signschoolbusstopahead'),
+    # --- rail crossing (Phase 4)
+    ('signrailroadcrossbuck', ('Railroad Crossing Sign (Crossbuck)', 'Señal de Cruce Ferroviario (Cruz de San Andrés)',
+                               'Bahnübergang Andreaskreuz Schild', 'Järnvägskorsning Kryssmärke-Vägmärke'),
+     'silhouette', crossbuck, 'signphotoenforced'),
+    ('signrailroadtracks2', ('2 Tracks Sign (Plaque)', 'Señal de 2 Vías (Placa)',
+                             '2 Gleise Schild (Zusatzschild)', '2 Spår-Vägmärke (Tilläggsskylt)'),
+     'plaque', T('plaque', ['2 TRACKS'], WHITE, BLACK), 'signrailroadcrossbuck'),
+    ('signdonotstopontracks', ('Do Not Stop On Tracks Sign', 'Señal de No Detenerse Sobre las Vías',
+                               'Nicht auf den Gleisen Anhalten Schild', 'Stanna Inte på Spåret-Vägmärke'),
+     'square', T('square', ['DO NOT', 'STOP ON', 'TRACKS'], WHITE, BLACK), 'signdonotpass'),
+    ('signrailroadadvance', ('Railroad Crossing Advance Warning Sign', 'Señal de Advertencia Anticipada de Cruce Ferroviario',
+                             'Bahnübergang Vorwarnung Schild', 'Järnvägskorsning Förvarning-Vägmärke'),
+     'circle', rr_advance, 'signradioradiation'),
     # --- work zone (Phase 3): the lane-closure family, all legends
     ('signleftlaneclosedahead', ('Left Lane Closed Ahead Sign', 'Señal de Carril Izquierdo Cerrado Adelante',
                                  'Linke Spur Gesperrt Voraus Schild', 'Vänster Körfält Avstängt Framför-Vägmärke'),

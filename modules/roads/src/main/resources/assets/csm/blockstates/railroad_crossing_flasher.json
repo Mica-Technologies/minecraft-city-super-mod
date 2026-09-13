@@ -1,0 +1,35 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/rail_crossing_flasher"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "powered": {
+      "false": {},
+      "true": {
+        "textures": {
+          "lens": "csm:blocks/trafficaccessories/rail/rr_lens_flash"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "textures": {
+          "lens": "csm:blocks/trafficaccessories/rail/rr_lens_flash"
+        }
+      }
+    ]
+  }
+}

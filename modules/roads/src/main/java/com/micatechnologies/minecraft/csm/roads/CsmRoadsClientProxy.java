@@ -27,6 +27,9 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignalRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityRailroadCrossingGate.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityRailroadCrossingGateRenderer());
     // Span wire: both ends of every cable segment draw their own piece, so both attachment
     // kinds get the same renderer behaviour bound to their own tile entity type.
     ClientRegistry.bindTileEntitySpecialRenderer(

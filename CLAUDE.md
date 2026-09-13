@@ -313,6 +313,9 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/WORK_ZONE_ACCESSORIES.md` -- Cones, drums, channelizers, barricades and the arrow board: how a device settles onto the road below it with no dependency on whatever built that road, barricade runs and their mounted signs, the animated arrow board
 - `assets/docs/GUARDRAIL_SYSTEM.md` -- Four rail families, their end treatments, the W-to-thrie transition and the crash cushion: why a run joins on the RAIL rather than on block identity, why the slope is read off where the rails actually are rather than off block positions, and why the end treatments are chiral
 - `assets/docs/PEDESTAL_POLE_SYSTEM.md` -- The pedestrian pedestal pole: one stackable block that decides base, cap or seamless joint per end from its neighbours, why the end properties are named in model space
+- `assets/docs/RAILROAD_CROSSING_SYSTEM.md` -- The grade crossing: crossbuck and signs, the
+  redstone-driven flasher mast (wig-wag in the texture, bell from the tile entity) and the gate
+  whose arm is a renderer swinging at a real gate's pace; why redstone and not a controller
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 - `assets/docs/PERFORMANCE_AND_SECURITY.md` -- Where frame time and memory actually go (client frame time is
   the whole story; the server tick is 0.4%), how to measure without fooling yourself, the rules render and
@@ -346,6 +349,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   `--apply` inserts the lang lines and tab lines after each sign's sibling; `--check` fails on
   drift. Silhouettes that are none of the eight shapes use the `yield_sign` model with a gray
   `_back` texture on slot `2`
+- `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
+  strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
+  four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →
+  ffmpeg → OGG)
 - `gen_led_signs.py` -- the LED-enhanced flashing STOP / WRONG WAY / DO NOT ENTER / PEDESTRIAN
   signs and the pedestrian arrow plaques: composites the border LEDs into the plain sign's face
   texture as a two-frame strip (one 100 ms blink a

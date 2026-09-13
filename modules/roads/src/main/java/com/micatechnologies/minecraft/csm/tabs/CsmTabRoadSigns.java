@@ -153,6 +153,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signdonotenter"));
     initTabBlock(new BlockTrafficSign("signdonotenterflashingled"));
     initTabBlock(new BlockTrafficSign("signdonotpass"));
+    initTabBlock(new BlockTrafficSign("signdonotstopontracks"));
     initTabBlock(new BlockTrafficSign("signdontthinkparking"));
     initTabBlock(new BlockTrafficSign("signdoubleoneway"));
     initTabBlock(new BlockTrafficSign("signdoubleonewayb"));
@@ -261,6 +262,8 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signpedestrianprohibit"));
     initTabBlock(new BlockTrafficSign("signresidentnormal"));
     initTabBlock(new BlockTrafficSign("signphotoenforced"));
+    initTabBlock(new BlockTrafficSign("signrailroadcrossbuck"));
+    initTabBlock(new BlockTrafficSign("signrailroadtracks2"));
     initTabBlock(new BlockTrafficSign("positivelynosmokingsign"));
     initTabBlock(new BlockTrafficSign("signredlightphoto"));
     initTabBlock(new BlockTrafficSign("signfine400"));
@@ -450,6 +453,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("plantentrancesign"));
     initTabBlock(new BlockTrafficSign("signplayground"));
     initTabBlock(new BlockTrafficSign("signradioradiation"));
+    initTabBlock(new BlockTrafficSign("signrailroadadvance"));
     initTabBlock(new BlockTrafficSign("signramp15"));
     initTabBlock(new BlockTrafficSign("signramp25"));
     initTabBlock(new BlockTrafficSign("signramp35"));
