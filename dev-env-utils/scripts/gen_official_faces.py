@@ -292,7 +292,7 @@ def TWO_PANEL(top, lines, colour='yellow'):
     return lambda: (ComposedFace(make), False, None)
 
 
-def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None):
+def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None, gap=None, min_condense=None):
     """A worded warning sign the book has no drawing for: the W8-1 BUMP diamond (border and
     corner radii) with its legend dropped and ``lines`` set inside it. The largest cap height
     is taken at which every line fits the diamond's width across its own band, allowing the
@@ -300,9 +300,10 @@ def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None):
     ``colour`` is an RGBA replacing the warning yellow (FAWE's magenta). ``tight`` is for a
     long block (four lines under a long word): closer lines, more narrowing and a text area
     run nearer the border, as the hand-set original had it. ``ink`` replaces the black of the
-    border and legend (white on a blue courtesy sign)."""
-    MIN_CONDENSE = 0.58 if tight else 0.7
-    GAP = 1.2 if tight else 1.35
+    border and legend (white on a blue courtesy sign); ``gap`` (line pitch in caps) and
+    ``min_condense`` tune a tight block between the two."""
+    MIN_CONDENSE = min_condense or (0.58 if tight else 0.7)
+    GAP = gap or (1.2 if tight else 1.35)
     def make(aspect):
         import gen_gap_signs as gg
         from PIL import ImageFont
@@ -690,6 +691,25 @@ CATALOGUE = [
     ('massdotsidestreettrafficsign', TEXT_DIAMOND(['PLEASE', 'SHOW', 'COURTESY', 'TO SIDE', 'STREET', 'TRAFFIC'],
                                                   shs.MOD_COLOURS['blue'], ink=shs.MOD_COLOURS['white']),
      'W8-1 diamond, blue'),
+    # --- Remaining-signs batch 10. Left as drawn: signnarrowbridgeimg (the symbol is not in
+    # the 2004 book, only the worded W5-2), signradioradiation (FCC placard), signrightlaneends.
+    ('sign3right', SHS(W, 14), 'W2-2R'),
+    ('signrightarrow', SHS(W, 6), 'W1-6R'),
+    ('signrightchevron', SHS(W, 8), 'W1-8R'),
+    ('signrightcurve', SHS(W, 2, inner=2), 'W1-2R'),
+    ('signrightshift', SHS(W, 4), 'W1-4R'),
+    ('signyright', SHS(W, 15), 'W2-3R'),
+    ('limitedmaintroadsign', TEXT_DIAMOND(['MINIMUM', 'MAINTENANCE', 'ROAD']), 'W8-1 diamond'),
+    ('signnewsignal', TEXT_DIAMOND(['NEW', 'SIGNAL', 'AHEAD']), 'W8-1 diamond'),
+    ('nofwyaccesssign', TEXT_DIAMOND(['NO', 'FREEWAY', 'ACCESS']), 'W8-1 diamond'),
+    ('noguardrailssign', TEXT_DIAMOND(['NO', 'GUARDRAILS']), 'W8-1 diamond'),
+    ('nohwyaccesssign', TEXT_DIAMOND(['NO', 'HIGHWAY', 'ACCESS']), 'W8-1 diamond'),
+    ('nopkwyaccesssign', TEXT_DIAMOND(['NO', 'PARKWAY', 'ACCESS']), 'W8-1 diamond'),
+    ('parkwayintersectionsign', TEXT_DIAMOND(['PARKWAY', 'INTERSECTION', 'AHEAD']), 'W8-1 diamond'),
+    ('plantentrancesign', TEXT_DIAMOND(['PLANT', 'ENTRANCE']), 'W8-1 diamond'),
+    ('signrampsignalahead', TEXT_DIAMOND(['RAMP', 'SIGNAL', 'AHEAD']), 'W8-1 diamond'),
+    ('signroadends', TEXT_DIAMOND(['ROAD', 'ENDS']), 'W8-1 diamond'),
+    ('signhightideroadflood', TEXT_DIAMOND(['ROAD', 'FLOODS', 'DURING', 'HIGH TIDE'], tight=True, gap=1.3, min_condense=0.68), 'W8-1 diamond'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
