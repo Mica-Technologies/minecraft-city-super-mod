@@ -6,7 +6,7 @@
       "all": "csm:blocks/trafficsigns/school_street_sweeping_monday",
       "particle": "csm:blocks/trafficsigns/school_street_sweeping_monday",
       "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-      "1": "csm:blocks/trafficsigns/speed_limit_5"
+      "1": "csm:blocks/trafficsigns/school_street_sweeping_monday"
     }
   },
   "variants": {
