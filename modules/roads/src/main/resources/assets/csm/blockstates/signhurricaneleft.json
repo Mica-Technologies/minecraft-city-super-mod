@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsigns/fdc_standpipe_bullseye_sign",
+    "model": "csm:trafficsigns/bikes_allowed_to_use_full_lane_sign_large",
     "textures": {
       "all": "csm:blocks/trafficsigns/hurricane_evacuation_route_left",
       "particle": "csm:blocks/trafficsigns/hurricane_evacuation_route_left",
@@ -141,10 +141,10 @@
     "shift": {
       "none": {},
       "setback": {
-        "model": "csm:trafficsigns/metal_signpostback_circle_sign_setback"
+        "model": "csm:trafficsigns/metal_signpostback_medium_square_sign_setback"
       },
       "backtoback": {
-        "model": "csm:trafficsigns/metal_signpostback_circle_sign_back_to_back"
+        "model": "csm:trafficsigns/metal_signpostback_medium_square_sign_back_to_back"
       }
     },
     "normal": [

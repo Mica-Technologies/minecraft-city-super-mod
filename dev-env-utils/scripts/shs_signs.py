@@ -274,9 +274,10 @@ def _legend_span_boxes(page, rect, text):
 
 def _legend_glyph_origins(page, rect, drop=None):
     """Origins of every character set in a legend font inside ``rect``, less the spans whose
-    text is ``drop``."""
+    text is in ``drop`` (a string or a list of them)."""
+    drops = set() if drop is None else ({drop} if isinstance(drop, str) else set(drop))
     return [o for text, origins, _bbox in _legend_spans(page, rect)
-            if text != drop for o in origins]
+            if text not in drops for o in origins]
 
 
 def _sheet_colour(fills, rect):
@@ -344,7 +345,7 @@ def _inset_rects(page, rect, fills):
 
 
 def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff',
-                  mirror_symbols=False):
+                  mirror_symbols=False, rotate_symbols=0):
     """The page's SVG reduced to the sign inside ``rect``: filled paths above the arrowhead
     threshold, undashed strokes heavier than a dimension line (their width taken through the
     path's own transform, which is where a scaled-up outline like the W10-1's X keeps its
@@ -417,6 +418,10 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
             continue
         if fill:
             fill_boxes.append(bbox)
+        if rotate_symbols and bbox.width < 0.5 * rect.width and bbox.height < 0.5 * rect.height:
+            # a symbol (the arrow), not the panel: turned about its own centre, where it is
+            el = '<g transform="rotate(%s,%s,%s)">%s</g>' % (
+                rotate_symbols, (bbox.x0 + bbox.x1) / 2, (bbox.y0 + bbox.y1) / 2, el)
         kept.append(el)
     # Legend glyphs are the ones set in a Series (Highway Gothic) font; captions, reference
     # letters and dimensions are all Nimbus Sans. Match each SVG glyph to the raw text's
@@ -441,9 +446,9 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
 
 
 def _render_svg(page, rect, only_inside=True, dpi=RENDER_DPI, drop=None, sheet_colour='#ffffff',
-                mirror_symbols=False):
+                mirror_symbols=False, rotate_symbols=0):
     doc = fitz.open('svg', _filtered_svg(page, rect, only_inside, drop, sheet_colour,
-                                         mirror_symbols).encode('utf-8'))
+                                         mirror_symbols, rotate_symbols).encode('utf-8'))
     return _render_clip(doc[0], rect, dpi)
 
 
@@ -479,7 +484,7 @@ def _outer_rects(fills):
 
 
 def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
-              mirror_symbols=False):
+              mirror_symbols=False, rotate_symbols=0):
     """One sign from a book page, rendered with alpha and cropped to its outline.
 
     ``pick`` chooses among the page's outermost sign rects, sorted top to bottom then left to
@@ -491,7 +496,10 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
     size of numeral the book draws: "50" on the Speed Limit page) and sets ``new`` in its
     place at the same cap height, in the mod's Highway Gothic. ``mirror_symbols`` flips the
     page's paths -- the arrow, the panel -- about the sign's centre line but not its glyphs:
-    the right-hand version of a sign the book draws left-handed with a legend.
+    the right-hand version of a sign the book draws left-handed with a legend;
+    ``rotate_symbols`` (degrees, clockwise) turns each symbol smaller than half the sign --
+    the arrow, not the panel -- about its own centre, so an up arrow points left or right
+    where it is. ``replace`` may also be a list of (old, new) pairs.
     """
     p = book_page(chapter, page)
     fills = _sign_fills(p)
@@ -508,19 +516,24 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
         rect = sheet
     if replace is None:
         return _render_svg(p, rect, only_inside, sheet_colour=sheet_colour,
-                           mirror_symbols=mirror_symbols)
-    old, new = replace
-    boxes = _legend_span_boxes(p, rect, old)
-    if not boxes:
-        raise SystemExit('%s p%d: no legend run reads %r (have %s)' % (
-            chapter, page, old, [t for t, _o, _b in _legend_spans(p, rect)]))
-    img = _render_svg(p, rect, only_inside, drop=old, sheet_colour=sheet_colour,
-                      mirror_symbols=mirror_symbols)
+                           mirror_symbols=mirror_symbols, rotate_symbols=rotate_symbols)
+    pairs = [replace] if isinstance(replace[0], str) else list(replace)
+    todo = []
+    for old, new in pairs:
+        boxes = _legend_span_boxes(p, rect, old)
+        if not boxes:
+            raise SystemExit('%s p%d: no legend run reads %r (have %s)' % (
+                chapter, page, old, [t for t, _o, _b in _legend_spans(p, rect)]))
+        todo.append((new, boxes))
+    img = _render_svg(p, rect, only_inside, drop=[old for old, _new in pairs],
+                      sheet_colour=sheet_colour, mirror_symbols=mirror_symbols,
+                      rotate_symbols=rotate_symbols)
     scale = RENDER_DPI / 72.0
-    for box in boxes:
-        px = ((box.x0 - rect.x0) * scale, (box.y0 - rect.y0) * scale,
-              (box.x1 - rect.x0) * scale, (box.y1 - rect.y0) * scale)
-        _set_legend(img, new, px)
+    for new, boxes in todo:
+        for box in boxes:
+            px = ((box.x0 - rect.x0) * scale, (box.y0 - rect.y0) * scale,
+                  (box.x1 - rect.x0) * scale, (box.y1 - rect.y0) * scale)
+            _set_legend(img, new, px)
     return img
 
 
