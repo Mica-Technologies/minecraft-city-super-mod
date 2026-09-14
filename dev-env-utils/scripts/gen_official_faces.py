@@ -394,6 +394,7 @@ E = 'EM'
 # the R7-8 page draws the wheelchair panel in a slate blue; the mod's is the D9-6 blue
 SLATE_TO_BLUE = {(74, 87, 120): shs.MOD_COLOURS['blue']}
 FYG_FACE = {(255, 245, 0): shs.MOD_COLOURS['fyg']}   # the book's yellow onto fluorescent yellow-green
+ORANGE_FACE = {(255, 245, 0): shs.MOD_COLOURS['orange']}   # ... and onto work-zone orange
 CATALOGUE = [
     # --- Phase 1: Regulatory, the confident exact matches. Not here, and why: signahead is
     # the up-arrow plaque, not the AHEAD legend; onewaytlsignright is the arrow-shaped R6-1;
@@ -793,6 +794,27 @@ CATALOGUE = [
     ('signusecrosswalkleft', SHS(R, 118, pick=1, rotate_symbols=180), 'R9-3bP (left)'),
     ('trailheadcrossingssign', TEXT_DIAMOND(['TRAILHEAD', 'CROSSINGS'], shs.MOD_COLOURS['fyg'], shift=True),
      'W8-1 diamond, FYG'),
+    # --- Remaining-signs batch 14. Left as drawn: safetyglassesandfaceshieldsign (facility
+    # placard), castraightdetoursign / freewaydetoursign (DETOUR over an arrow; the book's W20-2
+    # page carries construction lines), signworkpulloffleft / right.
+    ('signallmergeleft', SHS(W, 138, replace=('THRU', 'ALL'), palette=ORANGE_FACE), 'W4-7 (ALL, orange)'),
+    ('signallmergeright', SHS(W, 138, pick=1, replace=('THRU', 'ALL'), palette=ORANGE_FACE), 'W4-7 (ALL, orange)'),
+    ('endlandworksign', SHS(W, 168, pick=2, replace=('ROAD WORK', 'LAND WORK'), condense=True), 'G20-2 (LAND)'),
+    ('landworkaheadsign', TEXT_DIAMOND(['LAND', 'WORK', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('alwaysroadworksign', TEXT_DIAMOND(['ALWAYS', 'ROAD WORK', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('beachclosedsign', TEXT_DIAMOND(['BEACH', 'CLOSED'], shift=True), 'W8-1 diamond'),
+    ('dangerousroadcurvesrr', TEXT_DIAMOND(['DANGEROUS', 'ROAD CURVES'], shs.MOD_COLOURS['orange']), 'W8-1 diamond, orange'),
+    ('caltransduicheckpointaheadsign', TEXT_DIAMOND(['DUI /', "DRIVER'S LICENSE", 'CHECK POINT', 'AHEAD'], shs.MOD_COLOURS['orange'],
+                                                    ink=shs.MOD_COLOURS['white'], tight=True, gap=1.3,
+                                                    min_condense=0.68, shift=True), 'W8-1 diamond, orange'),
+    ('buildathoneventsign', TEXT_DIAMOND(['HUGE', 'BUILDATHON', 'EVENT', 'AHEAD'], shs.MOD_COLOURS['orange'], tight=True, gap=1.3,
+                                         min_condense=0.68, shift=True), 'W8-1 diamond, orange'),
+    ('massdotheavymergesignrw', TEXT_DIAMOND(['HEAVY', 'MERGE', 'AHEAD'], shs.MOD_COLOURS['orange']), 'W8-1 diamond, orange'),
+    ('noguardrailssignrr', TEXT_DIAMOND(['NO', 'GUARDRAILS'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('signrampclosedahead', TEXT_DIAMOND(['RAMP', 'CLOSED', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('rgraheadsign', TEXT_DIAMOND(['RGR', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('rgrbabysign', TEXT_DIAMOND(['RGR', 'BABY', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('rgrchickensign', TEXT_DIAMOND(['RGR', 'CHICKEN', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
