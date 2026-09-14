@@ -357,14 +357,16 @@ def contact_sheet(entries, out, cols=3):
 _ROW_RE = re.compile(r'^\| (\S+) \| (.*?) \| (EXACT|NEAR|NONE)\? \| (\w+) p(\d+)\s*([^|]*)\| (.*?) \|$')
 
 
-def verify_sheets(prefix, per_sheet=8):
-    """Every ``?`` row of the match table that cites a page: current texture beside the page
-    thumbnail, so a human can confirm or reject the guess."""
+def verify_sheets(prefix, per_sheet=8, categories=('EXACT', 'NEAR')):
+    """Every ``?`` row of the match table in ``categories`` that cites a page and is not yet
+    catalogued: current texture beside the page thumbnail, so a human can confirm or reject
+    the guess."""
     rows = []
+    done = {e[0] for e in CATALOGUE}
     with open(MATCH_TABLE, encoding='utf-8') as fh:
         for line in fh:
             m = _ROW_RE.match(line.rstrip('\n'))
-            if m:
+            if m and m.group(3) in categories and m.group(1) not in done:
                 rows.append(m.groups())
     print('%d ? rows with a cited page' % len(rows))
     cell_w, cell_h = 640, 330
