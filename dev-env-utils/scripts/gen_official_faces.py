@@ -379,6 +379,33 @@ def TEXT_PANEL(chapter, page, lines, pick=0, band=(0.1, 0.9), cap_max=0.3, width
     return lambda: (ComposedFace(make), False, None)
 
 
+def SHS_PANEL_COLOUR(chapter, page, colour, pick=0):
+    """A book warning sign moved onto another panel colour when its symbol also carries the
+    warning yellow (the W3-3's amber lamp): only the yellow joined to the panel is recoloured,
+    found by flood fill from the top of the field, so a lamp the black housing encloses keeps
+    its colour. A plain ``palette`` swap turns every yellow pixel."""
+    def make(aspect):
+        import numpy as np
+        from PIL import ImageDraw as _Draw
+        face = shs.recolour(shs.book_sign(chapter, page, pick), shs.SHS_PALETTE)
+        a = np.asarray(face).astype(np.int32)
+        yellow = np.array(shs.MOD_COLOURS['yellow'][:3])
+        near = (np.abs(a[..., :3] - yellow).sum(axis=2) < 90) & (a[..., 3] > 0)
+        mask = Image.fromarray((near * 255).astype(np.uint8)).copy()   # floodfill needs its own buffer
+        # seed every yellow run down the centre column above the symbol: the sheet rim outside
+        # the border, then the field inside it
+        col = a.shape[1] // 2
+        for y in range(int(a.shape[0] * 0.15)):
+            if near[y, col] and mask.getpixel((col, y)) == 255:
+                _Draw.floodfill(mask, (col, y), 128)
+        panel = np.asarray(mask) == 128
+        out = a.copy()
+        out[panel, :3] = shs.MOD_COLOURS[colour][:3]
+        face = Image.fromarray(out.astype(np.uint8), 'RGBA')
+        return shs.fit_plate(face, aspect, size=shs.DEFAULT_TEX)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -816,6 +843,26 @@ CATALOGUE = [
     ('rgraheadsign', TEXT_DIAMOND(['RGR', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
     ('rgrbabysign', TEXT_DIAMOND(['RGR', 'BABY', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
     ('rgrchickensign', TEXT_DIAMOND(['RGR', 'CHICKEN', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    # --- Remaining-signs batch 15. Left as drawn: signworkexitleft / right (the temporary EXIT
+    # panel is later than the book), seniorsafetyzonesign, conezonesign.
+    ('rwrkshiftleft2lanes', SHS(W, 136, pick=1), 'W1-4bL'),
+    ('rwrkshiftright2lanes', SHS(W, 136), 'W1-4bR'),
+    ('signrwrkshiftleftsingle', SHS(W, 4, pick=1, palette=ORANGE_FACE), 'W1-4L (orange)'),
+    ('signrwrkshiftrightsingle', SHS(W, 4, palette=ORANGE_FACE), 'W1-4R (orange)'),
+    ('rwrksignalahead', SHS_PANEL_COLOUR(W, 23, 'orange'), 'W3-3 (orange)'),
+    ('rwrkstopahead', SHS(W, 19, palette=ORANGE_FACE), 'W3-1 (orange)'),
+    ('rwrklowshoulder', SHS(W, 66, palette=ORANGE_FACE), 'W8-9 (orange)'),
+    ('signpeddetourleft', SHS(W, 174), 'M4-9b'),
+    ('signpeddetourright', SHS(W, 174, mirror_symbols=True), 'M4-9b (right)'),
+    ('signpostroadwork', TEXT_DIAMOND(['ROAD', 'WORK', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('roadendsinwatersign', TEXT_DIAMOND(['ROAD', 'ENDS IN', 'WATER'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('signrworkfinesdouble', TEXT_DIAMOND(['TRAFFIC', 'FINES DOUBLED', 'IN WORK', 'ZONES'], shs.MOD_COLOURS['orange'], tight=True, gap=1.3, min_condense=0.68, shift=True),
+     'W8-1 diamond, orange'),
+    ('rwrknewtrafficpatternsign', TEXT_DIAMOND(['NEW', 'TRAFFIC', 'PATTERN', 'AHEAD'], shs.MOD_COLOURS['orange'], tight=True, gap=1.3, min_condense=0.68, shift=True),
+     'W8-1 diamond, orange'),
+    ('rwrknoshouldersign', TEXT_DIAMOND(['NO', 'SHOULDER'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('signsignalworkahead', TEXT_DIAMOND(['SIGNAL', 'WORK', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('specialeventsign', TEXT_DIAMOND(['SPECIAL', 'EVENT', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
