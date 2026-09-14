@@ -46,6 +46,7 @@ BOOK_URL = 'https://mutcd.fhwa.dot.gov/SHSe/%s.pdf'
 INTERIM_URL = 'https://mutcd.fhwa.dot.gov/shsm_interim/zip_files/%s.zip'
 RENDER_DPI = 300
 MIN_FILL_PT = 6.0   # anything smaller than this is a dimension arrowhead, not sign
+MAX_ARROWHEAD_PT = 7.5  # ... and up to this a triangle is one too (a lane-line dash is a rectangle)
 MIN_SIGN_PT = 20.0  # no sign on these pages is drawn smaller than this; arrowheads are 6 pt
 MAX_MARK_AREA_PT = 80.0  # a white dimension bar is 1 pt wide; no white sign element is this small
 SHEET_MARGIN_PT = 20.0   # a sign's edge outline sits within this of its outermost fill
@@ -371,6 +372,10 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
         stroke = attrs.get('stroke', 'none') != 'none'
         if fill:
             if bbox.width < MIN_FILL_PT and bbox.height < MIN_FILL_PT:
+                continue
+            # a 6-7 pt triangle is a dimension arrowhead; a dash that size fills its box
+            if (max(bbox.width, bbox.height) < MAX_ARROWHEAD_PT
+                    and _path_area(attrs.get('d', ''), nums) < 0.7 * bbox.width * bbox.height):
                 continue
             # Dimension marks over a black symbol are drawn as white 1 pt bars and 5 pt
             # arrowheads (the break lines on a Keep Right hood, the ticks across a curve

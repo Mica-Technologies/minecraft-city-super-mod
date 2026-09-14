@@ -315,6 +315,17 @@ CATALOGUE = [
     ('signdoubleonewayb', SHS(R, 87), 'R6-1R'),
     ('signarrowdownright', SHS(G, 21, rotate_symbols=90), 'M6-2R (down)'),
     ('signarrowdownleft', SHS(G, 21, rotate_symbols=90, mirror=True), 'M6-2L (down)'),
+    # --- Remaining-signs batch 3. Left as drawn: signexceptbus, signfdcstandpipe (NFPA),
+    # forestryvehiclesonlysign, signhov6a9a, signhov2onlyoverhead, signhovahead / signhovends
+    # (the book's R3-15a / R3-14 carry the "2+" the other way round), signhovrules,
+    # kathieevanssign, signmetro, ladotantigridlockzone, ladotnostopping, signresidentlarge.
+    ('signendplaque', SHS(G, 16, pick=1), 'M4-6'),
+    ('signkeepright1', SHS(R, 69), 'R4-7b'),
+    ('signkeepright2', SHS(R, 70), 'R4-7c'),
+    ('signleftright', SHS(G, 21, pick=4), 'M6-4'),
+    ('signaheadleftright', SHS(G, 23, pick=1), 'M6-5'),   # batch 1's leftover: it is on p23
+    ('signleftahead', SHS(R, 28, pick=2), 'R3-6L'),
+    ('signleftonly', SHS(R, 28), 'R3-5L'),
     ('signhurricane', SHS(E, 0), 'EM-1'),   # the three moved to the 24 x 24 square plate
     ('signhurricaneleft', SHS(E, 0, rotate_symbols=-90), 'EM-1 (left)'),
     ('signhurricaneright', SHS(E, 0, rotate_symbols=90), 'EM-1 (right)'),
