@@ -50,6 +50,21 @@ def SHS(chapter, page, pick=0, mirror=False, palette=None, replace=None, inner=N
                                   rotate_symbols=rotate_symbols), mirror, palette)
 
 
+class SymbolFace(object):
+    """A bare pictogram from the book plus the panel colour it goes on; composed by
+    :func:`render` once the sign's plate aspect is known."""
+
+    def __init__(self, symbol, colour):
+        self.symbol, self.colour = symbol, colour
+
+
+def SYM(chapter, page, picks, colour):
+    """A recreational / services pictogram the book draws without a panel (``picks`` are the
+    outline numbers, several for a symbol drawn in pieces), set in white on a rounded panel
+    of ``colour`` ('brown', 'blue', 'green') with a white border."""
+    return lambda: (SymbolFace(shs.symbol_face(chapter, page, picks), shs.MOD_COLOURS[colour]), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -217,6 +232,21 @@ CATALOGUE = [
     ('signtractor', SHS(W, 94), 'W11-5'),
     ('signhandicap', SHS(G, 64), 'D9-6'),
     ('signcrossoverquartermile', SHS(G, 91), 'D13-1'),
+    # --- Phase 3b: the recreational pictograms, white on the mod's panel colours
+    ('signcamping', SYM(G, 127, [0], 'blue'), 'RS-010'),
+    ('signdog', SYM(G, 126, [0, 1], 'brown'), 'RS-030'),
+    ('signseaplane', SYM(G, 126, [3], 'brown'), 'RS-080'),
+    ('signhelicopter', SYM(G, 144, [0], 'brown'), 'RG-070'),
+    ('signatv', SYM(G, 152, [2, 3, 4, 5, 6], 'brown'), 'RL-020'),
+    ('signhangglider', SYM(G, 153, [2], 'brown'), 'RL-060'),
+    ('signfishing', SYM(G, 156, [0, 1], 'brown'), 'RW-010'),
+    ('signswimming', SYM(G, 160, [0], 'brown'), 'RW-080'),
+    ('signkayak', SYM(G, 162, [0], 'brown'), 'RW-090'),
+    ('signwindsurf', SYM(G, 162, [2], 'brown'), 'RW-120'),
+    ('signskilift', SYM(G, 167, [2], 'brown'), 'RM-050'),
+    ('signcamper', SYM(G, 135, [2, 3, 4], 'blue'), 'RA-130'),
+    ('signboats', SYM(G, 156, [3], 'green'), 'RW-050'),   # the anchor (marina), as the mod draws it
+    ('signparkingnoarrow', SYM(G, 140, [3], 'green'), 'D9-1'),
     ('signhurricane', SHS(E, 0), 'EM-1'),   # the three moved to the 24 x 24 square plate
     ('signhurricaneleft', SHS(E, 0, rotate_symbols=-90), 'EM-1 (left)'),
     ('signhurricaneright', SHS(E, 0, rotate_symbols=90), 'EM-1 (right)'),
@@ -282,6 +312,8 @@ def sign_info(registry):
 
 def render(source, info):
     face, mirror, palette = source()
+    if isinstance(face, SymbolFace):
+        return shs.symbol_on_panel(face.symbol, face.colour, info['aspect'], size=256)
     # a silhouette sign (one with a _back texture) IS its outline: never squash it to fill
     # a 2:1 plaque squishes its legend to 8 px per plate unit across at 128; 256 keeps it
     # readable a few blocks away

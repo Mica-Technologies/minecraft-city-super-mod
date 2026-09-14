@@ -34,7 +34,7 @@ import re
 import zipfile
 
 import fitz
-from PIL import Image
+from PIL import Image, ImageDraw
 
 try:
     from urllib.request import urlopen
@@ -597,6 +597,7 @@ MOD_COLOURS = {
     'fyg': (186, 255, 41, 255),   # fluorescent yellow-green, the pedestrian / school family
     'blue': (3, 94, 159, 255),    # the guide / services blue the mod's D9 signs use
     'green': (3, 112, 95, 255),   # the guide green of the mod's D1 / D8 / D13 signs
+    'brown': (135, 94, 20, 255),  # the recreational brown of the mod's RS signs
 }
 
 # The drawings' printed colours onto that palette: the book's and the interim files' yellow,
@@ -634,6 +635,47 @@ def back_texture(face, gray=(150, 150, 150, 255)):
     back = Image.new('RGBA', face.size, gray)
     back.putalpha(face.getchannel('A'))
     return back.transpose(Image.FLIP_LEFT_RIGHT)
+
+
+def symbol_face(chapter, page, picks):
+    """A pictogram the book draws bare -- a black symbol with no panel, sometimes in several
+    pieces (a fish and its hook) -- as one image on transparency: the union of the listed
+    outlines on the page (``picks`` as :func:`book_sign` numbers them)."""
+    p = book_page(chapter, page)
+    outers = _outer_rects(_sign_fills(p))
+    outers.sort(key=lambda r: (round(r.y0 / 40), r.x0))
+    rect = None
+    for i in picks:
+        rect = fitz.Rect(outers[i]) if rect is None else rect | outers[i]
+    return _render_svg(p, rect, only_inside=True)
+
+
+def symbol_on_panel(symbol, panel_colour, aspect=1.0, size=DEFAULT_TEX, symbol_frac=0.7,
+                    border=0.045, radius=0.07):
+    """The pictogram in white on a rounded panel with a white border, at the plate's
+    proportions (``aspect`` wide by 1 tall, then squished to the square texture as every
+    face is) -- the RS series sign the mod draws the recreational symbols on."""
+    ss = 4
+    W, H = (int(size * ss * aspect), size * ss) if aspect >= 1 else (size * ss, int(size * ss / aspect))
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    r = int(min(W, H) * radius)
+    d.rounded_rectangle((0, 0, W - 1, H - 1), radius=r, fill=(255, 255, 255, 255))
+    b = int(min(W, H) * border)
+    d.rounded_rectangle((b, b, W - 1 - b, H - 1 - b), radius=max(1, r - b), fill=tuple(panel_colour[:3]) + (255,))
+    # only the ink becomes white: a wheel's white centre or a window goes clear, so the
+    # panel shows through it as it does on the real sign
+    import numpy as np
+    arr = np.asarray(symbol.convert('RGBA')).astype(np.float32)
+    lum = (0.299 * arr[..., 0] + 0.587 * arr[..., 1] + 0.114 * arr[..., 2]) / 255.0
+    alpha = (arr[..., 3] * (1.0 - lum)).clip(0, 255).astype(np.uint8)
+    white = Image.new('RGBA', symbol.size, (255, 255, 255, 255))
+    white.putalpha(Image.fromarray(alpha, 'L'))
+    bw, bh = W * symbol_frac, H * symbol_frac
+    scale = min(bw / white.width, bh / white.height)
+    white = white.resize((max(1, int(white.width * scale)), max(1, int(white.height * scale))), Image.LANCZOS)
+    img.alpha_composite(white, ((W - white.width) // 2, (H - white.height) // 2))
+    return img.resize((size, size), Image.LANCZOS)
 
 
 def fit_plate(face, aspect, size=DEFAULT_TEX, margin=0.0, stretch_tol=0.25):
