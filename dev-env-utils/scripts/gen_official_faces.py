@@ -326,6 +326,19 @@ CATALOGUE = [
     ('signaheadleftright', SHS(G, 23, pick=1), 'M6-5'),   # batch 1's leftover: it is on p23
     ('signleftahead', SHS(R, 28, pick=2), 'R3-6L'),
     ('signleftonly', SHS(R, 28), 'R3-5L'),
+    # --- Remaining-signs batch 4. Left as drawn: signltyofy (flashing yellow arrow, not in
+    # the book), lhsstopsign (deliberately non-compliant), signlitteringillegal,
+    # signpostmbtalogo, signnodumping, signnobridgefishing, noforestparkingsign,
+    # noovernightparkingsign, signnoovernightparking, noparkingeairssign, noparkinginalleysign,
+    # noparkingonbridgesign (custom text on R8-style panels), signnoleftred.
+    ('signleft', SHS(G, 20, pick=4, mirror=True), 'M6-1L'),
+    ('signnobikes', SHS(R, 82), 'R5-6'),
+    ('signnopedestrians', SHS(R, 118), 'R9-3a'),
+    ('signnohitchhiker', SHS(R, 121), 'R9-4a'),
+    ('signhm', SHS(R, 168), 'R14-2'),
+    ('signnohm', SHS(R, 169), 'R14-3'),
+    ('noparking830530', SHS(R, 91, pick=1, mirror_symbols='both'), 'R7-2 (both ways)'),
+    ('noparkinglogo830530', SHS(R, 91, pick=2), 'R7-2a'),
     ('signhurricane', SHS(E, 0), 'EM-1'),   # the three moved to the 24 x 24 square plate
     ('signhurricaneleft', SHS(E, 0, rotate_symbols=-90), 'EM-1 (left)'),
     ('signhurricaneright', SHS(E, 0, rotate_symbols=90), 'EM-1 (right)'),

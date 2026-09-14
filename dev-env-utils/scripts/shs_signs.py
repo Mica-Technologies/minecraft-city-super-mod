@@ -353,12 +353,19 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
     thickness), and the glyphs set in a legend font. Everything is exactly as the PDF draws it."""
     svg = page.get_svg_image()
     head_end = svg.index('</defs>') + len('</defs>')
-    kept = []
+    kept = []         # (document position, sequence, element): the page's own draw order
+    seq = [0]
+
+    def add(el, pos):
+        seq[0] += 1
+        kept.append((pos, seq[0], el))
+
     fill_boxes = []   # of the fills kept so far, to recognise their own outlines
     insets = _inset_rects(page, rect, _sign_fills(page)) if only_inside else []
     body = svg[head_end:]   # the defs hold the page clip as a <path> too
     for m in _PATH_RE.finditer(body):
         el = m.group(0)
+        pos = m.start()
         attrs = dict(_ATTR_RE.findall(el))
         mt = attrs.get('transform', '')
         nums = [float(v) for v in _NUM_RE.findall(mt)] if mt.startswith('matrix') else [1, 0, 0, 1, 0, 0]
@@ -409,7 +416,7 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
                 # The sign's own edge: the sheet, white, behind everything the page drew
                 # inside it (the margin outside a regulatory sign's border is white sheet)
                 el = el.replace('fill="none"', 'fill="%s"' % sheet_colour, 1).replace(' stroke=', ' data-stroke=', 1)
-                kept.insert(0, el)
+                add(_mirrored(el, rect) if mirror_symbols is True else el, -1)
                 continue
             # dimension marks drawn over a black symbol or border are white or light-grey
             # strokes; no sign outline is lighter than its background
@@ -443,33 +450,33 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
             # the same rectangle serves both copies.
             cid = 'half_%d' % len(kept)
             cx = (bbox.x0 + bbox.x1) / 2
-            kept.append('<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="%s"/></clipPath>'
-                        % (cid, bbox.x0 - 1, bbox.y0 - 1, cx - bbox.x0 + 1, bbox.height + 2))
-            kept.append('<g clip-path="url(#%s)">%s</g>' % (cid, el))
-            kept.append('<g transform="matrix(-1,0,0,1,%s,0)" clip-path="url(#%s)">%s</g>'
-                        % (2 * cx, cid, el))
+            add('<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="%s"/></clipPath>'
+                % (cid, bbox.x0 - 1, bbox.y0 - 1, cx - bbox.x0 + 1, bbox.height + 2), pos)
+            add('<g clip-path="url(#%s)">%s</g>' % (cid, el), pos)
+            add('<g transform="matrix(-1,0,0,1,%s,0)" clip-path="url(#%s)">%s</g>'
+                % (2 * cx, cid, el), pos)
             continue
-        kept.append(el)
+        # mirror_symbols=True: every path (panel, border, arrow) flipped about the sign's
+        # centre line, the glyphs left alone so the legend still reads
+        add(_mirrored(el, rect) if mirror_symbols is True else el, pos)
     # Legend glyphs are the ones set in a Series (Highway Gothic) font; captions, reference
     # letters and dimensions are all Nimbus Sans. Match each SVG glyph to the raw text's
     # per-character origins to tell them apart -- the SVG itself does not name the font.
     legend_origins = _legend_glyph_origins(page, rect, drop)
-    n_glyphs = 0
     for m in _USE_RE.finditer(body):
         nums = [float(v) for v in m.group(2).split(',')]
         e, f = nums[4], nums[5]
         if not any(abs(e - ox) < 0.75 and abs(f - oy) < 0.75 for ox, oy in legend_origins):
             continue
         # the glyph outlines carry no fill rule; a counter (the hole in an A) needs even-odd
-        kept.append(m.group(0).replace('<use ', '<use fill-rule="evenodd" ', 1))
-        n_glyphs += 1
-    if mirror_symbols is True:
-        # The paths (panel, border, arrow) flipped about the sign's centre line; the glyphs,
-        # which came last into ``kept``, left as they are so the legend still reads
-        n_paths = len(kept) - n_glyphs
-        kept = (['<g transform="matrix(-1,0,0,1,%s,0)">' % (rect.x0 + rect.x1)]
-                + kept[:n_paths] + ['</g>'] + kept[n_paths:])
-    return svg[:head_end] + '\n' + '\n'.join(kept) + '\n</svg>'
+        add(m.group(0).replace('<use ', '<use fill-rule="evenodd" ', 1), m.start())
+    # In the page's own order, so a prohibition slash drawn after its letters stays on top
+    kept.sort(key=lambda t: (t[0], t[1]))
+    return svg[:head_end] + '\n' + '\n'.join(el for _p, _q, el in kept) + '\n</svg>'
+
+
+def _mirrored(el, rect):
+    return '<g transform="matrix(-1,0,0,1,%s,0)">%s</g>' % (rect.x0 + rect.x1, el)
 
 
 def _render_svg(page, rect, only_inside=True, dpi=RENDER_DPI, drop=None, sheet_colour='#ffffff',
