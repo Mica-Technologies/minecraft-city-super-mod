@@ -870,8 +870,8 @@ conflicting call waiting (and ped clearance is done).
 ### Coordination
 
 `TrafficSignalCoordinationPlan` adds FREE vs COORDINATED. Coordinated operation runs a background
-cycle (cycle length + offset against world time, so multiple intersections sync), tiles each ring's
-cycle into per-phase **permissive windows** from the splits, force-offs non-coordinated phases at
+cycle (cycle length + offset against world time, so multiple intersections sync), tiles the cycle
+into per-phase **permissive windows** from the splits, barrier by barrier, force-offs non-coordinated phases at
 their yield point (never truncating an in-progress ped clearance), and rests the coordinated phases
 (default p2/p6) in green. A call **registers** only while its phase's window is open, but once
 accepted it **sticks** (`RingBarrierState.windowAccepted`) until the phase is served, the demand
@@ -879,6 +879,21 @@ drops, or the phase is forced off — serving it takes real time (the mains' res
 clearance alone can outlast a tight window), so re-gating each tick would erase the call
 mid-sequence and the side street would never be served. A phase that starts late on a stuck
 accepted call gets its min green, then the force-off clips it back to the coordinated phases.
+
+#### Windows are laid out per barrier, not per ring
+
+The rings cross a barrier together, so each barrier is one slice of the cycle both rings share
+(`RingBarrierState.barrierSplits`, in the engine's crossing order). A barrier's length is the
+**longer** of the two rings' split totals on it; the barriers are then scaled to tile the cycle,
+and each ring's phases on a barrier are scaled to fill that barrier. A ring with no phase on a
+barrier has no window there and simply waits at it.
+
+This is what makes a coordinated **T intersection** work. With `1 + 2 + 4 / 6` on a 90 s cycle,
+ring 2 has nothing on the side-street barrier and cannot total the cycle. Tiling each ring on its
+own (the old behavior) gave phase 6 a window of the *entire* cycle, over the side street's time,
+whatever split was typed. Now `φ6 = φ1 + φ2` puts phase 6's window on barrier A only. When both
+rings do have phases on a barrier but their totals differ, the shorter ring's phases run longer
+than typed and `findBarrierMisalignment` logs an advisory comparing the **typed** splits.
 
 #### Splits include clearance — the yield point
 
@@ -889,7 +904,7 @@ point also gates *acceptance* via `acceptanceOpen`, because a call arriving afte
 served this cycle and would otherwise hand the phase a standing call into the next one.)
 
 Both are measured as a position *within the window* rather than against `windowEnd` directly — the
-last window in each ring ends exactly at the cycle wrap, where a plain `localCycle >= windowEnd`
+last window on the last barrier ends exactly at the cycle wrap, where a plain `localCycle >= windowEnd`
 test can never be true. Positions wrap, so a phase being served outside its window is past its
 yield point and force-offs at once. Min green is still guaranteed (`terminate && minMet`), and a
 split configured shorter than its own clearance keeps a one-tick acceptance sliver rather than

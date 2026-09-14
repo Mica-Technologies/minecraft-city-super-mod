@@ -185,16 +185,17 @@ public class AdvancedSignalControllerGui extends GuiScreen {
           + "throughs 2 & 6. Coordinated phases rest in green and are served every cycle without "
           + "needing a call; every other phase is only called and served inside its split window "
           + "and is forced off when the window closes.",
-      "The two rings time in PARALLEL, so each ring is its own full cycle budget: on a 90s cycle, "
-          + "ring 1's splits total 90 AND ring 2's splits total 90 — all eight together total 180, "
-          + "twice the cycle. That is parallelism, not overbooking: at every moment one ring-1 "
-          + "window and one ring-2 window are open side by side.",
-      "Splits do NOT strictly have to total the cycle: each ring's splits are scaled so its phases "
-          + "tile the cycle exactly, and a split of 0 means an even share. But scaled splits are "
-          + "hard to predict (spreading 90s across all eight phases makes every green run ~2x what "
-          + "you typed), so total EACH ring to the cycle — and keep concurrent groups matched "
-          + "across rings so companion phases open together (e.g. with phases 2,4,5,6,8: "
-          + "splits 5+6 should equal 2, and 8 should equal 4).",
+      "The two rings time in PARALLEL and cross each barrier together, so the cycle is budgeted "
+          + "barrier by barrier: each barrier's time is split among the phases on it in EACH ring. "
+          + "With phases 2,4,5,6,8 on a 90s cycle: 5+6 = 2 = 55 on barrier A, and 8 = 4 = 35 on "
+          + "barrier B. Barrier A + barrier B = the cycle. That makes all eight splits add up to "
+          + "twice the cycle. That is parallelism, not overbooking.",
+      "A ring with NO phase on a barrier just waits there, e.g. a T intersection with 1,2,4 / 6: "
+          + "1 = 10, 2 = 45, 4 = 35, and 6 = 55 (= 1 + 2). Leave ring 2's missing barrier out: 6 "
+          + "stays 55, not 90. When the two rings' totals on a barrier differ, the longer one wins "
+          + "and the shorter ring's phases are stretched to fill it (the game log warns). If the "
+          + "barriers don't add up to the cycle they are all scaled to fit, and a split of 0 means "
+          + "an even share.",
       "A split is the whole slice a movement owns — its green AND the yellow and red clearance "
           + "that follow. Each phase therefore starts clearing early enough that its red finishes "
           + "as its split ends, so the next phase goes green exactly when its own split starts. "
@@ -1499,10 +1500,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "Toggle COORD to mark a phase as a coordinated (synced) phase",
         "that rests in green between permissive windows. R1/R2 + A/B =",
         "the phase's ring and barrier. * = enabled; dim rows disabled.",
-        "The rings time in PARALLEL, so budget EACH ring to the full",
-        "cycle (all eight splits together total TWICE the cycle). Rings",
-        "that don't total it are rescaled to fit (0 = even share), and",
-        "concurrent groups should match across rings. More on HELP.");
+        "Budget per BARRIER: the phases on a barrier in each ring total",
+        "that barrier's time (5+6 = 2), and barrier A + B = the cycle.",
+        "A ring with no phase on a barrier waits there (T intersection:",
+        "1,2,4 / 6 -> 6 = 1+2, not the whole cycle). 0 = even share.",
+        "More on HELP.");
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       int y = lcdY + 62 + (pn - 1) * rowH;

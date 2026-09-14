@@ -358,10 +358,11 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
   1↔6 would show the green arrow beside the "opposing" through. The ring/barrier structure is the
   only conflict guard, and this keeps the pairing inside it.
 - **Barrier alignment advisory** — `findBarrierMisalignment` (reported once per load with the
-  split-shortfall advisory) compares each barrier's split total between the rings. Splits are
-  normalised per ring, so nothing else forces ring 1's barrier-A phases and ring 2's to add up
-  the same; when they differ the ring that finishes first waits for the other by the difference
-  every cycle and the rest of its windows run late. Advisory rather than fault, like the shortfall.
+  split-shortfall advisory) compares each barrier's typed split total between the rings. Windows
+  are laid out per barrier, so a barrier runs the longer ring's total and the shorter ring's
+  phases are stretched to fill it; the advisory says so, because those phases then run longer
+  than typed. A barrier only one ring has phases on (a T intersection) is not compared: that ring
+  alone sets its length and the other waits at it. Advisory rather than fault, like the shortfall.
 
 ### Preemption clearances
 
@@ -447,7 +448,8 @@ running the coordinated phase long, never by shortening another phase's split.
 
 ### Our model
 
-Splits tile each ring's cycle into permissive windows, and **every phase terminates at its yield
+Splits tile the cycle into permissive windows barrier by barrier (a barrier is as long as the
+longer ring's total on it, and a ring with no phase on a barrier waits at it), and **every phase terminates at its yield
 point** — window end less its own clearance — rather than at the window end. Non-coordinated phases
 force off there; the same point gates whether a new call is even accepted, since a call arriving
 later cannot be served this cycle.
