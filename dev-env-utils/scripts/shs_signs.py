@@ -346,7 +346,7 @@ def _inset_rects(page, rect, fills):
 
 
 def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff',
-                  mirror_symbols=False, rotate_symbols=0):
+                  mirror_symbols=False, rotate_symbols=0, symbols_only=False):
     """The page's SVG reduced to the sign inside ``rect``: filled paths above the arrowhead
     threshold, undashed strokes heavier than a dimension line (their width taken through the
     path's own transform, which is where a scaled-up outline like the W10-1's X keeps its
@@ -374,6 +374,10 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
         scale = abs(nums[0] * nums[3] - nums[1] * nums[2]) ** 0.5
         bbox = _path_bbox(attrs.get('d', ''), nums)
         if bbox is None:
+            continue
+        # symbols_only: the panel, its border and the sheet are the caller's to draw
+        # (on the R6-1 the arrow's box is 0.69 of the sign, the black field 0.8, the sheet 1)
+        if symbols_only and bbox.width * bbox.height >= 0.75 * rect.width * rect.height:
             continue
         fill = attrs.get('fill', '#000000') != 'none'   # SVG's default fill is black, not none
         stroke = attrs.get('stroke', 'none') != 'none'
@@ -480,9 +484,9 @@ def _mirrored(el, rect):
 
 
 def _render_svg(page, rect, only_inside=True, dpi=RENDER_DPI, drop=None, sheet_colour='#ffffff',
-                mirror_symbols=False, rotate_symbols=0):
+                mirror_symbols=False, rotate_symbols=0, symbols_only=False):
     doc = fitz.open('svg', _filtered_svg(page, rect, only_inside, drop, sheet_colour,
-                                         mirror_symbols, rotate_symbols).encode('utf-8'))
+                                         mirror_symbols, rotate_symbols, symbols_only).encode('utf-8'))
     return _render_clip(doc[0], rect, dpi)
 
 
@@ -518,7 +522,7 @@ def _outer_rects(fills):
 
 
 def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
-              mirror_symbols=False, rotate_symbols=0):
+              mirror_symbols=False, rotate_symbols=0, symbols_only=False):
     """One sign from a book page, rendered with alpha and cropped to its outline.
 
     ``pick`` chooses among the page's outermost sign rects, sorted top to bottom then left to
@@ -552,7 +556,8 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
         rect = sheet
     if replace is None:
         return _render_svg(p, rect, only_inside, sheet_colour=sheet_colour,
-                           mirror_symbols=mirror_symbols, rotate_symbols=rotate_symbols)
+                           mirror_symbols=mirror_symbols, rotate_symbols=rotate_symbols,
+                           symbols_only=symbols_only)
     pairs = [replace] if isinstance(replace[0], str) else list(replace)
     todo = []
     for old, new in pairs:

@@ -68,6 +68,49 @@ def SYM(chapter, page, picks, colour):
     return lambda: (SymbolFace(shs.symbol_face(chapter, page, picks), shs.MOD_COLOURS[colour]), False, None)
 
 
+class ComposedFace(object):
+    """A face built by a function of the plate aspect, for the few signs that are an official
+    drawing plus a step of the mod's own (a panel cut to a point)."""
+
+    def __init__(self, fn):
+        self.fn = fn
+
+
+def POINTED_ONE_WAY(left):
+    """The ONE WAY sign whose panel is cut to a point behind the arrowhead, as some cities
+    make it: a pentagon panel drawn at the plate's proportions (white border, black field),
+    with the R6-1's own arrow and legend set on it, the arrow tip a little inside the point."""
+    def make(aspect):
+        import numpy as np
+        from PIL import ImageDraw
+        W, H = 1024, int(round(1024 / aspect))
+        panel = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(panel)
+        b = int(H * 0.09)                       # the border, as the R6-1's
+        r = int(H * 0.06)
+        shoulder = W * 0.16                     # the cut runs this far in from the point end
+        if left:
+            outer = [(0, H / 2.0), (shoulder, 0), (W - r, 0), (W, r), (W, H - r), (W - r, H), (shoulder, H)]
+            inner = [(b * 1.6, H / 2.0), (shoulder + b * 0.6, b), (W - b, b), (W - b, H - b), (shoulder + b * 0.6, H - b)]
+        else:
+            outer = [(W, H / 2.0), (W - shoulder, 0), (r, 0), (0, r), (0, H - r), (r, H), (W - shoulder, H)]
+            inner = [(W - b * 1.6, H / 2.0), (W - shoulder - b * 0.6, b), (b, b), (b, H - b), (W - shoulder - b * 0.6, H - b)]
+        d.polygon(outer, fill=(245, 245, 245, 255))
+        d.polygon(inner, fill=(20, 20, 20, 255))
+        # the arrow and legend alone, off the page, scaled to sit inside the black field
+        art = shs.recolour(shs.book_sign(R, 87, 1 if left else 0, symbols_only=True), shs.SHS_PALETTE)
+        bb = art.getchannel('A').getbbox()
+        art = art.crop(bb)
+        gap = b * 2.6                           # black field between the arrowhead and the point
+        target_w = W - b - (b * 1.6 + gap)
+        scale = min(target_w / art.width, (H - 2.2 * b) / art.height)
+        art = art.resize((int(art.width * scale), int(art.height * scale)), Image.LANCZOS)
+        x = int((b * 1.6 + gap) if left else (W - b * 1.6 - gap - art.width))
+        panel.alpha_composite(art, (x, (H - art.height) // 2))
+        return shs.fit_plate(panel, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -339,6 +382,16 @@ CATALOGUE = [
     ('signnohm', SHS(R, 169), 'R14-3'),
     ('noparking830530', SHS(R, 91, pick=1, mirror_symbols='both'), 'R7-2 (both ways)'),
     ('noparkinglogo830530', SHS(R, 91, pick=2), 'R7-2a'),
+    # --- Remaining-signs batch 5. Left as drawn: signnorightred, signnotrucksleftlane,
+    # signnoturnsofficialonly, signonbridge, signonpavement, signonecarpergreen(eachlane),
+    # signresidentnormal, signphotoenforced / signredlightphoto (the book's R10-18 / R10-19
+    # are text only; the mod's carry a signal head), positivelynosmokingsign, signfine400,
+    # signpostreduced30, signpostreducedspeedahead (no R2-5 in the book), restrictedareasign.
+    ('nostandingsign', SHS(R, 92, pick=1), 'R7-4'),
+    ('onewaytlsignright', POINTED_ONE_WAY(left=False), 'R6-1R (pointed)'),
+    ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
+    ('signpostonewayright', SHS(R, 87), 'R6-1R'),
+    ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
     ('signhurricane', SHS(E, 0), 'EM-1'),   # the three moved to the 24 x 24 square plate
     ('signhurricaneleft', SHS(E, 0, rotate_symbols=-90), 'EM-1 (left)'),
     ('signhurricaneright', SHS(E, 0, rotate_symbols=90), 'EM-1 (right)'),
@@ -406,6 +459,8 @@ def render(source, info):
     face, mirror, palette = source()
     if isinstance(face, SymbolFace):
         return shs.symbol_on_panel(face.symbol, face.colour, info['aspect'], size=256)
+    if isinstance(face, ComposedFace):
+        return face.fn(info['aspect'])
     # a silhouette sign (one with a _back texture) IS its outline: never squash it to fill
     # a 2:1 plaque squishes its legend to 8 px per plate unit across at 128; 256 keeps it
     # readable a few blocks away
