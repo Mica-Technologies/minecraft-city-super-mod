@@ -891,6 +891,186 @@ def BULLSEYE():
     return lambda: (ComposedFace(make), False, None)
 
 
+def PANEL_LINES(lines, colour='white', ink='black', art=None, condense=1.0):
+    """A plain rounded panel with the inset border (PANEL's) and ``lines`` each at its own size:
+    (text, centre y, cap height, width) as fractions of the sign, in ``ink``. ``art(img)`` draws
+    over it (a symbol lifted off a book page)."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        Wd = int(round(H * aspect))
+        img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        inkc = shs.MOD_COLOURS[ink]
+        m = int(H * 0.012)
+        d.rounded_rectangle((m, m, Wd - m, H - m), radius=int(H * 0.07), fill=shs.MOD_COLOURS[colour])
+        inset, stroke = int(H * 0.035), int(H * 0.03)
+        d.rounded_rectangle((inset, inset, Wd - inset, H - inset), radius=int(H * 0.05), outline=inkc, width=stroke)
+        for text, cy, cap, width in lines:
+            gg._legend_line(img, text, cy * H, cap * H, width * Wd, colour=inkc, condense=condense)
+        if art:
+            art(img)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def _book_symbol(chapter, page, box, pick=0):
+    """Paste a book sign's face inside its border into ``box`` (fractions of the
+    image: x0, y0, x1, y1), fitted and centred: the R3-2's crossed-out turn over ON RED."""
+    def art(img):
+        sym = shs.recolour(shs.book_sign(chapter, page, pick), shs.SHS_PALETTE)
+        # inside the sign's black border: the panel white stays, the border and sheet go
+        m = int(min(sym.size) * 0.05)
+        sym = sym.crop((m, m, sym.width - m, sym.height - m))
+        W, H = img.size
+        bw, bh = (box[2] - box[0]) * W, (box[3] - box[1]) * H
+        k = min(bw / sym.width, bh / sym.height)
+        sym = sym.resize((int(sym.width * k), int(sym.height * k)), Image.LANCZOS)
+        img.alpha_composite(sym, (int(box[0] * W + (bw - sym.width) / 2), int(box[1] * H + (bh - sym.height) / 2)))
+    return art
+
+
+def FLASHING_YELLOW_YIELD():
+    """LEFT TURN YIELD ON FLASHING with a yellow left arrow: the R10-12 with its ON GREEN line
+    re-set and the green ball replaced by the flashing yellow arrow on a black disc."""
+    def make(aspect):
+        import numpy as np
+        face = shs.book_sign(R, 143, replace=('ON GREEN', 'ON FLASHING'), condense=True)
+        a = np.asarray(face).astype(np.int32)
+        green = (np.abs(a[..., 0] - 0) < 60) & (a[..., 1] > 110) & (a[..., 2] < 110) & (a[..., 3] > 0)
+        ys, xs = np.nonzero(green)
+        cx, cy = xs.mean(), ys.mean()
+        r = max(xs.max() - xs.min(), ys.max() - ys.min()) / 2.0 + 2
+        face = shs.recolour(face, shs.SHS_PALETTE)
+        d = ImageDraw.Draw(face)
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=shs.MOD_COLOURS['black'])
+        yellow = shs.MOD_COLOURS['yellow']
+        w = max(3, int(r * 0.12))
+        tip = (cx - r * 0.72, cy)
+        d.line((cx + r * 0.05, cy - r * 0.66, tip[0], tip[1], cx + r * 0.05, cy + r * 0.66), fill=yellow,
+               width=w, joint='curve')
+        d.line((cx - r * 0.24, cy, cx + r * 0.72, cy), fill=yellow, width=w)
+        return shs.fit_plate(face, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def _runs(img, runs, baseline, cx, colour):
+    """Words of different sizes side by side on one baseline, centred on ``cx``: ``runs`` are
+    (text, cap height px, underlined), a word space of the larger neighbour between them."""
+    import gen_gap_signs as gg
+    d = ImageDraw.Draw(img)
+    parts = []
+    for text, cap, under in runs:
+        layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+        gg._legend_line_at(layer, text, img.width / 2, baseline - cap / 2, cap, img.width, colour=colour)
+        box = layer.getbbox()
+        parts.append((layer.crop(box), box, cap, under))
+    gap = [max(parts[k][2], parts[k + 1][2]) * 0.28 for k in range(len(parts) - 1)]
+    total = sum(pt[0].width for pt in parts) + sum(gap)
+    x = cx - total / 2
+    for k, (im, box, cap, under) in enumerate(parts):
+        img.alpha_composite(im, (int(x), box[1]))
+        if under:
+            d.rectangle((x, box[3] + cap * 0.18, x + im.width, box[3] + cap * 0.36), fill=colour)
+        x += im.width + (gap[k] if k < len(gap) else 0)
+
+
+def _car(d, x, y, w, colour, hole):
+    """A car in side view, white silhouette with wheel holes, ``w`` long, its roof at ``y``."""
+    h = w * 0.42
+    d.rounded_rectangle((x, y + h * 0.38, x + w, y + h * 0.8), radius=h * 0.12, fill=colour)
+    d.polygon([(x + w * 0.22, y + h * 0.4), (x + w * 0.34, y), (x + w * 0.68, y), (x + w * 0.8, y + h * 0.4)],
+              fill=colour)
+    for wx in (0.24, 0.76):
+        rr = h * 0.2
+        d.ellipse((x + w * wx - rr, y + h * 0.78 - rr, x + w * wx + rr, y + h * 0.78 + rr), fill=colour)
+        d.ellipse((x + w * wx - rr * 0.45, y + h * 0.78 - rr * 0.45, x + w * wx + rr * 0.45, y + h * 0.78 + rr * 0.45),
+                  fill=hole)
+
+
+def LA_NO_STOPPING():
+    """Los Angeles' NO STOPPING 7AM to 9AM / 4PM to 6PM tow-away sign, set from a photograph of
+    the city's sign: red border on white, a red band with a tow truck lifting a car, NO reversed
+    out of a red block beside STOPPING, the hours with a small underlined "to", and the
+    EXCEPT SATURDAY & SUNDAY / impound lines in small red type."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        S = 1024
+        W = int(round(S * aspect))
+        red, white = shs.MOD_COLOURS['red'], shs.MOD_COLOURS['white']
+        img = Image.new('RGBA', (W, S), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((4, 4, W - 4, S - 4), radius=int(S * 0.05), fill=white)
+        e, b = int(S * 0.025), int(S * 0.022)
+        d.rounded_rectangle((e, e, W - e, S - e), radius=int(S * 0.04), outline=red, width=b)
+        d.rounded_rectangle((e, e, W - e, int(S * 0.19)), radius=int(S * 0.04), fill=red)
+        d.rectangle((e, int(S * 0.12), W - e, int(S * 0.19)), fill=red)
+        # the tow: a car on the left, its front lifted, hooked to the truck on the right
+        car = Image.new('RGBA', (int(W * 0.34), int(S * 0.2)), (0, 0, 0, 0))
+        _car(ImageDraw.Draw(car), car.width * 0.03, car.height * 0.2, car.width * 0.94, white, red)
+        car = car.rotate(7, expand=True, resample=Image.BICUBIC)
+        layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+        layer.alpha_composite(car, (int(W * 0.1), int(S * 0.02)))
+        ld = ImageDraw.Draw(layer)
+        tx, ty, tw = W * 0.55, S * 0.045, W * 0.36
+        _car(ld, tx, ty, tw, white, red)
+        ld.line((W * 0.43, S * 0.1, tx + tw * 0.1, ty + tw * 0.2), fill=white, width=int(S * 0.012))
+        img.alpha_composite(layer)
+        d.rectangle((e, int(S * 0.19), int(W * 0.31), int(S * 0.41)), fill=red)
+        gg._legend_line_at(img, 'NO', W * 0.165, S * 0.3, S * 0.16, W * 0.26, colour=white)
+        gg._legend_line_at(img, 'STOPPING', W * 0.645, S * 0.3, S * 0.12, W * 0.6, colour=red)
+        _runs(img, [('7', S * 0.14, False), ('AM', S * 0.1, False), ('TO', S * 0.045, True),
+                    ('9', S * 0.14, False), ('AM', S * 0.1, False)], S * 0.58, W / 2, red)
+        _runs(img, [('4', S * 0.14, False), ('PM', S * 0.1, False), ('TO', S * 0.045, True),
+                    ('6', S * 0.14, False), ('PM', S * 0.1, False)], S * 0.77, W / 2, red)
+        gg._legend_line(img, 'EXCEPT SATURDAY & SUNDAY', S * 0.845, S * 0.036, W * 0.8, colour=red)
+        gg._legend_line(img, 'TO RECOVER IMPOUNDED VEHICLE CALL 3-1-1', S * 0.905, S * 0.03, W * 0.86, colour=red)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def LA_TWO_HOUR():
+    """The green 2 HOUR PARKING 9AM to 8PM EXCEPT SUNDAY panel that hangs under Los Angeles'
+    no stopping sign: a green block with the 2 reversed out, HOUR / PARKING beside it."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        S = 1024
+        W = int(round(S * aspect))
+        green, white = shs.MOD_COLOURS['green'], shs.MOD_COLOURS['white']
+        img = Image.new('RGBA', (W, S), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((4, 4, W - 4, S - 4), radius=int(S * 0.05), fill=white)
+        e, b = int(S * 0.025), int(S * 0.022)
+        d.rounded_rectangle((e, e, W - e, S - e), radius=int(S * 0.04), outline=green, width=b)
+        d.rounded_rectangle((e, e, int(W * 0.34), int(S * 0.5)), radius=int(S * 0.04), fill=green)
+        d.rectangle((int(W * 0.2), e, int(W * 0.34), int(S * 0.5)), fill=green)
+        d.rectangle((e, int(S * 0.2), int(W * 0.34), int(S * 0.5)), fill=green)
+        gg._legend_line_at(img, '2', W * 0.18, S * 0.27, S * 0.3, W * 0.26, colour=white)
+        gg._legend_line_at(img, 'HOUR', W * 0.66, S * 0.15, S * 0.13, W * 0.56, colour=green)
+        gg._legend_line_at(img, 'PARKING', W * 0.66, S * 0.36, S * 0.15, W * 0.6, colour=green)
+        _runs(img, [('9', S * 0.14, False), ('AM', S * 0.1, False), ('TO', S * 0.045, True),
+                    ('8', S * 0.14, False), ('PM', S * 0.1, False)], S * 0.74, W / 2, green)
+        gg._legend_line(img, 'EXCEPT  SUNDAY', S * 0.87, S * 0.05, W * 0.6, colour=green)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def STOP_BANG():
+    """The LHS "STOP!" sign, deliberately not the MUTCD's: the R1-1 octagon from the book with
+    its legend dropped and STOP! set underlined in Highway Gothic."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        face = shs.recolour(shs.book_sign(R, 0, blank=True), shs.SHS_PALETTE)
+        S = 1024
+        img = face.resize((S, S), Image.LANCZOS)
+        white = shs.MOD_COLOURS['white']
+        gg._legend_line(img, 'STOP!', S * 0.47, S * 0.24, S * 0.74, colour=white)
+        d = ImageDraw.Draw(img)
+        d.rectangle((S * 0.16, S * 0.64, S * 0.84, S * 0.68), fill=white)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -1435,6 +1615,42 @@ CATALOGUE = [
     ('signdontthinkparking', RED_ZONE_PARKING(), 'NYC red zone (drawn)'),
     ('signexceptbus', TEXT_PANEL(R, 60, ['EXCEPT', 'BUS'], pick=1, band=(0.14, 0.86)), 'R3-17aP plaque'),
     ('signfdcstandpipe', BULLSEYE(), 'bullseye (drawn)'),
+    # --- Second pass, batch B. Approved as they are: signmetro, signpostmbtalogo,
+    # signlitteringillegal. Redo later: kathieevanssign (not a road sign).
+    ('ladotnostopping', LA_NO_STOPPING(), 'LA no stopping (photo)'),
+    ('lhsstopsign', STOP_BANG(), 'R1-1 octagon, STOP! (non-compliant on purpose)'),
+    ('forestryvehiclesonlysign', PANEL(['FORESTRY', 'VEHICLES', 'ONLY'], 'white', band=(0.12, 0.88), width=0.8),
+     'white panel'),
+    ('signhov6a9a', BOOK_LINES(R, 49, [('HOV 2+', 0.4, 0.1, 0.8), ('ONLY', 0.55, 0.1, 0.8),
+                                       ('6AM-9AM', 0.72, 0.075, 0.8), ('MON-FRI', 0.85, 0.075, 0.8)]),
+     'R3-11c panel (6-9)'),
+    ('signhov2onlyoverhead', BOOK_LINES(R, 55, [('HOV 2+', 0.2, 0.15, 0.62, 'black', 0.59),
+                                                ('ONLY', 0.43, 0.15, 0.62, 'black', 0.59),
+                                                ('6AM-9AM', 0.66, 0.075, 0.34, 'black', 0.27),
+                                                ('MON-FRI', 0.66, 0.075, 0.34, 'black', 0.78)]), 'R3-12a (lines raised)'),
+    ('signhovahead', SHS(R, 50, replace=('HOV 2+', 'HOV')), 'R3-14 (HOV)'),
+    ('signhovends', BOOK_LINES(R, 51, [('HOV 2+', 0.125, 0.085, 0.8), ('LANE', 0.255, 0.085, 0.8), ('ENDS', 0.875, 0.085, 0.8)]), 'R3-15 (HOV 2+)'),
+    ('signhovrules', BOOK_LINES(R, 49, [('HOV 2+ ONLY', 0.42, 0.075, 0.84), ('2 OR MORE', 0.58, 0.07, 0.84),
+                                        ('PERSONS', 0.71, 0.07, 0.84), ('PER VEHICLE', 0.84, 0.07, 0.84)]),
+     'R3-11c panel (R3-13 legend)'),
+    ('ladotantigridlockzone', PANEL(['ANTI-GRIDLOCK', 'ZONE', 'L.A.M.C. 80.70'], 'red', ink='white',
+                                    band=(0.24, 0.76), width=0.8), 'red panel'),
+    ('signresidentlarge', PANEL_LINES([('PERMIT PARKING', 0.135, 0.098, 0.8), ('FOR', 0.28, 0.098, 0.8),
+                                       ('RESIDENTS ONLY', 0.425, 0.098, 0.8),
+                                       ('VEHICLES WITHOUT VALID', 0.585, 0.057, 0.8),
+                                       ('PARKING PERMITS', 0.685, 0.057, 0.8),
+                                       ('WILL BE TOWED AT', 0.785, 0.057, 0.8),
+                                       ("VEHICLE OWNER'S EXPENSE", 0.885, 0.057, 0.8)], condense=0.74),
+     'white panel, narrow series'),
+    ('signleftplaque', PANEL(['LEFT'], 'white', band=(0.2, 0.8), cap_max=0.45, width=0.6), 'white plaque'),
+    ('signltyofy', FLASHING_YELLOW_YIELD(), 'R10-12 (flashing yellow arrow)'),
+    ('signnodumping', PANEL(['NO', 'DUMPING'], 'white', band=(0.14, 0.86), width=0.8), 'white panel'),
+    ('signnobridgefishing', PANEL(['NO', 'FISHING', 'FROM', 'BRIDGE'], 'white', band=(0.08, 0.92), width=0.8),
+     'white panel'),
+    ('noforestparkingsign', PANEL(['NO', 'FOREST', 'PARKING'], 'white', ink='red', band=(0.14, 0.86), width=0.8),
+     'white panel, red'),
+    ('signnoleftred', PANEL_LINES([('ON RED', 0.83, 0.11, 0.8)], art=_book_symbol(R, 24, (0.17, 0.11, 0.83, 0.67))),
+     'R3-2 symbol + ON RED'),
     ('signarchery', SYM(G, 153, [0], 'brown'), 'archer (brown)'),
     ('signmotorbike', SYM(G, 151, [4, 5], 'brown'), 'trail bike (brown)'),
     ('signoffroad', SYM(G, 151, [0, 1, 2], 'brown'), 'off-road vehicle (brown)'),

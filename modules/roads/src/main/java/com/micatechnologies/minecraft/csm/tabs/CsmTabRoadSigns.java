@@ -190,6 +190,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signmetro"));
     initTabBlock(new BlockTrafficSign("ladotantigridlockzone"));
     initTabBlock(new BlockTrafficSign("ladotnostopping"));
+    initTabBlock(new BlockTrafficSign("signla2hourparking"));
     initTabBlock(new BlockTrafficSign("signresidentlarge"));
     initTabBlock(new BlockTrafficSign("signleftright"));
     initTabBlock(new BlockTrafficSign("signleftahead"));
