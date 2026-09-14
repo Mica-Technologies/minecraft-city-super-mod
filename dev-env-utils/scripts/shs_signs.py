@@ -572,22 +572,24 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
                            symbols_only=symbols_only)
     pairs = [replace] if isinstance(replace[0], str) else list(replace)
     todo = []
-    for old, new in pairs:
+    for pair in pairs:
+        # (old, new) or (old, new, colour): a run reversed out of a dark band is set in white
+        old, new = pair[0], pair[1]
+        colour = pair[2] if len(pair) > 2 else (legend_colour or (31, 26, 23, 255))
         boxes = _legend_span_boxes(p, rect, old)
         if not boxes:
             raise SystemExit('%s p%d: no legend run reads %r (have %s)' % (
                 chapter, page, old, [t for t, _o, _b in _legend_spans(p, rect)]))
-        todo.append((new, boxes))
-    img = _render_svg(p, rect, only_inside, drop=[old for old, _new in pairs],
+        todo.append((new, boxes, colour))
+    img = _render_svg(p, rect, only_inside, drop=[pair[0] for pair in pairs],
                       sheet_colour=sheet_colour, mirror_symbols=mirror_symbols,
                       rotate_symbols=rotate_symbols)
     scale = RENDER_DPI / 72.0
-    for new, boxes in todo:
+    for new, boxes, colour in todo:
         for box in boxes:
             px = ((box.x0 - rect.x0) * scale, (box.y0 - rect.y0) * scale,
                   (box.x1 - rect.x0) * scale, (box.y1 - rect.y0) * scale)
-            _set_legend(img, new, px, condense=condense,
-                        colour=legend_colour or (31, 26, 23, 255))
+            _set_legend(img, new, px, condense=condense, colour=colour)
     return img
 
 

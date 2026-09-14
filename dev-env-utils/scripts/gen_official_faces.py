@@ -669,6 +669,228 @@ def LIGHTS_OUT():
                                  extras=lambda a: {'lightsoutnopowersign_on.png': draw(a, True)}), False, None)
 
 
+def BOOK_LINES(chapter, page, lines, pick=0, draw=None):
+    """A book panel with every legend dropped and the mod's own lines set on it, each at its own
+    size: ``lines`` are (text, centre y, cap height, width[, colour name[, centre x]]) as fractions
+    of the sign, black unless named. For
+    a sign that is an official panel with a different legend (CITY SPEED LIMIT 35, END 35 MPH
+    LIMIT). ``draw(img)`` adds artwork after the lines."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        panel = shs.recolour(shs.book_sign(chapter, page, pick, blank=True), shs.SHS_PALETTE)
+        H = 1024
+        Wd = int(round(H * aspect))
+        img = panel.resize((Wd, H), Image.LANCZOS)
+        for line in lines:
+            text, cy, cap, width = line[:4]
+            colour = shs.MOD_COLOURS[line[4]] if len(line) > 4 else shs.MOD_COLOURS['black']
+            gg._legend_line_at(img, text, (line[5] if len(line) > 5 else 0.5) * Wd, cy * H, cap * H,
+                               width * Wd, colour=colour)
+        if draw:
+            draw(img)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def _hov_diamond(img):
+    """The HOV diamond, white outline, in the black header's left third (the R3-11a's)."""
+    d = ImageDraw.Draw(img)
+    W, H = img.size
+    cx, cy, rx, ry = W * 0.2, H * 0.165, W * 0.09, H * 0.12
+    white, black = shs.MOD_COLOURS['white'], shs.MOD_COLOURS['black']
+    d.polygon([(cx, cy - ry), (cx + rx, cy), (cx, cy + ry), (cx - rx, cy)], fill=white)
+    t = W * 0.035
+    d.polygon([(cx, cy - ry + t * 1.4), (cx + rx - t, cy), (cx, cy + ry - t * 1.4), (cx - rx + t, cy)], fill=black)
+
+
+def DANGER_PLACARD(lines, header='DANGER'):
+    """An ANSI-style facility DANGER placard (no FHWA drawing): white sign with a thin black
+    border, a red header band lettered white, and black ``lines`` set at one size below it."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        Wd = int(round(H * aspect))
+        white, black, red = shs.MOD_COLOURS['white'], shs.MOD_COLOURS['black'], shs.MOD_COLOURS['red']
+        img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        e, b = int(H * 0.03), int(H * 0.015)     # the edge outside the border line, the line
+        band = 0.27
+        # the sheet: red out to the edge across the header, white below it
+        d.rounded_rectangle((4, 4, Wd - 4, H - 4), radius=int(H * 0.06), fill=white)
+        d.rounded_rectangle((4, 4, Wd - 4, int(H * band) + 40), radius=int(H * 0.06), fill=red)
+        d.rectangle((4, int(H * band), Wd - 4, int(H * band) + 41), fill=white)
+        d.rounded_rectangle((e, e, Wd - e, H - e), radius=int(H * 0.045), outline=black, width=b)
+        d.rectangle((e + b, e + b + int(H * 0.03), Wd - e - b, int(H * band)), fill=red)
+        d.rounded_rectangle((e + b, e + b, Wd - e - b, int(H * band)), radius=int(H * 0.035), fill=red)
+        d.rectangle((e, int(H * band), Wd - e, int(H * band) + b), fill=black)
+        gg._legend_line(img, header, (band * H + e + b) / 2, 0.14 * H, 0.8 * Wd, colour=white)
+        n = len(lines)
+        pitch = (0.95 - band - 0.04) / n
+        cap = min(0.12, pitch * 0.62) * H
+        cond = _series_condense(lines, cap, 0.84 * Wd)
+        for i, t in enumerate(lines):
+            gg._legend_line(img, t, (band + 0.04 + pitch * (i + 0.5)) * H, cap, 0.84 * Wd, colour=black, condense=cond)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def HV_DANGER(footer=None):
+    """The DANGER / KEEP OFF! DO NOT CLIMB! high-voltage placard on utility poles and towers:
+    the red header, a red prohibition circle over a lattice tower, and the warning below.
+    ``footer`` adds the owner's line in small type along the bottom (the Alto DWP sign's)."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        Wd = int(round(H * aspect))
+        white, black, red = shs.MOD_COLOURS['white'], shs.MOD_COLOURS['black'], shs.MOD_COLOURS['red']
+        img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        e, b = int(H * 0.022), int(H * 0.011)
+        d.rounded_rectangle((4, 4, Wd - 4, H - 4), radius=int(H * 0.045), fill=white)
+        d.rounded_rectangle((e, e, Wd - e, H - e), radius=int(H * 0.035), fill=black)
+        d.rounded_rectangle((e + b, e + b, Wd - e - b, H - e - b), radius=int(H * 0.028), fill=white)
+        band = 0.15
+        d.rounded_rectangle((e + b, e + b, Wd - e - b, int(H * band)), radius=int(H * 0.028), fill=red)
+        d.rectangle((e + b, int(H * band) - int(H * 0.03), Wd - e - b, int(H * band)), fill=red)
+        d.rectangle((e + b, int(H * band), Wd - e - b, int(H * band) + b), fill=black)
+        cy = (band * H + e + b) / 2
+        gg._legend_line_at(img, 'DANGER', Wd * 0.57, cy, 0.08 * H, 0.62 * Wd, colour=white)
+        tw, th = Wd * 0.12, H * 0.085                  # the warning triangle, white with a red "!"
+        tx = Wd * 0.17
+        d.polygon([(tx, cy - th / 2), (tx + tw / 2, cy + th / 2), (tx - tw / 2, cy + th / 2)], fill=white)
+        d.rectangle((tx - tw * 0.05, cy - th * 0.18, tx + tw * 0.05, cy + th * 0.2), fill=red)
+        d.rectangle((tx - tw * 0.05, cy + th * 0.28, tx + tw * 0.05, cy + th * 0.4), fill=red)
+        # the tower: a tapering lattice
+        cx, top, bot = Wd / 2, H * 0.24, H * 0.58
+        half_top, half_bot = Wd * 0.04, Wd * 0.14
+        lw = max(3, int(Wd * 0.012))
+        d.line((cx - half_top, top, cx - half_bot, bot), fill=black, width=lw)
+        d.line((cx + half_top, top, cx + half_bot, bot), fill=black, width=lw)
+        steps = 5
+        for i in range(steps + 1):
+            t0, t1 = i / steps, min(1, (i + 1) / steps)
+            y0, y1 = top + (bot - top) * t0, top + (bot - top) * t1
+            h0 = half_top + (half_bot - half_top) * t0
+            h1 = half_top + (half_bot - half_top) * t1
+            d.line((cx - h0, y0, cx + h0, y0), fill=black, width=lw)
+            if i < steps:
+                d.line((cx - h0, y0, cx + h1, y1), fill=black, width=lw)
+                d.line((cx + h0, y0, cx - h1, y1), fill=black, width=lw)
+        d.line((cx - Wd * 0.12, top + H * 0.04, cx + Wd * 0.12, top + H * 0.04), fill=black, width=lw)
+        r = Wd * 0.26
+        cy = (top + bot) / 2 - H * 0.01
+        ring = int(Wd * 0.045)
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=red, width=ring)
+        import math
+        a = math.radians(45)
+        d.line((cx - r * math.cos(a), cy - r * math.sin(a), cx + r * math.cos(a), cy + r * math.sin(a)), fill=red, width=ring)
+        rows = (('KEEP OFF!', 0.69, 0.075), ('DO NOT CLIMB!', 0.785, 0.055),
+                ('HAZARDOUS VOLTAGE', 0.865, 0.04), ('WILL SHOCK, BURN OR KILL', 0.92, 0.04))
+        if footer:
+            rows = (('KEEP OFF!', 0.675, 0.07), ('DO NOT CLIMB!', 0.765, 0.05),
+                    ('HAZARDOUS VOLTAGE', 0.84, 0.037), ('WILL SHOCK, BURN OR KILL', 0.893, 0.037),
+                    (footer, 0.95, 0.024))
+        rule = (rows[0][1] - rows[0][2] / 2 - 0.035) * H
+        d.rectangle((e + b, rule, Wd - e - b, rule + b), fill=black)
+        left = e + b + Wd * 0.05
+        for text, y, cap in rows:
+            layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+            gg._legend_line(layer, text, y * H, cap * H, 0.86 * Wd, colour=black)
+            box = layer.getbbox()
+            img.alpha_composite(layer.crop(box), (int(left), box[1]))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def RED_ZONE_PARKING():
+    """New York's RED ZONE / DON'T EVEN THINK OF PARKING HERE: black panel, red border and a red
+    RED ZONE band, white legend with THINK the largest line."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        Wd = int(round(H * aspect))
+        white, black, red = shs.MOD_COLOURS['white'], shs.MOD_COLOURS['black'], shs.MOD_COLOURS['red']
+        img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        e, b, w = int(H * 0.012), int(H * 0.022), int(H * 0.006)
+        d.rounded_rectangle((4, 4, Wd - 4, H - 4), radius=int(H * 0.045), fill=white)
+        d.rounded_rectangle((e, e, Wd - e, H - e), radius=int(H * 0.04), fill=red)
+        inner = (e + b, int(H * 0.1), Wd - e - b, H - e - b)
+        d.rectangle((inner[0] - w, inner[1] - w, inner[2] + w, inner[3] + w), fill=white)
+        d.rectangle(inner, fill=black)
+        gg._legend_line(img, 'RED ZONE', (0.1 * H + e) / 2, 0.045 * H, 0.6 * Wd, colour=white)
+        for text, y, cap in (("DON'T", 0.2, 0.09), ('EVEN', 0.33, 0.09), ('THINK', 0.5, 0.15),
+                             ('OF', 0.64, 0.07), ('PARKING', 0.76, 0.09), ('HERE', 0.89, 0.09)):
+            gg._legend_line(img, text, y * H, cap * H, 0.86 * Wd, colour=white)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def CARELESS_PERSON():
+    """A CARELESS PERSON IS JUST AN ACCIDENT GOING SOMEPLACE TO HAPPEN, the old safety slogan
+    banner, as photographed: white with a bright green border, italic black lettering, and
+    CARELESS and ACCIDENT in red with a red underline."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 480
+        Wd = int(round(H * aspect))
+        white, black, red = shs.MOD_COLOURS['white'], shs.MOD_COLOURS['black'], shs.MOD_COLOURS['red']
+        green = (46, 160, 67, 255)
+        img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((4, 4, Wd - 4, H - 4), radius=int(H * 0.05), fill=green)
+        b = int(H * 0.05)
+        d.rounded_rectangle((4 + b, 4 + b, Wd - 4 - b, H - 4 - b), radius=int(H * 0.03), fill=white)
+        cap = 0.2 * H
+        space = cap * 0.6
+        rows = (((('A', black, False), ('CARELESS', red, True), ('PERSON', black, False), ('IS', black, False))),
+                ((('JUST', black, False), ('AN', black, False), ('ACCIDENT', red, True), ('GOING', black, False))),
+                ((('SOMEPLACE', black, False), ('TO', black, False), ('HAPPEN', black, False))))
+        for runs, cy in zip(rows, (0.26, 0.5, 0.74)):
+            # the words side by side on one layer, a word space apart, then the line is sheared
+            # italic and centred
+            layer = Image.new('RGBA', (Wd * 2, H), (0, 0, 0, 0))
+            ld = ImageDraw.Draw(layer)
+            x = 0
+            for n, (text, colour, underline) in enumerate(runs):
+                part = Image.new('RGBA', (Wd * 2, H), (0, 0, 0, 0))
+                gg._legend_line_at(part, text, Wd, cy * H, cap, Wd * 2, colour=colour)
+                box = part.getbbox()
+                if n:
+                    x += space
+                layer.alpha_composite(part.crop(box), (int(x), box[1]))
+                if underline:
+                    y = box[3] + cap * 0.08
+                    ld.rectangle((x, y, x + box[2] - box[0], y + cap * 0.07), fill=colour)
+                x += box[2] - box[0]
+            box = layer.getbbox()
+            line = layer.crop(box)
+            k = 0.22
+            wide = Image.new('RGBA', (line.width + int(line.height * k) + 2, line.height), (0, 0, 0, 0))
+            wide.paste(line, (0, 0))
+            line = wide.transform(wide.size, Image.AFFINE, (1, k, -k * line.height, 0, 1, 0), Image.BICUBIC)
+            line = line.crop(line.getbbox())
+            maxw = int(Wd * 0.91)
+            if line.width > maxw:
+                line = line.resize((maxw, line.height), Image.LANCZOS)
+            img.alpha_composite(line, ((Wd - line.width) // 2, box[1]))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def BULLSEYE():
+    """The FDC standpipe bullseye: concentric red and white rings, drawn crisp."""
+    def make(aspect):
+        S = 1024
+        img = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        red, white = shs.MOD_COLOURS['red'], shs.MOD_COLOURS['white']
+        for r, c in ((0.5, red), (0.33, white), (0.16, red)):
+            d.ellipse((S * (0.5 - r), S * (0.5 - r), S * (0.5 + r) - 1, S * (0.5 + r) - 1), fill=c)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -1184,6 +1406,35 @@ CATALOGUE = [
     ('r1012uturn', SHS(R, 143, replace=('LEFT TURN', 'U TURN')), 'R10-12 (U TURN)'),
     ('rightlanebussign', SHS(R, 48, replace=('6AM-9AM', '7AM-7PM')), 'R3-11b (7AM-7PM)'),
     ('lightsoutnopowersign', LIGHTS_OUT(), 'blank-out sign (drawn), + _on'),
+    # --- Second pass, batch A (signs first left as drawn). Kept: bearcrossingsign (no bear
+    # symbol to draw from; already the mod's yellow).
+    ('carelesspersonsign', CARELESS_PERSON(), 'safety slogan (drawn)'),
+    ('beginfwysign', PANEL(['BEGIN', 'FREEWAY'], 'white', band=(0.2, 0.8), width=0.76), 'white panel'),
+    ('beginhwysign', PANEL(['BEGIN', 'HIGHWAY'], 'white', band=(0.2, 0.8), width=0.76), 'white panel'),
+    ('beginpkwysign', PANEL(['BEGIN', 'PARKWAY'], 'white', band=(0.2, 0.8), width=0.76), 'white panel'),
+    ('signbeginplaque', PANEL(['BEGIN'], 'white', band=(0.2, 0.8), cap_max=0.45, width=0.7), 'white plaque'),
+    ('signcenterlanebusonly69', BOOK_LINES(R, 39, [('CENTER', 0.1, 0.085, 0.8, 'white'), ('LANE', 0.23, 0.085, 0.8, 'white'),
+                                                   ('BUSES', 0.43, 0.11, 0.8), ('ONLY', 0.6, 0.11, 0.8),
+                                                   ('6AM - 9AM', 0.76, 0.075, 0.8), ('MON-FRI', 0.88, 0.06, 0.8)]),
+     'R3-9f panel (CENTER BUSES ONLY)'),
+    ('signcenterhov6a9a', BOOK_LINES(R, 39, [('CENTER', 0.1, 0.085, 0.6, 'white', 0.6), ('LANE', 0.23, 0.085, 0.6, 'white', 0.6),
+                                             ('HOV 2+', 0.43, 0.11, 0.8), ('ONLY', 0.6, 0.11, 0.8),
+                                             ('6AM - 9AM', 0.76, 0.075, 0.8), ('MON-FRI', 0.88, 0.06, 0.8)],
+                                     draw=_hov_diamond), 'R3-9f panel (CENTER HOV 2+)'),
+    ('signcenterlanenouse79', SHS(R, 39), 'R3-9f'),
+    ('signcityspeed35', BOOK_LINES(R, 11, [('CITY', 0.14, 0.115, 0.84), ('SPEED', 0.3, 0.115, 0.84),
+                                           ('LIMIT', 0.46, 0.115, 0.84), ('35', 0.74, 0.3, 0.84)]), 'R2-1 panel'),
+    ('signendspeed35', BOOK_LINES(R, 11, [('END', 0.14, 0.1, 0.8), ('35', 0.38, 0.24, 0.8),
+                                          ('MPH', 0.63, 0.1, 0.8), ('LIMIT', 0.83, 0.1, 0.8)]), 'R2-1 panel'),
+    ('signdividedhw1', SHS(R, 89), 'R6-3'),
+    ('signdividedhw2', SHS(R, 90), 'R6-3a'),
+    ('dangerbadwatersign', DANGER_PLACARD(['DO NOT DRINK', 'THIS WATER']), 'danger placard'),
+    ('dangerfallingmaterialsign', DANGER_PLACARD(['FALLING', 'MATERIAL']), 'danger placard'),
+    ('generichvdangersign', HV_DANGER(), 'high voltage placard'),
+    ('altodwphvdangersign', HV_DANGER(footer='ALTO DEPARTMENT OF WATER AND POWER'), 'high voltage placard'),
+    ('signdontthinkparking', RED_ZONE_PARKING(), 'NYC red zone (drawn)'),
+    ('signexceptbus', TEXT_PANEL(R, 60, ['EXCEPT', 'BUS'], pick=1, band=(0.14, 0.86)), 'R3-17aP plaque'),
+    ('signfdcstandpipe', BULLSEYE(), 'bullseye (drawn)'),
     ('signarchery', SYM(G, 153, [0], 'brown'), 'archer (brown)'),
     ('signmotorbike', SYM(G, 151, [4, 5], 'brown'), 'trail bike (brown)'),
     ('signoffroad', SYM(G, 151, [0, 1, 2], 'brown'), 'off-road vehicle (brown)'),
