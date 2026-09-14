@@ -406,12 +406,14 @@ def SHS_PANEL_COLOUR(chapter, page, colour, pick=0):
     return lambda: (ComposedFace(make), False, None)
 
 
-def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, width=0.84, ink='black'):
+def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, width=0.84, ink='black',
+          footer=None):
     """A rectangular temporary-traffic-control panel no single page draws at the mod's wording:
     a rounded ``colour`` panel with the inset black border at the M4-9b's proportions, ``lines``
     set in ``band`` at one size and narrowing, and optionally the M6-2's diagonal arrow lifted
     off its page (``arrow='right'`` points up-right, ``'left'`` up-left) in the lower half.
-    ``ink`` colours the border, legend and arrow (white on a green guide panel)."""
+    ``ink`` colours the border, legend and arrow (white on a green guide panel). ``footer``
+    (text, top) rules the panel off at ``top`` and sets ``text`` in the strip below it (CALL 911)."""
     def make(aspect):
         import gen_gap_signs as gg
         H = 1024
@@ -431,6 +433,11 @@ def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, wid
         for i, text in enumerate(lines):
             gg._legend_line(img, text, (band[0] + pitch * (i + 0.5)) * H, cap, width * Wd,
                             colour=black, condense=condense)
+        if footer:
+            text, top = footer
+            d.rectangle((inset, int(top * H) - stroke // 2, Wd - inset, int(top * H) + stroke // 2), fill=black)
+            gg._legend_line(img, text, (top * H + H - inset) / 2, min(cap, (1.0 - top) * H * 0.55), width * Wd, colour=black,
+                            condense=condense)
         if arrow:
             art = shs.recolour(shs.book_sign(G, 21, symbols_only=True), shs.SHS_PALETTE)
             if ink != 'black':
@@ -561,6 +568,22 @@ def SNOWFLAKE():
         d.regular_polygon((c, c, S * 0.1), 6, rotation=0, fill=ink)
         return shs.symbol_on_panel(sym, shs.MOD_COLOURS['green'], aspect, size=256, symbol_frac=0.8)
     return lambda: (ComposedFace(make), False, None)
+
+
+def SYM_ART(colour, art):
+    """A pictogram made from page art rather than outline picks, set white on the rounded
+    ``colour`` panel: ``art`` returns black-ink-on-clear (an arrow lifted off its page, or a
+    a later drawing's symbol)."""
+    return lambda: (SymbolFace(art(), shs.MOD_COLOURS[colour]), False, None)
+
+
+def _page_arrow(page, pick, turn=0):
+    """The arrow alone off a guide arrow plaque (M6-1 / M6-3), turned ``turn`` degrees clockwise."""
+    def art():
+        a = shs.recolour(shs.book_sign(G, page, pick, symbols_only=True), shs.SHS_PALETTE)
+        a = a.crop(a.getchannel('A').getbbox())
+        return a.rotate(-turn, expand=True, resample=Image.BICUBIC) if turn else a
+    return art
 
 
 def SHSI(code, variant=None, palette=None):
@@ -1064,6 +1087,28 @@ CATALOGUE = [
     ('falloutsheltersignalt', FALLOUT_SHELTER(basement=True), 'Civil Defense, IN BASEMENT (drawn)'),
     ('buslanesign', BUS_LANE(), 'NYCDOT bus lane (drawn)'),
     ('signsnowflake', SNOWFLAKE(), 'snowflake on green (drawn)'),
+    # --- Remaining-signs batch 18. Left as drawn: 99onlypricesignnew2, uiawelcomesyousign,
+    # hearbanjossign (flavour artwork), signarv, signlaundry (the page reverses the washer out
+    # of a black square); signpolice / sheriffstation kept their artwork
+    # with the blue recoloured (one-off, not catalogued).
+    ('signphone', SHS(G, 57), 'D9-1'),
+    ('signarchery', SYM(G, 153, [0], 'brown'), 'archer (brown)'),
+    ('signmotorbike', SYM(G, 151, [4, 5], 'brown'), 'trail bike (brown)'),
+    ('signoffroad', SYM(G, 151, [0, 1, 2], 'brown'), 'off-road vehicle (brown)'),
+    ('signfamily', SYM(G, 143, [3, 4, 5, 6, 7, 8], 'brown'), 'family (brown)'),
+    ('signhikingbrown', SYM(G, 149, [0, 1, 2], 'brown'), 'hiking (brown)'),
+    ('signaheadbrown', SYM_ART('brown', _page_arrow(21, 2)), 'M6-3 arrow (brown)'),
+    ('signbrownleft', SYM_ART('brown', _page_arrow(20, 4, turn=180)), 'M6-1 arrow (brown)'),
+    ('signparkingarea1mile', PANEL(['PARKING AREA', '1 MILE'], 'blue', ink='white', band=(0.14, 0.86), width=0.8),
+     'blue panel (D5-3 legend)'),
+    ('signscenicoverlookright', PANEL(['SCENIC', 'OVERLOOK'], 'blue', ink='white', arrow='right', band=(0.06, 0.52),
+                                      cap_max=0.17, width=0.8), 'blue panel + M6-2 arrow'),
+    ('reportdrunkdriversign', PANEL(['REPORT', 'DRUNK', 'DRIVERS'], 'blue', ink='white', band=(0.07, 0.73),
+                                    width=0.78, footer=('CALL 911', 0.75)), 'blue panel'),
+    ('signsignalremovalstudy', PANEL(['SIGNAL', 'UNDER', 'STUDY FOR', 'REMOVAL'], 'blue', ink='white',
+                                     band=(0.08, 0.92), width=0.78), 'blue panel'),
+    ('altextremeheatdangersign', PANEL(['CAUTION!', 'EXTREME', 'HEAT', 'DANGER'], 'brown', ink='white',
+                                       band=(0.08, 0.92), width=0.76), 'brown panel'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
