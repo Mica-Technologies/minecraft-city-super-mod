@@ -248,6 +248,42 @@ def STATE_PROPERTY():
     return lambda: (ComposedFace(make), False, None)
 
 
+def _with(mapping, extra):
+    out = dict(mapping)
+    out.update(extra)
+    return out
+
+
+def DEADLY_FORCE():
+    """The WARNING / BEYOND THIS POINT DEADLY FORCE IS AUTHORIZED sign at military and
+    federal sites: the W13-3 RAMP advisory's two-panel layout (the black divider under a short
+    top panel) in white, its legends dropped and the sign's own set in their place."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        panel = shs.book_sign(W, 111, blank=True)
+        panel = shs.recolour(panel, _with(shs.SHS_PALETTE, {(255, 245, 0): shs.MOD_COLOURS['white']}))
+        H = 1024
+        Wd = int(round(H * aspect))
+        img = panel.resize((Wd, H), Image.LANCZOS)
+        black = shs.MOD_COLOURS['black']
+        # the page's panels, as fractions of the sign's height: top 0.03-0.33, bottom 0.35-0.97
+        gg._legend_line(img, 'WARNING', 0.18 * H, 0.15 * H, 0.84 * Wd, colour=black)
+        lines = (('BEYOND THIS POINT', 0.49), ('DEADLY FORCE', 0.66), ('IS AUTHORIZED', 0.83))
+        # one narrowing for all three, set by the longest, so the lines read as one series
+        from PIL import ImageFont
+        import render_sign as rs
+        cap = 0.095 * H
+        f = ImageFont.truetype(rs.FONT_PATH, int(cap * 1.4))
+        bb = f.getbbox('H')
+        f = ImageFont.truetype(rs.FONT_PATH, int(round(int(cap * 1.4) * cap / (bb[3] - bb[1]))))
+        widest = max(f.getbbox(t)[2] - f.getbbox(t)[0] for t, _cy in lines) + 4
+        condense = min(1.0, 0.84 * Wd / widest)
+        for text, cy in lines:
+            gg._legend_line(img, text, cy * H, cap, 0.84 * Wd, colour=black, condense=condense)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -543,13 +579,14 @@ CATALOGUE = [
     # --- Remaining-signs batch 7. Left as drawn: signgatecode, extremeheatdangersign,
     # signstopherepedleft / right (R1-5b/c are 2009 signs: neither the book nor an interim ZIP),
     # stopbridgeclearancesign, the five street sweeping signs, doorsunlockedbiz,
-    # shouldertravelongreenarrowsign, signturnflashred, utilityvehiclesonlysign, deadlyforcesign.
+    # shouldertravelongreenarrowsign, signturnflashred, utilityvehiclesonlysign.
     ('signto', SHS(G, 16, pick=2), 'M4-5'),
     ('signtruckhalf', SHS(G, 16), 'M4-4'),
     ('signposttruck40', SHS(R, 13), 'R2-2'),
     ('signturnsonly', SHS(R, 36), 'R3-9a'),
     ('signupleftdownright', SHS(G, 21, pick=4, rotate_symbols=35), 'M6-4 (turned)'),
     ('signdownleftupright', SHS(G, 21, pick=4, rotate_symbols=-35), 'M6-4 (turned)'),
+    ('deadlyforcesign', DEADLY_FORCE(), 'W13-3 layout, white'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
