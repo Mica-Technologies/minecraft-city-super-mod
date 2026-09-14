@@ -292,7 +292,7 @@ def TWO_PANEL(top, lines, colour='yellow'):
     return lambda: (ComposedFace(make), False, None)
 
 
-def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None, gap=None, min_condense=None):
+def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None, gap=None, min_condense=None, shift=False):
     """A worded warning sign the book has no drawing for: the W8-1 BUMP diamond (border and
     corner radii) with its legend dropped and ``lines`` set inside it. The largest cap height
     is taken at which every line fits the diamond's width across its own band, allowing the
@@ -301,7 +301,9 @@ def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None, gap=None, min_conden
     long block (four lines under a long word): closer lines, more narrowing and a text area
     run nearer the border, as the hand-set original had it. ``ink`` replaces the black of the
     border and legend (white on a blue courtesy sign); ``gap`` (line pitch in caps) and
-    ``min_condense`` tune a tight block between the two."""
+    ``min_condense`` tune a tight block between the two. ``shift`` lets the block move off
+    centre, so its longest line sits nearer the diamond's widest point and a line near a point
+    clears the border; it then keeps each line's whole cap clear of the border."""
     MIN_CONDENSE = min_condense or (0.58 if tight else 0.7)
     GAP = gap or (1.2 if tight else 1.35)
     def make(aspect):
@@ -320,27 +322,34 @@ def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None, gap=None, min_conden
         f = ImageFont.truetype(rs.FONT_PATH, 200)
         hb = f.getbbox('H')
         unit = [(f.getbbox(t)[2] - f.getbbox(t)[0]) / float(hb[3] - hb[1]) for t in lines]  # width per cap
+        margin = 0.5 if shift else (0.1 if tight else 0.25)
+        offsets = [R * i / 40.0 for i in range(-12, 13)] if shift else [0.0]
         def fit(min_condense):
-            cap = 0.24 * S
-            while cap > 8:
-                lh = cap * GAP
-                if n * lh <= 2 * R * 0.9:
-                    cond = 1.0
-                    for k, u in enumerate(unit):
-                        # measured a quarter-cap out from the line's middle: the corners of a
-                        # line's end letters may run a little toward the border, as on real signs
-                        band = abs((k - (n - 1) / 2.0) * lh) + cap * (0.1 if tight else 0.25)
-                        avail = 2 * (R - band)
-                        cond = min(cond, avail / (u * cap) if avail > 0 else 0)
-                    if cond >= min_condense:
-                        return cap, cond
-                cap -= 2
+            best = None
+            for dy in sorted(offsets, key=abs):
+                cap = 0.24 * S
+                while cap > 8 and (best is None or cap > best[0]):
+                    lh = cap * GAP
+                    if n * lh + 2 * abs(dy) <= 2 * R * 0.9:
+                        cond = 1.0
+                        for k, u in enumerate(unit):
+                            # measured ``margin`` caps out from the line's middle: by default the
+                            # corners of a line's end letters may run a little toward the border,
+                            # as on real signs; a shifted block keeps the whole cap clear
+                            band = abs((k - (n - 1) / 2.0) * lh + dy) + cap * margin
+                            avail = 2 * (R - band)
+                            cond = min(cond, avail / (u * cap) if avail > 0 else 0)
+                        if cond >= min_condense:
+                            best = (cap, cond, dy)
+                            break
+                    cap -= 2
+            return best
         # the letters' own width unless that costs a tenth of the height narrowing would give
         wide, narrow = fit(0.92), fit(MIN_CONDENSE)
-        cap, cond = wide if wide[0] >= 0.9 * narrow[0] and not tight else narrow
+        cap, cond, dy = wide if wide[0] >= 0.9 * narrow[0] and not tight else narrow
         lh = cap * GAP
         for k, t in enumerate(lines):
-            cy = S / 2 + (k - (n - 1) / 2.0) * lh
+            cy = S / 2 + (k - (n - 1) / 2.0) * lh + dy
             gg._legend_line(img, t, cy, cap, S, colour=ink or shs.MOD_COLOURS['black'], condense=cond)
         return shs.fit_plate(img, aspect, size=256)
     return lambda: (ComposedFace(make), False, None)
@@ -702,14 +711,15 @@ CATALOGUE = [
     ('limitedmaintroadsign', TEXT_DIAMOND(['MINIMUM', 'MAINTENANCE', 'ROAD']), 'W8-1 diamond'),
     ('signnewsignal', TEXT_DIAMOND(['NEW', 'SIGNAL', 'AHEAD']), 'W8-1 diamond'),
     ('nofwyaccesssign', TEXT_DIAMOND(['NO', 'FREEWAY', 'ACCESS']), 'W8-1 diamond'),
-    ('noguardrailssign', TEXT_DIAMOND(['NO', 'GUARDRAILS']), 'W8-1 diamond'),
+    ('noguardrailssign', TEXT_DIAMOND(['NO', 'GUARDRAILS'], shift=True), 'W8-1 diamond'),
     ('nohwyaccesssign', TEXT_DIAMOND(['NO', 'HIGHWAY', 'ACCESS']), 'W8-1 diamond'),
     ('nopkwyaccesssign', TEXT_DIAMOND(['NO', 'PARKWAY', 'ACCESS']), 'W8-1 diamond'),
     ('parkwayintersectionsign', TEXT_DIAMOND(['PARKWAY', 'INTERSECTION', 'AHEAD']), 'W8-1 diamond'),
     ('plantentrancesign', TEXT_DIAMOND(['PLANT', 'ENTRANCE']), 'W8-1 diamond'),
     ('signrampsignalahead', TEXT_DIAMOND(['RAMP', 'SIGNAL', 'AHEAD']), 'W8-1 diamond'),
     ('signroadends', TEXT_DIAMOND(['ROAD', 'ENDS']), 'W8-1 diamond'),
-    ('signhightideroadflood', TEXT_DIAMOND(['ROAD', 'FLOODS', 'DURING', 'HIGH TIDE'], tight=True, gap=1.3, min_condense=0.68), 'W8-1 diamond'),
+    ('signhightideroadflood', TEXT_DIAMOND(['ROAD', 'FLOODS', 'DURING', 'HIGH TIDE'], tight=True, gap=1.3, min_condense=0.68,
+                                                    shift=True), 'W8-1 diamond'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
