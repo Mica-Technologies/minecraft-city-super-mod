@@ -140,7 +140,7 @@ def text_sign(shape, lines, bg, fg):
 
 def _stretch(shape):
     # a silhouette IS its outline; every other plate is filled edge to edge
-    return 0.0 if shape == 'silhouette' else 0.25
+    return 0.0 if shape == 'silhouette' else None
 
 
 def _size(shape):
