@@ -110,6 +110,10 @@ public class RingBarrierState {
     // green the instant the call that ended it dropped (NEMA dual entry is an entry rule, not a
     // re-entry rule — the ring waits at the barrier for the next crossing).
     int clearedAlongside = -1;
+    // A coordinated phase outside its own window that has decided to yield for a conflicting
+    // phase whose window is about to open: that phase's number, or 0. Latched so the yield still
+    // happens when min green or a pedestrian clearance holds the green past the opening point.
+    int coordYieldFor = 0;
   }
 
   private int currentBarrier = 0;
@@ -179,6 +183,19 @@ public class RingBarrierState {
   private long localCycle = 0L;
   /** Coordination cycle length in ticks for this tick's plan; 1 when not coordinated. */
   private long cycleTicks = 1L;
+  /** This tick's world time less the offset: the unwrapped background cycle position. */
+  private long cycleTime = 0L;
+  /**
+   * The window instance ({@link #windowInstance}) each phase was last served green in, or
+   * {@link Long#MIN_VALUE}. A non-coordinated phase is served at most once per window: a recall
+   * phase that gapped out early otherwise re-registered its call for the rest of its window,
+   * leaving a standing call that kept the rings from returning to the phases ahead of it.
+   */
+  private final long[] servedWindow = new long[PHASE_SLOTS];
+
+  {
+    java.util.Arrays.fill(servedWindow, Long.MIN_VALUE);
+  }
   private final long[] windowStart = new long[PHASE_SLOTS];
   private final long[] windowEnd = new long[PHASE_SLOTS];
   private final boolean[] coordPhase = new boolean[PHASE_SLOTS];
@@ -656,6 +673,7 @@ public class RingBarrierState {
     ring.dualEntry = false;
     ring.condServiceUsed = false;
     ring.clearedAlongside = -1;
+    ring.coordYieldFor = 0;
   }
 
   // region: Ring stepping
@@ -748,9 +766,24 @@ public class RingBarrierState {
               : Math.max(0L, ring.pedStart + ring.walkHold + phase.getPedClear() - now);
         }
         long coordClearance = phase.getYellow() + phase.getRedClear() + pedRemaining;
+        // A coordinated green OUTSIDE its own window is not always running late: after an early
+        // return (a side street that gapped out) it came up early, and the time it is filling may
+        // be another conflicting phase's window — typically a lead left at the top of the cycle.
+        // Dwelling to its own yield point there held the left's accepted call until the far end of
+        // the window, so the left then ran straight after the side street every cycle. So it also
+        // yields, early enough for that phase to start on time, when a waiting conflicting phase's
+        // window is about to open. Nothing is shortened: the time given up was never its own.
+        if (isCoord && !ring.dualEntry && ring.coordYieldFor == 0) {
+          ring.coordYieldFor = conflictingWindowOpening(phase, ringNum, plan, coordClearance);
+        }
+        if (ring.coordYieldFor != 0 && !tickRawCalled[ring.coordYieldFor]) {
+          ring.coordYieldFor = 0; // the waiting phase's demand went away before the clearance
+        }
+        int windowOpeningFor = isCoord && !ring.dualEntry ? ring.coordYieldFor : 0;
         boolean coordYieldDue = isCoord && !ring.dualEntry
-            && coordYieldReached(phaseNum, coordClearance, now - ring.greenStart)
-            && demandConflictsWith(phase, ringNum, plan, tickRawCalled);
+            && ((coordYieldReached(phaseNum, coordClearance, now - ring.greenStart)
+            && demandConflictsWith(phase, ringNum, plan, tickRawCalled))
+            || windowOpeningFor != 0);
         // While a coordinated phase is holding for its yield point, ordinary gap-out/conflict
         // termination must not take it off green — that is what the hold IS.
         boolean coordHold = isCoord && !ring.dualEntry && !coordYieldDue;
@@ -834,6 +867,11 @@ public class RingBarrierState {
         if (terminate && minMet) {
           // Phase next: commit to the calls this termination is for.
           commitConflictingCalls(phase, ringNum, plan, called);
+          if (windowOpeningFor != 0 && coordYieldDue) {
+            // Its window has not opened yet, so its call is not accepted and the commitment
+            // above missed it; without this the idle ring would re-serve the coordinated phase.
+            committedCalls[windowOpeningFor] = true;
+          }
           if (forceOff) {
             // Forcing off consumes the window acceptance: the phase's window has closed, so it has
             // had its chance this cycle and the remaining time belongs to the coordinated phase.
@@ -984,6 +1022,9 @@ public class RingBarrierState {
       lockedCalls[phase.getPhaseNumber()] = false; // LOCK: service discharges the latched call
       windowAccepted[phase.getPhaseNumber()] = false; // service consumes the window acceptance
       committedCalls[phase.getPhaseNumber()] = false; // service discharges the commitment
+      if (coordinated) {
+        servedWindow[phase.getPhaseNumber()] = windowInstance(phase.getPhaseNumber());
+      }
     }
     ring.activePhase = phase.getPhaseNumber();
     ring.serviceSeq++;
@@ -1009,6 +1050,7 @@ public class RingBarrierState {
     ring.bikeCall = startSummary != null && startSummary.getProtectedTotal() > 0;
     ring.maxStart = -1L; // NEMA MAX: (re)starts timing at the first conflicting call, not at green
     ring.dualEntry = false; // normal service; fillDualEntry re-flags its own entries afterward
+    ring.coordYieldFor = 0;
   }
 
   /**
@@ -1270,6 +1312,7 @@ public class RingBarrierState {
     long cycle = Math.max(1L, co.getCycleLength());
     cycleTicks = cycle;
     localCycle = ((now - co.getOffset()) % cycle + cycle) % cycle;
+    cycleTime = now - co.getOffset();
 
     activeCoordinationSlot = nextCoordinationSlot(activeCoordinationSlot, scheduled, true,
         localCycle, previousLocalCycle);
@@ -1660,6 +1703,53 @@ public class RingBarrierState {
   }
 
   /**
+   * For a coordinated phase currently outside its own window: the waiting conflicting phase whose
+   * permissive window opens within {@code clearance} ticks — the point the coordinated phase has
+   * to start clearing for that phase to go green at its window start — or {@code 0} if none.
+   *
+   * <p>Only a window still <em>ahead</em> is looked for; a window already open is left to the
+   * offset-recovery dwell. Serving into an open window on a gapped-out recall phase would re-serve
+   * it on every gap-out, thrashing the coordinated phase. A yield that could not complete in time
+   * (min green or a pedestrian clearance still running) is carried by
+   * {@link RingRuntime#coordYieldFor} instead. Inside its own window the coordinated phase never
+   * yields early. Demand is judged raw, like the coordinated yield point, because a window that
+   * has not opened cannot accept it.</p>
+   */
+  private int conflictingWindowOpening(TrafficSignalProgrammedPhase coord, int ringNum,
+      TrafficSignalProgrammedPhasePlan plan, long clearance) {
+    int n = coord.getPhaseNumber();
+    long ownLen = windowEnd[n] - windowStart[n];
+    if (!coordinated || ownLen <= 0L || windowPos(n) < ownLen) {
+      return 0;
+    }
+    int best = 0;
+    long bestArc = Long.MAX_VALUE;
+    for (int m = 1; m <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; m++) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(m);
+      if (m == n || p == null || !p.isActive() || coordPhase[m] || !tickRawCalled[m]
+          || m == ring1.activePhase || m == ring2.activePhase
+          || windowEnd[m] - windowStart[m] <= 0L || !conflicts(coord, ringNum, plan, m)) {
+        continue;
+      }
+      long arc = ((windowStart[m] - localCycle) % cycleTicks + cycleTicks) % cycleTicks;
+      if (arc > 0L && arc <= Math.max(0L, clearance) && arc < bestArc) {
+        best = m;
+        bestArc = arc;
+      }
+    }
+    return best;
+  }
+
+  /**
+   * Which occurrence of a phase's permissive window the cycle is in: the number of whole cycles
+   * since that window last opened, counted on the unwrapped cycle time. Changes exactly when the
+   * window opens, so a window that spans the cycle wrap is still one instance.
+   */
+  private long windowInstance(int phaseNumber) {
+    return Math.floorDiv(cycleTime - windowStart[phaseNumber], Math.max(1L, cycleTicks));
+  }
+
+  /**
    * The local cycle's position within a phase's permissive window. Positions wrap, so a local cycle
    * outside the window yields a position at or beyond the window's length.
    */
@@ -1733,7 +1823,8 @@ public class RingBarrierState {
       windowAccepted[n] = false;
       return false;
     }
-    if (acceptanceOpen(n, phase.getYellow() + phase.getRedClear())) {
+    if (acceptanceOpen(n, phase.getYellow() + phase.getRedClear())
+        && servedWindow[n] != windowInstance(n)) {
       windowAccepted[n] = true;
     }
     return windowAccepted[n];

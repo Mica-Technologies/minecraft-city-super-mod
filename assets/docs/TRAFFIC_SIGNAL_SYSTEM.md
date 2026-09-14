@@ -939,6 +939,23 @@ where the cycle sits now. An instantaneous comparison cannot separate a green th
 and has just crossed its yield point (terminate now — it may have crossed between two sparse ticks)
 from one that only just started well beyond it because the cycle is out of alignment (dwell).
 
+**A coordinated green outside its window is not always late.** After an *early return* (a side
+street that gapped out) the coordinated phase comes up early, and the time it is filling can be a
+conflicting phase's window still ahead of it — typically a lead left at the top of the cycle.
+Dwelling to its own yield point there held the left's accepted call to the far end of the window,
+so the left ran straight after the side street every cycle. So a coordinated phase outside its own
+window also yields when a waiting conflicting phase's window is about to open, set back by its
+clearance so that phase starts at its window start (`conflictingWindowOpening`). The decision is
+latched on the ring (`coordYieldFor`) so min green or a pedestrian clearance cannot make it miss the
+point, and the target is committed as the phase-next call because its window has not accepted it
+yet. Only windows still ahead count; an already-open window is left to the dwell, and inside its
+own window the coordinated phase still never yields early.
+
+**One service per window.** A non-coordinated phase is served at most once per occurrence of its
+window (`servedWindow`, keyed by `windowInstance`). A recall phase that gapped out early otherwise
+re-registered its call for the rest of its window: a standing side-street call that kept the idle
+ring from returning to the phases ahead of it on the other barrier.
+
 Note the consequence when reading a running controller: while recovering, the coordinated phase's
 green *starts* late and spans the top of the cycle. What defines correct coordination is that the
 coordinated phase is **green at the offset** (the green band) and that the side street **starts at

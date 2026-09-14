@@ -456,13 +456,19 @@ later cannot be served this cycle.
 
 The coordinated phase has a yield point too, budgeting the pedestrian clearance it still **owes**
 (a ped recall has normally finished by then; a phase resting on WALK recycles its walk and still
-owes the full interval) plus yellow and red. It is the only thing that ends a coordinated green:
+owes the full interval) plus yellow and red. It ends a coordinated green, with one exception below:
 
 - Before it, gap-out and conflicting calls **cannot** take the phase off green — it holds past max
   green (coordinated phases are already max-out exempt).
 - A coordinated phase sitting outside its own window **dwells** on green until the yield point comes
   round again. That is the whole of our offset correction, and it is add-only by construction: no
   side-street split and no pedestrian interval is ever cut short to catch up.
+- The exception: outside its own window, it also yields when a waiting conflicting phase's window is
+  **about to open** (a lead left at the top of the cycle, after an early return), timed so that
+  phase starts at its window start. The time given up was never the coordinated phase's own.
+
+A non-coordinated phase is served at most **once per window**, so a recall phase that gaps out early
+does not re-register a standing call for the rest of its window.
 
 "Has the yield point been reached" is evaluated from the **start of the green**, not from the
 current cycle position — that is what separates a green that legitimately crossed its yield point
