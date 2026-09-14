@@ -783,6 +783,16 @@ CATALOGUE = [
     ('signexceptbicycle', TEXT_PANEL(R, 60, ['EXCEPT', 'BICYCLES'], pick=1, band=(0.14, 0.86)), 'R3-17aP plaque'),
     ('signexceptbusbicycle', TEXT_PANEL(R, 60, ['EXCEPT BUS', '& BICYCLES'], pick=1, band=(0.14, 0.86)),
      'R3-17aP plaque'),
+    # --- Remaining-signs batch 13. Left as drawn: hikersaheadsign (no hiker symbol in the
+    # book), signleftbikerightpark, mivehiclessharecenterlanesign, paytocrosssign,
+    # signrightlanebikeonly, signslowdownpedestriantraffic, signslowschool,
+    # thicklysettledspeedlimit25mphsign, the six turning-vehicles-yield signs (the book's R10-15
+    # is text only; the mod's are the later symbol versions), schoolsafetyzonesign,
+    # streetsweepmonschool, 99onlypricesignold.
+    ('signusecrosswalkright', SHS(R, 118, pick=1), 'R9-3bP'),
+    ('signusecrosswalkleft', SHS(R, 118, pick=1, rotate_symbols=180), 'R9-3bP (left)'),
+    ('trailheadcrossingssign', TEXT_DIAMOND(['TRAILHEAD', 'CROSSINGS'], shs.MOD_COLOURS['fyg'], shift=True),
+     'W8-1 diamond, FYG'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
