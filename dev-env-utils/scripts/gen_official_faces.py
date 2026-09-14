@@ -76,37 +76,143 @@ class ComposedFace(object):
         self.fn = fn
 
 
+def _inset_polygon(pts, d):
+    """A convex polygon moved ``d`` inward along every edge (clockwise or not)."""
+    n = len(pts)
+    area = sum(pts[i][0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * pts[i][1] for i in range(n))
+    sign = 1.0 if area > 0 else -1.0
+    lines = []
+    for i in range(n):
+        (x0, y0), (x1, y1) = pts[i], pts[(i + 1) % n]
+        ex, ey = x1 - x0, y1 - y0
+        ln = (ex * ex + ey * ey) ** 0.5
+        nx, ny = -ey / ln * sign, ex / ln * sign          # the inward normal
+        lines.append(((x0 + nx * d, y0 + ny * d), (ex, ey)))
+    out = []
+    for i in range(n):
+        (px, py), (ax, ay) = lines[i - 1]
+        (qx, qy), (bx, by) = lines[i]
+        t = ((qx - px) * by - (qy - py) * bx) / float(ax * by - ay * bx)
+        out.append((px + ax * t, py + ay * t))
+    return out
+
+
+def _rounded_polygon(pts, r, steps=12):
+    """A convex polygon with every corner replaced by an arc of radius ``r``."""
+    import math
+    out = []
+    n = len(pts)
+    for i in range(n):
+        px, py = pts[i]
+        ux, uy = pts[i - 1][0] - px, pts[i - 1][1] - py
+        vx, vy = pts[(i + 1) % n][0] - px, pts[(i + 1) % n][1] - py
+        lu, lv = math.hypot(ux, uy), math.hypot(vx, vy)
+        ux, uy, vx, vy = ux / lu, uy / lu, vx / lv, vy / lv
+        half = math.acos(max(-1.0, min(1.0, ux * vx + uy * vy))) / 2.0
+        t = r / math.tan(half)
+        bx, by = ux + vx, uy + vy
+        lb = math.hypot(bx, by)
+        cx, cy = px + bx / lb * r / math.sin(half), py + by / lb * r / math.sin(half)
+        a0 = math.atan2(py + uy * t - cy, px + ux * t - cx)
+        a1 = math.atan2(py + vy * t - cy, px + vx * t - cx)
+        sweep = (a1 - a0 + math.pi) % (2 * math.pi) - math.pi   # the short way round
+        out += [(cx + r * math.cos(a0 + sweep * k / steps), cy + r * math.sin(a0 + sweep * k / steps))
+                for k in range(steps + 1)]
+    return out
+
+
 def POINTED_ONE_WAY(left):
-    """The ONE WAY sign whose panel is cut to a point behind the arrowhead, as some cities
-    make it: a pentagon panel drawn at the plate's proportions (white border, black field),
-    with the R6-1's own arrow and legend set on it, the arrow tip a little inside the point."""
+    """The ONE WAY sign whose panel is cut to a point behind the arrowhead, as Los Angeles and
+    other cities make it: a pentagon panel at the plate's proportions (thin white border,
+    black field), the R6-1's own arrowhead and legend set on it with the shaft run out to
+    the square end. The cut is parallel to the arrowhead's edges, so the black margin round
+    the head is as even as it is above and below it; the plate is longer than the R6-1's 3:1,
+    so the extra shaft goes to the word space and either side of the legend."""
     def make(aspect):
+        import math
         import numpy as np
-        from PIL import ImageDraw
-        W, H = 1024, int(round(1024 / aspect))
+        H = 480
+        W = int(round(H * aspect))
+        white, black = shs.MOD_COLOURS['white'], shs.MOD_COLOURS['black']
+        b = 0.04 * H                            # white border
+        m = 0.075 * H                           # black field above and below the head
+        tail = 0.2 * H                          # black field beyond the end of the shaft
+
+        # the arrow and legend alone, off the page (the R6-1L; the right sign mirrors the
+        # arrow, never the words)
+        art = shs.recolour(shs.book_sign(R, 87, 1, symbols_only=True), shs.SHS_PALETTE)
+        art = art.crop(art.getchannel('A').getbbox())
+        a = np.asarray(art).astype(np.float32)
+        alpha = a[..., 3] / 255.0
+        lum = a[..., :3].mean(axis=2)
+        ink = alpha * np.clip((white[0] - lum) / float(white[0] - black[0]), 0.0, 1.0)
+        solid = alpha > 0.5
+
+        # the head's slope (x per y) off its upper edge, and the shaft off the last column
+        ah, aw = solid.shape
+        def lead(row):
+            return float(np.argmax(solid[row]))
+        k = (lead(int(ah * 0.2)) - lead(int(ah * 0.45))) / (ah * 0.45 - ah * 0.2)
+        rows = np.nonzero(solid[:, -4])[0]
+        shaft_top, shaft_bot = rows[0], rows[-1] + 1
+        # the outline's anti-aliased edge renders dark; the legend is inside the shaft only
+        ink[:shaft_top + 4] = 0
+        ink[shaft_bot - 4:] = 0
+        cols = np.nonzero(ink.max(axis=0) > 0.5)[0]
+        legend_x0, legend_x1 = cols[0], cols[-1] + 1
+
+        scale = (H - 2 * (b + m)) / float(ah)
+        slant = math.sqrt(1 + k * k)            # horizontal run of a unit perpendicular
+        tip = (b + m) * slant                   # the head's point, in panel px
+        shaft_end = W - b - tail
+
+        # the panel: outer outline, then the black field inset by the border
+        shoulder = k * H / 2.0
+        outer = [(0, H / 2.0), (shoulder, 0), (W, 0), (W, H), (shoulder, H)]
+        inner = _inset_polygon(outer, b)
         panel = Image.new('RGBA', (W, H), (0, 0, 0, 0))
         d = ImageDraw.Draw(panel)
-        b = int(H * 0.09)                       # the border, as the R6-1's
-        r = int(H * 0.06)
-        shoulder = W * 0.16                     # the cut runs this far in from the point end
-        if left:
-            outer = [(0, H / 2.0), (shoulder, 0), (W - r, 0), (W, r), (W, H - r), (W - r, H), (shoulder, H)]
-            inner = [(b * 1.6, H / 2.0), (shoulder + b * 0.6, b), (W - b, b), (W - b, H - b), (shoulder + b * 0.6, H - b)]
-        else:
-            outer = [(W, H / 2.0), (W - shoulder, 0), (r, 0), (0, r), (0, H - r), (r, H), (W - shoulder, H)]
-            inner = [(W - b * 1.6, H / 2.0), (W - shoulder - b * 0.6, b), (b, b), (b, H - b), (W - shoulder - b * 0.6, H - b)]
-        d.polygon(outer, fill=(245, 245, 245, 255))
-        d.polygon(inner, fill=(20, 20, 20, 255))
-        # the arrow and legend alone, off the page, scaled to sit inside the black field
-        art = shs.recolour(shs.book_sign(R, 87, 1 if left else 0, symbols_only=True), shs.SHS_PALETTE)
-        bb = art.getchannel('A').getbbox()
-        art = art.crop(bb)
-        gap = b * 2.6                           # black field between the arrowhead and the point
-        target_w = W - b - (b * 1.6 + gap)
-        scale = min(target_w / art.width, (H - 2.2 * b) / art.height)
-        art = art.resize((int(art.width * scale), int(art.height * scale)), Image.LANCZOS)
-        x = int((b * 1.6 + gap) if left else (W - b * 1.6 - gap - art.width))
-        panel.alpha_composite(art, (x, (H - art.height) // 2))
+        d.polygon(_rounded_polygon(outer, 0.08 * H), fill=white)
+        d.polygon(_rounded_polygon(inner, 0.04 * H), fill=black)
+
+        # the arrow: the book's silhouette, its shaft carried on to shaft_end
+        sw, sh = int(round(aw * scale)), int(round(ah * scale))
+        top = (H - sh) / 2.0
+        sil = Image.fromarray((solid * 255).astype(np.uint8)).resize((sw, sh), Image.LANCZOS)
+        arrow = Image.new('L', (W, H), 0)
+        arrow.paste(sil, (int(round(tip)), int(round(top))))
+        ImageDraw.Draw(arrow).rectangle(
+            [tip + sw - 2, top + shaft_top * scale, shaft_end, top + shaft_bot * scale - 1], fill=255)
+
+        # the legend: split into its two words at the widest gap, the spare shaft shared out
+        cols_ink = ink[:, legend_x0:legend_x1].max(axis=0) > 0.02
+        gaps, run = [], None
+        for i, on in enumerate(cols_ink):
+            if not on and run is None:
+                run = i
+            elif on and run is not None:
+                gaps.append((i - run, run, i))
+                run = None
+        _, g0, g1 = max(gaps)
+        words = [(legend_x0, legend_x0 + g0), (legend_x0 + g1, legend_x1)]
+        start = tip + legend_x0 * scale                  # where the book sets it
+        room = shaft_end - (tip + sw)                    # the shaft added past the book's
+        offsets = [start + room * 0.45, start + room * 0.55]
+        # the right sign's legend is the same block mirrored whole, its words kept in order
+        block_x1 = offsets[1] + (legend_x1 - legend_x0) * scale
+        shift = 0.0 if left else W - block_x1 - offsets[0]
+        ink_img = Image.new('L', (W, H), 0)
+        for (x0, x1), ox in zip(words, offsets):
+            word = Image.fromarray((ink[:, x0:x1] * 255).astype(np.uint8))
+            word = word.resize((int(round((x1 - x0) * scale)), sh), Image.LANCZOS)
+            ox = ox + (x0 - legend_x0) * scale + shift
+            ink_img.paste(word, (int(round(ox)), int(round(top))))
+
+        if not left:
+            arrow = arrow.transpose(Image.FLIP_LEFT_RIGHT)
+            panel = panel.transpose(Image.FLIP_LEFT_RIGHT)
+        panel.paste(Image.new('RGBA', (W, H), white), (0, 0), arrow)
+        panel.paste(Image.new('RGBA', (W, H), black), (0, 0), ink_img)
         return shs.fit_plate(panel, aspect, size=256)
     return lambda: (ComposedFace(make), False, None)
 
