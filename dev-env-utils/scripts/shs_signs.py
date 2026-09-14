@@ -423,10 +423,26 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
             continue
         if fill:
             fill_boxes.append(bbox)
-        if rotate_symbols and bbox.width < 0.5 * rect.width and bbox.height < 0.5 * rect.height:
+        # a symbol rather than the panel: an arrow may span most of the width but not the area
+        small = bbox.width * bbox.height < 0.3 * rect.width * rect.height
+        if rotate_symbols and small:
             # a symbol (the arrow), not the panel: turned about its own centre, where it is
             el = '<g transform="rotate(%s,%s,%s)">%s</g>' % (
                 rotate_symbols, (bbox.x0 + bbox.x1) / 2, (bbox.y0 + bbox.y1) / 2, el)
+        if mirror_symbols == 'both' and small:
+            # A double-headed arrow from a single one: the head half of the arrow (its
+            # left half, clipped) and that half's mirror image, meeting at the arrow's own
+            # centre with one shaft width -- mirroring the whole arrow would lay its
+            # squared tail over the other head. The clip is in the element's own space, so
+            # the same rectangle serves both copies.
+            cid = 'half_%d' % len(kept)
+            cx = (bbox.x0 + bbox.x1) / 2
+            kept.append('<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="%s"/></clipPath>'
+                        % (cid, bbox.x0 - 1, bbox.y0 - 1, cx - bbox.x0 + 1, bbox.height + 2))
+            kept.append('<g clip-path="url(#%s)">%s</g>' % (cid, el))
+            kept.append('<g transform="matrix(-1,0,0,1,%s,0)" clip-path="url(#%s)">%s</g>'
+                        % (2 * cx, cid, el))
+            continue
         kept.append(el)
     # Legend glyphs are the ones set in a Series (Highway Gothic) font; captions, reference
     # letters and dimensions are all Nimbus Sans. Match each SVG glyph to the raw text's
@@ -441,7 +457,7 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
         # the glyph outlines carry no fill rule; a counter (the hole in an A) needs even-odd
         kept.append(m.group(0).replace('<use ', '<use fill-rule="evenodd" ', 1))
         n_glyphs += 1
-    if mirror_symbols:
+    if mirror_symbols is True:
         # The paths (panel, border, arrow) flipped about the sign's centre line; the glyphs,
         # which came last into ``kept``, left as they are so the legend still reads
         n_paths = len(kept) - n_glyphs
@@ -504,7 +520,9 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
     the right-hand version of a sign the book draws left-handed with a legend;
     ``rotate_symbols`` (degrees, clockwise) turns each symbol smaller than half the sign --
     the arrow, not the panel -- about its own centre, so an up arrow points left or right
-    where it is. ``replace`` may also be a list of (old, new) pairs.
+    where it is; ``mirror_symbols='both'`` keeps each symbol and adds its mirror image, a
+    single arrow becoming the double-headed one. ``replace`` may also be a list of (old,
+    new) pairs.
     """
     p = book_page(chapter, page)
     fills = _sign_fills(p)
@@ -621,7 +639,7 @@ SHS_PALETTE = {
 }
 
 
-def official_face(face, aspect, mirror=False, palette=None, size=DEFAULT_TEX, stretch_tol=0.25):
+def official_face(face, aspect, mirror=False, palette=None, size=DEFAULT_TEX, stretch_tol=None):
     """A rendered drawing onto a sign texture: palette-mapped, optionally mirrored (the
     left-hand version of a symbol the book draws right-handed only), fitted to the plate.
     ``stretch_tol=0`` keeps the face's true proportions whatever the plate -- a silhouette
@@ -683,7 +701,7 @@ def symbol_on_panel(symbol, panel_colour, aspect=1.0, size=DEFAULT_TEX, symbol_f
     return img.resize((size, size), Image.LANCZOS)
 
 
-def fit_plate(face, aspect, size=DEFAULT_TEX, margin=0.0, stretch_tol=0.25):
+def fit_plate(face, aspect, size=DEFAULT_TEX, margin=0.0, stretch_tol=None):
     """Squish a sign face to the square texture its plate stretches back to ``aspect``.
 
     The plate models come in a handful of proportions and the real signs in many more, so a
@@ -696,7 +714,9 @@ def fit_plate(face, aspect, size=DEFAULT_TEX, margin=0.0, stretch_tol=0.25):
     w, h = face.size
     sign_aspect = w / float(h)
     ratio = sign_aspect / aspect
-    if abs(ratio - 1.0) <= stretch_tol:
+    if stretch_tol is None or abs(ratio - 1.0) <= stretch_tol:
+        # the default: every face fills its plate edge to edge, as the hand-drawn faces
+        # did; a sign whose drawing is far from its plate gets a better plate instead
         pw = ph = 1.0 - 2 * margin
     elif ratio > 1.0:                        # width-limited
         pw = 1.0 - 2 * margin

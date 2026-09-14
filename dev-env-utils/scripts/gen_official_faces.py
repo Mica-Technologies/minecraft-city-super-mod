@@ -101,7 +101,7 @@ CATALOGUE = [
     ('signbuslane', SHS(R, 30, pick=3), 'R3-5b'),
     ('signleftmustturnleft', SHS(R, 31), 'R3-7L'),
     ('buslaneahead', SHS(R, 44), 'R3-10a'),
-    ('signhovlaneends', SHS(R, 51), 'R3-14'),   # plate changed to wide for it (2026-09-13)
+    ('signhovlaneends', SHS(R, 51), 'R3-14'),   # portrait plate: the R3-14 is 24 x 30
     ('signhovlaneahead', SHS(R, 58), 'R3-15'),
     ('signaheadplaque', SHS(R, 60, pick=1), 'R3-17a'),
     ('signendsplaque', SHS(R, 60, pick=2), 'R3-17b'),
@@ -115,8 +115,8 @@ CATALOGUE = [
     ('signwrongway', SHS(R, 75), 'R5-1a'),
     ('signnotrucks', SHS(R, 77), 'R5-2'),
     ('signnomotorvehicles', SHS(R, 79), 'R5-3'),
-    ('signcommercialexclude', SHS(R, 80), 'R5-4'),
-    ('signvehiclelugsprohibit', SHS(R, 81), 'R5-5'),
+    ('signcommercialexclude', SHS(R, 80), 'R5-4'),   # portrait plate (2026-09-13)
+    ('signvehiclelugsprohibit', SHS(R, 81), 'R5-5'),   # portrait plate (2026-09-13)
     ('signmotorcycleprohibit', SHS(R, 84), 'R5-8'),
     ('signpedestrianprohibit', SHS(R, 86, pick=1), 'R5-10b'),
     ('signloadzonenoparking', SHS(R, 93, pick=1), 'R7-6'),
@@ -266,10 +266,10 @@ CATALOGUE = [
     ('signnonmotorprohibit', SHS(R, 83), 'R5-7'),
     ('signonewayright', SHS(R, 88), 'R6-2R'),
     ('signonewayleft', SHS(R, 88, mirror_symbols=True), 'R6-2L'),
-    ('signstopherered', SHS(R, 136, pick=1), 'R10-6a'),
+    ('signstopherered', SHS(R, 136), 'R10-6'),   # straight arrow, as the mod drew both
     ('signstopherered2', SHS(R, 136, mirror_symbols=True), 'R10-6 (right)'),
     ('signstophereflashred2', SHS(R, 115, mirror_symbols=True), 'R8-10 (right)'),
-    ('signnoparkinganytime', SHS(R, 91), 'R7-1'),
+    ('signnoparkinganytime', SHS(R, 91, mirror_symbols='both'), 'R7-1 (both ways)'),
     ('signnoturnred', SHS(R, 141), 'R10-11a'),
     ('signoturnonred', SHS(R, 142), 'R10-11b'),
     ('signonehrparking97', SHS(R, 93), 'R7-5 (1 hr)'),
@@ -360,7 +360,7 @@ def render(source, info):
     # readable a few blocks away
     return shs.official_face(face, info['aspect'], mirror, palette,
                              size=256 if info['aspect'] >= 1.8 else shs.DEFAULT_TEX,
-                             stretch_tol=0.0 if info['back'] else 0.25)
+                             stretch_tol=0.0 if info['back'] else None)
 
 
 # ----------------------------------------------------------------------------- sheets
