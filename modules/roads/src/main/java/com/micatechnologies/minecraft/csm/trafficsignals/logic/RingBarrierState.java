@@ -1275,39 +1275,38 @@ public class RingBarrierState {
         localCycle, previousLocalCycle);
     previousLocalCycle = localCycle;
 
-    for (int ring = 1; ring <= 2; ring++) {
-      int[] seq = plan.getRingSequence(ring);
-      // Active phases in this ring, in sequence order.
-      List<Integer> active = new ArrayList<>();
-      for (int n : seq) {
-        TrafficSignalProgrammedPhase p = plan.getPhase(n);
-        if (p != null && p.isActive()) {
-          active.add(n);
+    // Windows are laid out barrier by barrier, not ring by ring. The rings cross a barrier
+    // together, so a barrier is one slice of the cycle that both rings share: its length is the
+    // longer of the two rings' split totals on it, and a ring with no phase on a barrier simply
+    // waits at it. Tiling each ring's phases over the whole cycle on its own broke exactly that
+    // case — a T intersection whose ring 2 has only phase 6 got a phase-6 window spanning the
+    // entire cycle, across the side street's time, whatever split was typed for it.
+    BarrierSplits bs = barrierSplits(plan, co, cycle);
+    long total = 0L;
+    for (int b = 0; b < bs.order.length; b++) {
+      total += Math.max(bs.total[0][b], bs.total[1][b]);
+    }
+    long barrierStart = 0L;
+    for (int b = 0; b < bs.order.length && total > 0L; b++) {
+      // Barriers are normalised to tile the cycle; the last absorbs rounding.
+      long len = b == bs.order.length - 1 ? cycle - barrierStart
+          : Math.max(bs.total[0][b], bs.total[1][b]) * cycle / total;
+      for (int ring = 1; ring <= 2; ring++) {
+        List<Integer> onBarrier = activeOnBarrier(plan, ring, bs.order[b]);
+        long ringTotal = bs.total[ring - 1][b];
+        long cum = barrierStart;
+        for (int i = 0; i < onBarrier.size(); i++) {
+          int n = onBarrier.get(i);
+          // A ring shorter than the barrier has its phases stretched in proportion to fill it.
+          long w = ringTotal > 0L ? splitOrShare(plan, co, ring, n, cycle) * len / ringTotal
+              : len / onBarrier.size();
+          windowStart[n] = cum;
+          cum += w;
+          // Last phase on the barrier absorbs rounding so the ring meets the barrier exactly.
+          windowEnd[n] = (i == onBarrier.size() - 1) ? barrierStart + len : cum;
         }
       }
-      if (active.isEmpty()) {
-        continue;
-      }
-      // Splits (configured or evenly divided), normalized to tile the cycle exactly.
-      long total = 0L;
-      long[] split = new long[active.size()];
-      for (int i = 0; i < active.size(); i++) {
-        long s = co.getSplit(active.get(i));
-        if (s <= 0L) {
-          s = cycle / active.size();
-        }
-        split[i] = s;
-        total += s;
-      }
-      long cum = 0L;
-      for (int i = 0; i < active.size(); i++) {
-        int n = active.get(i);
-        long w = total > 0L ? split[i] * cycle / total : cycle / active.size();
-        windowStart[n] = cum;
-        cum += w;
-        // Last phase absorbs rounding so windows tile [0, cycle) exactly.
-        windowEnd[n] = (i == active.size() - 1) ? cycle : cum;
-      }
+      barrierStart += len;
     }
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
       coordPhase[n] = co.isCoordinatedPhase(n);
@@ -1422,42 +1421,111 @@ public class RingBarrierState {
     }
   }
 
+  /** Each ring's split total on each barrier, with the barriers in the order the rings cross them. */
+  static final class BarrierSplits {
+    /** Barrier numbers in crossing order, starting at the barrier ring 1's sequence opens on. */
+    final int[] order;
+    /** {@code total[ring - 1][i]}: that ring's split total on {@code order[i]}, in ticks. */
+    final long[][] total;
+
+    BarrierSplits(int[] order) {
+      this.order = order;
+      this.total = new long[2][order.length];
+    }
+  }
+
   /**
-   * Non-fatal check that the two rings' splits meet at every barrier. Each ring's splits are
-   * normalised to the cycle on their own, so nothing else forces ring 1's barrier-A phases and
-   * ring 2's barrier-A phases to add up to the same length — but the rings cross a barrier
-   * together, so when the totals differ the ring that finishes its side first waits (dark or
-   * held) for the other by the difference, every cycle, and its remaining windows sit late by
-   * that much. A real controller refuses such a plan; this is an advisory for the same reason
-   * {@link #findSplitShortfall} is. Barriers that only one ring has phases on are not compared.
+   * Adds up each ring's splits per barrier for a coordination pattern. The barrier order matches
+   * {@link #handleBarrier}'s rotation (ascending, starting at {@link #firstBarrier}), so the
+   * windows built from it run in the order the rings actually cross.
+   */
+  BarrierSplits barrierSplits(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalCoordinationPlan co, long cycle) {
+    int[] ascending = distinctBarriers(plan);
+    int first = firstBarrier(plan);
+    int start = 0;
+    for (int i = 0; i < ascending.length; i++) {
+      if (ascending[i] == first) {
+        start = i;
+        break;
+      }
+    }
+    int[] order = new int[ascending.length];
+    for (int i = 0; i < ascending.length; i++) {
+      order[i] = ascending[(start + i) % ascending.length];
+    }
+    BarrierSplits bs = new BarrierSplits(order);
+    for (int ring = 1; ring <= 2; ring++) {
+      for (int b = 0; b < order.length; b++) {
+        for (int n : activeOnBarrier(plan, ring, order[b])) {
+          bs.total[ring - 1][b] += splitOrShare(plan, co, ring, n, cycle);
+        }
+      }
+    }
+    return bs;
+  }
+
+  /** The active phases of a ring's sequence that sit on {@code barrier}, in sequence order. */
+  private static List<Integer> activeOnBarrier(TrafficSignalProgrammedPhasePlan plan, int ring,
+      int barrier) {
+    List<Integer> out = new ArrayList<>();
+    for (int n : plan.getRingSequence(ring)) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      if (p != null && p.isActive() && p.getBarrier() == barrier) {
+        out.add(n);
+      }
+    }
+    return out;
+  }
+
+  /**
+   * A phase's split as configured, or — for a split of 0 — an even share of the cycle among the
+   * active phases of its ring. Never below one tick, so every active phase keeps a window.
+   */
+  private static long splitOrShare(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalCoordinationPlan co, int ring, int phaseNumber, long cycle) {
+    long s = co.getSplit(phaseNumber);
+    if (s > 0L) {
+      return s;
+    }
+    int active = 0;
+    for (int n : plan.getRingSequence(ring)) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      if (p != null && p.isActive()) {
+        active++;
+      }
+    }
+    return Math.max(1L, cycle / Math.max(1, active));
+  }
+
+  /**
+   * Non-fatal check that the two rings' splits meet at every barrier. The rings cross a barrier
+   * together, so the engine gives each barrier the <em>longer</em> ring's total and stretches the
+   * shorter ring's phases to fill it: the cycle still holds, but the shorter ring's phases run
+   * longer than typed, and the whole cycle is rescaled if the barriers then overrun it. A real
+   * controller refuses such a plan; this is an advisory for the same reason
+   * {@link #findSplitShortfall} is. Barriers that only one ring has phases on are not compared —
+   * that ring alone sets the barrier's length and the other waits at it (a T intersection).
    *
    * @return a description of the first mismatched barrier, or {@code null} if every barrier's
    *     totals agree
    */
   String findBarrierMisalignment(TrafficSignalProgrammedPhasePlan plan) {
-    java.util.TreeMap<Integer, long[]> totals = new java.util.TreeMap<>();
-    for (int ring = 1; ring <= 2; ring++) {
-      for (int n : plan.getRingSequence(ring)) {
-        TrafficSignalProgrammedPhase p = plan.getPhase(n);
-        if (p == null || !p.isActive()) {
-          continue;
-        }
-        long[] t = totals.computeIfAbsent(p.getBarrier(), k -> new long[4]);
-        t[ring - 1] += windowEnd[n] - windowStart[n]; // total for this ring
-        t[ring + 1]++;                                 // phase count for this ring
-      }
-    }
-    for (Map.Entry<Integer, long[]> e : totals.entrySet()) {
-      long[] t = e.getValue();
-      if (t[2] == 0L || t[3] == 0L || t[0] == t[1]) {
+    TrafficSignalCoordinationPlan co = plan.getCoordination(Math.max(0, activeCoordinationSlot));
+    BarrierSplits bs = barrierSplits(plan, co, Math.max(1L, co.getCycleLength()));
+    for (int b = 0; b < bs.order.length; b++) {
+      long t1 = bs.total[0][b];
+      long t2 = bs.total[1][b];
+      if (activeOnBarrier(plan, 1, bs.order[b]).isEmpty()
+          || activeOnBarrier(plan, 2, bs.order[b]).isEmpty() || t1 == t2) {
         continue;
       }
-      char barrier = (char) ('A' + e.getKey());
+      char barrier = (char) ('A' + bs.order[b]);
       return "the rings' splits do not meet at barrier " + barrier + ": ring 1's phases there "
-          + "total " + t[0] + " ticks and ring 2's " + t[1] + ". The rings cross a barrier "
-          + "together, so the ring that finishes first waits " + Math.abs(t[0] - t[1])
-          + " ticks every cycle and the rest of its windows run late. Give both rings the same "
-          + "split total on each barrier.";
+          + "total " + t1 + " ticks and ring 2's " + t2 + ". The rings cross a barrier "
+          + "together, so the barrier runs the longer " + Math.max(t1, t2) + " and the shorter "
+          + "ring's phases are stretched " + Math.abs(t1 - t2) + " ticks past what was typed. "
+          + "Give both rings the same split total on each barrier.";
     }
     return null;
   }

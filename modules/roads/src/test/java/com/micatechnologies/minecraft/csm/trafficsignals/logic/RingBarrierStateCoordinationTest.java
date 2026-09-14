@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.ServedMovement;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.VehInterval;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -348,5 +350,103 @@ class RingBarrierStateCoordinationTest {
     RingBarrierState rb2 = new RingBarrierState();
     rb2.tick(skewed, ckts, NO_OVERLAPS, 0L, new RingBarrierStateTest.Demand());
     assertNull(rb2.findBarrierMisalignment(skewed), "aligned barriers report nothing");
+  }
+
+  /**
+   * A coordinated T intersection: two rings, but only ring 1 has a phase on the side-street
+   * barrier. {@code ring1} and {@code ring2} are {phase, split} pairs; every phase is quick-timed
+   * and on its own circuit (in the order given).
+   */
+  private TrafficSignalProgrammedPhasePlan teePlan(long[][] ring1, long[][] ring2) {
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    TrafficSignalCoordinationPlan co = plan.getCoordination();
+    int circuit = 0;
+    for (long[][] ring : new long[][][] {ring1, ring2}) {
+      for (long[] ps : ring) {
+        int phase = (int) ps[0];
+        RingBarrierStateTest.enable(plan, phase, circuit++);
+        RingBarrierStateTest.quickTiming(plan, phase);
+        // Force-off, not max-out, must be what ends each phase, or the splits are not exercised.
+        plan.getPhase(phase).setMaxGreen(6000L);
+        co.setSplit(phase, ps[1]);
+      }
+    }
+    co.setMode(TrafficSignalCoordinationMode.COORDINATED);
+    co.setCycleLength(1800L);
+    return plan;
+  }
+
+  /**
+   * Runs {@code plan} for six cycles under continuous demand on every circuit and returns, for
+   * each phase, the local-cycle positions its green started at after the first (cold-start)
+   * cycle. Also fails if {@code phase} is ever green inside {@code [forbidFrom, forbidTo)}.
+   */
+  private Map<Integer, java.util.Set<Long>> greenStarts(TrafficSignalProgrammedPhasePlan plan,
+      int circuits, int phase, long forbidFrom, long forbidTo) {
+    long cycle = plan.getCoordination().getCycleLength();
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(circuits);
+    RingBarrierStateTest.Demand busy = new RingBarrierStateTest.Demand();
+    for (int c = 0; c < circuits; c++) {
+      busy.veh(c, 1, 1, 0);
+    }
+    Map<Integer, java.util.Set<Long>> starts = new HashMap<>();
+    int[] wasGreen = new int[3];
+    for (long t = 0; t <= cycle * 6; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, busy);
+      long local = ((t - plan.getCoordination().getOffset()) % cycle + cycle) % cycle;
+      for (int ring = 1; ring <= 2; ring++) {
+        ServedMovement m = rb.getLastServed(ring);
+        int green = m != null && m.vehicle == VehInterval.GREEN ? m.phaseNumber : 0;
+        if (t > cycle && green != 0 && green != wasGreen[ring]) {
+          starts.computeIfAbsent(green, k -> new java.util.TreeSet<>()).add(local);
+        }
+        if (t > cycle && green == phase) {
+          assertTrue(local < forbidFrom || local >= forbidTo, "phase " + phase
+              + " was green at localCycle=" + local + " (t=" + t + "), inside [" + forbidFrom
+              + ", " + forbidTo + ") where the other barrier owns the cycle");
+        }
+        wasGreen[ring] = green;
+      }
+    }
+    return starts;
+  }
+
+  @Test
+  @DisplayName("coordination: T intersection with a lead left (1, 2, 4 / 6) — phase 6's window "
+      + "ends at the barrier instead of spanning the side street's time")
+  void teeIntersectionRingWithoutSideStreetWaitsAtTheBarrier() {
+    // The in-game report: ring 1 is 1 (10 s) + 2 (45 s) + 4 (35 s) on a 90 s cycle, ring 2 has
+    // only phase 6. Ring 2 has nothing on barrier B, so it cannot total the cycle — tiling each
+    // ring on its own gave phase 6 a window of the entire cycle. Barrier A is 55 s in both rings.
+    TrafficSignalProgrammedPhasePlan plan = teePlan(
+        new long[][] {{1, 200L}, {2, 900L}, {4, 700L}}, new long[][] {{6, 1100L}});
+    Map<Integer, java.util.Set<Long>> starts = greenStarts(plan, 4, 6, 1100L, 1800L);
+    assertEquals(java.util.Collections.singleton(1100L), starts.get(4),
+        "the side street must start at its window start (55 s) every cycle: " + starts);
+    assertEquals(java.util.Collections.singleton(200L), starts.get(2),
+        "the coordinated through must start after the 10 s lead left every cycle: " + starts);
+    assertEquals(java.util.Collections.singleton(0L), starts.get(6),
+        "phase 6 must start with the barrier every cycle: " + starts);
+
+    RingBarrierState rb = new RingBarrierState();
+    rb.tick(plan, RingBarrierStateTest.circuits(4), NO_OVERLAPS, 0L,
+        new RingBarrierStateTest.Demand());
+    assertNull(rb.findBarrierMisalignment(plan),
+        "a barrier only one ring has phases on is not a misalignment");
+  }
+
+  @Test
+  @DisplayName("coordination: T intersection flipped (2, 4 / 5, 6) — the lone ring-1 through "
+      + "fills barrier A and the side street still starts on time")
+  void flippedTeeIntersectionAlignsBothBarriers() {
+    // Ring 1 is 2 (55 s) + 4 (35 s); ring 2 is 5 (10 s) + 6 (45 s), with nothing on barrier B.
+    TrafficSignalProgrammedPhasePlan plan = teePlan(
+        new long[][] {{2, 1100L}, {4, 700L}}, new long[][] {{5, 200L}, {6, 900L}});
+    Map<Integer, java.util.Set<Long>> starts = greenStarts(plan, 4, 6, 1100L, 1800L);
+    assertEquals(java.util.Collections.singleton(1100L), starts.get(4),
+        "the side street must start at its window start (55 s) every cycle: " + starts);
+    assertEquals(java.util.Collections.singleton(200L), starts.get(6),
+        "the coordinated through must start after the 10 s lead left every cycle: " + starts);
   }
 }

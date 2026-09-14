@@ -1052,10 +1052,11 @@ cycle --- time no amount of offset correction can give back --- and the
 controller says so once in the game log.
 \end{warnbox}
 
-\subsection{Splits are per-ring proportions}\label{sec:splits}
+\subsection{Splits are budgeted per barrier}\label{sec:splits}
 
-Each ring's active phases divide the cycle among themselves in ring-sequence
-order, starting at local cycle 0:
+The two rings cross a barrier together, so the cycle is divided barrier by
+barrier, starting at local cycle 0. On each barrier, each ring's phases share
+that barrier's time in ring-sequence order:
 
 \begin{figure}[H]
 \centering
@@ -1084,35 +1085,56 @@ together at 50\,s.}
 \label{fig:ringsplit}
 \end{figure}
 
-Two programming rules fall out of the per-ring tiling:
+Two programming rules follow from this:
 
 \begin{enumerate}[nosep]
-  \item \textbf{Make each ring's splits total the cycle.} The engine normalizes if
-        you don't — every split in a ring is scaled by
-        $\text{cycle} \div \text{ring total}$ so the windows tile the cycle exactly
-        (a split of 0 means ``an even share''). That is a safety net, not a
-        feature: if ring 2 totals 60\,s against a 90\,s cycle, every ring-2 phase
-        silently runs $1.5\times$ what you typed.
-  \item \textbf{Match concurrent groups across rings} so companion phases open
-        together: in Figure~\ref{fig:ringsplit},
-        $\ph{5}+\ph{6} = \ph{2} = 50$ and $\ph{8} = \ph{4} = 40$. Mismatched
-        groups make the rings hit the barrier at different times, and one
-        direction sits dark waiting.
+  \item \textbf{Match each barrier's total across the rings.} In
+        Figure~\ref{fig:ringsplit}, $\ph{5}+\ph{6} = \ph{2} = 50$ on barrier A
+        and $\ph{8} = \ph{4} = 40$ on barrier B. If the totals differ, the engine
+        gives the barrier the \emph{longer} total and stretches the shorter
+        ring's phases to fill it, so they run longer than you typed. The game
+        log warns you once.
+  \item \textbf{Make the barriers total the cycle.} $50 + 40 = 90$. If they
+        don't, every barrier is scaled by
+        $\text{cycle} \div \text{barrier total}$ so the windows still tile the
+        cycle (a split of 0 means ``an even share of its ring''). That is a
+        safety net, not a feature: every split then runs a different length
+        from what you typed.
 \end{enumerate}
 
 \begin{tipbox}
-Sanity check: because the two rings time \emph{in parallel}, each ring is its own
-full cycle budget. On a 90\,s cycle, ring 1's splits total 90 \textbf{and} ring
-2's splits total 90 — so all eight splits together total \textbf{180\,s, twice
-the cycle}. That is parallelism, not overbooking: at every moment of the cycle
-one ring-1 window and one ring-2 window are open side by side (in
-Figure~\ref{fig:ringsplit}, while \ph{2} owns 0--50 in ring 1, \ph{5} and \ph{6}
-split that same 0--50 in ring 2). The split column on the COORD screen is
-therefore best read one ring at a time — the R1/R2 tag beside each phase shows
-which ring (and A/B which barrier) it belongs to. If you instead spread the 90\,s
-across all eight phases, each ring totals only ${\sim}45$, and the engine's
-normalization scales every green to about \emph{twice} what you typed.
+Sanity check: because the two rings time \emph{in parallel}, a ring with a phase
+on every barrier has its own full cycle budget. On a 90\,s cycle, ring 1's splits
+total 90 \textbf{and} ring 2's splits total 90 — so all eight splits together
+total \textbf{180\,s, twice the cycle}. That is parallelism, not overbooking:
+while \ph{2} owns 0--50 in ring 1, \ph{5} and \ph{6} split that same 0--50 in
+ring 2. The R1/R2 tag beside each phase on the COORD screen shows its ring, and
+A/B its barrier. If you instead spread the 90\,s across all eight phases, the
+barriers total only 45, and scaling makes every green about \emph{twice} what
+you typed.
 \end{tipbox}
+
+\paragraph{T intersections: a ring with nothing on a barrier.} A three-leg
+intersection often has no ring-2 phase on the side-street barrier. Take
+\ph{1}+\ph{2}+\ph{4} in ring 1 and only \ph{6} in ring 2. Ring 2 cannot total
+the cycle, and it does not need to. It waits at the barrier while ring 1 serves
+the side street, so \ph{6} takes only barrier A's time:
+
+\begin{center}
+\begin{tabular}{lllll}
+\toprule
+ & \multicolumn{2}{l}{Barrier A} & Barrier B & Cycle \\
+\midrule
+Ring 1 & \ph{1} = 10 & \ph{2} = 45 & \ph{4} = 35 & 90 \\
+Ring 2 & \multicolumn{2}{l}{\ph{6} = 55 \quad ($= \ph{1}+\ph{2}$)} & (waits) & 55 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Do \emph{not} set \ph{6} to 90 to make ring 2 ``total the cycle''. That makes
+barrier A 90\,s long against 35\,s for barrier B, and the scaled cycle leaves
+the side street about 25\,s. The flipped layout (\ph{2}+\ph{4} / \ph{5}+\ph{6})
+works the same way: $\ph{2} = \ph{5}+\ph{6}$.
 
 \begin{warnbox}
 A split must cover the whole slice — green \textbf{plus} yellow \textbf{plus} red
@@ -1256,7 +1278,9 @@ On \screen{COORD}, at each intersection:
   \item \field{Cycle} — the shared corridor cycle length.
   \item \field{Offset} — 0 at the reference intersection; travel-time based at the rest.
   \item \field{Splits} — a value for every enabled phase (marked \texttt{*}).
-        Check each ring sums to the cycle; match groups across rings. Size each
+        Match each barrier's total across the rings and check the barriers sum
+        to the cycle; a ring with no phase on a barrier is left out of that
+        barrier (\S\ref{sec:splits}). Size each
         split to hold the phase \emph{and} its clearance: min green (or walk plus
         ped clearance, whichever is longer), then yellow, then red clear.
   \item \field{COORD} toggles — mark the main-street phases (usually \ph{2}+\ph{6}).
