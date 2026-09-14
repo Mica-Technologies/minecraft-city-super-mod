@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "637 blocks in this tab"
+!!! info "639 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -193,6 +193,8 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Forestry Vehicles Only | `csm:forestryvehiclesonlysign` | 2 | 10 | pickaxe | 1 |
 | Freeway Entrance Sign | `csm:signfreewayentrance` | 2 | 10 | pickaxe | 1 |
 | Freeway Intersection Ahead | `csm:fwyintersectionsign` | 2 | 10 | pickaxe | 1 |
+| Fresh Chips and Salsa Sign | `csm:signfreshchipsandsalsa` | 2 | 10 | pickaxe | 1 |
+| Fresh Oil and Chips Sign | `csm:signfreshoilandchips` | 2 | 10 | pickaxe | 1 |
 | FWY Detour | `csm:freewaydetoursign` | 2 | 10 | pickaxe | 1 |
 | Gas Sign | `csm:signgas` | 2 | 10 | pickaxe | 1 |
 | Handicap Sign | `csm:signhandicap` | 2 | 10 | pickaxe | 1 |

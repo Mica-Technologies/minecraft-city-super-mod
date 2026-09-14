@@ -593,6 +593,8 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("massdotheavymergesignrw"));
     initTabBlock(new BlockTrafficSign("noguardrailssignrr"));
     initTabBlock(new BlockTrafficSign("signonelaneroadahead"));
+    initTabBlock(new BlockTrafficSign("signfreshoilandchips"));
+    initTabBlock(new BlockTrafficSign("signfreshchipsandsalsa"));
     initTabBlock(new BlockTrafficSign("signworkpulloffleft"));
     initTabBlock(new BlockTrafficSign("signworkpulloffright"));
     initTabBlock(new BlockTrafficSign("signrampclosedahead"));

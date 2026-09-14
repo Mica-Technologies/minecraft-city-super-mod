@@ -266,6 +266,16 @@ def accessible_icon_variant(shape, chapter, page, pick=0, palette=None):
 # ----------------------------------------------------------------------------- catalogue
 # registry, display (en, es, de, sv), shape, drawer, tab sibling (insert after)
 
+def DIAMOND(lines, colour):
+    """A worded diamond on the book's W8-1 panel, laid out by gen_official_faces.TEXT_DIAMOND
+    (the same drawer the re-faced worded warnings use), so a new sign matches them."""
+    def make():
+        import gen_official_faces as gof
+        face, _mirror, _palette = gof.TEXT_DIAMOND(lines, shs.MOD_COLOURS[colour], shift=True)()
+        return face.fn(1.0)
+    return make
+
+
 def T(shape, lines, bg=YELLOW, fg=BLACK):
     return lambda: text_sign(shape, lines, bg, fg)
 
@@ -391,6 +401,12 @@ CATALOGUE = [
     ('signonelaneroadahead', ('One Lane Road Ahead Sign', 'Señal de Carretera de Un Carril Adelante',
                               'Einspurige Straße Voraus Schild', 'Enfilig Väg Framför-Vägmärke'),
      'diamond', T('diamond', ['ONE LANE', 'ROAD', 'AHEAD'], rs.ORANGE), 'noguardrailssignrr'),
+    ('signfreshoilandchips', ('Fresh Oil and Chips Sign', 'Señal de Aceite y Gravilla Recién Aplicados',
+                              'Frischer Rollsplitt Schild', 'Nylagd Oljegrus-Vägmärke'),
+     'diamond', DIAMOND(['FRESH', 'OIL AND', 'CHIPS'], 'orange'), 'signonelaneroadahead'),
+    ('signfreshchipsandsalsa', ('Fresh Chips and Salsa Sign', 'Señal de Totopos y Salsa Frescos',
+                                'Frische Chips und Salsa Schild', 'Färska Chips och Salsa-Vägmärke'),
+     'diamond', DIAMOND(['FRESH', 'CHIPS AND', 'SALSA'], 'orange'), 'signfreshoilandchips'),
     ('signutilityworkahead', ('Utility Work Ahead Sign', 'Señal de Trabajos de Servicios Adelante',
                               'Versorgungsarbeiten Voraus Schild', 'Ledningsarbete Framför-Vägmärke'),
      'diamond', SHS('diamond', 'Warning', 158), 'signunmarkedpavement'),
