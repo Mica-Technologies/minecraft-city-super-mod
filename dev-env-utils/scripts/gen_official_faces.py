@@ -1119,14 +1119,16 @@ def _both(*arts):
     return art
 
 
-def _white_panel(W, H, ink, colour='white', edge=0.012, inset=0.035, stroke=0.028):
+def _white_panel(W, H, ink, colour='white', edge=0.012, inset=0.035, stroke=0.028, radius=None):
     """A rounded panel with the inset border every drawn regulatory sign uses."""
     img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     m = int(H * edge)
-    d.rounded_rectangle((m, m, W - m, H - m), radius=int(H * 0.06), fill=shs.MOD_COLOURS[colour])
+    r = int(H * 0.06) if radius is None else int(radius)
+    d.rounded_rectangle((m, m, W - m, H - m), radius=r, fill=shs.MOD_COLOURS[colour])
     d.rounded_rectangle((int(H * inset), int(H * inset), W - int(H * inset), H - int(H * inset)),
-                        radius=int(H * 0.045), outline=shs.MOD_COLOURS[ink], width=int(H * stroke))
+                        radius=int(H * 0.045) if radius is None else int(r * 0.75),
+                        outline=shs.MOD_COLOURS[ink], width=int(H * stroke))
     return img, d
 
 
@@ -1471,6 +1473,162 @@ def _svg_ink(name, box):
     out = Image.new('RGBA', im.size, shs.MOD_COLOURS['black'])
     out.putalpha(Image.fromarray((dark * 255).astype(np.uint8), 'L'))
     return out.crop(out.getchannel('A').getbbox())
+
+
+def _original_glyph(registry, box, threshold=110, colour='black'):
+    """A black glyph lifted off a sign's original texture (first git version) inside ``box``
+    (fractions), upscaled and thresholded so its edges come out crisp: for an artwork glyph with no
+    MUTCD drawing (the pay-to-cross hand, the running child). Returns ``colour`` on clear."""
+    import numpy as np
+    import detect_legend_series as det
+    info = sign_info(registry)
+    im, _rev = det.original_texture(info['texture'])
+    w, h = im.size
+    im = im.crop((int(box[0] * w), int(box[1] * h), int(box[2] * w), int(box[3] * h)))
+    im = im.resize((im.width * 8, im.height * 8), Image.BICUBIC)
+    a = np.asarray(im).astype(np.float32)
+    lum = a[..., :3].mean(axis=2)
+    ink = np.clip((threshold + 20 - lum) / 40.0, 0, 1) * (a[..., 3] / 255.0)
+    out = Image.new('RGBA', im.size, shs.MOD_COLOURS[colour])
+    out.putalpha(Image.fromarray((ink * 255).astype(np.uint8), 'L'))
+    box2 = out.getchannel('A').getbbox()
+    return out.crop(box2) if box2 else out
+
+
+def _lines(img, rows, colour):
+    """(text, centre y, cap, width, series[, centre x]) fractions, set centred."""
+    import gen_gap_signs as gg
+    W, H = img.size
+    for r in rows:
+        text, cy, cap, width, series = r[:5]
+        cx = r[5] if len(r) > 5 else 0.5
+        gg._legend_line_at(img, text, cx * W, cy * H, cap * H, width * W, colour=shs.MOD_COLOURS[colour], condense=series)
+
+
+def EXCEPT_BIKE_ICON():
+    """EXCEPT over the W11-1 bicycle, a white plaque."""
+    def make(aspect):
+        H = 512
+        W = int(round(H * aspect))
+        img, d = _white_panel(W, H, 'black', stroke=0.04, inset=0.05)
+        _lines(img, [('EXCEPT', 0.3, 0.24, 0.8, 'C')], 'black')
+        _paste_fit(img, _ink_symbol(W_, 90), (W * 0.3, H * 0.5, W * 0.7, H * 0.88))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def LEFT_BIKE_RIGHT_PARK():
+    """LEFT | RIGHT over a bicycle and a P in a green ring, ONLY across the bottom, laid out as the
+    original measures."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        W = int(round(H * aspect))
+        img, d = _white_panel(W, H, 'black', inset=0.03, stroke=0.02)
+        black, green = shs.MOD_COLOURS['black'], shs.MOD_COLOURS['green']
+        d.rectangle((W * 0.5 - W * 0.007, H * 0.1, W * 0.5 + W * 0.007, H * 0.66), fill=black)
+        _lines(img, [('LEFT', 0.165, 0.11, 0.34, 'B', 0.27), ('RIGHT', 0.165, 0.11, 0.36, 'B', 0.73),
+                     ('ONLY', 0.825, 0.165, 0.68, ('E', 'D'))], 'black')
+        _paste_fit(img, _ink_symbol(W_, 90), (W * 0.08, H * 0.38, W * 0.46, H * 0.58))
+        cx, cy, r = W * 0.725, H * 0.485, W * 0.165
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=green, width=int(W * 0.045))
+        gg._legend_line_at(img, 'P', cx + W * 0.005, cy, H * 0.14, r * 1.2, colour=black, condense='E')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def RIGHT_LANE_BIKE_ONLY():
+    """RIGHT LANE reversed out of a black band, the bicycle, ONLY: R3-17-style, drawn."""
+    def make(aspect):
+        H = 1024
+        W = int(round(H * aspect))
+        img, d = _white_panel(W, H, 'black')
+        d.rounded_rectangle((H * 0.035, H * 0.035, W - H * 0.035, H * 0.4), radius=int(H * 0.045),
+                            fill=shs.MOD_COLOURS['black'])
+        d.rectangle((H * 0.035, H * 0.3, W - H * 0.035, H * 0.4), fill=shs.MOD_COLOURS['black'])
+        _lines(img, [('RIGHT', 0.13, 0.1, 0.8, 'C'), ('LANE', 0.29, 0.1, 0.8, 'C')], 'white')
+        _paste_fit(img, _ink_symbol(W_, 90), (W * 0.24, H * 0.46, W * 0.76, H * 0.66))
+        _lines(img, [('ONLY', 0.82, 0.15, 0.84, 'C')], 'black')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def SLOW_DOWN_PED():
+    """CAUTION in fluorescent yellow-green on a black band, SLOW DOWN / PEDESTRIAN TRAFFIC below."""
+    def make(aspect):
+        H = 1024
+        W = int(round(H * aspect))
+        img, d = _white_panel(W, H, 'black', colour='fyg')
+        d.rounded_rectangle((H * 0.035, H * 0.035, W - H * 0.035, H * 0.33), radius=int(H * 0.045),
+                            fill=shs.MOD_COLOURS['black'])
+        d.rectangle((H * 0.035, H * 0.24, W - H * 0.035, H * 0.33), fill=shs.MOD_COLOURS['black'])
+        _lines(img, [('CAUTION', 0.18, 0.14, 0.84, 'B')], 'fyg')
+        _lines(img, [('SLOW', 0.44, 0.14, 0.84, 'C'), ('DOWN', 0.62, 0.14, 0.84, 'C'),
+                     ('PEDESTRIAN', 0.77, 0.085, 0.84, 'C'), ('TRAFFIC', 0.88, 0.085, 0.84, 'C')], 'black')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def THICKLY_SETTLED_25():
+    """Massachusetts' THICKLY SETTLED / SPEED LIMIT 25 CITYWIDE / UNLESS OTHERWISE POSTED stack:
+    a fluorescent yellow-green top panel, the R2-1 panel and a white bottom plaque, ruled apart,
+    with the small corner radius of a tall sign and positions measured off the original."""
+    def make(aspect):
+        H = 2048
+        W = int(round(H * aspect))
+        black = shs.MOD_COLOURS['black']
+        rad = W * 0.06
+        img, d = _white_panel(W, H, 'black', inset=0.012, stroke=0.009, edge=0.004, radius=rad)
+        e = H * 0.012 + H * 0.009
+        d.rounded_rectangle((e, e, W - e, H * 0.2), radius=int(rad * 0.5), fill=shs.MOD_COLOURS['fyg'])
+        d.rectangle((e, H * 0.1, W - e, H * 0.2), fill=shs.MOD_COLOURS['fyg'])
+        for y in (0.2, 0.72):
+            d.rectangle((H * 0.012, H * y - H * 0.0045, W - H * 0.012, H * y + H * 0.0045), fill=black)
+        _lines(img, [('THICKLY', 0.075, 0.05, 0.8, 'C'), ('SETTLED', 0.155, 0.05, 0.8, 'C'),
+                     ('SPEED', 0.285, 0.068, 0.82, 'D'), ('LIMIT', 0.385, 0.068, 0.82, 'D'),
+                     ('25', 0.535, 0.15, 0.82, 'D'), ('CITYWIDE', 0.675, 0.045, 0.82, 'D'),
+                     ('UNLESS', 0.785, 0.05, 0.8, 'C'), ('OTHERWISE', 0.857, 0.05, 0.82, 'C'),
+                     ('POSTED', 0.93, 0.05, 0.8, 'C')], 'black')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def PAY_TO_CROSS():
+    """The PUSH BUTTON TO CROSS STREET parody: a hand paying $1.00 into a slot (lifted off the
+    original), TO CROSS / arrow STREET / WAIT FOR, and the walking figure white on black."""
+    def make(aspect):
+        H = 1024
+        W = int(round(H * aspect))
+        img, d = _white_panel(W, H, 'black')
+        black = shs.MOD_COLOURS['black']
+        _paste_fit(img, _original_glyph('paytocrosssign', (0.44, 0.07, 0.9, 0.33)), (W * 0.42, H * 0.08, W * 0.88, H * 0.32))
+        _lines(img, [('$1.00', 0.24, 0.045, 0.3, 'C', 0.24), ('TO CROSS', 0.43, 0.08, 0.8, 'C'),
+                     ('STREET', 0.555, 0.08, 0.55, 'C', 0.64), ('WAIT FOR', 0.68, 0.08, 0.8, 'C')], 'black')
+        _line_arrow(d, W * 0.34, H * 0.555, W * 0.12, H * 0.555, H * 0.035, H * 0.08, black)
+        d.rectangle((W * 0.37, H * 0.75, W * 0.63, H * 0.9), fill=black)
+        ped = _ink_symbol(W_, 91, colour='white')
+        _paste_fit(img, ped, (W * 0.4, H * 0.765, W * 0.6, H * 0.885))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def SCHOOL_SAFETY_ZONE():
+    """SCHOOL SAFETY ZONE / DRIVE SLOWLY in white on black bands around the S1-1 school pentagon
+    in fluorescent yellow-green."""
+    def make(aspect):
+        H = 1024
+        W = int(round(H * aspect))
+        img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((6, 6, W - 6, H - 6), radius=int(H * 0.04), fill=shs.MOD_COLOURS['black'])
+        d.rectangle((H * 0.03, H * 0.28, W - H * 0.03, H * 0.82), fill=shs.MOD_COLOURS['white'])
+        _lines(img, [('SCHOOL', 0.085, 0.1, 0.88, 'C'), ('SAFETY ZONE', 0.2, 0.1, 0.92, 'B'),
+                     ('DRIVE SLOWLY', 0.91, 0.1, 0.92, 'B')], 'white')
+        penta = shs.recolour(shs.book_sign('School', 0), _with(shs.SHS_PALETTE, FYG_FACE))
+        penta = penta.crop(penta.getchannel('A').getbbox())
+        _paste_fit(img, penta, (W * 0.08, H * 0.295, W * 0.92, H * 0.805))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
 
 
 def SHSI(code, variant=None, palette=None):
@@ -2098,6 +2256,17 @@ CATALOGUE = [
     ('signbikesallowedusefulllane', BIKE_PANEL(['ALLOWED'], (0.22, 0.07, 0.78, 0.36),
      [('ALLOWED', 0.48, 0.12, 0.84, 0.5, 'C'), ('USE OF', 0.66, 0.12, 0.84, 0.5, 'C'),
       ('FULL LANE', 0.84, 0.12, 0.84, 0.5, 'C')]), 'W11-1 bicycle + legend'),
+    # --- Second pass, batch F. Kept (clean MUTCD-style art; FYG and red recoloured once):
+    # signbusstopahead, hikersaheadsign, signslowschool, the six turning-vehicles-yield signs,
+    # mivehiclessharecenterlanesign; 99onlypricesignold kept as drawn. signbikesallowedusefulllanelarge
+    # shares the batch E texture.
+    ('signexceptbicycleicon', EXCEPT_BIKE_ICON(), 'EXCEPT + W11-1 bicycle'),
+    ('signleftbikerightpark', LEFT_BIKE_RIGHT_PARK(), 'bike / parking (drawn)'),
+    ('paytocrosssign', PAY_TO_CROSS(), 'R10-4 parody (drawn)'),
+    ('signrightlanebikeonly', RIGHT_LANE_BIKE_ONLY(), 'RIGHT LANE bike ONLY (drawn)'),
+    ('signslowdownpedestriantraffic', SLOW_DOWN_PED(), 'FYG panel (drawn)'),
+    ('thicklysettledspeedlimit25mphsign', THICKLY_SETTLED_25(), 'MA thickly settled stack (drawn)'),
+    ('schoolsafetyzonesign', SCHOOL_SAFETY_ZONE(), 'S1-1 pentagon + bands'),
     # --- Second pass, batch C. signresidentnormal paints signresidentlarge's texture (done in B).
     ('noovernightparkingsign', PANEL(['NO', 'OVERNIGHT', 'PARKING', 'AND', 'CAMPING'], 'white', ink='red',
                                      band=(0.06, 0.94), width=0.8,
