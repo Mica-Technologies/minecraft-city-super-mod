@@ -288,6 +288,22 @@ CATALOGUE = [
     ('signturnoff2way', SHS(W, 160), 'W22-2'),
     ('signparkingarearight', SHS(G, 40), 'D5-4'),
     ('signrestarearight', SHS(G, 37, pick=1), 'D5-2a'),
+    # --- Remaining-signs batch 1 (tab order from the top). Custom, left as drawn:
+    # carelesspersonsign, signaheadleftright (three-headed), signbeginplaque (the book's BEGIN
+    # is green), bearcrossingsign, beginfwysign / beginhwysign / beginpkwysign.
+    ('signupright', SHS(G, 22, pick=2), 'M6-6R'),
+    ('signupleft', SHS(G, 22, pick=2, mirror=True), 'M6-6L'),
+    ('signaheadright', SHS(G, 22, pick=2), 'M6-6R'),
+    ('signaheadleft', SHS(G, 22, pick=2, mirror=True), 'M6-6L'),
+    ('signupslightright', SHS(G, 22, pick=4), 'M6-7R'),
+    ('signupslightleft', SHS(G, 22, pick=4, mirror=True), 'M6-7L'),
+    ('signahead', SHS(G, 21, pick=2), 'M6-3'),
+    ('signaheadonly', SHS(R, 29), 'R3-5a'),
+    ('signalternate', SHS(G, 15), 'M4-1a'),
+    ('signalt', SHS(G, 15, pick=1), 'M4-1'),
+    ('signbikelane', SHS(R, 60), 'R3-17'),
+    ('signbikelanelarge', SHS(R, 60), 'R3-17'),
+    ('signpostweightlimit', SHS(R, 163), 'R12-5'),
     ('signhurricane', SHS(E, 0), 'EM-1'),   # the three moved to the 24 x 24 square plate
     ('signhurricaneleft', SHS(E, 0, rotate_symbols=-90), 'EM-1 (left)'),
     ('signhurricaneright', SHS(E, 0, rotate_symbols=90), 'EM-1 (right)'),
