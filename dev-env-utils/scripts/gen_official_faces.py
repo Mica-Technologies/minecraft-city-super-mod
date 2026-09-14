@@ -42,14 +42,15 @@ MATCH_TABLE = os.path.join(layout.REPO_ROOT, 'assets', 'docs', 'agent_progress',
 # ----------------------------------------------------------------------------- sources
 
 def SHS(chapter, page, pick=0, mirror=False, palette=None, replace=None, inner=None,
-        rotate_symbols=0, mirror_symbols=False):
+        rotate_symbols=0, mirror_symbols=False, condense=False):
     """A face from a 2004 SHS book page (0-based). ``pick`` for pages with more than one
     sign, ``mirror`` for the left-hand version of a symbol the book draws right-handed only
     (``mirror_symbols`` when it carries a legend: the arrow flips, the words do not),
     ``rotate_symbols`` to turn an arrow in place, ``replace=(old, new)`` to re-set the one
     numeral the book draws."""
     return lambda: (shs.book_sign(chapter, page, pick, inner=inner, replace=replace,
-                                  rotate_symbols=rotate_symbols, mirror_symbols=mirror_symbols),
+                                  rotate_symbols=rotate_symbols, mirror_symbols=mirror_symbols,
+                                  condense=condense),
                     mirror, palette)
 
 
@@ -214,6 +215,36 @@ def POINTED_ONE_WAY(left):
         panel.paste(Image.new('RGBA', (W, H), white), (0, 0), arrow)
         panel.paste(Image.new('RGBA', (W, H), black), (0, 0), ink_img)
         return shs.fit_plate(panel, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def STATE_PROPERTY():
+    """California's state-property sign (no drawing exists for it): a white panel with a thin
+    black border and six lines in four sizes, set from a photograph of the real sign. The
+    real sign is about 30 x 18, the plate 1.38:1, so each line is narrowed to the share of
+    the width it takes on the sign rather than scaled down."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        W = int(round(H * aspect))
+        img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        white, black = shs.MOD_COLOURS['white'], shs.MOD_COLOURS['black']
+        m = int(H * 0.012)
+        d.rounded_rectangle((m, m, W - m, H - m), radius=int(H * 0.06), fill=white)
+        inset, stroke = int(H * 0.035), int(H * 0.022)
+        d.rounded_rectangle((inset, inset, W - inset, H - inset), radius=int(H * 0.045),
+                            outline=black, width=stroke)
+        # (text, centre y, cap height, width) as fractions of the panel
+        for text, cy, cap, width in (
+                ('STATE PROPERTY', 0.130, 0.080, 0.67),
+                ('NO DUMPING', 0.285, 0.120, 0.70),
+                ('NO PARKING', 0.465, 0.120, 0.69),
+                ('NO TRESPASSING', 0.645, 0.120, 0.87),
+                ('VIOLATORS WILL BE PROSECUTED', 0.800, 0.058, 0.79),
+                ('PENAL CODE SEC. 374.3, 602-m; VEHICLE CODE 22523, 22659', 0.905, 0.042, 0.88)):
+            gg._legend_line(img, text, cy * H, cap * H, width * W, colour=black)
+        return shs.fit_plate(img, aspect, size=256)
     return lambda: (ComposedFace(make), False, None)
 
 
@@ -495,6 +526,20 @@ CATALOGUE = [
     # signpostreduced30, signpostreducedspeedahead (no R2-5 in the book), restrictedareasign.
     ('nostandingsign', SHS(R, 92, pick=1), 'R7-4'),
     ('onewaytlsignright', POINTED_ONE_WAY(left=False), 'R6-1R (pointed)'),
+    # --- Remaining-signs batch 6. Left as drawn: rightlanefreewayonlysign, signrightplaque
+    # (text, as signleftplaque), the four school street sweeping signs, signdontblockthebox,
+    # snownotremovedsign, signpostspeedzoneahead (the book's W3-5a is a yellow diamond).
+    ('signstatepropertynotrasspassing', STATE_PROPERTY(), 'California state property (photo)'),
+    ('signrightahead', SHS(R, 28, pick=3), 'R3-6R'),
+    ('signrightonly', SHS(R, 28, pick=1), 'R3-5R'),
+    ('signright', SHS(G, 20, pick=4), 'M6-1R'),
+    ('signr105a', SHS(R, 135, replace=('LEFT ON', 'RIGHT ON'), condense=True), 'R10-5 (right)'),
+    ('signaheadsharpleft', SHS(G, 20), 'M5-1L'),
+    ('signaheadsharpright', SHS(G, 20, mirror=True), 'M5-1R'),
+    ('signaheadslightleft', SHS(G, 20, pick=2), 'M5-2L'),
+    ('signaheadslightright', SHS(G, 20, pick=2, mirror=True), 'M5-2R'),
+    ('signslightright', SHS(G, 21), 'M6-2R'),
+    ('signslightleft', SHS(G, 21, mirror=True), 'M6-2L'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
