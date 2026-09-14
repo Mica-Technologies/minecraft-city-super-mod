@@ -522,7 +522,7 @@ def _outer_rects(fills):
 
 
 def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
-              mirror_symbols=False, rotate_symbols=0, symbols_only=False):
+              mirror_symbols=False, rotate_symbols=0, symbols_only=False, condense=False):
     """One sign from a book page, rendered with alpha and cropped to its outline.
 
     ``pick`` chooses among the page's outermost sign rects, sorted top to bottom then left to
@@ -539,7 +539,8 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
     the arrow, not the panel -- about its own centre, so an up arrow points left or right
     where it is; ``mirror_symbols='both'`` keeps each symbol and adds its mirror image, a
     single arrow becoming the double-headed one. ``replace`` may also be a list of (old,
-    new) pairs.
+    new) pairs; ``condense`` narrows a ``new`` legend too wide for its line instead of
+    shrinking it, so a word legend keeps the cap height of the words round it.
     """
     p = book_page(chapter, page)
     fills = _sign_fills(p)
@@ -574,11 +575,11 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
         for box in boxes:
             px = ((box.x0 - rect.x0) * scale, (box.y0 - rect.y0) * scale,
                   (box.x1 - rect.x0) * scale, (box.y1 - rect.y0) * scale)
-            _set_legend(img, new, px)
+            _set_legend(img, new, px, condense=condense)
     return img
 
 
-def _set_legend(img, text, box, colour=(31, 26, 23, 255)):
+def _set_legend(img, text, box, colour=(31, 26, 23, 255), condense=False):
     """Draw ``text`` centred on ``box`` (pixels) with the digits' cap height matching the
     box, in the mod's sign font; the colour is the book's black so recolour() maps it."""
     from PIL import ImageDraw, ImageFont
@@ -594,8 +595,18 @@ def _set_legend(img, text, box, colour=(31, 26, 23, 255)):
     # a longer legend ("100" for "50") keeps the old run's side margins rather than the panel
     max_w = img.width - 2 * min(x0, img.width - x1)
     if bb[2] - bb[0] > max_w:
-        f = ImageFont.truetype(rs.FONT_PATH, max(8, int(size * max_w / (bb[2] - bb[0]))))
-        bb = f.getbbox(text)
+        if not condense:
+            f = ImageFont.truetype(rs.FONT_PATH, max(8, int(size * max_w / (bb[2] - bb[0]))))
+            bb = f.getbbox(text)
+        else:
+            # keep the cap height of the lines round it and narrow the letters instead, the
+            # way the book's narrower series sit beside the mod's one wide font
+            layer = Image.new('RGBA', (bb[2] - bb[0], bb[3] - bb[1]), (0, 0, 0, 0))
+            ImageDraw.Draw(layer).text((-bb[0], -bb[1]), text, font=f, fill=colour)
+            layer = layer.resize((int(max_w), layer.height), Image.LANCZOS)
+            img.alpha_composite(layer, (int(round((x0 + x1) / 2 - max_w / 2)),
+                                        int(round((y0 + y1) / 2 - layer.height / 2))))
+            return
     d = ImageDraw.Draw(img)
     d.text(((x0 + x1) / 2 - (bb[2] + bb[0]) / 2, (y0 + y1) / 2 - (bb[3] + bb[1]) / 2),
            text, font=f, fill=colour)
