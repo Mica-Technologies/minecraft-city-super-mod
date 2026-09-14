@@ -73,8 +73,10 @@ class ComposedFace(object):
     """A face built by a function of the plate aspect, for the few signs that are an official
     drawing plus a step of the mod's own (a panel cut to a point)."""
 
-    def __init__(self, fn):
-        self.fn = fn
+    def __init__(self, fn, extras=None):
+        # extras(aspect) -> {texture file name beside the face: image}, for a sign whose
+        # blockstate swaps in a second face (the lit state of a blank-out sign)
+        self.fn, self.extras = fn, extras
 
 
 def _inset_polygon(pts, d):
@@ -628,6 +630,45 @@ def HEAR_BANJOS():
     return lambda: (ComposedFace(make), False, None)
 
 
+def LIGHTS_OUT():
+    """The IF LIGHTS OUT / NO POWER / SIGNAL NOT WORKING blank-out sign: white legend on black
+    with two lamps pointed at by arrows. The block swaps faces when powered, so the unlit
+    face goes to the texture slot and the lit one (amber lamps) to its ``_on`` twin."""
+    def draw(aspect, lit):
+        import gen_gap_signs as gg
+        S = 1024
+        white, black = shs.MOD_COLOURS['white'], shs.MOD_COLOURS['black']
+        img = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((8, 8, S - 8, S - 8), radius=60, fill=white)
+        d.rounded_rectangle((34, 34, S - 34, S - 34), radius=42, fill=black)
+        cap = 0.11 * S
+        gg._legend_line(img, 'IF LIGHTS OUT', 0.16 * S, cap, 0.84 * S, colour=white)
+        for x0 in (0.07, 0.70):
+            box = (int(x0 * S), int(0.3 * S), int((x0 + 0.23) * S), int(0.47 * S))
+            if lit:
+                d.rounded_rectangle(box, radius=30, fill=(255, 196, 40, 255))
+                d.rounded_rectangle((box[0] + 26, box[1] + 22, box[2] - 26, box[3] - 22), radius=20,
+                                    fill=(255, 244, 190, 255))
+            else:
+                d.rounded_rectangle(box, radius=30, fill=(120, 120, 120, 255))
+        # an arrow from the centre toward each lamp
+        art = shs.recolour(shs.book_sign(G, 21, symbols_only=True), shs.SHS_PALETTE)
+        art = art.crop(art.getchannel('A').getbbox())
+        art = Image.composite(Image.new('RGBA', art.size, white), art, art)
+        h = int(0.12 * S)
+        art = art.resize((int(art.width * h / art.height), h), Image.LANCZOS)
+        right = art.transpose(Image.FLIP_TOP_BOTTOM)             # down-right
+        left = right.transpose(Image.FLIP_LEFT_RIGHT)            # down-left
+        img.alpha_composite(left, (int(0.475 * S - left.width), int(0.3 * S)))
+        img.alpha_composite(right, (int(0.525 * S), int(0.3 * S)))
+        gg._legend_line(img, 'NO POWER', 0.64 * S, 0.14 * S, 0.84 * S, colour=white)
+        gg._legend_line(img, 'SIGNAL NOT WORKING', 0.84 * S, 0.075 * S, 0.84 * S, colour=white)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(lambda a: draw(a, False),
+                                 extras=lambda a: {'lightsoutnopowersign_on.png': draw(a, True)}), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -1135,6 +1176,14 @@ CATALOGUE = [
     # with the blue recoloured (one-off, not catalogued).
     ('signphone', SHS(G, 57), 'D9-1'),
     ('hearbanjossign', HEAR_BANJOS(), 'novelty trail sign (photo)'),
+    # --- Remaining-signs batch 19, the last rows. Left as drawn: tolledbikelanesign (Alto MTA
+    # toll plaque), steepedgesign (facility placard), signsharedpathway.
+    ('signpicnic', SYM(G, 132, [2], 'brown'), 'picnic area (brown)'),
+    ('signshelter', SYM(G, 133, [0], 'brown'), 'picnic shelter (brown)'),
+    ('signrightarrowbrown', SYM_ART('brown', _page_arrow(20, 4)), 'M6-1 arrow (brown)'),
+    ('r1012uturn', SHS(R, 143, replace=('LEFT TURN', 'U TURN')), 'R10-12 (U TURN)'),
+    ('rightlanebussign', SHS(R, 48, replace=('6AM-9AM', '7AM-7PM')), 'R3-11b (7AM-7PM)'),
+    ('lightsoutnopowersign', LIGHTS_OUT(), 'blank-out sign (drawn), + _on'),
     ('signarchery', SYM(G, 153, [0], 'brown'), 'archer (brown)'),
     ('signmotorbike', SYM(G, 151, [4, 5], 'brown'), 'trail bike (brown)'),
     ('signoffroad', SYM(G, 151, [0, 1, 2], 'brown'), 'off-road vehicle (brown)'),
@@ -1337,6 +1386,10 @@ def main():
         targets = [(info['texture'], face)]
         if info['back']:
             targets.append((info['back'], shs.back_texture(face)))
+        composed = source()[0]
+        if isinstance(composed, ComposedFace) and composed.extras:
+            for name, img in composed.extras(info['aspect']).items():
+                targets.append((os.path.join(os.path.dirname(info['texture']), name), img))
         for path, img in targets:
             if check:
                 cur = Image.open(path).convert('RGBA') if os.path.exists(path) else None
