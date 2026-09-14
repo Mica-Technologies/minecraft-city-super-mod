@@ -443,9 +443,12 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
         # (the panel and its border span the whole sign; a diagonal arrow up to two thirds)
         small = bbox.width * bbox.height < 0.7 * rect.width * rect.height
         if rotate_symbols and small:
-            # a symbol (the arrow), not the panel: turned about its own centre, where it is
-            el = '<g transform="rotate(%s,%s,%s)">%s</g>' % (
-                rotate_symbols, (bbox.x0 + bbox.x1) / 2, (bbox.y0 + bbox.y1) / 2, el)
+            # a symbol (the arrow), not the panel: turned about its own centre, where it is;
+            # (degrees, scale) also shrinks it there, for a diagonal arrow turned level
+            deg, scale = rotate_symbols if isinstance(rotate_symbols, tuple) else (rotate_symbols, 1)
+            cx, cy = (bbox.x0 + bbox.x1) / 2, (bbox.y0 + bbox.y1) / 2
+            el = '<g transform="translate(%s,%s) rotate(%s) scale(%s) translate(%s,%s)">%s</g>' % (
+                cx, cy, deg, scale, -cx, -cy, el)
         if mirror_symbols == 'both' and small:
             # A double-headed arrow from a single one: the head half of the arrow (its
             # left half, clipped) and that half's mirror image, meeting at the arrow's own
@@ -523,7 +526,7 @@ def _outer_rects(fills):
 
 def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
               mirror_symbols=False, rotate_symbols=0, symbols_only=False, condense=False,
-              blank=False):
+              blank=False, legend_colour=None):
     """One sign from a book page, rendered with alpha and cropped to its outline.
 
     ``pick`` chooses among the page's outermost sign rects, sorted top to bottom then left to
@@ -536,14 +539,15 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
     place at the same cap height, in the mod's Highway Gothic. ``mirror_symbols`` flips the
     page's paths -- the arrow, the panel -- about the sign's centre line but not its glyphs:
     the right-hand version of a sign the book draws left-handed with a legend;
-    ``rotate_symbols`` (degrees, clockwise) turns each symbol smaller than half the sign --
+    ``rotate_symbols`` (degrees, clockwise; or (degrees, scale)) turns each symbol smaller than half the sign --
     the arrow, not the panel -- about its own centre, so an up arrow points left or right
     where it is; ``mirror_symbols='both'`` keeps each symbol and adds its mirror image, a
     single arrow becoming the double-headed one. ``replace`` may also be a list of (old,
     new) pairs; ``condense`` narrows a ``new`` legend too wide for its line instead of
     shrinking it, so a word legend keeps the cap height of the words round it. ``condense='box'``
     narrows it to the old run's own width instead, for a run set between fixed marks. ``blank``
-    renders the panel with every legend dropped.
+    renders the panel with every legend dropped. ``legend_colour`` sets a re-set legend in the
+    page's colour for it (the D4-1's green) instead of the book's black.
     """
     p = book_page(chapter, page)
     fills = _sign_fills(p)
@@ -582,7 +586,8 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
         for box in boxes:
             px = ((box.x0 - rect.x0) * scale, (box.y0 - rect.y0) * scale,
                   (box.x1 - rect.x0) * scale, (box.y1 - rect.y0) * scale)
-            _set_legend(img, new, px, condense=condense)
+            _set_legend(img, new, px, condense=condense,
+                        colour=legend_colour or (31, 26, 23, 255))
     return img
 
 
