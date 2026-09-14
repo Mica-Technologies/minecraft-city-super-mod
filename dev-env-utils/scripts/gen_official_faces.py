@@ -254,32 +254,90 @@ def _with(mapping, extra):
     return out
 
 
-def DEADLY_FORCE():
-    """The WARNING / BEYOND THIS POINT DEADLY FORCE IS AUTHORIZED sign at military and
-    federal sites: the W13-3 RAMP advisory's two-panel layout (the black divider under a short
-    top panel) in white, its legends dropped and the sign's own set in their place."""
+def _series_condense(texts, cap, max_w):
+    """One horizontal narrowing for a block of lines at cap height ``cap``, set by the widest,
+    so the lines read as one series rather than each squeezed to its own width."""
+    from PIL import ImageFont
+    import render_sign as rs
+    f = ImageFont.truetype(rs.FONT_PATH, int(cap * 1.4))
+    bb = f.getbbox('H')
+    f = ImageFont.truetype(rs.FONT_PATH, int(round(int(cap * 1.4) * cap / (bb[3] - bb[1]))))
+    widest = max(f.getbbox(t)[2] - f.getbbox(t)[0] for t in texts) + 4
+    return min(1.0, max_w / widest)
+
+
+def TWO_PANEL(top, lines, colour='yellow'):
+    """A facility WARNING / CAUTION sign laid out like the W13-3 RAMP advisory: a short top
+    panel over a black divider, the book's panel (border, divider, corner radii) in ``colour``
+    with its legends dropped, ``top`` set in the top panel and ``lines`` spread down the
+    bottom one at one size and one narrowing."""
     def make(aspect):
         import gen_gap_signs as gg
         panel = shs.book_sign(W, 111, blank=True)
-        panel = shs.recolour(panel, _with(shs.SHS_PALETTE, {(255, 245, 0): shs.MOD_COLOURS['white']}))
+        panel = shs.recolour(panel, _with(shs.SHS_PALETTE, {(255, 245, 0): shs.MOD_COLOURS[colour]}))
         H = 1024
         Wd = int(round(H * aspect))
         img = panel.resize((Wd, H), Image.LANCZOS)
         black = shs.MOD_COLOURS['black']
         # the page's panels, as fractions of the sign's height: top 0.03-0.33, bottom 0.35-0.97
-        gg._legend_line(img, 'WARNING', 0.18 * H, 0.15 * H, 0.84 * Wd, colour=black)
-        lines = (('BEYOND THIS POINT', 0.49), ('DEADLY FORCE', 0.66), ('IS AUTHORIZED', 0.83))
-        # one narrowing for all three, set by the longest, so the lines read as one series
+        gg._legend_line(img, top, 0.18 * H, 0.15 * H, 0.84 * Wd, colour=black)
+        n = len(lines)
+        spacing = min(0.17, 0.56 / n)
+        cap = min(0.095, spacing * 0.56) * H
+        condense = _series_condense(lines, cap, 0.84 * Wd)
+        for i, text in enumerate(lines):
+            cy = 0.66 + (i - (n - 1) / 2.0) * spacing
+            gg._legend_line(img, text, cy * H, cap, 0.84 * Wd, colour=black, condense=condense)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def TEXT_DIAMOND(lines, colour=None, tight=False):
+    """A worded warning sign the book has no drawing for: the W8-1 BUMP diamond (border and
+    corner radii) with its legend dropped and ``lines`` set inside it. The largest cap height
+    is taken at which every line fits the diamond's width across its own band, allowing the
+    block one shared narrowing down to ``MIN_CONDENSE`` (the narrower Highway Gothic series).
+    ``colour`` is an RGBA replacing the warning yellow (FAWE's magenta). ``tight`` is for a
+    long block (four lines under a long word): closer lines, more narrowing and a text area
+    run nearer the border, as the hand-set original had it."""
+    MIN_CONDENSE = 0.58 if tight else 0.7
+    GAP = 1.2 if tight else 1.35
+    def make(aspect):
+        import gen_gap_signs as gg
         from PIL import ImageFont
         import render_sign as rs
-        cap = 0.095 * H
-        f = ImageFont.truetype(rs.FONT_PATH, int(cap * 1.4))
-        bb = f.getbbox('H')
-        f = ImageFont.truetype(rs.FONT_PATH, int(round(int(cap * 1.4) * cap / (bb[3] - bb[1]))))
-        widest = max(f.getbbox(t)[2] - f.getbbox(t)[0] for t, _cy in lines) + 4
-        condense = min(1.0, 0.84 * Wd / widest)
-        for text, cy in lines:
-            gg._legend_line(img, text, cy * H, cap, 0.84 * Wd, colour=black, condense=condense)
+        panel = shs.book_sign(W, 58, blank=True)
+        mapping = shs.SHS_PALETTE if colour is None else _with(shs.SHS_PALETTE, {(255, 245, 0): colour})
+        panel = shs.recolour(panel, mapping)
+        S = 1024
+        img = panel.resize((S, S), Image.LANCZOS)
+        R = S / 2 * (0.86 if tight else 0.80)                        # half-diagonal inside the black border, less a margin
+        n = len(lines)
+        f = ImageFont.truetype(rs.FONT_PATH, 200)
+        hb = f.getbbox('H')
+        unit = [(f.getbbox(t)[2] - f.getbbox(t)[0]) / float(hb[3] - hb[1]) for t in lines]  # width per cap
+        def fit(min_condense):
+            cap = 0.24 * S
+            while cap > 8:
+                lh = cap * GAP
+                if n * lh <= 2 * R * 0.9:
+                    cond = 1.0
+                    for k, u in enumerate(unit):
+                        # measured a quarter-cap out from the line's middle: the corners of a
+                        # line's end letters may run a little toward the border, as on real signs
+                        band = abs((k - (n - 1) / 2.0) * lh) + cap * (0.1 if tight else 0.25)
+                        avail = 2 * (R - band)
+                        cond = min(cond, avail / (u * cap) if avail > 0 else 0)
+                    if cond >= min_condense:
+                        return cap, cond
+                cap -= 2
+        # the letters' own width unless that costs a tenth of the height narrowing would give
+        wide, narrow = fit(0.92), fit(MIN_CONDENSE)
+        cap, cond = wide if wide[0] >= 0.9 * narrow[0] and not tight else narrow
+        lh = cap * GAP
+        for k, t in enumerate(lines):
+            cy = S / 2 + (k - (n - 1) / 2.0) * lh
+            gg._legend_line(img, t, cy, cap, S, colour=shs.MOD_COLOURS['black'], condense=cond)
         return shs.fit_plate(img, aspect, size=256)
     return lambda: (ComposedFace(make), False, None)
 
@@ -586,7 +644,28 @@ CATALOGUE = [
     ('signturnsonly', SHS(R, 36), 'R3-9a'),
     ('signupleftdownright', SHS(G, 21, pick=4, rotate_symbols=35), 'M6-4 (turned)'),
     ('signdownleftupright', SHS(G, 21, pick=4, rotate_symbols=-35), 'M6-4 (turned)'),
-    ('deadlyforcesign', DEADLY_FORCE(), 'W13-3 layout, white'),
+    ('deadlyforcesign', TWO_PANEL('WARNING', ('BEYOND THIS POINT', 'DEADLY FORCE', 'IS AUTHORIZED'), 'white'),
+     'W13-3 layout, white'),
+    # --- Remaining-signs batch 8. Left as drawn: verizondig (utility placard),
+    # basestationradiosign (white over yellow, landscape), signcautiondriveslowly.
+    ('sign14_4', SHS(W, 105, replace=[('12', '14'), ('-6', ' -4')], condense='box'), 'W12-2 (14-4)'),
+    ('sign3wayt', SHS(W, 16), 'W2-4'),
+    ('sign4way', SHS(W, 13), 'W2-1'),
+    ('signcow', SHS(W, 93), 'W11-4'),
+    ('signpostcurvyroad', SHS(W, 5), 'W1-5'),
+    ('signfiretruck', SHS(W, 98), 'W11-8'),
+    ('fallhazzardsign', TWO_PANEL('WARNING', ('FALL HAZARD AREA', 'DO NOT ENTER'), 'white'), 'W13-3 layout, white'),
+    ('earprotectionsign', TWO_PANEL('CAUTION', ('EAR PROTECTION', 'REQUIRED BEYOND', 'THIS POINT')), 'W13-3 layout'),
+    ('switchequipmentwarningsign', TWO_PANEL('CAUTION', ('REMOTE CONTROLLED', 'EQUIPMENT MAY OPERATE',
+                                                         'AT ANY TIME', 'KEEP CLEAR OF', 'MOVING PARTS')), 'W13-3 layout'),
+    ('absolutelynothingsign', TEXT_DIAMOND(['ABSOLUTELY', 'NOTHING']), 'W8-1 diamond'),
+    ('signduststor', TEXT_DIAMOND(['OCCASIONAL', 'BLINDING', 'DUST', 'STORMS'], tight=True), 'W8-1 diamond'),
+    ('cautiondriveways', TEXT_DIAMOND(['CAUTION', 'DRIVEWAYS']), 'W8-1 diamond'),
+    ('dangerousroadcurves', TEXT_DIAMOND(['DANGEROUS', 'ROAD CURVES']), 'W8-1 diamond'),
+    ('endcountymaintainedroadsign', TEXT_DIAMOND(['END', 'COUNTY', 'MAINTAINED', 'ROAD']), 'W8-1 diamond'),
+    ('roadend', TEXT_DIAMOND(['END']), 'W8-1 diamond'),
+    ('faweincidentsign', TEXT_DIAMOND(['FAWE', 'INCIDENT', 'AHEAD'], (255, 0, 255, 255)), 'W8-1 diamond, magenta'),
+    ('fwyintersectionsign', TEXT_DIAMOND(['FREEWAY', 'INTERSECTION', 'AHEAD']), 'W8-1 diamond'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),

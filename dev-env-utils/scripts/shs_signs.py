@@ -541,7 +541,8 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
     where it is; ``mirror_symbols='both'`` keeps each symbol and adds its mirror image, a
     single arrow becoming the double-headed one. ``replace`` may also be a list of (old,
     new) pairs; ``condense`` narrows a ``new`` legend too wide for its line instead of
-    shrinking it, so a word legend keeps the cap height of the words round it. ``blank``
+    shrinking it, so a word legend keeps the cap height of the words round it. ``condense='box'``
+    narrows it to the old run's own width instead, for a run set between fixed marks. ``blank``
     renders the panel with every legend dropped.
     """
     p = book_page(chapter, page)
@@ -600,6 +601,9 @@ def _set_legend(img, text, box, colour=(31, 26, 23, 255), condense=False):
     bb = f.getbbox(text)
     # a longer legend ("100" for "50") keeps the old run's side margins rather than the panel
     max_w = img.width - 2 * min(x0, img.width - x1)
+    if condense == 'box':
+        # a run between fixed marks (the W12-2's foot and inch marks) keeps to its own box
+        max_w = x1 - x0
     if bb[2] - bb[0] > max_w:
         if not condense:
             f = ImageFont.truetype(rs.FONT_PATH, max(8, int(size * max_w / (bb[2] - bb[0]))))
