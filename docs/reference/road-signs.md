@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "640 blocks in this tab"
+!!! info "641 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -15,6 +15,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | 1000 Feet Sign (Plaque) | `csm:sign1000feet` | 2 | 10 | pickaxe | 1 |
 | 14ft 4in Sign | `csm:sign14_4` | 2 | 10 | pickaxe | 1 |
 | 2 Hour Parking 8:30a-5:30a Sign | `csm:twohourpark830530` | 2 | 10 | pickaxe | 1 |
+| 2 Hour Parking 9AM-8PM Sign | `csm:signla2hourparking` | 2 | 10 | pickaxe | 1 |
 | 2 Tracks Sign (Plaque) | `csm:signrailroadtracks2` | 2 | 10 | pickaxe | 1 |
 | 24 Hour Parking Sign | `csm:sign24hrparking` | 2 | 10 | pickaxe | 1 |
 | 3-Way T-Intersection Sign | `csm:sign3wayt` | 2 | 10 | pickaxe | 1 |

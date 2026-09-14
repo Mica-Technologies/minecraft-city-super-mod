@@ -1055,6 +1055,7 @@ tile.hwyentrance.name=Entrada a la Carretera
 tile.kathieevanssign.name=Se Vende - Kathie Evans
 tile.ladotantigridlockzone.name=LADOT Zona Anti-Congestión
 tile.ladotnostopping.name=LADOT Prohibido Detenerse 7AM-9AM 4PM-6PM
+tile.signla2hourparking.name=Señal de Estacionamiento 2 Horas 9AM-8PM
 tile.ladotsignalsync.name=LADOT Sincronización de Semáforos
 tile.landareastudysign.name=Área de Terreno en Estudio
 tile.landworkaheadsign.name=Trabajos de Terreno Adelante
