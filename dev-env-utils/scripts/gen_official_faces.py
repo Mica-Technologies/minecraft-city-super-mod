@@ -304,6 +304,17 @@ CATALOGUE = [
     ('signbikelane', SHS(R, 60), 'R3-17'),
     ('signbikelanelarge', SHS(R, 60), 'R3-17'),
     ('signpostweightlimit', SHS(R, 163), 'R12-5'),
+    # --- Remaining-signs batch 2. Left as drawn: the centre-lane hour panels
+    # (signcenterlanebusonly69, signcenterhov6a9a, signcenterlanenouse79), signcityspeed35,
+    # the danger / high-voltage set, signdividedhw1 / 2 (crossing arrows), signdontthinkparking,
+    # signdownleftupright.
+    ('signbypass', SHS(G, 15, pick=2), 'M4-2'),
+    ('signbusiness', SHS(G, 15, pick=3), 'M4-3'),
+    ('signend', SHS(G, 16, pick=1), 'M4-6'),
+    ('signdoubleoneway', SHS(R, 87, pick=1), 'R6-1L'),
+    ('signdoubleonewayb', SHS(R, 87), 'R6-1R'),
+    ('signarrowdownright', SHS(G, 21, rotate_symbols=90), 'M6-2R (down)'),
+    ('signarrowdownleft', SHS(G, 21, rotate_symbols=90, mirror=True), 'M6-2L (down)'),
     ('signhurricane', SHS(E, 0), 'EM-1'),   # the three moved to the 24 x 24 square plate
     ('signhurricaneleft', SHS(E, 0, rotate_symbols=-90), 'EM-1 (left)'),
     ('signhurricaneright', SHS(E, 0, rotate_symbols=90), 'EM-1 (right)'),

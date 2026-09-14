@@ -424,7 +424,8 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
         if fill:
             fill_boxes.append(bbox)
         # a symbol rather than the panel: an arrow may span most of the width but not the area
-        small = bbox.width * bbox.height < 0.3 * rect.width * rect.height
+        # (the panel and its border span the whole sign; a diagonal arrow up to two thirds)
+        small = bbox.width * bbox.height < 0.7 * rect.width * rect.height
         if rotate_symbols and small:
             # a symbol (the arrow), not the panel: turned about its own centre, where it is
             el = '<g transform="rotate(%s,%s,%s)">%s</g>' % (
