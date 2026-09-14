@@ -445,6 +445,124 @@ def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, wid
     return lambda: (ComposedFace(make), False, None)
 
 
+def FALLOUT_SHELTER(basement=False):
+    """The Civil Defense fallout shelter sign (1961, public domain, no FHWA drawing): a yellow
+    field holding the black disc and its three yellow triangles, over a black band lettered
+    FALLOUT SHELTER in yellow, measured off a scan of the real 14 x 20 sign. ``basement``
+    adds the IN BASEMENT supplement some signs carried, black on a yellow strip in the band."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        W, H = 1425, 2000                        # the scan's own units
+        yellow, black = shs.MOD_COLOURS['yellow'], shs.MOD_COLOURS['black']
+        img = Image.new('RGBA', (W, H), black)
+        d = ImageDraw.Draw(img)
+        band = 1415                              # where the yellow field ends
+        d.rectangle((22, 22, W - 22, band), fill=yellow)
+        cx, cy, r = 712, 720, 598
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=black)
+        g = 8                                    # the black gap either side of each triangle's edge
+        for tri in (((440 + g, 235), (1000 - g, 235), (718, 718 - 2 * g)),
+                    ((155 + 2 * g, 725 + g), (715 - g, 725 + g), (435, 1205 - g)),
+                    ((720 + g, 725 + g), (1280 - 2 * g, 725 + g), (995, 1205 - g))):
+            d.polygon(tri, fill=yellow)
+        if basement:
+            gg._legend_line(img, 'FALLOUT SHELTER', 1545, 180, 0.94 * W, colour=yellow)
+            d.rectangle((330, 1710, W - 330, 1900), fill=yellow)
+            gg._legend_line(img, 'IN BASEMENT', 1805, 120, W - 720, colour=black, condense=0.8)
+        else:
+            gg._legend_line(img, 'FALLOUT SHELTER', 1580, 200, 0.94 * W, colour=yellow)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def _bus_icon(w):
+    """The front of a bus, white, ``w`` wide: the pictogram on New York's bus lane banners."""
+    h = int(w * 1.15)
+    icon = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(icon)
+    white = (255, 255, 255, 255)
+    clear = (0, 0, 0, 0)
+    d.rounded_rectangle((0, 0, w - 1, int(h * 0.86)), radius=int(w * 0.16), fill=white)
+    d.rounded_rectangle((int(w * 0.12), int(h * 0.12), int(w * 0.88), int(h * 0.5)), radius=int(w * 0.06), fill=clear)
+    for x0 in (0.12, 0.66):
+        d.ellipse((int(w * x0), int(h * 0.6), int(w * (x0 + 0.22)), int(h * 0.76)), fill=clear)
+    for x0 in (0.08, 0.7):
+        d.rectangle((int(w * x0), int(h * 0.8), int(w * (x0 + 0.22)), h - 1), fill=white)
+    return icon
+
+
+def BUS_LANE(hours=True):
+    """New York City's overhead bus lane banner (NYCDOT, no FHWA drawing), measured off
+    photographs: a blue band with BUS LANE between two bus pictograms, then (``hours``) a black
+    band with 7AM - 7PM and MON - FRI, then a white panel with a down arrow over the lane and
+    BUSES ONLY & RIGHT TURNS, all inside a thin black border."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 600
+        Wd = int(round(H * aspect))
+        blue, black = shs.MOD_COLOURS['blue'], shs.MOD_COLOURS['black']
+        white = shs.MOD_COLOURS['white']
+        img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        e = int(H * 0.012)                       # the white sheet edge
+        b = int(H * 0.022)                       # the black border
+        d.rounded_rectangle((0, 0, Wd - 1, H - 1), radius=int(H * 0.03), fill=white)
+        d.rectangle((e, e, Wd - 1 - e, H - 1 - e), fill=black)
+        d.rectangle((e + b, e + b, Wd - 1 - e - b, H - 1 - e - b), fill=white)
+        blue_end = 0.3 if hours else 0.34
+        d.rectangle((e, e, Wd - 1 - e, int(H * blue_end)), fill=blue)
+        gg._legend_line_at(img, 'BUS   LANE', Wd / 2, (blue_end * H + e) / 2, 0.16 * H, 0.6 * Wd, colour=white)
+        icon = _bus_icon(int(H * 0.15))
+        for x in (0.07, 0.93):
+            img.alpha_composite(icon, (int(Wd * x - icon.width / 2), int((blue_end * H + e) / 2 - icon.height / 2)))
+        top = blue_end
+        if hours:
+            d.rectangle((e, int(H * blue_end), Wd - 1 - e, int(H * 0.5)), fill=black)
+            gg._legend_line_at(img, '7AM - 7PM', 0.3 * Wd, 0.405 * H, 0.11 * H, 0.3 * Wd, colour=white)
+            gg._legend_line_at(img, 'MON - FRI', 0.63 * Wd, 0.405 * H, 0.11 * H, 0.3 * Wd, colour=white)
+            top = 0.5
+        # the arrow over the lane, and the legend beside it
+        mid = (top + 0.97) / 2
+        ax, aw = (0.3 if hours else 0.2) * Wd, 0.13 * Wd
+        at, ab = (top + 0.08) * H, 0.9 * H
+        stem = aw * 0.32
+        head = (ab - at) * 0.5
+        d.polygon([(ax - stem / 2, at), (ax + stem / 2, at), (ax + stem / 2, ab - head), (ax + aw / 2, ab - head),
+                   (ax, ab), (ax - aw / 2, ab - head), (ax - stem / 2, ab - head)], fill=black)
+        lx = 0.66 * Wd if hours else 0.6 * Wd
+        gg._legend_line_at(img, 'BUSES ONLY', lx, (mid - 0.09) * H, (0.17 if hours else 0.2) * H, 0.52 * Wd, colour=black)
+        gg._legend_line_at(img, '& RIGHT TURNS', lx, (mid + 0.14) * H, (0.09 if hours else 0.1) * H, 0.4 * Wd, colour=black)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def SNOWFLAKE():
+    """A snowflake in white on the green pictogram panel (winter-conditions and snow-route
+    signage use one; the 2004 book does not draw it): six arms with two pairs of branches."""
+    def make(aspect):
+        import math
+        S = 1000
+        sym = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+        d = ImageDraw.Draw(sym)
+        ink = (0, 0, 0, 255)
+        c = S / 2
+        arm, wid = S * 0.46, int(S * 0.055)
+        for k in range(6):
+            a = math.radians(90 + 60 * k)
+            ux, uy = math.cos(a), -math.sin(a)
+            d.line((c, c, c + ux * arm, c + uy * arm), fill=ink, width=wid)
+            for t, blen in ((0.45, 0.2), (0.72, 0.14)):
+                px, py = c + ux * arm * t, c + uy * arm * t
+                for side in (-1, 1):
+                    bb = a + side * math.radians(45)
+                    d.line((px, py, px + math.cos(bb) * S * blen, py - math.sin(bb) * S * blen), fill=ink, width=wid)
+            ex, ey = c + ux * arm, c + uy * arm
+            d.ellipse((ex - wid / 2, ey - wid / 2, ex + wid / 2, ey + wid / 2), fill=ink)
+        d.regular_polygon((c, c, S * 0.1), 6, rotation=0, fill=ink)
+        return shs.symbol_on_panel(sym, shs.MOD_COLOURS['green'], aspect, size=256, symbol_frac=0.8)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -942,6 +1060,10 @@ CATALOGUE = [
                                   band=(0.22, 0.78), cap_max=0.1), 'blue panel'),
     ('respectuianatparkssign', PANEL(['PLEASE', 'RESPECT ALL UIA', 'NATIONAL PARKS', 'AND PROPERTY', 'FOR EVERYONE',
                                       'UIA CODES APPLY'], 'white', ink='green', band=(0.08, 0.92), width=0.76), 'white panel'),
+    ('falloutsheltersign', FALLOUT_SHELTER(), 'Civil Defense (drawn)'),
+    ('falloutsheltersignalt', FALLOUT_SHELTER(basement=True), 'Civil Defense, IN BASEMENT (drawn)'),
+    ('buslanesign', BUS_LANE(), 'NYCDOT bus lane (drawn)'),
+    ('signsnowflake', SNOWFLAKE(), 'snowflake on green (drawn)'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
