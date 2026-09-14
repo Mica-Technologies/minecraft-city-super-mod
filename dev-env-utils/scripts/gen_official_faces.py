@@ -42,12 +42,15 @@ MATCH_TABLE = os.path.join(layout.REPO_ROOT, 'assets', 'docs', 'agent_progress',
 # ----------------------------------------------------------------------------- sources
 
 def SHS(chapter, page, pick=0, mirror=False, palette=None, replace=None, inner=None,
-        rotate_symbols=0):
+        rotate_symbols=0, mirror_symbols=False):
     """A face from a 2004 SHS book page (0-based). ``pick`` for pages with more than one
-    sign, ``mirror`` for the left-hand version of a symbol the book draws right-handed only,
-    ``replace=(old, new)`` to re-set the one numeral the book draws."""
+    sign, ``mirror`` for the left-hand version of a symbol the book draws right-handed only
+    (``mirror_symbols`` when it carries a legend: the arrow flips, the words do not),
+    ``rotate_symbols`` to turn an arrow in place, ``replace=(old, new)`` to re-set the one
+    numeral the book draws."""
     return lambda: (shs.book_sign(chapter, page, pick, inner=inner, replace=replace,
-                                  rotate_symbols=rotate_symbols), mirror, palette)
+                                  rotate_symbols=rotate_symbols, mirror_symbols=mirror_symbols),
+                    mirror, palette)
 
 
 class SymbolFace(object):
@@ -247,6 +250,44 @@ CATALOGUE = [
     ('signcamper', SYM(G, 135, [2, 3, 4], 'blue'), 'RA-130'),
     ('signboats', SYM(G, 156, [3], 'green'), 'RW-050'),   # the anchor (marina), as the mod draws it
     ('signparkingnoarrow', SYM(G, 140, [3], 'green'), 'D9-1'),
+    # --- Phase 5: the audit's unverified guesses, each checked against the page by eye and
+    # kept only where the mod's sign IS that drawing (a custom number, lane or wording stays
+    # as the mod drew it). Left/right twins of a legend sign use mirror_symbols. Not taken:
+    # the arrow-shaped ONE WAY pair and the W16-5p arrow plaques (3:1 and 4:3 drawings on
+    # 4.3:1 and 2:1 plates), the M6 arrows (the mod's are combined Y / T arrows), Weigh
+    # Station Next Right (its page draws no white border).
+    ('signbustaxionly', SHS(R, 57), 'R3-14b'),
+    ('signcenterlaneturnsonly', SHS(R, 37), 'R3-9b'),
+    ('signhov2ormorepervehicle', SHS(R, 53), 'R3-13'),
+    ('signr105', SHS(R, 135), 'R10-5'),
+    ('noparkingsundayholiday', SHS(R, 92), 'R7-3'),
+    ('signnotrucksover7000', SHS(R, 161), 'R12-3'),
+    ('signweightlimit2peraxle', SHS(R, 161, pick=1), 'R12-4'),
+    ('signnonmotorprohibit', SHS(R, 83), 'R5-7'),
+    ('signonewayright', SHS(R, 88), 'R6-2R'),
+    ('signonewayleft', SHS(R, 88, mirror_symbols=True), 'R6-2L'),
+    ('signstopherered', SHS(R, 136, pick=1), 'R10-6a'),
+    ('signstopherered2', SHS(R, 136, mirror_symbols=True), 'R10-6 (right)'),
+    ('signstophereflashred2', SHS(R, 115, mirror_symbols=True), 'R8-10 (right)'),
+    ('signnoparkinganytime', SHS(R, 91), 'R7-1'),
+    ('signnoturnred', SHS(R, 141), 'R10-11a'),
+    ('signoturnonred', SHS(R, 142), 'R10-11b'),
+    ('signonehrparking97', SHS(R, 93), 'R7-5 (1 hr)'),
+    ('signrightturn', SHS(W, 0), 'W1-1R'),
+    ('signleftturn', SHS(W, 0, pick=1), 'W1-1L'),
+    ('signhairpinright', SHS(W, 10), 'W1-11R'),
+    ('signhairpinleft', SHS(W, 10, mirror=True), 'W1-11L'),
+    ('signloopright', SHS(W, 12), 'W1-15R'),
+    ('signmergeleftlanends', SHS(W, 30), 'W4-2R'),
+    ('signleftends', SHS(W, 30, pick=1), 'W4-2L'),
+    ('signblastingzone', SHS(W, 159), 'W22-1'),
+    ('rwrkbepreptostop', SHS(W, 25, palette={(255, 245, 0): shs.MOD_COLOURS['orange']}), 'W3-4 (TTC)'),
+    ('rwrkflagger', SHS(W, 149), 'W20-7'),
+    ('signworkdetourright', SHS(W, 172), 'M4-9R'),
+    ('signworkdetouerleft', SHS(W, 172, mirror_symbols=True), 'M4-9L'),
+    ('signturnoff2way', SHS(W, 160), 'W22-2'),
+    ('signparkingarearight', SHS(G, 40), 'D5-4'),
+    ('signrestarearight', SHS(G, 37, pick=1), 'D5-2a'),
     ('signhurricane', SHS(E, 0), 'EM-1'),   # the three moved to the 24 x 24 square plate
     ('signhurricaneleft', SHS(E, 0, rotate_symbols=-90), 'EM-1 (left)'),
     ('signhurricaneright', SHS(E, 0, rotate_symbols=90), 'EM-1 (right)'),

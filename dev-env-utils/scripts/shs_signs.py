@@ -378,9 +378,14 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
             # those -- a letter's counter (the hole in an A) is small too, but fills its box
             if attrs.get('fill', '').lower() in ('#ffffff', '#fff', 'white'):
                 area = _path_area(attrs.get('d', ''), nums)
-                thin = min(bbox.width, bbox.height) < 2.5 or area < 0.3 * bbox.width * bbox.height
+                box_area = bbox.width * bbox.height
+                # (a 1 pt leader across a panel fills ~1% of its box; a fraction's slash ~20%)
+                hairline = min(bbox.width, bbox.height) < 2.5 or area < 0.06 * box_area
+                thin = area < 0.3 * box_area
                 speck = max(bbox.width, bbox.height) < 8    # an arrowhead; a counter is bigger
-                if area < MAX_MARK_AREA_PT and (thin or speck):
+                # a hairline of any length (a long diagonal leader is 200 pt^2), or a small
+                # thin shape or speck; a counter fills its box and is left alone
+                if hairline or (area < MAX_MARK_AREA_PT and (thin or speck)):
                     continue
         elif stroke:
             width = float(attrs.get('stroke-width', '1')) * scale
