@@ -1297,6 +1297,182 @@ def STOP_HERE_FOR_PEDS(left):
 W_ = 'Warning'
 
 
+def _ink_symbol(chapter, page, pick=0, colour='black'):
+    """A book sign's symbol alone (panel and border dropped), cropped, recoloured to ``colour``."""
+    art = shs.recolour(shs.book_sign(chapter, page, pick, symbols_only=True), shs.SHS_PALETTE)
+    art = art.crop(art.getchannel('A').getbbox())
+    if colour != 'black':
+        art = Image.composite(Image.new('RGBA', art.size, shs.MOD_COLOURS[colour]), art, art)
+    return art
+
+
+def DIAMOND_ART(arts, colour='yellow'):
+    """The W8-1 diamond with its legend dropped and ``arts`` pasted in: (image function, box as
+    fractions of the sign, rotation degrees counter-clockwise) -- the M6-2 arrow turned onto a
+    diamond, a tram drawn above a double arrow."""
+    def make(aspect):
+        panel = shs.book_sign(W, 58, blank=True)
+        mapping = shs.SHS_PALETTE if colour == 'yellow' else _with(shs.SHS_PALETTE, {(255, 245, 0): shs.MOD_COLOURS[colour]})
+        S = 1024
+        img = shs.recolour(panel, mapping).resize((S, S), Image.LANCZOS)
+        for fn, box, rot in arts:
+            art = fn(img) if callable(fn) else fn
+            if art is None:
+                continue
+            if rot:
+                art = art.rotate(rot, expand=True, resample=Image.BICUBIC)
+            _paste_fit(img, art, (box[0] * S, box[1] * S, box[2] * S, box[3] * S))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def _m62():
+    return _ink_symbol(G, 21)
+
+
+def _double_arrow(w=900):
+    """A horizontal double-headed arrow, black."""
+    h = int(w * 0.16)
+    art = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(art)
+    k = (0, 0, 0, 255)
+    th, hl = h * 0.34, w * 0.13
+    d.rectangle((hl * 0.8, h / 2 - th / 2, w - hl * 0.8, h / 2 + th / 2), fill=k)
+    d.polygon([(0, h / 2), (hl, 0), (hl, h)], fill=k)
+    d.polygon([(w, h / 2), (w - hl, 0), (w - hl, h)], fill=k)
+    return art
+
+
+def _line_arrow(d, x0, y0, x1, y1, width, head, colour):
+    """A straight arrow from (x0, y0) to its tip at (x1, y1): a shaft ``width`` thick and a
+    triangular head ``head`` long, the style of the mod's diagonal lane-end arrows."""
+    import math
+    ang = math.atan2(y1 - y0, x1 - x0)
+    ux, uy = math.cos(ang), math.sin(ang)
+    px, py = -uy, ux
+    bx, by = x1 - ux * head, y1 - uy * head
+    w2 = width / 2.0
+    d.polygon([(x0 + px * w2, y0 + py * w2), (bx + px * w2, by + py * w2), (bx - px * w2, by - py * w2),
+               (x0 - px * w2, y0 - py * w2)], fill=colour)
+    hw = head * 0.62
+    d.polygon([(x1, y1), (bx + px * hw, by + py * hw), (bx - px * hw, by - py * hw)], fill=colour)
+
+
+def DIAGONAL_ARROW(tip_left):
+    """One long diagonal arrow pointing down-left (or down-right) across the W8-1 diamond."""
+    def make(aspect):
+        S = 1024
+        img = shs.recolour(shs.book_sign(W, 58, blank=True), shs.SHS_PALETTE).resize((S, S), Image.LANCZOS)
+        d = ImageDraw.Draw(img)
+        if tip_left:
+            _line_arrow(d, S * 0.7, S * 0.3, S * 0.3, S * 0.7, S * 0.09, S * 0.19, shs.MOD_COLOURS['black'])
+        else:
+            _line_arrow(d, S * 0.3, S * 0.3, S * 0.7, S * 0.7, S * 0.09, S * 0.19, shs.MOD_COLOURS['black'])
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def BIKE_PANEL(lines, bike_box, layout):
+    """A white panel with the W11-1 bicycle lifted off its page and ``layout`` lines, for the bike
+    plaques the 2004 book does not draw (BIKE LANE plaque, R4-11 BICYCLES MAY USE FULL LANE)."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        Wd = int(round(H * aspect))
+        img, d = _white_panel(Wd, H, 'black')
+        _paste_fit(img, _ink_symbol(W, 90), (bike_box[0] * Wd, bike_box[1] * H, bike_box[2] * Wd, bike_box[3] * H))
+        for text, cy, cap, width, cx, series in layout:
+            gg._legend_line_at(img, text, cx * Wd, cy * H, cap * H, width * Wd, colour=shs.MOD_COLOURS['black'],
+                               condense=series)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def SLOW_DANGEROUS():
+    """SLOW in a black diamond outline over DANGEROUS INTERSECTION, on a yellow panel."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        Wd = int(round(H * aspect))
+        black = shs.MOD_COLOURS['black']
+        img, d = _white_panel(Wd, H, 'black', colour='yellow')
+        cx, cy, r = Wd / 2, H * 0.355, H * 0.265
+        d.polygon([(cx, cy - r), (cx + r, cy), (cx, cy + r), (cx - r, cy)], outline=black, width=int(H * 0.02))
+        gg._legend_line(img, 'SLOW', cy, H * 0.15, r * 1.2, colour=black, condense=('C', 'B'))
+        gg._legend_line(img, 'DANGEROUS', H * 0.735, H * 0.125, Wd * 0.84, colour=black, condense='B')
+        gg._legend_line(img, 'INTERSECTION', H * 0.87, H * 0.1, Wd * 0.84, colour=black, condense='B')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def _legend_art(text, cap_frac, series=('C', 'B')):
+    """A line of legend as a cropped black image, for pasting into a pictogram layout."""
+    import gen_gap_signs as gg
+    layer = Image.new('RGBA', (2000, 400), (0, 0, 0, 0))
+    gg._legend_line(layer, text, 200, 200 * cap_frac / 0.06 * 0.5, 1990, colour=shs.MOD_COLOURS['black'], condense=series)
+    return layer.crop(layer.getbbox())
+
+
+def TWO_PANEL_H():
+    """USE BASE STATION RADIOS ONLY IN CONTROL ROOM over NO RADIOS ALLOWED BEHIND CONTROL CABINETS:
+    a white top half and a yellow bottom half with a thin black rule, black border, as the original."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        Wd = int(round(H * aspect))
+        black = shs.MOD_COLOURS['black']
+        img, d = _white_panel(Wd, H, 'black')
+        d.rectangle((H * 0.05, H * 0.5, Wd - H * 0.05, H - H * 0.05), fill=shs.MOD_COLOURS['yellow'])
+        d.rectangle((H * 0.035, H * 0.49, Wd - H * 0.035, H * 0.51), fill=black)
+        for text, y in (('USE BASE STATION', 0.15), ('RADIOS ONLY IN', 0.27), ('CONTROL ROOM', 0.39),
+                        ('NO RADIOS ALLOWED', 0.63), ('BEHIND CONTROL', 0.75), ('CABINETS', 0.87)):
+            gg._legend_line(img, text, y * H, H * 0.08, Wd * 0.86, colour=black, condense=('D', 'C', 'B'))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+ARTWORK = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'artwork')
+
+
+def _svg_image(name, size=1024):
+    """A public-domain MUTCD sign drawing from ``artwork/`` rendered with alpha, ``size`` wide."""
+    import fitz
+    page = fitz.open(os.path.join(ARTWORK, name))[0]
+    k = size / page.rect.width
+    pix = page.get_pixmap(matrix=fitz.Matrix(k, k), alpha=True)
+    return Image.frombytes('RGBA', (pix.width, pix.height), pix.samples)
+
+
+SVG_PALETTE = _with(shs.SHS_PALETTE, {(252, 209, 22): shs.MOD_COLOURS['yellow']})
+
+
+def SVG_SIGN(name):
+    """A whole sign from a MUTCD SVG (Wikimedia's redraws of the federal and California MUTCD
+    drawings, public domain), palette-mapped onto the mod's colours: the W5-2a narrow bridge
+    symbol and California's W82 streetcar, which the 2004 book does not draw."""
+    def make(aspect):
+        return shs.fit_plate(shs.recolour(_svg_image(name), SVG_PALETTE), aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def _svg_ink(name, box):
+    """The black ink of an SVG sign inside ``box`` (fractions), as black on clear, cropped."""
+    import numpy as np
+    im = _svg_image(name, 2048)
+    W_, H_ = im.size
+    yy, xx = np.mgrid[0:H_, 0:W_]
+    inside = (np.abs(xx / W_ - 0.5) + np.abs(yy / H_ - 0.5)) < 0.4        # not the diamond's border
+    arr = np.asarray(im).copy()
+    arr[~inside, 3] = 0
+    im = Image.fromarray(arr, 'RGBA')
+    im = im.crop((int(box[0] * W_), int(box[1] * H_), int(box[2] * W_), int(box[3] * H_)))
+    a = np.asarray(im).astype(np.float32)
+    dark = np.clip((110 - a[..., :3].mean(axis=2)) / 90.0, 0, 1) * (a[..., 3] / 255.0)
+    out = Image.new('RGBA', im.size, shs.MOD_COLOURS['black'])
+    out.putalpha(Image.fromarray((dark * 255).astype(np.uint8), 'L'))
+    return out.crop(out.getchannel('A').getbbox())
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -1884,6 +2060,44 @@ CATALOGUE = [
     ('streetsweepwed', STREET_SWEEP('WEDNESDAY', [('12', True), ('NOON', False), ('TO', False), ('4', True), ('PM', False)]), 'Alto street sweeping'),
     ('doorsunlockedbiz', PANEL(['THIS DOOR TO', 'REMAIN UNLOCKED', 'DURING', 'BUSINESS HOURS'], 'white',
      band=(0.08, 0.92), width=0.9), 'white plaque'),
+    # --- Second pass, batch E. Kept as they are: verizondig (Verizon placard), signradioradiation,
+    # signleftlaneends / signrightlaneends (already MUTCD SVG renders; yellow recoloured once)
+    # (FCC placard). signbikesignaldoublesided shares bike_signal.png (done in pass 1).
+    ('shouldertravelongreenarrowsign', PANEL(['TRAVEL ON'], 'white',
+     layout=[('TRAVEL ON', 0.16, 0.1, 0.86, 0.5, 'C'), ('SHOULDER', 0.33, 0.1, 0.86, 0.5, 'C'),
+             ('ON GREEN', 0.5, 0.1, 0.86, 0.5, 'C'), ('ARROW', 0.67, 0.1, 0.86, 0.5, 'C'),
+             ('ONLY', 0.84, 0.1, 0.86, 0.5, 'C')]), 'white panel'),
+    ('signturnflashred', PANEL(['TURN ON'], 'white',
+     layout=[('TURN ON', 0.19, 0.12, 0.86, 0.5, 'C'), ('FLASHING RED', 0.41, 0.12, 0.86, 0.5, 'B'),
+             ('WITH CAUTION', 0.62, 0.12, 0.86, 0.5, 'B'), ('AFTER STOP', 0.83, 0.12, 0.86, 0.5, 'B')]), 'white panel'),
+    ('utilityvehiclesonlysign', PANEL(['UTILITY'], 'white',
+     layout=[('UTILITY', 0.3, 0.16, 0.86, 0.5, 'C'), ('VEHICLES', 0.52, 0.16, 0.86, 0.5, 'C'),
+             ('ONLY', 0.74, 0.16, 0.86, 0.5, 'C')]), 'white panel'),
+    ('basestationradiosign', TWO_PANEL_H(), 'white over yellow plaque'),
+    ('signcautiondriveslowly', PANEL(['CAUTION'], 'yellow',
+     layout=[('CAUTION', 0.23, 0.125, 0.78, 0.5, 'C'), ('DRIVE', 0.5, 0.125, 0.78, 0.5, 'C'),
+             ('SLOWLY', 0.77, 0.125, 0.78, 0.5, 'C')]), 'yellow panel'),
+    ('calaneendsignleft', DIAGONAL_ARROW(tip_left=True), 'W8-1 diamond + arrow'),
+    ('calaneendsignright', DIAGONAL_ARROW(tip_left=False), 'W8-1 diamond + arrow'),
+    ('signnarrowbridgeimg', SVG_SIGN('mutcd_w5_2a.svg'), 'W5-2a (MUTCD SVG)'),
+    ('notmaintainedroadsign', PANEL(['THIS ROAD IS'], 'yellow',
+     layout=[('THIS ROAD IS', 0.2, 0.06, 0.86, 0.5, 'C'), ('NOT MAINTAINED', 0.3, 0.06, 0.86, 0.5, 'C'),
+             ('ANY UIA AREA COUNTY IS', 0.4, 0.06, 0.86, 0.5, 'B'), ('NOT RESPONSIBLE', 0.5, 0.06, 0.86, 0.5, 'C'),
+             ('FOR ANY LOSS OR', 0.6, 0.06, 0.86, 0.5, 'C'), ('INJURY SUFFERED BY', 0.7, 0.06, 0.86, 0.5, 'C'),
+             ('REASON OF ITS USE', 0.8, 0.06, 0.86, 0.5, 'C')]), 'yellow panel'),
+    ('signroadsplit', SHS(W, 104), 'W12-1'),
+    ('signslowdangerousintersection', SLOW_DANGEROUS(), 'yellow panel, SLOW diamond'),
+    ('signtrolley', SVG_SIGN('mutcd_ca_w82.svg'), 'CA W82 (MUTCD SVG)'),
+    ('signloookbothways', DIAMOND_ART([(lambda img: _svg_ink('mutcd_ca_w82.svg', (0.13, 0.25, 0.87, 0.64)), (0.26, 0.22, 0.74, 0.47), 0),
+                                       (lambda img: _double_arrow(), (0.25, 0.5, 0.75, 0.59), 0),
+                                       (lambda img: _legend_art('LOOK BOTH', 0.06), (0.28, 0.6, 0.72, 0.7), 0),
+                                       (lambda img: _legend_art('WAYS', 0.06), (0.37, 0.72, 0.63, 0.81), 0)]),
+     'W8-1 diamond + drawn tram'),
+    ('signbikelaneplaque', BIKE_PANEL(['LANE'], (0.07, 0.24, 0.47, 0.76), [('LANE', 0.5, 0.34, 0.46, 0.72, 'B')]),
+     'W11-1 bicycle + LANE'),
+    ('signbikesallowedusefulllane', BIKE_PANEL(['ALLOWED'], (0.22, 0.07, 0.78, 0.36),
+     [('ALLOWED', 0.48, 0.12, 0.84, 0.5, 'C'), ('USE OF', 0.66, 0.12, 0.84, 0.5, 'C'),
+      ('FULL LANE', 0.84, 0.12, 0.84, 0.5, 'C')]), 'W11-1 bicycle + legend'),
     # --- Second pass, batch C. signresidentnormal paints signresidentlarge's texture (done in B).
     ('noovernightparkingsign', PANEL(['NO', 'OVERNIGHT', 'PARKING', 'AND', 'CAMPING'], 'white', ink='red',
                                      band=(0.06, 0.94), width=0.8,
