@@ -522,7 +522,8 @@ def _outer_rects(fills):
 
 
 def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
-              mirror_symbols=False, rotate_symbols=0, symbols_only=False, condense=False):
+              mirror_symbols=False, rotate_symbols=0, symbols_only=False, condense=False,
+              blank=False):
     """One sign from a book page, rendered with alpha and cropped to its outline.
 
     ``pick`` chooses among the page's outermost sign rects, sorted top to bottom then left to
@@ -540,7 +541,8 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
     where it is; ``mirror_symbols='both'`` keeps each symbol and adds its mirror image, a
     single arrow becoming the double-headed one. ``replace`` may also be a list of (old,
     new) pairs; ``condense`` narrows a ``new`` legend too wide for its line instead of
-    shrinking it, so a word legend keeps the cap height of the words round it.
+    shrinking it, so a word legend keeps the cap height of the words round it. ``blank``
+    renders the panel with every legend dropped.
     """
     p = book_page(chapter, page)
     fills = _sign_fills(p)
@@ -555,6 +557,10 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
     sheet_colour = _sheet_colour(fills, rect)
     if sheet is not None:
         rect = sheet
+    if blank:
+        # the panel alone, every legend dropped, for a sign that reuses a layout with its own words
+        return _render_svg(p, rect, only_inside, sheet_colour=sheet_colour,
+                           drop=[t for t, _o, _b in _legend_spans(p, rect)])
     if replace is None:
         return _render_svg(p, rect, only_inside, sheet_colour=sheet_colour,
                            mirror_symbols=mirror_symbols, rotate_symbols=rotate_symbols,
