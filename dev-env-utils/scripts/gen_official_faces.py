@@ -355,6 +355,30 @@ def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None, gap=None, min_conden
     return lambda: (ComposedFace(make), False, None)
 
 
+def TEXT_PANEL(chapter, page, lines, pick=0, band=(0.1, 0.9), cap_max=0.3, width=0.84, palette=None):
+    """A book panel with its legend dropped and the mod's own ``lines`` set in the vertical
+    ``band`` (fractions of the sign's height) at one size and one narrowing: the R9-5's bike
+    over a worded bike sign, the R3-17aP plaque under an EXCEPT legend. The symbols the page
+    keeps (the bike) stay where the book draws them. ``cap_max`` caps the letter height as a
+    fraction of the sign's height; ``width`` is the share of the sign a line may take."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        panel = shs.book_sign(chapter, page, pick, blank=True)
+        panel = shs.recolour(panel, shs.SHS_PALETTE if palette is None else _with(shs.SHS_PALETTE, palette))
+        H = 1024
+        Wd = int(round(H * aspect))
+        img = panel.resize((Wd, H), Image.LANCZOS)
+        n = len(lines)
+        pitch = (band[1] - band[0]) / n
+        cap = min(cap_max, pitch * 0.66) * H
+        condense = _series_condense(lines, cap, width * Wd)
+        for i, text in enumerate(lines):
+            cy = (band[0] + pitch * (i + 0.5)) * H
+            gg._legend_line(img, text, cy, cap, width * Wd, colour=shs.MOD_COLOURS['black'], condense=condense)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -738,6 +762,27 @@ CATALOGUE = [
     ('watchdownhillspeedsign', TEXT_DIAMOND(['WATCH', 'DOWNHILL', 'SPEED'], shift=True), 'W8-1 diamond'),
     ('signwatchemergency', TEXT_DIAMOND(['WATCH', 'FOR', 'EMERGENCY', 'VEHICLES'], tight=True, gap=1.3, min_condense=0.68, shift=True), 'W8-1 diamond'),
     ('signlowaircraft', TEXT_DIAMOND(['WATCH', 'FOR', 'LOW FLYING', 'AIRCRAFT'], tight=True, gap=1.3, min_condense=0.68, shift=True), 'W8-1 diamond'),
+    # --- Remaining-signs batch 12. Left as drawn: signbikelaneplaque (bike + LANE; the book's
+    # R3-17 is the black BIKE LANE panel), signbikesallowedusefulllane / large (square plate:
+    # the R9-5 panel's bike would stretch half as wide again), signbusstopahead (the symbol
+    # S3-1 is 2009; the book's is worded), signexceptbicycleicon (EXCEPT over a bike).
+    ('signyintersection', SHS(W, 17), 'W2-5'),
+    ('signaheadplaquefloyellow', SHS(W, 126, pick=1, palette=FYG_FACE), 'W16-9p (FYG)'),
+    ('signarrowplaquefloyellowdownleft', SHS(W, 125, palette=FYG_FACE), 'W16-7pL (FYG)'),
+    ('signarrowplaquefloyellowdownright', SHS(W, 125, pick=1, palette=FYG_FACE), 'W16-7pR (FYG)'),
+    ('signbeginrightlaneyieldbikes', SHS(R, 65), 'R4-4'),
+    ('signbeginleftlaneyieldbikes', SHS(R, 65, replace=('RIGHT TURN LANE', 'LEFT TURN LANE'), mirror_symbols=True,
+                                        condense=True), 'R4-4 (left)'),
+    ('bikesusepedsignalsign', SHS(R, 122), 'R9-5'),
+    ('signbikeyieldtopeds', SHS(R, 123), 'R9-6'),
+    ('signbikelaneahead', TEXT_PANEL(R, 122, ['LANE', 'AHEAD'], band=(0.42, 0.92), cap_max=0.14, width=0.76), 'R9-5 panel'),
+    ('signbikelaneends', TEXT_PANEL(R, 122, ['LANE', 'ENDS'], band=(0.42, 0.92), cap_max=0.14, width=0.76), 'R9-5 panel'),
+    ('signbikesignal', TEXT_PANEL(R, 122, ['SIGNAL'], band=(0.5, 0.9), cap_max=0.2, width=0.8), 'R9-5 panel'),
+    ('campgroundcrossingsign', TEXT_DIAMOND(['CAMPGROUND', 'CROSSINGS'], shs.MOD_COLOURS['fyg'], shift=True),
+     'W8-1 diamond, FYG'),
+    ('signexceptbicycle', TEXT_PANEL(R, 60, ['EXCEPT', 'BICYCLES'], pick=1, band=(0.14, 0.86)), 'R3-17aP plaque'),
+    ('signexceptbusbicycle', TEXT_PANEL(R, 60, ['EXCEPT BUS', '& BICYCLES'], pick=1, band=(0.14, 0.86)),
+     'R3-17aP plaque'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
