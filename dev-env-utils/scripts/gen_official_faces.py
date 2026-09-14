@@ -292,14 +292,15 @@ def TWO_PANEL(top, lines, colour='yellow'):
     return lambda: (ComposedFace(make), False, None)
 
 
-def TEXT_DIAMOND(lines, colour=None, tight=False):
+def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None):
     """A worded warning sign the book has no drawing for: the W8-1 BUMP diamond (border and
     corner radii) with its legend dropped and ``lines`` set inside it. The largest cap height
     is taken at which every line fits the diamond's width across its own band, allowing the
     block one shared narrowing down to ``MIN_CONDENSE`` (the narrower Highway Gothic series).
     ``colour`` is an RGBA replacing the warning yellow (FAWE's magenta). ``tight`` is for a
     long block (four lines under a long word): closer lines, more narrowing and a text area
-    run nearer the border, as the hand-set original had it."""
+    run nearer the border, as the hand-set original had it. ``ink`` replaces the black of the
+    border and legend (white on a blue courtesy sign)."""
     MIN_CONDENSE = 0.58 if tight else 0.7
     GAP = 1.2 if tight else 1.35
     def make(aspect):
@@ -308,6 +309,8 @@ def TEXT_DIAMOND(lines, colour=None, tight=False):
         import render_sign as rs
         panel = shs.book_sign(W, 58, blank=True)
         mapping = shs.SHS_PALETTE if colour is None else _with(shs.SHS_PALETTE, {(255, 245, 0): colour})
+        if ink is not None:
+            mapping = _with(mapping, {k: ink for k, v in shs.SHS_PALETTE.items() if v == shs.MOD_COLOURS['black']})
         panel = shs.recolour(panel, mapping)
         S = 1024
         img = panel.resize((S, S), Image.LANCZOS)
@@ -337,7 +340,7 @@ def TEXT_DIAMOND(lines, colour=None, tight=False):
         lh = cap * GAP
         for k, t in enumerate(lines):
             cy = S / 2 + (k - (n - 1) / 2.0) * lh
-            gg._legend_line(img, t, cy, cap, S, colour=shs.MOD_COLOURS['black'], condense=cond)
+            gg._legend_line(img, t, cy, cap, S, colour=ink or shs.MOD_COLOURS['black'], condense=cond)
         return shs.fit_plate(img, aspect, size=256)
     return lambda: (ComposedFace(make), False, None)
 
@@ -666,6 +669,27 @@ CATALOGUE = [
     ('roadend', TEXT_DIAMOND(['END']), 'W8-1 diamond'),
     ('faweincidentsign', TEXT_DIAMOND(['FAWE', 'INCIDENT', 'AHEAD'], (255, 0, 255, 255)), 'W8-1 diamond, magenta'),
     ('fwyintersectionsign', TEXT_DIAMOND(['FREEWAY', 'INTERSECTION', 'AHEAD']), 'W8-1 diamond'),
+    # --- Remaining-signs batch 9. Left as drawn: calaneendsignleft / right (a diagonal arrow
+    # on a diamond, no drawing), signleftlaneends (LANE ENDS between two arrows).
+    ('signhardleftshift', SHS(W, 3, pick=1), 'W1-3L'),
+    ('signhardrightshift', SHS(W, 3), 'W1-3R'),
+    ('signleftshift', SHS(W, 4, pick=1), 'W1-4L'),
+    ('signleftcurve', SHS(W, 2, inner=2, mirror=True), 'W1-2L'),
+    ('signleftarrow', SHS(W, 6, pick=1), 'W1-6L'),
+    ('signleftrightarrow', SHS(W, 7), 'W1-7'),
+    ('signleftchevron', SHS(W, 8, pick=1), 'W1-8L'),
+    ('sign3left', SHS(W, 14, pick=1), 'W2-2L'),
+    ('signyleft', SHS(W, 15, pick=1), 'W2-3L'),
+    ('signmergeleft', SHS(W, 29), 'W4-1R'),
+    ('signmergeright', SHS(W, 29, pick=1), 'W4-1L'),
+    ('signtrainleft', SHS(W, 77, pick=1), 'W10-3L'),
+    ('signtrainright', SHS(W, 77), 'W10-3R'),
+    ('signhwintersection', TEXT_DIAMOND(['HIGHWAY', 'INTERSECTION', 'AHEAD']), 'W8-1 diamond'),
+    ('landslidearea', TEXT_DIAMOND(['LANDSLIDE', 'AREA']), 'W8-1 diamond'),
+    ('massdotheavymergesign', TEXT_DIAMOND(['HEAVY', 'MERGE', 'AHEAD']), 'W8-1 diamond'),
+    ('massdotsidestreettrafficsign', TEXT_DIAMOND(['PLEASE', 'SHOW', 'COURTESY', 'TO SIDE', 'STREET', 'TRAFFIC'],
+                                                  shs.MOD_COLOURS['blue'], ink=shs.MOD_COLOURS['white']),
+     'W8-1 diamond, blue'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
