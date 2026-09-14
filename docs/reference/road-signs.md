@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "633 blocks in this tab"
+!!! info "637 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -25,6 +25,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | 99 Cents Only Price Sign (Old) | `csm:99onlypricesignold` | 2 | 10 | pickaxe | 1 |
 | A Careless Person Is Just An Accident Going Someplace To Happen | `csm:carelesspersonsign` | 2 | 10 | pickaxe | 1 |
 | Absolutely Nothing Sign | `csm:absolutelynothingsign` | 2 | 10 | pickaxe | 1 |
+| Accessibility Sign (Accessible Icon) | `csm:signhandicapaccessibleicon` | 2 | 10 | pickaxe | 1 |
 | Added Lane Sign (Left) | `csm:signaddleft` | 2 | 10 | pickaxe | 1 |
 | Added Lane Sign (Right) | `csm:signaddright` | 2 | 10 | pickaxe | 1 |
 | Advisory Speed 10 MPH Sign (Plaque) | `csm:signadvisoryspeed10` | 2 | 10 | pickaxe | 1 |
@@ -90,6 +91,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Blasting Zone Sign | `csm:signblastingzone` | 2 | 10 | pickaxe | 1 |
 | Blinding Dust Storms Sign | `csm:signduststor` | 2 | 10 | pickaxe | 1 |
 | Blue Stop Sign (Hawaii, Non Compliant) | `csm:signbluestop` | 2 | 10 | pickaxe | 1 |
+| Bridge Ices Before Road Sign | `csm:signbridgeice` | 2 | 10 | pickaxe | 1 |
 | Bridge Out Sign | `csm:signbridgeout` | 2 | 10 | pickaxe | 1 |
 | Bridge Weight Limit Sign | `csm:signpostweightlimit` | 2 | 10 | pickaxe | 1 |
 | Bump Sign | `csm:signbump` | 2 | 10 | pickaxe | 1 |
@@ -400,6 +402,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Reduced Speed 30 Sign | `csm:signpostreduced30` | 2 | 10 | pickaxe | 1 |
 | Reduced Speed Ahead Sign | `csm:signpostreducedspeedahead` | 2 | 10 | pickaxe | 1 |
 | Report Drunk Drivers Call 911 | `csm:reportdrunkdriversign` | 2 | 10 | pickaxe | 1 |
+| Reserved Parking Sign (Accessible Icon) | `csm:signhandicapreservedparkingaccessibleicon` | 2 | 10 | pickaxe | 1 |
 | Rest Area 1 Mile Sign | `csm:signrestarea1mile` | 2 | 10 | pickaxe | 1 |
 | Rest Area Right Arrow Sign | `csm:signrestarearight` | 2 | 10 | pickaxe | 1 |
 | Restricted Area No Trespassing Warning | `csm:restrictedareasign` | 2 | 10 | pickaxe | 1 |
@@ -543,8 +546,10 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Speed Limit 5 Sign | `csm:signspeed5` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 50 Minimum 30 Sign | `csm:signpost50min30` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 50 Sign | `csm:signpostspeed50` | 2 | 10 | pickaxe | 1 |
+| Speed Limit 55 Minimum 40 Sign | `csm:signpost55min40` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 55 Sign | `csm:signpostspeed55` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 60 Sign | `csm:signspeed60` | 2 | 10 | pickaxe | 1 |
+| Speed Limit 65 Minimum 45 Sign | `csm:signpost65min45` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 65 Sign | `csm:signspeed65` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 70 Sign | `csm:signspeed70` | 2 | 10 | pickaxe | 1 |
 | Speed Limit 75 Sign | `csm:signspeed75` | 2 | 10 | pickaxe | 1 |
@@ -628,7 +633,6 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Warning Underground Fiber Optic Cable Call Before You Dig | `csm:verizondig` | 2 | 10 | pickaxe | 1 |
 | Watch Downhill Speed | `csm:watchdownhillspeedsign` | 2 | 10 | pickaxe | 1 |
 | Watch for Emergency Vehicles Sign | `csm:signwatchemergency` | 2 | 10 | pickaxe | 1 |
-| Watch for Ice on Bridge Sign | `csm:signbridgeice` | 2 | 10 | pickaxe | 1 |
 | Watch for Low Flying Aircraft Sign | `csm:signlowaircraft` | 2 | 10 | pickaxe | 1 |
 | Weigh Station 1 Mile Sign | `csm:signweighstation1mile` | 2 | 10 | pickaxe | 1 |
 | Weigh Station Next Right Sign | `csm:signweighstationnextright` | 2 | 10 | pickaxe | 1 |

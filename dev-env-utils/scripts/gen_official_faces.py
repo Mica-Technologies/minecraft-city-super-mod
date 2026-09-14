@@ -41,11 +41,13 @@ MATCH_TABLE = os.path.join(layout.REPO_ROOT, 'assets', 'docs', 'agent_progress',
 
 # ----------------------------------------------------------------------------- sources
 
-def SHS(chapter, page, pick=0, mirror=False, palette=None, replace=None, inner=None):
+def SHS(chapter, page, pick=0, mirror=False, palette=None, replace=None, inner=None,
+        rotate_symbols=0):
     """A face from a 2004 SHS book page (0-based). ``pick`` for pages with more than one
     sign, ``mirror`` for the left-hand version of a symbol the book draws right-handed only,
     ``replace=(old, new)`` to re-set the one numeral the book draws."""
-    return lambda: (shs.book_sign(chapter, page, pick, inner=inner, replace=replace), mirror, palette)
+    return lambda: (shs.book_sign(chapter, page, pick, inner=inner, replace=replace,
+                                  rotate_symbols=rotate_symbols), mirror, palette)
 
 
 def SHSI(code, variant=None, palette=None):
@@ -60,6 +62,8 @@ R = 'Regulatory'
 W = 'Warning'
 G = 'Guide'
 E = 'EM'
+# the R7-8 page draws the wheelchair panel in a slate blue; the mod's is the D9-6 blue
+SLATE_TO_BLUE = {(74, 87, 120): shs.MOD_COLOURS['blue']}
 FYG_FACE = {(255, 245, 0): shs.MOD_COLOURS['fyg']}   # the book's yellow onto fluorescent yellow-green
 CATALOGUE = [
     # --- Phase 1: Regulatory, the confident exact matches. Not here, and why: signahead is
@@ -187,6 +191,36 @@ CATALOGUE = [
     ('signtrainstation', SHS(G, 100), 'I-7'),
     ('signlibrary', SHS(G, 101), 'I-8'),
     ('signtrafficctlpoint', SHS(E, 1, pick=2), 'EM-3'),
+    # --- Phase 4: the near matches -- the book draws one numeral, replace= sets the mod's.
+    # Not here: signkeepright1/2 (KEEP RIGHT with an arrow, not the R4-7 symbol), sign14_4
+    # (a diamond, not the W12-2p plaque), the hurricane left/right (the EM-1 arrow points
+    # up only), and the pictograms (Phase 3b).
+    ('signspeed0', SHS(R, 11, replace=('50', '0')), 'R2-1 (0)'),
+    ('signspeed5', SHS(R, 11, replace=('50', '5')), 'R2-1 (5)'),
+    ('signspeed15', SHS(R, 11, replace=('50', '15')), 'R2-1 (15)'),
+    ('signspeed20', SHS(R, 11, replace=('50', '20')), 'R2-1 (20)'),
+    ('signspeed25', SHS(R, 11, replace=('50', '25')), 'R2-1 (25)'),
+    ('signpostspeed30', SHS(R, 11, replace=('50', '30')), 'R2-1 (30)'),
+    ('signspeed35', SHS(R, 11, replace=('50', '35')), 'R2-1 (35)'),
+    ('signspeed40', SHS(R, 11, replace=('50', '40')), 'R2-1 (40)'),
+    ('signspeed45', SHS(R, 11, replace=('50', '45')), 'R2-1 (45)'),
+    ('signspeed65', SHS(R, 11, replace=('50', '65')), 'R2-1 (65)'),
+    ('signspeed75', SHS(R, 11, replace=('50', '75')), 'R2-1 (75)'),
+    ('signpost50min30', SHS(R, 19, replace=('55', '50')), 'R2-4a (50/30)'),   # ultratall plate
+    ('signhandicapreservedparking', SHS(R, 93, pick=3, palette=SLATE_TO_BLUE), 'R7-8'),
+    ('signcurve15', SHS(W, 113, replace=('25', '15')), 'W13-5 (15)'),
+    ('signcurve35', SHS(W, 113, replace=('25', '35')), 'W13-5 (35)'),
+    ('signcurve45', SHS(W, 113, replace=('25', '45')), 'W13-5 (45)'),
+    ('signramp15', SHS(W, 111, replace=('30', '15')), 'W13-3 (15)'),
+    ('signramp25', SHS(W, 111, replace=('30', '25')), 'W13-3 (25)'),
+    ('signramp35', SHS(W, 111, replace=('30', '35')), 'W13-3 (35)'),
+    ('signtractor', SHS(W, 94), 'W11-5'),
+    ('signhandicap', SHS(G, 64), 'D9-6'),
+    ('signcrossoverquartermile', SHS(G, 91), 'D13-1'),
+    ('signhurricane', SHS(E, 0), 'EM-1'),   # the three moved to the 24 x 24 square plate
+    ('signhurricaneleft', SHS(E, 0, rotate_symbols=-90), 'EM-1 (left)'),
+    ('signhurricaneright', SHS(E, 0, rotate_symbols=90), 'EM-1 (right)'),
+    ('signbridgeice', SHS(W, 71), 'W8-13'),   # renamed Bridge Ices Before Road
 ]
 
 

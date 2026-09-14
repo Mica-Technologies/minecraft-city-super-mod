@@ -71,6 +71,7 @@ SHAPES = {
     # and its own blockstate, so the shape clones itself
     'paddle': ('signstatelawstopforpeds', 8 / 24),
     'landscape': ('signrdclosed', 32 / 24),   # the 48 x 36 rectangles (ROAD CLOSED)
+    'ultratall': ('signpost50min30', 16 / 40),  # the 24 x 48 speed / minimum signs
 }
 LANGS = ('en_us', 'es_es', 'de_de', 'sv_se')
 
@@ -146,7 +147,7 @@ def _size(shape):
     # A 16 x 8 plaque squishes a 2:1 face into a square texture, leaving a small two-line
     # legend 8 px per plate unit across; it blurs a few blocks away at 128, so plaques are 256
     # The 1:3 paddle has it worse the other way: 5 px per unit down its 24-unit face
-    return 256 if shape in ('plaque', 'paddle', 'landscape') else shs.DEFAULT_TEX
+    return 256 if shape in ('plaque', 'paddle', 'landscape', 'ultratall') else shs.DEFAULT_TEX
 
 
 def SHS(shape, chapter, page, pick=0, mirror=False, palette=None, replace=None,
@@ -211,6 +212,55 @@ def ct_construction_ahead():
             ('COMMISSIONER  OF  TRANSPORTATION', 0.845, 0.046, 0.72)):
         _legend_line(img, text, cy * H, cap * H, max_w, condense=cond)
     return _finish(img, _size('landscape'))
+
+
+ACCESSIBLE_ICON = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'artwork', 'accessible_icon.svg')
+
+
+def _accessible_icon(w, h):
+    """The Accessible Icon Project's symbol (accessibleicon.org, free to use), rendered white
+    on transparency to fit ``w`` x ``h``."""
+    import fitz
+    doc = fitz.open(ACCESSIBLE_ICON)
+    page = doc[0]
+    # the artwork sits in the middle of a letter-sized canvas: crop to its ink
+    rect = None
+    for d in page.get_drawings():
+        rect = d['rect'] if rect is None else rect | d['rect']
+    scale = min(w / rect.width, h / rect.height)
+    pix = page.get_pixmap(matrix=fitz.Matrix(scale, scale), clip=rect, alpha=True)
+    icon = Image.frombytes('RGBA', (pix.width, pix.height), pix.samples)
+    white = Image.new('RGBA', icon.size, (255, 255, 255, 255))
+    white.putalpha(icon.getchannel('A'))
+    return white
+
+
+def accessible_icon_variant(shape, chapter, page, pick=0, palette=None):
+    """An official sign with the wheelchair symbol replaced by the Accessible Icon: the
+    symbol's blue panel is found on the rendered face by colour, repainted, and the icon set
+    in it with the same margins the original symbol keeps."""
+    def make():
+        import numpy as np
+        face = shs.official_face(shs.book_sign(chapter, page, pick), SHAPES[shape][1],
+                                 palette=palette, size=256, stretch_tol=_stretch(shape))
+        px = np.array(face)
+        blue = np.array(shs.MOD_COLOURS['blue'][:3])
+        mask = (np.abs(px[:, :, :3].astype(int) - blue).sum(axis=2) < 60) & (px[:, :, 3] > 200)
+        ys, xs = np.where(mask)
+        x0, y0, x1, y1 = xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
+        # fill the panel's box (which is what the mask covers, holes and all)
+        px[y0:y1, x0:x1] = np.where(px[y0:y1, x0:x1, 3:4] > 200, np.array(list(blue) + [255], dtype=px.dtype), px[y0:y1, x0:x1])
+        out = Image.fromarray(px, 'RGBA')
+        # the face is squished to the plate: the panel's true proportions come back with it
+        aspect = SHAPES[shape][1]
+        bw, bh = (x1 - x0), (y1 - y0)
+        margin = 0.16
+        iw, ih = bw * (1 - 2 * margin), bh * (1 - 2 * margin)
+        icon = _accessible_icon(iw * 4 / (aspect if aspect < 1 else 1), ih * 4 * (aspect if aspect > 1 else 1))
+        icon = icon.resize((max(1, int(iw)), max(1, int(ih))), Image.LANCZOS)
+        out.alpha_composite(icon, (int(x0 + (bw - icon.width) / 2), int(y0 + (bh - icon.height) / 2)))
+        return out
+    return make
 
 
 # ----------------------------------------------------------------------------- catalogue
@@ -358,6 +408,24 @@ CATALOGUE = [
     ('signpostsidewalkclosedright', ('Sidewalk Closed Sign (Right)', 'Señal de Acera Cerrada (Derecha)',
                                      'Gehweg Gesperrt Schild (Rechts)', 'Trottoar Stängd-Vägmärke (Höger)'),
      'plaque', SHS('plaque', 'Regulatory', 127, mirror_symbols=True), 'signpostsidewalkclosed'),
+    ('signpost55min40', ('Speed Limit 55 Minimum 40 Sign', 'Señal de Límite de Velocidad 55 Mínimo 40',
+                         'Tempolimit 55 Mindesttempo 40 Schild', 'Hastighetsbegränsning 55 Minimum 40-Vägmärke'),
+     'ultratall', SHS('ultratall', 'Regulatory', 19, replace=[('55', '55'), ('30', '40')]), 'signpost50min30'),
+    ('signpost65min45', ('Speed Limit 65 Minimum 45 Sign', 'Señal de Límite de Velocidad 65 Mínimo 45',
+                         'Tempolimit 65 Mindesttempo 45 Schild', 'Hastighetsbegränsning 65 Minimum 45-Vägmärke'),
+     'ultratall', SHS('ultratall', 'Regulatory', 19, replace=[('55', '65'), ('30', '45')]), 'signpost55min40'),
+    ('signhandicapaccessibleicon', ('Accessibility Sign (Accessible Icon)',
+                                    'Señal de Accesibilidad (Icono Accesible)',
+                                    'Barrierefreiheit Schild (Accessible Icon)',
+                                    'Tillgänglighet-Vägmärke (Accessible Icon)'),
+     'square', accessible_icon_variant('square', 'Guide', 64), 'signhandicap'),
+    ('signhandicapreservedparkingaccessibleicon', ('Reserved Parking Sign (Accessible Icon)',
+                                                   'Señal de Estacionamiento Reservado (Icono Accesible)',
+                                                   'Reservierter Parkplatz Schild (Accessible Icon)',
+                                                   'Reserverad Parkering-Vägmärke (Accessible Icon)'),
+     'portrait', accessible_icon_variant('portrait', 'Regulatory', 93, pick=3,
+                                         palette={(74, 87, 120): shs.MOD_COLOURS['blue']}),
+     'signhandicapreservedparking'),
     # --- custom (photographed, no SHS drawing)
     ('signconstructionaheadliability', ('Construction Ahead Road Use Restricted Sign',
                                         'Señal de Construcción Adelante Uso de Carretera Restringido',
