@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "639 blocks in this tab"
+!!! info "640 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -96,6 +96,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Bridge Weight Limit Sign | `csm:signpostweightlimit` | 2 | 10 | pickaxe | 1 |
 | Bump Sign | `csm:signbump` | 2 | 10 | pickaxe | 1 |
 | Bus Lane Ahead Sign | `csm:buslaneahead` | 2 | 10 | pickaxe | 1 |
+| Bus Lane Buses Only & Right Turns Sign | `csm:buslanesignnohours` | 2 | 10 | pickaxe | 1 |
 | Bus Lane Hours Buses Only & Right Turns | `csm:buslanesign` | 2 | 10 | pickaxe | 1 |
 | Bus Lane Sign (Plaque) | `csm:signbuslane` | 2 | 10 | pickaxe | 1 |
 | Bus Station Sign | `csm:signbusstation` | 2 | 10 | pickaxe | 1 |

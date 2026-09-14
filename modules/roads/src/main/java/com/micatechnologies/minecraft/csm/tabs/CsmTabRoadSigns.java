@@ -676,6 +676,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signambulance"));
     initTabBlock(new BlockTrafficSign("signbluestop"));
     initTabBlock(new BlockTrafficSign("buslanesign"));
+    initTabBlock(new BlockTrafficSign("buslanesignnohours"));
     initTabBlock(new BlockTrafficSign("signcamping"));
     initTabBlock(new BlockTrafficSign("signdiesel"));
     initTabBlock(new BlockTrafficSign("signeisenhower"));

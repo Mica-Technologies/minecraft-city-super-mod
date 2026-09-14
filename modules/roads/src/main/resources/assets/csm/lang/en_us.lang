@@ -1025,6 +1025,7 @@ tile.beginhwysign.name=Begin Highway
 tile.beginpkwysign.name=Begin Parkway
 tile.buildathoneventsign.name=Huge Buildathon Event Ahead
 tile.buslanesign.name=Bus Lane Hours Buses Only & Right Turns
+tile.buslanesignnohours.name=Bus Lane Buses Only & Right Turns Sign
 tile.calaneendsignleft.name=Lane Ends Merge Left
 tile.calaneendsignright.name=Lane Ends Merge Right
 tile.caltransduicheckpointaheadsign.name=DUI Driver's License Check Point Ahead
