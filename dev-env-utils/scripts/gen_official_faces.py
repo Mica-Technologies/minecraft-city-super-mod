@@ -249,7 +249,7 @@ CATALOGUE = [
     ('signskilift', SYM(G, 167, [2], 'brown'), 'RM-050'),
     ('signcamper', SYM(G, 135, [2, 3, 4], 'blue'), 'RA-130'),
     ('signboats', SYM(G, 156, [3], 'green'), 'RW-050'),   # the anchor (marina), as the mod draws it
-    ('signparkingnoarrow', SYM(G, 140, [3], 'green'), 'D9-1'),
+    # signparkingnoarrow stays as drawn: it is one of a matching set with the arrow versions
     # --- Phase 5: the audit's unverified guesses, each checked against the page by eye and
     # kept only where the mod's sign IS that drawing (a custom number, lane or wording stays
     # as the mod drew it). Left/right twins of a legend sign use mirror_symbols. Not taken:
