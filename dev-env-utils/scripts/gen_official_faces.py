@@ -42,7 +42,7 @@ MATCH_TABLE = os.path.join(layout.REPO_ROOT, 'assets', 'docs', 'agent_progress',
 # ----------------------------------------------------------------------------- sources
 
 def SHS(chapter, page, pick=0, mirror=False, palette=None, replace=None, inner=None,
-        rotate_symbols=0, mirror_symbols=False, condense=False):
+        rotate_symbols=0, mirror_symbols=False, condense=False, legend_colour=None):
     """A face from a 2004 SHS book page (0-based). ``pick`` for pages with more than one
     sign, ``mirror`` for the left-hand version of a symbol the book draws right-handed only
     (``mirror_symbols`` when it carries a legend: the arrow flips, the words do not),
@@ -50,7 +50,7 @@ def SHS(chapter, page, pick=0, mirror=False, palette=None, replace=None, inner=N
     numeral the book draws."""
     return lambda: (shs.book_sign(chapter, page, pick, inner=inner, replace=replace,
                                   rotate_symbols=rotate_symbols, mirror_symbols=mirror_symbols,
-                                  condense=condense),
+                                  condense=condense, legend_colour=legend_colour),
                     mirror, palette)
 
 
@@ -406,18 +406,19 @@ def SHS_PANEL_COLOUR(chapter, page, colour, pick=0):
     return lambda: (ComposedFace(make), False, None)
 
 
-def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, width=0.84):
+def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, width=0.84, ink='black'):
     """A rectangular temporary-traffic-control panel no single page draws at the mod's wording:
     a rounded ``colour`` panel with the inset black border at the M4-9b's proportions, ``lines``
     set in ``band`` at one size and narrowing, and optionally the M6-2's diagonal arrow lifted
-    off its page (``arrow='right'`` points up-right, ``'left'`` up-left) in the lower half."""
+    off its page (``arrow='right'`` points up-right, ``'left'`` up-left) in the lower half.
+    ``ink`` colours the border, legend and arrow (white on a green guide panel)."""
     def make(aspect):
         import gen_gap_signs as gg
         H = 1024
         Wd = int(round(H * aspect))
         img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
         d = ImageDraw.Draw(img)
-        black = shs.MOD_COLOURS['black']
+        black = shs.MOD_COLOURS[ink]
         m = int(H * 0.012)
         d.rounded_rectangle((m, m, Wd - m, H - m), radius=int(H * 0.07), fill=shs.MOD_COLOURS[colour])
         inset, stroke = int(H * 0.035), int(H * 0.03)
@@ -432,6 +433,8 @@ def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, wid
                             colour=black, condense=condense)
         if arrow:
             art = shs.recolour(shs.book_sign(G, 21, symbols_only=True), shs.SHS_PALETTE)
+            if ink != 'black':
+                art = Image.composite(Image.new('RGBA', art.size, shs.MOD_COLOURS[ink]), art, art)
             art = art.crop(art.getchannel('A').getbbox())
             if arrow == 'left':
                 art = art.transpose(Image.FLIP_LEFT_RIGHT)
@@ -901,6 +904,28 @@ CATALOGUE = [
     ('rwrknoshouldersign', TEXT_DIAMOND(['NO', 'SHOULDER'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
     ('signsignalworkahead', TEXT_DIAMOND(['SIGNAL', 'WORK', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
     ('specialeventsign', TEXT_DIAMOND(['SPECIAL', 'EVENT', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    # --- Remaining-signs batch 16. Left as drawn: 1hrtruckparkingsign, sign24hrparking,
+    # signcrossoverleft (green panel with a horizontal arrow), signparkingnoarrow (the D4-1 is
+    # drawn with its arrow), signpostca_pch (California route shield); signhm was Phase 4.
+    ('signstreetworkahead', TEXT_DIAMOND(['STREET', 'WORK', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('signunmarkedpavement', TEXT_DIAMOND(['UNMARKED', 'PAVEMENT', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
+    ('signworkturnlaneleft', PANEL(['TURN', 'LANE'], arrow='left', band=(0.06, 0.52), cap_max=0.17), 'orange panel + M6-2 arrow'),
+    ('signworkturnlaneright', PANEL(['TURN', 'LANE'], arrow='right', band=(0.06, 0.52), cap_max=0.17), 'orange panel + M6-2 arrow'),
+    ('twohourpark830530', SHS(R, 98), 'R7-108'),
+    ('signjct', SHS(G, 12), 'M2-1'),
+    ('signhiking', SYM(G, 149, [0, 1, 2], 'green'), 'RS-? hiking (green)'),
+    ('hwyentrance', PANEL(['HIGHWAY', 'ENTRANCE'], 'green', ink='white', band=(0.2, 0.8)), 'green panel'),
+    ('pkwyentrancesign', PANEL(['PARKWAY', 'ENTRANCE'], 'green', ink='white', band=(0.2, 0.8)), 'green panel'),
+    ('signparkingright', SHS(G, 31, pick=2, replace=('ARKING', 'ARKING'), condense=True,
+                                legend_colour=(0, 145, 64, 255)), 'D4-1 (up right)'),
+    ('signparkingr', SHS(G, 31, pick=2, rotate_symbols=(45, 0.65), replace=('ARKING', 'ARKING'), condense=True,
+                                legend_colour=(0, 145, 64, 255)), 'D4-1 (right)'),
+    ('signparkingahead', SHS(G, 31, pick=2, rotate_symbols=-45, replace=('ARKING', 'ARKING'), condense=True,
+                                legend_colour=(0, 145, 64, 255)), 'D4-1 (ahead)'),
+    ('signparkingleft', SHS(G, 31, pick=2, rotate_symbols=(-90, 0.85), replace=('ARKING', 'ARKING'), condense=True,
+                                legend_colour=(0, 145, 64, 255)), 'D4-1 (up left)'),
+    ('signparkingl', SHS(G, 31, pick=2, rotate_symbols=(-135, 0.65), replace=('ARKING', 'ARKING'), condense=True,
+                                legend_colour=(0, 145, 64, 255)), 'D4-1 (left)'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
