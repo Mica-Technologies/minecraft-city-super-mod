@@ -1119,6 +1119,184 @@ def _both(*arts):
     return art
 
 
+def _white_panel(W, H, ink, colour='white', edge=0.012, inset=0.035, stroke=0.028):
+    """A rounded panel with the inset border every drawn regulatory sign uses."""
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    m = int(H * edge)
+    d.rounded_rectangle((m, m, W - m, H - m), radius=int(H * 0.06), fill=shs.MOD_COLOURS[colour])
+    d.rounded_rectangle((int(H * inset), int(H * inset), W - int(H * inset), H - int(H * inset)),
+                        radius=int(H * 0.045), outline=shs.MOD_COLOURS[ink], width=int(H * stroke))
+    return img, d
+
+
+def _paste_fit(img, art, box):
+    """``art`` scaled to fit ``box`` (pixels x0, y0, x1, y1), centred in it."""
+    k = min((box[2] - box[0]) / art.width, (box[3] - box[1]) / art.height)
+    art = art.resize((max(1, int(art.width * k)), max(1, int(art.height * k))), Image.LANCZOS)
+    img.alpha_composite(art, (int((box[0] + box[2] - art.width) / 2), int((box[1] + box[3] - art.height) / 2)))
+
+
+def _book_stop():
+    """The R1-1 STOP sign off its page, legend and all, for a sign that carries a small one."""
+    art = shs.recolour(shs.book_sign(R, 0), shs.SHS_PALETTE)
+    return art.crop(art.getchannel('A').getbbox())
+
+
+def _line_left(img, text, x, cy, cap, max_w, colour, series):
+    """A line set flush left at ``x`` (pixels) instead of centred."""
+    import gen_gap_signs as gg
+    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    gg._legend_line(layer, text, cy, cap, max_w, colour=colour, condense=series)
+    box = layer.getbbox()
+    if box:
+        img.alpha_composite(layer.crop(box), (int(x), box[1]))
+
+
+def STREET_SWEEP(day, hours):
+    """Alto Sanitation's street sweeping sign, red on white, measured off the original: NO PARKING,
+    IN THIS AREA, the day, the hours with small AM / NOON / PM, STREET SWEEPING, the agency line.
+    ``hours`` is a list of (text, big) runs: [('7', True), ('AM', False), ('TO', False), ...]."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        W = int(round(H * aspect))
+        red = shs.MOD_COLOURS['red']
+        img, d = _white_panel(W, H, 'red')
+        gg._legend_line(img, 'NO PARKING', 0.195 * H, 0.09 * H, 0.84 * W, colour=red, condense='B')
+        gg._legend_line(img, 'IN THIS AREA', 0.327 * H, 0.053 * H, 0.8 * W, colour=red, condense='B')
+        gg._legend_line(img, day, 0.464 * H, 0.088 * H, 0.84 * W, colour=red, condense='C')
+        _runs(img, [(t, (0.088 if big else 0.045) * H, False) for t, big in hours], 0.66 * H, W / 2, red)
+        gg._legend_line(img, 'STREET SWEEPING', 0.769 * H, 0.053 * H, 0.84 * W, colour=red, condense='C')
+        gg._legend_line(img, 'ALTO SANITATION', 0.87 * H, 0.03 * H, 0.6 * W, colour=red, condense='C')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def DONT_BLOCK_BOX():
+    """DON'T BLOCK THE BOX: the intersection pictogram (corner kerbs, red hatched approaches and a
+    red box with an X) between the two lines, drawn from the original."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        W = int(round(H * aspect))
+        black, red = shs.MOD_COLOURS['black'], shs.MOD_COLOURS['red']
+        pink = (226, 80, 110, 255)
+        img, d = _white_panel(W, H, 'black')
+        gg._legend_line(img, "DON'T BLOCK", 0.13 * H, 0.13 * H, 0.86 * W, colour=black, condense='B')
+        gg._legend_line(img, 'THE BOX', 0.87 * H, 0.13 * H, 0.86 * W, colour=black, condense='B')
+        cx, cy = W / 2, 0.5 * H
+        g_, arm, lw = 0.125 * W, 0.31 * W, max(4, int(H * 0.014))
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                x0, y0 = cx + sx * g_, cy + sy * g_
+                d.line((x0, y0, x0 + sx * (arm - g_), y0), fill=black, width=lw)
+                d.line((x0, y0, x0, y0 + sy * (arm - g_) * 0.85), fill=black, width=lw)
+        sw, sl = 0.026 * W, 0.1 * W
+        for k in (-1, 0, 1):
+            for sy in (-1, 1):
+                x = cx + k * 0.055 * W
+                ya, yb = sorted((cy + sy * g_ * 1.15, cy + sy * (g_ * 1.15 + sl)))
+                d.rectangle((x - sw / 2, ya, x + sw / 2, yb), fill=pink)
+            for sx in (-1, 1):
+                y = cy + k * 0.055 * H
+                xa, xb = sorted((cx + sx * g_ * 1.15, cx + sx * (g_ * 1.15 + sl)))
+                d.rectangle((xa, y - sw / 2, xb, y + sw / 2), fill=pink)
+        b = 0.105 * W
+        d.rectangle((cx - b, cy - b, cx + b, cy + b), outline=pink, width=int(H * 0.012))
+        d.line((cx - b * 0.75, cy - b * 0.75, cx + b * 0.75, cy + b * 0.75), fill=red, width=int(H * 0.018))
+        d.line((cx - b * 0.75, cy + b * 0.75, cx + b * 0.75, cy - b * 0.75), fill=red, width=int(H * 0.018))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def GATE_CODE():
+    """STOP / Please Read / the five gate rules, red on white under a small STOP sign."""
+    def make(aspect):
+        H = 1024
+        W = int(round(H * aspect))
+        red, black = shs.MOD_COLOURS['red'], shs.MOD_COLOURS['black']
+        img, d = _white_panel(W, H, 'black', inset=0.03, stroke=0.016)
+        _paste_fit(img, _book_stop(), (W * 0.36, H * 0.05, W * 0.64, H * 0.29))
+        pr = Image.new('RGBA', img.size, (0, 0, 0, 0))
+        import gen_gap_signs as gg
+        gg._legend_line(pr, 'Please Read', 0.345 * H, 0.065 * H, 0.7 * W, colour=black, condense='ModE')
+        box = pr.getbbox()
+        line = pr.crop(box)
+        k = 0.25
+        wide = Image.new('RGBA', (line.width + int(line.height * k) + 2, line.height), (0, 0, 0, 0))
+        wide.paste(line, (0, 0))
+        line = wide.transform(wide.size, Image.AFFINE, (1, k, -k * line.height, 0, 1, 0), Image.BICUBIC)
+        img.alpha_composite(line, (int(W / 2 - line.width / 2), box[1]))
+        rows = [('1. ENTER CODE NUMBERS', 0), ('2. WAIT FOR GATE TO RISE', 0), ('3. PROCEED SLOWLY', 0),
+                ('(ONE VEHICLE ONLY)', 1), ('4. CODE MUST BE ENTERED', 0), ('BEFORE EACH VEHICLE', 1),
+                ('5. GATE DAMAGE $100', 0), ('MINIMUM CHARGE', 1)]
+        cap, y = 0.039 * H, 0.445 * H
+        for text, cont in rows:
+            _line_left(img, text, W * (0.13 if cont else 0.09), y, cap, W * (0.76 if cont else 0.8), red, ('C', 'B'))
+            y += 0.063 * H
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def EXTREME_HEAT():
+    """The park's STOP / Extreme Heat Danger octagon: the book's R1-1 panel with its legend dropped,
+    STOP and the warning in white, and the white notice card of small print below."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        S = 1024
+        img = shs.recolour(shs.book_sign(R, 0, blank=True), shs.SHS_PALETTE).resize((S, S), Image.LANCZOS)
+        d = ImageDraw.Draw(img)
+        white, grey = shs.MOD_COLOURS['white'], (150, 150, 150, 255)
+        gg._legend_line(img, 'STOP', 0.23 * S, 0.17 * S, 0.62 * S, colour=white, condense='D')
+        gg._legend_line(img, 'Extreme Heat Danger', 0.39 * S, 0.075 * S, 0.86 * S, colour=white, condense=('C', 'B'))
+        gg._legend_line(img, 'Walking after 10 AM not recommended', 0.475 * S, 0.038 * S, 0.8 * S, colour=white,
+                        condense=('C', 'B'))
+        d.rectangle((0.27 * S, 0.53 * S, 0.73 * S, 0.8 * S), fill=white)
+        for k in range(8):
+            y = 0.56 * S + k * 0.03 * S
+            d.rectangle((0.3 * S, y, (0.7 if k % 3 != 2 else 0.55) * S, y + 0.008 * S), fill=grey)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def STOP_HERE_FOR_PEDS(left):
+    """STOP HERE FOR PEDESTRIANS (R1-5b / R1-5c, 2009, not in the 2004 book). It is the R1-5 YIELD
+    HERE TO PEDESTRIANS layout with STOP for YIELD, so the book's R1-5L / R1-5R page is used whole --
+    its curved arrow and pedestrian, HERE and FOR set where its HERE and TO sit, the yield triangle painted out
+    and the book's STOP sign set in its place, a little lower to clear the border."""
+    def make(aspect):
+        import numpy as np
+        import gen_gap_signs as gg
+        # the page sets HERE and TO as one run, so the legend is dropped and set again where the
+        # book puts it (Series C, cap 0.116 of the sign): HERE beside the arrow, FOR under it
+        face = shs.recolour(shs.book_sign(R, 5 if left else 6, blank=True), shs.SHS_PALETTE)
+        S = 1024
+        img = face.resize((S, S), Image.LANCZOS)
+        black = shs.MOD_COLOURS['black']
+        a = np.asarray(img).astype(np.int32)
+        red = np.array(shs.MOD_COLOURS['red'][:3])
+        mask = (np.abs(a[..., :3] - red).sum(axis=2) < 120) & (a[..., 3] > 0)
+        ys, xs = np.nonzero(mask)
+        x0, x1, y0, y1 = xs.min(), xs.max(), ys.min(), ys.max()
+        pad = S * 0.02
+        d = ImageDraw.Draw(img)
+        white = shs.MOD_COLOURS['white']
+        mid = min(y1, S * 0.47)                       # above HERE's capitals the whole width is clear
+        d.rectangle((x0 - pad, y0 - pad, x1 + pad, mid), fill=white)
+        d.polygon([(x0 - pad, mid - 1), (x1 + pad, mid - 1), ((x0 + x1) / 2, y1 + pad)], fill=white)
+        size = (y1 - y0) * 0.86
+        cx, top = (x0 + x1) / 2, y0 + S * 0.02
+        _paste_fit(img, _book_stop(), (cx - size / 2, top, cx + size / 2, top + size))
+        gg._legend_line_at(img, 'HERE', S * (0.27 if left else 0.727), S * 0.536, S * 0.116, S * 0.4, colour=black, condense='C')
+        gg._legend_line_at(img, 'FOR', S * 0.52, S * 0.827, S * 0.116, S * 0.3, colour=black, condense='C')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+W_ = 'Warning'
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -1674,6 +1852,38 @@ CATALOGUE = [
     # signlitteringillegal. Redo later: kathieevanssign (not a road sign).
     ('ladotnostopping', LA_NO_STOPPING(), 'LA no stopping (photo)'),
     ('lhsstopsign', STOP_BANG(), 'R1-1 octagon, STOP! (non-compliant on purpose)'),
+    # --- Second pass, batch D.
+    ('rightlanefreewayonlysign', PANEL(['RIGHT LANE', 'FREEWAY', 'ONLY'], 'white',
+     layout=[('RIGHT LANE', 0.239, 0.107, 0.86, 0.51, 'C'), ('FREEWAY', 0.49, 0.133, 0.86, 0.51, 'C'), ('ONLY', 0.76, 0.137, 0.86, 0.5, 'D')]),
+     'white panel (measured)'),
+    ('signrightplaque', PANEL(['RIGHT'], 'white', layout=[('RIGHT', 0.5, 0.58, 0.86, 0.5, 'B')]), 'white plaque (measured)'),
+    ('streetsweepfrischool', STREET_SWEEP('FRIDAY', [('7', True), ('AM', False), ('TO', False), ('12', True), ('NOON', False)]), 'Alto street sweeping'),
+    ('streetsweeptuesschool', STREET_SWEEP('TUESDAY', [('7', True), ('AM', False), ('TO', False), ('12', True), ('NOON', False)]), 'Alto street sweeping'),
+    ('streetsweepthursschool', STREET_SWEEP('THURSDAY', [('7', True), ('AM', False), ('TO', False), ('12', True), ('NOON', False)]), 'Alto street sweeping'),
+    ('streetsweepwedschool', STREET_SWEEP('WEDNESDAY', [('7', True), ('AM', False), ('TO', False), ('12', True), ('NOON', False)]), 'Alto street sweeping'),
+    ('streetsweepmonschool', STREET_SWEEP('MONDAY', [('7', True), ('AM', False), ('TO', False), ('12', True), ('NOON', False)]), 'Alto street sweeping'),
+    ('signdontblockthebox', DONT_BLOCK_BOX(), 'box junction (drawn)'),
+    ('snownotremovedsign', PANEL(['SNOW NOT', 'REMOVED', 'BEYOND HERE'], 'white',
+     layout=[('SNOW NOT', 0.358, 0.076, 0.86, 0.5, 'E'), ('REMOVED', 0.493, 0.076, 0.86, 0.5, 'E'), ('BEYOND HERE', 0.63, 0.076, 0.86, 0.5, 'E')]),
+     'white panel (measured)'),
+    ('signpostspeedzoneahead', PANEL(['SPEED', 'ZONE', 'AHEAD'], 'white',
+     layout=[('SPEED', 0.229, 0.183, 0.86, 0.5, 'B'), ('ZONE', 0.498, 0.183, 0.86, 0.5, 'B'), ('AHEAD', 0.768, 0.176, 0.86, 0.49, 'B')]),
+     'white panel (measured)'),
+    ('signgatecode', GATE_CODE(), 'gate rules (drawn)'),
+    ('extremeheatdangersign', EXTREME_HEAT(), 'R1-1 panel, heat warning'),
+    ('signstopherepedleft', STOP_HERE_FOR_PEDS(left=True), 'R1-5b (drawn)'),
+    ('signstopherepedright', STOP_HERE_FOR_PEDS(left=False), 'R1-5c (drawn)'),
+    ('stopbridgeclearancesign', PANEL(['STOP'], 'red', ink='white',
+     layout=[('STOP', 0.205, 0.246, 0.86, 0.5, 'D'), ('LOW CLEARANCE', 0.434, 0.066, 0.86, 0.5, 'D'),
+             ('--DO NOT--', 0.542, 0.064, 0.86, 0.5, 'D'), ('HIT THIS BRIDGE', 0.647, 0.064, 0.86, 0.5, 'D'),
+             ('PER UIA FEDERAL LAW', 0.835, 0.045, 0.86, 0.5, 'D')]), 'red panel (measured)'),
+    ('streetsweepfri', STREET_SWEEP('FRIDAY', [('12', True), ('NOON', False), ('TO', False), ('4', True), ('PM', False)]), 'Alto street sweeping'),
+    ('streetsweepmon', STREET_SWEEP('MONDAY', [('12', True), ('NOON', False), ('TO', False), ('4', True), ('PM', False)]), 'Alto street sweeping'),
+    ('streetsweepthurs', STREET_SWEEP('THURSDAY', [('12', True), ('NOON', False), ('TO', False), ('4', True), ('PM', False)]), 'Alto street sweeping'),
+    ('streetsweeptues', STREET_SWEEP('TUESDAY', [('12', True), ('NOON', False), ('TO', False), ('4', True), ('PM', False)]), 'Alto street sweeping'),
+    ('streetsweepwed', STREET_SWEEP('WEDNESDAY', [('12', True), ('NOON', False), ('TO', False), ('4', True), ('PM', False)]), 'Alto street sweeping'),
+    ('doorsunlockedbiz', PANEL(['THIS DOOR TO', 'REMAIN UNLOCKED', 'DURING', 'BUSINESS HOURS'], 'white',
+     band=(0.08, 0.92), width=0.9), 'white plaque'),
     # --- Second pass, batch C. signresidentnormal paints signresidentlarge's texture (done in B).
     ('noovernightparkingsign', PANEL(['NO', 'OVERNIGHT', 'PARKING', 'AND', 'CAMPING'], 'white', ink='red',
                                      band=(0.06, 0.94), width=0.8,
