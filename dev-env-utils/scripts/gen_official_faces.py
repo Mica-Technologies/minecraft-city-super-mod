@@ -586,6 +586,48 @@ def _page_arrow(page, pick, turn=0):
     return art
 
 
+def HEAR_BANJOS():
+    """The HEAR BANJOS? / WALK FASTER novelty trail sign, set from photographs of the real one:
+    a brown panel with a white border, the book's hiking pictogram (Guide p149) under the
+    question with two eighth notes beside it, and WALK FASTER below in two sizes."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        Wd = int(round(H * aspect))
+        white, brown = shs.MOD_COLOURS['white'], shs.MOD_COLOURS['brown']
+        img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        m = int(H * 0.01)
+        d.rounded_rectangle((m, m, Wd - m, H - m), radius=int(H * 0.06), fill=white)
+        b = int(H * 0.028)
+        d.rounded_rectangle((m + b, m + b, Wd - m - b, H - m - b), radius=int(H * 0.045), fill=brown)
+        gg._legend_line(img, 'HEAR BANJOS?', 0.125 * H, 0.075 * H, 0.8 * Wd, colour=white)
+        # the hikers, white, a little right of centre to leave room for the notes
+        import numpy as np
+        sym = shs.symbol_face(G, 149, [0, 1, 2])
+        a = np.asarray(sym.convert('RGBA')).astype(np.float32)
+        lum = (0.299 * a[..., 0] + 0.587 * a[..., 1] + 0.114 * a[..., 2]) / 255.0
+        alpha = (a[..., 3] * (1.0 - lum)).clip(0, 255).astype(np.uint8)
+        hik = Image.new('RGBA', sym.size, white)
+        hik.putalpha(Image.fromarray(alpha, 'L'))
+        hik = hik.crop(hik.getchannel('A').getbbox())
+        hh = int(H * 0.36)
+        hik = hik.resize((int(hik.width * hh / hik.height), hh), Image.LANCZOS)
+        img.alpha_composite(hik, (int(Wd * 0.58 - hik.width / 2), int(H * 0.2)))
+        # two beamed-free eighth notes, upper left of the hikers
+        for nx, ny, sc in ((0.19, 0.29, 1.0), (0.26, 0.315, 1.0)):
+            x, y, r = nx * Wd, ny * H, H * 0.018 * sc
+            d.ellipse((x - r * 1.3, y - r, x + r * 1.3, y + r), fill=white)
+            st = H * 0.007
+            d.rectangle((x + r * 1.3 - st, y - H * 0.075, x + r * 1.3, y), fill=white)
+            d.polygon([(x + r * 1.3 - st, y - H * 0.075), (x + r * 1.3 + H * 0.028, y - H * 0.045),
+                       (x + r * 1.3 + H * 0.02, y - H * 0.035), (x + r * 1.3, y - H * 0.055)], fill=white)
+        gg._legend_line(img, 'WALK', 0.68 * H, 0.1 * H, 0.8 * Wd, colour=white)
+        gg._legend_line(img, 'FASTER', 0.845 * H, 0.14 * H, 0.84 * Wd, colour=white)
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -1088,10 +1130,11 @@ CATALOGUE = [
     ('buslanesign', BUS_LANE(), 'NYCDOT bus lane (drawn)'),
     ('signsnowflake', SNOWFLAKE(), 'snowflake on green (drawn)'),
     # --- Remaining-signs batch 18. Left as drawn: 99onlypricesignnew2, uiawelcomesyousign,
-    # hearbanjossign (flavour artwork), signarv, signlaundry (the page reverses the washer out
+    # signarv, signlaundry (the page reverses the washer out
     # of a black square); signpolice / sheriffstation kept their artwork
     # with the blue recoloured (one-off, not catalogued).
     ('signphone', SHS(G, 57), 'D9-1'),
+    ('hearbanjossign', HEAR_BANJOS(), 'novelty trail sign (photo)'),
     ('signarchery', SYM(G, 153, [0], 'brown'), 'archer (brown)'),
     ('signmotorbike', SYM(G, 151, [4, 5], 'brown'), 'trail bike (brown)'),
     ('signoffroad', SYM(G, 151, [0, 1, 2], 'brown'), 'off-road vehicle (brown)'),
