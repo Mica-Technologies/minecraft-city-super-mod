@@ -58,6 +58,8 @@ def SHSI(code, variant=None, palette=None):
 
 R = 'Regulatory'
 W = 'Warning'
+G = 'Guide'
+E = 'EM'
 FYG_FACE = {(255, 245, 0): shs.MOD_COLOURS['fyg']}   # the book's yellow onto fluorescent yellow-green
 CATALOGUE = [
     # --- Phase 1: Regulatory, the confident exact matches. Not here, and why: signahead is
@@ -164,6 +166,27 @@ CATALOGUE = [
     ('signoncomingmayextendedgreen', SHS(W, 135), 'W25-2'),
     ('signendroadwork', SHS(W, 168, pick=2), 'G20-2'),
     ('signexitclosed', SHS(W, 169, pick=2), 'E5-2a'),
+    # --- Phase 3: Guide and EM panel signs. The recreational pictograms (camping, dog, kayak,
+    # ...) are drawn in the book as bare symbols, some in several pieces, with no panel; they
+    # wait for a symbol-on-panel mode. Fallout Shelter stays: the mod's is the classic yellow
+    # sign, not the EM chapter's white directional one. Police is a badge, not the D9-14
+    # legend. The D5-3 and M1-10 pages draw no white border, so those two keep their faces.
+    ('signnorth', SHS(G, 13), 'M3-1'),
+    ('signeast', SHS(G, 13, pick=1), 'M3-2'),
+    ('signsouth', SHS(G, 14), 'M3-3'),
+    ('signwest', SHS(G, 14, pick=1), 'M3-4'),
+    ('signtemporary', SHS(G, 18, pick=1), 'M4-7'),
+    ('signrestarea1mile', SHS(G, 35), 'D5-1'),
+    ('signscenicoverlook2miles', SHS(G, 51), 'D6-1'),
+    ('signweighstation1mile', SHS(G, 54), 'D8-1'),
+    ('signhospital', SHS(G, 60), 'D9-2'),
+    ('signgas', SHS(G, 65), 'D9-7'),
+    ('signfreewayentrance', SHS(G, 92), 'D13-3'),
+    ('signairport', SHS(G, 98), 'I-5'),
+    ('signbusstation', SHS(G, 99), 'I-6'),
+    ('signtrainstation', SHS(G, 100), 'I-7'),
+    ('signlibrary', SHS(G, 101), 'I-8'),
+    ('signtrafficctlpoint', SHS(E, 1, pick=2), 'EM-3'),
 ]
 
 
