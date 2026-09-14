@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsigns/metal_sign_ultratall",
+    "model": "csm:trafficsigns/metal_sign_ultratall_wide",
     "textures": {
       "all": "csm:blocks/trafficsigns/pole_speed_50_minimum_30",
       "particle": "csm:blocks/trafficsigns/pole_speed_50_minimum_30",

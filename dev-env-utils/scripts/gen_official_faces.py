@@ -224,7 +224,7 @@ CATALOGUE = [
     ('signspeed45', SHS(R, 11, replace=('50', '45')), 'R2-1 (45)'),
     ('signspeed65', SHS(R, 11, replace=('50', '65')), 'R2-1 (65)'),
     ('signspeed75', SHS(R, 11, replace=('50', '75')), 'R2-1 (75)'),
-    ('signpost50min30', SHS(R, 19, replace=('55', '50')), 'R2-4a (50/30)'),   # ultratall plate
+    ('signpost50min30', SHS(R, 19, replace=('55', '50')), 'R2-4a (50/30)'),   # 20 x 40 plate
     ('signhandicapreservedparking', SHS(R, 93, pick=3, palette=SLATE_TO_BLUE), 'R7-8'),
     ('signcurve15', SHS(W, 113, replace=('25', '15')), 'W13-5 (15)'),
     ('signcurve35', SHS(W, 113, replace=('25', '35')), 'W13-5 (35)'),

@@ -71,7 +71,7 @@ SHAPES = {
     # and its own blockstate, so the shape clones itself
     'paddle': ('signstatelawstopforpeds', 8 / 24),
     'landscape': ('signrdclosed', 32 / 24),   # the 48 x 36 rectangles (ROAD CLOSED)
-    'ultratall': ('signpost50min30', 16 / 40),  # the 24 x 48 speed / minimum signs
+    'ultratall': ('signpost50min30', 20 / 40),  # the 24 x 48 speed / minimum signs (metal_sign_ultratall_wide)
 }
 LANGS = ('en_us', 'es_es', 'de_de', 'sv_se')
 
