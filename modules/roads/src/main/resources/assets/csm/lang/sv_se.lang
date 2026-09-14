@@ -1024,6 +1024,7 @@ tile.beginhwysign.name=Huvudväg Börjar
 tile.beginpkwysign.name=Parkväg Börjar
 tile.buildathoneventsign.name=Stort Byggevenemang Framme
 tile.buslanesign.name=Busskörfält, Tider: Endast Bussar & Högersvängar
+tile.buslanesignnohours.name=Busfil Endast Buss och Högersväng-Vägmärke
 tile.calaneendsignleft.name=Fil Slutar, Kör Ihop Åt Vänster
 tile.calaneendsignright.name=Fil Slutar, Kör Ihop Åt Höger
 tile.caltransduicheckpointaheadsign.name=Nykterhets- och Körkortskontroll Framme

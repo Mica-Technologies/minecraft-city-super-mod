@@ -71,7 +71,8 @@ SHAPES = {
     # and its own blockstate, so the shape clones itself
     'paddle': ('signstatelawstopforpeds', 8 / 24),
     'landscape': ('signrdclosed', 32 / 24),   # the 48 x 36 rectangles (ROAD CLOSED)
-    'ultratall': ('signpost50min30', 20 / 40),  # the 24 x 48 speed / minimum signs (metal_sign_ultratall_wide)
+    'ultratall': ('signpost50min30', 20 / 40),
+    'banner': ('buslanesign', 26 / 11),       # the NYC bus lane banner (end_road_work_sign model)  # the 24 x 48 speed / minimum signs (metal_sign_ultratall_wide)
 }
 LANGS = ('en_us', 'es_es', 'de_de', 'sv_se')
 
@@ -171,6 +172,16 @@ def SHSI(shape, code, variant=None):
 
 # ----------------------------------------------------------------------------- custom legends
 # Signs no drawing exists for, set line by line from a photograph.
+
+def _legend_line_at(img, text, cx, cy, cap_h, max_w, colour=BLACK, condense=1.0):
+    """:func:`_legend_line` centred on ``cx`` rather than on the canvas."""
+    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    _legend_line(layer, text, cy, cap_h, max_w, colour, condense)
+    box = layer.getbbox()
+    if box is None:
+        return
+    img.alpha_composite(layer.crop(box), (int(round(cx - (box[2] - box[0]) / 2)), box[1]))
+
 
 def _legend_line(img, text, cy, cap_h, max_w, colour=BLACK, condense=1.0):
     """One line of Highway Gothic centred at ``cy`` with the given cap height (canvas px),
@@ -273,6 +284,15 @@ def DIAMOND(lines, colour):
         import gen_official_faces as gof
         face, _mirror, _palette = gof.TEXT_DIAMOND(lines, shs.MOD_COLOURS[colour], shift=True)()
         return face.fn(1.0)
+    return make
+
+
+def COMPOSED(shape, drawer, **kw):
+    """A face from one of gen_official_faces' drawn signs (BUS_LANE, ...), at this shape's plate."""
+    def make():
+        import gen_official_faces as gof
+        face, _mirror, _palette = getattr(gof, drawer)(**kw)()
+        return face.fn(SHAPES[shape][1])
     return make
 
 
@@ -407,6 +427,9 @@ CATALOGUE = [
     ('signfreshchipsandsalsa', ('Fresh Chips and Salsa Sign', 'Señal de Totopos y Salsa Frescos',
                                 'Frische Chips und Salsa Schild', 'Färska Chips och Salsa-Vägmärke'),
      'diamond', DIAMOND(['FRESH', 'CHIPS AND', 'SALSA'], 'orange'), 'signfreshoilandchips'),
+    ('buslanesignnohours', ('Bus Lane Buses Only & Right Turns Sign', 'Señal de Carril Bus Solo Autobuses y Giros a la Derecha',
+                            'Busspur Nur Busse und Rechtsabbieger Schild', 'Busfil Endast Buss och Högersväng-Vägmärke'),
+     'banner', COMPOSED('banner', 'BUS_LANE', hours=False), 'buslanesign'),
     ('signutilityworkahead', ('Utility Work Ahead Sign', 'Señal de Trabajos de Servicios Adelante',
                               'Versorgungsarbeiten Voraus Schild', 'Ledningsarbete Framför-Vägmärke'),
      'diamond', SHS('diamond', 'Warning', 158), 'signunmarkedpavement'),

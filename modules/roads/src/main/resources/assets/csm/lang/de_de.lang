@@ -1024,6 +1024,7 @@ tile.beginhwysign.name=Beginn Landstraße
 tile.beginpkwysign.name=Beginn Parkway
 tile.buildathoneventsign.name=Großes Buildathon-Event Voraus
 tile.buslanesign.name=Busspur-Zeiten Nur Busse Und Rechtsabbieger
+tile.buslanesignnohours.name=Busspur Nur Busse und Rechtsabbieger Schild
 tile.calaneendsignleft.name=Fahrspur Endet Links Einfädeln
 tile.calaneendsignright.name=Fahrspur Endet Rechts Einfädeln
 tile.caltransduicheckpointaheadsign.name=Trunkenheitskontrolle Voraus

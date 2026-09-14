@@ -18,12 +18,12 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Materials](materials.md) | 1 | The CSM Fabricator, which turns vanilla ingots into CSM blocks. |
 | [Novelties](novelties.md) | 35 | Decorative oddities that did not belong anywhere else. |
 | [Power Grid](power-grid.md) | 46 | Utility poles, transformers and the Forge Energy that runs through them. |
-| [Road Signs](road-signs.md) | 639 | The MUTCD sign set, grouped the way the manual groups it. |
+| [Road Signs](road-signs.md) | 640 | The MUTCD sign set, grouped the way the manual groups it. |
 | [Technology](technology.md) | 37 | Servers, routers, screens and consumer electronics. |
 | [Traffic Accessories](traffic-accessories.md) | 354 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Unlisted](unlisted.md) | 112 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **1803** | |
+| **Total** | **1804** | |
 
 ## How to read the table
 

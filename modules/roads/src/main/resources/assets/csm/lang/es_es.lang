@@ -1024,6 +1024,7 @@ tile.beginhwysign.name=Inicio de Carretera
 tile.beginpkwysign.name=Inicio de Vía Parque
 tile.buildathoneventsign.name=Gran Evento de Construcción Adelante
 tile.buslanesign.name=Carril Bus, Horario: Solo Autobuses y Giros a la Derecha
+tile.buslanesignnohours.name=Señal de Carril Bus Solo Autobuses y Giros a la Derecha
 tile.calaneendsignleft.name=Fin de Carril, Incorpórese a la Izquierda
 tile.calaneendsignright.name=Fin de Carril, Incorpórese a la Derecha
 tile.caltransduicheckpointaheadsign.name=Punto de Control de Alcoholemia y Licencia de Conducir Adelante
