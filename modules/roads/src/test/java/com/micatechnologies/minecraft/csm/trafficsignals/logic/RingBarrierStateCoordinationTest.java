@@ -383,13 +383,18 @@ class RingBarrierStateCoordinationTest {
    */
   private Map<Integer, java.util.Set<Long>> greenStarts(TrafficSignalProgrammedPhasePlan plan,
       int circuits, int phase, long forbidFrom, long forbidTo) {
-    long cycle = plan.getCoordination().getCycleLength();
-    RingBarrierState rb = new RingBarrierState();
-    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(circuits);
     RingBarrierStateTest.Demand busy = new RingBarrierStateTest.Demand();
     for (int c = 0; c < circuits; c++) {
       busy.veh(c, 1, 1, 0);
     }
+    return greenStarts(plan, circuits, busy, phase, forbidFrom, forbidTo);
+  }
+
+  private Map<Integer, java.util.Set<Long>> greenStarts(TrafficSignalProgrammedPhasePlan plan,
+      int circuits, RingBarrierStateTest.Demand busy, int phase, long forbidFrom, long forbidTo) {
+    long cycle = plan.getCoordination().getCycleLength();
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(circuits);
     Map<Integer, java.util.Set<Long>> starts = new HashMap<>();
     int[] wasGreen = new int[3];
     for (long t = 0; t <= cycle * 6; t++) {
@@ -448,5 +453,27 @@ class RingBarrierStateCoordinationTest {
         "the side street must start at its window start (55 s) every cycle: " + starts);
     assertEquals(java.util.Collections.singleton(200L), starts.get(6),
         "the coordinated through must start after the 10 s lead left every cycle: " + starts);
+  }
+
+  @Test
+  @DisplayName("coordination: after an early return the lead left still runs in its own window "
+      + "at the top of the cycle, not straight after the side street")
+  void leadLeftStaysInItsWindowAfterEarlyReturn() {
+    // From the in-game test of the T intersection above: every phase on minimum recall with no
+    // vehicles, so the side street gaps out at min green and the rings return to barrier A early.
+    // The coordinated through came up early and then dwelled across the top of the cycle, where
+    // the lead left's window is. The left was accepted there but could not be served until the
+    // through yielded at the end of ITS window, so it ran after the side street, far outside its
+    // own window, every cycle.
+    TrafficSignalProgrammedPhasePlan plan = teePlan(
+        new long[][] {{1, 200L}, {2, 900L}, {4, 700L}}, new long[][] {{6, 1100L}});
+    for (int n : new int[] {1, 2, 4, 6}) {
+      plan.getPhase(n).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+    }
+    Map<Integer, java.util.Set<Long>> starts = greenStarts(plan, 4,
+        new RingBarrierStateTest.Demand(), 1, 200L, 1800L);
+    assertEquals(java.util.Collections.singleton(0L), starts.get(1),
+        "the lead left must start at its window start every cycle: " + starts);    assertEquals(java.util.Collections.singleton(1100L), starts.get(4),
+        "the side street must still start at its window start every cycle: " + starts);
   }
 }

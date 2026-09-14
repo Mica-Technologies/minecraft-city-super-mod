@@ -1255,7 +1255,15 @@ is the slack in the plan, so all correction is taken there:
   \item A coordinated phase that finds itself \emph{outside} its own window holds
         green until the yield point comes round again, absorbing the whole error
         in one long green.
+  \item The one exception: outside its own window, it gives way when a waiting
+        phase's window is \emph{about to open}. After an early return (the side
+        street gapped out), the main street comes up early and would otherwise
+        sit on a lead left's window at the top of the cycle, pushing the left to
+        run after the side street instead.
 \end{itemize}
+
+Each non-coordinated phase is served at most once per window, so a side street on
+recall that gaps out early gives its leftover time back instead of calling again.
 
 Correction is therefore \textbf{add-only}: it lengthens the coordinated green and
 never shortens a side street's split or a pedestrian interval to catch up. A
