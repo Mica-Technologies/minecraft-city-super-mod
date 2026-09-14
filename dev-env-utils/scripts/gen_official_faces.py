@@ -395,6 +395,7 @@ E = 'EM'
 SLATE_TO_BLUE = {(74, 87, 120): shs.MOD_COLOURS['blue']}
 FYG_FACE = {(255, 245, 0): shs.MOD_COLOURS['fyg']}   # the book's yellow onto fluorescent yellow-green
 ORANGE_FACE = {(255, 245, 0): shs.MOD_COLOURS['orange']}   # ... and onto work-zone orange
+INCIDENT_PINK = (255, 0, 255, 255)   # the mod's incident-management magenta (FAWE's)
 CATALOGUE = [
     # --- Phase 1: Regulatory, the confident exact matches. Not here, and why: signahead is
     # the up-arrow plaque, not the AHEAD legend; onewaytlsignright is the arrow-shaped R6-1;
@@ -702,7 +703,7 @@ CATALOGUE = [
     ('dangerousroadcurves', TEXT_DIAMOND(['DANGEROUS', 'ROAD CURVES']), 'W8-1 diamond'),
     ('endcountymaintainedroadsign', TEXT_DIAMOND(['END', 'COUNTY', 'MAINTAINED', 'ROAD']), 'W8-1 diamond'),
     ('roadend', TEXT_DIAMOND(['END']), 'W8-1 diamond'),
-    ('faweincidentsign', TEXT_DIAMOND(['FAWE', 'INCIDENT', 'AHEAD'], (255, 0, 255, 255)), 'W8-1 diamond, magenta'),
+    ('faweincidentsign', TEXT_DIAMOND(['FAWE', 'INCIDENT', 'AHEAD'], INCIDENT_PINK), 'W8-1 diamond, magenta'),
     ('fwyintersectionsign', TEXT_DIAMOND(['FREEWAY', 'INTERSECTION', 'AHEAD']), 'W8-1 diamond'),
     # --- Remaining-signs batch 9. Left as drawn: calaneendsignleft / right (a diagonal arrow
     # on a diamond, no drawing), signleftlaneends (LANE ENDS between two arrows).
@@ -804,9 +805,9 @@ CATALOGUE = [
     ('alwaysroadworksign', TEXT_DIAMOND(['ALWAYS', 'ROAD WORK', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
     ('beachclosedsign', TEXT_DIAMOND(['BEACH', 'CLOSED'], shift=True), 'W8-1 diamond'),
     ('dangerousroadcurvesrr', TEXT_DIAMOND(['DANGEROUS', 'ROAD CURVES'], shs.MOD_COLOURS['orange']), 'W8-1 diamond, orange'),
-    ('caltransduicheckpointaheadsign', TEXT_DIAMOND(['DUI /', "DRIVER'S LICENSE", 'CHECK POINT', 'AHEAD'], shs.MOD_COLOURS['orange'],
-                                                    ink=shs.MOD_COLOURS['white'], tight=True, gap=1.3,
-                                                    min_condense=0.68, shift=True), 'W8-1 diamond, orange'),
+    ('caltransduicheckpointaheadsign', TEXT_DIAMOND(['DUI /', "DRIVER'S LICENSE", 'CHECK POINT', 'AHEAD'], INCIDENT_PINK,
+                                                    tight=True, gap=1.3, min_condense=0.68, shift=True),
+     'W8-1 diamond, incident pink'),
     ('buildathoneventsign', TEXT_DIAMOND(['HUGE', 'BUILDATHON', 'EVENT', 'AHEAD'], shs.MOD_COLOURS['orange'], tight=True, gap=1.3,
                                          min_condense=0.68, shift=True), 'W8-1 diamond, orange'),
     ('massdotheavymergesignrw', TEXT_DIAMOND(['HEAVY', 'MERGE', 'AHEAD'], shs.MOD_COLOURS['orange']), 'W8-1 diamond, orange'),
