@@ -406,6 +406,42 @@ def SHS_PANEL_COLOUR(chapter, page, colour, pick=0):
     return lambda: (ComposedFace(make), False, None)
 
 
+def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, width=0.84):
+    """A rectangular temporary-traffic-control panel no single page draws at the mod's wording:
+    a rounded ``colour`` panel with the inset black border at the M4-9b's proportions, ``lines``
+    set in ``band`` at one size and narrowing, and optionally the M6-2's diagonal arrow lifted
+    off its page (``arrow='right'`` points up-right, ``'left'`` up-left) in the lower half."""
+    def make(aspect):
+        import gen_gap_signs as gg
+        H = 1024
+        Wd = int(round(H * aspect))
+        img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        black = shs.MOD_COLOURS['black']
+        m = int(H * 0.012)
+        d.rounded_rectangle((m, m, Wd - m, H - m), radius=int(H * 0.07), fill=shs.MOD_COLOURS[colour])
+        inset, stroke = int(H * 0.035), int(H * 0.03)
+        d.rounded_rectangle((inset, inset, Wd - inset, H - inset), radius=int(H * 0.05),
+                            outline=black, width=stroke)
+        n = len(lines)
+        pitch = (band[1] - band[0]) / n
+        cap = min(cap_max, pitch * 0.66) * H
+        condense = _series_condense(lines, cap, width * Wd)
+        for i, text in enumerate(lines):
+            gg._legend_line(img, text, (band[0] + pitch * (i + 0.5)) * H, cap, width * Wd,
+                            colour=black, condense=condense)
+        if arrow:
+            art = shs.recolour(shs.book_sign(G, 21, symbols_only=True), shs.SHS_PALETTE)
+            art = art.crop(art.getchannel('A').getbbox())
+            if arrow == 'left':
+                art = art.transpose(Image.FLIP_LEFT_RIGHT)
+            h = int(H * 0.36)
+            art = art.resize((int(art.width * h / art.height), h), Image.LANCZOS)
+            img.alpha_composite(art, ((Wd - art.width) // 2, int(H * 0.52)))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -843,8 +879,10 @@ CATALOGUE = [
     ('rgraheadsign', TEXT_DIAMOND(['RGR', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
     ('rgrbabysign', TEXT_DIAMOND(['RGR', 'BABY', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
     ('rgrchickensign', TEXT_DIAMOND(['RGR', 'CHICKEN', 'AHEAD'], shs.MOD_COLOURS['orange'], shift=True), 'W8-1 diamond, orange'),
-    # --- Remaining-signs batch 15. Left as drawn: signworkexitleft / right (the temporary EXIT
-    # panel is later than the book), seniorsafetyzonesign, conezonesign.
+    # --- Remaining-signs batch 15. Left as drawn: seniorsafetyzonesign.
+    ('signworkexitleft', PANEL(['EXIT'], arrow='left', band=(0.08, 0.5), cap_max=0.2), 'orange panel + M6-2 arrow'),
+    ('signworkexitright', PANEL(['EXIT'], arrow='right', band=(0.08, 0.5), cap_max=0.2), 'orange panel + M6-2 arrow'),
+    ('conezonesign', PANEL(['SLOW FOR', 'THE CONE', 'ZONE'], band=(0.1, 0.9), width=0.76), 'orange panel'),
     ('rwrkshiftleft2lanes', SHS(W, 136, pick=1), 'W1-4bL'),
     ('rwrkshiftright2lanes', SHS(W, 136), 'W1-4bR'),
     ('signrwrkshiftleftsingle', SHS(W, 4, pick=1, palette=ORANGE_FACE), 'W1-4L (orange)'),
