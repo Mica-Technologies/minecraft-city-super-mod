@@ -225,13 +225,19 @@ LEGEND_FONT_PREFIXES = ('Series', 'Highway')
 def _legend_spans(page, rect):
     """Every run of legend-font text inside ``rect``: (text, [(ox, oy), ...], bbox)."""
     out = []
+    # a smaller sign drawn overlapping this one's corner (W4-7's right-hand version) keeps its legend
+    others = [r for r in _outer_rects(_sign_fills(page))
+              if r != rect and r.width * r.height < rect.width * rect.height
+              and (r & rect).get_area() < 0.6 * r.get_area()]   # mostly outside: another sign, not this one's own
+                                                                 # outline or a panel inside it
     for block in page.get_text('rawdict')['blocks']:
         for line in block.get('lines', []):
             for span in line['spans']:
                 font = span['font'].split('+', 1)[-1]
                 if not font.startswith(LEGEND_FONT_PREFIXES):
                     continue
-                chars = [ch for ch in span['chars'] if rect.contains(fitz.Point(*ch['origin']))]
+                chars = [ch for ch in span['chars'] if rect.contains(fitz.Point(*ch['origin']))
+                         and not any(r.contains(fitz.Point(*ch['origin'])) for r in others)]
                 if not chars:
                     continue
                 bbox = fitz.Rect(chars[0]['bbox'])
@@ -576,57 +582,51 @@ def book_sign(chapter, page, pick=0, only_inside=True, inner=None, replace=None,
         # (old, new) or (old, new, colour): a run reversed out of a dark band is set in white
         old, new = pair[0], pair[1]
         colour = pair[2] if len(pair) > 2 else (legend_colour or (31, 26, 23, 255))
-        boxes = _legend_span_boxes(p, rect, old)
+        # only the runs on this sign: a page with two signs lists both signs' runs
+        boxes = [bx for bx in _legend_span_boxes(p, rect, old) if rect.intersects(bx)]
+        # and not a callout set small in the same words beside the drawing
+        tallest = max([bx.height for bx in boxes] or [0])
+        boxes = [bx for bx in boxes if bx.height >= 0.5 * tallest]
         if not boxes:
             raise SystemExit('%s p%d: no legend run reads %r (have %s)' % (
                 chapter, page, old, [t for t, _o, _b in _legend_spans(p, rect)]))
-        todo.append((new, boxes, colour))
+        todo.append((new, boxes, colour, _run_series(p, rect, old)))
     img = _render_svg(p, rect, only_inside, drop=[pair[0] for pair in pairs],
                       sheet_colour=sheet_colour, mirror_symbols=mirror_symbols,
                       rotate_symbols=rotate_symbols)
     scale = RENDER_DPI / 72.0
-    for new, boxes, colour in todo:
+    for new, boxes, colour, series in todo:
         for box in boxes:
             px = ((box.x0 - rect.x0) * scale, (box.y0 - rect.y0) * scale,
                   (box.x1 - rect.x0) * scale, (box.y1 - rect.y0) * scale)
-            _set_legend(img, new, px, condense=condense, colour=colour)
+            _set_legend(img, new, px, condense=condense, colour=colour, series=series)
     return img
 
 
-def _set_legend(img, text, box, colour=(31, 26, 23, 255), condense=False):
-    """Draw ``text`` centred on ``box`` (pixels) with the digits' cap height matching the
-    box, in the mod's sign font; the colour is the book's black so recolour() maps it."""
-    from PIL import ImageDraw, ImageFont
-    import render_sign as rs
+def _run_series(page, rect, text):
+    """The FHWA series the page sets the legend run ``text`` in (from its embedded font name),
+    or Series D when the run is not found."""
+    import re as _re
+    for b in page.get_text('dict')['blocks']:
+        for line in b.get('lines', []):
+            for sp in line['spans']:
+                if sp['text'].strip() == text and rect.intersects(fitz.Rect(sp['bbox'])):
+                    m = _re.search(r'Series(ModE|[A-F])2000', sp['font'])
+                    if m:
+                        return m.group(1)
+    return 'D'
+
+
+def _set_legend(img, text, box, colour=(31, 26, 23, 255), condense=False, series='D'):
+    """Draw ``text`` centred on ``box`` (pixels) with its capitals the box's height, in the
+    series the page set the replaced run in, stepping to narrower series if it does not fit;
+    the colour is the book's black so recolour() maps it."""
     x0, y0, x1, y1 = box
-    target = y1 - y0
-    size = max(8, int(target))
-    f = ImageFont.truetype(rs.FONT_PATH, size)
-    bb = f.getbbox('0')
-    size = max(8, int(round(size * target / (bb[3] - bb[1]))))
-    f = ImageFont.truetype(rs.FONT_PATH, size)
-    bb = f.getbbox(text)
-    # a longer legend ("100" for "50") keeps the old run's side margins rather than the panel
-    max_w = img.width - 2 * min(x0, img.width - x1)
-    if condense == 'box':
-        # a run between fixed marks (the W12-2's foot and inch marks) keeps to its own box
-        max_w = x1 - x0
-    if bb[2] - bb[0] > max_w:
-        if not condense:
-            f = ImageFont.truetype(rs.FONT_PATH, max(8, int(size * max_w / (bb[2] - bb[0]))))
-            bb = f.getbbox(text)
-        else:
-            # keep the cap height of the lines round it and narrow the letters instead, the
-            # way the book's narrower series sit beside the mod's one wide font
-            layer = Image.new('RGBA', (bb[2] - bb[0], bb[3] - bb[1]), (0, 0, 0, 0))
-            ImageDraw.Draw(layer).text((-bb[0], -bb[1]), text, font=f, fill=colour)
-            layer = layer.resize((int(max_w), layer.height), Image.LANCZOS)
-            img.alpha_composite(layer, (int(round((x0 + x1) / 2 - max_w / 2)),
-                                        int(round((y0 + y1) / 2 - layer.height / 2))))
-            return
-    d = ImageDraw.Draw(img)
-    d.text(((x0 + x1) / 2 - (bb[2] + bb[0]) / 2, (y0 + y1) / 2 - (bb[3] + bb[1]) / 2),
-           text, font=f, fill=colour)
+    # a longer legend ("100" for "50") keeps the old run's side margins rather than the panel;
+    # a run between fixed marks (the W12-2's foot and inch marks) keeps to its own box
+    max_w = (x1 - x0) if condense == 'box' else img.width - 2 * min(x0, img.width - x1)
+    prefer = SERIES[:SERIES.index(series) + 1][::-1]
+    set_legend_line(img, text, (x0 + x1) / 2, (y0 + y1) / 2, y1 - y0, max_w, colour, prefer)
 
 
 def interim_sign(code, variant=None):
@@ -797,3 +797,151 @@ if __name__ == '__main__':
         interim_sign(sys.argv[2], sys.argv[3] if len(sys.argv) > 4 else None).save(sys.argv[-1])
     else:
         raise SystemExit(__doc__)
+
+
+# ----------------------------------------------------------------------------- the FHWA alphabets
+# The book's own legends are set in the FHWA Standard Alphabets, Series B, C, D, E, E(M) and F,
+# embedded in every chapter PDF as Type 1 fonts. Alphabets.pdf carries all six complete, so they
+# are extracted from it into the cache on first use (never committed) and every legend a generator
+# SETS -- rather than lifts off a page -- uses the series the book would. The fonts' own advances
+# reproduce the book's letter spacing (checked against glyph placement on the Regulatory, Warning
+# and Guide pages: 0.997 of the book's run width); their space glyph does not, so words are set
+# apart by WORD_GAP cap heights, the book's measured word space (wider than the space glyph of
+# the community Highway Gothic fonts, ~0.35; FHWA's design guide asks 1-1.5 letter heights on guide signs).
+
+SERIES = ('B', 'C', 'D', 'E', 'ModE', 'F')          # narrowest to widest
+WORD_GAP = {'B': 0.49, 'C': 0.49, 'D': 0.49,      # word space / cap height, measured off ~300 book
+            'E': 0.69, 'ModE': 0.69, 'F': 0.69}      # word gaps (the wide series are set looser)
+_SERIES_FONT_NAME = {'B': 'SeriesB2000', 'C': 'SeriesC2000', 'D': 'SeriesD2000', 'E': 'SeriesE2000',
+                     'ModE': 'SeriesModE2000', 'F': 'SeriesF2000'}
+_font_cache = {}
+
+
+def series_font_path(series):
+    """The cached Type 1 file for ``series``, extracted from Alphabets.pdf on first use."""
+    name = _SERIES_FONT_NAME[series]
+    path = os.path.join(CACHE, 'series', name + '.pfa')
+    if not os.path.exists(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        doc = fitz.open(_fetch(BOOK_URL % 'Alphabets', 'Alphabets.pdf'))
+        best = {}
+        for i in range(doc.page_count):
+            for xref, _ext, _typ, fname, *_rest in doc.get_page_fonts(i):
+                base = fname.split('+')[-1].replace('-Normal', '')
+                if base in _SERIES_FONT_NAME.values():
+                    content = doc.extract_font(xref)[3]
+                    if len(content) > len(best.get(base, b'')):
+                        best[base] = content
+        for base, content in best.items():
+            with open(os.path.join(CACHE, 'series', base + '.pfa'), 'wb') as fh:
+                fh.write(content)
+    return path
+
+
+def _fallback_font(cap_px):
+    """The mod's shipped Highway Gothic, for any character no FHWA alphabet has."""
+    from PIL import ImageFont
+    import render_sign as rs
+    key = ('fallback', int(round(cap_px * 8)))
+    if key not in _font_cache:
+        probe = ImageFont.truetype(rs.FONT_PATH, 1000)
+        hb = probe.getbbox('H')
+        _font_cache[key] = ImageFont.truetype(rs.FONT_PATH, max(6, int(round(1000 * cap_px / (hb[3] - hb[1])))))
+    return _font_cache[key]
+
+
+def series_font(series, cap_px):
+    """``series`` at the size whose capital H is ``cap_px`` tall."""
+    from PIL import ImageFont
+    key = (series, int(round(cap_px * 8)))
+    if key not in _font_cache:
+        path = series_font_path(series)
+        probe = ImageFont.truetype(path, 1000)
+        hb = probe.getbbox('H')
+        _font_cache[key] = ImageFont.truetype(path, max(6, int(round(1000 * cap_px / (hb[3] - hb[1])))))
+    return _font_cache[key]
+
+
+def _has_glyph(font, ch):
+    return ch == ' ' or font.getmask(ch).getbbox() is not None
+
+
+APOSTROPHES = ("'", '’')     # no alphabet carries one: drawn as the series' own comma, raised
+
+
+def _char_advance(f, fallback, ch):
+    if ch in APOSTROPHES:
+        return f.getlength(',')
+    return (f if _has_glyph(f, ch) else fallback).getlength(ch)
+
+
+def legend_width(text, series, cap_px):
+    """Width of ``text`` set in ``series`` at cap height ``cap_px``, the book's way."""
+    f = series_font(series, cap_px)
+    words = text.split(' ')
+    w = 0.0
+    fallback = _fallback_font(cap_px)
+    for ch in text.replace(' ', ''):
+        w += _char_advance(f, fallback, ch)
+    return w + WORD_GAP[series] * cap_px * (len(words) - 1)
+
+
+def pick_series(texts, cap_px, max_w, prefer=('D', 'C', 'B')):
+    """The first series in ``prefer`` in which every line of ``texts`` fits ``max_w``; the last
+    one if none does (the caller narrows that as a last resort)."""
+    if isinstance(texts, str):
+        texts = [texts]
+    for s in prefer:
+        if all(legend_width(t, s, cap_px) <= max_w for t in texts):
+            return s
+    return prefer[-1]
+
+
+def prefer_for(condense):
+    """Map the old horizontal-squash factor onto the series a designer would have picked: a line
+    that had to be squashed hard was set in a narrower alphabet, not a squashed wide one."""
+    if isinstance(condense, str):
+        return (condense,)
+    if isinstance(condense, (tuple, list)):
+        return tuple(condense)
+    if condense >= 0.95:
+        return ('D', 'C', 'B')
+    if condense >= 0.8:
+        return ('C', 'B')
+    return ('B',)
+
+
+def set_legend_line(img, text, cx, cy, cap_px, max_w, colour, series=('D', 'C', 'B')):
+    """``text`` centred on (``cx``, ``cy``) with its capitals ``cap_px`` tall, in the first
+    series of ``series`` that fits ``max_w`` (a single name forces it). Only if even the last
+    series is too wide is the line narrowed to fit. Characters an alphabet lacks (the apostrophe
+    none has) are drawn from the series' own comma; anything else missing comes from the mod's font."""
+    from PIL import ImageDraw
+    s = pick_series([text], cap_px, max_w, prefer_for(series))
+    f = series_font(s, cap_px)
+    fallback = _fallback_font(cap_px)
+    w = legend_width(text, s, cap_px)
+    top = f.getbbox('H')[1]
+    pad = int(cap_px) + 4
+    layer = Image.new('RGBA', (int(w) + 2 * pad, int(cap_px * 2) + 2 * pad), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    x = pad
+    for word_i, word in enumerate(text.split(' ')):
+        if word_i:
+            x += WORD_GAP[s] * cap_px
+        for ch in word:
+            if ch in APOSTROPHES:
+                cb = f.getbbox(',')
+                d.text((x, pad - cb[1]), ',', font=f, fill=colour)      # comma, its top on the cap line
+            else:
+                font = f if _has_glyph(f, ch) else fallback
+                d.text((x, pad - top), ch, font=font, fill=colour)
+            x += _char_advance(f, fallback, ch)
+    if w > max_w:
+        layer = layer.resize((max(1, int(layer.width * max_w / w)), layer.height), Image.LANCZOS)
+        pad_x = pad * max_w / w
+    else:
+        pad_x = pad
+    scale_w = min(1.0, max_w / w) if w else 1.0
+    img.alpha_composite(layer, (int(round(cx - w * scale_w / 2 - pad_x)), int(round(cy - cap_px / 2 - pad))))
+    return s

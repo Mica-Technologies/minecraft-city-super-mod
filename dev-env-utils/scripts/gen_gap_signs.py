@@ -119,17 +119,28 @@ def _diamond_panel(img, bg, fg):
 
 
 def text_sign(shape, lines, bg, fg):
-    """A text-only sign on the given plate shape."""
-    aspect = SHAPES[shape][1]
+    """A text-only sign on the given plate shape, set in the FHWA series. A diamond is the book's
+    W8-1 panel laid out by gen_official_faces.TEXT_DIAMOND, as the re-faced worded warnings are;
+    any other shape is the rounded panel with the lines at the largest cap height that fits, in
+    the widest of Series D, C, B that fits at it."""
     if shape == 'diamond':
-        img = _canvas(1.0)
-        _diamond_panel(img, bg, fg)
-        R = (SIZE / 2 - 3 * SS) - (2 * SS + 3 * SS) - 4 * SS
-        rs._draw_text_diamond(img, lines, fg, SIZE / 2, SIZE / 2, R)
-        return _finish(img)
+        import gen_official_faces as gof
+        return gof.TEXT_DIAMOND(list(lines), bg, shift=True)()[0].fn(1.0)
+    aspect = SHAPES[shape][1]
     img = _canvas(aspect)
-    _d, box = _rounded_panel(img, bg, fg)
-    rs._draw_text(img, lines, fg, box)
+    _d, (x0, y0, x1, y1) = _rounded_panel(img, bg, fg)
+    n = len(lines)
+    bw, bh = x1 - x0, y1 - y0
+    cap = min(bh * 0.55, bh / (n * 1.5 - 0.5) * 0.9)
+    while cap > 8:
+        series = shs.pick_series(lines, cap, bw, ('D', 'C', 'B'))
+        if all(shs.legend_width(t, series, cap) <= bw for t in lines):
+            break
+        cap *= 0.97
+    pitch = cap * 1.5
+    first = (y0 + y1) / 2 - (n - 1) * pitch / 2
+    for k, t in enumerate(lines):
+        shs.set_legend_line(img, t, (x0 + x1) / 2, first + k * pitch, cap, bw, fg, series)
     return _finish(img, _size(shape))
 
 
@@ -184,20 +195,11 @@ def _legend_line_at(img, text, cx, cy, cap_h, max_w, colour=BLACK, condense=1.0)
 
 
 def _legend_line(img, text, cy, cap_h, max_w, colour=BLACK, condense=1.0):
-    """One line of Highway Gothic centred at ``cy`` with the given cap height (canvas px),
-    condensed horizontally by ``condense`` -- the shipped face is Series E(M)-wide, and a
-    narrower series is that face squeezed -- and never wider than ``max_w``."""
-    from PIL import ImageFont
-    f = ImageFont.truetype(rs.FONT_PATH, int(cap_h * 1.4))
-    bb = f.getbbox('H')
-    f = ImageFont.truetype(rs.FONT_PATH, max(8, int(round(int(cap_h * 1.4) * cap_h / (bb[3] - bb[1])))))
-    bb = f.getbbox(text)
-    w, h = bb[2] - bb[0], bb[3] - bb[1]
-    line = Image.new('RGBA', (w + 4, h + 4), (0, 0, 0, 0))
-    ImageDraw.Draw(line).text((2 - bb[0], 2 - bb[1]), text, font=f, fill=colour)
-    tw = min(int(round(line.width * condense)), int(max_w))
-    line = line.resize((tw, line.height), Image.LANCZOS)
-    img.alpha_composite(line, (int(img.width / 2 - tw / 2), int(cy - line.height / 2)))
+    """One line centred at ``cy`` with capitals ``cap_h`` tall (canvas px), in the FHWA series
+    the book would use (shs_signs.set_legend_line) and never wider than ``max_w``. ``condense``
+    is a series name or tuple of them; an old float squash factor maps onto the narrower series
+    it stood in for (shs_signs.prefer_for)."""
+    shs.set_legend_line(img, text, img.width / 2, cy, cap_h, max_w, colour, condense)
 
 
 def ct_construction_ahead():

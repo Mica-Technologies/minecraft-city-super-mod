@@ -257,15 +257,9 @@ def _with(mapping, extra):
 
 
 def _series_condense(texts, cap, max_w):
-    """One horizontal narrowing for a block of lines at cap height ``cap``, set by the widest,
-    so the lines read as one series rather than each squeezed to its own width."""
-    from PIL import ImageFont
-    import render_sign as rs
-    f = ImageFont.truetype(rs.FONT_PATH, int(cap * 1.4))
-    bb = f.getbbox('H')
-    f = ImageFont.truetype(rs.FONT_PATH, int(round(int(cap * 1.4) * cap / (bb[3] - bb[1]))))
-    widest = max(f.getbbox(t)[2] - f.getbbox(t)[0] for t in texts) + 4
-    return min(1.0, max_w / widest)
+    """One FHWA series for a block of lines at cap height ``cap``: the widest of D, C, B in which
+    every line fits, so the lines read as one series rather than each picking its own."""
+    return shs.pick_series(texts, cap, max_w, ('D', 'C', 'B'))
 
 
 def TWO_PANEL(top, lines, colour='yellow'):
@@ -321,38 +315,38 @@ def TEXT_DIAMOND(lines, colour=None, tight=False, ink=None, gap=None, min_conden
         img = panel.resize((S, S), Image.LANCZOS)
         R = S / 2 * (0.86 if tight else 0.80)                        # half-diagonal inside the black border, less a margin
         n = len(lines)
-        f = ImageFont.truetype(rs.FONT_PATH, 200)
-        hb = f.getbbox('H')
-        unit = [(f.getbbox(t)[2] - f.getbbox(t)[0]) / float(hb[3] - hb[1]) for t in lines]  # width per cap
         margin = 0.5 if shift else (0.1 if tight else 0.25)
         offsets = [R * i / 40.0 for i in range(-12, 13)] if shift else [0.0]
-        def fit(min_condense):
+        # the alphabets a block may drop to: a tight block (or a low min_condense) reaches Series B
+        allowed = ('D', 'C', 'B') if (tight or MIN_CONDENSE < 0.7) else ('D', 'C')
+        def fit(series):
+            unit = [shs.legend_width(t, series, 1000) / 1000.0 for t in lines]   # width per cap
             best = None
             for dy in sorted(offsets, key=abs):
                 cap = 0.24 * S
                 while cap > 8 and (best is None or cap > best[0]):
                     lh = cap * GAP
                     if n * lh + 2 * abs(dy) <= 2 * R * 0.9:
-                        cond = 1.0
-                        for k, u in enumerate(unit):
-                            # measured ``margin`` caps out from the line's middle: by default the
-                            # corners of a line's end letters may run a little toward the border,
-                            # as on real signs; a shifted block keeps the whole cap clear
-                            band = abs((k - (n - 1) / 2.0) * lh + dy) + cap * margin
-                            avail = 2 * (R - band)
-                            cond = min(cond, avail / (u * cap) if avail > 0 else 0)
-                        if cond >= min_condense:
-                            best = (cap, cond, dy)
+                        # measured ``margin`` caps out from the line's middle: by default the
+                        # corners of a line's end letters may run a little toward the border, as
+                        # on real signs; a shifted block keeps the whole cap clear
+                        if all(u * cap <= 2 * (R - abs((k - (n - 1) / 2.0) * lh + dy) - cap * margin)
+                               for k, u in enumerate(unit)):
+                            best = (cap, dy)
                             break
                     cap -= 2
             return best
-        # the letters' own width unless that costs a tenth of the height narrowing would give
-        wide, narrow = fit(0.92), fit(MIN_CONDENSE)
-        cap, cond, dy = wide if wide[0] >= 0.9 * narrow[0] and not tight else narrow
+        # the widest alphabet unless a narrower one buys a tenth more height
+        fits = [(s_, fit(s_)) for s_ in allowed]
+        fits = [(s_, f_) for s_, f_ in fits if f_]
+        series, (cap, dy) = fits[0]
+        for s_, f_ in fits[1:]:
+            if f_[0] > 1.1 * cap:
+                series, (cap, dy) = s_, f_
         lh = cap * GAP
         for k, t in enumerate(lines):
             cy = S / 2 + (k - (n - 1) / 2.0) * lh + dy
-            gg._legend_line(img, t, cy, cap, S, colour=ink or shs.MOD_COLOURS['black'], condense=cond)
+            gg._legend_line(img, t, cy, cap, S, colour=ink or shs.MOD_COLOURS['black'], condense=series)
         return shs.fit_plate(img, aspect, size=256)
     return lambda: (ComposedFace(make), False, None)
 
@@ -409,13 +403,15 @@ def SHS_PANEL_COLOUR(chapter, page, colour, pick=0):
 
 
 def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, width=0.84, ink='black',
-          footer=None):
+          footer=None, layout=None):
     """A rectangular temporary-traffic-control panel no single page draws at the mod's wording:
     a rounded ``colour`` panel with the inset black border at the M4-9b's proportions, ``lines``
     set in ``band`` at one size and narrowing, and optionally the M6-2's diagonal arrow lifted
     off its page (``arrow='right'`` points up-right, ``'left'`` up-left) in the lower half.
     ``ink`` colours the border, legend and arrow (white on a green guide panel). ``footer``
-    (text, top) rules the panel off at ``top`` and sets ``text`` in the strip below it (CALL 911)."""
+    (text, top) rules the panel off at ``top`` and sets ``text`` in the strip below it (CALL 911).
+    ``layout`` replaces the evenly spread ``lines`` with the original sign's own: (text, centre y,
+    cap height, width, centre x, series) as measured by detect_legend_series.py."""
     def make(aspect):
         import gen_gap_signs as gg
         H = 1024
@@ -428,13 +424,18 @@ def PANEL(lines, colour='orange', arrow=None, band=(0.1, 0.9), cap_max=0.24, wid
         inset, stroke = int(H * 0.035), int(H * 0.03)
         d.rounded_rectangle((inset, inset, Wd - inset, H - inset), radius=int(H * 0.05),
                             outline=black, width=stroke)
-        n = len(lines)
-        pitch = (band[1] - band[0]) / n
-        cap = min(cap_max, pitch * 0.66) * H
-        condense = _series_condense(lines, cap, width * Wd)
-        for i, text in enumerate(lines):
-            gg._legend_line(img, text, (band[0] + pitch * (i + 0.5)) * H, cap, width * Wd,
-                            colour=black, condense=condense)
+        if layout:
+            for text, cy, lcap, lw, cx, series in layout:
+                gg._legend_line_at(img, text, cx * Wd, cy * H, lcap * H, lw * Wd, colour=black, condense=series)
+            cap, condense = layout[-1][2] * H, layout[-1][5]
+        else:
+            n = len(lines)
+            pitch = (band[1] - band[0]) / n
+            cap = min(cap_max, pitch * 0.66) * H
+            condense = _series_condense(lines, cap, width * Wd)
+            for i, text in enumerate(lines):
+                gg._legend_line(img, text, (band[0] + pitch * (i + 0.5)) * H, cap, width * Wd,
+                                colour=black, condense=condense)
         if footer:
             text, top = footer
             d.rectangle((inset, int(top * H) - stroke // 2, Wd - inset, int(top * H) + stroke // 2), fill=black)
@@ -685,7 +686,7 @@ def BOOK_LINES(chapter, page, lines, pick=0, draw=None):
             text, cy, cap, width = line[:4]
             colour = shs.MOD_COLOURS[line[4]] if len(line) > 4 else shs.MOD_COLOURS['black']
             gg._legend_line_at(img, text, (line[5] if len(line) > 5 else 0.5) * Wd, cy * H, cap * H,
-                               width * Wd, colour=colour)
+                               width * Wd, colour=colour, condense=line[6] if len(line) > 6 else 1.0)
         if draw:
             draw(img)
         return shs.fit_plate(img, aspect, size=256)
@@ -906,8 +907,11 @@ def PANEL_LINES(lines, colour='white', ink='black', art=None, condense=1.0):
         d.rounded_rectangle((m, m, Wd - m, H - m), radius=int(H * 0.07), fill=shs.MOD_COLOURS[colour])
         inset, stroke = int(H * 0.035), int(H * 0.03)
         d.rounded_rectangle((inset, inset, Wd - inset, H - inset), radius=int(H * 0.05), outline=inkc, width=stroke)
-        for text, cy, cap, width in lines:
-            gg._legend_line(img, text, cy * H, cap * H, width * Wd, colour=inkc, condense=condense)
+        for line in lines:
+            text, cy, cap, width = line[:4]
+            cx = line[4] if len(line) > 4 else 0.5
+            series = line[5] if len(line) > 5 else condense
+            gg._legend_line_at(img, text, cx * Wd, cy * H, cap * H, width * Wd, colour=inkc, condense=series)
         if art:
             art(img)
         return shs.fit_plate(img, aspect, size=256)
@@ -1069,6 +1073,50 @@ def STOP_BANG():
         d.rectangle((S * 0.16, S * 0.64, S * 0.84, S * 0.68), fill=white)
         return shs.fit_plate(img, aspect, size=256)
     return lambda: (ComposedFace(make), False, None)
+
+
+def _signal_head(box):
+    """A black three-lamp signal head (red, yellow, green) in ``box`` (fractions of the image)."""
+    def art(img):
+        d = ImageDraw.Draw(img)
+        W, H = img.size
+        x0, y0, x1, y1 = box[0] * W, box[1] * H, box[2] * W, box[3] * H
+        d.rounded_rectangle((x0, y0, x1, y1), radius=(x1 - x0) * 0.18, fill=shs.MOD_COLOURS['black'])
+        r = min(x1 - x0, (y1 - y0) / 3) * 0.36
+        cx = (x0 + x1) / 2
+        for k, c in enumerate(('red', 'yellow', 'green')):
+            cy = y0 + (y1 - y0) * (k + 0.5) / 3
+            d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=shs.MOD_COLOURS[c])
+    return art
+
+
+def _rule(y):
+    """A full-width black rule inside the border at ``y`` (fraction of the height)."""
+    def art(img):
+        d = ImageDraw.Draw(img)
+        W, H = img.size
+        d.rectangle((W * 0.035, H * y - H * 0.012, W * 0.965, H * y + H * 0.012), fill=shs.MOD_COLOURS['black'])
+    return art
+
+
+def _header_band(text, bottom):
+    """A black band across the top of the panel down to ``bottom``, ``text`` in white on it."""
+    def art(img):
+        import gen_gap_signs as gg
+        d = ImageDraw.Draw(img)
+        W, H = img.size
+        d.rounded_rectangle((H * 0.035, H * 0.035, W - H * 0.035, H * bottom), radius=int(H * 0.05),
+                            fill=shs.MOD_COLOURS['black'])
+        d.rectangle((H * 0.035, H * bottom - H * 0.06, W - H * 0.035, H * bottom), fill=shs.MOD_COLOURS['black'])
+        gg._legend_line(img, text, H * (bottom + 0.035) / 2, H * 0.06, W * 0.8, colour=shs.MOD_COLOURS['white'])
+    return art
+
+
+def _both(*arts):
+    def art(img):
+        for a in arts:
+            a(img)
+    return art
 
 
 def SHSI(code, variant=None, palette=None):
@@ -1511,7 +1559,8 @@ CATALOGUE = [
     # --- Remaining-signs batch 15. Left as drawn: seniorsafetyzonesign.
     ('signworkexitleft', PANEL(['EXIT'], arrow='left', band=(0.08, 0.5), cap_max=0.2), 'orange panel + M6-2 arrow'),
     ('signworkexitright', PANEL(['EXIT'], arrow='right', band=(0.08, 0.5), cap_max=0.2), 'orange panel + M6-2 arrow'),
-    ('conezonesign', PANEL(['SLOW FOR', 'THE CONE', 'ZONE'], band=(0.1, 0.9), width=0.76), 'orange panel'),
+    ('conezonesign', PANEL(['SLOW FOR', 'THE CONE', 'ZONE'], band=(0.1, 0.9), width=0.76,
+     layout=[('SLOW FOR', 0.258, 0.148, 0.86, 0.5, 'B'), ('THE CONE', 0.51, 0.14, 0.86, 0.5, 'B'), ('ZONE', 0.755, 0.142, 0.86, 0.5, 'B')]), 'orange panel'),
     ('rwrkshiftleft2lanes', SHS(W, 136, pick=1), 'W1-4bL'),
     ('rwrkshiftright2lanes', SHS(W, 136), 'W1-4bR'),
     ('signrwrkshiftleftsingle', SHS(W, 4, pick=1, palette=ORANGE_FACE), 'W1-4L (orange)'),
@@ -1540,8 +1589,10 @@ CATALOGUE = [
     ('twohourpark830530', SHS(R, 98), 'R7-108'),
     ('signjct', SHS(G, 12), 'M2-1'),
     ('signhiking', SYM(G, 149, [0, 1, 2], 'green'), 'RS-? hiking (green)'),
-    ('hwyentrance', PANEL(['HIGHWAY', 'ENTRANCE'], 'green', ink='white', band=(0.2, 0.8)), 'green panel'),
-    ('pkwyentrancesign', PANEL(['PARKWAY', 'ENTRANCE'], 'green', ink='white', band=(0.2, 0.8)), 'green panel'),
+    ('hwyentrance', PANEL(['HIGHWAY', 'ENTRANCE'], 'green', ink='white', band=(0.2, 0.8),
+     layout=[('HIGHWAY', 0.405, 0.096, 0.86, 0.5, 'E'), ('ENTRANCE', 0.579, 0.096, 0.86, 0.5, 'ModE')]), 'green panel'),
+    ('pkwyentrancesign', PANEL(['PARKWAY', 'ENTRANCE'], 'green', ink='white', band=(0.2, 0.8),
+     layout=[('PARKWAY', 0.378, 0.174, 0.86, 0.5, 'B'), ('ENTRANCE', 0.621, 0.176, 0.86, 0.5, 'B')]), 'green panel'),
     ('signparkingright', SHS(G, 31, pick=2, replace=('ARKING', 'ARKING'), condense=True,
                                 legend_colour=(0, 145, 64, 255)), 'D4-1 (up right)'),
     ('signparkingr', SHS(G, 31, pick=2, rotate_symbols=(45, 0.65), replace=('ARKING', 'ARKING'), condense=True,
@@ -1561,9 +1612,11 @@ CATALOGUE = [
     ('signinformation', SHS(G, 68), 'D9-10'),
     ('signdiesel', SHS(G, 69), 'D9-11'),
     ('signweighstationright', SHS(G, 56), 'D8-3'),
-    ('signweighstationnextright', PANEL(['WEIGH', 'STATION', 'NEXT RIGHT'], 'green', ink='white', band=(0.1, 0.9), width=0.78),
+    ('signweighstationnextright', PANEL(['WEIGH', 'STATION', 'NEXT RIGHT'], 'green', ink='white', band=(0.1, 0.9), width=0.78,
+     layout=[('WEIGH', 0.258, 0.164, 0.86, 0.5, 'D'), ('STATION', 0.521, 0.166, 0.86, 0.5, 'D'), ('NEXT RIGHT', 0.764, 0.148, 0.86, 0.5, 'D')]),
      'green panel (D8-2 legend)'),
-    ('landareastudysign', PANEL(['LAND AREA', 'UNDER STUDY'], 'blue', ink='white', band=(0.2, 0.8), width=0.76), 'blue panel'),
+    ('landareastudysign', PANEL(['LAND AREA', 'UNDER STUDY'], 'blue', ink='white', band=(0.2, 0.8), width=0.76,
+     layout=[('LAND AREA', 0.363, 0.172, 0.86, 0.5, 'B'), ('UNDER STUDY', 0.655, 0.174, 0.86, 0.5, 'B')]), 'blue panel'),
     ('altowelcomesyousign', PANEL(['ALTO', 'WELCOMES YOU', 'ESTABLISHED IN 2020'], 'blue', ink='white',
                                   band=(0.22, 0.78), cap_max=0.1), 'blue panel'),
     ('respectuianatparkssign', PANEL(['PLEASE', 'RESPECT ALL UIA', 'NATIONAL PARKS', 'AND PROPERTY', 'FOR EVERYONE',
@@ -1589,10 +1642,14 @@ CATALOGUE = [
     # --- Second pass, batch A (signs first left as drawn). Kept: bearcrossingsign (no bear
     # symbol to draw from; already the mod's yellow).
     ('carelesspersonsign', CARELESS_PERSON(), 'safety slogan (drawn)'),
-    ('beginfwysign', PANEL(['BEGIN', 'FREEWAY'], 'white', band=(0.2, 0.8), width=0.76), 'white panel'),
-    ('beginhwysign', PANEL(['BEGIN', 'HIGHWAY'], 'white', band=(0.2, 0.8), width=0.76), 'white panel'),
-    ('beginpkwysign', PANEL(['BEGIN', 'PARKWAY'], 'white', band=(0.2, 0.8), width=0.76), 'white panel'),
-    ('signbeginplaque', PANEL(['BEGIN'], 'white', band=(0.2, 0.8), cap_max=0.45, width=0.7), 'white plaque'),
+    ('beginfwysign', PANEL(['BEGIN', 'FREEWAY'], 'white', band=(0.2, 0.8), width=0.76,
+     layout=[('BEGIN', 0.353, 0.189, 0.86, 0.5, 'B'), ('FREEWAY', 0.654, 0.187, 0.86, 0.5, 'B')]), 'white panel'),
+    ('beginhwysign', PANEL(['BEGIN', 'HIGHWAY'], 'white', band=(0.2, 0.8), width=0.76,
+     layout=[('BEGIN', 0.354, 0.189, 0.86, 0.5, 'B'), ('HIGHWAY', 0.653, 0.189, 0.86, 0.5, 'B')]), 'white panel'),
+    ('beginpkwysign', PANEL(['BEGIN', 'PARKWAY'], 'white', band=(0.2, 0.8), width=0.76,
+     layout=[('BEGIN', 0.355, 0.191, 0.86, 0.5, 'B'), ('PARKWAY', 0.656, 0.183, 0.86, 0.5, 'B')]), 'white panel'),
+    ('signbeginplaque', PANEL(['BEGIN'], 'white', band=(0.2, 0.8), cap_max=0.45, width=0.7,
+     layout=[('BEGIN', 0.498, 0.519, 0.86, 0.5, 'B')]), 'white plaque'),
     ('signcenterlanebusonly69', BOOK_LINES(R, 39, [('CENTER', 0.1, 0.085, 0.8, 'white'), ('LANE', 0.23, 0.085, 0.8, 'white'),
                                                    ('BUSES', 0.43, 0.11, 0.8), ('ONLY', 0.6, 0.11, 0.8),
                                                    ('6AM - 9AM', 0.76, 0.075, 0.8), ('MON-FRI', 0.88, 0.06, 0.8)]),
@@ -1602,10 +1659,8 @@ CATALOGUE = [
                                              ('6AM - 9AM', 0.76, 0.075, 0.8), ('MON-FRI', 0.88, 0.06, 0.8)],
                                      draw=_hov_diamond), 'R3-9f panel (CENTER HOV 2+)'),
     ('signcenterlanenouse79', SHS(R, 39), 'R3-9f'),
-    ('signcityspeed35', BOOK_LINES(R, 11, [('CITY', 0.14, 0.115, 0.84), ('SPEED', 0.3, 0.115, 0.84),
-                                           ('LIMIT', 0.46, 0.115, 0.84), ('35', 0.74, 0.3, 0.84)]), 'R2-1 panel'),
-    ('signendspeed35', BOOK_LINES(R, 11, [('END', 0.14, 0.1, 0.8), ('35', 0.38, 0.24, 0.8),
-                                          ('MPH', 0.63, 0.1, 0.8), ('LIMIT', 0.83, 0.1, 0.8)]), 'R2-1 panel'),
+    ('signcityspeed35', BOOK_LINES(R, 11, [('CITY', 0.146, 0.096, 0.86, 'black', 0.5, 'ModE'), ('SPEED', 0.309, 0.097, 0.86, 'black', 0.5, 'ModE'), ('LIMIT', 0.471, 0.094, 0.86, 'black', 0.5, 'F'), ('35', 0.74, 0.328, 0.86, 'black', 0.5, 'D')]), 'R2-1 panel'),
+    ('signendspeed35', BOOK_LINES(R, 11, [('END', 0.167, 0.131, 0.86, 'black', 0.5, 'D'), ('35', 0.428, 0.265, 0.86, 'black', 0.5, 'D'), ('MPH', 0.682, 0.094, 0.86, 'black', 0.5, 'F'), ('LIMIT', 0.846, 0.094, 0.86, 'black', 0.5, 'E')]), 'R2-1 panel'),
     ('signdividedhw1', SHS(R, 89), 'R6-3'),
     ('signdividedhw2', SHS(R, 90), 'R6-3a'),
     ('dangerbadwatersign', DANGER_PLACARD(['DO NOT DRINK', 'THIS WATER']), 'danger placard'),
@@ -1619,7 +1674,50 @@ CATALOGUE = [
     # signlitteringillegal. Redo later: kathieevanssign (not a road sign).
     ('ladotnostopping', LA_NO_STOPPING(), 'LA no stopping (photo)'),
     ('lhsstopsign', STOP_BANG(), 'R1-1 octagon, STOP! (non-compliant on purpose)'),
-    ('forestryvehiclesonlysign', PANEL(['FORESTRY', 'VEHICLES', 'ONLY'], 'white', band=(0.12, 0.88), width=0.8),
+    # --- Second pass, batch C. signresidentnormal paints signresidentlarge's texture (done in B).
+    ('noovernightparkingsign', PANEL(['NO', 'OVERNIGHT', 'PARKING', 'AND', 'CAMPING'], 'white', ink='red',
+                                     band=(0.06, 0.94), width=0.8,
+     layout=[('NO', 0.163, 0.103, 0.86, 0.5, 'B'), ('OVERNIGHT', 0.333, 0.103, 0.86, 0.5, 'C'), ('PARKING', 0.501, 0.103, 0.86, 0.5, 'C'), ('AND', 0.67, 0.101, 0.86, 0.49, 'C'), ('CAMPING', 0.839, 0.103, 0.86, 0.5, 'C')]), 'white panel, red'),
+    ('signnoovernightparking', PANEL_LINES([('NO', 0.165, 0.103, 0.86, 0.5, 'D'), ('OVERNIGHT', 0.302, 0.103, 0.86, 0.51, 'C'), ('PARKING', 0.44, 0.103, 0.86, 0.5, 'C'), ('VIOLATORS', 0.567, 0.049, 0.86, 0.5, 'D'), ('TOWED AWAY', 0.642, 0.049, 0.86, 0.5, 'D'), ('AT VEHICLE', 0.716, 0.049, 0.86, 0.5, 'D'), ("OWNER'S", 0.793, 0.051, 0.86, 0.5, 'D'), ('EXPENSE', 0.868, 0.049, 0.86, 0.5, 'D')], ink='red'),
+     'white panel, red'),
+    ('noparkingeairssign', PANEL(['NO PARKING', 'IN THIS AREA', 'FOR 1 MILE', 'EMERGENCY', 'AIRSTRIP'], 'white',
+                                 ink='red', band=(0.06, 0.94), width=0.8,
+     layout=[('NO PARKING', 0.203, 0.082, 0.86, 0.5, 'C'), ('IN THIS AREA', 0.349, 0.08, 0.86, 0.5, 'C'), ('FOR 1 MILE', 0.494, 0.082, 0.86, 0.5, 'C'), ('EMERGENCY', 0.639, 0.082, 0.86, 0.5, 'C'), ('AIRSTRIP', 0.786, 0.08, 0.86, 0.5, 'D')]), 'white panel, red'),
+    ('noparkinginalleysign', PANEL_LINES([('NO', 0.19, 0.158, 0.86, 0.5, 'C'), ('PARKING', 0.401, 0.158, 0.86, 0.5, 'B'), ('IN', 0.621, 0.101, 0.86, 0.5, 'D'), ('ALLEY', 0.78, 0.103, 0.86, 0.5, 'E')], ink='red'),
+     'white panel, red'),
+    ('noparkingonbridgesign', PANEL_LINES([('NO', 0.208, 0.181, 0.86, 0.5, 'D'), ('PARKING', 0.417, 0.158, 0.86, 0.5, 'B'), ('ON', 0.647, 0.092, 0.86, 0.49, 'F'), ('BRIDGE', 0.806, 0.092, 0.86, 0.5, 'F')], ink='red'),
+     'white panel, red'),
+    ('signnorightred', PANEL_LINES([('ON RED', 0.83, 0.11, 0.8)], art=_book_symbol(R, 22, (0.17, 0.11, 0.83, 0.67))),
+     'R3-1 symbol + ON RED'),
+    ('signnotrucksleftlane', PANEL_LINES([('NO', 0.163, 0.107, 0.86, 0.5, 'B'), ('TRUCKS', 0.315, 0.107, 0.86, 0.49, 'C'), ('LEFT LANE', 0.47, 0.103, 0.86, 0.5, 'C'), ('EXCEPT', 0.703, 0.105, 0.86, 0.5, 'C'), ('LEFT TURNS', 0.856, 0.107, 0.86, 0.5, 'C')], art=_rule(0.56)), 'white panel'),
+    ('signnoturnsofficialonly', PANEL(['NO TURNS', 'OFFICIAL', 'USE ONLY'], 'white', band=(0.12, 0.88), width=0.8,
+     layout=[('NO TURNS', 0.244, 0.156, 0.86, 0.5, 'C'), ('OFFICIAL', 0.504, 0.125, 0.86, 0.5, 'D'), ('USE ONLY', 0.762, 0.125, 0.86, 0.5, 'D')]),
+     'white panel'),
+    ('signonbridge', PANEL_LINES([('ON', 0.324, 0.23, 0.86, 0.5, 'B'), ('BRIDGE', 0.654, 0.23, 0.86, 0.5, 'B')], ink='red'),
+     'R8 plaque, red'),
+    ('signonpavement', PANEL_LINES([('ON', 0.331, 0.217, 0.86, 0.5, 'B'), ('PAVEMENT', 0.661, 0.209, 0.86, 0.5, 'B')], ink='red'),
+     'R8 plaque, red'),
+    ('signonecarpergreeneachlane', PANEL(['ONE CAR', 'PER GREEN', 'EACH LANE'], 'white', band=(0.1, 0.9), width=0.8,
+     layout=[('ONE CAR', 0.202, 0.17, 0.86, 0.5, 'C'), ('PER GREEN', 0.492, 0.172, 0.86, 0.5, 'C'), ('EACH LANE', 0.787, 0.172, 0.86, 0.5, 'C')]),
+     'white panel'),
+    ('signonecarpergreen', PANEL(['ONE', 'VEHICLE', 'PER', 'GREEN'], 'white', band=(0.07, 0.93), width=0.8,
+     layout=[('ONE', 0.171, 0.131, 0.86, 0.5, 'C'), ('VEHICLE', 0.394, 0.131, 0.86, 0.5, 'C'), ('PER', 0.617, 0.129, 0.86, 0.5, 'C'), ('GREEN', 0.841, 0.131, 0.86, 0.5, 'C')]),
+     'white panel'),
+    ('signphotoenforced', PANEL_LINES([('PHOTO', 0.75, 0.075, 0.8), ('ENFORCED', 0.87, 0.075, 0.8)],
+                                      art=_signal_head((0.36, 0.08, 0.64, 0.64))), 'signal head + PHOTO ENFORCED'),
+    ('positivelynosmokingsign', PANEL(['POSITIVELY NO', 'SMOKING OR OPEN', 'LIGHTS PERMITTED'], 'white',
+                                      band=(0.14, 0.86), width=0.86), 'white plaque'),
+    ('signredlightphoto', PANEL_LINES([('RED', 0.18, 0.12, 0.52, 0.62), ('LIGHT', 0.39, 0.12, 0.52, 0.62),
+                                       ('PHOTO', 0.6, 0.12, 0.52, 0.62), ('ENFORCED', 0.81, 0.12, 0.52, 0.62)],
+                                      art=_signal_head((0.1, 0.1, 0.28, 0.62))), 'signal head + legend'),
+    ('signfine400', PANEL_LINES([('RED LIGHT', 0.186, 0.101, 0.86, 0.5, 'C'), ('VIOLATION', 0.369, 0.101, 0.86, 0.5, 'C'), ('$400', 0.597, 0.193, 0.86, 0.5, 'C'), ('FINE', 0.816, 0.097, 0.86, 0.5, 'B')]), 'white panel'),
+    ('signpostreduced30', BOOK_LINES(R, 11, [('REDUCED', 0.187, 0.135, 0.86, 'black', 0.5, 'B'), ('SPEED', 0.389, 0.137, 0.86, 'black', 0.49, 'B'), ('30', 0.71, 0.369, 0.86, 'black', 0.49, 'C')]), 'R2-1 panel'),
+    ('signpostreducedspeedahead', BOOK_LINES(R, 11, [('REDUCED', 0.233, 0.15, 0.86, 'black', 0.5, 'B'), ('SPEED', 0.503, 0.15, 0.86, 'black', 0.5, 'B'), ('AHEAD', 0.773, 0.144, 0.86, 'black', 0.49, 'B')]), 'R2-1 panel'),
+    ('restrictedareasign', PANEL_LINES([('NO TRESPASSING', 0.42, 0.065, 0.84), ('BEYOND THIS POINT', 0.54, 0.065, 0.84),
+                                        ('PHOTOGRAPHY', 0.66, 0.065, 0.84), ('IS PROHIBITED', 0.78, 0.065, 0.84)],
+                                       art=_header_band('RESTRICTED AREA', 0.2)), 'facility placard'),
+    ('forestryvehiclesonlysign', PANEL(['FORESTRY', 'VEHICLES', 'ONLY'], 'white', band=(0.12, 0.88), width=0.8,
+     layout=[('FORESTRY', 0.291, 0.133, 0.86, 0.5, 'D'), ('VEHICLES', 0.51, 0.133, 0.86, 0.5, 'D'), ('ONLY', 0.729, 0.131, 0.86, 0.5, 'D')]),
      'white panel'),
     ('signhov6a9a', BOOK_LINES(R, 49, [('HOV 2+', 0.4, 0.1, 0.8), ('ONLY', 0.55, 0.1, 0.8),
                                        ('6AM-9AM', 0.72, 0.075, 0.8), ('MON-FRI', 0.85, 0.075, 0.8)]),
@@ -1634,20 +1732,20 @@ CATALOGUE = [
                                         ('PERSONS', 0.71, 0.07, 0.84), ('PER VEHICLE', 0.84, 0.07, 0.84)]),
      'R3-11c panel (R3-13 legend)'),
     ('ladotantigridlockzone', PANEL(['ANTI-GRIDLOCK', 'ZONE', 'L.A.M.C. 80.70'], 'red', ink='white',
-                                    band=(0.24, 0.76), width=0.8), 'red panel'),
-    ('signresidentlarge', PANEL_LINES([('PERMIT PARKING', 0.135, 0.098, 0.8), ('FOR', 0.28, 0.098, 0.8),
-                                       ('RESIDENTS ONLY', 0.425, 0.098, 0.8),
-                                       ('VEHICLES WITHOUT VALID', 0.585, 0.057, 0.8),
-                                       ('PARKING PERMITS', 0.685, 0.057, 0.8),
-                                       ('WILL BE TOWED AT', 0.785, 0.057, 0.8),
-                                       ("VEHICLE OWNER'S EXPENSE", 0.885, 0.057, 0.8)], condense=0.74),
+                                    band=(0.24, 0.76), width=0.8,
+     layout=[('ANTI-GRIDLOCK', 0.369, 0.07, 0.86, 0.5, 'D'), ('ZONE', 0.493, 0.068, 0.86, 0.5, 'D'), ('L.A.M.C. 80.70', 0.619, 0.07, 0.86, 0.5, 'D')]), 'red panel'),
+    ('signresidentlarge', PANEL_LINES([('PERMIT PARKING', 0.159, 0.111, 0.86, 0.5, 'B'), ('FOR', 0.313, 0.111, 0.86, 0.5, 'B'), ('RESIDENTS ONLY', 0.468, 0.111, 0.86, 0.5, 'B'), ('VEHICLES WITHOUT VALID', 0.602, 0.054, 0.86, 0.5, 'C'), ('PARKING PERMITS', 0.692, 0.053, 0.86, 0.5, 'C'), ('WILL BE TOWED AT', 0.784, 0.053, 0.86, 0.5, 'C'), ("VEHICLE OWNER'S EXPENSE", 0.875, 0.054, 0.86, 0.5, 'C')], condense=0.74),
      'white panel, narrow series'),
-    ('signleftplaque', PANEL(['LEFT'], 'white', band=(0.2, 0.8), cap_max=0.45, width=0.6), 'white plaque'),
+    ('signleftplaque', PANEL(['LEFT'], 'white', band=(0.2, 0.8), cap_max=0.45, width=0.6,
+     layout=[('LEFT', 0.516, 0.59, 0.86, 0.5, 'B')]), 'white plaque'),
     ('signltyofy', FLASHING_YELLOW_YIELD(), 'R10-12 (flashing yellow arrow)'),
-    ('signnodumping', PANEL(['NO', 'DUMPING'], 'white', band=(0.14, 0.86), width=0.8), 'white panel'),
-    ('signnobridgefishing', PANEL(['NO', 'FISHING', 'FROM', 'BRIDGE'], 'white', band=(0.08, 0.92), width=0.8),
+    ('signnodumping', PANEL(['NO', 'DUMPING'], 'white', band=(0.14, 0.86), width=0.8,
+     layout=[('NO', 0.293, 0.25, 0.86, 0.5, 'B'), ('DUMPING', 0.688, 0.207, 0.86, 0.5, 'B')]), 'white panel'),
+    ('signnobridgefishing', PANEL(['NO', 'FISHING', 'FROM', 'BRIDGE'], 'white', band=(0.08, 0.92), width=0.8,
+     layout=[('NO', 0.179, 0.166, 0.86, 0.5, 'C'), ('FISHING', 0.418, 0.121, 0.86, 0.5, 'D'), ('FROM', 0.625, 0.121, 0.86, 0.5, 'D'), ('BRIDGE', 0.832, 0.121, 0.86, 0.5, 'D')]),
      'white panel'),
-    ('noforestparkingsign', PANEL(['NO', 'FOREST', 'PARKING'], 'white', ink='red', band=(0.14, 0.86), width=0.8),
+    ('noforestparkingsign', PANEL(['NO', 'FOREST', 'PARKING'], 'white', ink='red', band=(0.14, 0.86), width=0.8,
+     layout=[('NO', 0.289, 0.133, 0.86, 0.5, 'B'), ('FOREST', 0.504, 0.133, 0.86, 0.51, 'C'), ('PARKING', 0.719, 0.133, 0.86, 0.5, 'C')]),
      'white panel, red'),
     ('signnoleftred', PANEL_LINES([('ON RED', 0.83, 0.11, 0.8)], art=_book_symbol(R, 24, (0.17, 0.11, 0.83, 0.67))),
      'R3-2 symbol + ON RED'),
@@ -1658,16 +1756,20 @@ CATALOGUE = [
     ('signhikingbrown', SYM(G, 149, [0, 1, 2], 'brown'), 'hiking (brown)'),
     ('signaheadbrown', SYM_ART('brown', _page_arrow(21, 2)), 'M6-3 arrow (brown)'),
     ('signbrownleft', SYM_ART('brown', _page_arrow(20, 4, turn=180)), 'M6-1 arrow (brown)'),
-    ('signparkingarea1mile', PANEL(['PARKING AREA', '1 MILE'], 'blue', ink='white', band=(0.14, 0.86), width=0.8),
+    ('signparkingarea1mile', PANEL(['PARKING AREA', '1 MILE'], 'blue', ink='white', band=(0.14, 0.86), width=0.8,
+     layout=[('PARKING AREA', 0.33, 0.246, 0.86, 0.5, 'B'), ('1 MILE', 0.687, 0.236, 0.86, 0.5, 'B')]),
      'blue panel (D5-3 legend)'),
     ('signscenicoverlookright', PANEL(['SCENIC', 'OVERLOOK'], 'blue', ink='white', arrow='right', band=(0.06, 0.52),
                                       cap_max=0.17, width=0.8), 'blue panel + M6-2 arrow'),
     ('reportdrunkdriversign', PANEL(['REPORT', 'DRUNK', 'DRIVERS'], 'blue', ink='white', band=(0.07, 0.73),
-                                    width=0.78, footer=('CALL 911', 0.75)), 'blue panel'),
+                                    width=0.78, footer=('CALL 911', 0.75),
+     layout=[('REPORT', 0.17, 0.113, 0.86, 0.51, 'D'), ('DRUNK', 0.364, 0.111, 0.86, 0.51, 'D'), ('DRIVERS', 0.556, 0.115, 0.86, 0.51, 'D')]), 'blue panel'),
     ('signsignalremovalstudy', PANEL(['SIGNAL', 'UNDER', 'STUDY FOR', 'REMOVAL'], 'blue', ink='white',
-                                     band=(0.08, 0.92), width=0.78), 'blue panel'),
+                                     band=(0.08, 0.92), width=0.78,
+     layout=[('SIGNAL', 0.156, 0.133, 0.86, 0.5, 'C'), ('UNDER', 0.39, 0.131, 0.86, 0.5, 'C'), ('STUDY FOR', 0.621, 0.133, 0.86, 0.5, 'C'), ('REMOVAL', 0.854, 0.129, 0.86, 0.5, 'C')]), 'blue panel'),
     ('altextremeheatdangersign', PANEL(['CAUTION!', 'EXTREME', 'HEAT', 'DANGER'], 'brown', ink='white',
-                                       band=(0.08, 0.92), width=0.76), 'brown panel'),
+                                       band=(0.08, 0.92), width=0.76,
+     layout=[('CAUTION!', 0.205, 0.1, 0.86, 0.5, 'D'), ('EXTREME', 0.391, 0.109, 0.86, 0.5, 'D'), ('HEAT', 0.591, 0.111, 0.86, 0.5, 'C'), ('DANGER', 0.796, 0.119, 0.86, 0.5, 'D')]), 'brown panel'),
     ('onewaytlsignleft', POINTED_ONE_WAY(left=True), 'R6-1L (pointed)'),
     ('signpostonewayright', SHS(R, 87), 'R6-1R'),
     ('signpostonewayleft', SHS(R, 87, pick=1), 'R6-1L'),
