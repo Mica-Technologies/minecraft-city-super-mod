@@ -281,17 +281,19 @@ def _legend_glyph_origins(page, rect, drop=None):
 
 def _sheet_colour(fills, rect):
     """What the margin between a sign's outermost fill and its edge outline is: the sign's own
-    background where the outermost fill is that background (a yellow diamond's edge is
-    yellow), and white where the outermost fill is a dark border (a regulatory sign's white
-    sheet shows outside its black border)."""
+    colour for the warning family (a yellow diamond's edge is yellow) and white for everything
+    else (a regulatory sign's sheet shows outside its black border, a guide sign's outside its
+    blue panel)."""
     for d in fills:
         r = d['rect']
         if d.get('fill') is None or abs(r.x0 - rect.x0) > 1.5 or abs(r.y0 - rect.y0) > 1.5                 or abs(r.x1 - rect.x1) > 1.5 or abs(r.y1 - rect.y1) > 1.5:
             continue
         red, green, blue = d['fill'][:3]
-        if 0.299 * red + 0.587 * green + 0.114 * blue < 0.3:
-            return '#ffffff'
-        return '#%02x%02x%02x' % (int(round(red * 255)), int(round(green * 255)), int(round(blue * 255)))
+        # Only the warning family (yellow, orange, fluorescent yellow-green) runs its colour
+        # to the edge; regulatory, guide and services signs all sit on a white sheet
+        if red > 0.6 and green > 0.5 and blue < 0.45:
+            return '#%02x%02x%02x' % (int(round(red * 255)), int(round(green * 255)), int(round(blue * 255)))
+        return '#ffffff'
     return '#ffffff'
 
 
@@ -371,10 +373,14 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
                 continue
             # Dimension marks over a black symbol are drawn as white 1 pt bars and 5 pt
             # arrowheads (the break lines on a Keep Right hood, the ticks across a curve
-            # arrow); a white shape that encloses next to nothing is one of those
-            if (attrs.get('fill', '').lower() in ('#ffffff', '#fff', 'white')
-                    and _path_area(attrs.get('d', ''), nums) < MAX_MARK_AREA_PT):
-                continue
+            # arrow); a white shape that encloses next to nothing for its extent is one of
+            # those -- a letter's counter (the hole in an A) is small too, but fills its box
+            if attrs.get('fill', '').lower() in ('#ffffff', '#fff', 'white'):
+                area = _path_area(attrs.get('d', ''), nums)
+                thin = min(bbox.width, bbox.height) < 2.5 or area < 0.3 * bbox.width * bbox.height
+                speck = max(bbox.width, bbox.height) < 8    # an arrowhead; a counter is bigger
+                if area < MAX_MARK_AREA_PT and (thin or speck):
+                    continue
         elif stroke:
             width = float(attrs.get('stroke-width', '1')) * scale
             closed = attrs.get('d', '').rstrip().upper().endswith('Z')
@@ -422,7 +428,8 @@ def _filtered_svg(page, rect, only_inside=True, drop=None, sheet_colour='#ffffff
         e, f = nums[4], nums[5]
         if not any(abs(e - ox) < 0.75 and abs(f - oy) < 0.75 for ox, oy in legend_origins):
             continue
-        kept.append(m.group(0))
+        # the glyph outlines carry no fill rule; a counter (the hole in an A) needs even-odd
+        kept.append(m.group(0).replace('<use ', '<use fill-rule="evenodd" ', 1))
         n_glyphs += 1
     if mirror_symbols:
         # The paths (panel, border, arrow) flipped about the sign's centre line; the glyphs,
@@ -575,6 +582,8 @@ MOD_COLOURS = {
     'black': (20, 20, 20, 255),
     'white': (245, 245, 245, 255),
     'fyg': (186, 255, 41, 255),   # fluorescent yellow-green, the pedestrian / school family
+    'blue': (3, 94, 159, 255),    # the guide / services blue the mod's D9 signs use
+    'green': (3, 112, 95, 255),   # the guide green of the mod's D1 / D8 / D13 signs
 }
 
 # The drawings' printed colours onto that palette: the book's and the interim files' yellow,
@@ -588,6 +597,8 @@ SHS_PALETTE = {
     (35, 31, 32): MOD_COLOURS['black'],
     (255, 255, 255): MOD_COLOURS['white'],
     (190, 215, 61): MOD_COLOURS['fyg'],
+    (0, 125, 194): MOD_COLOURS['blue'],
+    (0, 145, 64): MOD_COLOURS['green'],
 }
 
 
