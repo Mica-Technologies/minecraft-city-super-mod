@@ -257,3 +257,65 @@ panel is its opaque bounds; the diamond's points are where it meets each texture
 edges inset by the diamond's own apothem) rather than hard-coding them, and pre-stretches the WRONG WAY dots
 by the wide plate's 22:16 aspect so they come out round in the world. The lang lines and tab
 registrations it prints are added by hand next to the plain sign's own.
+
+## Where Sign Faces Come From
+
+Almost every road sign's face texture is generated, not hand-painted. Two generators own them,
+and both have a `--check` that fails when a texture no longer matches the script:
+
+- `dev-env-utils/scripts/gen_official_faces.py` -- re-faces signs that already exist. It never
+  touches registration, lang or blockstates: it reads the sign's blockstate for the plate model and
+  the texture on slot `1` (often not named after the registry), measures the plate's aspect off the
+  model's `#1` faces, and writes that one texture.
+- `dev-env-utils/scripts/gen_gap_signs.py` -- signs added by the 2026-09 catalogue review; it also
+  owns their blockstates, lang lines and tab registration (`--apply`).
+
+### Preference order
+
+1. **The official drawing.** `shs_signs.py` renders a sign straight off the FHWA Standard Highway
+   Signs book (2004 chapter PDFs, public domain) or an interim per-sign ZIP, both fetched into the
+   gitignored `_shs_cache/`. `recolour` maps the book's print colours onto `MOD_COLOURS`
+   (`SHS_PALETTE`); a face stretches to fill its plate. Options on `SHS(...)`: `pick` (a page with
+   several signs), `mirror` / `mirror_symbols` / `rotate_symbols` (left-hand and turned arrows),
+   `replace=` (re-set a numeral or word: `('50', '35')`, pairs may carry a colour), `blank=True`
+   (panel only, every legend dropped).
+2. **A book panel with the mod's own legend.** `BOOK_LINES`, `TEXT_PANEL`, `TEXT_DIAMOND` (the W8-1
+   diamond, lines fitted to its width band by band), `TWO_PANEL` (the W13-3 RAMP layout),
+   `SHS_PANEL_COLOUR` (a book sign on another panel colour when its symbol shares the panel's
+   yellow).
+3. **A public-domain MUTCD SVG** in `dev-env-utils/scripts/artwork/` (`SVG_SIGN`, `_svg_ink`), for a
+   symbol the 2004 book does not draw (W5-2a narrow bridge, California W82 streetcar).
+4. **Drawn from a photograph or the original texture**: `PANEL` / `PANEL_LINES` panels and the named
+   drawers (`STATE_PROPERTY`, `BUS_LANE`, `FALLOUT_SHELTER`, `LA_NO_STOPPING`, `HV_DANGER`, ...),
+   with book symbols lifted off their pages where one fits (`_ink_symbol`, `_book_stop`), or a
+   glyph lifted off the sign's own original texture and sharpened (`_original_glyph`).
+5. **Left as it was.** Branded or artwork signs (store price tags, agency logos, route shields,
+   facility placards) keep their textures; several had only their background shifted onto
+   `MOD_COLOURS` by a one-off recolour, so `--check` does not cover them.
+
+### Lettering
+
+Every legend a generator *sets* uses the real FHWA Standard Alphabets, Series B, C, D, E, E(M) and
+F, extracted at run time from the book's `Alphabets.pdf` into `_shs_cache/series/`. They are never
+committed. `shs_signs.set_legend_line` picks the widest allowed series that fits the line at its cap
+height, with the fonts' own letter spacing (it matches the book's glyph placement to within 0.3%) and
+the book's measured word space: 0.49 cap height for B/C/D, 0.69 for E and wider. The book chooses the
+series per line, not per sign -- long lines drop to B or C -- so drawers pass a tuple of acceptable
+series per line. No alphabet has an apostrophe; the series' own comma is drawn raised. Squeezing one
+wide font sideways to fit a line is exactly what not to do: it thins the verticals and leaves the
+horizontals heavy.
+
+The mod's shipped `highway_gothic_wide.ttf` is Series E width; it remains the fallback for a
+character no alphabet has.
+
+### Matching the sign being replaced
+
+`dev-env-utils/scripts/detect_legend_series.py <registry> "LINE|LINE"` reads a sign's first version
+from git and measures each legend line's centre, cap height and nearest series. `PANEL(layout=...)`,
+`PANEL_LINES` and `BOOK_LINES` take those measurements, so a remake keeps the layout the sign had.
+Check its output by eye on small 128 px originals: a blurry thin line measures a series too wide.
+
+### Reviewing a change
+
+`gen_official_faces.py --only a,b --sheet out.png` writes a before/after contact sheet without
+touching the tree; every batch of face changes has been reviewed on one before being written.

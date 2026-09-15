@@ -365,7 +365,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   `--check` is a byte comparison and a batch reverts with `git checkout`. `--sheet` makes the
   before/after contact sheet a batch is reviewed on; `--verify-sheet` puts each unverified
   match-table guess beside its cited book page. `replace=('50', '35')` re-sets the one numeral
-  a page draws
+  a page draws. Also the drawers for signs with no drawing (book panels with the mod's legend,
+  public-domain MUTCD SVGs in `artwork/`, photo-measured panels). Every set legend uses the real
+  FHWA Series B-F, extracted from the book at run time and never committed; see "Where Sign Faces
+  Come From" in `assets/docs/TRAFFIC_SIGNS.md`
+- `detect_legend_series.py` -- measures a sign's original texture (first git version): each legend
+  line's centre, cap height and nearest FHWA series, for a remake's `layout=`
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →
