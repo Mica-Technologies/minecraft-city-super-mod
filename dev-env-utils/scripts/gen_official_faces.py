@@ -17,7 +17,7 @@ which is what makes ``--check`` a byte comparison and a batch reversible with
 ``--sheet`` writes a before/after contact sheet at plate aspect (current texture left, new
 face right) without touching the tree -- the batch review the user sees before anything is
 written. ``--verify-sheet`` renders every ``?`` row of
-``assets/docs/agent_progress/SHS_MATCH_TABLE.md`` as the current texture beside a thumbnail
+``assets/docs/agent_progress/done/SHS_MATCH_TABLE.md`` as the current texture beside a thumbnail
 of the cited book page, eight per sheet, so the token-matched guesses can be confirmed or
 rejected by eye before they are catalogued.
 
@@ -36,7 +36,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
 import shs_signs as shs  # noqa: E402
 
-MATCH_TABLE = os.path.join(layout.REPO_ROOT, 'assets', 'docs', 'agent_progress', 'SHS_MATCH_TABLE.md')
+MATCH_TABLE = os.path.join(layout.REPO_ROOT, 'assets', 'docs', 'agent_progress', 'done', 'SHS_MATCH_TABLE.md')
 
 
 # ----------------------------------------------------------------------------- sources
