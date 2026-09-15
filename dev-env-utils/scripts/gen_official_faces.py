@@ -1631,6 +1631,154 @@ def SCHOOL_SAFETY_ZONE():
     return lambda: (ComposedFace(make), False, None)
 
 
+def DETOUR_DIAMOND(lines):
+    """DETOUR (with its lines) over the M6-3 up arrow on the orange W8-1 diamond."""
+    def make(aspect):
+        S = 1024
+        img = shs.recolour(shs.book_sign(W, 58, blank=True), _with(shs.SHS_PALETTE, ORANGE_FACE)).resize((S, S), Image.LANCZOS)
+        n = len(lines)
+        rows = [(t, (0.36 if n == 1 else 0.33) + (k - (n - 1) / 2.0) * 0.14, 0.11, 0.6, 'C') for k, t in enumerate(lines)]
+        _lines(img, rows, 'black')
+        _paste_fit(img, _ink_symbol(G, 21, 2), (S * 0.37, S * 0.47 if n == 1 else S * 0.5, S * 0.63, S * 0.8))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def SAFETY_ZONE(top, bottom, symbol, colour):
+    """A zone sign: ``top`` lines and ``bottom`` in ``colour`` on black bands around a ``colour``
+    panel carrying ``symbol`` (an image) -- SENIORS SAFETY ZONE with the W11-2 pedestrian."""
+    def make(aspect):
+        H = 1024
+        Wd = int(round(H * aspect))
+        img = Image.new('RGBA', (Wd, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((6, 6, Wd - 6, H - 6), radius=int(H * 0.03), fill=shs.MOD_COLOURS['black'])
+        d.rectangle((H * 0.03, H * 0.28, Wd - H * 0.03, H * 0.83), fill=shs.MOD_COLOURS[colour])
+        _lines(img, [(top[0], 0.085, 0.1, 0.88, 'C'), (top[1], 0.2, 0.1, 0.92, 'B'),
+                     (bottom, 0.915, 0.1, 0.92, 'B')], colour)
+        _paste_fit(img, symbol(), (Wd * 0.22, H * 0.33, Wd * 0.78, H * 0.79))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def _senior_ped():
+    ped = _ink_symbol(W_, 91)
+    base = Image.new('RGBA', (ped.width, ped.height + ped.height // 12), (0, 0, 0, 0))
+    base.alpha_composite(ped, (0, 0))
+    ImageDraw.Draw(base).rectangle((0, ped.height + ped.height // 30, ped.width, ped.height + ped.height // 18),
+                                  fill=shs.MOD_COLOURS['black'])
+    return base
+
+
+def GREEN_PARKING(rows, arrow=False):
+    """A white parking regulation sign in green: ``rows`` lines, with a double-headed arrow below."""
+    def make(aspect):
+        H = 1024
+        Wd = int(round(H * aspect))
+        img, d = _white_panel(Wd, H, 'green')
+        _lines(img, rows, 'green')
+        if arrow:
+            art = _double_arrow()
+            art = Image.composite(Image.new('RGBA', art.size, shs.MOD_COLOURS['green']), art, art)
+            _paste_fit(img, art, (Wd * 0.14, H * 0.8, Wd * 0.86, H * 0.9))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def CROSSOVER_LEFT():
+    """CROSSOVER over a left arrow, white on the guide green."""
+    def make(aspect):
+        H = 1024
+        Wd = int(round(H * aspect))
+        img, d = _white_panel(Wd, H, 'white', colour='green', stroke=0.02)
+        _lines(img, [('CROSSOVER', 0.32, 0.17, 0.86, 'C')], 'white')
+        art = _ink_symbol(G, 20, 4, colour='white').transpose(Image.FLIP_LEFT_RIGHT)
+        _paste_fit(img, art, (Wd * 0.22, H * 0.55, Wd * 0.78, H * 0.85))
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def VISITOR_PARKING():
+    """VISITOR PARKING reversed out of a green upper panel over NO LONG TERM PARKING in green."""
+    def make(aspect):
+        H = 1024
+        Wd = int(round(H * aspect))
+        img, d = _white_panel(Wd, H, 'green')
+        d.rounded_rectangle((H * 0.035, H * 0.035, Wd - H * 0.035, H * 0.44), radius=int(H * 0.045),
+                            fill=shs.MOD_COLOURS['green'])
+        d.rectangle((H * 0.035, H * 0.3, Wd - H * 0.035, H * 0.44), fill=shs.MOD_COLOURS['green'])
+        _lines(img, [('VISITOR', 0.15, 0.12, 0.84, 'C'), ('PARKING', 0.32, 0.12, 0.84, 'C')], 'white')
+        _lines(img, [('NO', 0.54, 0.1, 0.84, 'C'), ('LONG TERM', 0.7, 0.1, 0.84, 'B'),
+                     ('PARKING', 0.86, 0.1, 0.84, 'C')], 'green')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def BLUE_STOP():
+    """Hawaii's blue STOP sign (private roads, deliberately not the MUTCD's red): the book's R1-1
+    with its red moved to the guide blue."""
+    def make(aspect):
+        blue = shs.MOD_COLOURS['blue']
+        face = shs.recolour(shs.book_sign(R, 0), _with(shs.SHS_PALETTE, {(217, 38, 28): blue, (191, 48, 26): blue}))
+        return shs.fit_plate(face, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def EISENHOWER():
+    """The Eisenhower Interstate System marker: five white stars over three lines on guide blue."""
+    def make(aspect):
+        import math
+        H = 1024
+        Wd = int(round(H * aspect))
+        img, d = _white_panel(Wd, H, 'white', colour='blue', stroke=0.02)
+        white = shs.MOD_COLOURS['white']
+
+        def star(cx, cy, r):
+            pts = []
+            for k in range(10):
+                rad = r if k % 2 == 0 else r * 0.4
+                a = math.radians(-90 + 36 * k)
+                pts.append((cx + rad * math.cos(a), cy + rad * math.sin(a)))
+            d.polygon(pts, fill=white)
+        for cx, cy in ((0.5, 0.12), (0.35, 0.22), (0.65, 0.22), (0.41, 0.35), (0.59, 0.35)):
+            star(Wd * cx, H * (cy + 0.02), H * 0.065)
+        _lines(img, [('EISENHOWER', 0.55, 0.095, 0.8, 'C'), ('INTERSTATE', 0.7, 0.095, 0.8, 'C'),
+                     ('SYSTEM', 0.85, 0.095, 0.8, 'C')], 'white')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def TOLLED_BIKE():
+    """The Alto MTA tolled bike signal plaque: the W11-1 bicycle, SIGNAL, a purple band with
+    Alto MTA and the $1.00 toll."""
+    def make(aspect):
+        H = 1024
+        Wd = int(round(H * aspect))
+        img, d = _white_panel(Wd, H, 'black')
+        _paste_fit(img, _ink_symbol(W_, 90), (Wd * 0.2, H * 0.1, Wd * 0.8, H * 0.35))
+        _lines(img, [('SIGNAL', 0.47, 0.12, 0.86, 'D')], 'black')
+        d.rounded_rectangle((Wd * 0.14, H * 0.57, Wd * 0.86, H * 0.74), radius=int(H * 0.02), fill=(102, 34, 150, 255))
+        _lines(img, [('Alto MTA', 0.655, 0.09, 0.66, 'D')], 'white')
+        _lines(img, [('$1.00', 0.85, 0.12, 0.8, 'D')], 'black')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
+def SHARED_PATHWAY():
+    """SHARED PATHWAY under a green ring holding the pedestrian over the bicycle."""
+    def make(aspect):
+        H = 1024
+        Wd = int(round(H * aspect))
+        img, d = _white_panel(Wd, H, 'black')
+        cx, cy, r = Wd / 2, H * 0.34, Wd * 0.33
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=shs.MOD_COLOURS['green'], width=int(Wd * 0.07))
+        _paste_fit(img, _ink_symbol(W_, 91), (cx - r * 0.35, cy - r * 0.75, cx + r * 0.35, cy + r * 0.05))
+        _paste_fit(img, _ink_symbol(W_, 90), (cx - r * 0.6, cy + r * 0.08, cx + r * 0.6, cy + r * 0.62))
+        _lines(img, [('SHARED', 0.675, 0.11, 0.84, 'C'), ('PATHWAY', 0.815, 0.11, 0.84, 'C')], 'black')
+        return shs.fit_plate(img, aspect, size=256)
+    return lambda: (ComposedFace(make), False, None)
+
+
 def SHSI(code, variant=None, palette=None):
     """A face from an interim SHS ZIP (a sign added or redrawn since the book)."""
     return lambda: (shs.interim_sign(code, variant), False, palette)
@@ -2267,6 +2415,29 @@ CATALOGUE = [
     ('signslowdownpedestriantraffic', SLOW_DOWN_PED(), 'FYG panel (drawn)'),
     ('thicklysettledspeedlimit25mphsign', THICKLY_SETTLED_25(), 'MA thickly settled stack (drawn)'),
     ('schoolsafetyzonesign', SCHOOL_SAFETY_ZONE(), 'S1-1 pentagon + bands'),
+    # --- Second pass, batch G. Kept: signpostca_pch (route shield artwork), 99onlypricesignnew,
+    # 99onlypricesignnew2 (store artwork), signambulance, hgblissgreenhwysign, ladotsignalsync,
+    # signpolice, sheriffstation (colour-matched earlier), signarv, signlaundry (clean pictograms),
+    # steepedgesign (facility placard), signparkingnoarrow (already a clean D4-1 render).
+    ('safetyglassesandfaceshieldsign', PANEL(['CAUTION'], 'orange',
+     layout=[('CAUTION', 0.2, 0.085, 0.86, 0.5, 'C'), ('USE GLASSES AND', 0.35, 0.085, 0.86, 0.5, 'C'),
+             ('FACE SHIELD', 0.5, 0.085, 0.86, 0.5, 'C'), ('WHILE OPERATING', 0.65, 0.085, 0.86, 0.5, 'C'),
+             ('THIS MACHINE', 0.8, 0.085, 0.86, 0.5, 'C')]), 'orange panel'),
+    ('castraightdetoursign', DETOUR_DIAMOND(['DETOUR']), 'W8-1 orange + M6-3 arrow'),
+    ('freewaydetoursign', DETOUR_DIAMOND(['FWY', 'DETOUR']), 'W8-1 orange + M6-3 arrow'),
+    ('signworkpulloffleft', PANEL(['PULL-OFF', 'AREA'], arrow='left', band=(0.06, 0.48), cap_max=0.17), 'orange panel + M6-2 arrow'),
+    ('signworkpulloffright', PANEL(['PULL-OFF', 'AREA'], arrow='right', band=(0.06, 0.48), cap_max=0.17), 'orange panel + M6-2 arrow'),
+    ('seniorsafetyzonesign', SAFETY_ZONE(('SENIORS', 'SAFETY ZONE'), 'DRIVE SLOWLY', _senior_ped, 'yellow'), 'zone sign, W11-2'),
+    ('1hrtruckparkingsign', GREEN_PARKING([('1 HR', 0.28, 0.15, 0.84, 'C'), ('TRUCK', 0.5, 0.15, 0.84, 'C'),
+                                           ('PARKING', 0.72, 0.15, 0.86, 'B')]), 'green parking panel'),
+    ('sign24hrparking', GREEN_PARKING([('24', 0.24, 0.2, 0.84, 'D'), ('HOUR', 0.48, 0.11, 0.84, 'C'),
+                                       ('PARKING', 0.66, 0.11, 0.84, 'C')], arrow=True), 'green parking panel'),
+    ('signcrossoverleft', CROSSOVER_LEFT(), 'green panel + M6-1 arrow'),
+    ('signvisitornolongtermparking', VISITOR_PARKING(), 'green panel'),
+    ('signbluestop', BLUE_STOP(), 'R1-1 in blue (Hawaii)'),
+    ('signeisenhower', EISENHOWER(), 'Eisenhower marker (drawn)'),
+    ('tolledbikelanesign', TOLLED_BIKE(), 'bike signal toll plaque (drawn)'),
+    ('signsharedpathway', SHARED_PATHWAY(), 'shared path (drawn)'),
     # --- Second pass, batch C. signresidentnormal paints signresidentlarge's texture (done in B).
     ('noovernightparkingsign', PANEL(['NO', 'OVERNIGHT', 'PARKING', 'AND', 'CAMPING'], 'white', ink='red',
                                      band=(0.06, 0.94), width=0.8,
