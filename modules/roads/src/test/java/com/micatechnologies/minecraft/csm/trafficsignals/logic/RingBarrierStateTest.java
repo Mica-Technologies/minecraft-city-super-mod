@@ -896,6 +896,70 @@ class RingBarrierStateTest {
   }
 
   @Test
+  @DisplayName("the concurrent through holds green across the lead left's 1+6 -> 2+6 change")
+  void concurrentThroughHoldsGreenAcrossTheLeadLeftChange() {
+    // Regression (in-game report, issue #196): with a lead left on 1 running beside the 6 through,
+    // the standing cross-barrier calls on 4/8 counted as conflicting demand against 6. Phase 6 has
+    // no traffic of its own, so it gapped out and was terminated mid-barrier — it went fully red
+    // between 1+6 and 2+6, even though the barrier could not cross and nothing conflicting with 6
+    // could be served in its place. A green ending only for demand on another barrier must be held
+    // until the other ring is done with this one.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]); // FREE operation
+    enable(plan, 1, 0); // lead left, ring 1, barrier A
+    plan.getPhase(1).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+    plan.getPhase(1).setPermissivePhase(2);
+    enable(plan, 2, 1); // ring 1 through, barrier A
+    enable(plan, 6, 2); // ring 2 through, barrier A — the phase that must hold
+    enable(plan, 4, 3); // side street, ring 1, barrier B
+    enable(plan, 8, 4); // side street, ring 2, barrier B
+    for (int n : new int[] {2, 4, 6, 8}) {
+      plan.getPhase(n).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+      quickTiming(plan, n);
+    }
+    quickTiming(plan, 1);
+    TrafficSignalControllerCircuits ckts = circuits(5);
+    // A car turns left (phase 1) and a queue sits on the phase 2 through; phase 6 has no traffic
+    // at all, so only its MIN recall calls it and its passage timer gaps out immediately.
+    Demand leftAndThrough = new Demand().veh(0, 0, 1, 0).veh(1, 2, 0, 0);
+    Demand throughOnly = new Demand().veh(1, 2, 0, 0); // the left-turner goes, the queue stays
+    Demand quiet = new Demand();                       // ...and finally the through queue clears
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, leftAndThrough);
+    assertEquals(1, rb.getLastServed(1).phaseNumber, "the lead left is served first");
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+
+    // Tick every tick through the left's service, its clearance and the change to phase 2.
+    boolean sawThrough2 = false;
+    for (long t = 1L; t <= 300L; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, throughOnly);
+      ServedMovement ring2 = rb.getLastServed(2);
+      assertNotNull(ring2, "ring 2 must not go dark at t=" + t);
+      assertEquals(6, ring2.phaseNumber, "ring 2 must stay on phase 6 at t=" + t);
+      assertEquals(VehInterval.GREEN, ring2.vehicle,
+          "phase 6 must hold green while ring 1 works barrier A (t=" + t + ")");
+      if (rb.getLastServed(1).phaseNumber == 2
+          && rb.getLastServed(1).vehicle == VehInterval.GREEN) {
+        sawThrough2 = true;
+      }
+    }
+    assertTrue(sawThrough2, "ring 1 must have changed from the left (1) to the through (2)");
+
+    // And the hold must not become a deadlock: once the phase 2 queue clears, both rings
+    // terminate and the barrier crosses to the side street.
+    boolean crossed = false;
+    for (long t = 301L; t <= 500L && !crossed; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, quiet);
+      crossed = rb.getLastServed(1) != null && rb.getLastServed(1).phaseNumber == 4
+          && rb.getLastServed(1).vehicle == VehInterval.GREEN;
+    }
+    assertTrue(crossed, "the barrier must still cross to the side street once barrier A is done");
+    assertEquals(8, rb.getLastServed(2).phaseNumber, "ring 2 crosses with it");
+  }
+
+  @Test
   @DisplayName("coordination: a dual-entry companion serves the side street despite coord demand")
   void dualEntryCompanionServesUnderCoordination() {
     // In-game report: coordinated plan with coord throughs 2/6 (barrier A) and side street 4/8
@@ -1365,29 +1429,33 @@ class RingBarrierStateTest {
   @DisplayName("dual entry: a companion that gapped out beside a green does not re-enter beside it")
   void dualEntryDoesNotReenterAfterGapOut() {
     // 6 dual-entered beside 2, picked up traffic of its own (so it is an ordinary phase), then
-    // gapped out against a call on 4 while 2 holds green on its long min green. Ring 2 must wait
-    // at the barrier — not put 6 straight back to green beside the same 2 green.
+    // gave the green up to a call on the ring 2 left (5) while 2 holds green on its long min
+    // green. Ring 2 must wait at the barrier — not put 6 straight back to green beside the same 2
+    // green. (The call on 5 is what ends 6: demand on the OTHER barrier alone no longer does,
+    // since the barrier cannot cross while ring 1 is still working this one.)
     RingBarrierState rb = new RingBarrierState();
     TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
     plan.getCoordination().setCoordinatedPhases(new int[0]);
     enable(plan, 2, 0);
     enable(plan, 6, 1);
     enable(plan, 4, 2);
+    enable(plan, 5, 3); // ring 2 left, barrier A: the within-barrier call that ends phase 6
+    plan.getPhase(5).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
     plan.getPhase(6).setDualEntry(true);
-    for (int n : new int[] {2, 4, 6}) {
+    for (int n : new int[] {2, 4, 5, 6}) {
       quickTiming(plan, n);
     }
     plan.getPhase(2).setMinGreen(200L); // 2 outlasts 6's clearance
-    TrafficSignalControllerCircuits ckts = circuits(3);
+    TrafficSignalControllerCircuits ckts = circuits(4);
     Demand through2 = new Demand().veh(0, 1, 0, 0);
     Demand through2And6 = new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0);
-    Demand through2AndCar4 = new Demand().veh(0, 1, 0, 0).veh(2, 1, 0, 0);
+    Demand through2AndCar4 = new Demand().veh(0, 1, 0, 0).veh(2, 1, 0, 0).veh(3, 0, 1, 0);
 
     rb.tick(plan, ckts, NO_OVERLAPS, 0L, through2);         // 2 green
     rb.tick(plan, ckts, NO_OVERLAPS, 10L, through2);        // 6 dual-enters
     assertEquals(6, rb.getLastServed(2).phaseNumber);
     rb.tick(plan, ckts, NO_OVERLAPS, 20L, through2And6);    // traffic on 6: an ordinary phase now
-    rb.tick(plan, ckts, NO_OVERLAPS, 40L, through2AndCar4); // 6 gaps out against the call on 4
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, through2AndCar4); // 6 yields to the call on the left (5)
     assertEquals(VehInterval.YELLOW, rb.getLastServed(2).vehicle);
     assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle, "2 holds on its min green");
     rb.tick(plan, ckts, NO_OVERLAPS, 60L, through2AndCar4); // red clearance

@@ -476,4 +476,33 @@ class RingBarrierStateCoordinationTest {
         "the lead left must start at its window start every cycle: " + starts);    assertEquals(java.util.Collections.singleton(1100L), starts.get(4),
         "the side street must still start at its window start every cycle: " + starts);
   }
+
+  @Test
+  @DisplayName("coordination: a through whose ring's lead left is never called starts with the "
+      + "barrier and is not forced off the moment it goes green")
+  void throughTakingAnUncalledLeadLeftsTimeIsNotForcedOffAtOnce() {
+    // Issue #196, the coordinated half: ring 2 is 5 (10 s lead left) + 6 (45 s through), but
+    // nothing ever calls phase 5. Ring 2 therefore starts phase 6 at the barrier, 10 s before
+    // phase 6's window opens — and a window laid out from the splits of every ACTIVE phase put
+    // phase 6 "outside its window" for those 10 s, so it was force-off'd as soon as its minimum
+    // green was met and had to clear and be served again. A phase that is served early because
+    // the phases ahead of it in its ring were skipped owns their time too.
+    for (int[] coordPhases : new int[][] {{2, 6}, {2}}) {
+      TrafficSignalProgrammedPhasePlan plan = teePlan(
+          new long[][] {{1, 200L}, {2, 900L}, {4, 700L}},
+          new long[][] {{5, 200L}, {6, 900L}, {8, 700L}});
+      plan.getCoordination().setCoordinatedPhases(coordPhases);
+      // Traffic everywhere except the ring 2 lead left (phase 5, circuit 3).
+      RingBarrierStateTest.Demand busy = new RingBarrierStateTest.Demand();
+      for (int c : new int[] {0, 1, 2, 4, 5}) {
+        busy.veh(c, 1, 1, 0);
+      }
+      Map<Integer, java.util.Set<Long>> starts = greenStarts(plan, 6, busy, 6, 1100L, 1800L);
+      assertEquals(java.util.Collections.singleton(0L), starts.get(6),
+          "with coordinated phases " + java.util.Arrays.toString(coordPhases) + ", phase 6 must "
+              + "start with the barrier and stay green through its split: " + starts);
+      assertEquals(java.util.Collections.singleton(1100L), starts.get(8),
+          "the side street must still start at its window start every cycle: " + starts);
+    }
+  }
 }
