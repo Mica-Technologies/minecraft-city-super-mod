@@ -241,6 +241,20 @@ def tab_files():
     return _tab_files()
 
 
+def _source_class(qualified_name, classes):
+    """The class whose source file describes a registration.
+
+    The last dotted part of the name that has a source file, so a nested subclass such as
+    ``BlockTrafficAccessoryNSEWUD.PoleFitted`` -- a flavour of its enclosing factory, declared
+    inside it -- resolves to the factory, whose constructor stats it inherits. A fully
+    qualified name still resolves to its simple class name."""
+    parts = qualified_name.split(".")
+    for part in reversed(parts):
+        if part in classes:
+            return part
+    return parts[-1]
+
+
 def scan_tabs():
     """Return ({tab_id: [(registry_name, class_name), ...]}, classes) over every source tree."""
     classes = scan_sources()
@@ -261,7 +275,7 @@ def scan_tabs():
 
         def add_by_class(qualified_name):
             """Resolve a (possibly fully qualified) class name to its registry name(s)."""
-            class_name = qualified_name.rsplit(".", 1)[-1]
+            class_name = _source_class(qualified_name, classes)
             info = classes.get(class_name)
             if not info or not info["registry"]:
                 entries.append((None, class_name))
@@ -280,7 +294,7 @@ def scan_tabs():
         for match in _TAB_CTOR_RE.finditer(text):
             qualified_name, explicit = match.group(1), match.group(2)
             if explicit:
-                entries.append((explicit, qualified_name.rsplit(".", 1)[-1]))
+                entries.append((explicit, _source_class(qualified_name, classes)))
             else:
                 # No-arg constructor: the class supplies its own registry name.
                 add_by_class(qualified_name)
@@ -317,7 +331,7 @@ def scan_item_tabs():
         entries = []
 
         def add_by_class(qualified_name):
-            class_name = qualified_name.rsplit(".", 1)[-1]
+            class_name = _source_class(qualified_name, classes)
             info = classes.get(class_name) or {}
             registry = info.get("item_registry")
             entries.append((registry, class_name) if registry else (None, class_name))
@@ -329,7 +343,7 @@ def scan_item_tabs():
         for match in _TAB_ITEM_CTOR_RE.finditer(text):
             qualified_name, explicit = match.group(1), match.group(2)
             if explicit:
-                entries.append((explicit, qualified_name.rsplit(".", 1)[-1]))
+                entries.append((explicit, _source_class(qualified_name, classes)))
             else:
                 add_by_class(qualified_name)
 
