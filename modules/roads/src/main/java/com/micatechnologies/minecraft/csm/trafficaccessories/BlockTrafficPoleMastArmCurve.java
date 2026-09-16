@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -285,6 +286,13 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
    * <p>The mountability test is {@link AbstractBlockTrafficPole}'s own, so a curve ignores exactly
    * what a pole ignores. That list already contains this class, which is what stops one cell of a
    * curve from sprouting hardware into the next cell of the same curve.
+   *
+   * <p>The root cell also reads the width of the pole behind it. The arm's tube is wider than
+   * the thin and pedestal poles, so the saddle-cut boot it wears on the 12-across pole family
+   * has nothing to land on there; the generator emits a bolted bracket for those poles instead,
+   * and {@link MastArmCurveProfile.PoleFit} picks it from
+   * {@link AbstractBlockTrafficPole#getPoleRadius()}. Anything that is not a pole gets the
+   * large fit: the saddle cut against a full block simply disappears inside it.
    */
   @Override
   public @NotNull IBlockState getActualState(@NotNull IBlockState state,
@@ -307,8 +315,16 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
         ignore)) {
       mask |= MastArmCurveProfile.MOUNT_WEST;
     }
-    return state.withProperty(shapeProperty,
-        MastArmCurveProfile.shapeIndex(cellIndexAt(worldIn, pos), mask));
+    int cell = cellIndexAt(worldIn, pos);
+    MastArmCurveProfile.PoleFit fit = MastArmCurveProfile.PoleFit.LARGE;
+    if (cell == 0) {
+      Block behind = worldIn.getBlockState(pos.offset(facing.getOpposite())).getBlock();
+      if (behind instanceof AbstractBlockTrafficPole) {
+        fit = MastArmCurveProfile.PoleFit.forPoleRadius(
+            ((AbstractBlockTrafficPole) behind).getPoleRadius());
+      }
+    }
+    return state.withProperty(shapeProperty, profile.shapeIndex(cell, mask, fit));
   }
 
   /**

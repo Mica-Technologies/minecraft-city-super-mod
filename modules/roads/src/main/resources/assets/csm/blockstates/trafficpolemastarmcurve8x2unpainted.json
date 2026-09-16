@@ -3671,6 +3671,738 @@
             }
           }
         }
+      },
+      "160": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj"
+      },
+      "161": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "162": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "163": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "164": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "165": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "166": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "167": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "168": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "169": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "170": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "171": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "172": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "173": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "174": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "175": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_thin_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "176": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj"
+      },
+      "177": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "178": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "179": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "180": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "181": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "182": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "183": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "184": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "185": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "186": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "187": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "188": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "189": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "190": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
+      },
+      "191": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped.obj",
+        "submodel": {
+          "mount_down": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_ped_down.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_up": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_up.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_east": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_east.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          },
+          "mount_west": {
+            "model": "csm:trafficaccessories/shared_models/mastarmcurve_8x2_c0_west.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_white"
+            }
+          }
+        }
       }
     },
     "facing": {

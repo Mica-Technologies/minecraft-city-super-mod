@@ -394,4 +394,21 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
   public abstract Class<?>[] getIgnoreBlock();
 
   public abstract TRAFFIC_POLE_COLOR getTrafficPoleColor();
+
+  /**
+   * The radius of this pole's tube, in sixteenths of a block.
+   *
+   * <p>An accessory whose geometry is cut to meet a pole -- the mast arm curve's root cell --
+   * picks the joint it was generated for from this number. The pole family's own mount stubs
+   * do not need it: a stub is one model reused everywhere, because it only ever leaves the
+   * pole's own block face. The default is the 12-across pole family; the thin pole and the
+   * pedestal pole override it.
+   *
+   * @return the tube radius in 1/16 block units
+   *
+   * @since 2026.9
+   */
+  public double getPoleRadius() {
+    return 6.0D;
+  }
 }

@@ -41,6 +41,14 @@ public class BlockTrafficPoleSmallTan extends AbstractBlockTrafficPole {
     return TRAFFIC_POLE_COLOR.TAN;
   }
 
+  /**
+   * The thin pole's tube is 8 across (the {@code small} model spans x 4..12).
+   */
+  @Override
+  public double getPoleRadius() {
+    return 4.0D;
+  }
+
     /**
      * Retrieves the bounding box of the block.
      *

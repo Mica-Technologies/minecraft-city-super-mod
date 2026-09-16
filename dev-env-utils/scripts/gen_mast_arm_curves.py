@@ -47,9 +47,21 @@ The tube tapers 10 units at the flange to 8 at the tip. 8 is not a free choice: 
 diameter of `trafficpolehorizontal`, the arm block this thing has to hand off to. The far ring
 is sheared flat onto the block boundary plane so the join is flush.
 
+THE POLE END
+------------
+The root cell is generated once per pole width the arm can land on (POLE_FITS). Against the
+12-across pole family the tube is saddle-cut into the pole and swells into a welded boot. The
+thin pole (8 across) and the pedestal pole (6 across) are narrower than the tube itself, so no
+cut into them can hide the arm's end; there the root ends the tube flat inside a bolted bracket
+plate with a saddle block and two band straps round the pole. Only the root's model differs, so
+the fit is one more thing folded into the `shape` property; the block reads the pole's radius
+off `AbstractBlockTrafficPole.getPoleRadius` and picks the fit through `PoleFit.forPoleRadius`.
+
 OUTPUT
 ------
   models/block/trafficaccessories/shared_models/mastarmcurve_<preset>_c<n>.obj   (+ _inv.obj)
+  models/block/trafficaccessories/shared_models/mastarmcurve_<preset>_c0_thin.obj, _c0_ped.obj
+                                                                  (the root on a narrow pole)
   models/block/trafficaccessories/shared_models/mastarmcurve.mtl                 (one, shared)
   blockstates/trafficpolemastarmcurve<preset><color>.json                        (presets x colors)
   src/main/java/.../trafficaccessories/MastArmCurveProfile.java, in whichever tree already has
@@ -146,6 +158,45 @@ POLE_RADIUS = 6.0
 POLE_AXIS_X = 8.0
 POLE_AXIS_Z = 24.0
 
+# Narrower poles get a different joint. The tube is 9.2 across at the root, so against the thin
+# pole (8 across) or the pedestal pole (6 across) the saddle cut has nothing to land on: the rails
+# at the flanks would never enter the pole's cylinder, and a boot wider than the pole cannot hide
+# behind it. A real arm on a slim pole is not welded on either; it is bolted to a bracket plate
+# that is strapped round the pole. So the root cell of a curve on a narrow pole ends the tube flat
+# inside a plate, a saddle block behind the plate hugs the pole, and two band straps wrap it.
+#
+# (registry/model suffix, pole radius, label). The first entry is the pole family's 12-across
+# tube, which keeps the saddle-cut boot. The Java enum's PoleFit is emitted from this list in this
+# order, and the radius thresholds it picks a fit by are the midpoints between these radii.
+POLE_FITS = [
+    ("", POLE_RADIUS, "large"),
+    ("_thin", 4.0, "thin"),        # trafficpolehorizontal* (model `small`, x 4..12)
+    ("_ped", 3.0, "pedestal"),     # trafficpolepedestal* (R_SHAFT in gen_pedestal_pole.py)
+]
+PLATE_T = 1.2          # bracket plate thickness
+PLATE_GAP = 0.3        # the plate stands this far off the pole's front skin
+PLATE_MARGIN = 0.9     # the plate extends this far past the tube's cut end all round
+TUBE_INTO_PLATE = 0.4  # the tube's flat end sits this far inside the plate's front face
+SADDLE_INSET = 1.0     # the saddle block stops this far short of the plate's top and bottom
+SADDLE_BITE = 0.3      # how far the saddle block's concave back reaches inside the pole skin
+STRAP_STANDOFF = 0.45  # band strap radius beyond the pole's
+STRAP_H = 1.4
+STRAP_INSET = 0.9      # straps sit this far in from the plate's top and bottom edges
+
+
+def is_large(fit):
+    return fit[0] == ""
+
+
+def bracket_geometry(pole_r):
+    """The z planes of the narrow-pole bracket in the root cell's frame, for a pole of the given
+    radius: its front skin, the plate's back and front, and where the tube is cut."""
+    z_front = POLE_AXIS_Z - pole_r
+    z_plate_back = z_front - PLATE_GAP
+    z_plate_front = z_plate_back - PLATE_T
+    return {"z_front": z_front, "z_plate_back": z_plate_back,
+            "z_plate_front": z_plate_front, "z_cut": z_plate_front + TUBE_INTO_PLATE}
+
 # Two sweep samples closer than this (in blocks travelled) are the same sample. Comfortably below
 # the uniform spacing of run/SAMPLES_PER_BLOCK, and comfortably above the float noise that makes a
 # solved boundary crossing miss an exact one.
@@ -174,26 +225,31 @@ def tangent(t, run, rise):
     return (0.0, dy / n, dz / n)
 
 
-def radius(t, run):
+def radius(t, run, boot=True):
     """Tube radius at t, including the boot.
 
     Two effects superposed: the arm's own taper from root to tip, plus a swelling over the last
     BOOT_LEN of run before the pole. Making the boot part of the tube's radius rather than a
     separate collar part is what keeps it from poking out of anything -- there is only ever one
-    surface here, so there is nothing to bleed through."""
+    surface here, so there is nothing to bleed through.
+
+    boot=False leaves the swelling out. The narrow-pole bracket ends the tube flat inside a
+    bolted plate, and a welded boot on a bolted bracket would be two joints on one arm."""
     base = R_ROOT + (R_TIP - R_ROOT) * (t / run)
+    if not boot:
+        return base
     u = min(1.0, max(0.0, t / BOOT_LEN))
     return base + (R_BOOT - R_ROOT) * (1.0 - u) ** 1.6
 
 
-def ring(t, run, rise, r=None):
+def ring(t, run, rise, r=None, boot=True):
     """One cross-section: SIDES points around the tube, plus their outward normals."""
     px, py, pz = centre(t, run, rise)
     tx, ty, tz = tangent(t, run, rise)
     # In-plane normal: the tangent rotated 90 degrees within YZ. The other basis vector is X,
     # which is constant because the whole curve lives in one vertical plane.
     ny, nz = -tz, ty
-    rr = radius(t, run) if r is None else r
+    rr = radius(t, run, boot) if r is None else r
     out = []
     for i in range(SIDES):
         a = 2.0 * math.pi * i / SIDES
@@ -260,6 +316,46 @@ def clip_ring(run, rise):
         t = (t_out + t_in) / 2.0
         ts.append(t)
         pts.append(ring(t, run, rise)[i])
+    return pts, ts
+
+
+def clip_plane_ring(run, rise, z_cut):
+    """The arm's flat end for the narrow-pole bracket: every rail clipped where it crosses the
+    plane z = z_cut, so the ring is planar and the plate in front of it hides it.
+
+    This is the "clipped rail by rail against a flat plane" cut the doc records as wrong -- and
+    it was wrong THERE, against a bare round pole, because nothing covered the flanks. Behind a
+    bracket plate wider than the tube it is the right cut: the plate is flat, so the end must be
+    too. The rails are walked backwards from a parameter known to be outside, the way clip_ring
+    does, rather than solved directly: the rail's z is the centreline's z plus a term that turns
+    with the tangent, and it is simpler to scan than to prove monotone.
+
+    Returns (points_with_normals, t_of_each_rail)."""
+    pts, ts = [], []
+    for i in range(SIDES):
+        t_out = 0.5
+        step = 0.002
+        t_in = None
+        t = t_out
+        while t > -1.5:
+            t -= step
+            if ring(t, run, rise, boot=False)[i][0][2] >= z_cut:
+                t_in = t
+                break
+            t_out = t
+        if t_in is None:
+            raise AssertionError("rail %d of run=%d rise=%d never reaches z=%.2f"
+                                 % (i, run, rise, z_cut))
+        for _ in range(50):
+            mid = (t_out + t_in) / 2.0
+            if ring(mid, run, rise, boot=False)[i][0][2] >= z_cut:
+                t_in = mid
+            else:
+                t_out = mid
+        t = (t_out + t_in) / 2.0
+        ts.append(t)
+        p, n = ring(t, run, rise, boot=False)[i]
+        pts.append(((p[0], p[1], z_cut), n))
     return pts, ts
 
 
@@ -358,6 +454,11 @@ class Mesh:
         self.tri([a, b, c])
         self.tri([a, c, d])
 
+    def same_as(self, other):
+        """Whether two meshes are the same geometry, to the precision the OBJ is written at."""
+        return ([self._key(p) for p in self.v] == [other._key(p) for p in other.v]
+                and self.f == other.f)
+
     def bounds(self):
         xs = [p[0] for p in self.v]
         ys = [p[1] for p in self.v]
@@ -402,9 +503,18 @@ def uv(u_frac, v_frac):
     return (u, 1.0 - v)
 
 
-def build_sweep(run, rise):
-    """Returns (bands, rings). A band is (ring_a, ring_b, t_a, t_b, arclen_a, arclen_b)."""
-    near_ring, near_ts = clip_ring(run, rise)
+def build_sweep(run, rise, fit=POLE_FITS[0]):
+    """Returns (bands, rings). A band is (ring_a, ring_b, t_a, t_b, arclen_a, arclen_b).
+
+    `fit` is a POLE_FITS entry. The large pole gets the saddle cut and the boot; a narrow pole
+    gets the boot-free tube, cut flat where it enters the bracket plate. From the boot's end
+    outward the sweep is identical whichever fit is asked for, and the boot lies inside the root
+    cell, which is what lets a narrow fit replace the root cell's model and nothing else."""
+    boot = is_large(fit)
+    if boot:
+        near_ring, near_ts = clip_ring(run, rise)
+    else:
+        near_ring, near_ts = clip_plane_ring(run, rise, bracket_geometry(fit[1])["z_cut"])
     # The first FULL ring has to sit past every clipped rail, or a quad would run backwards.
     t_first = max(near_ts)
     # The far end needs no clipping: the parabola is horizontal at t = run, so the cross-section
@@ -414,7 +524,7 @@ def build_sweep(run, rise):
 
     ts = [t for t in sample_ts(run, rise) if t_first < t < t_last]
     ts = [t_first] + ts + [t_last]
-    rings = [ring(t, run, rise) for t in ts]
+    rings = [ring(t, run, rise, boot=boot) for t in ts]
     rings[0] = near_ring  # ragged clipped aperture, all vertices on z = 16 - INSET
     arc = [0.0]
     for i in range(1, len(ts)):
@@ -572,7 +682,7 @@ def emit_cylinder(mesh, a, b, r, sides=12):
             mesh.tri([tri[0], tri[2], tri[1]] if reverse else tri)
 
 
-def emit_stub(mesh, t_lo, t_hi, run, rise, offset, face_centre, face_normal):
+def emit_stub(mesh, t_lo, t_hi, run, rise, offset, face_centre, face_normal, boot=True):
     """One direction's mount hardware for one cell, in that cell's local frame.
 
     The band is placed at the point of the tube CLOSEST TO THE FACE CENTRE rather than at the
@@ -587,7 +697,7 @@ def emit_stub(mesh, t_lo, t_hi, run, rise, offset, face_centre, face_normal):
         if best is None or d < best[0]:
             best = (d, t, pt)
     dist, t_star, anchor = best
-    r = radius(t_star, run)
+    r = radius(t_star, run, boot)
     to_face = vnorm(vsub(face_centre, anchor))
 
     # Clamp band, straddling the tube along its own axis.
@@ -609,6 +719,101 @@ def emit_stub(mesh, t_lo, t_hi, run, rise, offset, face_centre, face_normal):
     # face -- an "up" stub under a tube that already fills the top of its cell -- there is not.
     if dist > r + BAND_MARGIN + 1.0:
         emit_cylinder(mesh, vadd(anchor, vmul(to_face, r - 0.6)), plate_inner, BRACKET_R)
+
+
+# --------------------------------------------------------------------------------------------
+# The narrow-pole bracket
+#
+# The joint a curve makes with a pole thinner than its own tube: a flat plate the tube ends
+# inside, a saddle block behind the plate that hugs the pole, and two band straps round the pole.
+# All of it is drawn by the ROOT CELL and sits in the pole's block (z > 16). An OBJ may leave its
+# block; the root cell is right there behind it, so this is never the only thing keeping the
+# bracket on screen.
+# --------------------------------------------------------------------------------------------
+
+def tri_n(mesh, a, b, c, n, uva=(0.3, 0.3), uvb=(0.7, 0.3), uvc=(0.5, 0.7)):
+    """A triangle wound so that its face agrees with the normal it is given, whichever order
+    the corners came in. Every face of the bracket has an obvious outward normal, and none of
+    them is worth reasoning about winding by hand."""
+    cr = vcross(vsub(b, a), vsub(c, a))
+    if cr[0] * n[0] + cr[1] * n[1] + cr[2] * n[2] < 0.0:
+        b, c = c, b
+        uvb, uvc = uvc, uvb
+    mesh.tri([(a, uv(*uva), n), (b, uv(*uvb), n), (c, uv(*uvc), n)])
+
+
+def quad_n(mesh, a, b, c, d, n):
+    """A planar quad with its corners in order round the edge, wound to the given normal."""
+    tri_n(mesh, a, b, c, n, (0.3, 0.3), (0.7, 0.3), (0.7, 0.7))
+    tri_n(mesh, a, c, d, n, (0.3, 0.3), (0.7, 0.7), (0.3, 0.7))
+
+
+def emit_box(mesh, lo, hi):
+    (x0, y0, z0), (x1, y1, z1) = lo, hi
+    quad_n(mesh, (x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0), (0.0, 0.0, -1.0))
+    quad_n(mesh, (x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1), (0.0, 0.0, 1.0))
+    quad_n(mesh, (x0, y0, z0), (x0, y1, z0), (x0, y1, z1), (x0, y0, z1), (-1.0, 0.0, 0.0))
+    quad_n(mesh, (x1, y0, z0), (x1, y1, z0), (x1, y1, z1), (x1, y0, z1), (1.0, 0.0, 0.0))
+    quad_n(mesh, (x0, y0, z0), (x1, y0, z0), (x1, y0, z1), (x0, y0, z1), (0.0, -1.0, 0.0))
+    quad_n(mesh, (x0, y1, z0), (x1, y1, z0), (x1, y1, z1), (x0, y1, z1), (0.0, 1.0, 0.0))
+
+
+def emit_saddle_block(mesh, pole_r, y0, y1, z_front, segments=8):
+    """The block between the bracket plate and the pole: flat against the plate, concave
+    against the pole.
+
+    Its back is an arc of radius pole_r - SADDLE_BITE, so it sits just inside the pole's skin
+    all the way across. A flat back would touch a round pole along one line and leave a
+    widening gap toward each corner -- the same gap that made the old flat-cut arm look
+    unfinished. Triangulated as strips at fixed x rather than as a fan: the arc indents the
+    outline, so a fan from any one point would cross it."""
+    half = 0.85 * pole_r
+    r_arc = pole_r - SADDLE_BITE
+    xs = [POLE_AXIS_X - half + 2.0 * half * k / segments for k in range(segments + 1)]
+    back = [POLE_AXIS_Z - math.sqrt(max(0.0, r_arc * r_arc - (x - POLE_AXIS_X) ** 2))
+            for x in xs]
+    for k in range(segments):
+        xa, xb = xs[k], xs[k + 1]
+        za, zb = back[k], back[k + 1]
+        quad_n(mesh, (xa, y1, z_front), (xb, y1, z_front), (xb, y1, zb), (xa, y1, za),
+               (0.0, 1.0, 0.0))
+        quad_n(mesh, (xa, y0, z_front), (xb, y0, z_front), (xb, y0, zb), (xa, y0, za),
+               (0.0, -1.0, 0.0))
+        # The concave back: outward from the block is toward the pole's axis.
+        n = vnorm((POLE_AXIS_X - (xa + xb) / 2.0, 0.0, POLE_AXIS_Z - (za + zb) / 2.0))
+        quad_n(mesh, (xa, y0, za), (xb, y0, zb), (xb, y1, zb), (xa, y1, za), n)
+    quad_n(mesh, (xs[0], y0, z_front), (xs[-1], y0, z_front), (xs[-1], y1, z_front),
+           (xs[0], y1, z_front), (0.0, 0.0, -1.0))
+    quad_n(mesh, (xs[0], y0, z_front), (xs[0], y0, back[0]), (xs[0], y1, back[0]),
+           (xs[0], y1, z_front), (-1.0, 0.0, 0.0))
+    quad_n(mesh, (xs[-1], y0, z_front), (xs[-1], y0, back[-1]), (xs[-1], y1, back[-1]),
+           (xs[-1], y1, z_front), (1.0, 0.0, 0.0))
+
+
+def emit_bracket(mesh, cut_ring, pole_r):
+    """Plate, saddle block and straps for one preset on one narrow pole.
+
+    The plate is sized off the tube's own cut ring -- PLATE_MARGIN past it on every side -- so
+    it is measured per preset rather than guessed: a steeper preset's oblique cut is a taller
+    ellipse, and it also sits lower, because the parabola keeps dropping behind the pole face.
+
+    Returns (plate_y0, plate_y1, plate_half_width) for the run summary."""
+    g = bracket_geometry(pole_r)
+    xs = [p[0][0] for p in cut_ring]
+    ys = [p[0][1] for p in cut_ring]
+    half_w = round((max(xs) - min(xs)) / 2.0 + PLATE_MARGIN, 1)
+    y0 = round(min(ys) - PLATE_MARGIN, 1)
+    y1 = round(max(ys) + PLATE_MARGIN, 1)
+    emit_box(mesh, (POLE_AXIS_X - half_w, y0, g["z_plate_front"]),
+             (POLE_AXIS_X + half_w, y1, g["z_plate_back"]))
+    # The saddle block starts a fifth of a unit inside the plate so the two share no face.
+    emit_saddle_block(mesh, pole_r, y0 + SADDLE_INSET, y1 - SADDLE_INSET,
+                      g["z_plate_back"] - 0.2)
+    for yc in (y0 + STRAP_INSET + STRAP_H / 2.0, y1 - STRAP_INSET - STRAP_H / 2.0):
+        emit_cylinder(mesh, (POLE_AXIS_X, yc - STRAP_H / 2.0, POLE_AXIS_Z),
+                      (POLE_AXIS_X, yc + STRAP_H / 2.0, POLE_AXIS_Z),
+                      pole_r + STRAP_STANDOFF, sides=16)
+    return (y0, y1, half_w)
 
 
 # --------------------------------------------------------------------------------------------
@@ -709,7 +914,41 @@ def build_preset(preset_id, run, rise):
         box = tuple(min(1.0, max(0.0, (v[k] - off[k]) / 16.0))
                     for v in (lo, hi) for k in range(3))
         cells.append(((ci, cj), m, off, box, stubs))
-    return cells, whole
+
+    # The root cell again, once per narrow pole: the same sweep from the boot's end outward,
+    # the boot-free tube cut flat behind the bracket plate, and the bracket itself.
+    root_variants = []
+    for fit in POLE_FITS[1:]:
+        fbands, frings = build_sweep(run, rise, fit)
+        forder, fowned = assign_cells(fbands, run, rise)
+        if forder != order:
+            raise AssertionError("the %s fit of %s visits different cells: %s vs %s"
+                                 % (fit[2], preset_id, forder, order))
+        for c in order[1:]:
+            if ([(b[2], b[3]) for b in fowned[c]] != [(b[2], b[3]) for b in owned[c]]):
+                raise AssertionError("the %s fit of %s changed cell %s, which only the root "
+                                     "may differ in" % (fit[2], preset_id, c))
+        m = Mesh()
+        emit_cap(m, frings[0], (0.0, 0.0, 1.0),
+                 (POLE_AXIS_X, sum(p[0][1] for p in frings[0]) / SIDES, frings[0][0][0][2]))
+        for b in fowned[order[0]]:
+            emit_tube(m, b)
+        plate = emit_bracket(m, frings[0], fit[1])
+        # The stubs anchor on the LARGE root's parameter span, not this fit's. The tube is the
+        # same from the boot's end outward and no stub anchors inside the boot, so searching the
+        # same span lands on the same point and the meshes come out identical -- which is what
+        # lets the blockstate reuse the large root's stub files. Searching this fit's own span
+        # would move the search grid by a hair and produce four near-identical files per fit.
+        t_lo = min(b[2] for b in owned[order[0]])
+        t_hi = max(b[3] for b in owned[order[0]])
+        stubs = []
+        for (dir_name, face_centre, face_normal) in STUB_DIRECTIONS:
+            sm = Mesh()
+            emit_stub(sm, t_lo, t_hi, run, rise, (0.0, 0.0, 0.0), face_centre, face_normal,
+                      boot=False)
+            stubs.append((dir_name, sm))
+        root_variants.append((fit, m, stubs, plate))
+    return cells, whole, root_variants
 
 
 def main():
@@ -734,7 +973,7 @@ def main():
     profiles = []
 
     for preset_id, run, rise, label in PRESETS:
-        cells, whole = build_preset(preset_id, run, rise)
+        cells, whole, root_variants = build_preset(preset_id, run, rise)
         entry_deg = math.degrees(math.atan2(2.0 * rise, float(run)))
 
         for idx, ((ci, cj), mesh, offset, _box, stubs) in enumerate(cells):
@@ -749,6 +988,31 @@ def main():
                                  "mastarmcurve_%s_c%d_%s.obj" % (preset_id, idx, dir_name)),
                     "mastarm_%s_c%d_%s" % (preset_id, idx, dir_name),
                     header="mount hardware on cell %d, model-space %s" % (idx, dir_name))
+
+        # The narrow-pole roots. Their stubs are the large root's own files whenever the two
+        # meshes agree -- they do unless a stub anchors inside the boot, which none does today --
+        # so the stub set is shared rather than tripled.
+        variant_models = []
+        for (fit, mesh, stubs, (py0, py1, phw)) in root_variants:
+            model_file = "mastarmcurve_%s_c0%s.obj" % (preset_id, fit[0])
+            mesh.write(os.path.join(MODEL_DIR, model_file),
+                       "mastarm_%s_c0%s" % (preset_id, fit[0]),
+                       header="root cell on the %s pole (radius %.0f): bracket plate %.1f wide,"
+                              " y %.1f..%.1f" % (fit[2], fit[1], 2.0 * phw, py0, py1))
+            stub_files = {}
+            for (dir_name, stub_mesh), (_d, large_stub) in zip(stubs, cells[0][4]):
+                if stub_mesh.same_as(large_stub):
+                    stub_files[dir_name] = "mastarmcurve_%s_c0_%s.obj" % (preset_id, dir_name)
+                    continue
+                stub_files[dir_name] = "mastarmcurve_%s_c0%s_%s.obj" % (preset_id, fit[0],
+                                                                       dir_name)
+                stub_mesh.write(os.path.join(MODEL_DIR, stub_files[dir_name]),
+                                "mastarm_%s_c0%s_%s" % (preset_id, fit[0], dir_name),
+                                header="mount hardware on the %s-pole root, model-space %s"
+                                       % (fit[2], dir_name))
+            variant_models.append((fit, model_file, stub_files))
+            summary.append("       %-8s pole: plate %.1f wide, y %.1f..%.1f"
+                           % (fit[2], 2.0 * phw, py0, py1))
 
         (lo, hi) = whole.bounds()
         span = max(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2])
@@ -765,7 +1029,7 @@ def main():
 
         for color_id, texture, color_label in COLORS:
             name = registry_name(preset_id, color_id)
-            write_blockstate(name, preset_id, len(cells), texture)
+            write_blockstate(name, preset_id, len(cells), texture, variant_models)
             lang_lines.append("tile.%s.name=%s Mast Arm Curve %dx%d (%s)"
                               % (name, color_label, run, rise, label))
             tab_lines.append(
@@ -785,41 +1049,57 @@ def main():
 
     print("Mast arm curve presets:")
     print("\n".join(summary))
-    print("\nWrote %d OBJ cells + %d inventory models, %d blockstates."
-          % (sum(len(p[5]) for p in profiles), len(PRESETS), len(PRESETS) * len(COLORS)))
+    print("\nWrote %d OBJ cells + %d narrow-pole roots + %d inventory models, %d blockstates."
+          % (sum(len(p[5]) for p in profiles), len(PRESETS) * (len(POLE_FITS) - 1),
+             len(PRESETS), len(PRESETS) * len(COLORS)))
     print("Fragments in %s" % SCRATCH_DIR)
 
 
-def write_blockstate(name, preset_id, cell_count, texture):
+def shape_variant(model_file, stub_files, mask, texture):
+    """One `shape` variant: a cell's tube model plus the stub submodels its mask asks for."""
+    variant = {"model": "%s/%s" % (MODEL_PREFIX, model_file)}
+    submodels = {}
+    for bit, (dir_name, _face, _normal) in enumerate(STUB_DIRECTIONS):
+        if mask & (1 << bit):
+            submodels["mount_" + dir_name] = {
+                "model": "%s/%s" % (MODEL_PREFIX, stub_files[dir_name]),
+                "custom": {"flip-v": True},
+                "textures": {"#" + MATERIAL: texture},
+            }
+    if submodels:
+        variant["submodel"] = submodels
+    return variant
+
+
+def write_blockstate(name, preset_id, cell_count, texture, variant_models):
     """One blockstate per preset per colour.
 
     Model and mount hardware are selected by a SINGLE `shape` property holding
-    `cell * 16 + mountMask`, not by a `cell` property plus four mount properties. That is not a
+    `slot * 16 + mountMask`, not by a `cell` property plus four mount properties. That is not a
     style choice, it is the only encoding that fits: a stub model depends on BOTH which cell it is
     and which way it points, so a mount property would have to carry the cell index, and four
     13-value mount properties alongside cell and facing is 1,370,928 block states -- all of which
     Minecraft materialises eagerly. Folding the same information into one property is 768 states,
     exactly what four plain booleans would have cost, while still letting each stub match the tube
     it clamps to.
+
+    The slot is the cell index, except that the root cell on a narrow pole takes a slot past the
+    last cell: `cell_count + (fit - 1)`. Which pole is behind the root is one more thing only the
+    root's model depends on, and it goes in the same property for the same reason the mount mask
+    does. `MastArmCurveProfile.shapeIndex` is the other half of this packing.
     """
     shape_variants = {}
     for cell in range(cell_count):
+        model_file = "mastarmcurve_%s_c%d.obj" % (preset_id, cell)
+        stub_files = {d: "mastarmcurve_%s_c%d_%s.obj" % (preset_id, cell, d)
+                      for (d, _face, _normal) in STUB_DIRECTIONS}
         for mask in range(1 << len(STUB_DIRECTIONS)):
-            variant = {
-                "model": "%s/mastarmcurve_%s_c%d.obj" % (MODEL_PREFIX, preset_id, cell)
-            }
-            submodels = {}
-            for bit, (dir_name, _face, _normal) in enumerate(STUB_DIRECTIONS):
-                if mask & (1 << bit):
-                    submodels["mount_" + dir_name] = {
-                        "model": "%s/mastarmcurve_%s_c%d_%s.obj"
-                                 % (MODEL_PREFIX, preset_id, cell, dir_name),
-                        "custom": {"flip-v": True},
-                        "textures": {"#" + MATERIAL: texture},
-                    }
-            if submodels:
-                variant["submodel"] = submodels
-            shape_variants[str(cell * 16 + mask)] = variant
+            shape_variants[str(cell * 16 + mask)] = shape_variant(model_file, stub_files, mask,
+                                                                  texture)
+    for k, (_fit, model_file, stub_files) in enumerate(variant_models):
+        for mask in range(1 << len(STUB_DIRECTIONS)):
+            shape_variants[str((cell_count + k) * 16 + mask)] = shape_variant(
+                model_file, stub_files, mask, texture)
 
     data = {
         "forge_marker": 1,
@@ -880,7 +1160,7 @@ def write_profile_enum(profiles):
  */
 public enum MastArmCurveProfile {
 
-%s
+%(body)s
 
   private final int run;
   private final int rise;
@@ -949,8 +1229,36 @@ public enum MastArmCurveProfile {
   public static final int SHAPE_STRIDE = 16;
 
   /**
+   * How the root cell meets the pole behind it. The joint is generated per pole width, because
+   * the arm's tube is 9.2 units across at the root and only the 12-across pole family is wide
+   * enough to be saddle-cut against; a thinner pole gets a bolted bracket instead.
+   */
+  public enum PoleFit {
+%(fit_constants)s
+
+    /**
+     * The fit for a pole of the given tube radius, in sixteenths of a block. The thresholds are
+     * the midpoints between the radii the joints were generated for, so a pole of some other
+     * width gets the nearest joint rather than none.
+     *
+     * @param radius the pole's tube radius, as {@code AbstractBlockTrafficPole#getPoleRadius}
+     *               reports it
+     *
+     * @return the fit to draw
+     */
+    public static PoleFit forPoleRadius(double radius) {
+%(fit_thresholds)s
+    }
+  }
+
+  /**
+   * How many extra root-cell slots the narrow-pole fits take, past the last cell.
+   */
+  public static final int ROOT_VARIANTS = %(root_variants)d;
+
+  /**
    * Packs a cell index and a mount mask into the single {@code shape} property value the
-   * blockstate keys its model and its stub submodels off.
+   * blockstate keys its model and its stub submodels off, for the root on the large pole.
    *
    * <p>One property rather than five is forced, not preferred. A stub model depends on both the
    * cell and the direction, so a mount property would have to carry the cell index; four such
@@ -965,6 +1273,25 @@ public enum MastArmCurveProfile {
    */
   public static int shapeIndex(int cell, int mountMask) {
     return cell * SHAPE_STRIDE + mountMask;
+  }
+
+  /**
+   * The packed shape value for a cell, taking the pole behind the root into account. Only the
+   * root's model depends on the pole, so a narrow-pole fit moves the root to a slot past the
+   * last cell and every other cell packs as {@link #shapeIndex(int, int)} does.
+   *
+   * @param cell      the cell index
+   * @param mountMask the mount mask, as for {@link #shapeIndex(int, int)}
+   * @param fit       how the root meets its pole; ignored for any cell but the root
+   *
+   * @return the packed shape value
+   */
+  public int shapeIndex(int cell, int mountMask, PoleFit fit) {
+    int slot = cell;
+    if (cell == 0 && fit != PoleFit.LARGE) {
+      slot = cells.length + fit.ordinal() - 1;
+    }
+    return slot * SHAPE_STRIDE + mountMask;
   }
 
   /**
@@ -995,17 +1322,46 @@ public enum MastArmCurveProfile {
 
   /**
    * The number of distinct {@code shape} values this profile can take: one per cell per mount
-   * mask.
+   * mask, plus the root's narrow-pole slots.
    *
    * @return the shape count
    */
   public int getShapeCount() {
-    return cells.length * SHAPE_STRIDE;
+    return (cells.length + ROOT_VARIANTS) * SHAPE_STRIDE;
   }
 }
-''' % ("\n".join(body))
+''' % {"body": "\n".join(body),
+       "fit_constants": pole_fit_constants(),
+       "fit_thresholds": pole_fit_thresholds(),
+       "root_variants": len(POLE_FITS) - 1}
     with open(JAVA_PATH, "w", newline="\n") as fh:
         fh.write(src)
+
+
+def pole_fit_constants():
+    docs = {
+        "large": "The 12-across pole family: the arm is saddle-cut against the pole's cylinder "
+                 "and swells into a welded boot.",
+        "thin": "The 8-across thin pole: the tube ends flat inside a bracket plate strapped "
+                "round the pole.",
+        "pedestal": "The 6-across pedestal pole: the same bracket, strapped round the thinner "
+                    "tube.",
+    }
+    out = []
+    for i, (_suffix, r, label) in enumerate(POLE_FITS):
+        out.append("    /** %s Generated for a tube radius of %.0f. */\n    %s%s"
+                   % (docs[label], r, label.upper(), "," if i < len(POLE_FITS) - 1 else ";"))
+    return "\n".join(out)
+
+
+def pole_fit_thresholds():
+    out = []
+    for i in range(len(POLE_FITS) - 1):
+        threshold = (POLE_FITS[i][1] + POLE_FITS[i + 1][1]) / 2.0
+        out.append("      if (radius >= %.1fD) {\n        return %s;\n      }"
+                   % (threshold, POLE_FITS[i][2].upper()))
+    out.append("      return %s;" % POLE_FITS[-1][2].upper())
+    return "\n".join(out)
 
 
 if __name__ == "__main__":
