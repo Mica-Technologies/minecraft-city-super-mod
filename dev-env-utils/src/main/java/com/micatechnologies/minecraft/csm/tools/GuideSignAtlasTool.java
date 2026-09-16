@@ -235,15 +235,36 @@ public class GuideSignAtlasTool {
   }
 
   private static Shape makeCaliforniaShape(int col, int row) {
-    // Spade-like outline: rounded top, narrow point at bottom.
+    // The Caltrans miner's spade, not a map pin: the marker is widest right at the top, where
+    // a nearly flat edge runs between two rounded shoulders with a small raised point at
+    // centre; the sides fall away almost straight and only turn in near the bottom, meeting at
+    // a single rounded point. Laid out in a 0..1 box inset by the shared margin.
     int x = col * CELL_SIZE;
     int y = row * CELL_SIZE;
     int s = CELL_SIZE;
     int m = 4;
+    double span = s - 2.0 * m;
+    double x0 = x + m;
+    double y0 = y + m;
     GeneralPath p = new GeneralPath();
-    p.moveTo(x + s / 2.0, y + m);
-    p.curveTo(x + s - m, y + s * 0.10, x + s - m, y + s * 0.62, x + s / 2.0, y + s - m);
-    p.curveTo(x + m, y + s * 0.62, x + m, y + s * 0.10, x + s / 2.0, y + m);
+    // Top centre point, down its right flank onto the flat top edge.
+    p.moveTo(x0 + 0.500 * span, y0);
+    p.lineTo(x0 + 0.595 * span, y0 + 0.100 * span);
+    p.lineTo(x0 + 0.880 * span, y0 + 0.100 * span);
+    // Rounded top-right shoulder.
+    p.quadTo(x0 + 1.000 * span, y0 + 0.100 * span, x0 + 1.000 * span, y0 + 0.215 * span);
+    // Right side: a near-straight fall that turns in low down and runs unbroken into the
+    // bottom point. One curve per side rather than a separate tip arc, so the outline keeps a
+    // single tangent the whole way and does not pinch just above the point.
+    p.curveTo(x0 + 1.000 * span, y0 + 0.430 * span,
+        x0 + 0.760 * span, y0 + 0.730 * span,
+        x0 + 0.500 * span, y0 + 1.000 * span);
+    // Left side and shoulder, mirrored.
+    p.curveTo(x0 + 0.240 * span, y0 + 0.730 * span,
+        x0 + 0.000, y0 + 0.430 * span,
+        x0 + 0.000, y0 + 0.215 * span);
+    p.quadTo(x0 + 0.000, y0 + 0.100 * span, x0 + 0.120 * span, y0 + 0.100 * span);
+    p.lineTo(x0 + 0.405 * span, y0 + 0.100 * span);
     p.closePath();
     return p;
   }
