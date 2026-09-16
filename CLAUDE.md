@@ -217,7 +217,11 @@ or `src/main/…` for Core's own (Materials) content. Paths below are relative t
 6. Register the block in that module's `tabs/CsmTab*.java` via `initTabBlock(BlockExample.class, event)`
 7. If the blockstate has no `inventory` variant, create `resources/assets/csm/models/item/<registry_name>.json`
 8. Re-run `python dev-env-utils/scripts/gen_wiki_reference.py` and commit the regenerated `docs/reference/`
-   pages (the guidebook's block catalogue). Pull requests fail its `--check` if you forget
+   pages (the guidebook's block catalogue). Pull requests fail its `--check` if you forget.
+   This applies to **any** edit of a tab registration line, not only a new block: the page's
+   stats columns are resolved through the class named on the `initTabBlock` line, so switching
+   a block to another class (a factory, a nested `PoleFitted` flavour) changes the page too.
+   Run the `--check` before every commit that touches a `tabs/CsmTab*.java` file
 
 If the block reuses a model or texture that already lives in Core's tree, leave it there — a shared
 asset stays in Core so every partial install resolves it.
