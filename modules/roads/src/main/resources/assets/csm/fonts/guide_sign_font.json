@@ -85,6 +85,10 @@
     "!": {"col": 11, "row": 4, "advance": 14.62},
     "+": {"col": 12, "row": 4, "advance": 28.35},
     "#": {"col": 13, "row": 4, "advance": 39.39},
-    "%": {"col": 14, "row": 4, "advance": 28.35}
+    "%": {"col": 14, "row": 4, "advance": 28.35},
+    "<": {"col": 15, "row": 4, "advance": 34.86},
+    ">": {"col": 0, "row": 5, "advance": 34.86},
+    "*": {"col": 1, "row": 5, "advance": 28.35},
+    "_": {"col": 2, "row": 5, "advance": 33.19}
   }
 }

@@ -618,17 +618,18 @@ public class TileEntityDynamicStreetSignRenderer
     }
 
     renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod,
-        pos, bakeable, faceKey);
+        pos, bakeable, faceKey, false);
     if (data.isDoubleSided()) {
       // The back face is the same draw rotated 180 degrees about the block's vertical axis.
       // That is orientation-preserving, so combined with the outer mirror the legend reads
-      // correctly (not mirrored) to a viewer standing behind the blade.
+      // correctly (not mirrored) to a viewer standing behind the blade. The arrow is the one
+      // thing that must NOT come along unchanged -- see renderArrow.
       GlStateManager.pushMatrix();
       GlStateManager.translate(CX, 0.0f, CZ);
       GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f);
       GlStateManager.translate(-CX, 0.0f, -CZ);
       renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod,
-          pos, bakeable, faceKey);
+          pos, bakeable, faceKey, true);
       GlStateManager.popMatrix();
     }
     // Frame, hangers and cable share one list: they are contiguous in the draw order and all draw
@@ -702,10 +703,13 @@ public class TileEntityDynamicStreetSignRenderer
     tess.draw();
   }
 
-  /** Border plate, painted face, and (unless in far LOD) the whole legend. */
+  /**
+   * Border plate, painted face, and (unless in far LOD) the whole legend. {@code backFace} is
+   * set for the mirrored rear pass; only the arrow reacts to it.
+   */
   private void renderFace(Layout l, StreetSignData data, GuideSignColor signColor,
       float legendR, float legendG, float legendB, int legendTextColor, boolean farLod,
-      BlockPos pos, boolean bakeable, long faceKey) {
+      BlockPos pos, boolean bakeable, long faceKey, boolean backFace) {
     CornerStyle corners = data.getCornerStyle();
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
@@ -737,7 +741,7 @@ public class TileEntityDynamicStreetSignRenderer
     // Side slots run outward from the text column in a fixed order -- arrow outermost, then
     // emblem, then block number -- which is how a real blade reads at both ends.
     if (data.getArrowPosition() == StreetSignSlotPosition.LEFT) {
-      renderArrow(data, l, x);
+      renderArrow(data, l, x, backFace);
       x += l.arrowSize + gapSlot;
     }
     if (data.getEmblemPosition() == StreetSignSlotPosition.LEFT && data.hasEmblem()) {
@@ -764,7 +768,7 @@ public class TileEntityDynamicStreetSignRenderer
     }
     if (data.getArrowPosition() == StreetSignSlotPosition.RIGHT) {
       x += gapSlot;
-      renderArrow(data, l, x);
+      renderArrow(data, l, x, backFace);
     }
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
@@ -924,8 +928,23 @@ public class TileEntityDynamicStreetSignRenderer
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
-  private void renderArrow(StreetSignData data, Layout l, float x) {
+  /**
+   * The direction arrow in a side slot.
+   *
+   * <p>Unlike the legend, the arrow names a direction in the WORLD, not on the panel. The rear
+   * pass draws the whole face rotated 180 degrees about the blade's vertical axis, which swaps
+   * the reader's left and right, so an arrow carried through that rotation unchanged would point
+   * a viewer behind the blade at the opposite street. Mirroring the quad's U coordinates undoes
+   * exactly that swap and nothing else, so LEFT reads as LEFT from both sides and the symmetric
+   * arrows (UP, DOWN, LEFT_RIGHT, UP_LEFT_RIGHT) are unaffected. Text and emblems are NOT
+   * mirrored -- they are painted on the panel and rotate with it.
+   *
+   * @param backFace whether this is the mirrored rear pass
+   */
+  private void renderArrow(StreetSignData data, Layout l, float x, boolean backFace) {
     float[] uv = GuideSignAtlas.getArrowUV(data.getArrowType());
+    float uLeft = backFace ? uv[2] : uv[0];
+    float uRight = backFace ? uv[0] : uv[2];
     float half = l.arrowSize / 2.0f;
     float centerX = x + half;
     float centerY = l.contentCenterY;
@@ -935,10 +954,10 @@ public class TileEntityDynamicStreetSignRenderer
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    atlasVertex(buf, centerX + half, centerY + half, z, uv[2], uv[1]);
-    atlasVertex(buf, centerX - half, centerY + half, z, uv[0], uv[1]);
-    atlasVertex(buf, centerX - half, centerY - half, z, uv[0], uv[3]);
-    atlasVertex(buf, centerX + half, centerY - half, z, uv[2], uv[3]);
+    atlasVertex(buf, centerX + half, centerY + half, z, uRight, uv[1]);
+    atlasVertex(buf, centerX - half, centerY + half, z, uLeft, uv[1]);
+    atlasVertex(buf, centerX - half, centerY - half, z, uLeft, uv[3]);
+    atlasVertex(buf, centerX + half, centerY - half, z, uRight, uv[3]);
     tess.draw();
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }

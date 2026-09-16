@@ -56,11 +56,14 @@ public class GuideSignFontAtlasTool {
   // Every glyph is rendered so the capital height is exactly this many pixels.
   private static final int CAP_HEIGHT = 40;
 
+  // Cells are assigned in this string's order, so a character is only ever APPENDED:
+  // inserting one would move every later glyph's cell and reflow the whole atlas.
   private static final String GLYPHS =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
           + "abcdefghijklmnopqrstuvwxyz"
           + "0123456789"
-          + " -.,'\"/&():;?!+#%";
+          + " -.,'\"/&():;?!+#%"
+          + "<>*_";
 
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Guide Sign Font Atlas Generator", args,

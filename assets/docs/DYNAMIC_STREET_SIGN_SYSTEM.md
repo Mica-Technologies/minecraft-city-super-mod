@@ -194,6 +194,15 @@ rotation is orientation-preserving, so combined with the outer mirror the legend
 `z = 16 − f`, which is exactly where the hanging mount's rear plates belong. The core slab is
 drawn once, outside the rotation.
 
+**The arrow is the one thing the rotation must not carry unchanged.** Text and emblems are paint
+on the panel and rotate with it, but an arrow names a direction in the *world*, and the rotation
+swaps the reader's left and right — so an arrow drawn identically on both faces would send a
+viewer behind the blade to the opposite street. `renderFace` therefore takes a `backFace` flag and
+`renderArrow` mirrors the arrow quad's U coordinates when it is set, which undoes exactly that
+swap and nothing else (the symmetric arrows — UP, DOWN, LEFT_RIGHT, UP_LEFT_RIGHT — are
+unaffected). The arrow is drawn after `glCallList`, outside the geometry-only face list, so
+nothing about the display-list cache key changes.
+
 ### Extruded frame
 
 `extrudedFrame` draws the dark aluminum extrusion an internally-illuminated blade is built in:
