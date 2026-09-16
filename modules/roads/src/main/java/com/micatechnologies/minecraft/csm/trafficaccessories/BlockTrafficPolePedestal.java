@@ -132,6 +132,14 @@ public class BlockTrafficPolePedestal extends AbstractBlockTrafficPole {
     return color;
   }
 
+  /**
+   * The tube is 6 across ({@code R_SHAFT} in {@code gen_pedestal_pole.py}).
+   */
+  @Override
+  public double getPoleRadius() {
+    return 3.0D;
+  }
+
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     if (state.getPropertyKeys().contains(END_NORTH)
