@@ -32,6 +32,15 @@
     ],
     "normal": [
       {}
-    ]
+    ],
+    "polefit": {
+      "large": {},
+      "thin": {
+        "model": "csm:powergrid/shared_models/scelightmount_thin"
+      },
+      "pedestal": {
+        "model": "csm:powergrid/shared_models/scelightmount_pedestal"
+      }
+    }
   }
 }

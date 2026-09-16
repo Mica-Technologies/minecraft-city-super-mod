@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmPoleFitted;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;
@@ -97,5 +98,21 @@ public class BlockTrafficAccessoryNSEWUD extends AbstractBlockRotatableNSEWUD
   @Override
   public BlockRenderLayer getBlockRenderLayer() {
     return renderLayer;
+  }
+
+  /**
+   * The same accessory, drawn to meet the pole behind it: the light mounts. A separate class
+   * because the opt-in is a marker interface, which has to be known inside the {@code Block}
+   * constructor.
+   *
+   * @see ICsmPoleFitted
+   * @since 2026.9
+   */
+  public static class PoleFitted extends BlockTrafficAccessoryNSEWUD implements ICsmPoleFitted {
+
+    public PoleFitted(String registryName, AxisAlignedBB boundingBox,
+        BlockRenderLayer renderLayer, float hardness, boolean fullCube) {
+      super(registryName, boundingBox, renderLayer, hardness, fullCube);
+    }
   }
 }

@@ -116,4 +116,24 @@ public class BlockRotatableNSEWUDFactory extends AbstractBlockRotatableNSEWUD {
       BlockPos pos) {
     return nullCollision ? NULL_AABB : super.getCollisionBoundingBox(blockState, worldIn, pos);
   }
+
+  /**
+   * The same block, drawn to meet the pole behind it. A separate class because the opt-in is a
+   * marker interface, which has to be known inside the {@code Block} constructor.
+   *
+   * @see ICsmPoleFitted
+   * @since 2026.9
+   */
+  public static class PoleFitted extends BlockRotatableNSEWUDFactory implements ICsmPoleFitted {
+
+    public PoleFitted(String registryName, Material material, SoundType soundType,
+        String harvestToolClass, int harvestLevel, float hardness, float resistance,
+        float lightLevel, int lightOpacity, AxisAlignedBB boundingBox,
+        boolean opaqueCube, boolean fullCube, boolean connectsRedstone,
+        BlockRenderLayer renderLayer, boolean passable, boolean nullCollision) {
+      super(registryName, material, soundType, harvestToolClass, harvestLevel, hardness,
+          resistance, lightLevel, lightOpacity, boundingBox, opaqueCube, fullCube,
+          connectsRedstone, renderLayer, passable, nullCollision);
+    }
+  }
 }

@@ -35,13 +35,15 @@ The tube is 6/16 across, against the thin pole's 8/16. A real 4½ in pedestal tu
 8 in signal pole is 0.56 of the width; 0.75 is as slim as it can go here and still read as a
 pole at Minecraft's texel density and player scale.
 
-That width is reported through `getPoleRadius()` (3, in sixteenths), which is how a mast arm
-curve placed against the pole knows to wear its bolted bracket rather than the saddle boot it
-wears on a 12-across pole — the arm's tube is wider than this pole, so there is nothing for a
-saddle cut to land on. The pole draws nothing at that joint itself; see "Narrow poles: the
-bracket" in `MAST_ARM_CURVE_SYSTEM.md`. A mast arm on a pedestal pole is not something a real
-street has, but players build it, and a joint that floats is worse than a joint that is honest
-about being bolted on.
+That width is reported through `getPoleRadius()` (3, in sixteenths), which is how anything
+side-mounted on the pole knows how far to reach: the light mounts, the NOV tapered masts and
+the other pole-fitted arms swap in a model whose plate reaches this pole's skin (see "Pole fit"
+in `BLOCK_AND_ITEM_BASE_CLASSES.md`), and a mast arm curve wears its bolted bracket rather than
+the saddle boot it wears on a 12-across pole, because the arm's tube is wider than this pole and
+there is nothing for a saddle cut to land on (see "Narrow poles: the bracket" in
+`MAST_ARM_CURVE_SYSTEM.md`). The pole draws nothing at those joints itself. A mast arm on a
+pedestal pole is not something a real street has, but players build it, and a joint that floats
+is worse than a joint that is honest about being bolted on.
 
 ## Files
 

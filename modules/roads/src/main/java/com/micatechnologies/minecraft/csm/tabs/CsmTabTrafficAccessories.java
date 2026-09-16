@@ -495,11 +495,11 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountwhite", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
 
     // --- NSEWUD factory blocks: Vertical Light Mounts ---
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmount", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmountblack", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmounttan", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmountunpainted", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmountwhite", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD.PoleFitted("trafficpoleverticallightmount", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD.PoleFitted("trafficpoleverticallightmountblack", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD.PoleFitted("trafficpoleverticallightmounttan", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD.PoleFitted("trafficpoleverticallightmountunpainted", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD.PoleFitted("trafficpoleverticallightmountwhite", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
 
     // --- NSEWUD factory blocks: Vertical Quad Mounts ---
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmount", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));

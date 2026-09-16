@@ -398,6 +398,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_pedestal_pole.py` -- the pedestal (pedestrian) traffic pole: lathes the tube, domed cap,
   tapered base with its access door and the clamp bracket as OBJ, and emits the five
   blockstates plus lang/tab fragments; `--check` fails if the tree has drifted from the script
+- `gen_pole_fit_models.py` -- the `_thin` and `_pedestal` copies of every side-mounted arm that
+  clamps to a pole (light mounts, NOV tapered masts, SCE light mounts), with
+  the pole-end plate moved back to the thinner pole's skin, and the `polefit` variant block in
+  each arm's blockstate that swaps them in. Its catalogue is the one list of which arms adapt
+  to the pole behind them (`ICsmPoleFitted` / `CsmPoleFit`); `--check` fails on drift
 - `preview_block_model.py` -- renders a Forge JSON element model or an OBJ against its texture offline, with Minecraft's face winding and UV origin, so stretched UVs and transparent bleed can be caught without launching the game
 - `audit_inventory_renders.py` -- measures, in a running dev client, how far every OBJ-backed item
   actually sits inside its 16px inventory slot, by putting each one alone in a hotbar slot and

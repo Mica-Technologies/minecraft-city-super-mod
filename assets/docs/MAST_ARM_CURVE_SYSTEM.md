@@ -261,11 +261,15 @@ All of that is drawn by the root cell and sits in the pole's block. An OBJ may l
 the root is right behind it, so this is never the only thing keeping the bracket on screen.
 
 **The arm adapts to the pole, not the other way round.** `BlockTrafficPoleMastArmCurve`'s root
-reads `AbstractBlockTrafficPole.getPoleRadius()` off the block behind it and picks a
-`MastArmCurveProfile.PoleFit` — `LARGE` (saddle boot), `THIN` or `PEDESTAL` (bracket) — by the
-midpoints between the radii the joints were generated for. Anything that is not a pole gets the
-large fit, whose saddle cut simply disappears inside a full block. The pole draws nothing at the
-joint either way: curves are `ICsmTrafficPoleIgnored`, as before.
+asks `CsmPoleFit.behind()` (Core) what stands behind it, which reads
+`AbstractBlockTrafficPole.getPoleRadius()` and picks `LARGE` (saddle boot), `THIN` or
+`PEDESTAL` (bracket) by the midpoints between the radii the joints were generated for. Anything
+that is not a pole gets the large fit, whose saddle cut simply disappears inside a full block.
+The pole draws nothing at the joint either way: curves are `ICsmTrafficPoleIgnored`, as before.
+The root packs the fit into its `shape` slot rather than carrying `CsmPoleFit.PROPERTY` the way
+the light mounts do (see "Pole fit" in `BLOCK_AND_ITEM_BASE_CLASSES.md`), because its model
+already depends on the cell and the mount mask and one property is all a blockstate can key a
+model off.
 
 The root's mount stubs are shared with the large root wherever the meshes agree, which is
 everywhere except a stub that anchors inside the boot (the `down` stub on every preset, `east`
