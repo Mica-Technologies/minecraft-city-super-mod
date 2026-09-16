@@ -203,7 +203,19 @@ public abstract class AbstractBlockRotatableNSEW extends AbstractBlock {
   @Override
   @Nonnull
   protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-    return new net.minecraft.block.state.BlockStateContainer(this, FACING);
+    return new net.minecraft.block.state.BlockStateContainer(this,
+        CsmPoleFit.properties(this, FACING));
+  }
+
+  /**
+   * Resolves {@link CsmPoleFit#PROPERTY} for a block that is {@link ICsmPoleFitted}; a no-op for
+   * every other block. The property is actual-state only, so metadata is untouched.
+   */
+  @Override
+  @SuppressWarnings("deprecation")
+  public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+    return CsmPoleFit.apply(super.getActualState(state, worldIn, pos), worldIn, pos,
+        state.getValue(FACING));
   }
 
   /**

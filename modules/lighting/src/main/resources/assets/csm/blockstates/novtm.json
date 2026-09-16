@@ -32,6 +32,15 @@
     ],
     "normal": [
       {}
-    ]
+    ],
+    "polefit": {
+      "large": {},
+      "thin": {
+        "model": "csm:lighting/shared_models/nov_tapered_mast_thin"
+      },
+      "pedestal": {
+        "model": "csm:lighting/shared_models/nov_tapered_mast_pedestal"
+      }
+    }
   }
 }

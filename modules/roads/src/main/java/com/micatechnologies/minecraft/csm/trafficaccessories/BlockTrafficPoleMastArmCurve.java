@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
@@ -9,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -290,9 +290,11 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
    * <p>The root cell also reads the width of the pole behind it. The arm's tube is wider than
    * the thin and pedestal poles, so the saddle-cut boot it wears on the 12-across pole family
    * has nothing to land on there; the generator emits a bolted bracket for those poles instead,
-   * and {@link MastArmCurveProfile.PoleFit} picks it from
-   * {@link AbstractBlockTrafficPole#getPoleRadius()}. Anything that is not a pole gets the
-   * large fit: the saddle cut against a full block simply disappears inside it.
+   * and {@link CsmPoleFit#behind} picks it from {@link AbstractBlockTrafficPole#getPoleRadius()}.
+   * Anything that is not a pole gets the large fit: the saddle cut against a full block simply
+   * disappears inside it. The root packs the fit into its own {@code shape} property rather than
+   * carrying {@link CsmPoleFit#PROPERTY}, because its model already depends on the cell and the
+   * mount mask and one property is all the blockstate can key a model off.
    */
   @Override
   public @NotNull IBlockState getActualState(@NotNull IBlockState state,
@@ -316,14 +318,7 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
       mask |= MastArmCurveProfile.MOUNT_WEST;
     }
     int cell = cellIndexAt(worldIn, pos);
-    MastArmCurveProfile.PoleFit fit = MastArmCurveProfile.PoleFit.LARGE;
-    if (cell == 0) {
-      Block behind = worldIn.getBlockState(pos.offset(facing.getOpposite())).getBlock();
-      if (behind instanceof AbstractBlockTrafficPole) {
-        fit = MastArmCurveProfile.PoleFit.forPoleRadius(
-            ((AbstractBlockTrafficPole) behind).getPoleRadius());
-      }
-    }
+    CsmPoleFit fit = cell == 0 ? CsmPoleFit.behind(worldIn, pos, facing) : CsmPoleFit.LARGE;
     return state.withProperty(shapeProperty, profile.shapeIndex(cell, mask, fit));
   }
 

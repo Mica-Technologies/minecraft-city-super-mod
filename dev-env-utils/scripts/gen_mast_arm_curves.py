@@ -166,8 +166,8 @@ POLE_AXIS_Z = 24.0
 # inside a plate, a saddle block behind the plate hugs the pole, and two band straps wrap it.
 #
 # (registry/model suffix, pole radius, label). The first entry is the pole family's 12-across
-# tube, which keeps the saddle-cut boot. The Java enum's PoleFit is emitted from this list in this
-# order, and the radius thresholds it picks a fit by are the midpoints between these radii.
+# tube, which keeps the saddle-cut boot. The order and the radii are those of Core's CsmPoleFit
+# enum (LARGE, THIN, PEDESTAL), whose ordinal is what the root's shape slot is computed from.
 POLE_FITS = [
     ("", POLE_RADIUS, "large"),
     ("_thin", 4.0, "thin"),        # trafficpolehorizontal* (model `small`, x 4..12)
@@ -1146,6 +1146,8 @@ def write_profile_enum(profiles):
                box_src, term))
     src = '''package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
+
 /**
  * The mast arm curve sizes, and the exact block cells each one occupies.
  *
@@ -1229,30 +1231,10 @@ public enum MastArmCurveProfile {
   public static final int SHAPE_STRIDE = 16;
 
   /**
-   * How the root cell meets the pole behind it. The joint is generated per pole width, because
-   * the arm's tube is 9.2 units across at the root and only the 12-across pole family is wide
-   * enough to be saddle-cut against; a thinner pole gets a bolted bracket instead.
-   */
-  public enum PoleFit {
-%(fit_constants)s
-
-    /**
-     * The fit for a pole of the given tube radius, in sixteenths of a block. The thresholds are
-     * the midpoints between the radii the joints were generated for, so a pole of some other
-     * width gets the nearest joint rather than none.
-     *
-     * @param radius the pole's tube radius, as {@code AbstractBlockTrafficPole#getPoleRadius}
-     *               reports it
-     *
-     * @return the fit to draw
-     */
-    public static PoleFit forPoleRadius(double radius) {
-%(fit_thresholds)s
-    }
-  }
-
-  /**
-   * How many extra root-cell slots the narrow-pole fits take, past the last cell.
+   * How many extra root-cell slots the narrow-pole fits take, past the last cell: one per
+   * {@link CsmPoleFit} other than {@link CsmPoleFit#LARGE}. The joint is generated per pole
+   * width because the arm's tube is 9.2 units across at the root and only the 12-across pole
+   * family is wide enough to be saddle-cut against; a thinner pole gets a bolted bracket.
    */
   public static final int ROOT_VARIANTS = %(root_variants)d;
 
@@ -1286,9 +1268,9 @@ public enum MastArmCurveProfile {
    *
    * @return the packed shape value
    */
-  public int shapeIndex(int cell, int mountMask, PoleFit fit) {
+  public int shapeIndex(int cell, int mountMask, CsmPoleFit fit) {
     int slot = cell;
-    if (cell == 0 && fit != PoleFit.LARGE) {
+    if (cell == 0 && fit != CsmPoleFit.LARGE) {
       slot = cells.length + fit.ordinal() - 1;
     }
     return slot * SHAPE_STRIDE + mountMask;
@@ -1331,37 +1313,9 @@ public enum MastArmCurveProfile {
   }
 }
 ''' % {"body": "\n".join(body),
-       "fit_constants": pole_fit_constants(),
-       "fit_thresholds": pole_fit_thresholds(),
        "root_variants": len(POLE_FITS) - 1}
     with open(JAVA_PATH, "w", newline="\n") as fh:
         fh.write(src)
-
-
-def pole_fit_constants():
-    docs = {
-        "large": "The 12-across pole family: the arm is saddle-cut against the pole's cylinder "
-                 "and swells into a welded boot.",
-        "thin": "The 8-across thin pole: the tube ends flat inside a bracket plate strapped "
-                "round the pole.",
-        "pedestal": "The 6-across pedestal pole: the same bracket, strapped round the thinner "
-                    "tube.",
-    }
-    out = []
-    for i, (_suffix, r, label) in enumerate(POLE_FITS):
-        out.append("    /** %s Generated for a tube radius of %.0f. */\n    %s%s"
-                   % (docs[label], r, label.upper(), "," if i < len(POLE_FITS) - 1 else ";"))
-    return "\n".join(out)
-
-
-def pole_fit_thresholds():
-    out = []
-    for i in range(len(POLE_FITS) - 1):
-        threshold = (POLE_FITS[i][1] + POLE_FITS[i + 1][1]) / 2.0
-        out.append("      if (radius >= %.1fD) {\n        return %s;\n      }"
-                   % (threshold, POLE_FITS[i][2].upper()))
-    out.append("      return %s;" % POLE_FITS[-1][2].upper())
-    return "\n".join(out)
 
 
 if __name__ == "__main__":

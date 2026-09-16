@@ -32,6 +32,15 @@
     ],
     "normal": [
       {}
-    ]
+    ],
+    "polefit": {
+      "large": {},
+      "thin": {
+        "model": "csm:trafficaccessories/shared_models/trafficpoleverticallightmount_thin"
+      },
+      "pedestal": {
+        "model": "csm:trafficaccessories/shared_models/trafficpoleverticallightmount_pedestal"
+      }
+    }
   }
 }

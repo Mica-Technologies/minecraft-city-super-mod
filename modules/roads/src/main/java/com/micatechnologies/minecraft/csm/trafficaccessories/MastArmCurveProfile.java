@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
+
 /**
  * The mast arm curve sizes, and the exact block cells each one occupies.
  *
@@ -153,41 +155,10 @@ public enum MastArmCurveProfile {
   public static final int SHAPE_STRIDE = 16;
 
   /**
-   * How the root cell meets the pole behind it. The joint is generated per pole width, because
-   * the arm's tube is 9.2 units across at the root and only the 12-across pole family is wide
-   * enough to be saddle-cut against; a thinner pole gets a bolted bracket instead.
-   */
-  public enum PoleFit {
-    /** The 12-across pole family: the arm is saddle-cut against the pole's cylinder and swells into a welded boot. Generated for a tube radius of 6. */
-    LARGE,
-    /** The 8-across thin pole: the tube ends flat inside a bracket plate strapped round the pole. Generated for a tube radius of 4. */
-    THIN,
-    /** The 6-across pedestal pole: the same bracket, strapped round the thinner tube. Generated for a tube radius of 3. */
-    PEDESTAL;
-
-    /**
-     * The fit for a pole of the given tube radius, in sixteenths of a block. The thresholds are
-     * the midpoints between the radii the joints were generated for, so a pole of some other
-     * width gets the nearest joint rather than none.
-     *
-     * @param radius the pole's tube radius, as {@code AbstractBlockTrafficPole#getPoleRadius}
-     *               reports it
-     *
-     * @return the fit to draw
-     */
-    public static PoleFit forPoleRadius(double radius) {
-      if (radius >= 5.0D) {
-        return LARGE;
-      }
-      if (radius >= 3.5D) {
-        return THIN;
-      }
-      return PEDESTAL;
-    }
-  }
-
-  /**
-   * How many extra root-cell slots the narrow-pole fits take, past the last cell.
+   * How many extra root-cell slots the narrow-pole fits take, past the last cell: one per
+   * {@link CsmPoleFit} other than {@link CsmPoleFit#LARGE}. The joint is generated per pole
+   * width because the arm's tube is 9.2 units across at the root and only the 12-across pole
+   * family is wide enough to be saddle-cut against; a thinner pole gets a bolted bracket.
    */
   public static final int ROOT_VARIANTS = 2;
 
@@ -221,9 +192,9 @@ public enum MastArmCurveProfile {
    *
    * @return the packed shape value
    */
-  public int shapeIndex(int cell, int mountMask, PoleFit fit) {
+  public int shapeIndex(int cell, int mountMask, CsmPoleFit fit) {
     int slot = cell;
-    if (cell == 0 && fit != PoleFit.LARGE) {
+    if (cell == 0 && fit != CsmPoleFit.LARGE) {
       slot = cells.length + fit.ordinal() - 1;
     }
     return slot * SHAPE_STRIDE + mountMask;
