@@ -867,6 +867,17 @@ No new linking or sensor blocks — set circuits up as today (one circuit per ap
 recall flag. A green ends on max-out, or once min green is met and the phase has gapped out with a
 conflicting call waiting (and ped clearance is done).
 
+**Only demand that can actually be served next ends a green.** A call in the other ring on the same
+barrier is a compatible movement and never ends this phase. A call on the *other* barrier does count
+as conflicting demand — the max-green timer runs against it, as on a real controller — but while the
+other ring is still working this barrier the barrier cannot cross, so terminating would only turn
+this ring dark beside a green it does not conflict with. The phase is **held at the barrier** instead
+(`RingBarrierState.barrierWaiting`) and ends the moment the other ring is done, which is what keeps
+the ring 2 through green straight through a lead left's `1+6` → `2+6` change rather than dropping it
+to red in between. Two rings that have both finished flag each other, so they cannot hold one another
+and still go to yellow together. Coordination's own terminations — force-off and the coordinated
+yield point — are timed against the cycle and are never held.
+
 ### Coordination
 
 `TrafficSignalCoordinationPlan` adds FREE vs COORDINATED. Coordinated operation runs a background
@@ -905,10 +916,18 @@ served this cycle and would otherwise hand the phase a standing call into the ne
 
 Both are measured as a position *within the window* rather than against `windowEnd` directly — the
 last window on the last barrier ends exactly at the cycle wrap, where a plain `localCycle >= windowEnd`
-test can never be true. Positions wrap, so a phase being served outside its window is past its
-yield point and force-offs at once. Min green is still guaranteed (`terminate && minMet`), and a
-split configured shorter than its own clearance keeps a one-tick acceptance sliver rather than
-starving.
+test can never be true. Positions wrap, so a phase being served late (outside its window, on a sticky
+accepted call) is past its yield point and force-offs at once. Min green is still guaranteed
+(`terminate && minMet`), and a split configured shorter than its own clearance keeps a one-tick
+acceptance sliver rather than starving.
+
+A phase can also be reached *before* its window opens, and that one is legitimate: a ring does not
+wait out the split of a phase nothing called — it skips the slot and starts the next phase at the
+barrier. `effectiveWindowStart` therefore walks a phase's window start back over the phases ahead of
+it in its ring that were not served this window instance, so a through whose lead left never got a
+call owns that left's time instead of counting as "outside its window" for the whole of it (which
+force-off'd it the instant it met min green, or left the ring dark because its call was never
+accepted). The yield point itself does not move: it is always `windowEnd - clearance`.
 
 > **Behavior change for existing worlds:** splits previously behaved as if they were all green, so
 > every phase overran its window by its clearance. Side-street greens are now shorter by their own
