@@ -17,8 +17,15 @@ package com.micatechnologies.minecraft.csm.codeutils;
  * any subclass field exists. The factory block classes expose a {@code PoleFitted} subclass for
  * exactly this reason.
  *
+ * <p>A fitted arm is also {@link ICsmTrafficPoleIgnored}: it draws its own joint to the pole,
+ * which is exactly the hardware a pole's mount stub depicts, and the two together read as a
+ * broken joint -- a band and bracket sprouting into a plate that is already bolted on. Extending
+ * the marker here, rather than asking every implementer to remember both, is what keeps the two
+ * from drifting apart; {@code IGNORE_BLOCK} matches by assignability, so the sub-interface is
+ * covered.
+ *
  * @see CsmPoleFit
  * @since 2026.9
  */
-public interface ICsmPoleFitted {
+public interface ICsmPoleFitted extends ICsmTrafficPoleIgnored {
 }

@@ -255,6 +255,11 @@ pedestal), and `CsmPoleFit` (Core, `codeutils`) turns that into one of `LARGE`, 
 * The factory block classes (`BlockTrafficAccessoryNSEWUD`, `BlockRotatableNSEWUDFactory`)
   each expose a `PoleFitted` subclass for the same reason the opt-in is a marker.
 
+`ICsmPoleFitted` extends `ICsmTrafficPoleIgnored`: a fitted arm draws its own joint, and a pole
+growing a band-and-bracket stub into a plate that is already bolted on reads as a broken joint.
+So opting into the fit opts out of the pole's stub in the same stroke, with nothing for an
+implementer to remember.
+
 The GE Powerbracket has the same large-pole plate and is deliberately not fitted: it is a
 wall-mount specialty that is rarely put on a pole.
 
