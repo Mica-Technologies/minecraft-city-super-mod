@@ -74,13 +74,23 @@ PLATE_THICKNESS = 0.5
 # The post every sign plate is bolted to: 1 x 3 units behind the plate, one block tall.
 POST_X = (7.5, 8.5)
 POST_DEPTH = 3.0
-# Where the plate's front sits in each shift, matching the JSON plates' own setback (12.5) and
-# back-to-back (28.5) models. Back-to-back is half a unit further forward than theirs, so the
-# plate's back lands exactly on the partner's post face rather than overlapping it.
+# Where the plate's FRONT -- the face wearing the art -- sits in each shift. Both shifted
+# positions are the JSON plates' own, so a panel pairs with any other sign the same way:
+#
+#   setback       12.5, the plate on a post that reaches the back of the block
+#   back_to_back  28.49, nearly two blocks back, in the partner's block, against the back of the
+#                 partner's post -- which is at 28.5..31.5 seen from here, so the art lands the
+#                 same hundredth of a unit in front of it that the JSON plates' own art sliver
+#                 does, and neither face z-fights the other. The plate carries no post; the
+#                 partner's is the one both are bolted to.
+#
+# Exactly one sign of a pair may take this shift, or the two plates swap places and each ends up
+# behind the other showing the world its back. AbstractBlockSign.getShouldBackToBack is what
+# guarantees that, including for a pair with no support under either sign.
 SHIFTS = {
     "none": {"front": 0.0, "post": True},
     "setback": {"front": 12.5, "post": True},
-    "back_to_back": {"front": 28.0, "post": False},
+    "back_to_back": {"front": 28.49, "post": False},
 }
 
 FACINGS = [("n", 0), ("nw", 45), ("w", 90), ("sw", 135), ("s", 180), ("se", 225), ("e", 270),
