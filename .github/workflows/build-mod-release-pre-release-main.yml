@@ -228,11 +228,11 @@ jobs:
 
             `SHA256SUMS.txt` is attached in `sha256sum` format, so
             `sha256sum -c SHA256SUMS.txt` checks a download.
-          draft: false
+          # Created as a draft with no files attached: the action's own uploader is what loses
+          # assets (see the upload step below). It is filled and published from here instead.
+          draft: true
           prerelease: false
           generate_release_notes: true
-          files: |
-            ${{ env.RELEASE_FILES }}
 
       - name: Create Pre-Release Entry
         if: ${{ github.event.inputs.release == 'false' || !github.event.inputs.release }}
@@ -260,44 +260,86 @@ jobs:
             guaranteed to be stable or permanently available for download/usage.
             Pre-release versions of City Super Mod may be removed or unavailable after
             90 days from their initial release.
-          draft: false
+          # As above: a draft with nothing attached, filled by the upload step and published
+          # once every file is verified to be there.
+          draft: true
           prerelease: true
           generate_release_notes: true
-          files: |
-            ${{ env.RELEASE_FILES }}
 
-      # The publish step above uploads the jars in parallel and has been seen to lose some of
-      # them: on 2026-09-17 it reported `Error creating asset temp dir`, attached 8 of the 10
-      # jars, and left the release as a draft — while the job itself carried on and the run
-      # looked like a build problem rather than a publish one. A release missing a module jar
-      # is worse than no release at all, because the launcher manifests point straight at these
-      # file names, so the release is read back from the API here and the job fails unless every
-      # jar and SHA256SUMS.txt is attached and the entry is actually published.
+      # WHY THE ASSETS ARE NOT ATTACHED BY THE ACTION ABOVE
+      #
+      # softprops/action-gh-release uploads every asset in parallel and loses some of them. On
+      # 2026-09-17 three separate runs each reported `Error creating asset temp dir` and attached
+      # a different subset: 8 of 10 jars, then 6 of 10, then 7 of 10 after moving the action from
+      # v2 to v3. It is not the Node 20 -> 24 runtime change and it is not file size -- one run
+      # lost a 548 KB jar while uploading a 37 MB one, the next lost the three largest and kept
+      # the small ones. Different files each time is a race, and a release that is missing a
+      # module jar is worse than no release at all, because the launcher manifests point straight
+      # at these file names and a player gets a partial install rather than an error.
+      #
+      # So the entry above is created as an empty draft and the files go up one at a time here,
+      # where a failure is a failure rather than a missing asset nobody notices, and where a
+      # retry is possible. The draft is only published once every file is confirmed present.
+      - name: Upload the release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          tag="${{ env.CHOSEN_TAG }}"
+
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            if [ ! -f "$file" ]; then
+              echo "::error::$file was listed for upload but is not there"
+              exit 1
+            fi
+            for attempt in 1 2 3; do
+              echo "==> uploading $file (attempt $attempt)"
+              if gh release upload "$tag" "$file" --repo "${{ github.repository }}" --clobber; then
+                break
+              fi
+              if [ "$attempt" -eq 3 ]; then
+                echo "::error::giving up on $file after 3 attempts"
+                exit 1
+              fi
+              sleep $(( attempt * 5 ))
+            done
+          done <<< "${{ env.RELEASE_FILES }}"
+
+      # The uploader above has just been seen to report success for files it did not attach, so
+      # the release is read back from the API rather than trusted. This runs before the release
+      # is published, so a short release is never visible to anyone.
       - name: Verify the release has every jar
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event.inputs.release }}" = "true" ]; then
-            tag="${{ env.REL_TAG }}"
-          else
-            tag="${{ env.PRE_TAG }}"
-          fi
+          tag="${{ env.CHOSEN_TAG }}"
 
-          read -r attached isDraft < <(gh release view "$tag" \
-            --repo "${{ github.repository }}" \
-            --json assets,isDraft \
-            --jq '"\(.assets | map(select(.state == "uploaded")) | length) \(.isDraft)"')
+          repo="${{ github.repository }}"
+          attached=$(gh release view "$tag" --repo "$repo" --json assets \
+            --jq '[.assets[] | select(.state == "uploaded")] | length')
 
-          echo "==> $tag has $attached of ${{ env.RELEASE_FILE_COUNT }} assets (draft=$isDraft)"
-          gh release view "$tag" --repo "${{ github.repository }}" \
-            --json assets --jq '.assets[] | "    \(.name) \(.state)"'
+          echo "==> $tag has $attached of ${{ env.RELEASE_FILE_COUNT }} assets"
+          gh release view "$tag" --repo "$repo" --json assets \
+            --jq '.assets[] | "    \(.name) \(.size) \(.state)"'
 
           if [ "$attached" -ne "${{ env.RELEASE_FILE_COUNT }}" ]; then
             echo "::error::$tag has $attached uploaded assets, expected ${{ env.RELEASE_FILE_COUNT }}"
             exit 1
           fi
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          tag="${{ env.CHOSEN_TAG }}"
+          gh release edit "$tag" --repo "${{ github.repository }}" --draft=false
+
+          isDraft=$(gh release view "$tag" --repo "${{ github.repository }}" --json isDraft --jq '.isDraft')
           if [ "$isDraft" != "false" ]; then
             echo "::error::$tag is still a draft"
             exit 1
           fi
+          echo "==> published $tag"
