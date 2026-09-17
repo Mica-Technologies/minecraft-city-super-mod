@@ -27,6 +27,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLar
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeUnpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleMastArmCurve;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleFinial;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPolePedestal;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireAnchor;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireClusterMount;
@@ -429,6 +430,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestaltan", TRAFFIC_POLE_COLOR.TAN));
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalwhite", TRAFFIC_POLE_COLOR.WHITE));
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalunpainted", TRAFFIC_POLE_COLOR.UNPAINTED));
+    initTabBlock(BlockTrafficPoleFinial.class, fmlPreInitializationEvent); // Pole Finial
     initTabItem(ItemStreetLightConfigTool.class, fmlPreInitializationEvent); // Street Light Configuration Tool
 
     // --- Class-based: Traffic Pole Large (vertical) ---

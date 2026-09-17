@@ -11,8 +11,6 @@ Java that decides what each block shows cannot drift apart:
   * ``pedestalpole_shaft.obj``          -- the tube, drawn by every block of the pole
   * ``pedestalpole_cap_n/_s.obj``       -- the domed cap, at the model-north or model-south end
   * ``pedestalpole_base_n/_s.obj``      -- the pedestal base, likewise
-  * ``pedestalpole_ball_n/_s.obj``      -- the decorative ball finial that replaces the cap on a
-                                           pole top fitted with one, likewise
   * ``pedestalpole_mount.obj``          -- the band-clamp bracket a flank grows toward a device
   * ``pedestalpole_inv.obj``            -- base + tube + cap in one block, for the inventory
   * ``pedestalpole.mtl``                -- one material; each colour's blockstate retextures it
@@ -30,13 +28,6 @@ plain per-property Forge blockstate: each value adds a fixed submodel, and the f
 carries it to the right world end. The alternative -- one ``base`` boolean plus a
 facing-dependent transform -- is not expressible in that format without enumerating every
 combination by hand.
-
-The ball finial is a third value on those same properties, ``ball``, which the block shows in
-place of ``cap`` at the top of a pole the player has fitted with one (the Street Light
-Configuration Tool toggles it, and the stored state carries it on this very property). It
-rides the same submodel-per-end scheme, for the same reason. It is the one part that leaves
-its block: a finial stands on the tube top, so the neck and ball rise about 0.6 of a block
-above it, into the air the ``cap`` rule already requires to be there.
 
 The geometry is authored once in a STANDING frame (Y up, base on the floor, access door on
 the south face) and mapped into model space for each end. Which end faces down depends on the
@@ -96,19 +87,6 @@ INSET = 0.01          # keeps end faces off the block boundary plane exactly
 # Cap: a lip a little wider than the tube, then a dome. (radius, height) pairs, bottom up.
 CAP_PROFILE = [(R_SHAFT + 0.02, 14.4), (3.5, 14.7), (3.5, 15.2), (3.15, 15.6),
                (2.3, 15.87), (1.2, 15.98), (0.0, 16.0)]
-
-# Ball finial, replacing the cap on a pole top fitted with one. (radius, height) pairs, bottom
-# up, like the cap. A cast slip-on sleeve over the tube top (its bottom ring a hair off the
-# tube, as the cap's is), a rounded shoulder closing in to a waisted neck with one bead, then
-# the ball. The ball is a little wider than the sleeve, as a real finial on a 4.5 in post is.
-# Everything above y=16 stands in the block above, which is open whenever this part is drawn.
-FINIAL_SLEEVE = [(R_SHAFT + 0.02, 14.4), (3.5, 14.7), (3.5, 15.5), (3.25, 15.95),
-                 (2.5, 16.25), (1.6, 16.45)]
-FINIAL_NECK = [(1.3, 16.75), (1.2, 17.2), (1.4, 17.55), (2.05, 17.7), (2.05, 18.0),
-               (1.4, 18.15)]
-BALL_R = 3.75
-BALL_NECK_Y = 18.25   # where the neck enters the ball
-BALL_STEPS = 12       # latitude steps from the neck ring to the pole of the ball
 
 # Pedestal base: square, tapered with a gentle concave flare. (half-width, height) pairs.
 # The step at y=1 is the foot's top ledge.
@@ -494,31 +472,6 @@ def build_cap(mesh):
     lathe(mesh, CAP_PROFILE)
 
 
-def finial_profile():
-    """Sleeve, neck and ball as one lathe profile, so the ball's surface continues the neck's
-    with one shared ring and no seam to bleed through. The ball is sampled by latitude from
-    the ring where the neck enters it up to its pole."""
-    r_entry = FINIAL_NECK[-1][0]
-    rise = math.sqrt(BALL_R * BALL_R - r_entry * r_entry)
-    centre_y = BALL_NECK_Y + rise
-    phi0 = math.asin(r_entry / BALL_R)            # polar angle from straight down
-    ball = []
-    for k in range(BALL_STEPS + 1):
-        phi = phi0 + (math.pi - phi0) * k / BALL_STEPS
-        r = BALL_R * math.sin(phi)
-        ball.append((0.0 if k == BALL_STEPS else r, centre_y - BALL_R * math.cos(phi)))
-    return FINIAL_SLEEVE + FINIAL_NECK + ball
-
-
-def finial_top():
-    """Standing height of the top of the ball, in 1/16 block units."""
-    return finial_profile()[-1][1]
-
-
-def build_ball(mesh):
-    lathe(mesh, finial_profile())
-
-
 def build_base(mesh):
     square_frustum(mesh, BASE_PROFILE, top_face=True, bottom_face=True)
     lathe(mesh, COLLAR_PROFILE)          # no bottom disc: it would lie on the base's top face
@@ -615,13 +568,11 @@ def blockstate(texture):
                 "none": {},
                 "cap": {"submodel": {"cap_n": submodel("cap_n", texture)}},
                 "base": {"submodel": {"base_n": submodel("base_n", texture)}},
-                "ball": {"submodel": {"ball_n": submodel("ball_n", texture)}},
             },
             "ends": {
                 "none": {},
                 "cap": {"submodel": {"cap_s": submodel("cap_s", texture)}},
                 "base": {"submodel": {"base_s": submodel("base_s", texture)}},
-                "ball": {"submodel": {"ball_s": submodel("ball_s", texture)}},
             },
         },
     }
@@ -644,19 +595,10 @@ def generate(model_dir, blockstate_dir, scratch_dir):
     # top, so cap_n takes the OTHER map, the one that puts the floor at model south. Getting
     # this backwards renders the cap upside down at the far end of the block -- a ring one
     # block below the top of the pole, and a flat tube end where the dome should be.
-    # The ball finial sits on the standing top like the cap, so it takes the cap's maps. It is the
-    # only part allowed past its block, and only along the tube axis (model Z) by its own height.
-    ball_reach = finial_top() - 16.0
     parts = {
         "shaft": (build_shaft, to_model_south, to_model_south_n, "tube, along Z"),
         "cap_n": (build_cap, to_model_south, to_model_south_n, "domed cap at the model-north end"),
         "cap_s": (build_cap, to_model_north, to_model_north_n, "domed cap at the model-south end"),
-        "ball_n": (build_ball, to_model_south, to_model_south_n,
-                   "ball finial at the model-north end (the top of a pole facing UP)",
-                   ball_reach),
-        "ball_s": (build_ball, to_model_north, to_model_north_n,
-                   "ball finial at the model-south end (the top of a pole facing DOWN)",
-                   ball_reach),
         "base_n": (build_base, to_model_north, to_model_north_n,
                    "pedestal base at the model-north end (a pole facing DOWN stands on it)"),
         "base_s": (build_base, to_model_south, to_model_south_n,
@@ -664,14 +606,11 @@ def generate(model_dir, blockstate_dir, scratch_dir):
         "mount": (build_mount, None, None, "band-clamp bracket, pointing model north"),
         "inv": (build_inventory, None, None, "inventory icon: whole pole standing in one block"),
     }
-    for part, spec in parts.items():
-        builder, xf, nxf, header = spec[:4]
-        reach = spec[4] if len(spec) > 4 else 0.0
+    for part, (builder, xf, nxf, header) in parts.items():
         mesh = Mesh(xf, nxf)
         builder(mesh)
         lo, hi = mesh_bounds(mesh)
-        assert all(-0.02 <= c <= 16.02 for c in lo[:2] + hi[:2]), (part, lo, hi)
-        assert -0.02 - reach <= lo[2] and hi[2] <= 16.02 + reach, (part, lo, hi)
+        assert all(-0.02 <= c <= 16.02 for c in lo + hi), (part, lo, hi)
         mesh.write(os.path.join(model_dir, "%s_%s.obj" % (MODEL_STEM, part)),
                    "%s_%s" % (MODEL_STEM, part), header)
 

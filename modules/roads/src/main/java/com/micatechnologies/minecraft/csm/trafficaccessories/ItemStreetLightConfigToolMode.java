@@ -11,8 +11,11 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
  * @since 2026.9.17
  */
 public enum ItemStreetLightConfigToolMode {
-  /** Fits or removes the ball finial on top of a pedestal traffic pole. */
-  TOGGLE_BALL_FINIAL("Toggle Ball Finial");
+  /**
+   * Steps the finial on top of a pedestal traffic pole: none, each style in turn, then none
+   * again.
+   */
+  CYCLE_POLE_FINIAL("Cycle Pole Finial");
 
   private final String friendlyName;
 

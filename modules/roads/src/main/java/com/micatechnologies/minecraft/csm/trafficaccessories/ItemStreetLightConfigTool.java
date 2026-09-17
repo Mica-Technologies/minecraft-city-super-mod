@@ -1,7 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import java.util.List;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,9 +26,10 @@ import net.minecraft.world.World;
  *   <li><b>Sneak + right-click</b>, on a block or in the air, steps to the next mode.</li>
  * </ul>
  *
- * <p>Its first mode fits or removes the ball finial on a {@link BlockTrafficPolePedestal}. The
- * modes live in {@link ItemStreetLightConfigToolMode} so the decorative light poles can join it
- * later without a second tool.
+ * <p>Its first mode steps the finial on a {@link BlockTrafficPolePedestal}: none, then each
+ * {@link BlockTrafficPoleFinial.Style} in turn, then none again, placing, restyling and removing
+ * the finial block above the pole's top. The modes live in {@link ItemStreetLightConfigToolMode}
+ * so the decorative light poles can join it later without a second tool.
  *
  * <p>Everything that changes the world or talks to the player happens on the server. The client
  * answers {@link EnumActionResult#SUCCESS} to every block click so the arm swings and, more
@@ -60,8 +63,8 @@ public class ItemStreetLightConfigTool extends AbstractItem {
     }
 
     switch (getMode(heldStack)) {
-      case TOGGLE_BALL_FINIAL:
-        return toggleBallFinial(player, worldIn, pos, facing, heldStack);
+      case CYCLE_POLE_FINIAL:
+        return cycleFinial(player, worldIn, pos, facing, heldStack);
       default:
         return EnumActionResult.PASS;
     }
@@ -82,42 +85,70 @@ public class ItemStreetLightConfigTool extends AbstractItem {
   }
 
   /**
-   * Fits the ball finial to the pole that was clicked, or removes it.
+   * Steps the finial on the clicked pole: none, then each style in turn, then none again.
    *
-   * <p>On an upright pole the click is carried to the top block of the stack first. The finial
-   * only ever shows on the top block, a tall pole's top is usually out of reach, and setting the
-   * bit on a block in the middle of a stack would do nothing visible, which would read as the
-   * tool not working.
+   * <p>A click on the pole is carried to the top block of its stack and then to the block above
+   * it, which is where a finial lives; a click on the finial itself works on that block. A tall
+   * pole's top is usually out of reach, and a tool that only worked when the player could hit
+   * the one block above the post would read as broken.
+   *
+   * <p>The tool places and breaks the finial outright rather than taking one from the player's
+   * inventory: it is a configuration tool, like the signal ones, not a builder's wand.
    */
-  private static EnumActionResult toggleBallFinial(EntityPlayer player, World world,
-      BlockPos pos, EnumFacing side, ItemStack stack) {
+  private static EnumActionResult cycleFinial(EntityPlayer player, World world, BlockPos pos,
+      EnumFacing side, ItemStack stack) {
     IBlockState clicked = world.getBlockState(pos);
-    if (!(clicked.getBlock() instanceof BlockTrafficPolePedestal)) {
-      say(player, "Not a pedestal traffic pole. "
-          + ItemStreetLightConfigToolMode.TOGGLE_BALL_FINIAL.getFriendlyName()
-          + " works on pedestal traffic poles.");
+    BlockPos target;
+    if (clicked.getBlock() instanceof BlockTrafficPoleFinial) {
+      target = pos;
+    } else if (clicked.getBlock() instanceof BlockTrafficPolePedestal) {
+      target = topOfStack(world, pos).up();
+    } else {
+      say(player, "Not a pedestal traffic pole. A finial only fits a pedestal pole's top.");
       return EnumActionResult.FAIL;
     }
 
-    BlockPos top = topOfStack(world, pos);
-    IBlockState state = world.getBlockState(top);
-    if (!player.canPlayerEdit(top, side, stack) || !world.isBlockModifiable(player, top)) {
+    if (target.getY() >= world.getHeight()) {
+      say(player, "There is no room above that pole.");
+      return EnumActionResult.FAIL;
+    }
+    if (!player.canPlayerEdit(target, side, stack) || !world.isBlockModifiable(player, target)) {
       say(player, "You cannot change that pole here.");
       return EnumActionResult.FAIL;
     }
 
-    boolean fitted = !BlockTrafficPolePedestal.hasFinial(state);
-    // Flag 3: notify neighbours and send the change to clients, which re-render the chunk, so
-    // the ball appears at once. The choice is metadata, so it saves with the chunk.
-    world.setBlockState(top, BlockTrafficPolePedestal.withFinial(state, fitted), 3);
-
-    if (!fitted) {
-      say(player, "Ball finial removed.");
-    } else if (BlockTrafficPolePedestal.isFinialShown(world, top)) {
-      say(player, "Ball finial fitted.");
-    } else {
-      say(player, "Ball finial fitted. It will show once the top of the pole is clear.");
+    IBlockState state = world.getBlockState(target);
+    if (state.getBlock() instanceof BlockTrafficPoleFinial) {
+      BlockTrafficPoleFinial.Style style = state.getValue(BlockTrafficPoleFinial.STYLE);
+      if (style.ordinal() == BlockTrafficPoleFinial.Style.values().length - 1) {
+        // Past the last style, round to nothing again.
+        world.setBlockToAir(target);
+        say(player, "Pole finial removed.");
+        return EnumActionResult.SUCCESS;
+      }
+      // Flag 3: tell the neighbours and the clients, so the new ornament is drawn at once.
+      world.setBlockState(target,
+          state.withProperty(BlockTrafficPoleFinial.STYLE, style.next()), 3);
+      say(player, "Pole finial: " + style.next().getFriendlyName());
+      return EnumActionResult.SUCCESS;
     }
+
+    if (!world.isAirBlock(target) && !state.getBlock().isReplaceable(world, target)) {
+      say(player, "Something is already sitting on top of that pole.");
+      return EnumActionResult.FAIL;
+    }
+    if (!BlockTrafficPoleFinial.canStandOn(world, target)) {
+      say(player, "A finial only fits the top of an upright pedestal pole.");
+      return EnumActionResult.FAIL;
+    }
+    Block finial = CsmRegistry.getBlock("trafficpolefinial");
+    if (finial == null) {
+      return EnumActionResult.FAIL;
+    }
+    BlockTrafficPoleFinial.Style first = BlockTrafficPoleFinial.Style.values()[0];
+    world.setBlockState(target,
+        finial.getDefaultState().withProperty(BlockTrafficPoleFinial.STYLE, first), 3);
+    say(player, "Pole finial: " + first.getFriendlyName());
     return EnumActionResult.SUCCESS;
   }
 
@@ -188,7 +219,7 @@ public class ItemStreetLightConfigTool extends AbstractItem {
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
     list.add("Customize street light and pedestrian pole hardware:");
-    list.add("fit or remove the ball finial on a pedestal traffic pole.");
+    list.add("step a pedestal pole's finial through the six styles.");
     list.add("Right-click to apply. Sneak + right-click to switch modes.");
     list.add("Current mode: " + getMode(itemstack).getFriendlyName());
   }
