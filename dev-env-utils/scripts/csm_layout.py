@@ -409,6 +409,28 @@ def locales():
     return sorted(found)
 
 
+def same_generated_text(generated_path, tree_path):
+    """Return whether a freshly generated file matches the one in the tree.
+
+    Line endings are ignored, and this is the whole point of the function. The repository stores
+    LF and a generator writes LF, but Git checks the tree out through ``core.autocrlf``, which on
+    Windows turns every one of those into CRLF on disk. A byte comparison -- ``filecmp.cmp`` --
+    therefore reports that every generated file has drifted the moment it is checked out on
+    Windows, on a tree nobody has touched. That is worse than no check at all: a ``--check`` that
+    always fails is one nobody reads, and real drift hides in the noise.
+
+    A missing file counts as a difference. So does any difference in the text itself, including
+    trailing whitespace, since both are things a generator controls exactly.
+    """
+    if not os.path.exists(tree_path):
+        return False
+    with open(generated_path, encoding="utf-8", newline="") as handle:
+        generated = handle.read()
+    with open(tree_path, encoding="utf-8", newline="") as handle:
+        in_tree = handle.read()
+    return generated.replace("\r\n", "\n") == in_tree.replace("\r\n", "\n")
+
+
 def walk_assets(relative_path="", suffixes=None):
     """Yield ``(module, absolute_path, path_relative_to_assets_csm)`` over every tree.
 

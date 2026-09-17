@@ -45,7 +45,6 @@ Usage:
 Requires nothing beyond the standard library.
 """
 import argparse
-import filecmp
 import json
 import math
 import os
@@ -657,13 +656,13 @@ def main():
         stale = []
         for part in parts + ["__mtl__"]:
             fn = MTL_NAME if part == "__mtl__" else "%s_%s.obj" % (MODEL_STEM, part)
-            if not filecmp.cmp(os.path.join(tmp, "m", fn), os.path.join(MODEL_DIR, fn),
-                               shallow=False):
+            if not layout.same_generated_text(os.path.join(tmp, "m", fn),
+                                              os.path.join(MODEL_DIR, fn)):
                 stale.append(fn)
         for name in names:
             fn = name + ".json"
-            if not filecmp.cmp(os.path.join(tmp, "b", fn), os.path.join(BLOCKSTATE_DIR, fn),
-                               shallow=False):
+            if not layout.same_generated_text(os.path.join(tmp, "b", fn),
+                                              os.path.join(BLOCKSTATE_DIR, fn)):
                 stale.append(fn)
         if stale:
             print("out of date (re-run without --check):\n  " + "\n  ".join(stale))

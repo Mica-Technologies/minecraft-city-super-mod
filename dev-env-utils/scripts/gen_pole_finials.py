@@ -35,7 +35,6 @@ Usage:
 Requires nothing beyond the standard library.
 """
 import argparse
-import filecmp
 import json
 import math
 import os
@@ -338,12 +337,12 @@ def main():
         styles = generate(os.path.join(tmp, "m"), os.path.join(tmp, "b"), os.path.join(tmp, "s"))
         stale = []
         for name in ["%s_%s.obj" % (MODEL_STEM, s) for s in styles] + [MTL_NAME]:
-            if not filecmp.cmp(os.path.join(tmp, "m", name), os.path.join(MODEL_DIR, name),
-                               shallow=False):
+            if not layout.same_generated_text(os.path.join(tmp, "m", name),
+                                              os.path.join(MODEL_DIR, name)):
                 stale.append(name)
         fn = REGISTRY_NAME + ".json"
-        if not filecmp.cmp(os.path.join(tmp, "b", fn), os.path.join(BLOCKSTATE_DIR, fn),
-                           shallow=False):
+        if not layout.same_generated_text(os.path.join(tmp, "b", fn),
+                                          os.path.join(BLOCKSTATE_DIR, fn)):
             stale.append(fn)
         if stale:
             print("out of date (re-run without --check):\n  " + "\n  ".join(stale))
