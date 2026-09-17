@@ -144,9 +144,7 @@
       "setback": {
         "model": "csm:trafficsigns/metal_signpostback_double1way_sign_setback"
       },
-      "backtoback": {
-        "model": "csm:trafficsigns/metal_signpostback_double1way_sign_setback"
-      }
+      "backtoback": {}
     },
     "normal": [
       {}

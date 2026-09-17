@@ -47,24 +47,24 @@ All behavior is inherited from `AbstractBlockSign`.
 |---|---|---|---|
 | `FACING` | `PropertyEnum<DirectionEight>` | N, NE, E, SE, S, SW, W, NW | 8-direction rotation (inherited) |
 | `DOWNWARD` | `PropertyBool` | true/false | Whether to show extension post below |
-| `SETBACK` | `PropertyBool` | true/false | Whether sign is set back from a traffic pole |
+| `SHIFT` | `PropertyEnum<SignShift>` | none, setback, backtoback | Where in its block the plate is drawn |
 
 ### Dynamic State (`getActualState`)
 
-`DOWNWARD` and `SETBACK` are computed dynamically from the world, not stored in meta:
+`DOWNWARD` and `SHIFT` are computed dynamically from the world, not stored in meta:
 
-**DOWNWARD** -- Set to `true` when the block below is a `BlockSlab`:
-- Adds an extension post model below the sign to visually connect it to the slab surface
+**DOWNWARD** -- Set to `true` when the block below is a `BlockSlab`, or a guardrail the post
+passes down through:
+- Adds an extension post model below the sign to visually connect it to the surface
 - Automatically detected each render frame
 
-**SETBACK** -- Set to `true` when the sign is adjacent to an `AbstractBlockTrafficPole`:
-- Checks the block behind the sign (based on facing direction) for a traffic pole
-- Also inherits setback from signs directly above or below that are in front of poles
-- Changes the model to push the sign back from the pole for visual accuracy
+**SHIFT** -- `setback` when the sign is in front of an `AbstractBlockTrafficPole`'s signal arm or
+hung from a span wire, `backtoback` when it pairs with a sign facing the other way, `none`
+otherwise. Back-to-back wins over setback. See "The Three Shift Models" below.
 
 ### Meta Encoding
 
-Only FACING (0-7) is stored in block meta. DOWNWARD and SETBACK are computed from world
+Only FACING (0-7) is stored in block meta. DOWNWARD and SHIFT are computed from world
 context via `getActualState()`. This avoids wasting meta bits on information that can be
 derived.
 
@@ -79,6 +79,83 @@ Automatically rotated for all 8 directions via `RotationUtils`.
 ### Render Layer
 
 `BlockRenderLayer.CUTOUT_MIPPED` -- required for transparent sign textures.
+
+## The Three Shift Models
+
+Every sign's blockstate names a model for each value of `shift`, and the three are not three
+independent models. They are one model drawn in three places, and how far back each one goes is
+fixed by what has to line up with it.
+
+| `shift` | Where the model sits | Why there |
+|---|---|---|
+| `none` | as authored: plate at the front of the block, post behind it at z 0.5 to 3.5 | the ordinary sign |
+| `setback` | the whole model moved **+12.5** in z: plate at 12.5 to 13, post filling 13 to 16 | the plate lands in line with a signal arm's hardware, or with the housings hanging beside it on a span |
+| `backtoback` | the whole model moved **+28.5** in z -- the setback plus a block -- **and the post dropped** | the plate lands in the PARTNER's block, on the far side of the partner's post, so one post carries a face each way |
+
+The 28.5 is not a free choice. The partner a block behind is turned 180 degrees, so its own post
+occupies z 28.5 to 31.5 in this sign's frame and its plate 31.5 to 32. Putting this sign's plate
+at 28.5 to 29 backs it onto the near end of that post: two faces, one post, the way a real
+back-to-back assembly is built. Anything nearer leaves daylight between the two signs; anything
+further lands inside the partner's own plate and z-fights with it across the whole face. A sign
+that is several blocks wide does the same thing at the same depth (see "Signs Bigger Than Their
+Block") -- 28.5 is the one convention, whatever the plate is made of.
+
+Two details that look like noise and are not. The back-to-back model paints its face on a
+hundredth-of-a-unit sliver at 28.49 rather than on the plate itself, because the plate's own front
+face is coplanar with the end cap of the partner's post; and it keeps no post of its own, because
+the partner's is already standing there.
+
+### The invariant, and the check that holds it
+
+**Every `shift` entry must name a model that actually differs from the one it is shifting from,
+and a `backtoback` model must put its geometry in the block behind.** Both ways of breaking that
+have shipped:
+
+- a `shift` entry that names the default model -- the shift then renders as nothing, and the sign
+  simply never goes back to back;
+- a `backtoback` model built by keeping the FIRST element of the `none` model and moving that.
+  On a sign model element zero is the plate, so this worked; on a mount model it is one bar of a
+  bracket, so what appeared in the block behind was a fragment of the hardware with the rest of
+  the bracket missing. A wrong model looks worse than no model.
+
+`SignShiftModelTest` (roads module) measures the shipped resources and fails the build on either:
+it resolves all three models for every blockstate whose default model lives under
+`csm:trafficsigns/`, and requires that `setback` and `backtoback` each differ from `none`, that
+`backtoback` is not merely the setback model, that its front-most geometry lies between one block
+and 29 units behind the `none` model's, and that the plate it paints is the same size as the
+sign's own. It reads OBJ-backed signs too, in blocks rather than model units.
+
+A `backtoback` model with no elements at all is allowed for a piece that has no face of its own:
+`signpost` is all post, and in back-to-back the partner's post already stands through this block,
+so drawing a second one would only z-fight with it.
+
+### What is exempt, and why
+
+Three signs are on the test's exemption list, because back-to-back has no meaning for them
+rather than because it is unfinished:
+
+- **`signstatelawstopforpeds`** and its LED twin -- the R1-6 in-street paddle stands in the
+  roadway on a flexible base, painted on both sides. There is no plate to move and no post to
+  share.
+- **`signdoubleoneway`** / **`signdoubleonewayb`** -- the double one-way blades already read from
+  both sides, and they run 26 units along the very axis the shift moves. A copy a block back
+  would have to reach z 43.5, past the -16..32 an element may occupy before the whole model
+  silently fails to load.
+
+### Which sign of a pair moves
+
+Only one of the two may take `backtoback`: the model puts the plate in the partner's block, so if
+both took it they would swap places, each ending up behind the other with its art pointing inward
+and its blank back to the world.
+
+Support below normally decides it -- the sign standing on its own post keeps its place, the one
+hanging in front of it moves. But a pair hung in the air, on a span wire or on a mast, has support
+under neither, and both used to qualify; that is what made back-to-back look broken on the big
+panel signs. `AbstractBlockSign.isDesignatedShifter` breaks the tie: the facings of a pair are
+always opposite, so exactly one of them is north or west, and that one moves. It has to be a
+property of the pair rather than of whichever block the renderer reaches first, because each
+block computes its own `getActualState` knowing nothing of what the other decided --
+`SignBackToBackRuleTest` pins that down as a pure function.
 
 ## Forge Blockstate Format
 

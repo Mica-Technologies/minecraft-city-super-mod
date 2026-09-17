@@ -300,10 +300,79 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
   }
 
   /**
+   * Whether the block under {@code pos} is something a sign's post stands on: a slab, another
+   * sign or its post, a traffic pole, or a guardrail the post passes down through.
+   *
+   * @param source the block access
+   * @param pos    the position of the sign
+   *
+   * @return {@code true} if the sign at {@code pos} is carried by what is beneath it
+   *
+   * @since 2026.9.17
+   */
+  private static boolean hasSupportBelow(IBlockAccess source, BlockPos pos) {
+    Block blockBelow = source.getBlockState(pos.down()).getBlock();
+    return blockBelow instanceof BlockSlab || blockBelow instanceof AbstractBlockSign
+        || blockBelow instanceof AbstractBlockTrafficPole
+        || blockBelow instanceof ICsmPostPassesThrough;
+  }
+
+  /**
+   * Of a facing-opposite pair with nothing under either of them, the one that moves.
+   *
+   * <p>The back-to-back model puts a sign's plate a block behind itself, on the far side of the
+   * partner's post, which is only right when exactly ONE of the pair moves. Support below is
+   * normally what decides that -- the one standing on its own post keeps its place -- but a pair
+   * hung in the air, on span wire or on a mast, has support under neither, and both used to
+   * qualify. They then swapped blocks: each ended up behind the other, art pointing inward,
+   * blank backs to the world and a block and a half of daylight between them.
+   *
+   * <p>So the pair needs a tie-break, and it has to be one both blocks compute identically no
+   * matter which of them is asked first, since each is rendered from its own
+   * {@code getActualState} with no knowledge of what the other decided. Facing is the only thing
+   * about the pair that is symmetric and fixed: their facings are always opposite, so exactly one
+   * of them is north or west. That one moves. Nothing here reads a neighbour's shift, so there is
+   * no order to get wrong and no state to go stale.
+   *
+   * @param facing the facing of the sign being asked about
+   *
+   * @return {@code true} if this is the sign of the pair that moves
+   *
+   * @since 2026.9.17
+   */
+  static boolean isDesignatedShifter(DirectionEight facing) {
+    return facing == DirectionEight.N || facing == DirectionEight.W;
+  }
+
+  /**
+   * The back-to-back rule as a pure function of what the world says, so it can be reasoned about
+   * and tested without one.
+   *
+   * @param facing           this sign's facing
+   * @param hasPartnerBehind whether the block behind holds a sign facing the opposite way
+   * @param supportedHere    whether this sign has support below
+   * @param supportedBehind  whether the partner has support below
+   *
+   * @return {@code true} if this sign should render in back-to-back mode
+   *
+   * @since 2026.9.17
+   */
+  static boolean shouldBackToBack(DirectionEight facing, boolean hasPartnerBehind,
+      boolean supportedHere, boolean supportedBehind) {
+    if (facing == null || facing.isDiagonal() || !hasPartnerBehind || supportedHere) {
+      return false;
+    }
+    // The partner stands on something: it keeps its place and this one goes behind it. Neither
+    // does: the tie-break picks one, so the pair still produces exactly one shifted sign.
+    return supportedBehind || isDesignatedShifter(facing);
+  }
+
+  /**
    * Determines the shift mode for this sign. Back-to-back is detected when the block directly
    * behind this sign (opposite its facing direction) contains another {@link AbstractBlockSign}
-   * facing the opposite direction, and this sign has no structural support below (slab, sign, or
-   * traffic pole). Signs with support below never shift — only the unsupported partner shifts.
+   * facing the opposite direction, and this sign is the one of the pair that moves: the
+   * unsupported one when only one of them is unsupported, and otherwise the one
+   * {@link #isDesignatedShifter} picks. Signs with support below never shift.
    *
    * <p>Back-to-back takes priority over signal-arm setback.
    *
@@ -317,12 +386,6 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     if (!(state.getBlock() instanceof AbstractBlockSign)) {
       return false;
     }
-    Block blockBelow = source.getBlockState(pos.down()).getBlock();
-    if (blockBelow instanceof BlockSlab || blockBelow instanceof AbstractBlockSign
-        || blockBelow instanceof AbstractBlockTrafficPole
-        || blockBelow instanceof ICsmPostPassesThrough) {
-      return false;
-    }
     DirectionEight facing = state.getValue(FACING);
     if (facing.isDiagonal()) {
       return false;
@@ -330,10 +393,13 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     DirectionEight opposite = facing.getOpposite();
     BlockPos behindPos = pos.add(opposite.getOffsetX(), 0, opposite.getOffsetZ());
     IBlockState behindState = source.getBlockState(behindPos);
-    if (!(behindState.getBlock() instanceof AbstractBlockSign)) {
+    boolean hasPartnerBehind = behindState.getBlock() instanceof AbstractBlockSign
+        && behindState.getValue(FACING) == opposite;
+    if (!hasPartnerBehind) {
       return false;
     }
-    return behindState.getValue(FACING) == opposite;
+    return shouldBackToBack(facing, true, hasSupportBelow(source, pos),
+        hasSupportBelow(source, behindPos));
   }
 
   public boolean getShouldSetback(IBlockAccess source, BlockPos pos) {
@@ -396,7 +462,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
    * notification at all. Both were fixed for good by removing the cache: the client's first
    * rebuild after a prediction already sees the placed block, so an uncached answer is right the
    * first time. What it costs is one to three block lookups for the signal arm check and a few
-   * tile entity lookups for the span check, beside the three block lookups the back-to-back
+   * tile entity lookups for the span check, beside the four block lookups the back-to-back
    * check has always made uncached.
    */
 
