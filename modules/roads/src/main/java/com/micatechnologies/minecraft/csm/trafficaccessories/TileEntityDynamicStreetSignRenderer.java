@@ -675,6 +675,13 @@ public class TileEntityDynamicStreetSignRenderer
     // without GlStateManager noticing, leaving its shadow state stale. See
     // TileEntityTrafficSignalHeadRenderer for the full account.
     boolean bakeable = pos != null && !CsmRenderToggles.streetSignStructurePerFrame;
+    // The block's combined light leads the key because it is baked into every vertex (the BLOCK
+    // format carries the lightmap per vertex, which is what OptiFine's shaders read -- they
+    // ignore OpenGlHelper.setLightmapTextureCoords, so the light cannot be applied per frame from
+    // outside the list instead). Keyed on it, a light change compiles a new list rather than
+    // replaying yesterday's brightness; a blade that looks a level too dark is the client's own
+    // light data for that block, which no cache key can correct.
+    //
     // Adding or removing the second blade reshapes every list. The dirty flag already forces a
     // rebuild on any edit; the key carries the stack as well, so a list compiled for one shape
     // can never be replayed for the other whatever path the edit took.
