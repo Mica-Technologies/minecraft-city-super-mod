@@ -6,102 +6,146 @@
   },
   "multipart": [
     {
+      "when": {
+        "OR": [
+          {
+            "north": "true",
+            "east": "true"
+          },
+          {
+            "east": "true",
+            "south": "true"
+          },
+          {
+            "south": "true",
+            "west": "true"
+          },
+          {
+            "west": "true",
+            "north": "true"
+          },
+          {
+            "north": "true",
+            "east": "false",
+            "south": "false",
+            "west": "false"
+          },
+          {
+            "east": "true",
+            "north": "false",
+            "south": "false",
+            "west": "false"
+          },
+          {
+            "south": "true",
+            "north": "false",
+            "east": "false",
+            "west": "false"
+          },
+          {
+            "west": "true",
+            "north": "false",
+            "east": "false",
+            "south": "false"
+          }
+        ]
+      },
       "apply": {
         "model": "csm:buildingmaterials/steel_stud_wall_post"
       }
     },
     {
-      "apply": {
-        "model": "csm:buildingmaterials/steel_stud_wall_arm",
-        "uvlock": true
-      },
       "when": {
         "north": "true"
-      }
-    },
-    {
-      "apply": {
-        "model": "csm:buildingmaterials/steel_stud_wall_arm",
-        "uvlock": true,
-        "y": 90
       },
-      "when": {
-        "east": "true"
-      }
-    },
-    {
-      "apply": {
-        "model": "csm:buildingmaterials/steel_stud_wall_arm",
-        "uvlock": true,
-        "y": 180
-      },
-      "when": {
-        "south": "true"
-      }
-    },
-    {
-      "apply": {
-        "model": "csm:buildingmaterials/steel_stud_wall_arm",
-        "uvlock": true,
-        "y": 270
-      },
-      "when": {
-        "west": "true"
-      }
-    },
-    {
       "apply": {
         "model": "csm:buildingmaterials/steel_stud_wall_arm",
         "uvlock": true
-      },
-      "when": {
-        "north": "false",
-        "east": "false",
-        "south": "false",
-        "west": "false",
-        "facing": "east|west"
       }
     },
     {
-      "apply": {
-        "model": "csm:buildingmaterials/steel_stud_wall_arm",
-        "uvlock": true,
-        "y": 180
-      },
       "when": {
-        "north": "false",
-        "east": "false",
-        "south": "false",
-        "west": "false",
-        "facing": "east|west"
-      }
-    },
-    {
+        "east": "true"
+      },
       "apply": {
         "model": "csm:buildingmaterials/steel_stud_wall_arm",
         "uvlock": true,
         "y": 90
-      },
-      "when": {
-        "north": "false",
-        "east": "false",
-        "south": "false",
-        "west": "false",
-        "facing": "north|south"
       }
     },
     {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
       "apply": {
         "model": "csm:buildingmaterials/steel_stud_wall_arm",
         "uvlock": true,
         "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west"
       },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
       "when": {
         "north": "false",
         "east": "false",
         "south": "false",
         "west": "false",
         "facing": "north|south"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 270
       }
     }
   ]

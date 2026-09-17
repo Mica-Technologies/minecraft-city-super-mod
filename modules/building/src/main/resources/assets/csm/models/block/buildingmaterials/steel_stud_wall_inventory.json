@@ -74,12 +74,12 @@
       "from": [
         6,
         1,
-        2
+        3
       ],
       "to": [
         10,
         15,
-        4
+        5
       ],
       "faces": {
         "north": {
@@ -106,44 +106,12 @@
       "from": [
         6,
         1,
-        7
+        11
       ],
       "to": [
         10,
         15,
-        9
-      ],
-      "faces": {
-        "north": {
-          "texture": "#stud"
-        },
-        "south": {
-          "texture": "#stud"
-        },
-        "east": {
-          "texture": "#track"
-        },
-        "west": {
-          "texture": "#track"
-        },
-        "up": {
-          "texture": "#track"
-        },
-        "down": {
-          "texture": "#track"
-        }
-      }
-    },
-    {
-      "from": [
-        6,
-        1,
-        12
-      ],
-      "to": [
-        10,
-        15,
-        14
+        13
       ],
       "faces": {
         "north": {
