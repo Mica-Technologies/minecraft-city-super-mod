@@ -1,0 +1,221 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsigns/cars_only_banner_sign.obj",
+    "custom": {
+      "flip-v": true
+    }
+  },
+  "variants": {
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 45
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 135
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 225
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 315
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      }
+    },
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              0,
+              180,
+              0
+            ],
+            "scale": 0.18
+          },
+          "ground": {
+            "translation": [
+              0,
+              0.1875,
+              0
+            ],
+            "scale": 0.09
+          },
+          "fixed": {
+            "scale": 0.18
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              75,
+              225,
+              0
+            ],
+            "translation": [
+              0,
+              0.15625,
+              0
+            ],
+            "scale": 0.108
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              75,
+              225,
+              0
+            ],
+            "translation": [
+              0,
+              0.15625,
+              0
+            ],
+            "scale": 0.108
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "scale": 0.108
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "scale": 0.108
+          }
+        }
+      }
+    ],
+    "downward": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "extension": {
+            "model": "csm:trafficsigns/sign_pole",
+            "transform": {
+              "translation": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            }
+          }
+        }
+      }
+    },
+    "shift": {
+      "none": {},
+      "setback": {
+        "model": "csm:trafficsigns/cars_only_banner_sign_setback.obj",
+        "custom": {
+          "flip-v": true
+        }
+      },
+      "backtoback": {
+        "model": "csm:trafficsigns/cars_only_banner_sign_back_to_back.obj",
+        "custom": {
+          "flip-v": true
+        }
+      }
+    },
+    "normal": [
+      {}
+    ]
+  }
+}

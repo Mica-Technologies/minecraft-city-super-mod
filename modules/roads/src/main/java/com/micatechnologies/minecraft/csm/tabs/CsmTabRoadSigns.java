@@ -138,6 +138,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signbustaxionly"));
     initTabBlock(new BlockTrafficSign("signbusiness"));
     initTabBlock(new BlockTrafficSign("signbypass"));
+    initTabBlock(new BlockTrafficSign("cars_only_banner_sign"));
     initTabBlock(new BlockTrafficSign("signcenterlanebusonly69"));
     initTabBlock(new BlockTrafficSign("signcenterhov6a9a"));
     initTabBlock(new BlockTrafficSign("signcenterlanenouse79"));
@@ -344,6 +345,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signtrucklane500ft"));
     initTabBlock(new BlockTrafficSign("signtruckhalf"));
     initTabBlock(new BlockTrafficSign("signposttruck40"));
+    initTabBlock(new BlockTrafficSign("truckers_use_expressways_sign"));
     initTabBlock(new BlockTrafficSign("signtrucksuserightlanes"));
     initTabBlock(new BlockTrafficSign("signturnflashred"));
     initTabBlock(new BlockTrafficSign("signturnsonly"));
@@ -395,6 +397,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signcurve35"));
     initTabBlock(new BlockTrafficSign("signcurve45"));
     initTabBlock(new BlockTrafficSign("signpostcurvyroad"));
+    initTabBlock(new BlockTrafficSign("danger_low_clearance_sign"));
     initTabBlock(new BlockTrafficSign("dangerousroadcurves"));
     initTabBlock(new BlockTrafficSign("signdeadend"));
     initTabBlock(new BlockTrafficSign("signdeer"));
