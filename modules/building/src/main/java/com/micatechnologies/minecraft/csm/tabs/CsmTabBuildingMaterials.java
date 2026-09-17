@@ -1,18 +1,6 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCT50s1;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCT50s2;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCT50s3;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCTF;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCTFD;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCTS1;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCTS2;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCTS3;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT1;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT2;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT3;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlackMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlueMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCopperMetal;
@@ -73,7 +61,7 @@ public class CsmTabBuildingMaterials extends CsmTab {
    */
   @Override
   public Block getTabIcon() {
-    return CsmRegistry.getBlock("pcc");
+    return CsmRegistry.getBlock("silvermetal");
   }
 
   /**
@@ -125,18 +113,5 @@ public class CsmTabBuildingMaterials extends CsmTab {
         fmlPreInitializationEvent); // Yellow Metal Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetIridescentMetal.class,
         fmlPreInitializationEvent); // Iridescent Metal Set (Block, Fence, Slab, Stairs)
-    initTabBlock(BlockPCC.class, fmlPreInitializationEvent); // PCC
-    initTabBlock(BlockCTF.class, fmlPreInitializationEvent); // CTF
-    initTabBlock(BlockCTFD.class, fmlPreInitializationEvent); // CTFD
-    initTabBlock(BlockCT50s1.class, fmlPreInitializationEvent); // CT50s1
-    initTabBlock(BlockCT50s2.class, fmlPreInitializationEvent); // CT50s2
-    initTabBlock(BlockCT50s3.class, fmlPreInitializationEvent); // CT50s3
-    initTabBlock(BlockCTS1.class, fmlPreInitializationEvent); // CTS1
-    initTabBlock(BlockCTS2.class, fmlPreInitializationEvent); // CTS2
-    initTabBlock(BlockCTS3.class, fmlPreInitializationEvent); // CTS3
-    initTabBlock(BlockDCT1.class, fmlPreInitializationEvent); // DCT1
-    initTabBlock(BlockDCT2.class, fmlPreInitializationEvent); // DCT2
-    initTabBlock(BlockDCT3.class, fmlPreInitializationEvent); // DCT3
-
   }
 }

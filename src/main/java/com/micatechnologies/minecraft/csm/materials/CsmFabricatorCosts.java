@@ -69,12 +69,14 @@ public final class CsmFabricatorCosts {
   private static final String TAB_FURNITURE = "tabfurniture";
   private static final String TAB_GAMING = "tabgaming";
   private static final String TAB_HVAC = "tabhvac";
+  private static final String TAB_INTERIOR_FINISHES = "tabinteriorfinishes";
   private static final String TAB_LIFE_SAFETY = "tablifesafety";
   private static final String TAB_LIGHTING = "tablighting";
   private static final String TAB_MATERIALS = "tabmaterials";
   private static final String TAB_NOVELTIES = "tabnovelties";
   private static final String TAB_POWER_GRID = "tabpowergrid";
   private static final String TAB_ROAD_SIGNS = "tabroadsigns";
+  private static final String TAB_STRUCTURE_FRAMING = "tabstructureframing";
   private static final String TAB_TECHNOLOGY = "tabtechnology";
   private static final String TAB_TRAFFIC_ACCESSORIES = "tabtrafficaccessories";
   private static final String TAB_TRAFFIC_SIGNALS = "tabtrafficsignals";
@@ -206,6 +208,14 @@ public final class CsmFabricatorCosts {
       return buildingMaterialCost(block, registryName);
     }
 
+    // 3b. Interior finishes. Priced here rather than in the tab switch below because
+    // these are plain materials, like the building materials above, and because the
+    // ceiling blocks moved to this tab from Building Materials and must keep the cost
+    // they already had.
+    if (TAB_INTERIOR_FINISHES.equals(tabId)) {
+      return interiorFinishCost();
+    }
+
     // 4. Mounting hardware.
     if (matches(noun, MOUNT_NOUNS)) {
       return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
@@ -247,6 +257,12 @@ public final class CsmFabricatorCosts {
       case TAB_POWER_GRID:
         return cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
             FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+
+      case TAB_STRUCTURE_FRAMING:
+        // Framing is steel sections and fasteners. Refine per member type — stud wall,
+        // joist, deck, structural steel — as those blocks are built.
+        return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
 
       case TAB_TECHNOLOGY:
         return cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
@@ -312,8 +328,18 @@ public final class CsmFabricatorCosts {
       }
       return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2), dye);
     }
-    // The rest of this tab is ceiling finishes — popcorn ceiling and ceiling tiles — despite
-    // registry ids such as "pcc" and "dct1" suggesting concrete.
+    // Everything else in this tab is masonry and cast material.
+    return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
+        FabricatorIngredient.any(MC_CLAY_BALL, 1));
+  }
+
+  /**
+   * Prices interior finishes. Today that is the ceiling finishes — popcorn ceiling and
+   * ceiling tiles — which moved here from the Building Materials tab and keep the cost
+   * they had there, despite registry ids such as {@code pcc} and {@code dct1}
+   * suggesting concrete.
+   */
+  private static List<FabricatorIngredient> interiorFinishCost() {
     return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
         FabricatorIngredient.any(MC_CLAY_BALL, 1));
   }

@@ -1,4 +1,6 @@
 itemGroup.tabbuildingmaterials=CSM: Materiales de Construcción
+itemGroup.tabinteriorfinishes=CSM: Acabados Interiores
+itemGroup.tabstructureframing=CSM: Estructura y Entramado
 tile.blackmetal.name=Metal Negro
 tile.blackmetal_fence.name=Cerca de Metal Negro
 tile.blackmetal_slab.name=Losa de Metal Negro

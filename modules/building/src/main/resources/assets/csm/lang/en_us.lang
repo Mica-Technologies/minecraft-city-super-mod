@@ -1,4 +1,6 @@
 itemGroup.tabbuildingmaterials=CSM: Building Materials
+itemGroup.tabinteriorfinishes=CSM: Interior Finishes
+itemGroup.tabstructureframing=CSM: Structure & Framing
 tile.blackmetal.name=Black Metal
 tile.blackmetal_fence.name=Black Metal Fence
 tile.blackmetal_slab.name=Black Metal Slab

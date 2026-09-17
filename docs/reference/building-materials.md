@@ -1,8 +1,8 @@
 # Building Materials
 
-Concrete, brick, metal and tile, with matching stairs, slabs and fences.
+Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "72 blocks in this tab"
+!!! info "60 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -19,17 +19,6 @@ Concrete, brick, metal and tile, with matching stairs, slabs and fences.
 | Blue Metal Fence | `csm:bluemetal_fence` | 2 | 10 | pickaxe | 1 |
 | Blue Metal Slab | `csm:bluemetal_slab` | 2 | 10 | pickaxe | 1 |
 | Blue Metal Stairs | `csm:bluemetal_stairs` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (50s 1) | `csm:ct50s1` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (50s 2) | `csm:ct50s2` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (50s 3) | `csm:ct50s3` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (Dark 1) | `csm:dct1` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (Dark 2) | `csm:dct2` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (Dark 3) | `csm:dct3` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (Fancy Dark) | `csm:ctfd` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (Fancy) | `csm:ctf` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (Standard 1) | `csm:cts1` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (Standard 2) | `csm:cts2` | 2 | 10 | pickaxe | 1 |
-| Ceiling Tile (Standard 3) | `csm:cts3` | 2 | 10 | pickaxe | 1 |
 | Copper Metal | `csm:coppermetal` | 2 | 10 | pickaxe | 1 |
 | Copper Metal Fence | `csm:coppermetal_fence` | 2 | 10 | pickaxe | 1 |
 | Copper Metal Slab | `csm:coppermetal_slab` | 2 | 10 | pickaxe | 1 |
@@ -62,7 +51,6 @@ Concrete, brick, metal and tile, with matching stairs, slabs and fences.
 | Pink Metal Fence | `csm:pinkmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Pink Metal Slab | `csm:pinkmetal_slab` | 2 | 10 | pickaxe | 1 |
 | Pink Metal Stairs | `csm:pinkmetal_stairs` | 2 | 10 | pickaxe | 1 |
-| Popcorn Ceiling | `csm:pcc` | 2 | 10 | pickaxe | 1 |
 | Purple Metal | `csm:purplemetal` | 2 | 10 | pickaxe | 1 |
 | Purple Metal Fence | `csm:purplemetal_fence` | 2 | 10 | pickaxe | 1 |
 | Purple Metal Slab | `csm:purplemetal_slab` | 2 | 10 | pickaxe | 1 |
