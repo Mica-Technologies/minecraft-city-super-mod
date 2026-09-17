@@ -42,6 +42,18 @@ A controller runs in one of these:
 | **Forced fault** | All-red flash, because a fault was detected |
 | **Advanced** | NEMA dual-ring, dual-barrier phase control — see [Advanced Mode](advanced-mode-asc3.md) |
 
+Sneak-click the controller to step to the next mode; it tells you which one it landed on.
+
+!!! tip "Cycling past an unprogrammed Advanced"
+
+    Advanced is last in the cycle, so sneak-clicking round the modes lands on it on the way back to
+    Flash — and an Advanced controller with no phase plan programmed faults immediately. Landing
+    there says the plan needs programming and that the next sneak-click moves on, and that one
+    fault does not block the mode change, so you are never stuck on it.
+
+    Every other fault still holds the controller until you clear it with the Signal Configuration
+    Tool — the conflict monitor's skipped-clearance fault above all.
+
 ## Timing
 
 Every time is in ticks, and 20 ticks is a second.
@@ -116,6 +128,20 @@ retroreflective. Green is bike-lane green, for plates on bicycle signals.
 - **Poles and mast arms** — see [Mast Arms](mast-arms.md) for the multi-block curved arms.
 - **Span wire** — see [Span Wire](span-wire.md).
 - **Pedestal bases**, for crosswalk signals and low-mounted heads.
+
+### Pole finials
+
+A pedestal pole's top can wear a decorative **Pole Finial** — Small Ball, Large Ball, Acorn,
+Fluted Urn, Spire or Flat Cap. It is a block of its own, placed on top of the pole, and it takes
+the pole's own colour, so a repaint of the post repaints the ornament with it.
+
+The **Street Light Configuration Tool** is the quicker way: right-click anywhere on an upright
+pedestal pole and it fits, swaps or removes the finial on the top of that stack, so a tall post can
+be styled from the ground. Sneak-right-click changes the tool's mode, the same as the other
+configuration tools.
+
+A finial only fits an **upright pedestal pole** — its collar is cut to that tube, and it pops off
+as an item if the pole below it goes.
 
 ## Related
 
