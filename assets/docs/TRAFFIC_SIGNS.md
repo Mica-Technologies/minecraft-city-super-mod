@@ -243,16 +243,37 @@ would have had to be authored at a fraction of their real offsets.
 Everything else is the ordinary sign: the plate is half a unit thick on the same 1 x 3 post, the
 setback model moves it back 12.5 units onto a post reaching the back of the block, and the
 back-to-back model moves it back against the partner sign's post with no post of its own. The
-front face wears the art with an identity UV and the back and edges wear
-`absolutely_nothing_sign`, so transparent corners in the art are see-through rather than grey.
-The art is squished into a square texture (256 px for the 3-wide panel, 512 for the 5-wide
-ones) and stretched back out by the plate. The source art is not in the repository; the script's
-`--art` option rebuilds the textures from it, and `--check` covers the models and blockstates.
+front face wears the art and the back and edges wear `absolutely_nothing_sign`, so transparent
+corners in the art are see-through rather than grey. The source art is not in the repository; the
+script's `--art` option rebuilds the textures from it, and `--check` covers the models and
+blockstates.
 
 What the overhang does not bring with it: the selection and collision boxes are the ordinary
 sign's, inside the placed block, so the plate is only clicked and only stops a player there; and
 the overhanging part is drawn with the placed block's render section, so it can vanish at the
 very edge of the screen when that section is culled.
+
+### Why the art is letterboxed, not squished
+
+Every one-block sign squishes its face into a square texture and lets the plate stretch it back
+out, and at those aspects it does no harm. On these panels it did: the first version squished a
+5:1 banner into a 512 px square, so the legend had 512 texels over 16 units down the plate and
+512 over 80 across it, a fivefold difference. OpenGL picks the mip level from the axis with more
+texels per screen pixel, so a few blocks away the whole face was drawn from the level the tall
+axis wanted, and the long axis -- where the lettering is -- got a fifth of the detail it needed
+and turned to mush.
+
+So the art keeps the plate's aspect. `--art` resamples it once to the plate's proportions (the
+2.06:1 DANGER art is fitted to its 3 x 2 plate here, not by the UVs), at a whole number of pixels
+per block on both axes, and centres it in the square texture; the front face's UVs pick out just
+that rectangle, brought in half a texel. Texel density is then the same both ways, and the
+texture size is chosen to keep it at or above a one-block sign's 128 px a block: 1024 px for the
+5-wide panels (192 px a block), 512 for DANGER (149). The rest of the square is not left
+transparent. The art's edge pixels are repeated outward to fill it, alpha included, so the lower
+mip levels average the plate's rim with more of itself rather than with transparency or a
+neighbouring atlas sprite, while an edge the art itself leaves transparent (the TRUCKERS panel's
+rounded corners) stays transparent. Squishing the art to fill the square again would look like
+a tidy simplification and would bring the blur straight back.
 
 ## LED-Enhanced Flashing Signs
 
