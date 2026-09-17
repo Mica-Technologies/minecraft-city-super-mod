@@ -30,6 +30,9 @@ def arrow_up(d, cx, cy, w, h, color):
     d.rectangle((cx-sw/2, cy-h/2+h*head, cx+sw/2, cy+h/2), fill=color)
 
 def signal_sync():
+    # SUPERSEDED: the shipped texture has since had its blue shifted onto the mod's guide blue and
+    # been cropped to the sign and stretched edge to edge for its own 12.6 x 21 plate
+    # (metal_sign_tall_narrow). Re-running this would put back the narrow face on a square canvas.
     # portrait blue sign: small rotated SIGNAL + up-arrow (left column), big stacked SYNC (right)
     img = Image.new("RGBA", (S, S), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
     m = 4*SS; r = 6*SS
