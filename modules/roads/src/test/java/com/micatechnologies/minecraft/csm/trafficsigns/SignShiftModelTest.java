@@ -80,17 +80,6 @@ class SignShiftModelTest {
             + "very axis the shift moves: a copy a block back would have to reach z 43.5, past "
             + "the -16..32 an element may occupy before the whole model silently fails to load");
     NOT_APPLICABLE.put("signdoubleonewayb", "as signdoubleoneway");
-
-    PENDING_FIX.put("yieldsign", "yield_sign model family, issue #207");
-    PENDING_FIX.put("signnopassingzone", "yield_sign model family, issue #207");
-    PENDING_FIX.put("signrailroadcrossbuck", "yield_sign model family, issue #207");
-    PENDING_FIX.put("signschoolbusstopahead", "yield_sign model family, issue #207");
-    PENDING_FIX.put("signschoolcrossing", "yield_sign model family, issue #207");
-    PENDING_FIX.put("signschoolcrossingflashingled", "yield_sign model family, issue #207");
-    PENDING_FIX.put("signpost50min30", "ultratall plate family, issue #207");
-    PENDING_FIX.put("signpost55min40", "ultratall plate family, issue #207");
-    PENDING_FIX.put("signpost65min45", "ultratall plate family, issue #207");
-    PENDING_FIX.put("thicklysettledspeedlimit25mphsign", "ultratall plate family, issue #207");
   }
 
   // region: the measurements a model is judged on
