@@ -194,6 +194,13 @@ number set to BOTTOM sat visibly *below* the name's baseline rather than flush w
 **Sizing.** The panel auto-sizes to its content, then takes the max with `minWidth` / `minHeight`.
 Surplus from a floor leaves the content centered.
 
+A long name or a wide `minWidth` makes a panel **wider than the block it is placed in**, and it
+simply reaches into its neighbours: two blades four blocks apart with five-block panels overlap,
+exactly coplanar, and which one covers a given pixel is decided by depth order, so it changes with
+the camera and reads as one blade's legend disappearing behind the other. Nothing can resolve a tie
+between two surfaces in the same plane -- space wide blades far enough apart that their panels do
+not meet.
+
 ### Stacked blades
 
 A road that changes name at a junction gets two blades on one block: the top one lettered from
@@ -378,6 +385,18 @@ When lit, the painted face and the legend go fullbright (240); the core slab, fr
 keep the block's real light, so a night scene still reads as night around a glowing blade. The
 sign emits **no** Minecraft block light — this is a rendering effect only, so there is no
 chunk-relight cost when a photocell blade switches at dusk.
+
+**Where the blade's brightness comes from.** One `getCombinedLight` at the blade's own block,
+re-read every frame and baked into each vertex through the `BLOCK` vertex format -- per vertex
+rather than through `OpenGlHelper.setLightmapTextureCoords`, because OptiFine's shader programs
+read the lightmap from the vertex attribute and ignore that global state. The whole panel
+therefore takes the light of the block the sign is in, however far past it the panel reaches, and
+`combinedLight` is part of the display-list key (`structureKey`), so a light change recompiles
+rather than replaying the old brightness. A blade that looks a level or two too dark is
+**the client's own light data** for that block, not the cache: it survives edits (which discard
+the lists and re-bake) and clears on a relight or a client restart. That is what a blade
+`/setblock`-ed and then built over looked like once -- dark until the client restarted, at the
+same brightness through several edits.
 
 ### LOD
 
