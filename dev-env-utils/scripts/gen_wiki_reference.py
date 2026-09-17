@@ -95,14 +95,16 @@ _LANG_RE = re.compile(r'^tile\.([a-z0-9_]+)\.name=(.*)$')
 # tab id -> (page slug, human title, one-line description)
 TABS = {
     "tabbuildingmaterials": ("building-materials", "Building Materials",
-                             "Concrete, brick, metal and tile, with matching stairs, slabs and "
-                             "fences."),
+                             "Bulk material sets, with matching stairs, slabs and fences."),
     "tabfurniture": ("furniture", "Furniture",
                      "Interior fittings: seating, counters, appliances and fixtures."),
     "tabgaming": ("gaming", "Gaming",
                   "Arcade cabinets and the playable machines that go with them."),
     "tabhvac": ("hvac", "HVAC",
                 "Heating and cooling that actually simulates room temperature."),
+    "tabinteriorfinishes": ("interior-finishes", "Interior Finishes",
+                            "The surfaces that go on last: ceiling finishes, and the floor "
+                            "and wall finishes that join them."),
     "tablifesafety": ("life-safety", "Life Safety",
                       "Fire alarm horns, strobes, pull stations, panels and exit signage."),
     "tablighting": ("lighting", "Lighting",
@@ -115,6 +117,9 @@ TABS = {
                      "Utility poles, transformers and the Forge Energy that runs through them."),
     "tabroadsigns": ("road-signs", "Road Signs",
                      "The MUTCD sign set, grouped the way the manual groups it."),
+    "tabstructureframing": ("structure-framing", "Structure & Framing",
+                            "Steel and wood stud walls, the structure that spans between "
+                            "them, and structural steel."),
     "tabtechnology": ("technology", "Technology",
                       "Servers, routers, screens and consumer electronics."),
     "tabtrafficaccessories": ("traffic-accessories", "Traffic Accessories",
@@ -127,8 +132,9 @@ TABS = {
                 "load, and the hidden pieces other blocks place for themselves."),
 }
 
-PAGE_ORDER = ["tabbuildingmaterials", "tabfurniture", "tabgaming", "tabhvac", "tablifesafety",
-              "tablighting", "tabmaterials", "tabnovelties", "tabpowergrid", "tabroadsigns",
+PAGE_ORDER = ["tabbuildingmaterials", "tabfurniture", "tabgaming", "tabhvac",
+              "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
+              "tabnovelties", "tabpowergrid", "tabroadsigns", "tabstructureframing",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabnone"]
 
 

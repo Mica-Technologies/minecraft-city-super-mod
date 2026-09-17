@@ -1,4 +1,6 @@
 itemGroup.tabbuildingmaterials=CSM: Byggmaterial
+itemGroup.tabinteriorfinishes=CSM: Invändiga Ytskikt
+itemGroup.tabstructureframing=CSM: Stomme & Regelverk
 tile.blackmetal.name=Svart Metall
 tile.blackmetal_fence.name=Svart Metallstaket
 tile.blackmetal_slab.name=Svart Metallplatta

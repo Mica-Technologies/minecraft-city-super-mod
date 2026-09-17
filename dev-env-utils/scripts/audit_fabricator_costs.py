@@ -140,6 +140,9 @@ def cost_for(registry, info, ancestors):
             return ("SHEET_METAL x2", dye)
         return ("CONCRETE_MIX", "clay_ball")
 
+    if tab == "tabinteriorfinishes":
+        return ("CONCRETE_MIX", "clay_ball")
+
     if noun in MOUNT_NOUNS:
         return ("SHEET_METAL", "FASTENER_KIT")
 
@@ -173,6 +176,8 @@ def cost_for(registry, info, ancestors):
         return ("planks x2", "FASTENER_KIT")
     if tab == "tabpowergrid":
         return ("POLE_SECTION", "WIRING_HARNESS")
+    if tab == "tabstructureframing":
+        return ("SHEET_METAL x2", "FASTENER_KIT")
     if tab == "tabtechnology":
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtrafficaccessories":

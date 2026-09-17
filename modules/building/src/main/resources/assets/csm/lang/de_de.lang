@@ -1,4 +1,6 @@
 itemGroup.tabbuildingmaterials=CSM: Baumaterialien
+itemGroup.tabinteriorfinishes=CSM: Innenausbau
+itemGroup.tabstructureframing=CSM: Tragwerk & Ständerbau
 tile.blackmetal.name=Schwarzes Metall
 tile.blackmetal_fence.name=Schwarzer Metallzaun
 tile.blackmetal_slab.name=Schwarze Metallstufe
