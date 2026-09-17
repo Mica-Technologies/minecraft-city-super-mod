@@ -284,9 +284,11 @@ blocks, texture size). A block model transform `scale` on a small JSON plate wou
 reached, but it scales the setback and back-to-back depths along with the plate, so those models
 would have had to be authored at a fraction of their real offsets.
 
-Everything else is the ordinary sign: the plate is half a unit thick on the same 1 x 3 post, the
-setback model moves it back 12.5 units onto a post reaching the back of the block, and the
-back-to-back model moves it back against the partner sign's post with no post of its own. The
+Everything else is the ordinary sign, on the JSON plates' own offsets: the plate is half a unit
+thick on the same 1 x 3 post, the setback model moves it back 12.5 units onto a post reaching the
+back of the block, and the back-to-back model moves it 28.49 units back, into the partner's
+block, with no post of its own -- a hundredth of a unit in front of the back of the partner's
+post, where the JSON plates put their own art sliver, so neither face z-fights the other. The
 front face wears the art and the back and edges wear `absolutely_nothing_sign`, so transparent
 corners in the art are see-through rather than grey. The source art is not in the repository; the
 script's `--art` option rebuilds the textures from it, and `--check` covers the models and
@@ -296,6 +298,21 @@ What the overhang does not bring with it: the selection and collision boxes are 
 sign's, inside the placed block, so the plate is only clicked and only stops a player there; and
 the overhanging part is drawn with the placed block's render section, so it can vanish at the
 very edge of the screen when that section is culled.
+
+### A back-to-back pair, and why only one plate may move
+
+Moving a plate nearly two blocks back is only right while exactly ONE sign of a pair does it. The
+first pair of these panels hung in mid air showed what happens otherwise: neither had support
+below it, so both took the shift, both plates moved 28.49 units back, and they swapped places --
+each ended up behind the other, arts pointing at each other, blank backs to the world, a block
+and a half apart. The panels made it obvious, but the geometry is every sign family's.
+
+The answer is not a second convention for the big panels. `AbstractBlockSign.getShouldBackToBack`
+picks one sign of the pair, so a pair with no support under either still moves one plate and
+leaves the other where it is, and the assembly comes out the way a posted pair always did: the
+unshifted panel's plate, its post, then the shifted panel's plate bolted to the back of that same
+post, each art facing out. Keep the panels on 28.49 for that reason -- an offset of their own
+would look tidy on a hanging pair and break every pairing with a sign of another family.
 
 ### Why the art is letterboxed, not squished
 
