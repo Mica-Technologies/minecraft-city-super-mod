@@ -3,8 +3,9 @@
 The dynamic street sign is the intersection street-name blade: the green (or blue, brown, white)
 plate that hangs off a signal mast arm or bolts to a wall, carrying a street name and, optionally,
 a cardinal prefix, a street-type suffix, a city line, a block number, a route shield or civic
-logo, and a directional arrow. A single placeable block renders the whole thing through a
-TileEntitySpecialRenderer (TESR); players edit it in-world through a three-tab GUI, and the
+logo, and a directional arrow -- optionally with a second blade for another street hung directly
+below the first. A single placeable block renders the whole thing through a
+TileEntitySpecialRenderer (TESR); players edit it in-world through a four-tab GUI, and the
 configuration is stored as a JSON document in the tile entity's NBT and synced to the server with
 one update packet.
 
@@ -31,7 +32,8 @@ dependency, so it is usable on both sides. Gson serializes it to one NBT string 
 
 | Class | Role | Key facts |
 |---|---|---|
-| `StreetSignData` | The whole sign | `VERSION = 1`. Panel style (color, border 0–4, corners, mount, extruded frame, both-sides), lighting (`internalLight` + `SignLightMode`), legend (`prefix`, `streetName`, `suffix`, `cityText`, `textScale` 0.5–3.0), block-number slot, emblem slot, arrow slot, and `minWidth` / `minHeight` floors (16–320 / 8–64 sign px). String setters clamp to per-field length caps. `fromJson` is defensive — null/empty/malformed yields a fresh default and never throws, because it runs in the renderer and on the network path. `copy()` is a JSON round trip. |
+| `StreetSignData` | The whole sign | `VERSION = 1`. **Extends `StreetSignLegend`**: the inherited legend is the upper (or only) blade. Adds panel style (color, border 0–4, corners, mount, extruded frame, both-sides), lighting (`internalLight` + `SignLightMode`), the shared legend style (`textScale` 0.5–3.0, `affixVertical`), `minWidth` / `minHeight` floors (16–320 / 8–64 sign px), and `lowerBlade` -- a nested `StreetSignLegend` for a second blade, null for one blade. `fromJson` is defensive — null/empty/malformed yields a fresh default and never throws, because it runs in the renderer and on the network path — and it repairs both legends (nulls, over-long strings), because Gson bypasses the setters. `copy()` is a JSON round trip. |
+| `StreetSignLegend` | What one blade says | `prefix`, `streetName`, `suffix`, `cityText`, the block-number slot, the emblem slot and the arrow slot. String setters clamp to per-field length caps. |
 | `StreetSignMount` | How the blade hangs | `HANGING` (suspended below two hangers that reach half a block above, panel centered in the block's depth), `HANGING_BRACKET` (the same panel, hung off a horizontal support beam carried on a single centre drop) or `FLAT` (back against the block behind, like a guide sign). `canBeDoubleSided()` is true for either hanging style. Ask `isHanging()` rather than comparing against a constant -- the second hanging style had to be appended after `FLAT` because ordinals are serialized. |
 | `StreetSignSlotPosition` | Where an optional slot sits | `NONE` / `LEFT` / `RIGHT`, used independently by the block number, the emblem, and the arrow. |
 | `StreetSignVerticalPos` | Vertical placement | `TOP` / `MIDDLE` / `BOTTOM`. Used by the block number (real blades put it against an edge far more often than centered) and by `affixVertical`, which aligns the prefix and suffix against the street name's cap line, center, or baseline. |
@@ -44,6 +46,14 @@ dependency, so it is usable on both sides. Gson serializes it to one NBT string 
 markers), `GuideSignAtlas`, and `GuideSignFontRenderer` (the FHWA legend font). One atlas, one
 font, one visual language.
 
+**Why the legend is a superclass.** Gson writes a superclass's fields at the top level under their
+own names, so moving the legend fields out of `StreetSignData` into `StreetSignLegend` left the
+document's keys exactly where they were: an old save loads as the upper blade with no second
+blade, and a sign without a second blade writes back the same keys and values (the key *order*
+changes, which JSON does not care about). `lowerBlade` is null unless switched on, and Gson omits
+a null field, so it adds nothing to a single-blade document. `StreetSignDataTest` pins all of
+this against a literal old-format payload. Never rename a legend field -- its name is the key.
+
 **Every enum here is append-only** — ordinals are serialized. Each exposes `next()` for GUI
 cycling and a clamping `fromOrdinal` that returns a safe default for out-of-range values, so a
 hand-edited or truncated document can never produce an invalid enum.
@@ -53,11 +63,11 @@ hand-edited or truncated document can never produce an invalid enum.
 | Component | File | Notes |
 |---|---|---|
 | Block | `trafficaccessories/BlockDynamicStreetSign.java` | Extends `AbstractBlockRotatableNSEW` + `ICsmTileEntityProvider`. Material IRON, SoundType METAL, `CUTOUT_MIPPED`, not opaque/full cube. `onBlockActivated` opens GUI 20. **The AABB follows the mount** (see below). `getBlockConnectsRedstone` is true and `neighborChanged` / `onBlockPlacedBy` cache the power state on the TE for `SignLightMode.REDSTONE`. |
-| TileEntity | `trafficaccessories/TileEntityDynamicStreetSign.java` | Extends `AbstractTileEntity`. JSON in NBT key `"signData"`, powered flag in `"lightPowered"`. Lazy `cachedData`, invalidated on any write. `getRenderBoundingBox` covers ±10 blocks horizontally and −3/+4 vertically — a blade may be forced to 20 blocks wide, and a hanging one carries hangers above the block. `getMaxRenderDistanceSquared` is 96². |
+| TileEntity | `trafficaccessories/TileEntityDynamicStreetSign.java` | Extends `AbstractTileEntity`. JSON in NBT key `"signData"`, powered flag in `"lightPowered"`. Lazy `cachedData`, invalidated on any write. `getRenderBoundingBox` covers ±10 blocks horizontally and −3/+4 vertically (−9 below with a second blade, which can end about 8.6 blocks down) — a blade may be forced to 20 blocks wide, and a hanging one carries hangers above the block. `getMaxRenderDistanceSquared` is 96². |
 | Renderer | `trafficaccessories/TileEntityDynamicStreetSignRenderer.java` | Direct immediate-mode rendering. Same conventions as the guide sign TESR. |
 | Update packet | `codeutils/packets/DynamicStreetSignUpdatePacket.java` | `BlockPos` (as long) + `signDataJson` (UTF-8). |
 | Packet handler | `codeutils/packets/DynamicStreetSignUpdateHandler.java` | `Side.SERVER`. Reach check via `CsmPacketUtils.canPlayerReach`, then a `MAX_JSON_LENGTH = 4096` cap, then `setSignDataJson`. |
-| GUI | `trafficaccessories/DynamicStreetSignGui.java` | 3-tab `GuiScreen`. |
+| GUI | `trafficaccessories/DynamicStreetSignGui.java` | 4-tab `GuiScreen`. |
 
 Registration touch-points: GUI case in `CsmGuiHandler.java` (keyed off `BlockDynamicStreetSign.GUI_ID`);
 packet in `Csm.java`; TESR in `CsmClientProxy.java`; block in `CsmTabTrafficAccessories.java`;
@@ -75,6 +85,11 @@ side.
 - **Either hanging mount** → a slab through the middle of the block (`6.5/16 … 9.5/16` on
   whichever axis the panel's thickness runs along), full height so the hangers are clickable
   too. The two hanging styles differ only in the hardware above the blade, so they share a box.
+
+A second blade does not grow either box. Both already span the block's full height, and the part
+of a stacked pair outside the block is handled the way an oversized single blade always was:
+drawn, not clickable. A box past `0..1` would buy nothing -- a ray only tests the blocks whose
+cells it enters -- and would hand the sign a collision box in its neighbours' cells.
 
 `getBlockBoundingBox` reads the mount off the tile entity. It is called during chunk load
 **before** tile entities are attached, so the lookup falls back to the default mount when there
@@ -123,7 +138,9 @@ block). The four inherited invariants, all of which the guide sign learned the h
 ### Layout
 
 `computeLayout(data)` returns a `Layout` holding every measurement the draw pass and the GUI
-preview's fit math need — computed once so the two can never disagree.
+preview's fit math need — computed once so the two can never disagree. With a second blade it is
+the top blade's layout, and the lower blade's is on `Layout.lower`; `blades()` walks them top to
+bottom, which is how every per-blade pass (core, face, legend, frame) is written.
 
 | Constant | Value | Controls |
 |---|---|---|
@@ -176,6 +193,37 @@ number set to BOTTOM sat visibly *below* the name's baseline rather than flush w
 
 **Sizing.** The panel auto-sizes to its content, then takes the max with `minWidth` / `minHeight`.
 Surplus from a floor leaves the content centered.
+
+### Stacked blades
+
+A road that changes name at a junction gets two blades on one block: the top one lettered from
+the sign's own legend, the lower one from `lowerBlade`. Two blocks placed one above the other were
+never going to stack cleanly -- each sized itself from its own content, so different names gave
+different panels, and a hanging blade's hangers run half a block up through whatever is above it.
+One block owning both is what fixes both problems.
+
+- **Sizing.** `measureBlade` sizes each blade from its own content; `computeLayout` then gives
+  both the **wider** width and the **taller** height, and `placeBlade` centers each legend in its
+  panel. Everything else -- colour, border, corners, frame, lighting, text size, affix alignment,
+  the size floors -- is one setting for the pair, so the blades cannot drift apart.
+- **Gap.** `BLADE_GAP = 3.0` sign px of clear space, outer edge to outer edge (border and frame
+  included), about a fifth of a blade: enough to read as two blades on one assembly, and to show
+  the links between them.
+- **Hanging.** The top blade stays exactly where a single blade hangs, and the hangers, bracket,
+  clamp height and `HANGER_REACH_ABOVE` are untouched -- they grip the top blade only. The lower
+  blade hangs from the top one on **links**: a shoe on its top edge, a clip on the upper blade's
+  bottom edge and a rod across the gap, at the same x as the hardware above (`HANGER_INSET_FRACTION`
+  or `BRACKET_LINK_INSET_FRACTION`), so the load path reads straight down. A framed pair also runs
+  a short feed cable across the gap at the same end as the main feed.
+- **Flat.** The pair centers on the block **as a whole**, so the top blade rises by half of what
+  the lower one adds. No links: both are bolted to the wall behind.
+- **Double-sided.** Unchanged: the back pass rotates the whole assembly, both blades, 180°.
+- **Display lists.** The core, face and frame lists each hold both blades. Any edit already sets
+  the tile entity's dirty flag; `structureKey` also carries a bit for the stack (bit 33) so a list
+  compiled for one shape can never replay for the other.
+
+`DynamicStreetSignLayoutTest` covers the shared size in either order, the hanging top blade not
+moving, the gap, the flat pair's centering and the preview box.
 
 ### Mount geometry
 
@@ -380,7 +428,7 @@ mvn -f dev-env-utils/pom.xml compile exec:java \
 
 ### GUI (`DynamicStreetSignGui`)
 
-Three tabs, using the guide sign GUI's scrolling-viewport pattern: content between the tab strip
+Four tabs, using the guide sign GUI's scrolling-viewport pattern: content between the tab strip
 and the Save/Cancel row scrolls with the mouse wheel, off-viewport widgets are hidden
 (`visible = false`, `setVisible(false)`) rather than moved so they cannot intercept clicks or
 bleed through the fixed strips, and a scrollbar indicator is drawn when content overflows.
@@ -391,6 +439,12 @@ bleed through the fixed strips, and a scrollbar indicator is drawn when content 
   Each label row's Y is recorded while the tab is built rather than recomputed from the same
   increments in the draw pass — doing the latter meant every inserted row silently desynced the
   labels from the widgets they describe.
+- **Blade 2**: a `Second Blade: ON/OFF` switch (off by default), and while it is on the Text
+  tab's legend rows for the lower blade -- everything except text size and prefix/suffix
+  alignment, which the pair shares. The tabs are one builder (`buildLegendRows`) pointed at a
+  different `StreetSignLegend`; every legend control acts on `activeLegend()`, never on the
+  document directly. Switching the blade off parks its legend in the screen, so switching it back
+  on in the same session restores what was typed; only what is on when Save is pressed is sent.
 - **Style**: color, corners, mount, both-sides, extruded frame, border, min width, min height,
   internal illumination and its mode, template cycle, and copy/paste.
 - **Preview**: a live WYSIWYG render at the top — drawn by the TESR's own `renderForGui`,

@@ -104,6 +104,12 @@ public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
    * south face for NORTH, west face for EAST. A west-facing blade viewed from directly overhead
    * sits hard against the east edge of its own block. This used to be crossed for east/west only,
    * matching a renderer that drew the north/south pair backwards.
+   *
+   * <p>A second blade changes nothing here. Both boxes already span the block's full height, and
+   * the part of a stacked pair that reaches past the block is treated the way an oversized
+   * single blade always has been: drawn, but not clickable. A box outside {@code 0..1} would not
+   * help anyway -- a ray only tests the blocks whose cells it enters -- and would give the sign a
+   * collision box in the neighbouring cells.
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {

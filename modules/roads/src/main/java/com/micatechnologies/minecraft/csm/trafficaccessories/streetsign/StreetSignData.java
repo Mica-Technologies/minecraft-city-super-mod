@@ -3,9 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories.streetsign;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
-import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignArrowType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignColor;
-import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightMode;
 
 /**
@@ -22,8 +20,15 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLight
  * {@code fromOrdinal}, so a hand-edited or truncated document can never produce an invalid
  * value. Fields absent from older JSON fall to their Java defaults, which are chosen so an
  * older sign keeps rendering exactly as it did.
+ *
+ * <p><b>The legend lives in the superclass.</b> What is lettered on a blade is a
+ * {@link StreetSignLegend}, and this class extends it: the inherited fields are the upper (or
+ * only) blade, serialized at the top level under the names they always had. An optional second
+ * blade hangs below it as a nested {@link StreetSignLegend} in {@code lowerBlade}; everything else
+ * here -- colour, border, corners, mount, frame, lighting, text size, affix alignment and the size
+ * floors -- is shared by both blades, so a stacked pair cannot drift apart in style.
  */
-public class StreetSignData {
+public class StreetSignData extends StreetSignLegend {
 
   private static final int VERSION = 1;
   private static final Gson GSON = new GsonBuilder().create();
@@ -36,11 +41,6 @@ public class StreetSignData {
   public static final int MAX_BORDER_WIDTH = 4;
   public static final float MIN_TEXT_SCALE = 0.5f;
   public static final float MAX_TEXT_SCALE = 3.0f;
-  public static final int MAX_NAME_LENGTH = 28;
-  public static final int MAX_AFFIX_LENGTH = 6;
-  public static final int MAX_CITY_LENGTH = 20;
-  public static final int MAX_BLOCK_LENGTH = 6;
-  public static final int MAX_ROUTE_LENGTH = 4;
 
   private int version = VERSION;
 
@@ -69,14 +69,7 @@ public class StreetSignData {
   private boolean internalLight = false;
   private int lightMode = SignLightMode.NIGHT.ordinal();
 
-  // --- Legend ------------------------------------------------------------------------
-  /** Cardinal prefix drawn small and raised ahead of the name, e.g. "W". */
-  private String prefix = "";
-  private String streetName = "MAIN";
-  /** Street type drawn small and raised after the name, e.g. "ST", "BLVD". */
-  private String suffix = "ST";
-  /** Optional small line under the name -- a city, district, or agency. */
-  private String cityText = "";
+  // --- Shared legend style -----------------------------------------------------------
   private float textScale = 1.0f;
   /**
    * Where the prefix and suffix sit against the street name. TOP hangs them from the name's
@@ -86,27 +79,20 @@ public class StreetSignData {
    */
   private int affixVertical = StreetSignVerticalPos.TOP.ordinal();
 
-  // --- Block number slot -------------------------------------------------------------
-  private String blockNumber = "";
-  private int blockPosition = StreetSignSlotPosition.NONE.ordinal();
-  private int blockVertical = StreetSignVerticalPos.MIDDLE.ordinal();
-
-  // --- Emblem slot (route shield or civic logo) --------------------------------------
-  private int emblemKind = StreetSignEmblemKind.NONE.ordinal();
-  private int emblemPosition = StreetSignSlotPosition.LEFT.ordinal();
-  private int shieldType = GuideSignShieldType.INTERSTATE.ordinal();
-  private String shieldRoute = "";
-  private int logoType = StreetSignLogoType.SEAL_STAR.ordinal();
-
-  // --- Arrow slot --------------------------------------------------------------------
-  private int arrowPosition = StreetSignSlotPosition.NONE.ordinal();
-  private int arrowType = GuideSignArrowType.RIGHT.ordinal();
-
   // --- Size floors -------------------------------------------------------------------
   /** Floor for the blade's width in sign pixels; content stays centered in any surplus. */
   private int minWidth = 16;
   /** Floor for the blade's height in sign pixels; content stays centered in any surplus. */
   private int minHeight = 8;
+
+  // --- Second blade ------------------------------------------------------------------
+  /**
+   * The legend of a second blade hung directly below the first, sharing its width, height and
+   * style -- the two-name assembly used where a road changes name at the junction. Null means
+   * a single blade, and Gson omits a null field, so a sign without one saves exactly the
+   * document it always did and an older sign loads with none.
+   */
+  private StreetSignLegend lowerBlade = null;
 
   public StreetSignData() {
   }
@@ -220,43 +206,7 @@ public class StreetSignData {
     this.lightMode = getLightMode().next().ordinal();
   }
 
-  // ----------------------------------------------------------------------- legend ----
-
-  public String getPrefix() {
-    return prefix == null ? "" : prefix;
-  }
-
-  public void setPrefix(String prefix) {
-    this.prefix = clamp(prefix, MAX_AFFIX_LENGTH);
-  }
-
-  public String getStreetName() {
-    return streetName == null ? "" : streetName;
-  }
-
-  public void setStreetName(String streetName) {
-    this.streetName = clamp(streetName, MAX_NAME_LENGTH);
-  }
-
-  public String getSuffix() {
-    return suffix == null ? "" : suffix;
-  }
-
-  public void setSuffix(String suffix) {
-    this.suffix = clamp(suffix, MAX_AFFIX_LENGTH);
-  }
-
-  public String getCityText() {
-    return cityText == null ? "" : cityText;
-  }
-
-  public void setCityText(String cityText) {
-    this.cityText = clamp(cityText, MAX_CITY_LENGTH);
-  }
-
-  public boolean hasCityText() {
-    return !getCityText().isEmpty();
-  }
+  // ---------------------------------------------------------- shared legend style ----
 
   public StreetSignVerticalPos getAffixVertical() {
     return StreetSignVerticalPos.fromOrdinal(affixVertical);
@@ -278,126 +228,6 @@ public class StreetSignData {
     this.textScale = Math.max(MIN_TEXT_SCALE, Math.min(MAX_TEXT_SCALE, textScale));
   }
 
-  // ----------------------------------------------------------------- block number ----
-
-  public String getBlockNumber() {
-    return blockNumber == null ? "" : blockNumber;
-  }
-
-  public void setBlockNumber(String blockNumber) {
-    this.blockNumber = clamp(blockNumber, MAX_BLOCK_LENGTH);
-  }
-
-  public StreetSignSlotPosition getBlockPosition() {
-    return StreetSignSlotPosition.fromOrdinal(blockPosition);
-  }
-
-  public void setBlockPosition(StreetSignSlotPosition position) {
-    this.blockPosition = position.ordinal();
-  }
-
-  public void cycleBlockPosition() {
-    this.blockPosition = getBlockPosition().next().ordinal();
-  }
-
-  public StreetSignVerticalPos getBlockVertical() {
-    return StreetSignVerticalPos.fromOrdinal(blockVertical);
-  }
-
-  public void setBlockVertical(StreetSignVerticalPos vertical) {
-    this.blockVertical = vertical.ordinal();
-  }
-
-  public void cycleBlockVertical() {
-    this.blockVertical = getBlockVertical().next().ordinal();
-  }
-
-  /** Whether the block number slot occupies width: switched on AND actually carrying text. */
-  public boolean hasBlockNumber() {
-    return getBlockPosition().isShown() && !getBlockNumber().isEmpty();
-  }
-
-  // ----------------------------------------------------------------------- emblem ----
-
-  public StreetSignEmblemKind getEmblemKind() {
-    return StreetSignEmblemKind.fromOrdinal(emblemKind);
-  }
-
-  public void setEmblemKind(StreetSignEmblemKind kind) {
-    this.emblemKind = kind.ordinal();
-  }
-
-  public void cycleEmblemKind() {
-    this.emblemKind = getEmblemKind().next().ordinal();
-  }
-
-  public StreetSignSlotPosition getEmblemPosition() {
-    return StreetSignSlotPosition.fromOrdinal(emblemPosition);
-  }
-
-  public void setEmblemPosition(StreetSignSlotPosition position) {
-    this.emblemPosition = position.ordinal();
-  }
-
-  public void cycleEmblemPosition() {
-    this.emblemPosition = getEmblemPosition().next().ordinal();
-  }
-
-  public GuideSignShieldType getShieldType() {
-    return GuideSignShieldType.fromOrdinal(shieldType);
-  }
-
-  public void setShieldType(GuideSignShieldType type) {
-    this.shieldType = type.ordinal();
-  }
-
-  public String getShieldRoute() {
-    return shieldRoute == null ? "" : shieldRoute;
-  }
-
-  public void setShieldRoute(String shieldRoute) {
-    this.shieldRoute = clamp(shieldRoute, MAX_ROUTE_LENGTH);
-  }
-
-  public StreetSignLogoType getLogoType() {
-    return StreetSignLogoType.fromOrdinal(logoType);
-  }
-
-  public void setLogoType(StreetSignLogoType type) {
-    this.logoType = type.ordinal();
-  }
-
-  /** Whether the emblem slot occupies width: a kind is chosen AND a side is chosen. */
-  public boolean hasEmblem() {
-    return getEmblemKind() != StreetSignEmblemKind.NONE && getEmblemPosition().isShown();
-  }
-
-  // ------------------------------------------------------------------------ arrow ----
-
-  public StreetSignSlotPosition getArrowPosition() {
-    return StreetSignSlotPosition.fromOrdinal(arrowPosition);
-  }
-
-  public void setArrowPosition(StreetSignSlotPosition position) {
-    this.arrowPosition = position.ordinal();
-  }
-
-  public void cycleArrowPosition() {
-    this.arrowPosition = getArrowPosition().next().ordinal();
-  }
-
-  public GuideSignArrowType getArrowType() {
-    return GuideSignArrowType.fromOrdinal(arrowType);
-  }
-
-  public void setArrowType(GuideSignArrowType type) {
-    this.arrowType = type.ordinal();
-  }
-
-  public boolean hasArrow() {
-    return getArrowPosition().isShown();
-  }
-
   // ------------------------------------------------------------------- size floors ----
 
   public int getMinWidth() {
@@ -416,14 +246,46 @@ public class StreetSignData {
     this.minHeight = Math.max(MIN_MIN_HEIGHT, Math.min(MAX_MIN_HEIGHT, minHeight));
   }
 
-  // ----------------------------------------------------------------- serialization ----
+  // ------------------------------------------------------------------ second blade ----
 
-  private static String clamp(String value, int maxLength) {
-    if (value == null) {
-      return "";
-    }
-    return value.length() > maxLength ? value.substring(0, maxLength) : value;
+  /** Whether a second blade hangs below the first. */
+  public boolean hasLowerBlade() {
+    return lowerBlade != null;
   }
+
+  /**
+   * The second blade's legend.
+   *
+   * @return the lower blade, or null when this is a single blade
+   */
+  public StreetSignLegend getLowerBlade() {
+    return lowerBlade;
+  }
+
+  /**
+   * Adds, replaces or (with null) removes the second blade.
+   *
+   * @param legend the lower blade's legend, or null for a single blade
+   */
+  public void setLowerBlade(StreetSignLegend legend) {
+    this.lowerBlade = legend;
+  }
+
+  /**
+   * A fresh legend for a newly added second blade: a different street name than the first
+   * blade's default, so switching the blade on visibly adds a second, distinct sign rather than
+   * what looks like a duplicate.
+   *
+   * @return a new legend reading "ELM ST"
+   */
+  public static StreetSignLegend newLowerBlade() {
+    StreetSignLegend legend = new StreetSignLegend();
+    legend.setStreetName("ELM");
+    legend.setSuffix("ST");
+    return legend;
+  }
+
+  // ----------------------------------------------------------------- serialization ----
 
   public String toJson() {
     this.version = VERSION;
@@ -444,23 +306,9 @@ public class StreetSignData {
       if (data == null) {
         return new StreetSignData();
       }
-      if (data.prefix == null) {
-        data.prefix = "";
-      }
-      if (data.streetName == null) {
-        data.streetName = "";
-      }
-      if (data.suffix == null) {
-        data.suffix = "";
-      }
-      if (data.cityText == null) {
-        data.cityText = "";
-      }
-      if (data.blockNumber == null) {
-        data.blockNumber = "";
-      }
-      if (data.shieldRoute == null) {
-        data.shieldRoute = "";
+      data.sanitizeLegend();
+      if (data.lowerBlade != null) {
+        data.lowerBlade.sanitizeLegend();
       }
       return data;
     } catch (Exception e) {

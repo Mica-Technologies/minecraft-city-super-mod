@@ -10,6 +10,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSign
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightMode;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignEmblemKind;
+import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignLegend;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignSlotPosition;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignVerticalPos;
@@ -101,6 +102,14 @@ public class TileEntityDynamicStreetSignRenderer
   private static final float CZ = 8.0f;
   /** How far below the block's top edge a hanging blade's top rail sits. */
   private static final float HANG_DROP = 5.5f;
+  /**
+   * Clear space between the two blades of a stacked pair, outer edge to outer edge (border and
+   * frame included). A real two-name assembly hangs its blades a few inches apart on one set of
+   * hardware; about a fifth of a blade's height reads as one assembly rather than as either two
+   * unrelated signs or one sign with a stripe through it, and leaves the links between them a
+   * visible run of rod. Package-private for the layout test.
+   */
+  static final float BLADE_GAP = 3.0f;
 
   // ---- Padding and gaps ------------------------------------------------------------------
   private static final float PAD_SIDE = 3.0f;
@@ -425,15 +434,108 @@ public class TileEntityDynamicStreetSignRenderer
     float nameCenterY;
     float cityCenterY;
 
+    /** Height of the name line plus the city line under it, gaps included. */
+    float textBlockHeight;
+
     /** Topmost point of the whole assembly, hangers included -- for the preview's fit math. */
     float assemblyTop;
-    /** Bottommost point of the whole assembly. */
+    /**
+     * Bottommost point of the whole assembly -- the lower blade's bottom edge when there are
+     * two. Only meaningful on the top blade's layout.
+     */
     float assemblyBottom;
+
+    /** What this blade is lettered with. */
+    StreetSignLegend legend;
+    /**
+     * The second blade hung below this one, sharing its width and height, or null for a single
+     * blade. Only the top blade's layout carries one; the lower blade's own is always null.
+     */
+    Layout lower;
+
+    /** The blades top to bottom: this one, then the lower one if there is one. */
+    Layout[] blades() {
+      return lower == null ? new Layout[]{this} : new Layout[]{this, lower};
+    }
   }
 
-  /** Measures a blade without drawing it. Safe to call off the render thread's state. */
+  /**
+   * Measures a sign -- one blade, or a stacked pair -- without drawing it. Safe to call off the
+   * render thread's state. Returns the top blade's layout; a second blade is on {@link
+   * Layout#lower}.
+   *
+   * <p>A stacked pair is sized as one: each blade is measured on its own content, then both
+   * take the wider of the two widths and the taller of the two heights. Content-driven sizing
+   * per blade is exactly what made two separately placed blades disagree, and one block owning
+   * both is what lets the sizes be settled once.
+   */
   public Layout computeLayout(StreetSignData data) {
+    Layout top = measureBlade(data, data);
+    Layout lower = data.hasLowerBlade() ? measureBlade(data, data.getLowerBlade()) : null;
+    if (lower != null) {
+      float width = Math.max(top.signWidth, lower.signWidth);
+      float height = Math.max(top.signHeight, lower.signHeight);
+      top.signWidth = width;
+      lower.signWidth = width;
+      top.signHeight = height;
+      lower.signHeight = height;
+    }
+    // Border and frame are shared style, so both blades reach the same distance past their
+    // painted panel at each edge.
+    float edge = top.borderInset + top.frameOverhangY;
+
+    StreetSignMount mount = data.getMountType();
+    if (mount.isHanging()) {
+      // The blade drops from its hardware rather than centering on the block, so the hangers
+      // have somewhere to go. Both hanging styles drop by the same amount, so switching
+      // between them swaps the hardware without moving the panel. A second blade hangs below
+      // the first and moves nothing above it: the hangers still grip the top blade only.
+      top.signTop = 16.0f - HANG_DROP;
+      top.faceZ = CZ - SIGN_DEPTH / 2.0f;
+      top.coreBack = 16.0f - top.faceZ - Z_CORE_FRONT;
+      top.assemblyTop = 16.0f + HANGER_REACH_ABOVE;
+      if (mount == StreetSignMount.HANGING_BRACKET) {
+        top.mountOverhangX = BEAM_OVERHANG;
+        // A deeply bordered and framed blade can push the beam most of the way to the top of
+        // the run on its own. Take the whole stack as the floor so the centre drop always has
+        // somewhere to go: without it the post's box inverts and renders inside out.
+        top.assemblyTop = Math.max(top.assemblyTop,
+            top.signTop + edge + BEAM_GAP + BEAM_THICKNESS
+                + DROP_SADDLE_HEIGHT + HANGER_CLAMP_HEIGHT + JOINT_OVERLAP);
+      }
+    } else {
+      // Centered on the block -- a stacked pair centers as a whole, so the top blade rises by
+      // half of what the lower one adds.
+      float stackRise = lower == null ? 0 : (top.signHeight + 2 * edge + BLADE_GAP) / 2.0f;
+      top.signTop = CY + top.signHeight / 2.0f + stackRise;
+      top.faceZ = 16.0f - SIGN_DEPTH;
+      top.coreBack = 16.0f + 0.05f;
+      top.assemblyTop = top.signTop + edge;
+    }
+    placeBlade(top);
+
+    Layout bottom = top;
+    if (lower != null) {
+      lower.faceZ = top.faceZ;
+      lower.coreBack = top.coreBack;
+      lower.mountOverhangX = top.mountOverhangX;
+      lower.signTop = top.signBottom - 2 * edge - BLADE_GAP;
+      placeBlade(lower);
+      top.lower = lower;
+      bottom = lower;
+    }
+    top.assemblyBottom = bottom.signBottom - edge;
+    return top;
+  }
+
+  /**
+   * Everything about one blade that depends only on its own content: the legend metrics, the
+   * side slots, and its natural panel size. Placement is left to {@link #placeBlade}, after a
+   * stacked pair has agreed a shared size.
+   */
+  private static Layout measureBlade(StreetSignData data, StreetSignLegend legend) {
     Layout l = new Layout();
+    l.legend = legend;
     l.scale = data.getTextScale();
     l.nameCap = NAME_CAP_HEIGHT * l.scale;
     l.affixCap = l.nameCap * AFFIX_CAP_FRACTION;
@@ -446,39 +548,39 @@ public class TileEntityDynamicStreetSignRenderer
     float gapSlot = SLOT_GAP * l.scale;
     float gapCity = CITY_GAP * l.scale;
 
-    l.nameWidth = GuideSignFontRenderer.getStringWidth(data.getStreetName(), l.nameCap);
-    l.prefixWidth = data.getPrefix().isEmpty() ? 0
-        : GuideSignFontRenderer.getStringWidth(data.getPrefix(), l.affixCap) + gapAffix;
-    l.suffixWidth = data.getSuffix().isEmpty() ? 0
-        : GuideSignFontRenderer.getStringWidth(data.getSuffix(), l.affixCap) + gapAffix;
+    l.nameWidth = GuideSignFontRenderer.getStringWidth(legend.getStreetName(), l.nameCap);
+    l.prefixWidth = legend.getPrefix().isEmpty() ? 0
+        : GuideSignFontRenderer.getStringWidth(legend.getPrefix(), l.affixCap) + gapAffix;
+    l.suffixWidth = legend.getSuffix().isEmpty() ? 0
+        : GuideSignFontRenderer.getStringWidth(legend.getSuffix(), l.affixCap) + gapAffix;
     l.nameGroupWidth = l.prefixWidth + l.nameWidth + l.suffixWidth;
-    l.cityWidth = data.hasCityText()
-        ? GuideSignFontRenderer.getStringWidth(data.getCityText(), l.cityCap) : 0;
+    l.cityWidth = legend.hasCityText()
+        ? GuideSignFontRenderer.getStringWidth(legend.getCityText(), l.cityCap) : 0;
     l.textColumnWidth = Math.max(l.nameGroupWidth, l.cityWidth);
 
-    l.blockWidth = data.hasBlockNumber()
-        ? GuideSignFontRenderer.getStringWidth(data.getBlockNumber(), l.blockCap) : 0;
-    l.emblemWidth = data.hasEmblem() ? emblemWidth(data, l.emblemSize) : 0;
+    l.blockWidth = legend.hasBlockNumber()
+        ? GuideSignFontRenderer.getStringWidth(legend.getBlockNumber(), l.blockCap) : 0;
+    l.emblemWidth = legend.hasEmblem() ? emblemWidth(legend, l.emblemSize) : 0;
 
     float contentWidth = l.textColumnWidth;
-    if (data.hasBlockNumber()) {
+    if (legend.hasBlockNumber()) {
       contentWidth += l.blockWidth + gapSlot;
     }
-    if (data.hasEmblem()) {
+    if (legend.hasEmblem()) {
       contentWidth += l.emblemWidth + gapSlot;
     }
-    if (data.hasArrow()) {
+    if (legend.hasArrow()) {
       contentWidth += l.arrowSize + gapSlot;
     }
     l.contentWidth = contentWidth;
 
-    float textBlockHeight = l.nameCap * TEXT_VISUAL_FACTOR
-        + (data.hasCityText() ? l.cityCap * TEXT_VISUAL_FACTOR + gapCity : 0);
-    float contentHeight = textBlockHeight;
-    if (data.hasEmblem()) {
+    l.textBlockHeight = l.nameCap * TEXT_VISUAL_FACTOR
+        + (legend.hasCityText() ? l.cityCap * TEXT_VISUAL_FACTOR + gapCity : 0);
+    float contentHeight = l.textBlockHeight;
+    if (legend.hasEmblem()) {
       contentHeight = Math.max(contentHeight, l.emblemSize);
     }
-    if (data.hasArrow()) {
+    if (legend.hasArrow()) {
       contentHeight = Math.max(contentHeight, l.arrowSize);
     }
 
@@ -491,54 +593,34 @@ public class TileEntityDynamicStreetSignRenderer
         contentWidth + 2 * (PAD_SIDE + l.borderInset));
     l.signHeight = Math.max(data.getMinHeight(),
         contentHeight + PAD_TOP + PAD_BOTTOM + 2 * l.borderInset);
-
-    l.signLeft = CX - l.signWidth / 2.0f;
-    l.signRight = l.signLeft + l.signWidth;
-
-    StreetSignMount mount = data.getMountType();
-    if (mount.isHanging()) {
-      // The blade drops from its hardware rather than centering on the block, so the hangers
-      // have somewhere to go. Both hanging styles drop by the same amount, so switching
-      // between them swaps the hardware without moving the panel.
-      l.signTop = 16.0f - HANG_DROP;
-      l.signBottom = l.signTop - l.signHeight;
-      l.faceZ = CZ - SIGN_DEPTH / 2.0f;
-      l.coreBack = 16.0f - l.faceZ - Z_CORE_FRONT;
-      l.assemblyTop = 16.0f + HANGER_REACH_ABOVE;
-      l.assemblyBottom = l.signBottom - l.borderInset - l.frameOverhangY;
-      if (mount == StreetSignMount.HANGING_BRACKET) {
-        l.mountOverhangX = BEAM_OVERHANG;
-        // A deeply bordered and framed blade can push the beam most of the way to the top of
-        // the run on its own. Take the whole stack as the floor so the centre drop always has
-        // somewhere to go: without it the post's box inverts and renders inside out.
-        l.assemblyTop = Math.max(l.assemblyTop,
-            l.signTop + l.borderInset + l.frameOverhangY + BEAM_GAP + BEAM_THICKNESS
-                + DROP_SADDLE_HEIGHT + HANGER_CLAMP_HEIGHT + JOINT_OVERLAP);
-      }
-    } else {
-      l.signTop = CY + l.signHeight / 2.0f;
-      l.signBottom = CY - l.signHeight / 2.0f;
-      l.faceZ = 16.0f - SIGN_DEPTH;
-      l.coreBack = 16.0f + 0.05f;
-      l.assemblyTop = l.signTop + l.borderInset + l.frameOverhangY;
-      l.assemblyBottom = l.signBottom - l.borderInset - l.frameOverhangY;
-    }
-
-    l.contentCenterY = (l.signTop + l.signBottom) / 2.0f;
-    l.contentLeft = CX - contentWidth / 2.0f;
-
-    float textBlockTop = l.contentCenterY + textBlockHeight / 2.0f;
-    l.nameCenterY = textBlockTop - l.nameCap * TEXT_VISUAL_FACTOR / 2.0f;
-    l.cityCenterY = textBlockTop - l.nameCap * TEXT_VISUAL_FACTOR - gapCity
-        - l.cityCap * TEXT_VISUAL_FACTOR / 2.0f;
     return l;
   }
 
+  /**
+   * Resolves a measured blade's position from its {@code signTop} and its (possibly shared)
+   * size: the panel edges and where the legend sits inside it. Content stays centered in any
+   * surplus a floor or a wider partner blade leaves.
+   */
+  private static void placeBlade(Layout l) {
+    l.signLeft = CX - l.signWidth / 2.0f;
+    l.signRight = l.signLeft + l.signWidth;
+    l.signBottom = l.signTop - l.signHeight;
+
+    l.contentCenterY = (l.signTop + l.signBottom) / 2.0f;
+    l.contentLeft = CX - l.contentWidth / 2.0f;
+
+    float gapCity = CITY_GAP * l.scale;
+    float textBlockTop = l.contentCenterY + l.textBlockHeight / 2.0f;
+    l.nameCenterY = textBlockTop - l.nameCap * TEXT_VISUAL_FACTOR / 2.0f;
+    l.cityCenterY = textBlockTop - l.nameCap * TEXT_VISUAL_FACTOR - gapCity
+        - l.cityCap * TEXT_VISUAL_FACTOR / 2.0f;
+  }
+
   /** Rendered width of the emblem cell -- square, except a wide 3-digit shield variant. */
-  private static float emblemWidth(StreetSignData data, float emblemSize) {
-    if (data.getEmblemKind() == StreetSignEmblemKind.SHIELD) {
-      GuideSignShieldType type = data.getShieldType();
-      if (type.usesWideVariant(data.getShieldRoute())) {
+  private static float emblemWidth(StreetSignLegend legend, float emblemSize) {
+    if (legend.getEmblemKind() == StreetSignEmblemKind.SHIELD) {
+      GuideSignShieldType type = legend.getShieldType();
+      if (type.usesWideVariant(legend.getShieldRoute())) {
         return emblemSize * type.getWideAspect();
       }
     }
@@ -595,7 +677,10 @@ public class TileEntityDynamicStreetSignRenderer
     // without GlStateManager noticing, leaving its shadow state stale. See
     // TileEntityTrafficSignalHeadRenderer for the full account.
     boolean bakeable = pos != null && !CsmRenderToggles.streetSignStructurePerFrame;
-    long structureKey = combinedLight & 0xFFFFFFFFL;
+    // Adding or removing the second blade reshapes every list. The dirty flag already forces a
+    // rebuild on any edit; the key carries the stack as well, so a list compiled for one shape
+    // can never be replayed for the other whatever path the edit took.
+    long structureKey = (combinedLight & 0xFFFFFFFFL) | (l.lower != null ? 1L << 33 : 0L);
     // The face additionally follows the illumination, which the structure does not.
     long faceKey = structureKey | (lightOn ? 1L << 32 : 0L);
     if (stateDirty && pos != null) {
@@ -668,18 +753,58 @@ public class TileEntityDynamicStreetSignRenderer
   private void renderStructure(Layout l, StreetSignData data) {
     StreetSignMount mount = data.getMountType();
     if (data.hasExtrudedFrame()) {
-      renderExtrudedFrame(l, mount);
+      // Each blade of a stacked pair is its own extrusion, as the real ones are.
+      for (Layout blade : l.blades()) {
+        renderExtrudedFrame(blade, mount);
+      }
     }
     if (mount.isHanging()) {
+      // The hardware above grips the TOP blade only; the lower blade hangs from the top one.
       if (mount == StreetSignMount.HANGING_BRACKET) {
         renderBracketHanger(l);
       } else {
         renderHangers(l);
       }
+      float inset = mount == StreetSignMount.HANGING_BRACKET
+          ? BRACKET_LINK_INSET_FRACTION : HANGER_INSET_FRACTION;
+      if (l.lower != null) {
+        renderBladeLinks(l, l.lower, inset);
+      }
       if (data.hasExtrudedFrame()) {
         renderPowerCable(l, mount);
+        if (l.lower != null) {
+          // The lower blade is fed from the one above it, across the gap, at the same end.
+          renderCableRun(cableX(l), bladeTop(l.lower) - JOINT_OVERLAP,
+              bladeBottom(l) + JOINT_OVERLAP);
+        }
       }
     }
+  }
+
+  /**
+   * The short links a lower blade hangs from: at each grip point, a shoe on the lower blade's
+   * top edge, a clip on the upper blade's bottom edge, and a rod across the gap between them.
+   * They sit directly below the hardware above -- the same x as the hangers or bracket links --
+   * so the load path reads straight down through both blades.
+   *
+   * @param upper the top blade's layout
+   * @param lower the lower blade's layout
+   * @param inset the grip inset the mount above uses
+   */
+  private void renderBladeLinks(Layout upper, Layout lower, float inset) {
+    float lowerShoe = bladeTop(lower) - JOINT_OVERLAP;
+    float upperClip = bladeBottom(upper) + JOINT_OVERLAP;
+    List<RenderHelper.Box> parts = new ArrayList<>();
+    for (float hx : hangerCenters(upper, inset)) {
+      addHangerShoe(parts, hx, lowerShoe);
+      addHangerShoe(parts, hx, upperClip);
+      parts.add(new RenderHelper.Box(
+          new float[]{hx - HANGER_ROD_WIDTH / 2, lowerShoe + HANGER_SHOE_HEIGHT - JOINT_OVERLAP,
+              CZ - HANGER_ROD_WIDTH / 2},
+          new float[]{hx + HANGER_ROD_WIDTH / 2, upperClip - HANGER_SHOE_HEIGHT + JOINT_OVERLAP,
+              CZ + HANGER_ROD_WIDTH / 2}));
+    }
+    drawMetalwork(parts);
   }
 
   /**
@@ -692,9 +817,11 @@ public class TileEntityDynamicStreetSignRenderer
   private void renderCore(Layout l, CornerStyle corners) {
     float m = BACK_SLEEVE_MARGIN;
     List<RenderHelper.Box> core = new ArrayList<>();
-    addRectBoxes(core, l.signLeft - l.borderInset - m, l.signBottom - l.borderInset - m,
-        l.signRight + l.borderInset + m, l.signTop + l.borderInset + m,
-        l.faceZ + Z_CORE_FRONT, l.coreBack, corners);
+    for (Layout b : l.blades()) {
+      addRectBoxes(core, b.signLeft - b.borderInset - m, b.signBottom - b.borderInset - m,
+          b.signRight + b.borderInset + m, b.signTop + b.borderInset + m,
+          b.faceZ + Z_CORE_FRONT, b.coreBack, corners);
+    }
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -735,46 +862,60 @@ public class TileEntityDynamicStreetSignRenderer
       return;
     }
 
-    float gapSlot = SLOT_GAP * l.scale;
-    float x = l.contentLeft;
-
-    // Side slots run outward from the text column in a fixed order -- arrow outermost, then
-    // emblem, then block number -- which is how a real blade reads at both ends.
-    if (data.getArrowPosition() == StreetSignSlotPosition.LEFT) {
-      renderArrow(data, l, x, backFace);
-      x += l.arrowSize + gapSlot;
-    }
-    if (data.getEmblemPosition() == StreetSignSlotPosition.LEFT && data.hasEmblem()) {
-      renderEmblem(data, l, x, legendTextColor);
-      x += l.emblemWidth + gapSlot;
-    }
-    if (data.getBlockPosition() == StreetSignSlotPosition.LEFT && data.hasBlockNumber()) {
-      renderBlockNumber(data, l, x, legendTextColor);
-      x += l.blockWidth + gapSlot;
-    }
-
-    renderTextColumn(data, l, x, legendTextColor);
-    x += l.textColumnWidth;
-
-    if (data.getBlockPosition() == StreetSignSlotPosition.RIGHT && data.hasBlockNumber()) {
-      x += gapSlot;
-      renderBlockNumber(data, l, x, legendTextColor);
-      x += l.blockWidth;
-    }
-    if (data.getEmblemPosition() == StreetSignSlotPosition.RIGHT && data.hasEmblem()) {
-      x += gapSlot;
-      renderEmblem(data, l, x, legendTextColor);
-      x += l.emblemWidth;
-    }
-    if (data.getArrowPosition() == StreetSignSlotPosition.RIGHT) {
-      x += gapSlot;
-      renderArrow(data, l, x, backFace);
+    for (Layout blade : l.blades()) {
+      renderLegend(blade, data, legendTextColor, backFace);
     }
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
-  /** Prefix, street name, suffix on one line, with the optional city line centered under it. */
+  /**
+   * One blade's lettering and side slots, laid out from that blade's own layout.
+   *
+   * @param l        the blade's layout, which carries its legend
+   * @param data     the whole sign, for the style the blades share
+   * @param backFace whether this is the mirrored rear pass
+   */
+  private void renderLegend(Layout l, StreetSignData data, int legendTextColor,
+      boolean backFace) {
+    StreetSignLegend legend = l.legend;
+    float gapSlot = SLOT_GAP * l.scale;
+    float x = l.contentLeft;
+
+    // Side slots run outward from the text column in a fixed order -- arrow outermost, then
+    // emblem, then block number -- which is how a real blade reads at both ends.
+    if (legend.getArrowPosition() == StreetSignSlotPosition.LEFT) {
+      renderArrow(legend, l, x, backFace);
+      x += l.arrowSize + gapSlot;
+    }
+    if (legend.getEmblemPosition() == StreetSignSlotPosition.LEFT && legend.hasEmblem()) {
+      renderEmblem(legend, l, x, legendTextColor);
+      x += l.emblemWidth + gapSlot;
+    }
+    if (legend.getBlockPosition() == StreetSignSlotPosition.LEFT && legend.hasBlockNumber()) {
+      renderBlockNumber(legend, l, x, legendTextColor);
+      x += l.blockWidth + gapSlot;
+    }
+
+    renderTextColumn(data, legend, l, x, legendTextColor);
+    x += l.textColumnWidth;
+
+    if (legend.getBlockPosition() == StreetSignSlotPosition.RIGHT && legend.hasBlockNumber()) {
+      x += gapSlot;
+      renderBlockNumber(legend, l, x, legendTextColor);
+      x += l.blockWidth;
+    }
+    if (legend.getEmblemPosition() == StreetSignSlotPosition.RIGHT && legend.hasEmblem()) {
+      x += gapSlot;
+      renderEmblem(legend, l, x, legendTextColor);
+      x += l.emblemWidth;
+    }
+    if (legend.getArrowPosition() == StreetSignSlotPosition.RIGHT) {
+      x += gapSlot;
+      renderArrow(legend, l, x, backFace);
+    }
+  }
+
   /**
    * The border plate and the painted face behind the legend. Emits geometry only -- the white pixel
    * is bound by the caller, outside the list.
@@ -793,9 +934,11 @@ public class TileEntityDynamicStreetSignRenderer
 
     if (l.borderInset > 0) {
       List<RenderHelper.Box> border = new ArrayList<>();
-      addRectBoxes(border, l.signLeft - l.borderInset, l.signBottom - l.borderInset,
-          l.signRight + l.borderInset, l.signTop + l.borderInset,
-          l.faceZ + Z_BORDER_PLATE, l.faceZ + Z_BORDER_PLATE + LIT_FACE_DEPTH, corners);
+      for (Layout b : l.blades()) {
+        addRectBoxes(border, b.signLeft - b.borderInset, b.signBottom - b.borderInset,
+            b.signRight + b.borderInset, b.signTop + b.borderInset,
+            b.faceZ + Z_BORDER_PLATE, b.faceZ + Z_BORDER_PLATE + LIT_FACE_DEPTH, corners);
+      }
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(border, buf, legendR, legendG, legendB, 1.0f, 0, 0, 0,
           worldSkyLight, worldBlockLight);
@@ -806,8 +949,10 @@ public class TileEntityDynamicStreetSignRenderer
     // never at the same depth -- coplanar faces z-fight and a face behind the border renders
     // white from the front.
     List<RenderHelper.Box> face = new ArrayList<>();
-    addRectBoxes(face, l.signLeft, l.signBottom, l.signRight, l.signTop,
-        l.faceZ + Z_FACE_PLATE, l.faceZ + Z_FACE_PLATE + LIT_FACE_DEPTH, corners);
+    for (Layout b : l.blades()) {
+      addRectBoxes(face, b.signLeft, b.signBottom, b.signRight, b.signTop,
+          b.faceZ + Z_FACE_PLATE, b.faceZ + Z_FACE_PLATE + LIT_FACE_DEPTH, corners);
+    }
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(face, buf,
         signColor.getRed(), signColor.getGreen(), signColor.getBlue(), 1.0f, 0, 0, 0,
@@ -815,7 +960,9 @@ public class TileEntityDynamicStreetSignRenderer
     tess.draw();
   }
 
-  private void renderTextColumn(StreetSignData data, Layout l, float columnLeft, int color) {
+  /** Prefix, street name, suffix on one line, with the optional city line centered under it. */
+  private void renderTextColumn(StreetSignData data, StreetSignLegend legend, Layout l,
+      float columnLeft, int color) {
     float gapAffix = AFFIX_GAP * l.scale;
     float groupLeft = columnLeft + (l.textColumnWidth - l.nameGroupWidth) / 2.0f;
     float z = l.faceZ + Z_LEGEND;
@@ -825,21 +972,21 @@ public class TileEntityDynamicStreetSignRenderer
 
     GlStateManager.depthMask(false);
     float pen = groupLeft;
-    if (!data.getPrefix().isEmpty()) {
-      GuideSignFontRenderer.drawString(data.getPrefix(), pen, affixCenterY, z, l.affixCap,
+    if (!legend.getPrefix().isEmpty()) {
+      GuideSignFontRenderer.drawString(legend.getPrefix(), pen, affixCenterY, z, l.affixCap,
           color, worldSkyLight, worldBlockLight);
       pen += l.prefixWidth;
     }
-    GuideSignFontRenderer.drawString(data.getStreetName(), pen, l.nameCenterY, z, l.nameCap,
+    GuideSignFontRenderer.drawString(legend.getStreetName(), pen, l.nameCenterY, z, l.nameCap,
         color, worldSkyLight, worldBlockLight);
     pen += l.nameWidth;
-    if (!data.getSuffix().isEmpty()) {
-      GuideSignFontRenderer.drawString(data.getSuffix(), pen + gapAffix, affixCenterY, z,
+    if (!legend.getSuffix().isEmpty()) {
+      GuideSignFontRenderer.drawString(legend.getSuffix(), pen + gapAffix, affixCenterY, z,
           l.affixCap, color, worldSkyLight, worldBlockLight);
     }
-    if (data.hasCityText()) {
+    if (legend.hasCityText()) {
       float cityLeft = columnLeft + (l.textColumnWidth - l.cityWidth) / 2.0f;
-      GuideSignFontRenderer.drawString(data.getCityText(), cityLeft, l.cityCenterY, z,
+      GuideSignFontRenderer.drawString(legend.getCityText(), cityLeft, l.cityCenterY, z,
           l.cityCap, color, worldSkyLight, worldBlockLight);
     }
     GlStateManager.depthMask(true);
@@ -867,28 +1014,28 @@ public class TileEntityDynamicStreetSignRenderer
     return l.nameCenterY + l.nameCap / 2.0f - capHeight / 2.0f;
   }
 
-  private void renderBlockNumber(StreetSignData data, Layout l, float x, int color) {
-    float centerY = alignToNameCap(l, data.getBlockVertical(), l.blockCap);
+  private void renderBlockNumber(StreetSignLegend legend, Layout l, float x, int color) {
+    float centerY = alignToNameCap(l, legend.getBlockVertical(), l.blockCap);
     GlStateManager.depthMask(false);
-    GuideSignFontRenderer.drawString(data.getBlockNumber(), x, centerY, l.faceZ + Z_LEGEND,
+    GuideSignFontRenderer.drawString(legend.getBlockNumber(), x, centerY, l.faceZ + Z_LEGEND,
         l.blockCap, color, worldSkyLight, worldBlockLight);
     GlStateManager.depthMask(true);
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   /** The emblem slot: a route shield with its number drawn over it, or a civic logo cell. */
-  private void renderEmblem(StreetSignData data, Layout l, float x, int legendTextColor) {
-    boolean isShield = data.getEmblemKind() == StreetSignEmblemKind.SHIELD;
-    GuideSignShieldType shieldType = data.getShieldType();
-    boolean wide = isShield && shieldType.usesWideVariant(data.getShieldRoute());
+  private void renderEmblem(StreetSignLegend legend, Layout l, float x, int legendTextColor) {
+    boolean isShield = legend.getEmblemKind() == StreetSignEmblemKind.SHIELD;
+    GuideSignShieldType shieldType = legend.getShieldType();
+    boolean wide = isShield && shieldType.usesWideVariant(legend.getShieldRoute());
 
     float[] uv;
     if (isShield) {
       uv = wide ? GuideSignAtlas.getShieldWideUV(shieldType)
           : GuideSignAtlas.getShieldUV(shieldType);
     } else {
-      uv = GuideSignAtlas.getCellUV(data.getLogoType().getAtlasCol(),
-          data.getLogoType().getAtlasRow());
+      uv = GuideSignAtlas.getCellUV(legend.getLogoType().getAtlasCol(),
+          legend.getLogoType().getAtlasRow());
     }
 
     float halfWidth = l.emblemWidth / 2.0f;
@@ -908,7 +1055,7 @@ public class TileEntityDynamicStreetSignRenderer
     atlasVertex(buf, centerX + halfWidth, centerY - halfHeight, z, uv[2], uv[3]);
     tess.draw();
 
-    String route = data.getShieldRoute();
+    String route = legend.getShieldRoute();
     if (isShield && !route.isEmpty()) {
       // Shrink to fit so a long route number stays inside the shield's legend area instead
       // of spilling past its outline.
@@ -941,8 +1088,8 @@ public class TileEntityDynamicStreetSignRenderer
    *
    * @param backFace whether this is the mirrored rear pass
    */
-  private void renderArrow(StreetSignData data, Layout l, float x, boolean backFace) {
-    float[] uv = GuideSignAtlas.getArrowUV(data.getArrowType());
+  private void renderArrow(StreetSignLegend legend, Layout l, float x, boolean backFace) {
+    float[] uv = GuideSignAtlas.getArrowUV(legend.getArrowType());
     float uLeft = backFace ? uv[2] : uv[0];
     float uRight = backFace ? uv[0] : uv[2];
     float half = l.arrowSize / 2.0f;
@@ -1106,6 +1253,11 @@ public class TileEntityDynamicStreetSignRenderer
     return l.signTop + l.borderInset + l.frameOverhangY;
   }
 
+  /** Bottom edge of the blade, border and extruded frame included. */
+  private static float bladeBottom(Layout l) {
+    return l.signBottom - l.borderInset - l.frameOverhangY;
+  }
+
   /** Underside of the bracket mount's support beam. */
   private static float beamBottom(Layout l) {
     return bladeTop(l) + BEAM_GAP;
@@ -1177,11 +1329,26 @@ public class TileEntityDynamicStreetSignRenderer
    * through the beam.
    */
   private void renderPowerCable(Layout l, StreetSignMount mount) {
-    float baseX = l.signRight + l.borderInset + FRAME_END * CABLE_END_FRACTION;
-    float baseY = bladeTop(l) - JOINT_OVERLAP;
     float topY = mount == StreetSignMount.HANGING_BRACKET
         ? beamBottom(l) + BEAM_THICKNESS / 2.0f
         : l.assemblyTop;
+    renderCableRun(cableX(l), bladeTop(l) - JOINT_OVERLAP, topY);
+  }
+
+  /** Where along the blade's end casting a feed cable leaves it. */
+  private static float cableX(Layout l) {
+    return l.signRight + l.borderInset + FRAME_END * CABLE_END_FRACTION;
+  }
+
+  /**
+   * One bowed run of feed cable between two heights at the same x -- the blade's feed up to
+   * its hardware, or a lower blade's feed across the gap from the blade above it.
+   *
+   * @param baseX where the run starts and ends horizontally
+   * @param baseY the bottom of the run
+   * @param topY  the top of the run
+   */
+  private void renderCableRun(float baseX, float baseY, float topY) {
     float half = CABLE_THICKNESS / 2.0f;
 
     List<RenderHelper.Box> cable = new ArrayList<>();
