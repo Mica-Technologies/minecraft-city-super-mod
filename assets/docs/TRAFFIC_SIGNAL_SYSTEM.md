@@ -1069,6 +1069,14 @@ Rules the phase builders follow so the monitor never trips:
   overlays, preempt entry). Any head that was GREEN/FYA in the last applied phase and would be RED
   is held at solid yellow for the plan's longest programmed yellow, then released to red; a head
   that goes green/FYA again while held is released immediately.
+- **ADVANCED overlap holds**: `RingBarrierState.computeOverlapIntervals` keeps a vehicle overlap
+  green straight through a parent phase's clearance when the phase its ring serves next on the
+  barrier is another of that overlap's included phases (`holdsBetweenIncluded` —
+  `ADVANCED_MODE_ASC3.md` §4a). That adds no way to *end* a green, so the invariant is untouched:
+  the hold only ever makes a green longer. The case to watch is a hold that ends because the plan
+  changed under it (the phase skipped or disabled, a preempt taking the intersection), and that
+  falls to the enforcer above — the head was green in the last applied phase, so it is given its
+  yellow before red rather than snapping.
 - **ADVANCED runtime cold start**: `TileEntityTrafficSignalController.advancedRuntime` (the
   `RingBarrierState`) is `transient` — it is not written to NBT — while `currentPhase` (the last
   *displayed* phase) is. So every chunk unload/reload or server restart rebuilds the ring engine

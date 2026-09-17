@@ -207,6 +207,28 @@ determined (the cross-barrier case isn't, so lead green doesn't apply across a b
 real ASC/3, the controller does not validate the lead time — the operator is responsible for keeping
 it within the preceding clearance so the overlap doesn't conflict with a movement still clearing.
 
+**Parent to parent: no clearance at all.** Lag and lead green are configured *extensions* past the
+parents. On top of them the overlap is held **green** — unconditionally, with neither timer set —
+whenever a ring is clearing one of the overlap's included phases straight into another
+(`holdsBetweenIncluded`). A right turn that overlaps both of the side street's phases was otherwise
+dropped to yellow and then red in the middle of them and went green again a moment later, because
+the base decision only ever looks at what the parents are doing *this tick*. The clearance between
+two phases belongs to the movement that is ending; the overlap's movement is permitted by the phase
+on either side of it, so there is nothing for it to clear and a real controller carries it straight
+through. Both rings are checked, but the base is already green whenever *any* included phase is
+green, so an overlap spanning both rings never reaches the hold.
+
+**Scope/safety.** The same within-barrier limit as lead green, for the same reason and read off the
+same `peekNextWithinBarrier` (0 across a barrier): crossing a barrier starts the other ring's
+conflicting movements, about which the overlap's included phases say nothing. A parent that begins
+with a leading pedestrian interval (`DLY GRN`) is not held into either — that delay exists to give
+the pedestrians crossing the overlap's own path a head start, and the overlap has to be red for it.
+The hold is applied before the `-GRN/YEL` modifier check below, so a modifier phase still reds the
+overlap mid-hold. And a hold that ends because the plan changed under it — the phase skipped or
+disabled, a preempt taking the intersection — never snaps the head to red: `enforceOutputClearance`
+(see the clearance guarantee in `TRAFFIC_SIGNAL_SYSTEM.md`) sees a head that was green going red
+and gives it its yellow first, the same as it does for an over-long lag green.
+
 **Overlap type** (`TrafficSignalOverlapType`, ASC/3 MM-2-2 types):
 - **`NORMAL`** — as above.
 - **`-GRN/YEL` (Minus Green Yellow)** — NORMAL, but additionally forced **red** while any

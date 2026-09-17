@@ -518,6 +518,253 @@ class RingBarrierStateTest {
         "overlap leads green during the clearance before its included phase greens");
   }
 
+  // region: Parent-to-parent overlap hold
+
+  /** The right-turn overlap output head the parent-to-parent hold tests watch. */
+  static final BlockPos OVERLAP_HEAD = new BlockPos(90, 0, 0);
+
+  /**
+   * The side street's two phases with a right-turn overlap over them: 3 (left) and 4 (through),
+   * both ring 1 on barrier B and both on circuit 0, plus an overlap output on circuit 1 whose
+   * included phases are whatever the caller names. Phase 3 greens at tick 0, gaps out to yellow at
+   * 30, goes red at 50 and clears at 90, where phase 4 greens — the parent-to-parent change the
+   * overlap should run straight through.
+   */
+  static TrafficSignalProgrammedPhasePlan overlapHoldPlan(int... includedPhases) {
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 3, 0); // side street left    — ring 1, barrier B
+    enable(plan, 4, 0); // side street through — ring 1, barrier B, same circuit
+    TrafficSignalProgrammedPhase p3 = plan.getPhase(3);
+    p3.setMinGreen(20L);
+    p3.setPassage(10L);
+    p3.setYellow(20L);
+    p3.setRedClear(40L);
+
+    TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+    ov.setEnabled(true);
+    ov.setOutputCircuitIndex(1);
+    ov.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+    ov.setIncludedPhases(includedPhases);
+    plan.getVehicleOverlaps().add(ov);
+    return plan;
+  }
+
+  /** {@code count} circuits, with the overlap's output head on circuit 1. */
+  static TrafficSignalControllerCircuits overlapHoldCircuits(int count) {
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    for (int i = 0; i < count; i++) {
+      TrafficSignalControllerCircuit c = new TrafficSignalControllerCircuit();
+      if (i == 1) {
+        c.getRightSignals().add(OVERLAP_HEAD);
+      }
+      ckts.addCircuit(c);
+    }
+    return ckts;
+  }
+
+  @Test
+  @DisplayName("overlap runs green-to-green from one included phase straight into the next")
+  void overlapHoldsGreenBetweenIncludedPhases() {
+    // In-game report: a right-turn overlap that runs with both of the side street's phases went
+    // yellow and red in the middle of them, then straight back to green. The overlap's movement is
+    // not what is being taken away when its parent clears, so it must hold green throughout.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = overlapHoldPlan(3, 4);
+    TrafficSignalControllerCircuits ckts = overlapHoldCircuits(2);
+    Demand go = new Demand().veh(0, 1, 1, 0);     // a left call (phase 3) and a through call (4)
+    Demand gapped = new Demand().veh(0, 1, 0, 0); // the left clears; phase 4 is still calling
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, go);
+    assertEquals(3, rb.getLastServed(1).phaseNumber);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD),
+        "overlap is green with its first parent");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, gapped); // phase 3 gaps out -> yellow
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle, "parent phase 3 is clearing");
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD),
+        "overlap holds green through its parent's yellow");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, gapped); // phase 3 -> red clearance
+    assertEquals(VehInterval.RED, rb.getLastServed(1).vehicle);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD),
+        "overlap holds green through its parent's red clearance");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 70L, gapped); // still clearing
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 90L, gapped); // phase 4 greens
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD),
+        "overlap is green with its second parent, having never left green");
+  }
+
+  @Test
+  @DisplayName("overlap still clears normally when the ring's next phase is not one of its parents")
+  void overlapClearsWhenNextPhaseIsNotIncluded() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = overlapHoldPlan(3); // phase 4 is NOT a parent
+    TrafficSignalControllerCircuits ckts = overlapHoldCircuits(2);
+    Demand go = new Demand().veh(0, 1, 1, 0);
+    Demand gapped = new Demand().veh(0, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, go);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, gapped); // phase 3 -> yellow
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(OVERLAP_HEAD),
+        "the overlap's only parent is ending, so it runs its own yellow");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, gapped); // phase 3 -> red clearance
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(OVERLAP_HEAD),
+        "and then goes red, as before");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 90L, gapped); // phase 4 greens — not a parent
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(OVERLAP_HEAD));
+  }
+
+  @Test
+  @DisplayName("overlap does not hold green across a barrier crossing")
+  void overlapDoesNotHoldAcrossBarrier() {
+    // Phases 2 and 4 are both ring 1, but on either side of the barrier. Crossing starts the other
+    // ring's conflicting phases, about which the overlap's included phases say nothing, so the
+    // overlap clears normally even though the phase the ring serves next is a parent of it.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // barrier A
+    enable(plan, 4, 2); // barrier B
+    TrafficSignalProgrammedPhase p2 = plan.getPhase(2);
+    p2.setMinGreen(20L);
+    p2.setPassage(10L);
+    p2.setYellow(20L);
+    p2.setRedClear(40L);
+    TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+    ov.setEnabled(true);
+    ov.setOutputCircuitIndex(1);
+    ov.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+    ov.setIncludedPhases(new int[] {2, 4});
+    plan.getVehicleOverlaps().add(ov);
+    TrafficSignalControllerCircuits ckts = overlapHoldCircuits(3);
+    Demand go = new Demand().veh(0, 1, 0, 0).veh(2, 1, 0, 0);
+    Demand gapped = new Demand().veh(0, 0, 0, 0).veh(2, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, go);
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, gapped); // phase 2 -> yellow
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(OVERLAP_HEAD),
+        "the overlap clears with the barrier, not through it");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, gapped); // red clearance
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(OVERLAP_HEAD));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 90L, gapped); // cross the barrier -> phase 4 green
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD),
+        "and comes back green with its parent on the far side");
+  }
+
+  @Test
+  @DisplayName("-GRN/YEL still reds a held overlap when its modifier phase greens mid-hold")
+  void minusGreenYellowBeatsTheHold() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = overlapHoldPlan(3, 4);
+    TrafficSignalProgrammedOverlap ov = plan.getVehicleOverlaps().get(0);
+    ov.setType(TrafficSignalOverlapType.MINUS_GREEN_YELLOW);
+    ov.setModifierPhases(new int[] {8});
+    // Ring 2 runs 7 then 8 on the same barrier, with 8 (the modifier) greening at tick 70 —
+    // while ring 1 is still in phase 3's clearance with the overlap held green.
+    enable(plan, 7, 2);
+    enable(plan, 8, 2);
+    quickTiming(plan, 7);
+    TrafficSignalControllerCircuits ckts = overlapHoldCircuits(3);
+    Demand go = new Demand().veh(0, 1, 1, 0).veh(2, 1, 1, 0);
+    Demand gapped = new Demand().veh(0, 1, 0, 0).veh(2, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, go);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD));
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, gapped); // 3 and 7 -> yellow; overlap held green
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD));
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, gapped); // both -> red clearance; overlap still held
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 70L, gapped); // modifier phase 8 greens mid-hold
+    assertEquals(8, rb.getLastServed(2).phaseNumber);
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD),
+        "the -GRN/YEL modifier overrides the parent-to-parent hold");
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(OVERLAP_HEAD),
+        "and the head that was held green gets its yellow rather than snapping to red");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 90L, gapped); // parent phase 4 greens; modifier still holds it
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(OVERLAP_HEAD));
+
+    // The output clearance yellow (the plan's longest, 70 ticks) expires and the head goes red.
+    rb.tick(plan, ckts, NO_OVERLAPS, 145L, gapped);
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(OVERLAP_HEAD),
+        "a -GRN/YEL overlap ends up red while its modifier phase runs");
+  }
+
+  @Test
+  @DisplayName("a held overlap denied its expected phase still gets a yellow (skip)")
+  void heldOverlapSkippedPhaseStillClears() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = overlapHoldPlan(3, 4);
+    TrafficSignalControllerCircuits ckts = overlapHoldCircuits(2);
+    Demand go = new Demand().veh(0, 1, 1, 0);
+    Demand gapped = new Demand().veh(0, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, go);
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, gapped); // phase 3 red clearance, overlap held green
+    TrafficSignalPhase held = rb.getLastAppliedPhase();
+    assertTrue(held.getGreenSignals().contains(OVERLAP_HEAD));
+
+    // The phase the hold was banking on disappears out from under it mid-clearance.
+    plan.getPhase(4).setEnabled(false);
+    rb.tick(plan, ckts, NO_OVERLAPS, 70L, gapped);
+    TrafficSignalPhase after = rb.getLastAppliedPhase();
+    assertFalse(after.getGreenSignals().contains(OVERLAP_HEAD), "the hold ends with the phase");
+    assertTrue(after.getYellowSignals().contains(OVERLAP_HEAD),
+        "a hold that ends must still run a yellow, never snap green -> red");
+    assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(held, after, ckts),
+        "the conflict monitor must not see a skipped clearance");
+  }
+
+  @Test
+  @DisplayName("a held overlap caught by a preempt still gets a yellow")
+  void heldOverlapPreemptedStillClears() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = overlapHoldPlan(3, 4);
+    TrafficSignalPreempt pe = new TrafficSignalPreempt();
+    pe.setEnabled(true);
+    pe.setTriggerCircuitIndex(2);
+    pe.setTriggerMovement(TrafficSignalPhaseMovement.RIGHT);
+    pe.setDwellPhases(new int[] {2});
+    plan.getPreempts().add(pe);
+    TrafficSignalControllerCircuits ckts = overlapHoldCircuits(3);
+    Demand go = new Demand().veh(0, 1, 1, 0);
+    Demand gapped = new Demand().veh(0, 1, 0, 0);
+    Demand preempting = new Demand().veh(0, 1, 0, 0).veh(2, 0, 0, 1);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, go);
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, gapped); // phase 3 red clearance, overlap held green
+    TrafficSignalPhase held = rb.getLastAppliedPhase();
+    assertTrue(held.getGreenSignals().contains(OVERLAP_HEAD));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 70L, preempting); // a preempt takes the intersection
+    TrafficSignalPhase after = rb.getLastAppliedPhase();
+    assertFalse(after.getGreenSignals().contains(OVERLAP_HEAD));
+    assertTrue(after.getYellowSignals().contains(OVERLAP_HEAD),
+        "the preempt's entry clearance covers the held overlap too");
+    assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(held, after, ckts),
+        "the conflict monitor must not see a skipped clearance");
+  }
+
+  // endregion
+
   /** Sets short, uniform interval timing on a phase so crossings happen at predictable ticks. */
   static void quickTiming(TrafficSignalProgrammedPhasePlan plan, int phase) {
     TrafficSignalProgrammedPhase p = plan.getPhase(phase);

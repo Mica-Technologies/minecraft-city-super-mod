@@ -566,6 +566,11 @@ public class RingBarrierState {
    * ticks after they leave green, and for {@code leadGreen} ticks before an included phase greens
    * (during the preceding within-barrier red clearance); otherwise it follows the stateless base
    * decision (yellow during the included phases' clearance, else red).
+   *
+   * <p>On top of those configured extensions the overlap is held green through a parent phase's
+   * clearance whenever the ring is going straight on to another of the overlap's included phases
+   * ({@link #holdsBetweenIncluded}) — the whole point of an overlap is that it does not care which
+   * of its parents is up.</p>
    */
   private List<VehInterval> computeOverlapIntervals(TrafficSignalProgrammedPhasePlan plan,
       ServedMovement m1, ServedMovement m2, long now, boolean[] called) {
@@ -589,6 +594,11 @@ public class RingBarrierState {
             && leadingIntoIncluded(ov, plan, now, called)) {
           eff = VehInterval.GREEN;
         }
+        // Parent to parent: a ring clearing one included phase straight into another needs no
+        // clearance on the overlap itself, so hold it green rather than cycling it to red.
+        if (eff != VehInterval.GREEN && holdsBetweenIncluded(ov, plan, called)) {
+          eff = VehInterval.GREEN;
+        }
       }
       // -GRN/YEL: force red while a modifier phase is green or yellow.
       if (ov.getType() == TrafficSignalOverlapType.MINUS_GREEN_YELLOW
@@ -598,6 +608,49 @@ public class RingBarrierState {
       result.add(eff);
     }
     return result;
+  }
+
+  /**
+   * Whether the overlap is running from one of its parents straight into another, so that nothing
+   * on the overlap's own movement is being taken away and it should stay green through the
+   * clearance between them.
+   *
+   * <p>An overlap is green while any of its {@link TrafficSignalProgrammedOverlap#getIncludedPhases()
+   * included} phases is green, so a ring stepping from one included phase to the next — a right
+   * turn overlapping both of the side street's phases, say — has the overlap green on either side
+   * of the change. Without this hold the stateless base decision yellows and reds it in between
+   * purely because the <em>parent</em> is clearing, and the driver on the overlap gets a red
+   * between two greens for no reason. A real controller carries the overlap straight through: the
+   * clearance belongs to the movement that is ending, and the overlap's movement is not.</p>
+   *
+   * <p>Deliberately limited to a change <em>within</em> the current barrier ({@link
+   * #peekNextWithinBarrier} answers 0 across one). Crossing a barrier starts the conflicting
+   * movements in the other ring, and the overlap's included phases say nothing about those, so the
+   * overlap clears normally there.</p>
+   *
+   * <p>A parent that starts with a leading pedestrian interval ({@code DLY GRN}) is not held into
+   * either: that delay exists to give the pedestrians crossing the overlap's own path a head
+   * start, and the overlap has to be red for it.</p>
+   */
+  private boolean holdsBetweenIncluded(TrafficSignalProgrammedOverlap ov,
+      TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+    return ringHoldsBetweenIncluded(ring1, 1, ov, plan, called)
+        || ringHoldsBetweenIncluded(ring2, 2, ov, plan, called);
+  }
+
+  /** {@link #holdsBetweenIncluded} for one ring. */
+  private boolean ringHoldsBetweenIncluded(RingRuntime ring, int ringNum,
+      TrafficSignalProgrammedOverlap ov, TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+    if (ring.activePhase == 0 || ring.interval == VehInterval.GREEN
+        || !contains(ov.getIncludedPhases(), ring.activePhase)) {
+      return false; // not clearing one of this overlap's parents
+    }
+    int next = peekNextWithinBarrier(ring, ringNum, plan, called);
+    if (next == 0 || !contains(ov.getIncludedPhases(), next)) {
+      return false; // across the barrier, or on to something the overlap does not run with
+    }
+    TrafficSignalProgrammedPhase upcoming = plan.getPhase(next);
+    return upcoming != null && upcoming.getDelayedGreen() <= 0L;
   }
 
   /** Whether any ring is within the overlap's lead window heading into one of its included phases. */
