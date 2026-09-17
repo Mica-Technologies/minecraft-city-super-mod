@@ -38,6 +38,20 @@ import org.jetbrains.annotations.NotNull;
  * takes the base away: the pole is as dynamic as the rest of the family, and there is no
  * separate base or cap block to place.
  *
+ * <p>The one thing the neighbours cannot decide is taste: a player can fit the top of a pole
+ * with a decorative ball finial instead of the domed cap, using
+ * {@link ItemStreetLightConfigTool}. The ball appears wherever the cap would have been at the
+ * pole's top ({@link #finialEnd}), so anything sitting on the top still wins and hides it.
+ *
+ * <p><b>That choice is stored on the end properties themselves</b>, not in a property of its own:
+ * a stored state with {@link EndStyle#BALL} on an end <em>is</em> the player's wish, and metadata
+ * bit {@code 8} records it beside the facing. The blockstate already lists {@code ball} as an end
+ * value, so no extra property has to be named there, no extra model variants are loaded, and no
+ * client-side state mapper is needed. That matters: a mapper registered in pre-initialization
+ * cannot be trusted, because a block's registry delegate has no name yet at that point and
+ * Forge's {@code customStateMappers} map is keyed on the delegate, so five poles collapse into
+ * one entry and the other four render as the missing model.
+ *
  * <p><b>The end properties are named in model space.</b> {@link #END_NORTH} and
  * {@link #END_SOUTH} are the two ends of the tube before the {@code facing} rotation stands it
  * up; the blockstate attaches a fixed submodel to each value and the facing rotation carries it
@@ -62,7 +76,12 @@ public class BlockTrafficPolePedestal extends AbstractBlockTrafficPole {
     /** The domed cap: the tube ends in the open. */
     CAP,
     /** The pedestal base: the bottom of a vertical pole standing on the ground. */
-    BASE;
+    BASE,
+    /**
+     * The decorative ball finial: shown instead of {@link #CAP} at the top of a pole the player
+     * has fitted with one. Never decided from the neighbours alone.
+     */
+    BALL;
 
     @Override
     public String getName() {
@@ -77,6 +96,12 @@ public class BlockTrafficPolePedestal extends AbstractBlockTrafficPole {
   /** What the model-south end of the tube shows. */
   public static final PropertyEnum<EndStyle> END_SOUTH = PropertyEnum.create("ends",
       EndStyle.class);
+
+  /** Meta bits the facing occupies (0-5). */
+  private static final int FACING_MASK = 0b0111;
+
+  /** Meta bit the player's ball finial occupies, above the facing's. */
+  private static final int FINIAL_BIT = 0b1000;
 
   /**
    * Carries the constructor arguments past {@code super()}: {@link #getBlockRegistryName()} is
@@ -158,6 +183,71 @@ public class BlockTrafficPolePedestal extends AbstractBlockTrafficPole {
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * <p>Facing in the low three bits, the player's ball finial in the fourth. Both halves of the
+   * encoding are overridden together: a block that writes a bit it cannot read back loses the
+   * finial every time its chunk unloads.
+   *
+   * <p>The bit is read off {@link #hasFinial}, which is a question about the END properties, so
+   * the finial needs no property of its own — see the class comment. The predicate is the same
+   * one on both sides of the encoding and the same one the network's shared-metadata state
+   * representative satisfies, which is what makes the trick safe.
+   */
+  @Override
+  public int getMetaFromState(IBlockState state) {
+    int meta = state.getValue(FACING).getIndex() & FACING_MASK;
+    return hasFinial(state) ? meta | FINIAL_BIT : meta;
+  }
+
+  @Override
+  @Nonnull
+  public IBlockState getStateFromMeta(int meta) {
+    int facingIndex = meta & FACING_MASK;
+    // Same fallback as the superclass: an out-of-range facing reads as DOWN (0).
+    if (facingIndex > 5) {
+      facingIndex = 0;
+    }
+    return withFinial(getDefaultState().withProperty(FACING, EnumFacing.byIndex(facingIndex)),
+        (meta & FINIAL_BIT) != 0);
+  }
+
+  /**
+   * Whether this pole has been fitted with a ball finial.
+   *
+   * <p>On a <em>stored</em> state this is the player's choice, which is why it is what
+   * {@link #getMetaFromState} writes to the metadata. On an actual state it is also the answer to
+   * "is the ball being drawn", since the ball is only ever resolved onto an end that shows it.
+   *
+   * @param state the pole's block state
+   *
+   * @return {@code true} if either end carries {@link EndStyle#BALL}
+   *
+   * @since 2026.9.17
+   */
+  public static boolean hasFinial(IBlockState state) {
+    return state.getBlock() instanceof BlockTrafficPolePedestal
+        && (state.getValue(END_NORTH) == EndStyle.BALL
+        || state.getValue(END_SOUTH) == EndStyle.BALL);
+  }
+
+  /**
+   * The same state with the player's ball finial fitted or removed. Only meaningful on a stored
+   * state; {@link #getActualState} decides what the ends actually show.
+   *
+   * @param state  the pole's stored block state
+   * @param finial whether the pole should carry a finial
+   *
+   * @return the stored state to put in the world
+   *
+   * @since 2026.9.17
+   */
+  public static IBlockState withFinial(IBlockState state, boolean finial) {
+    return state.withProperty(END_NORTH, finial ? EndStyle.BALL : EndStyle.NONE)
+        .withProperty(END_SOUTH, EndStyle.NONE);
+  }
+
+  /**
    * The flank mounts come from the superclass; this adds what each end of the tube shows.
    */
   @Override
@@ -166,9 +256,61 @@ public class BlockTrafficPolePedestal extends AbstractBlockTrafficPole {
       @NotNull IBlockAccess worldIn, @NotNull BlockPos pos) {
     IBlockState actual = super.getActualState(state, worldIn, pos);
     EnumFacing facing = actual.getValue(FACING);
+    boolean finial = hasFinial(state);
     return actual
-        .withProperty(END_NORTH, endStyle(worldIn, pos, facing, endDirection(facing, true)))
-        .withProperty(END_SOUTH, endStyle(worldIn, pos, facing, endDirection(facing, false)));
+        .withProperty(END_NORTH, endShown(worldIn, pos, facing, true, finial))
+        .withProperty(END_SOUTH, endShown(worldIn, pos, facing, false, finial));
+  }
+
+  /**
+   * What one model end of the tube shows: {@link #endStyle} from the neighbours, with the cap
+   * swapped for the ball where the finial is fitted and this is the end it goes on.
+   */
+  private static EndStyle endShown(IBlockAccess worldIn, BlockPos pos, EnumFacing facing,
+      boolean north, boolean finial) {
+    EnumFacing end = endDirection(facing, north);
+    EndStyle style = endStyle(worldIn, pos, facing, end);
+    if (finial && style == EndStyle.CAP && end == finialEnd(facing)) {
+      return EndStyle.BALL;
+    }
+    return style;
+  }
+
+  /**
+   * The world direction of the end a ball finial goes on.
+   *
+   * <p>On an upright pole that is the end pointing up, whichever way the pole faces: a pole
+   * placed on the ground faces {@code UP} and one placed overhead faces {@code DOWN}, and both
+   * are the same post with the same top. A pole lying on its side has no top, so the finial
+   * takes the end its facing points to, which is the end nearest whoever placed it.
+   *
+   * @param facing the pole's facing
+   *
+   * @return the world direction of the finial's end
+   *
+   * @since 2026.9.17
+   */
+  public static EnumFacing finialEnd(EnumFacing facing) {
+    return facing.getAxis() == EnumFacing.Axis.Y ? EnumFacing.UP : facing;
+  }
+
+  /**
+   * Whether a placed pedestal pole is showing its ball finial right now, as opposed to merely
+   * having the bit set while something covers its top.
+   *
+   * @param worldIn the world
+   * @param pos     the pole's position
+   *
+   * @return {@code true} if either end of the pole's tube shows {@link EndStyle#BALL}
+   *
+   * @since 2026.9.17
+   */
+  public static boolean isFinialShown(IBlockAccess worldIn, BlockPos pos) {
+    IBlockState state = worldIn.getBlockState(pos);
+    if (!(state.getBlock() instanceof BlockTrafficPolePedestal)) {
+      return false;
+    }
+    return hasFinial(state.getActualState(worldIn, pos));
   }
 
   /**

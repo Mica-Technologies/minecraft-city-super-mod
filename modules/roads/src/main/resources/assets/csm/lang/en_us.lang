@@ -9,6 +9,7 @@ item.signalconfigurationtool.name=Traffic Signal Configuration Tool
 item.signalheadconfigtool.name=Signal Head Configuration Tool
 item.signalvisibilityprogrammer.name=Signal Visibility Programmer
 item.spanwiretool.name=Span Wire Tool
+item.street_light_config_tool.name=Street Light Configuration Tool
 itemGroup.tabroadsigns=CSM: Road Signs
 itemGroup.tabtrafficaccessories=CSM: Traffic Accessories
 itemGroup.tabtrafficsignals=CSM: Traffic Signals
