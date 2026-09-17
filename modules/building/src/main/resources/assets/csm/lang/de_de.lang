@@ -78,6 +78,7 @@ tile.silvermetal_fence.name=Silbermetallzaun
 tile.silvermetal_slab.name=Silbermetallstufe
 tile.silvermetal_slab_double.name=Silbermetall-Doppelstufe
 tile.silvermetal_stairs.name=Silbermetalltreppe
+tile.steel_stud_wall.name=Ständerwand (Stahl)
 tile.whitemetal.name=Weißmetall
 tile.whitemetal_fence.name=Weißmetallzaun
 tile.whitemetal_slab.name=Weißmetallstufe
