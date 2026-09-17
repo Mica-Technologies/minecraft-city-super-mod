@@ -293,6 +293,25 @@ and both have a `--check` that fails when a texture no longer matches the script
    facility placards) keep their textures; several had only their background shifted onto
    `MOD_COLOURS` by a one-off recolour, so `--check` does not cover them.
 
+### A face fills its plate
+
+The plate model, not the texture, gives a sign its proportions: every plate's `#1` face maps the
+whole square texture, so the drawn sign must run to the texture's edges and the plate must have
+the sign's aspect. A narrow sign drawn in the middle of a square texture with transparent margins
+looks right from the front only -- the plate's back and edges show the full plate around it, a
+wide gray board behind a slim face. Two kept-artwork signs were drawn that way on the 16 x 21 tall
+plate and now have plates of their own, the same height as the tall plate and with its post and
+its `setback` / `back_to_back` twins:
+
+| Model | Face | Signs |
+|---|---|---|
+| `metal_sign_tall_narrow` | 12.6 x 21 (0.6) | `ladotsignalsync` (an 18 x 30 in sign) |
+| `metal_sign_tall_extra_narrow` | 10.5 x 21 (0.5) | `verizondig` |
+
+Their textures were cropped to the drawn sign and stretched back out to the square (256 px, so the
+stretch loses nothing). Before giving a sign a new plate, measure the opaque bounds of its face
+texture against the plate's `#1` face; a fill well under the full width or height is this fault.
+
 ### Lettering
 
 Every legend a generator *sets* uses the real FHWA Standard Alphabets, Series B, C, D, E, E(M) and
