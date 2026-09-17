@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/buildingmaterials/shared_models/framing/framing_arm",
+  "parent": "csm:block/buildingmaterials/shared_models/framing/framing_arm_track_top",
   "textures": {
     "stud": "csm:blocks/buildingmaterials/framing/steel_stud",
     "track": "csm:blocks/buildingmaterials/framing/steel_track",
