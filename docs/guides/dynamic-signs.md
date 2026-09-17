@@ -23,7 +23,7 @@ An **element** is one of:
 | Element | What it is |
 |---|---|
 | **Text** | A line of legend |
-| **Shield** | A route marker — 8 generic plus 10 state-specific, with an optional banner word above or beside it, and an optional white backing plate |
+| **Shield** | A route marker — 8 generic, plus every state, DC and six Canadian provinces, with an optional banner word above or beside it, and an optional white backing plate |
 | **Arrow** | One of 10 arrow types |
 | **Divider** | A rule between elements |
 | **Spacing** | Deliberate gap |
@@ -64,6 +64,17 @@ has the same anatomy.
 | Emblem | Optional — a route shield with its number drawn over it, or one of 16 civic logos |
 | Arrow | Optional, left or right |
 
+### A second blade
+
+A blade can carry a **second blade below the first**, for a corner where each direction has its own
+street name. It is off by default; switch it on from the **Blade 2** tab of the editor and letter it
+with the same controls as the first.
+
+Both blades take the wider width and the taller height of the two, and share colour, border,
+corners, frame, lighting and text size, so they cannot drift apart the way two separate sign blocks
+did. On a hanging mount the top blade stays exactly where a single blade hangs and the hangers still
+grip it alone — the lower blade hangs from it on short links.
+
 ### Mounting
 
 | Mount | How it hangs |
@@ -85,6 +96,12 @@ Blade, Illuminated Blade, Numbered Cross Street, Historic District, and Flat Wal
 
 ## One visual language
 
-Street blades reuse the guide sign's colours, corner styles, arrows, the 78 route markers, the
+Street blades reuse the guide sign's colours, corner styles, arrows, the 67 route markers, the
 shared atlas and the FHWA legend font. One atlas, one font, one look — so a blade and a guide sign
 on the same corner belong to each other.
+
+The state and province markers are drawn from the real highway shields — California's miner's
+spade, Texas's square, Colorado's flag, Nebraska's wagon — rather than approximations of them, and
+each one sets its route number where the real sign sets it: above the word TEXAS, below Colorado's
+flag, in the corner Idaho's outline leaves free. Signs already standing in your world pick the
+artwork up on their own.

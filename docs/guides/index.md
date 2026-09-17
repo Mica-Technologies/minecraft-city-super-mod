@@ -56,7 +56,7 @@ How each system works, and how to build with it.
 
     ---
 
-    574 MUTCD signs, automatic post extensions, and why stacking them aligns them for you.
+    644 MUTCD signs, automatic post extensions, and why stacking them aligns them for you.
 
 -   :material-sign-direction:{ .lg .middle } **[Guide & Street Signs](dynamic-signs.md)**
 

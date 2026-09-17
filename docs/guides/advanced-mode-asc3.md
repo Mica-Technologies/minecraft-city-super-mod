@@ -52,6 +52,25 @@ runs, and the controller handles the transitions between them.
 A phase-based overlap lets a right turn run green through more than one parent phase — the usual
 case being a right that runs with both its own through movement and the complementary left.
 
+### The green carries straight from one parent to the next
+
+When an overlap is included in two phases that run back to back, it **stays green across the
+change** rather than dropping to yellow and red in between and coming back a moment later. The
+clearance between two phases belongs to the movement that is ending, and the overlap's movement is
+permitted on both sides of the change, so there is nothing for it to clear — which is what a real
+controller does. Nothing configures the hold; it is not the lag or lead green, which are extensions
+*past* the parents and are unchanged.
+
+Three cases where the overlap clears normally instead, all of them deliberate:
+
+- **Across a barrier.** Crossing a barrier starts the other ring's conflicting movements, about
+  which the overlap's included phases say nothing, so it gets its yellow and red as usual.
+- **A `-GRN/YEL` overlap while its modifier phase runs.** That type is forced red by the modifier,
+  and still goes red in the middle of a hold.
+- **Into a phase that opens with a delayed green.** That leading pedestrian interval exists to give
+  pedestrians a head start across the very path the overlap turns across, so the overlap has to be
+  red for it.
+
 ## Actuation and volume-density timing
 
 The ASC/3's actuated timing is modelled: maximum 2, added initial, gap reduction, and the
