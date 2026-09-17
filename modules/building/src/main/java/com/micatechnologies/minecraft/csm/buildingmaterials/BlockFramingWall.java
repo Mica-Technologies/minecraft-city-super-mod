@@ -42,9 +42,9 @@ import net.minecraft.world.World;
  *
  * <h3>State</h3>
  *
- * <p>192 states. {@code FACING} (4) and {@link FramingInsulation} (3) are stored, which is 12 of
- * the 16 metadata values; the four connections are actual-state only and cost no metadata. The
- * property set is fixed: anything added later multiplies against all of it.</p>
+ * <p>768 states. {@code FACING} (4) and {@link FramingInsulation} (3) are stored, which is 12 of
+ * the 16 metadata values; the six connections — four horizontal, plus up and down — are
+ * actual-state only and cost no metadata.</p>
  *
  * @version 1.0
  * @see FramingJoins
@@ -104,7 +104,8 @@ public abstract class BlockFramingWall extends AbstractBlock implements ICsmFram
   @Nonnull
   protected BlockStateContainer createBlockState() {
     return new BlockStateContainer(this, FACING, INSULATION,
-        FramingJoins.NORTH, FramingJoins.EAST, FramingJoins.SOUTH, FramingJoins.WEST);
+        FramingJoins.NORTH, FramingJoins.EAST, FramingJoins.SOUTH, FramingJoins.WEST,
+        FramingJoins.UP, FramingJoins.DOWN);
   }
 
   @Override
