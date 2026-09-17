@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "641 blocks in this tab"
+!!! info "644 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -107,6 +107,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Bypass Sign | `csm:signbypass` | 2 | 10 | pickaxe | 1 |
 | Campground Crossings | `csm:campgroundcrossingsign` | 2 | 10 | pickaxe | 1 |
 | Camping/Tent Sign | `csm:signcamping` | 2 | 10 | pickaxe | 1 |
+| Cars Only Banner | `csm:cars_only_banner_sign` | 2 | 10 | pickaxe | 1 |
 | Caution Drive Slowly Sign | `csm:signcautiondriveslowly` | 2 | 10 | pickaxe | 1 |
 | Caution Driveways Sign | `csm:cautiondriveways` | 2 | 10 | pickaxe | 1 |
 | Caution Ear Protection Required Beyond This Point | `csm:earprotectionsign` | 2 | 10 | pickaxe | 1 |
@@ -134,6 +135,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Danger Do Not Drink This Water | `csm:dangerbadwatersign` | 2 | 10 | pickaxe | 1 |
 | Danger Falling Material | `csm:dangerfallingmaterialsign` | 2 | 10 | pickaxe | 1 |
 | Danger High Voltage Keep Off | `csm:generichvdangersign` | 2 | 10 | pickaxe | 1 |
+| Danger Low Clearance | `csm:danger_low_clearance_sign` | 2 | 10 | pickaxe | 1 |
 | Dangerous Road Curves | `csm:dangerousroadcurves` | 2 | 10 | pickaxe | 1 |
 | Dangerous Road Curves (Orange) | `csm:dangerousroadcurvesrr` | 2 | 10 | pickaxe | 1 |
 | Dead End Sign | `csm:signdeadend` | 2 | 10 | pickaxe | 1 |
@@ -605,6 +607,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Truck Speed 40 Sign | `csm:signposttruck40` | 2 | 10 | pickaxe | 1 |
 | Truck Turnaround Ahead | `csm:truckturnaroundsign` | 2 | 10 | pickaxe | 1 |
 | Truck Warning Sign | `csm:signtruck` | 2 | 10 | pickaxe | 1 |
+| Truckers Use Expressways Not Parkways | `csm:truckers_use_expressways_sign` | 2 | 10 | pickaxe | 1 |
 | Trucks Use Right Lane Sign | `csm:signtrucksuserightlanes` | 2 | 10 | pickaxe | 1 |
 | Turn Lane Left Sign | `csm:signworkturnlaneleft` | 2 | 10 | pickaxe | 1 |
 | Turn Lane Right Sign | `csm:signworkturnlaneright` | 2 | 10 | pickaxe | 1 |

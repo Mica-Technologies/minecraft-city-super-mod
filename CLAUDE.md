@@ -373,6 +373,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   public-domain MUTCD SVGs in `artwork/`, photo-measured panels). Every set legend uses the real
   FHWA Series B-F, extracted from the book at run time and never committed; see "Where Sign Faces
   Come From" in `assets/docs/TRAFFIC_SIGNS.md`
+- `gen_large_custom_signs.py` -- road signs whose plate is several blocks across (the 5 x 3
+  TRUCKERS panel): an OBJ plate centred on the placed block for each shift, since a JSON element
+  cannot reach past -16..32, plus the blockstate with a slot-fitted inventory transform;
+  `--art <dir>` rebuilds the face textures from the source art, `--check` fails on drift
 - `detect_legend_series.py` -- measures a sign's original texture (first git version): each legend
   line's centre, cap height and nearest FHWA series, for a remake's `layout=`
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
