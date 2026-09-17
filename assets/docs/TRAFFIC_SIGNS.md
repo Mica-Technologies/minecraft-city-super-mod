@@ -363,6 +363,26 @@ Their textures were cropped to the drawn sign and stretched back out to the squa
 stretch loses nothing). Before giving a sign a new plate, measure the opaque bounds of its face
 texture against the plate's `#1` face; a fill well under the full width or height is this fault.
 
+### A plate needs its own shift twins
+
+The same aspect rule binds the `shift` variants. A sign's blockstate swaps the whole model for
+`setback` and `backtoback`, so those models have to carry the *same* plate as the default one --
+only moved back in Z, by 12.5 for the setback and to the neighbouring cell at 28.5 for the
+back-to-back, which drops the post and paints the face on a 0.01-thick decal in front of a blank
+plate. Borrowing another family's twin silently changes the plate size, and because the `#1` face
+maps the whole texture either way, the art squashes to whatever plate it lands on: the four
+ultra-tall signs pointed at the 16 x 21 tall twins and shrank to half their height the moment
+they were set back.
+
+| Plate | Default | Setback | Back to back |
+|---|---|---|---|
+| 16 x 40 | `metal_sign_ultratall` | `metal_signpostback_ultratall_sign_setback` | `..._back_to_back` |
+| 20 x 40 | `metal_sign_ultratall_wide` | `metal_signpostback_ultratall_wide_sign_setback` | `..._back_to_back` |
+
+So a new plate is three models, not one. The check is mechanical: for each blockstate with a
+`shift` variant, the `#1` element of the shift model must span the same width and height as the
+`#1` element of the default model.
+
 ### Lettering
 
 Every legend a generator *sets* uses the real FHWA Standard Alphabets, Series B, C, D, E, E(M) and

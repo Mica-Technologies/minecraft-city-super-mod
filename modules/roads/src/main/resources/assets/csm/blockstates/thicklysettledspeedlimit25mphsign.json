@@ -141,10 +141,10 @@
     "shift": {
       "none": {},
       "setback": {
-        "model": "csm:trafficsigns/metal_signpostback_tall_sign_setback"
+        "model": "csm:trafficsigns/metal_signpostback_ultratall_sign_setback"
       },
       "backtoback": {
-        "model": "csm:trafficsigns/metal_signpostback_tall_sign_back_to_back"
+        "model": "csm:trafficsigns/metal_signpostback_ultratall_sign_back_to_back"
       }
     },
     "normal": [
