@@ -154,11 +154,13 @@ jobs:
             echo "RELEASE_JAR_TABLE<<CSM_RELEASE_EOF"
             cat release-jar-table.md
             echo "CSM_RELEASE_EOF"
+            # Every jar plus SHA256SUMS.txt. The publish step is verified against this below.
+            echo "RELEASE_FILE_COUNT=$(( ${#jars[@]} + 1 ))"
           } >> "$GITHUB_ENV"
 
       - name: Create Release Entry
         if: ${{ github.event.inputs.release == 'true' && github.event.inputs.release }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -185,7 +187,7 @@ jobs:
 
       - name: Create Pre-Release Entry
         if: ${{ github.event.inputs.release == 'false' || !github.event.inputs.release }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -214,3 +216,39 @@ jobs:
           generate_release_notes: true
           files: |
             ${{ env.RELEASE_FILES }}
+
+      # The publish step above uploads the jars in parallel and has been seen to lose some of
+      # them: on 2026-09-17 it reported `Error creating asset temp dir`, attached 8 of the 10
+      # jars, and left the release as a draft — while the job itself carried on and the run
+      # looked like a build problem rather than a publish one. A release missing a module jar
+      # is worse than no release at all, because the launcher manifests point straight at these
+      # file names, so the release is read back from the API here and the job fails unless every
+      # jar and SHA256SUMS.txt is attached and the entry is actually published.
+      - name: Verify the release has every jar
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event.inputs.release }}" = "true" ]; then
+            tag="${{ env.REL_TAG }}"
+          else
+            tag="${{ env.PRE_TAG }}"
+          fi
+
+          read -r attached isDraft < <(gh release view "$tag" \
+            --repo "${{ github.repository }}" \
+            --json assets,isDraft \
+            --jq '"\(.assets | map(select(.state == "uploaded")) | length) \(.isDraft)"')
+
+          echo "==> $tag has $attached of ${{ env.RELEASE_FILE_COUNT }} assets (draft=$isDraft)"
+          gh release view "$tag" --repo "${{ github.repository }}" \
+            --json assets --jq '.assets[] | "    \(.name) \(.state)"'
+
+          if [ "$attached" -ne "${{ env.RELEASE_FILE_COUNT }}" ]; then
+            echo "::error::$tag has $attached uploaded assets, expected ${{ env.RELEASE_FILE_COUNT }}"
+            exit 1
+          fi
+          if [ "$isDraft" != "false" ]; then
+            echo "::error::$tag is still a draft"
+            exit 1
+          fi
