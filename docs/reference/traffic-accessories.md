@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "354 blocks in this tab"
+!!! info "355 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -101,6 +101,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Overhead Message Sign | `csm:overhead_message_sign` | 2 | 10 | pickaxe | 1 |
 | Overhead Variable Speed Limit Sign | `csm:overhead_speed_limit_sign` | 2 | 10 | pickaxe | 1 |
 | Plumbizer Signal Mount | `csm:plumbizer_signal_mount` |  | 10 | pickaxe | 1 |
+| Pole Finial | `csm:trafficpolefinial` | 2 | 10 | pickaxe | 1 |
 | Pole-Mount Control Box Large | `csm:controlboxlarge` |  | 10 | pickaxe | 1 |
 | Pole-Mount Control Box Large (Black) | `csm:controlboxlargeblack` |  | 10 | pickaxe | 1 |
 | Pole-Mount Control Box Large (Matte White) | `csm:controlboxlargemattewhite` |  | 10 | pickaxe | 1 |

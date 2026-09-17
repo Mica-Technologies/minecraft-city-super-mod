@@ -1,0 +1,72 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/polefinial_ball_small.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ],
+    "style": {
+      "ball_small": {
+        "model": "csm:trafficaccessories/shared_models/polefinial_ball_small.obj"
+      },
+      "ball_large": {
+        "model": "csm:trafficaccessories/shared_models/polefinial_ball_large.obj"
+      },
+      "acorn": {
+        "model": "csm:trafficaccessories/shared_models/polefinial_acorn.obj"
+      },
+      "urn": {
+        "model": "csm:trafficaccessories/shared_models/polefinial_urn.obj"
+      },
+      "spire": {
+        "model": "csm:trafficaccessories/shared_models/polefinial_spire.obj"
+      },
+      "disc": {
+        "model": "csm:trafficaccessories/shared_models/polefinial_disc.obj"
+      }
+    },
+    "color": {
+      "silver": {
+        "textures": {
+          "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+        }
+      },
+      "black": {
+        "textures": {
+          "#body": "csm:blocks/trafficsignals/shared_textures/metal_black",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_black"
+        }
+      },
+      "tan": {
+        "textures": {
+          "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+          "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+        }
+      },
+      "white": {
+        "textures": {
+          "#body": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite"
+        }
+      },
+      "unpainted": {
+        "textures": {
+          "#body": "csm:blocks/trafficsignals/shared_textures/metal_white",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_white"
+        }
+      }
+    }
+  }
+}

@@ -316,7 +316,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/MAST_ARM_CURVE_SYSTEM.md` -- Realistically scaled signal mast arm upsweeps: why they are multi-block, the parabolic sweep, oblique end clipping
 - `assets/docs/WORK_ZONE_ACCESSORIES.md` -- Cones, drums, channelizers, barricades and the arrow board: how a device settles onto the road below it with no dependency on whatever built that road, barricade runs and their mounted signs, the animated arrow board
 - `assets/docs/GUARDRAIL_SYSTEM.md` -- Four rail families, their end treatments, the W-to-thrie transition and the crash cushion: why a run joins on the RAIL rather than on block identity, why the slope is read off where the rails actually are rather than off block positions, and why the end treatments are chiral
-- `assets/docs/PEDESTAL_POLE_SYSTEM.md` -- The pedestrian pedestal pole: one stackable block that decides base, cap or seamless joint per end from its neighbours, why the end properties are named in model space, and the player-fitted ball finial the Street Light Configuration Tool toggles
+- `assets/docs/PEDESTAL_POLE_SYSTEM.md` -- The pedestrian pedestal pole: one stackable block that decides base, cap or seamless joint per end from its neighbours, why the end properties are named in model space, and the six-style finial block a pole wears on top, cycled with the Street Light Configuration Tool
 - `assets/docs/RAILROAD_CROSSING_SYSTEM.md` -- The grade crossing: crossbuck and signs, the
   redstone-driven flasher mast (wig-wag in the texture, bell from the tile entity) and the gate
   whose arm is a renderer swinging at a real gate's pace; why redstone and not a controller
@@ -409,8 +409,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   cell plus all 25 blockstates AND the Java enum holding the cell layout, so the placement code
   cannot disagree with the geometry it was split on
 - `gen_pedestal_pole.py` -- the pedestal (pedestrian) traffic pole: lathes the tube, domed cap,
-  ball finial, tapered base with its access door and the clamp bracket as OBJ, and emits the
-  five blockstates plus lang/tab fragments; `--check` fails if the tree has drifted from the script
+  tapered base with its access door and the clamp bracket as OBJ, and emits the five
+  blockstates plus lang/tab fragments; `--check` fails if the tree has drifted from the script
+- `gen_pole_finials.py` -- the six cast finials a pedestal pole wears on top (ball, acorn,
+  urn, spire, flat cap), each one lathe sharing the collar that sleeves over the pole below,
+  plus the blockstate; borrows the pedestal pole's lathe rather than copying it, and the urn
+  is cut by a fluted lathe that takes its normals from the surface; `--check` fails on drift
 - `gen_pole_fit_models.py` -- the `_thin` and `_pedestal` copies of every side-mounted arm that
   clamps to a pole (light mounts, NOV tapered masts, SCE light mounts), with
   the pole-end plate moved back to the thinner pole's skin, and the `polefit` variant block in
