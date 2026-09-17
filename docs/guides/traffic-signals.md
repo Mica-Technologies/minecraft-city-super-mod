@@ -13,19 +13,27 @@ intersection if it is ever asked to show two conflicting greens.
 
 1. **Place a controller cabinet** somewhere near the intersection.
 2. **Place your signal heads** on poles, mast arms or a span wire.
-3. **Take a signal linker tool** — there is one for North–South and one for East–West.
+3. **Take the Signal Link Tool.**
 4. **Right-click the controller** to select it. This stores the controller and defaults you to
    circuit 1.
-5. **Right-click each signal head** to link it to that circuit.
-6. **Sneak-click a signal** to unlink it again.
+5. **Right-click each signal head** to link it to that circuit. Sensors, crosswalk signals and APS
+   buttons link the same way.
+6. **Sneak-click a linked device** to unlink it again.
 
-Then use the **Signal Configuration Tool** to change timings and behaviour after linking.
+Then use the **Traffic Signal Configuration Tool** to change timings and behaviour after linking.
 
-!!! tip "Which linker to use"
+!!! tip "Changing circuits as you go"
 
-    The linker you hold decides which side of the intersection a head belongs to. Use the N-S
-    linker on the heads facing north and south, and the E-W linker on the others. The controller
-    works out the rest from the block type.
+    A circuit is one approach. To start the next one, **right-click any ordinary block** with the
+    Signal Link Tool: it steps to the next circuit and tells you which, marking it `(new)` when you
+    have gone past the circuits that already exist. So the usual rhythm is controller, then one
+    approach's heads, then a block of dirt, then the next approach's heads.
+
+    You never tell it *which* movement a head serves — the controller reads that from the head
+    itself, so a left-turn head lands in the circuit's left list and a right-turn head in its right
+    list.
+
+    A sensor's detection zone is a separate matter, set with the **Sensor Zone Tool**.
 
 ## Operating modes
 
