@@ -133,8 +133,6 @@ public class TileEntityDynamicStreetSignRenderer
   private static final float TEXT_VISUAL_FACTOR = 1.32f;
   private static final float EMBLEM_SIZE = 11.0f;
   private static final float ARROW_SIZE = 9.0f;
-  /** Route-number cap height over an emblem shield, as a fraction of the shield size. */
-  private static final float ROUTE_CAP_FRACTION = 0.42f;
 
   private static final float CORNER_STEP = 0.6f;
 
@@ -1059,15 +1057,19 @@ public class TileEntityDynamicStreetSignRenderer
     if (isShield && !route.isEmpty()) {
       // Shrink to fit so a long route number stays inside the shield's legend area instead
       // of spilling past its outline.
-      float capPx = l.emblemSize * ROUTE_CAP_FRACTION;
+      float capPx = l.emblemSize * shieldType.getRouteTextCapFraction();
       float available = l.emblemWidth * shieldType.getRouteTextMaxFraction();
       float width = GuideSignFontRenderer.getStringWidth(route, capPx);
       if (width > available) {
         capPx *= available / width;
         width = available;
       }
+      // Centred where the marker leaves room for it (above TEXAS, below Colorado's flag). The
+      // offset is measured top-down in the atlas cell, and pixel space here runs upwards.
+      float textCenterX = centerX + (shieldType.getRouteTextCenterX() - 0.5f) * l.emblemWidth;
+      float textCenterY = centerY - (shieldType.getRouteTextCenterY() - 0.5f) * l.emblemSize;
       GlStateManager.depthMask(false);
-      GuideSignFontRenderer.drawString(route, centerX - width / 2.0f, centerY,
+      GuideSignFontRenderer.drawString(route, textCenterX - width / 2.0f, textCenterY,
           l.faceZ + Z_ROUTE_TEXT, capPx, shieldType.getRouteTextColor(),
           worldSkyLight, worldBlockLight);
       GlStateManager.depthMask(true);

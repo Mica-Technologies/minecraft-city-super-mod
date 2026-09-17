@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="600" height="600" viewBox="0 0 600 600">
+ <rect width="600" height="600" rx="37.5" ry="37.5" style="fill:#000;fill-opacity:1;none" />
+ <path transform="matrix(1.7916668,0,0,1.828692,661.82839,-40.895462)" d="m -59.046956,286.96852 c -35.72594,61.87914 -250.081574,61.87914 -285.807514,0 -35.72594,-61.87914 71.45188,-247.51657 142.90376,-247.51657 71.45188,0 178.629694,185.63743 142.903754,247.51657 z" style="fill:#fff;fill-opacity:1;stroke:none" />
+</svg>

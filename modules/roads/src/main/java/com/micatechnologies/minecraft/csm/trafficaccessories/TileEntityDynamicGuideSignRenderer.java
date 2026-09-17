@@ -94,9 +94,8 @@ public class TileEntityDynamicGuideSignRenderer
   // Purple TOLL segment prepended to a toll exit tab.
   private static final float EXIT_TAB_TOLL_CAP_HEIGHT = 3.2f;
   private static final float EXIT_TAB_TOLL_PADDING = 2.0f;
-  // MUTCD-ish ratios against the shield: route numerals ~42% of shield height, banner
-  // words ~33%.
-  private static final float ROUTE_CAP_FRACTION = 0.42f;
+  // MUTCD-ish ratio against the shield: banner words ~33% of shield height. The route
+  // numeral's height and placement are per shield (GuideSignShieldType).
   private static final float BANNER_CAP_FRACTION = 0.33f;
   private static final float BANNER_AREA_HEIGHT = 5.5f;
 
@@ -1004,15 +1003,19 @@ public class TileEntityDynamicGuideSignRenderer
     if (routeNum != null && !routeNum.isEmpty()) {
       // Shrink to fit: long route numbers scale down so they stay inside the
       // shield's legend area instead of spilling over its edges.
-      float capPx = sSize * ROUTE_CAP_FRACTION;
+      float capPx = sSize * shieldType.getRouteTextCapFraction();
       float avail = shieldW * shieldType.getRouteTextMaxFraction();
       float w = GuideSignFontRenderer.getStringWidth(routeNum, capPx);
       if (w > avail) {
         capPx *= avail / w;
         w = avail;
       }
+      // Centred where the marker leaves room for it (above TEXAS, below Colorado's flag). The
+      // offset is measured top-down in the atlas cell, and pixel space here runs upwards.
+      float textCenterX = shieldCenterX + (shieldType.getRouteTextCenterX() - 0.5f) * shieldW;
+      float textCenterY = shieldCenterY - (shieldType.getRouteTextCenterY() - 0.5f) * sSize;
       GlStateManager.depthMask(false);
-      GuideSignFontRenderer.drawString(routeNum, shieldCenterX - w / 2.0f, shieldCenterY,
+      GuideSignFontRenderer.drawString(routeNum, textCenterX - w / 2.0f, textCenterY,
           faceZ - 0.4f, capPx, shieldType.getRouteTextColor(),
           worldSkyLight, worldBlockLight);
       GlStateManager.depthMask(true);

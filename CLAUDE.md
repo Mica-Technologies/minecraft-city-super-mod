@@ -346,6 +346,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `audit_fabricator_costs.py` -- mirrors the Fabricator cost rules against that index to sanity check what every block costs, without launching the game
 - `gen_firealarm_obj.py` -- generates the OBJ models for the fire alarm appliances with round strobe lenses (the System Sensor L-Series LED family and the beacons); traces each enclosure's silhouette and measures each lens circle off the texture rather than hard-coding either
 - `gen_dynamic_street_sign_texture.py` -- inventory/particle texture for the dynamic street sign block
+- `measure_shield_legends.py` -- where each state, DC and province route marker on the sign atlas
+  sets its route number (cap height, width, centre, colour): fits the largest two-digit number
+  into the face region under a seed point and writes the values into `GuideSignShieldType`.
+  Run it after `GuideSignAtlasTool` regenerates the atlas; `--check` fails on drift. The markers
+  themselves are sourced public-domain SVGs, provenance in `guidesign/shields/SOURCES.md`
 - `gen_gap_signs.py` -- the signs that filled the 2026-09 catalogue review's gaps (Keep Left,
   Speed Limit 10/60/70, reverse curves, advisory-speed and distance plaques, No Passing pennant,
   ...): one catalogue of registry + four-language display name + plate shape + face, the face
