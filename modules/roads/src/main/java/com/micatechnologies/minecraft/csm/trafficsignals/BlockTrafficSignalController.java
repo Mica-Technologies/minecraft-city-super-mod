@@ -170,8 +170,17 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
 
           // Display player output only if not remote
           if (!p_onBlockActivated_1_.isRemote) {
+            // Landed on an ADVANCED mode whose plan is not ready: that fault does not need the
+            // tool, the next sneak-click clears it and moves on
+            if (isInFaultState && tileEntityTrafficSignalController.isInAdvancedPlanFault()) {
+              p_onBlockActivated_4_.sendMessage(new TextComponentString(
+                  "Controller has switched to " + modeName + " mode, but its phase plan needs "
+                      + "programming: " + faultMessage));
+              p_onBlockActivated_4_.sendMessage(new TextComponentString(
+                  "Program it in the controller GUI, or sneak-click again to switch mode."));
+            }
             // Display player output in fault state
-            if (isInFaultState) {
+            else if (isInFaultState) {
               p_onBlockActivated_4_.sendMessage(new TextComponentString(
                   "Controller has encountered a fault! To reset the fault, please " +
                       "click with the signal changer tool."));

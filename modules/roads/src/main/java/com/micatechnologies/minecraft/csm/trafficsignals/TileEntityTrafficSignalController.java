@@ -2545,8 +2545,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * @since 2.0
    */
   public String switchMode() {
-    // Switch to next mode if not in fault state
-    if (!isInFaultState()) {
+    // Switch to next mode if not in fault state (see canChangeModeManually for the one fault a
+    // mode change may clear)
+    if (canChangeModeManually()) {
+      currentFaultMessage = "";
       mode = mode.getNextMode();
       operatingMode = mode;
       resetController(false, true);
@@ -2561,11 +2563,79 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * @param ordinal the ordinal value of the mode to set
    */
   public void setModeByOrdinal(int ordinal) {
-    if (!isInFaultState()) {
+    if (canChangeModeManually()) {
+      currentFaultMessage = "";
       mode = TrafficSignalControllerMode.fromNBT(ordinal);
       operatingMode = mode;
       resetController(false, true);
     }
+  }
+
+  /**
+   * Returns whether a manual mode change ({@link #switchMode()}, {@link #setModeByOrdinal(int)})
+   * may go ahead: always when the controller is not faulted, and otherwise only when the fault is
+   * {@code ADVANCED} mode's own plan-validation fault (see {@link #isInAdvancedPlanFault()}).
+   * <p>
+   * {@code ADVANCED} is the last mode in the cycle and faults on its very first tick when no plan
+   * is programmed, so a player cycling modes used to be stuck on it for good: every fault blocked
+   * the next mode change, and clearing the fault restored {@code ADVANCED}, which faulted again.
+   * Leaving {@code ADVANCED} fixes that fault by definition. Every other fault — the conflict
+   * monitor's skipped clearance above all, a missing signal, a fault in any other mode — still
+   * blocks a mode change until it is cleared with the signal changer tool.
+   * </p>
+   *
+   * @return true if a manual mode change may proceed (clearing the plan fault if there is one)
+   *
+   * @since 2026.9.17
+   */
+  private boolean canChangeModeManually() {
+    return !isInFaultState() || isInAdvancedPlanFault();
+  }
+
+  /**
+   * Returns whether the controller is faulted because its configured mode is {@code ADVANCED} and
+   * the programmed phase plan fails validation — the fault {@code onTick} raises before running
+   * the ring engine, as opposed to one raised while the plan was running.
+   * <p>
+   * Derived rather than flagged: the fault message is persisted in NBT and the plan's verdict can
+   * be recomputed, so the answer survives a world reload (and faults saved before this existed are
+   * recognised too). The plan is validated as the tick would see it, a never-programmed controller
+   * being judged on the default plan the tick would create, without creating it here.
+   * </p>
+   *
+   * @return true if the current fault is {@code ADVANCED} mode's plan-validation fault
+   *
+   * @since 2026.9.17
+   */
+  public boolean isInAdvancedPlanFault() {
+    if (!isInFaultState() || mode != TrafficSignalControllerMode.ADVANCED) {
+      return false;
+    }
+    TrafficSignalProgrammedPhasePlan plan = programmedPhasePlan != null ? programmedPhasePlan
+        : TrafficSignalProgrammedPhasePlan.createDefault();
+    return isAdvancedPlanFault(mode, currentFaultMessage, plan.validate(circuits));
+  }
+
+  /**
+   * Decides whether a fault is {@code ADVANCED} mode's plan-validation fault. It is only when the
+   * configured mode is {@code ADVANCED} and the fault message is exactly the error the plan's
+   * validation reports now. Matching the message, rather than merely finding the plan invalid,
+   * keeps a fault raised for another reason (a skipped yellow clearance, a missing signal) from
+   * being cleared just because the plan also happens to be invalid at the moment.
+   *
+   * @param configuredMode      the controller's configured mode
+   * @param faultMessage        the current fault message ({@code null} or empty when not faulted)
+   * @param planValidationError the plan's current validation error, or {@code null} if it is valid
+   *
+   * @return true if the fault is {@code ADVANCED} mode's plan-validation fault
+   *
+   * @since 2026.9.17
+   */
+  static boolean isAdvancedPlanFault(TrafficSignalControllerMode configuredMode,
+      String faultMessage, String planValidationError) {
+    return configuredMode == TrafficSignalControllerMode.ADVANCED
+        && faultMessage != null && !faultMessage.isEmpty()
+        && faultMessage.equals(planValidationError);
   }
 
   /**
