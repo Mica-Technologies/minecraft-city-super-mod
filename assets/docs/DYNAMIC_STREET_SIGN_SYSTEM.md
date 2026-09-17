@@ -42,7 +42,7 @@ dependency, so it is usable on both sides. Gson serializes it to one NBT string 
 | `StreetSignTemplates` | Preset configurations | 6 cycling presets: Standard Green Blade, Blue Blade, Illuminated Blade, Numbered Cross Street, Historic District, Flat Wall Blade. Each `get(index)` returns a fresh instance. |
 
 **Reused wholesale from the guide sign's model:** `GuideSignColor` (7 FHWA colors),
-`CornerStyle`, `SignLightMode`, `GuideSignArrowType` (10 arrows), `GuideSignShieldType` (78
+`CornerStyle`, `SignLightMode`, `GuideSignArrowType` (10 arrows), `GuideSignShieldType` (67
 markers), `GuideSignAtlas`, and `GuideSignFontRenderer` (the FHWA legend font). One atlas, one
 font, one visual language.
 
@@ -154,7 +154,7 @@ bottom, which is how every per-blade pass (core, face, legend, frame) is written
 | `TEXT_VISUAL_FACTOR` | `1.32` | Line height over cap height (room for descenders). |
 | `AFFIX_GAP` / `SLOT_GAP` / `CITY_GAP` | `1.4` / `2.5` / `1.2` | Gaps around the affixes, beside a side slot, and under the name. |
 | `EMBLEM_SIZE` / `ARROW_SIZE` | `11.0` / `9.0` | Rendered size of the emblem and arrow. |
-| `ROUTE_CAP_FRACTION` | `0.42` | Route-number cap height over a shield emblem. |
+| `GuideSignShieldType` route text | per shield | Route-number cap height, maximum width and centre over a shield emblem, shared with the guide sign (see its Rendering Proportions): a state marker's number sits where the real marker sets it, not always in the middle. |
 | `CORNER_STEP` | `0.6` | Chamfer per outer corner for ROUND corners. |
 | `HANG_DROP` | `5.5` | How far below the block's top edge a hanging blade's top rail sits. Shared by both hanging styles, so switching between them swaps the hardware without moving the panel. |
 | `HANGER_REACH_ABOVE` | `8.0` | How far above its own block the hanger run reaches, so the clamp lands on the underside of a top slab. |

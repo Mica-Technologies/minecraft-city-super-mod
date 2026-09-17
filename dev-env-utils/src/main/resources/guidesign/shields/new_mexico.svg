@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="600" height="600" viewBox="0 0 600 600">
+ <defs />
+ <g>
+  <rect width="600" height="600" rx="37.5" ry="37.5" x="0" y="0" style="opacity:1;fill:black;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <path d="M 1342.8571 954.28571 A 554.28571 582.85712 0 1 1  234.28571,954.28571 A 554.28571 582.85712 0 1 1  1342.8571 954.28571 z" transform="matrix(0.518686,0,0,0.49326,-109.0206,-170.711)" style="opacity:1;fill:white;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <path d="M 300,84.375 C 180.97496,84.375 84.374997,180.975 84.375,300 C 84.375,419.025 180.97495,515.625 300,515.625 C 419.02506,515.625 515.625,419.0251 515.625,300 C 515.625,180.975 419.02503,84.375 300,84.375 z M 300,100 C 410.39997,100 500,189.6 500,300 C 500,410.4 410.39997,500 300,500 C 189.60004,500 100,410.4 100,300 C 100,189.6 189.60003,100 300,100 z " style="opacity:1;fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="53.125" height="15.625" x="-95.625" y="-359.375" transform="scale(-1,-1)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="62.5" height="15.625" x="-87.5" y="-325" transform="scale(-1,-1)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="62.5" height="15.625" x="-87.5" y="-290.625" transform="scale(-1,-1)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="53.125" height="15.625" x="-95.625" y="-256.25" transform="scale(-1,-1)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="53.125" height="15.625" x="504.375" y="240.625" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="62.5" height="15.625" x="512.5" y="275" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="62.5" height="15.625" x="512.5" y="309.375" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="53.125" height="15.625" x="504.375" y="343.75" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="53.125" height="15.625" x="-95.625" y="240.625" transform="matrix(0,-1,1,0,0,0)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="62.5" height="15.625" x="-87.5" y="275" transform="matrix(0,-1,1,0,0,0)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="62.5" height="15.625" x="-87.5" y="309.375" transform="matrix(0,-1,1,0,0,0)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="53.125" height="15.625" x="-95.625" y="343.75" transform="matrix(0,-1,1,0,0,0)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="53.125" height="15.625" x="504.375" y="-359.375" transform="matrix(0,1,-1,0,0,0)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="62.5" height="15.625" x="512.5" y="-325" transform="matrix(0,1,-1,0,0,0)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="62.5" height="15.625" x="512.5" y="-290.625" transform="matrix(0,1,-1,0,0,0)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+  <rect width="53.125" height="15.625" x="504.375" y="-256.25" transform="matrix(0,1,-1,0,0,0)" style="fill:red;fill-opacity:1;stroke:none;stroke-width:22.5;stroke-linecap:square;stroke-miterlimit:3.863693;stroke-dasharray:none;stroke-opacity:1" />
+ </g>
+</svg>
