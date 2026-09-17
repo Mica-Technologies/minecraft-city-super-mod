@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.packets.DynamicStre
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignEmblemKind;
+import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignLegend;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignTemplates;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,10 +21,14 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 /**
- * The editing screen for a dynamic street sign. Three tabs -- Text, Style, Preview -- sharing
- * the dynamic guide sign GUI's scrolling-viewport pattern: content between the tab strip and
- * the Save/Cancel row scrolls with the wheel, and off-viewport widgets are hidden rather than
+ * The editing screen for a dynamic street sign. Four tabs -- Text, Blade 2, Style, Preview --
+ * sharing the dynamic guide sign GUI's scrolling-viewport pattern: content between the tab strip
+ * and the Save/Cancel row scrolls with the wheel, and off-viewport widgets are hidden rather than
  * moved so they cannot intercept clicks or bleed through the fixed strips.
+ *
+ * <p>Text and Blade 2 are the same legend controls pointed at a different {@link
+ * StreetSignLegend}: the sign itself for the upper blade, its lower blade for the second. Every
+ * legend control therefore acts on {@link #activeLegend()} rather than on the document.
  *
  * <p>Save sends the whole document in one {@link DynamicStreetSignUpdatePacket}; Cancel closes
  * without sending, so edits are discardable.
@@ -33,10 +38,12 @@ public class DynamicStreetSignGui extends GuiScreen {
   private static final int TAB_TEXT = 0;
   private static final int TAB_STYLE = 1;
   private static final int TAB_PREVIEW = 2;
+  private static final int TAB_BLADE2 = 3;
 
   private static final int BTN_TAB_TEXT = 100;
   private static final int BTN_TAB_STYLE = 101;
   private static final int BTN_TAB_PREVIEW = 102;
+  private static final int BTN_TAB_BLADE2 = 103;
   private static final int BTN_SAVE = 200;
   private static final int BTN_CANCEL = 201;
 
@@ -54,6 +61,7 @@ public class DynamicStreetSignGui extends GuiScreen {
   private static final int BTN_ARROW_POSITION = 20;
   private static final int BTN_ARROW_TYPE = 21;
   private static final int BTN_AFFIX_VERTICAL = 22;
+  private static final int BTN_LOWER_BLADE = 23;
 
   // Style tab
   private static final int BTN_SIGN_COLOR = 30;
@@ -104,6 +112,7 @@ public class DynamicStreetSignGui extends GuiScreen {
   private int labelYTextScale;
   private int labelYBlockRow;
   private int labelYShieldRow;
+  private int labelYBladeHint;
 
   private GuiTextField prefixField;
   private GuiTextField nameField;
@@ -116,6 +125,9 @@ public class DynamicStreetSignGui extends GuiScreen {
   private static String clipboardJson = null;
   // Static so the next template in the cycle survives closing and reopening the screen.
   private static int templateIndex = 0;
+  // The second blade's legend while it is switched off, so toggling it back on in the same
+  // session restores what was typed instead of starting over. Never saved: off means off.
+  private StreetSignLegend parkedLowerBlade = null;
 
   private final List<String> previewLines = new ArrayList<>();
   private final TileEntityDynamicStreetSignRenderer previewRenderer =
@@ -145,7 +157,7 @@ public class DynamicStreetSignGui extends GuiScreen {
     ScaledResolution sr = new ScaledResolution(this.mc);
     int centerX = sr.getScaledWidth() / 2;
     int left = centerX - FIELD_WIDTH / 2;
-    int tabWidth = FIELD_WIDTH / 3;
+    int tabWidth = FIELD_WIDTH / 4;
     int startY = 25;
     int bottomY = sr.getScaledHeight() - 30;
 
@@ -154,15 +166,20 @@ public class DynamicStreetSignGui extends GuiScreen {
     customContentBottom = 0;
 
     buttonList.add(new GuiButton(BTN_TAB_TEXT, left, startY, tabWidth, BTN_HEIGHT, "Text"));
-    buttonList.add(new GuiButton(BTN_TAB_STYLE, left + tabWidth, startY, tabWidth, BTN_HEIGHT,
-        "Style"));
-    buttonList.add(new GuiButton(BTN_TAB_PREVIEW, left + tabWidth * 2, startY, tabWidth,
+    buttonList.add(new GuiButton(BTN_TAB_BLADE2, left + tabWidth, startY, tabWidth,
+        BTN_HEIGHT, "Blade 2"));
+    buttonList.add(new GuiButton(BTN_TAB_STYLE, left + tabWidth * 2, startY, tabWidth,
+        BTN_HEIGHT, "Style"));
+    buttonList.add(new GuiButton(BTN_TAB_PREVIEW, left + tabWidth * 3, startY, tabWidth,
         BTN_HEIGHT, "Preview"));
 
     int halfW = (FIELD_WIDTH - 4) / 2;
     switch (currentTab) {
       case TAB_TEXT:
-        buildTextTab(left, viewportTop, halfW);
+        buildLegendRows(left, viewportTop, halfW, data, true);
+        break;
+      case TAB_BLADE2:
+        buildBlade2Tab(left, viewportTop, halfW);
         break;
       case TAB_STYLE:
         buildStyleTab(left, viewportTop, halfW);
@@ -185,7 +202,31 @@ public class DynamicStreetSignGui extends GuiScreen {
 
   // ------------------------------------------------------------------ tab building ----
 
-  private void buildTextTab(int left, int y, int halfW) {
+  /**
+   * The second blade's tab: an on/off switch, and while it is on, the same legend rows the Text
+   * tab has, minus the text size and affix alignment the two blades share.
+   */
+  private void buildBlade2Tab(int left, int y, int halfW) {
+    addContentBtn(new GuiButton(BTN_LOWER_BLADE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+    y += BTN_HEIGHT + 4;
+    labelYBladeHint = y;
+    y += 2 * PREVIEW_LINE_HEIGHT + 4;
+    if (data.hasLowerBlade()) {
+      buildLegendRows(left, y, halfW, data.getLowerBlade(), false);
+    } else {
+      customContentBottom = y;
+    }
+  }
+
+  /**
+   * The rows that letter one blade.
+   *
+   * @param legend      the blade being edited
+   * @param sharedStyle whether to include the text size and affix alignment, which belong to
+   *                    the whole sign and so appear only on the first blade's tab
+   */
+  private void buildLegendRows(int left, int y, int halfW, StreetSignLegend legend,
+      boolean sharedStyle) {
     // Prefix / name / suffix share a line, in the order they read on the blade.
     int prefixW = 34;
     int suffixW = 44;
@@ -193,35 +234,37 @@ public class DynamicStreetSignGui extends GuiScreen {
     labelYAffixRow = y;
     y += 10;
     prefixField = makeField(1, left, y, prefixW, StreetSignData.MAX_AFFIX_LENGTH,
-        data.getPrefix());
+        legend.getPrefix());
     nameField = makeField(2, left + prefixW + 4, y, nameW, StreetSignData.MAX_NAME_LENGTH,
-        data.getStreetName());
+        legend.getStreetName());
     suffixField = makeField(3, left + prefixW + nameW + 8, y, suffixW,
-        StreetSignData.MAX_AFFIX_LENGTH, data.getSuffix());
+        StreetSignData.MAX_AFFIX_LENGTH, legend.getSuffix());
     y += BTN_HEIGHT + 14;
 
     labelYCityRow = y;
     cityField = makeField(4, left, y, FIELD_WIDTH, StreetSignData.MAX_CITY_LENGTH,
-        data.getCityText());
+        legend.getCityText());
     y += BTN_HEIGHT + 14;
 
-    labelYTextScale = y;
-    addContentBtn(new GuiButton(BTN_TEXT_SCALE_DOWN, left, y, 30, BTN_HEIGHT, "-"));
-    addContentBtn(new GuiButton(BTN_TEXT_SCALE_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT,
-        "+"));
-    y += BTN_HEIGHT + 3;
-    addContentBtn(new GuiButton(BTN_AFFIX_VERTICAL, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
-    y += BTN_HEIGHT + 12;
+    if (sharedStyle) {
+      labelYTextScale = y;
+      addContentBtn(new GuiButton(BTN_TEXT_SCALE_DOWN, left, y, 30, BTN_HEIGHT, "-"));
+      addContentBtn(new GuiButton(BTN_TEXT_SCALE_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT,
+          "+"));
+      y += BTN_HEIGHT + 3;
+      addContentBtn(new GuiButton(BTN_AFFIX_VERTICAL, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+      y += BTN_HEIGHT + 12;
+    }
 
     // --- Block number ---
     labelYBlockRow = y;
     blockField = makeField(5, left, y, halfW, StreetSignData.MAX_BLOCK_LENGTH,
-        data.getBlockNumber());
+        legend.getBlockNumber());
     addContentBtn(new GuiButton(BTN_BLOCK_POSITION, left + halfW + 4, y, halfW, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 3;
     GuiButton blockVertical =
         new GuiButton(BTN_BLOCK_VERTICAL, left, y, FIELD_WIDTH, BTN_HEIGHT, "");
-    blockVertical.enabled = data.hasBlockNumber();
+    blockVertical.enabled = legend.hasBlockNumber();
     addContentBtn(blockVertical);
     y += BTN_HEIGHT + 12;
 
@@ -229,20 +272,20 @@ public class DynamicStreetSignGui extends GuiScreen {
     addContentBtn(new GuiButton(BTN_EMBLEM_KIND, left, y, halfW, BTN_HEIGHT, ""));
     GuiButton emblemPosition =
         new GuiButton(BTN_EMBLEM_POSITION, left + halfW + 4, y, halfW, BTN_HEIGHT, "");
-    emblemPosition.enabled = data.getEmblemKind() != StreetSignEmblemKind.NONE;
+    emblemPosition.enabled = legend.getEmblemKind() != StreetSignEmblemKind.NONE;
     addContentBtn(emblemPosition);
     y += BTN_HEIGHT + 3;
 
     labelYShieldRow = y;
-    if (data.getEmblemKind() == StreetSignEmblemKind.SHIELD) {
+    if (legend.getEmblemKind() == StreetSignEmblemKind.SHIELD) {
       addContentBtn(new GuiButton(BTN_SHIELD_TYPE_PREV, left, y, 24, BTN_HEIGHT, "<"));
       addContentBtn(new GuiButton(BTN_SHIELD_TYPE_NEXT, left + FIELD_WIDTH - 24, y, 24,
           BTN_HEIGHT, ">"));
       y += BTN_HEIGHT + 3;
       routeField = makeField(6, left, y, FIELD_WIDTH, StreetSignData.MAX_ROUTE_LENGTH,
-          data.getShieldRoute());
+          legend.getShieldRoute());
       y += BTN_HEIGHT + 12;
-    } else if (data.getEmblemKind() == StreetSignEmblemKind.LOGO) {
+    } else if (legend.getEmblemKind() == StreetSignEmblemKind.LOGO) {
       addContentBtn(new GuiButton(BTN_LOGO_TYPE_PREV, left, y, 24, BTN_HEIGHT, "<"));
       addContentBtn(new GuiButton(BTN_LOGO_TYPE_NEXT, left + FIELD_WIDTH - 24, y, 24,
           BTN_HEIGHT, ">"));
@@ -255,7 +298,7 @@ public class DynamicStreetSignGui extends GuiScreen {
     addContentBtn(new GuiButton(BTN_ARROW_POSITION, left, y, halfW, BTN_HEIGHT, ""));
     GuiButton arrowType =
         new GuiButton(BTN_ARROW_TYPE, left + halfW + 4, y, halfW, BTN_HEIGHT, "");
-    arrowType.enabled = data.hasArrow();
+    arrowType.enabled = legend.hasArrow();
     addContentBtn(arrowType);
     y += BTN_HEIGHT + 4;
     customContentBottom = y;
@@ -371,6 +414,8 @@ public class DynamicStreetSignGui extends GuiScreen {
     for (GuiButton btn : buttonList) {
       if (btn.id == BTN_TAB_TEXT) {
         btn.enabled = currentTab != TAB_TEXT;
+      } else if (btn.id == BTN_TAB_BLADE2) {
+        btn.enabled = currentTab != TAB_BLADE2;
       } else if (btn.id == BTN_TAB_STYLE) {
         btn.enabled = currentTab != TAB_STYLE;
       } else if (btn.id == BTN_TAB_PREVIEW) {
@@ -394,6 +439,9 @@ public class DynamicStreetSignGui extends GuiScreen {
     switch (currentTab) {
       case TAB_TEXT:
         drawTextTabLabels(left, viewportTop, centerX);
+        break;
+      case TAB_BLADE2:
+        drawBlade2TabLabels(left, centerX);
         break;
       case TAB_STYLE:
         drawStyleTabLabels(left, viewportTop, centerX);
@@ -426,27 +474,44 @@ public class DynamicStreetSignGui extends GuiScreen {
     }
   }
 
+  private void drawBlade2TabLabels(int left, int centerX) {
+    boolean on = data.hasLowerBlade();
+    for (GuiButton btn : buttonList) {
+      if (btn.id == BTN_LOWER_BLADE) {
+        btn.displayString = "Second Blade: " + (on ? "ON" : "OFF");
+      }
+    }
+    drawScrolledCenteredString(TextFormatting.GRAY + "Hangs below the first blade, sharing",
+        centerX, labelYBladeHint, 0xAAAAAA);
+    drawScrolledCenteredString(TextFormatting.GRAY + "its size, style and text size",
+        centerX, labelYBladeHint + PREVIEW_LINE_HEIGHT, 0xAAAAAA);
+    if (on) {
+      drawTextTabLabels(left, viewportTop, centerX);
+    }
+  }
+
   private void drawTextTabLabels(int left, int y, int centerX) {
+    StreetSignLegend legend = activeLegend();
     for (GuiButton btn : buttonList) {
       switch (btn.id) {
         case BTN_BLOCK_POSITION:
-          btn.displayString = "Block: " + data.getBlockPosition().getFriendlyName();
+          btn.displayString = "Block: " + legend.getBlockPosition().getFriendlyName();
           break;
         case BTN_BLOCK_VERTICAL:
           btn.displayString = "Block Number Height: "
-              + data.getBlockVertical().getFriendlyName();
+              + legend.getBlockVertical().getFriendlyName();
           break;
         case BTN_EMBLEM_KIND:
-          btn.displayString = data.getEmblemKind().getFriendlyName();
+          btn.displayString = legend.getEmblemKind().getFriendlyName();
           break;
         case BTN_EMBLEM_POSITION:
-          btn.displayString = "Side: " + data.getEmblemPosition().getFriendlyName();
+          btn.displayString = "Side: " + legend.getEmblemPosition().getFriendlyName();
           break;
         case BTN_ARROW_POSITION:
-          btn.displayString = "Arrow: " + data.getArrowPosition().getFriendlyName();
+          btn.displayString = "Arrow: " + legend.getArrowPosition().getFriendlyName();
           break;
         case BTN_ARROW_TYPE:
-          btn.displayString = data.getArrowType().getFriendlyName();
+          btn.displayString = legend.getArrowType().getFriendlyName();
           break;
         case BTN_AFFIX_VERTICAL:
           btn.displayString = "Prefix / Suffix Align: "
@@ -461,16 +526,18 @@ public class DynamicStreetSignGui extends GuiScreen {
     drawScrolledString("Street Name", left + 38, labelYAffixRow, 0xAAAAAA);
     drawScrolledString("Suffix", left + FIELD_WIDTH - 44, labelYAffixRow, 0xAAAAAA);
     drawScrolledString("City / district line (optional)", left, labelYCityRow - 10, 0xAAAAAA);
-    drawScrolledCenteredString(String.format("Text Size: %.2fx", data.getTextScale()),
-        centerX, labelYTextScale + 5, 0xFFFFFF);
+    if (currentTab == TAB_TEXT) {
+      drawScrolledCenteredString(String.format("Text Size: %.2fx", data.getTextScale()),
+          centerX, labelYTextScale + 5, 0xFFFFFF);
+    }
     drawScrolledString("Block no.", left, labelYBlockRow - 9, 0xAAAAAA);
 
-    if (data.getEmblemKind() == StreetSignEmblemKind.SHIELD) {
-      drawScrolledCenteredString(data.getShieldType().getFriendlyName(), centerX,
+    if (legend.getEmblemKind() == StreetSignEmblemKind.SHIELD) {
+      drawScrolledCenteredString(legend.getShieldType().getFriendlyName(), centerX,
           labelYShieldRow + 5, 0xFFFFFF);
       drawScrolledString("Route number", left, labelYShieldRow + BTN_HEIGHT + 3 - 9, 0xAAAAAA);
-    } else if (data.getEmblemKind() == StreetSignEmblemKind.LOGO) {
-      drawScrolledCenteredString(data.getLogoType().getFriendlyName(), centerX,
+    } else if (legend.getEmblemKind() == StreetSignEmblemKind.LOGO) {
+      drawScrolledCenteredString(legend.getLogoType().getFriendlyName(), centerX,
           labelYShieldRow + 5, 0xFFFFFF);
     }
   }
@@ -579,17 +646,14 @@ public class DynamicStreetSignGui extends GuiScreen {
 
   private void rebuildPreviewLines() {
     previewLines.clear();
-    StringBuilder legend = new StringBuilder();
-    if (!data.getPrefix().isEmpty()) {
-      legend.append(data.getPrefix()).append(' ');
-    }
-    legend.append(data.getStreetName());
-    if (!data.getSuffix().isEmpty()) {
-      legend.append(' ').append(data.getSuffix());
-    }
-    previewLines.add("Legend: " + legend);
-    if (data.hasCityText()) {
-      previewLines.add("City line: " + data.getCityText());
+    if (data.hasLowerBlade()) {
+      previewLines.add("Blade 1: " + legendSummary(data));
+      previewLines.add("Blade 2: " + legendSummary(data.getLowerBlade()));
+    } else {
+      previewLines.add("Legend: " + legendSummary(data));
+      if (data.hasCityText()) {
+        previewLines.add("City line: " + data.getCityText());
+      }
     }
     previewLines.add("Mount: " + data.getMountType().getFriendlyName()
         + (data.isDoubleSided() ? " (both sides)" : " (front only)"));
@@ -599,22 +663,54 @@ public class DynamicStreetSignGui extends GuiScreen {
         + (data.hasExtrudedFrame() ? ", framed" : ""));
     previewLines.add("Lighting: " + (data.hasInternalLight()
         ? "internal, " + data.getLightMode().getFriendlyName() : "none"));
-    if (data.hasBlockNumber()) {
-      previewLines.add("Block number: " + data.getBlockNumber() + " ("
-          + data.getBlockPosition().getFriendlyName().toLowerCase() + ", "
-          + data.getBlockVertical().getFriendlyName().toLowerCase() + ")");
+    addSlotLines(data.hasLowerBlade() ? "Blade 1 " : "", data);
+    if (data.hasLowerBlade()) {
+      addSlotLines("Blade 2 ", data.getLowerBlade());
     }
-    if (data.hasEmblem()) {
-      String what = data.getEmblemKind() == StreetSignEmblemKind.SHIELD
-          ? data.getShieldType().getFriendlyName()
-          + (data.getShieldRoute().isEmpty() ? "" : " " + data.getShieldRoute())
-          : data.getLogoType().getFriendlyName();
-      previewLines.add("Emblem: " + what + " ("
-          + data.getEmblemPosition().getFriendlyName().toLowerCase() + ")");
+  }
+
+  /**
+   * The legend as it reads along the name line. A stacked pair has no room for a separate city
+   * line per blade in the summary, so there the city line follows after a slash.
+   */
+  private String legendSummary(StreetSignLegend legend) {
+    StringBuilder text = new StringBuilder();
+    if (!legend.getPrefix().isEmpty()) {
+      text.append(legend.getPrefix()).append(' ');
     }
-    if (data.hasArrow()) {
-      previewLines.add("Arrow: " + data.getArrowType().getFriendlyName() + " ("
-          + data.getArrowPosition().getFriendlyName().toLowerCase() + ")");
+    text.append(legend.getStreetName());
+    if (!legend.getSuffix().isEmpty()) {
+      text.append(' ').append(legend.getSuffix());
+    }
+    if (data.hasLowerBlade() && legend.hasCityText()) {
+      text.append(" / ").append(legend.getCityText());
+    }
+    return text.toString();
+  }
+
+  /**
+   * One summary line per side slot a blade actually shows.
+   *
+   * @param bladeLabel prefixed to each line to say which blade it belongs to; empty for a
+   *                   single blade, which keeps the lines it always had
+   */
+  private void addSlotLines(String bladeLabel, StreetSignLegend legend) {
+    if (legend.hasBlockNumber()) {
+      previewLines.add(bladeLabel + "Block number: " + legend.getBlockNumber() + " ("
+          + legend.getBlockPosition().getFriendlyName().toLowerCase() + ", "
+          + legend.getBlockVertical().getFriendlyName().toLowerCase() + ")");
+    }
+    if (legend.hasEmblem()) {
+      String what = legend.getEmblemKind() == StreetSignEmblemKind.SHIELD
+          ? legend.getShieldType().getFriendlyName()
+          + (legend.getShieldRoute().isEmpty() ? "" : " " + legend.getShieldRoute())
+          : legend.getLogoType().getFriendlyName();
+      previewLines.add(bladeLabel + "Emblem: " + what + " ("
+          + legend.getEmblemPosition().getFriendlyName().toLowerCase() + ")");
+    }
+    if (legend.hasArrow()) {
+      previewLines.add(bladeLabel + "Arrow: " + legend.getArrowType().getFriendlyName() + " ("
+          + legend.getArrowPosition().getFriendlyName().toLowerCase() + ")");
     }
   }
 
@@ -680,25 +776,38 @@ public class DynamicStreetSignGui extends GuiScreen {
     }
   }
 
-  /** Pushes every visible text field's contents into the document. */
+  /**
+   * The blade the legend controls on the current tab edit: the lower blade on the Blade 2 tab
+   * while it is switched on, otherwise the sign itself, whose inherited legend is the upper
+   * blade.
+   */
+  private StreetSignLegend activeLegend() {
+    if (currentTab == TAB_BLADE2 && data.hasLowerBlade()) {
+      return data.getLowerBlade();
+    }
+    return data;
+  }
+
+  /** Pushes every visible text field's contents into the blade the current tab edits. */
   private void syncFields() {
+    StreetSignLegend legend = activeLegend();
     if (prefixField != null) {
-      data.setPrefix(prefixField.getText());
+      legend.setPrefix(prefixField.getText());
     }
     if (nameField != null) {
-      data.setStreetName(nameField.getText());
+      legend.setStreetName(nameField.getText());
     }
     if (suffixField != null) {
-      data.setSuffix(suffixField.getText());
+      legend.setSuffix(suffixField.getText());
     }
     if (cityField != null) {
-      data.setCityText(cityField.getText());
+      legend.setCityText(cityField.getText());
     }
     if (blockField != null) {
-      data.setBlockNumber(blockField.getText());
+      legend.setBlockNumber(blockField.getText());
     }
     if (routeField != null) {
-      data.setShieldRoute(routeField.getText());
+      legend.setShieldRoute(routeField.getText());
     }
   }
 
@@ -708,10 +817,16 @@ public class DynamicStreetSignGui extends GuiScreen {
     // Any button press can be preceded by typing, and several rebuild the tab (dropping the
     // fields), so capture what is typed before acting on the press.
     syncFields();
+    StreetSignLegend legend = activeLegend();
 
     switch (button.id) {
       case BTN_TAB_TEXT:
         currentTab = TAB_TEXT;
+        tabContentScroll = 0;
+        initGui();
+        return;
+      case BTN_TAB_BLADE2:
+        currentTab = TAB_BLADE2;
         tabContentScroll = 0;
         initGui();
         return;
@@ -743,37 +858,46 @@ public class DynamicStreetSignGui extends GuiScreen {
         data.setTextScale(data.getTextScale() + 0.1f);
         break;
       case BTN_BLOCK_POSITION:
-        data.cycleBlockPosition();
+        legend.cycleBlockPosition();
         break;
       case BTN_BLOCK_VERTICAL:
-        data.cycleBlockVertical();
+        legend.cycleBlockVertical();
         break;
       case BTN_EMBLEM_KIND:
-        data.cycleEmblemKind();
+        legend.cycleEmblemKind();
         break;
       case BTN_EMBLEM_POSITION:
-        data.cycleEmblemPosition();
+        legend.cycleEmblemPosition();
         break;
       case BTN_SHIELD_TYPE_PREV:
-        data.setShieldType(data.getShieldType().prev());
+        legend.setShieldType(legend.getShieldType().prev());
         break;
       case BTN_SHIELD_TYPE_NEXT:
-        data.setShieldType(data.getShieldType().next());
+        legend.setShieldType(legend.getShieldType().next());
         break;
       case BTN_LOGO_TYPE_PREV:
-        data.setLogoType(data.getLogoType().prev());
+        legend.setLogoType(legend.getLogoType().prev());
         break;
       case BTN_LOGO_TYPE_NEXT:
-        data.setLogoType(data.getLogoType().next());
+        legend.setLogoType(legend.getLogoType().next());
         break;
       case BTN_ARROW_POSITION:
-        data.cycleArrowPosition();
+        legend.cycleArrowPosition();
         break;
       case BTN_ARROW_TYPE:
-        data.setArrowType(data.getArrowType().next());
+        legend.setArrowType(legend.getArrowType().next());
         break;
       case BTN_AFFIX_VERTICAL:
         data.cycleAffixVertical();
+        break;
+      case BTN_LOWER_BLADE:
+        if (data.hasLowerBlade()) {
+          parkedLowerBlade = data.getLowerBlade();
+          data.setLowerBlade(null);
+        } else {
+          data.setLowerBlade(parkedLowerBlade != null
+              ? parkedLowerBlade : StreetSignData.newLowerBlade());
+        }
         break;
 
       // --- Style tab ---

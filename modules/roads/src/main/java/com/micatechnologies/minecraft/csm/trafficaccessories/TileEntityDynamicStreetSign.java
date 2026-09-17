@@ -164,9 +164,11 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
     // A blade may be forced out to 20 blocks wide and 4 tall (StreetSignData's min-size
     // ceilings), centered on the block, and a hanging one carries its hangers half a block
     // above. The box must cover that or a wide blade culls the moment its own block leaves
-    // the frustum.
+    // the frustum. A second blade doubles how far a hanging assembly can reach below its block:
+    // two 4-block blades under a hanging mount end about 8.6 blocks down.
+    int below = getSignData().hasLowerBlade() ? 9 : 3;
     return new AxisAlignedBB(
-        pos.getX() - 10, pos.getY() - 3, pos.getZ() - 10,
+        pos.getX() - 10, pos.getY() - below, pos.getZ() - 10,
         pos.getX() + 11, pos.getY() + 4, pos.getZ() + 11);
   }
 
