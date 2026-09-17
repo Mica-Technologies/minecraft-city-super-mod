@@ -167,6 +167,42 @@ independently.
 | `metal_signpost` | Simple vertical post | Extension posts (DOWNWARD) |
 | (and others for rectangular, square, etc.) | | |
 
+### What the Three Shift Models Are
+
+`AbstractBlockSign.getActualState` works out a `shift` of `none`, `setback` or `backtoback` from
+the sign's neighbours, and the blockstate's `shift` variant swaps the model for it. The shift is
+*only* that model swap -- the block never moves -- so a plate shape needs all three models
+authored, and each has a fixed geometry:
+
+| Shift | Plate | Post | Why |
+|---|---|---|---|
+| `none` | at the block's front face, z 0..0.5 | z 0.5..3.5, behind the plate | the ordinary roadside sign |
+| `setback` | z 12.5..13 | z 13..16, reaching the back of the block | the whole assembly moved 12.5 units to the back of its own block, to clear a signal mast arm or to line up under a span wire |
+| `backtoback` | z 28.5..29, i.e. in the block *behind* | none | the partner's plate crosses into the supported sign's block and mounts on the back of *its* post; the two share one post |
+
+Back-to-back only ever shifts the partner that has nothing under it, so the sign that owns the
+post keeps `none` and its post stays where it is. That is what makes the fixed 28.5 work: a
+`none` post always ends at z 3.5, so a plate whose front face lands at z 28.49 (28.5 - the plate's
+own thickness, mirrored into the neighbour's block) always comes to rest flush against the back
+of it.
+
+**Every `shift` entry must name a model that actually differs from the default.** An entry that
+repeats the default model, or names a copy with the same element boxes, compiles and loads
+cleanly and then does nothing: the computed shift never reaches the screen, and two signs placed
+back to back simply intersect. This is what the yield-plate family
+(`yieldsign`, `signnopassingzone`, `signrailroadcrossbuck`, `signschoolbusstopahead`,
+`signschoolcrossing`, `signschoolcrossingflashingled`) did until `yield_sign_setback` and
+`yield_sign_back_to_back` were written for it.
+
+On a plate that is painted on both sides -- the yield family paints `#1` on the north face and a
+`_back` texture on the south -- the back-to-back model keeps **both** faces. The back is not
+merely hidden behind the partner: the yield plate is 23 units across, wider than the block and
+wider than a standard 16-unit plate, so on a mixed pair its corners show around whatever is in
+front of them, and they have to show the sign's own back rather than its legend reversed.
+
+The one deliberate exception is the in-street paddle (see "The In-Street Pedestrian Sign" below),
+which has no post to move and already carries its legend on both faces.
+
 ## Adding a New Traffic Sign
 
 1. Create a class extending `AbstractBlockSign`:
@@ -220,6 +256,14 @@ offset, its selection box and its collision box (see `WORK_ZONE_ACCESSORIES.md`,
 onto the road below"). The shift and downward variants exist on it, since every traffic sign
 carries those properties, but its blockstate maps them all to the same model: there is no
 post to set back or extend.
+
+It is the one place the "every shift entry must name a model that actually differs" rule above
+is deliberately broken, and it is worth saying why rather than leaving it to be found again.
+Setback exists to get a plate out from under a signal mast arm or into line with a span wire,
+neither of which an object bolted to the pavement ever meets; and back-to-back exists so two
+signs can share one post, where this one has no post, already carries its legend on both faces,
+and would have its base dragged out of the block a player put it in. So both entries are empty
+on purpose.
 
 Its face is written at 256 px: a 1:3 face squished into a square texture has only 5 px per
 plate unit down its long side at 128, and it blurred a few blocks away.
