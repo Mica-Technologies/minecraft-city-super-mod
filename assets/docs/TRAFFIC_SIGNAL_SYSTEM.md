@@ -46,7 +46,8 @@ vehicle detection sensors, and signal overlaps. All traffic signal code lives in
 ### Controller
 
 - **`BlockTrafficSignalController`** -- The block class. Responds to redstone power, handles
-  player interaction (normal click = switch mode, sneak-click = show faults). Implements
+  player interaction (plain click by an op or creative player = open the controller GUI,
+  sneak-click = switch to the next mode and report it, or the fault that blocked it). Implements
   `ICsmTileEntityProvider`.
 - **`TileEntityTrafficSignalController`** -- Server-side tickable tile entity. The brain of the
   system. Manages circuits, phases, timing, overlaps, and operating modes. Stores all state
@@ -1007,6 +1008,20 @@ PREEMPT, TSP (transit signal priority), ACT (actuation), OVL (overlaps) and HELP
   controller has always had — see `ADVANCED_MODE_ASC3.md` §5c and §5d.
 - The controller dispatches `ADVANCED` directly in `onTick` (like the detection modes); a
   misconfigured plan enters fault state with a descriptive message.
+- **Leaving a faulted `ADVANCED` by changing mode.** A fault normally blocks every manual mode
+  change (`switchMode`, `setModeByOrdinal`) until it is cleared with the signal changer tool.
+  `ADVANCED` is declared last, so cycling modes lands on it on the way back round to `FLASH`, and
+  an unprogrammed controller faults on that very first tick. Clearing the fault restores the
+  configured mode, which faults again, so a player cycling modes used to be stuck on `ADVANCED`
+  for good (issue #204). The plan-validation fault is therefore the one fault a manual mode change
+  clears: leaving `ADVANCED` removes its cause. `isInAdvancedPlanFault()` recognises it by
+  derivation — configured mode `ADVANCED` and the persisted fault message equal to the plan's
+  current `validate()` error (a never-programmed controller is judged on the default plan, which
+  is not created as a side effect) — so it needs no extra NBT and still works after a reload.
+  Matching the exact message is what keeps the conflict monitor's fault below, a missing-signal
+  fault or any other mode's fault blocking a mode change exactly as before, even while the plan
+  also happens to be invalid. Sneak-clicking onto an unprogrammed `ADVANCED` says the plan needs
+  programming and that the next sneak-click moves on.
 
 **Current limitation:** left movements display protected-or-red; permissive flashing-yellow (FYA)
 arbitration within ADVANCED mode is a planned refinement. Live runtime status (active phase /
