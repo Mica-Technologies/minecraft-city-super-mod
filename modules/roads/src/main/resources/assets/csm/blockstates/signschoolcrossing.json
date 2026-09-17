@@ -142,10 +142,10 @@
     "shift": {
       "none": {},
       "setback": {
-        "model": "csm:trafficsigns/yield_sign"
+        "model": "csm:trafficsigns/yield_sign_setback"
       },
       "backtoback": {
-        "model": "csm:trafficsigns/yield_sign"
+        "model": "csm:trafficsigns/yield_sign_back_to_back"
       }
     },
     "normal": [

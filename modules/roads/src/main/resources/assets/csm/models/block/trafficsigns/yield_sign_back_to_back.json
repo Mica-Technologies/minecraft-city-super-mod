@@ -1,0 +1,25 @@
+{
+	"credit": "CSM yield sign, back to back: the bare panel, moved into the block behind to sit against the back of the partner's post. No post of its own -- it shares the partner's.",
+	"textures": {
+		"0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+		"2": "csm:blocks/trafficsigns/yield_back"
+	},
+	"elements": [
+		{
+			"from": [-3.5, -3.5, 28.49],
+			"to": [19.5, 19.5, 28.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 15.999, 15.999], "texture": "#1"},
+				"south": {"uv": [15.999, 0, 0, 15.999], "texture": "#2"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 0.5, 0],
+			"scale": [0.625, 0.625, 0.625]
+		}
+	}
+}
