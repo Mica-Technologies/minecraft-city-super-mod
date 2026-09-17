@@ -26,6 +26,11 @@ the base away, and a horizontal run capped at both ends is one block placed side
 mounting is the family's: anything mountable beside the tube grows a band-clamp bracket toward
 it, and blocks that draw their own hardware (`ICsmTrafficPoleIgnored`) do not.
 
+The one thing a player chooses rather than the neighbours is a **ball finial** in place of the
+domed cap at the top, fitted and removed with the Street Light Configuration Tool (see "The
+ball finial" below). The pole remembers the choice in its metadata, and shows the ball wherever
+it would otherwise have shown the cap at its top.
+
 The access door is on the world **south** face of the base for both vertical facings. That is
 a consequence of the geometry being one model per end rather than per facing (see below), and
 was judged not worth a rotation property: the door is a detail, and the base is symmetrical
@@ -54,10 +59,12 @@ is worse than a joint that is honest about being bolted on.
 | `models/block/trafficaccessories/shared_models/pedestalpole_shaft.obj` | the tube, drawn by every block |
 | `…/pedestalpole_cap_n.obj`, `…/pedestalpole_cap_s.obj` | the domed cap, at the model-north / model-south end |
 | `…/pedestalpole_base_n.obj`, `…/pedestalpole_base_s.obj` | the pedestal base, likewise |
+| `…/pedestalpole_ball_n.obj`, `…/pedestalpole_ball_s.obj` | the ball finial, likewise |
 | `…/pedestalpole_mount.obj` | the band-clamp bracket a flank grows toward a device |
 | `…/pedestalpole_inv.obj` | base + tube + cap in one block, the inventory icon |
 | `…/pedestalpole.mtl` | one material, `body`; each colour's blockstate retextures it |
 | `blockstates/trafficpolepedestal<colour>.json` | five blockstates, per-property Forge format |
+| `modules/roads/.../trafficaccessories/ItemStreetLightConfigTool.java` | the tool that fits and removes the finial; its modes are `ItemStreetLightConfigToolMode` |
 
 Nothing under `shared_models/pedestalpole_*` or the five blockstates is hand edited. Change the
 shape in the script's constants and re-run it; `python gen_pedestal_pole.py --check`
@@ -70,15 +77,18 @@ before committing anything that touches these files.
 the four flank mount booleans, and adds two enum properties:
 
 ```java
-public enum EndStyle { NONE, CAP, BASE }
+public enum EndStyle { NONE, CAP, BASE, BALL }
 public static final PropertyEnum<EndStyle> END_NORTH = PropertyEnum.create("endn", EndStyle.class);
 public static final PropertyEnum<EndStyle> END_SOUTH = PropertyEnum.create("ends", EndStyle.class);
 ```
 
-`getActualState` calls the superclass for the flanks, then decides each end. All six properties
-are actual-state only; metadata still holds just the facing, so nothing about this block is
-stored differently from the rest of the family. 6 facings × 16 mount combinations × 9 end
-combinations is 864 block states.
+`getActualState` calls the superclass for the flanks, then decides each end. Every property is
+still resolved per frame, and metadata still holds only the facing — plus one bit, bit `8`, for
+the player's ball finial, which is read straight off the end properties rather than from a
+property of its own (see "The ball finial"). `getMetaFromState` and `getStateFromMeta` are
+overridden together, because a block that writes a bit it cannot read back loses the finial
+every time its chunk unloads. 6 facings × 16 mount combinations × 16 end combinations is 1,536
+block states.
 
 The class takes its registry name and colour as constructor arguments, so there is one class
 for the five colours instead of five near-identical files. `getBlockRegistryName()` is called
@@ -130,6 +140,76 @@ property's value. It could be written by enumerating every `facing=…,base=…`
 hand, which is 864 variants, or with a vanilla `multipart` blockstate, which cannot retexture an
 OBJ material and would need five OBJ copies per part. Two extra OBJ files is the cheap way out.
 
+### The ball finial
+
+A player-fitted finial is a wish, not a shape. `hasFinial(state)` asks whether the player wants
+one; `endShown` turns an end's `CAP` into `BALL` only when they do **and** that end is the
+pole's top, `finialEnd(facing)`:
+
+* on an upright pole (facing `UP` or `DOWN`) the top is the end pointing world **up**. The two
+  facings are the same post placed from above or below, so the finial must not follow the
+  facing, or a pole placed overhead would wear its ball under the base;
+* a pole lying on its side has no top, so the finial takes the end its facing points to, which
+  is the end nearest whoever placed it.
+
+Because the ball only ever replaces a cap, everything the neighbours decide still wins. Stack
+another pole on top, or sit a signal head there, and the top end is `NONE`: the ball goes away
+with the cap and the stored choice stays, so taking that block off again brings the ball back.
+The choice is not cleared behind the player's back.
+
+The **Street Light Configuration Tool** (`street_light_config_tool`) sets and clears it. It
+follows the other configuration tools: right-click applies the current mode, sneak +
+right-click (on a block or in the air) steps to the next, the mode is an ordinal in the stack's
+NBT under `csm_tool_mode`, and everything that changes the world or talks to the player happens
+on the server. Its only mode today is *Toggle Ball Finial*; the enum is where the decorative
+light poles will add theirs, appended so saved tools keep their mode.
+
+On an upright pole the tool carries the click to the **top block of the stack** before toggling.
+The finial can only show there, the top of a tall pole is out of reach, and fitting one halfway
+up a stack would do nothing visible, which reads as a broken tool. It checks
+`canPlayerEdit` and `isBlockModifiable` on that block, so adventure mode and spawn protection
+refuse it, and it sets the state with flag `3`, so clients re-render the pole at once.
+
+There is no survival recipe, in line with the signal configuration tools.
+
+### Where the choice is stored, and the state mapper that must not be
+
+There is no `finial` property. The **stored** state carries the wish on `endn` itself:
+`hasFinial` is "either end is `BALL`", `withFinial` writes `endn=ball` (and `ends=none`), and
+`getMetaFromState` turns that same question into bit `8`. `getActualState` then overwrites both
+ends from the neighbours, reading the wish out of the stored state it was handed.
+
+Three things make that safe rather than clever:
+
+* the predicate is the same on both sides of the encoding, so the meta round-trips;
+* every state sharing a metadata value answers the predicate the same way. That matters
+  because `Block.BLOCK_STATE_IDS` keeps **one** state per id, so the state a client gets off the
+  network is an arbitrary representative of its metadata — an arbitrary one that still answers
+  "has a finial" correctly;
+* the blockstate already lists `ball` as a value of `endn`/`ends`, so no variant name Forge
+  builds contains anything the JSON does not define.
+
+The one place it gives something up: a piston stores the **actual** state of what it pushes, so
+pushing a pole whose finial is hidden under something loses the choice. Pushing one whose ball
+is showing keeps it, and neither is worth a property of its own.
+
+The first attempt did add a `finial` property and hid it from the blockstate with a
+`StateMap.Builder().ignore(FINIAL)` registered from the Roads client proxy's
+pre-initialization. **It silently broke every pedestal pole**, and the trap is worth knowing:
+`ModelLoader.setCustomStateMapper` keys `customStateMappers` on the block's *registry delegate*,
+whose `equals`/`hashCode` are its registry **name** — and that name is only set when the block is
+added to the registry, which happens in `GameData.fireRegistryEvents`, **after** every mod's
+pre-initialization. So all five poles were registered under a null-named delegate, the `HashMap`
+collapsed them into one entry, four of the five colours kept the default state mapper, and every
+one of their variant names carried `finial=…`, which the blockstate did not define. The client
+logged a `MissingVariantException` per variant — of which Forge prints only the first four per
+domain before "Suppressed additional N model loading errors for domain csm", which is what made
+it look like a handful of odd states rather than the whole family.
+
+So: a per-property Forge blockstate must name every property in the state, and the way to keep a
+stored choice out of the variant name is to make it a value of a property the blockstate already
+has — not to hide a property from the mapper.
+
 ### Bounding box
 
 The tube's box is `[5, 5, 0] → [11, 11, 16]` along model Z, rotated by the facing like every
@@ -145,8 +225,8 @@ mapped into model space at write time. Two maps, both proper rotations about the
 
 | Map | Standing → model | Standing floor lands at | Standing top lands at | Used for |
 |-----|------------------|-------------------------|-----------------------|----------|
-| `to_model_south` | `(x, y, z) → (x, z, 16 − y)` | model z = 16 (south) | model z = 0 (north) | `base_s`, `cap_n`, the shaft |
-| `to_model_north` | `(x, y, z) → (x, 16 − z, y)` | model z = 0 (north) | model z = 16 (south) | `base_n`, `cap_s` |
+| `to_model_south` | `(x, y, z) → (x, z, 16 − y)` | model z = 16 (south) | model z = 0 (north) | `base_s`, `cap_n`, `ball_n`, the shaft |
+| `to_model_north` | `(x, y, z) → (x, 16 − z, y)` | model z = 0 (north) | model z = 16 (south) | `base_n`, `cap_s`, `ball_s` |
 
 A base sits at the standing *floor* and a cap at the standing *top*, so the two pieces named
 for the same model end take **opposite** maps. Getting that backwards is easy and looks like a
@@ -167,6 +247,12 @@ The parts, in 1/16 block units:
   that is what lets a flat clamp plate sit on the tube instead of straddling a vertex.
 * **Cap** — a lip of radius 3.5 from y 14.4 to 15.2, then a dome closing at y 16. Its bottom
   ring is at radius 3.02, a hair off the tube, so it shares no surface with it.
+* **Ball finial** — one lathe profile, so the ball continues the neck with a shared ring and
+  no seam: a cast slip-on sleeve 7 across from y 14.4 (its bottom ring at 3.02, like the cap's)
+  with a rounded shoulder, a waisted neck with one bead, then a ball 7.5 across whose top is at
+  y 25.5. The ball is a little wider than the sleeve, as on a real finial. It is the only part
+  that leaves its block, rising about 0.6 of a block into the space above — which is always open
+  when it is drawn, because it only replaces a cap.
 * **Base** — a square foot 12.4 across and 1 high with a top ledge, a three-segment concave
   taper from 12.0 across at y 1 to 7.8 across at y 10, a square shoulder, then the threaded
   collar (radius 3.6, y 10 to 11.6, bevelled) the tube disappears into. The collar has no
@@ -194,10 +280,12 @@ whole family depends on that pairing.
 * Every triangle is wound to face its analytic vertex normal, which every primitive sets from
   the geometry (a lathe from its profile slope, a frustum face from its taper). A face cannot
   come out inside-out; a degenerate one fails the run.
-* Every part's bounds are asserted inside `[−0.02, 16.02]`.
-* `audit_obj_models.py` reports the cap and base as see-through from some angles when audited
-  **alone**. That is the open ring the tube passes through, and it is expected; the inventory
-  model, which is the same parts assembled, audits clean, and that is the check that matters.
+* Every part's bounds are asserted inside `[−0.02, 16.02]`, except that the ball finial may
+  reach past its block along the tube axis (model Z) by exactly its own height and no further.
+* `audit_obj_models.py` reports the cap, base and ball finial as see-through from some angles
+  when audited **alone**. That is the open ring the tube passes through, and it is expected; the
+  inventory model, which is the same parts assembled, audits clean, and so does the shaft with
+  the ball on it, which is the check that matters.
 
 ## Adding a colour
 

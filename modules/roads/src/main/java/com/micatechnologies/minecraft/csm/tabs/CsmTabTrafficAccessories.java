@@ -53,6 +53,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailBoxBe
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailEnd;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockGuardrailTransition;
 import com.micatechnologies.minecraft.csm.trafficaccessories.ItemGuardrailTool;
+import com.micatechnologies.minecraft.csm.trafficaccessories.ItemStreetLightConfigTool;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneArrowBoard;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneBarricade;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneBarricadeFolding;
@@ -428,6 +429,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestaltan", TRAFFIC_POLE_COLOR.TAN));
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalwhite", TRAFFIC_POLE_COLOR.WHITE));
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalunpainted", TRAFFIC_POLE_COLOR.UNPAINTED));
+    initTabItem(ItemStreetLightConfigTool.class, fmlPreInitializationEvent); // Street Light Configuration Tool
 
     // --- Class-based: Traffic Pole Large (vertical) ---
     initTabBlock(BlockTrafficPoleLargeGray.class, fmlPreInitializationEvent);

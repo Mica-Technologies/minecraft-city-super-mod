@@ -9,6 +9,7 @@ item.signalconfigurationtool.name=Trafiksignalkonfigurationsverktyg
 item.signalheadconfigtool.name=Signalhuvudkonfigurationsverktyg
 item.signalvisibilityprogrammer.name=Signalsynlighetsprogrammerare
 item.spanwiretool.name=Spänntrådsverktyg
+item.street_light_config_tool.name=Gatljuskonfigurationsverktyg
 itemGroup.tabroadsigns=CSM: Vägmärken
 itemGroup.tabtrafficaccessories=CSM: Trafiktillbehör
 itemGroup.tabtrafficsignals=CSM: Trafiksignaler

@@ -9,6 +9,7 @@ item.signalconfigurationtool.name=Verkehrssignal-Konfigurationswerkzeug
 item.signalheadconfigtool.name=Signalkopf-Konfigurationswerkzeug
 item.signalvisibilityprogrammer.name=Signalsichtbarkeits-Programmiergerät
 item.spanwiretool.name=Spanndraht-Werkzeug
+item.street_light_config_tool.name=Straßenleuchten-Konfigurationswerkzeug
 itemGroup.tabroadsigns=CSM: Verkehrsschilder
 itemGroup.tabtrafficaccessories=CSM: Verkehrszubehör
 itemGroup.tabtrafficsignals=CSM: Verkehrssignale
