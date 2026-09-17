@@ -2,7 +2,7 @@
 
 Steel and wood stud walls, the structure that spans between them, and structural steel.
 
-!!! info "0 blocks in this tab"
+!!! info "1 block in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,5 +11,6 @@ Steel and wood stud walls, the structure that spans between them, and structural
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Steel Stud Wall | `csm:steel_stud_wall` | 1.5 | 8 | pickaxe | 1 |
 
 </div>

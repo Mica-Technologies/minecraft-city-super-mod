@@ -1,0 +1,108 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:buildingmaterials/steel_stud_wall_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_post"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true
+      },
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_arm",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south"
+      }
+    }
+  ]
+}
