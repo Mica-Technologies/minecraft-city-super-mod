@@ -7,8 +7,8 @@ Pedestrian signals, push buttons, and the audible units that make a crossing usa
 CSM has symbolic (hand/person) and worded (DON'T WALK / WALK) crosswalk heads, in 12-inch and
 16-inch, on base or pole mounts.
 
-They link to a controller exactly like a vehicle head — hold a signal linker, right-click the
-controller, then right-click the crosswalk head. The controller then drives walk, flashing don't
+They link to a controller exactly like a vehicle head — hold the Signal Link Tool, right-click
+the controller, then right-click the crosswalk head. The controller then drives walk, flashing don't
 walk and don't walk from the pedestrian timing in its configuration.
 
 | Controller timing | Effect on the crossing |
@@ -83,8 +83,8 @@ The **rectangular rapid flashing beacon**: two rectangular amber indications in 
 until a pedestrian activates them, then firing rapid bursts at the traffic. It is the modern device
 for an uncontrolled or midblock crossing, where there is no signal to stop anyone.
 
-It links to a controller as a **pedestrian beacon**, exactly as a HAWK does — hold the signal
-linker, right-click the controller, right-click the RRFB. Put the crossing's button in
+It links to a controller as a **pedestrian beacon**, exactly as a HAWK does — hold the Signal Link
+Tool, right-click the controller, right-click the RRFB. Put the crossing's button in
 **requestable** mode and the button is what calls it.
 
 The controller knows it is not a HAWK. A HAWK announces itself — flashing yellow, steady yellow,
