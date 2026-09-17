@@ -77,6 +77,41 @@ jobs:
           git tag "${{ env.PRE_TAG }}" "${{ github.sha }}"
           git push origin "${{ env.PRE_TAG }}"
 
+      # The version the jars are stamped with comes from `git describe --abbrev=0 --tags`
+      # (build.gradle's getLastTag), which asks "some tag on this commit" and not "the tag being
+      # published". A dispatched release and a pushed pre-release of the same commit leave BOTH
+      # tags on it — 2026.09.17 and 2026.09.17-pre.2131.UTC+0000+09d91b3de both point at
+      # 09d91b3de today — and which one describe answers with is not ours to decide. If it
+      # answers with the pre-release tag, a full release ships jars stamped as a pre-release,
+      # and `mcmod.info` inside them says so too. The same bug bit MCMCP on 2026-09-09.
+      #
+      # So the version is STATED rather than inferred: buildscript.properties' modVersion is
+      # empty, and build.gradle only falls back to git when it is (build.gradle:329). This edit
+      # is CI-only and never committed.
+      - name: Pin the mod version to the tag being published
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event.inputs.release }}" = "true" ]; then
+            chosen="${{ env.REL_TAG }}"
+          else
+            chosen="${{ env.PRE_TAG }}"
+          fi
+          echo "CHOSEN_TAG=$chosen" >> "$GITHUB_ENV"
+
+          sed -i "s|^modVersion =.*|modVersion = $chosen|" buildscript.properties
+          grep -n '^modVersion' buildscript.properties
+
+          # getLastTag also feeds the generated changelog, which asks git the same ambiguous
+          # question, so the other tags on this commit go too. Local refs only: the remote tags,
+          # and so the release history, are untouched. `|| true` because grep exits 1 when the
+          # chosen tag is the only one on the commit, which is the ordinary pre-release case.
+          others="$(git tag --points-at "${{ github.sha }}" | grep -vxF "$chosen" || true)"
+          if [ -n "$others" ]; then
+            echo "$others" | xargs git tag -d
+          fi
+          echo "Local tags now on this commit:"
+          git tag --points-at "${{ github.sha }}"
+
       - name: Assemble Mod with Gradle
         run: ./gradlew build -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 -Dorg.gradle.internal.http.socketTimeout=60000 -Dorg.gradle.internal.http.connectionTimeout=60000
 
@@ -95,6 +130,20 @@ jobs:
         run: |
           modVersion=$(${{github.workspace}}/gradlew -q printModVersion | tail -n 1 | xargs)
           echo "MOD_VERSION=$modVersion" >> $GITHUB_ENV
+
+      # Shape validation cannot catch a version that is well formed but simply not the one being
+      # published, so this compares against the intended value. It runs before anything is
+      # uploaded, because the version is baked into the jars and mcmod.info as well as the file
+      # names — a wrong one cannot be fixed by renaming the assets afterwards.
+      - name: Fail if the built version is not the tag being published
+        run: |
+          built="${{ env.MOD_VERSION }}"
+          chosen="${{ env.CHOSEN_TAG }}"
+          if [ "$built" != "$chosen" ]; then
+            echo "::error::Built version '$built' does not match the published tag '$chosen'. Every jar, and the mcmod.info inside it, would be stamped '$built'. Refusing to publish."
+            exit 1
+          fi
+          echo "Built version matches the published tag: $built"
 
       - name: Save Minecraft Version to GITHUB_ENV
         run: |
