@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmScrollViewport;
 import com.micatechnologies.minecraft.csm.trafficaccessories.packets.DynamicGuideSignUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.ExitTabData;
@@ -237,15 +238,18 @@ public class DynamicGuideSignGui extends GuiScreen {
       int naturalY = contentButtonNaturalY.get(i);
       int scrolledY = naturalY - tabContentScroll;
       btn.y = scrolledY;
-      btn.visible = scrolledY + btn.height > viewportTop && scrolledY < viewportBottom;
+      // Fully inside, not merely overlapping -- see CsmScrollViewport: a button half under the
+      // Save row is invisible but still clickable, and one click presses both.
+      btn.visible = CsmScrollViewport.isRowVisible(scrolledY, btn.height, viewportTop,
+          viewportBottom);
     }
     for (int i = 0; i < contentTextFields.size(); i++) {
       GuiTextField field = contentTextFields.get(i);
       int naturalY = contentTextFieldNaturalY.get(i);
       int scrolledY = naturalY - tabContentScroll;
       field.y = scrolledY;
-      field.setVisible(
-          scrolledY + field.height > viewportTop && scrolledY < viewportBottom);
+      field.setVisible(CsmScrollViewport.isRowVisible(scrolledY, field.height, viewportTop,
+          viewportBottom));
     }
   }
 
@@ -591,8 +595,16 @@ public class DynamicGuideSignGui extends GuiScreen {
     if (boxTop + PREVIEW_VISUAL_HEIGHT < viewportTop || boxTop > viewportBottom) {
       return;
     }
+    // The preview scrolls with the rest of the tab, so everything it draws is clipped to the
+    // viewport as well as to its own box -- past the strips it would land on the tab buttons or
+    // the Save row.
+    int clipTop = Math.max(boxTop, viewportTop);
+    int clipBottom = Math.min(boxTop + PREVIEW_VISUAL_HEIGHT, viewportBottom);
+    if (clipBottom <= clipTop) {
+      return;
+    }
     // Dark backdrop so white borders and light sign colors stay visible.
-    drawRect(left, boxTop, left + FIELD_WIDTH, boxTop + PREVIEW_VISUAL_HEIGHT, 0xFF2A2A2E);
+    drawRect(left, clipTop, left + FIELD_WIDTH, clipBottom, 0xFF2A2A2E);
 
     float[] dims = previewRenderer.computeSignDimensions(data);
     float signW = dims[0];
@@ -624,8 +636,8 @@ public class DynamicGuideSignGui extends GuiScreen {
     ScaledResolution sr = new ScaledResolution(mc);
     int f = sr.getScaleFactor();
     GL11.glEnable(GL11.GL_SCISSOR_TEST);
-    GL11.glScissor(left * f, mc.displayHeight - (boxTop + PREVIEW_VISUAL_HEIGHT) * f,
-        FIELD_WIDTH * f, PREVIEW_VISUAL_HEIGHT * f);
+    GL11.glScissor(left * f, mc.displayHeight - clipBottom * f,
+        FIELD_WIDTH * f, (clipBottom - clipTop) * f);
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(cx, cy, 120);
@@ -715,14 +727,14 @@ public class DynamicGuideSignGui extends GuiScreen {
 
   private void drawScrolledCenteredString(String text, int x, int naturalY, int color) {
     int y = naturalY - tabContentScroll;
-    if (y + fontRenderer.FONT_HEIGHT > viewportTop && y < viewportBottom) {
+    if (CsmScrollViewport.isRowVisible(y, fontRenderer.FONT_HEIGHT, viewportTop, viewportBottom)) {
       drawCenteredString(fontRenderer, text, x, y, color);
     }
   }
 
   private void drawScrolledString(String text, int x, int naturalY, int color) {
     int y = naturalY - tabContentScroll;
-    if (y + fontRenderer.FONT_HEIGHT > viewportTop && y < viewportBottom) {
+    if (CsmScrollViewport.isRowVisible(y, fontRenderer.FONT_HEIGHT, viewportTop, viewportBottom)) {
       drawString(fontRenderer, text, x, y, color);
     }
   }

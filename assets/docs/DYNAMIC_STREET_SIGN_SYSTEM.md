@@ -433,6 +433,16 @@ and the Save/Cancel row scrolls with the mouse wheel, off-viewport widgets are h
 (`visible = false`, `setVisible(false)`) rather than moved so they cannot intercept clicks or
 bleed through the fixed strips, and a scrollbar indicator is drawn when content overflows.
 
+**A widget counts as on-viewport only when it fits there entirely** (`CsmScrollViewport.isRowVisible`,
+shared with the guide sign editor, and the rule the preview's scissor box and every scrolled label
+follow too). Merely overlapping is not enough, and the difference is not cosmetic: vanilla's
+`GuiScreen.mouseClicked` walks the entire button list without stopping at the first hit, so a
+content button peeking out from under the Save button was pressed by the same click that pressed
+Save -- invisible, because Save is drawn over it. On a 1904x1041 window (GUI scale 4, so 476x261
+scaled) the Save row lands exactly on the Text tab's emblem-kind button, and every save silently
+cycled the blade's emblem. Which row it catches depends on the window height, which is why it
+looked like nothing at all at most sizes.
+
 - **Text**: prefix / street name / suffix on one line in blade order, the optional city line,
   text size, the prefix/suffix alignment, the block number and its side and height, the emblem
   (kind, side, and either a shield chooser with a route field or a logo chooser), and the arrow.

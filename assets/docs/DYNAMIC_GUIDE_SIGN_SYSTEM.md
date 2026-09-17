@@ -319,8 +319,11 @@ FontRenderer / atlas pass, because shaders ignore `disableTexture2D` global stat
 
 A 4-tab `GuiScreen`. A tab strip (buttons 100–103) switches `currentTab`; the active tab's button is
 disabled. Content between the tab strip and the Save/Cancel buttons scrolls with the mouse wheel
-(`Mouse.getEventDWheel()`); off-viewport buttons and text fields are hidden (`visible = false`) so
-they don't intercept clicks or bleed through the fixed strips, and a scrollbar indicator is drawn
+(`Mouse.getEventDWheel()`); buttons and text fields are hidden (`visible = false`) unless they fit
+**entirely** between the fixed strips (`CsmScrollViewport.isRowVisible`), so they don't intercept
+clicks or bleed through them -- a widget half under the Save row is invisible but still clickable,
+and vanilla presses every button under the cursor rather than the first (see the street sign
+document), and a scrollbar indicator is drawn
 when content overflows.
 
 - **Properties** (`TAB_PROPERTIES`): sign color cycle, post type cycle, border +/−, min-width,
