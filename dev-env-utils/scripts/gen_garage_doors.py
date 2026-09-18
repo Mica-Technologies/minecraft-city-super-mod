@@ -360,22 +360,28 @@ def control_colour(rgb, seed):
 
 def keypad_face():
     """A keypad's face, drawn over the whole texture and mapped whole onto the keypad's front (6 x
-    9 px, so it is squeezed to 3:8 across and 9:16 down -- the keys are drawn 3 x 2 to come out
-    square): a bezel, a lit display across the top and twelve backlit keys, three by four."""
-    img, px, _ = _canvas(20261827, (30, 30, 32), 3)
-    for i in range(16):
-        for j in (0, 15):
-            px[i, j] = _shift((60, 58, 56), 0)
-            px[j, i] = _shift((60, 58, 56), 0)
-    for x in range(2, 14):
-        for y in range(2, 4):
-            px[x, y] = _shift((80, 168, 92), -10 if y == 3 else 0)
+    9 px, so it is squeezed across more than down). Drawn at 32 px, because at 16 there is no room
+    for the margin that keeps the keys off the bezel on all four sides: a bezel, a lit display
+    across the top and twelve backlit keys, three by four, each 6 x 4 so it comes out square."""
+    import random as _random
+    rng = _random.Random(20261827)
+    img = Image.new("RGBA", (32, 32))
+    px = img.load()
+    for y in range(32):
+        for x in range(32):
+            if x in (0, 31) or y in (0, 31):
+                px[x, y] = _shift((60, 58, 56), rng.uniform(-3, 3))
+            else:
+                px[x, y] = _shift((30, 30, 32), rng.uniform(-3, 3))
+    for y in range(2, 6):
+        for x in range(4, 28):
+            px[x, y] = _shift((80, 168, 92), -12 if y == 5 else 0)
     for row in range(4):
         for col in range(3):
-            for dx in range(3):
-                for dy in range(2):
-                    x, y = 2 + col * 5 + dx, 5 + row * 3 + dy
-                    px[x, y] = _shift((218, 224, 218), -30 if dy == 1 else 0)
+            for dx in range(6):
+                for dy in range(4):
+                    x, y = 4 + col * 9 + dx, 8 + row * 6 + dy
+                    px[x, y] = _shift((218, 224, 218), -34 if dy == 3 else 0)
     return img
 
 
