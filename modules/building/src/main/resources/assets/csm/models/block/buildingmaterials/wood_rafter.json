@@ -1,0 +1,50 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/buildingmaterials/framing/wood_plate",
+    "particle": "csm:blocks/buildingmaterials/framing/wood_plate"
+  },
+  "elements": [
+    {
+      "from": [
+        6,
+        5,
+        -3.5
+      ],
+      "to": [
+        10,
+        11,
+        19.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        },
+        "down": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "x",
+        "angle": 45
+      }
+    }
+  ]
+}

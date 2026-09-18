@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBarJoist;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCeilingJoist;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockHollowMetalDoorFrame;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockJoistGirder;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockMetalRoofDeck;
@@ -15,6 +16,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelTrack;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodIJoist;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodJoist;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodPlate;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodRafter;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWall;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWallBlocking;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWallBraced;
@@ -112,5 +114,7 @@ public class CsmTabStructureFraming extends CsmTab {
     initTabBlock(BlockJoistGirder.class, fmlPreInitializationEvent); // Joist Girder
     initTabBlock(BlockMetalRoofDeck.class, fmlPreInitializationEvent); // Metal Roof Deck
     initTabBlock(BlockMetalRoofDeckConcrete.class, fmlPreInitializationEvent); // Metal Deck with Concrete
+    initTabBlock(BlockCeilingJoist.class, fmlPreInitializationEvent); // Ceiling Joist
+    initTabBlock(BlockWoodRafter.class, fmlPreInitializationEvent); // Wood Rafter
   }
 }
