@@ -11,6 +11,7 @@ formwork, shoring and rebar, and a tower crane. One creative tab, **Construction
 | Formwork and shoring | Wall Formwork, Column Formwork, Post Shore | `gen_formwork.py` |
 | Rebar | Rebar Mat, Rebar Dowels, Rebar Column Cage, Rebar Bundle | `gen_formwork.py` |
 | Tower crane | Tower Crane Mast (1x1), Tower Crane Mast (2x2), Tower Crane Head | `gen_crane.py` (masts); the head is drawn in Java |
+| Fencing | Temporary Fence (plain and with privacy screen), Silt Fence; in Building Materials, Chain-Link Fence (galvanized, black) and its Barbed Wire Top | `gen_fencing.py` |
 
 Classes are in `modules/building/src/main/java/com/micatechnologies/minecraft/csm/constructionsite/`,
 the tab in `tabs/CsmTabConstructionSite.java`. Every generator has `--check`.
@@ -76,6 +77,43 @@ stack: a real shore is two or three blocks tall, so each block works out its par
 tube where the stack carries on; the adjusting collar, inner tube and U-head where it ends; a base
 plate at its foot) and nothing is stored. The column form, rebar mat, dowels and cage are one
 class, `BlockSiteProp`, constructed by registry name -- a ThreadLocal hands the name to the constructor, as `BlockBrickTrim` does.
+
+## Fencing
+
+Six blocks, one class: `BlockSiteFence`, constructed by registry name, which joins its neighbours
+the way a vanilla fence does -- a post at the centre of the block and a panel out to each side it
+connects on. All state is actual state: the four sides, whether the same family continues above
+and below, and whether the post is a terminal (an end, corner or junction) rather than a line post
+in a straight run. Fences join their own family -- both temporary fences, both chain-link finishes
+-- and the temporary and chain-link fences also butt up against a solid face.
+
+| Block | Tab | What it is |
+|---|---|---|
+| Temporary Fence | Construction Site | mesh panels in tube frames, 1.75 blocks tall (a real panel's six feet), standing in precast feet, with a clamp coupling each pair of end tubes |
+| Temporary Fence (Privacy Screen) | Construction Site | the same with green shade cloth behind the mesh |
+| Silt Fence | Construction Site | black geotextile on wooden stakes, low along a site's edge |
+| Chain-Link Fence, (Black) | Building Materials | permanent chain-link, one block tall and **stacking** |
+| Chain-Link Barbed Wire Top | Building Materials | V arms and three strands a side, placed on top of a chain-link fence |
+
+- **Chain-link stacks instead of coming in heights**, at the user's request: a tall fence is several
+  one-block courses sharing one continuous post and mesh. The top rail and post cap are drawn only
+  on the top course (nothing of the family above), the tension wire only on the bottom one, and
+  the heavier terminal post with a dome cap wherever a run ends or turns; line posts get a loop
+  cap the rail passes through.
+- **The mesh is a zero-thickness cutout plane** through the post, from a 32 px diamond texture whose
+  pitch divides the block, so mesh on neighbouring blocks and courses is one mesh. A mesh is a
+  pattern of holes; a box would draw every wire twice. The temporary fence uses the same mesh.
+- **A panel is drawn once**, running east from the post, and the multipart blockstate turns it onto
+  the other three sides. The temporary fence's foot turns to lie along the run; a lone fence gets
+  it along x.
+- **The barbed wire is a strip of texture**, not geometry: a plane two pixels tall sampling the rows
+  of `barbed_wire.png` the wire is drawn on (explicit UVs), because a barb in elements is eight
+  boxes and a fence has dozens of barbs.
+- **The temporary fence's icon is scaled down** (`display.gui`): at 1.75 blocks, block/block's
+  inventory view pushed it out of the top of the slot.
+- Collision is a vanilla fence's 1.5 blocks for the temporary and chain-link fences, 0.75 for the
+  silt fence and 1.0 for the barbed top; all of them are steel that comes down by hand, like the
+  scaffold, except the silt fence, which is wood.
 
 ## Tower crane
 

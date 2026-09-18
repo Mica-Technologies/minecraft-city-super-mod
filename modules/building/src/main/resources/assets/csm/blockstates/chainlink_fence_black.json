@@ -1,0 +1,162 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:constructionsite/chainlink_black_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "terminal": "false",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_post_line"
+      }
+    },
+    {
+      "when": {
+        "terminal": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_post_line_top"
+      }
+    },
+    {
+      "when": {
+        "terminal": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_post_terminal"
+      }
+    },
+    {
+      "when": {
+        "terminal": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_post_terminal_top"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_mesh"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_mesh",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_mesh",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_mesh",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_mesh_top"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_mesh_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_mesh_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_mesh_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_wire"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_wire",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_wire",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/chainlink_black_wire",
+        "y": 270
+      }
+    }
+  ]
+}

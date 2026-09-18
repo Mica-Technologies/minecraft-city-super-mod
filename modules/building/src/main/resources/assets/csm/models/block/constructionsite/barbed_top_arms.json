@@ -1,0 +1,163 @@
+{
+  "textures": {
+    "post": "csm:blocks/constructionsite/chainlink_post_galv",
+    "barb": "csm:blocks/constructionsite/barbed_wire",
+    "particle": "csm:blocks/constructionsite/chainlink_post_galv"
+  },
+  "elements": [
+    {
+      "from": [
+        7.5,
+        2.5,
+        7.5
+      ],
+      "to": [
+        8.5,
+        14.5,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            1.5,
+            8.5,
+            13.5
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            1.5,
+            8.5,
+            13.5
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            1.5,
+            8.5,
+            13.5
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            1.5,
+            8.5,
+            13.5
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            7.5,
+            8.5,
+            8.5
+          ]
+        },
+        "down": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            7.5,
+            8.5,
+            8.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          2.5,
+          8
+        ],
+        "axis": "x",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        7.5,
+        2.5,
+        7.5
+      ],
+      "to": [
+        8.5,
+        14.5,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            1.5,
+            8.5,
+            13.5
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            1.5,
+            8.5,
+            13.5
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            1.5,
+            8.5,
+            13.5
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            1.5,
+            8.5,
+            13.5
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            7.5,
+            8.5,
+            8.5
+          ]
+        },
+        "down": {
+          "texture": "#post",
+          "uv": [
+            7.5,
+            7.5,
+            8.5,
+            8.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          2.5,
+          8
+        ],
+        "axis": "x",
+        "angle": -45
+      }
+    }
+  ]
+}

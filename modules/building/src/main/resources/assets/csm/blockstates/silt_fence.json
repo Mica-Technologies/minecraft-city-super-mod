@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:constructionsite/silt_fence_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:constructionsite/silt_fence_stake"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/silt_fence_half"
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/silt_fence_half",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/silt_fence_half",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/silt_fence_half",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:constructionsite/barbed_top_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:constructionsite/barbed_top_sleeve"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "true"
+          },
+          {
+            "west": "true"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/barbed_top_arms"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "true"
+          },
+          {
+            "south": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/barbed_top_arms",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/barbed_top_strands"
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/barbed_top_strands",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/barbed_top_strands",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/barbed_top_strands",
+        "y": 270
+      }
+    }
+  ]
+}

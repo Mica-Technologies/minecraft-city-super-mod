@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "160 blocks in this tab"
+!!! info "163 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -49,6 +49,9 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Cedar Shingle Siding Fence | `csm:siding_shingle_fence` | 2 | 5 | axe | 0 |
 | Cedar Shingle Siding Slab | `csm:siding_shingle_slab` | 2 | 5 | axe | 0 |
 | Cedar Shingle Siding Stairs | `csm:siding_shingle_stairs` | 2 | 5 | axe | 0 |
+| Chain-Link Barbed Wire Top | `csm:chainlink_barbed_top` |  |  |  |  |
+| Chain-Link Fence | `csm:chainlink_fence` |  |  |  |  |
+| Chain-Link Fence (Black) | `csm:chainlink_fence_black` |  |  |  |  |
 | Composite Panel Cladding | `csm:cladding_composite` | 3 | 10 | pickaxe | 1 |
 | Composite Panel Cladding Fence | `csm:cladding_composite_fence` | 3 | 10 | pickaxe | 1 |
 | Composite Panel Cladding Slab | `csm:cladding_composite_slab` | 3 | 10 | pickaxe | 1 |

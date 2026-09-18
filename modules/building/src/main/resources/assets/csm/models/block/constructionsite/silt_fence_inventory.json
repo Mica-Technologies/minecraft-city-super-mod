@@ -1,0 +1,142 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "stake": "csm:blocks/constructionsite/form_lumber",
+    "fabric": "csm:blocks/constructionsite/silt_fabric",
+    "particle": "csm:blocks/constructionsite/silt_fabric"
+  },
+  "elements": [
+    {
+      "from": [
+        7.25,
+        0,
+        7.25
+      ],
+      "to": [
+        8.75,
+        14,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stake",
+          "uv": [
+            7.25,
+            2,
+            8.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#stake",
+          "uv": [
+            7.25,
+            2,
+            8.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#stake",
+          "uv": [
+            7.25,
+            2,
+            8.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#stake",
+          "uv": [
+            7.25,
+            2,
+            8.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#stake",
+          "uv": [
+            7.25,
+            7.25,
+            8.75,
+            8.75
+          ]
+        },
+        "down": {
+          "texture": "#stake",
+          "uv": [
+            7.25,
+            7.25,
+            8.75,
+            8.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8.75,
+        0,
+        8
+      ],
+      "to": [
+        16,
+        11,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fabric",
+          "uv": [
+            0,
+            5,
+            7.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#fabric",
+          "uv": [
+            8.75,
+            5,
+            16.0,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        8
+      ],
+      "to": [
+        7.25,
+        11,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fabric",
+          "uv": [
+            8.75,
+            5,
+            16.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#fabric",
+          "uv": [
+            0,
+            5,
+            7.25,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

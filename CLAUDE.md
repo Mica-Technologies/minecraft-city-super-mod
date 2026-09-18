@@ -312,7 +312,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   blocks and not a state, how each material is told from its nearest neighbour, the name-driven
   Fabricator pricing, and the traps (a name decides a price, fine detail mipmaps away)
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
-  crane: why the scaffold's look is actual state and its sides three-valued, the guardrail that
+  crane and the site fences: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
   or baked models, the display list with the slew outside it, how its deck and walkways are made
   solid without blocks, climbing by inserting sections, and
@@ -453,6 +453,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   into a cutout texture on a plane per face -- a 1x1 face's chord-to-chord diagonal is not an angle
   an element can be turned to, and a texture diagonal can be any angle and meets the chord at the
   cell edge; `--check` fails on drift
+- `gen_fencing.py` -- the site and chain-link fences (one class, `BlockSiteFence`): temporary
+  fence with and without privacy screen, silt fence, stacking chain-link in two finishes and its
+  barbed-wire top. The mesh is a zero-thickness cutout plane, a panel is drawn once running east
+  and turned by the multipart blockstate; `--check` fails on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the
