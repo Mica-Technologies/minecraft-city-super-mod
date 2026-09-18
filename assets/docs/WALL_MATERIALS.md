@@ -168,7 +168,8 @@ class per form, constructed by registry name (`glass_<kind>`, `glass_pane_<kind>
   free. Different kinds are different windows, so a frame runs between them.
 - **One-way glass needs nothing but two textures.** It is dark on its outside face and clear on the
   inside one, and Minecraft never draws the back of a face, so from outside only the dark face is
-  seen and from inside only the clear one. The outside is the way the placer was looking (they
+  seen and from inside only the clear one. The dark face is fully opaque: at 90% it still showed
+  the inside faintly, and one-way glass that can be seen through is not one-way. The outside is the way the placer was looking (they
   are taken to be standing inside). A pane's facing is turned a quarter in its actual state if it
   runs along the pane.
 - **A pane's arm is drawn twice, running east and running west, never turned 180 degrees**:

@@ -66,7 +66,9 @@ KINDS = {
     "frosted": ((236, 240, 242, 205), ("Frosted Glass", "Vidrio Esmerilado", "Milchglas",
                                        "Frostat Glas")),
 }
-ONE_WAY_OUTSIDE = (40, 50, 62, 228)
+# One-way glass's outside: fully opaque. Any alpha at all lets the inside show through, and the
+# point of it is that from outside it does not; the inside face stays clear either way.
+ONE_WAY_OUTSIDE = (46, 56, 70, 255)
 FRAME = (58, 48, 38)
 PANE_NAMES = ("%s Pane", "Panel de %s", "Glasscheibe (%s)", "Glasruta (%s)")
 
