@@ -10,7 +10,9 @@ and planks, but a Minecraft cell holds one block, so each cell is one bay and de
 parts: an end frame on its near side always and on its far side only where the run ends, a cross
 brace on each open long face, a plank deck on top only when nothing is stacked on it, and screw
 jacks under the legs only where it stands on something else. Stacked, a tower reads as frames and
-braces with a working deck at the top, which is what a real one looks like.
+braces with a working deck at the top, which is what a real one looks like. The top deck also
+grows a guardrail on every edge that is a drop; which edges those are is decided in Java
+(BlockScaffoldFrame.needsRail), and only drawn here.
 
 WHAT IS STORED. Only the facing, which says which way the frames run. Every part is decided in
 getActualState from the neighbours, so the look can change completely -- in this file -- without
@@ -66,6 +68,13 @@ BRACE_Z = (0.2, 0.7)  # the two braces of an X, one in front of the other so the
 DECK_Y = 15.0         # planks from here to the top of the cell
 PLANKS = ((2.25, 5.75), (6.25, 9.75), (10.25, 13.75))  # plank spans across the depth
 JACK_PLATE = 0.5      # base plate thickness
+# The guardrail, drawn into the cell above the deck (y 16..32), on the leg lines.
+RAIL_POST_TOP = 32.0  # posts run up from the legs to here
+RAIL_TOP_Y = 30.0     # top rail, one tube section from here
+RAIL_MID_Y = 23.0     # mid rail
+RAIL_INSET = 0.1      # rails are this much thinner than the posts each side, so a rail passing
+                      # through a post never shares a face with it
+TOEBOARD = (16.0, 18.0, 0.5)  # toeboard bottom, top and thickness, just inside the leg line
 JACK_COLLAR = (2.0, 2.75)
 
 # A 45 degree diagonal from corner to corner of a 16 x 16 face is 22.63 long. Rotation cannot
@@ -251,6 +260,46 @@ def jack_near():
     return out
 
 
+def _rail_run_x(z0):
+    """Top rail, mid rail and toeboard running the length of the bay (along x) on the leg line
+    that starts at ``z0``, and the post over the near leg. The far post is its own part, drawn
+    only where the run ends."""
+    t, p = "#tube", "#plank"
+    a, b = z0 + RAIL_INSET, z0 + TUBE - RAIL_INSET
+    inner = z0 + TUBE if z0 < 8 else z0 - TOEBOARD[2]
+    return [
+        _box(0, 16, z0, TUBE, RAIL_POST_TOP, z0 + TUBE, t),
+        _box(0, RAIL_TOP_Y + RAIL_INSET, a, 16, RAIL_TOP_Y + TUBE - RAIL_INSET, b, t),
+        _box(0, RAIL_MID_Y + RAIL_INSET, a, 16, RAIL_MID_Y + TUBE - RAIL_INSET, b, t),
+        _box(0, TOEBOARD[0], inner, 16, TOEBOARD[1], inner + TOEBOARD[2], p),
+    ]
+
+
+def rail_north():
+    """The guardrail along the north (long) edge, over the north legs."""
+    return _rail_run_x(LEG_Z[0])
+
+
+def rail_north_post():
+    """The post over the far north leg, drawn where the run ends to the east."""
+    z0 = LEG_Z[0]
+    return [_box(16 - TUBE, 16, z0, 16, RAIL_POST_TOP, z0 + TUBE, "#tube")]
+
+
+def rail_west():
+    """The guardrail across the near end frame: posts over both legs, rails between them."""
+    t, p = "#tube", "#plank"
+    z0, z1 = LEG_Z
+    a, b = RAIL_INSET, TUBE - RAIL_INSET
+    return [
+        _box(0, 16, z0, TUBE, RAIL_POST_TOP, z0 + TUBE, t),
+        _box(0, 16, z1, TUBE, RAIL_POST_TOP, z1 + TUBE, t),
+        _box(a, RAIL_TOP_Y + RAIL_INSET, z0 + TUBE, b, RAIL_TOP_Y + TUBE - RAIL_INSET, z1, t),
+        _box(a, RAIL_MID_Y + RAIL_INSET, z0 + TUBE, b, RAIL_MID_Y + TUBE - RAIL_INSET, z1, t),
+        _box(TUBE, TOEBOARD[0], z0 + TUBE, TUBE + TOEBOARD[2], TOEBOARD[1], z1, p),
+    ]
+
+
 TEXTURE_KEYS = {"tube": TEX_REF % "scaffold_tube", "plank": TEX_REF % "scaffold_plank",
                 "jack": TEX_REF % "scaffold_jack", "particle": TEX_REF % "scaffold_tube"}
 
@@ -272,6 +321,12 @@ def part_models():
         NAME + "_deck": _model(deck()),
         NAME + "_jack_near": _model(jn),
         NAME + "_jack_far": _model(_mirror_x(jn)),
+        NAME + "_rail_north": _model(rail_north()),
+        NAME + "_rail_south": _model(_mirror_z(rail_north())),
+        NAME + "_rail_north_post": _model(rail_north_post()),
+        NAME + "_rail_south_post": _model(_mirror_z(rail_north_post())),
+        NAME + "_rail_west": _model(rail_west()),
+        NAME + "_rail_east": _model(_mirror_x(rail_west())),
         NAME + "_inventory": _model(near + _mirror_x(near) + north + _mirror_z(north) + deck()
                                     + jn + _mirror_x(jn), parent="block/block"),
     }
@@ -283,8 +338,10 @@ def part_models():
 #
 # The two turns, and for each the absolute side each canonical face lands on. A y rotation of 90
 # carries north to east, east to south, south to west and west to north.
-TURNS = (("north|south", None, {"east": "east", "north": "north", "south": "south"}),
-         ("east|west", 90, {"east": "south", "north": "east", "south": "west"}))
+TURNS = (("north|south", None,
+          {"east": "east", "north": "north", "south": "south", "west": "west"}),
+         ("east|west", 90,
+          {"east": "south", "north": "east", "south": "west", "west": "north"}))
 
 
 def _apply(part, y):
@@ -308,6 +365,16 @@ def blockstate():
             {"when": dict(f, down="false", **{side["east"]: "false"}),
              "apply": _apply("jack_far", y)},
         ]
+        # Guardrails. Which edges get one is decided in Java (the rail_* properties); only the
+        # far posts need the run's end as well, since a post stands over every bay line and the
+        # next bay draws its own near one.
+        for canon in ("north", "south", "west", "east"):
+            parts.append({"when": dict(f, **{"rail_" + side[canon]: "true"}),
+                          "apply": _apply("rail_" + canon, y)})
+        for canon in ("north", "south"):
+            parts.append({"when": dict(f, **{"rail_" + side[canon]: "true",
+                                              side["east"]: "false"}),
+                          "apply": _apply("rail_%s_post" % canon, y)})
     return {"variants": {"inventory": {"model": MODEL_REF % (NAME + "_inventory")}},
             "multipart": parts}
 

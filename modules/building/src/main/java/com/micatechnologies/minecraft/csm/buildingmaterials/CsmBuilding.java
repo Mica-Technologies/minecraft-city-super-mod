@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldClimbHandler;
+import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldRailCollision;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
@@ -49,5 +50,7 @@ public class CsmBuilding {
     if (event.getSide().isClient()) {
       ScaffoldClimbHandler.register();
     }
+    // Guardrail collision that a jump would otherwise clear. Both sides, so they agree.
+    ScaffoldRailCollision.register();
   }
 }
