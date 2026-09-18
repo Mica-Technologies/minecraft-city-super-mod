@@ -10,21 +10,31 @@
         "axis": "x"
       },
       "apply": {
-        "model": "csm:constructionsite/trench_box_body"
-      }
-    },
-    {
-      "when": {
-        "axis": "z"
-      },
-      "apply": {
-        "model": "csm:constructionsite/trench_box_body",
-        "y": 90
+        "model": "csm:constructionsite/trench_box_core"
       }
     },
     {
       "when": {
         "axis": "x",
+        "side_a": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_side"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "side_a": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_join"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "side_a": "true",
         "up": "false"
       },
       "apply": {
@@ -33,12 +43,104 @@
     },
     {
       "when": {
+        "axis": "x",
+        "side_b": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_side",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "side_b": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_join",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "side_b": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_core",
+        "y": 90
+      }
+    },
+    {
+      "when": {
         "axis": "z",
+        "side_a": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_side",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "side_a": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_join",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "side_a": "true",
         "up": "false"
       },
       "apply": {
         "model": "csm:constructionsite/trench_box_top",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "side_b": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_side",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "side_b": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_join",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "side_b": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_top",
+        "y": 270
       }
     }
   ]

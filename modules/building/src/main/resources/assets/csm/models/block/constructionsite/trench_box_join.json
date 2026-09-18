@@ -1,0 +1,59 @@
+{
+  "textures": {
+    "panel": "csm:blocks/constructionsite/trench_panel",
+    "spreader": "csm:blocks/constructionsite/trench_spreader",
+    "particle": "csm:blocks/constructionsite/trench_panel"
+  },
+  "elements": [
+    {
+      "from": [
+        7.2,
+        11.2,
+        0
+      ],
+      "to": [
+        8.8,
+        12.8,
+        3.1
+      ],
+      "faces": {
+        "up": {
+          "texture": "#spreader",
+          "uv": [
+            7.2,
+            0,
+            8.8,
+            3.1
+          ]
+        },
+        "down": {
+          "texture": "#spreader",
+          "uv": [
+            7.2,
+            12.9,
+            8.8,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#spreader",
+          "uv": [
+            12.9,
+            3.2,
+            16.0,
+            4.8
+          ]
+        },
+        "west": {
+          "texture": "#spreader",
+          "uv": [
+            0,
+            3.2,
+            3.1,
+            4.8
+          ]
+        }
+      }
+    }
+  ]
+}

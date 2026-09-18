@@ -1,0 +1,213 @@
+{
+  "textures": {
+    "panel": "csm:blocks/constructionsite/trench_panel",
+    "spreader": "csm:blocks/constructionsite/trench_spreader",
+    "particle": "csm:blocks/constructionsite/trench_panel"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        1.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#panel",
+          "uv": [
+            14.5,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            0,
+            16,
+            1.5
+          ]
+        },
+        "down": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            14.5,
+            16,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        0,
+        1.5
+      ],
+      "to": [
+        9,
+        16,
+        2.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#panel",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#panel",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#panel",
+          "uv": [
+            13.9,
+            0,
+            14.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#panel",
+          "uv": [
+            1.5,
+            0,
+            2.1,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#panel",
+          "uv": [
+            7,
+            1.5,
+            9,
+            2.1
+          ]
+        },
+        "down": {
+          "texture": "#panel",
+          "uv": [
+            7,
+            13.9,
+            9,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.8,
+        10.8,
+        2.1
+      ],
+      "to": [
+        9.2,
+        13.2,
+        3.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#spreader",
+          "uv": [
+            6.8,
+            2.8,
+            9.2,
+            5.2
+          ]
+        },
+        "south": {
+          "texture": "#spreader",
+          "uv": [
+            6.8,
+            2.8,
+            9.2,
+            5.2
+          ]
+        },
+        "east": {
+          "texture": "#spreader",
+          "uv": [
+            12.9,
+            2.8,
+            13.9,
+            5.2
+          ]
+        },
+        "west": {
+          "texture": "#spreader",
+          "uv": [
+            2.1,
+            2.8,
+            3.1,
+            5.2
+          ]
+        },
+        "up": {
+          "texture": "#spreader",
+          "uv": [
+            6.8,
+            2.1,
+            9.2,
+            3.1
+          ]
+        },
+        "down": {
+          "texture": "#spreader",
+          "uv": [
+            6.8,
+            12.9,
+            9.2,
+            13.9
+          ]
+        }
+      }
+    }
+  ]
+}

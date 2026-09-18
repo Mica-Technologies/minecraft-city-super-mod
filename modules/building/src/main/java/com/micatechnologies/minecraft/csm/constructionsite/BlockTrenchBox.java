@@ -20,10 +20,13 @@ import net.minecraft.world.World;
  * worked in without its walls caving in.
  *
  * <p>Runs along the placer's line of sight, the way you look down a trench. Boxes laid end to end
- * are one box, and stacked they are one taller box: the top rail and lifting lugs are drawn only on
- * the top course ({@link #UP}, actual state). Only the side panels collide, so a player can walk
- * the trench between them; the spreaders are overhead of anyone in a real one. The models come
- * from {@code dev-env-utils/scripts/gen_earthworks.py}.</p>
+ * are one box, stacked they are one taller box -- the top rail and lifting lugs are drawn only on
+ * the top course ({@link #UP}) -- and side by side they are one wider box: a block drops its panel
+ * on a side where another box runs the same way ({@link #SIDE_A}, {@link #SIDE_B}), and its
+ * spreader pipe runs on through to the far panel. So a box is built as wide as the trench, with no
+ * limit. Only the panels collide, so a player can walk the trench between them; the spreaders are
+ * overhead of anyone in a real one. All of this is actual state; only the axis is stored. The
+ * models come from {@code dev-env-utils/scripts/gen_earthworks.py}.</p>
  *
  * @version 1.0
  * @since 2026.9
@@ -32,6 +35,13 @@ public class BlockTrenchBox extends AbstractBlockSiteAxial {
 
   /** Another box is stacked on this one. Actual state only. */
   public static final PropertyBool UP = PropertyBool.create("up");
+  /**
+   * A panel on the model's north side (the world's north for a box along x, its east for one along
+   * z) and on its south side: false where another box running the same way joins it there.
+   * Actual state only.
+   */
+  public static final PropertyBool SIDE_A = PropertyBool.create("side_a");
+  public static final PropertyBool SIDE_B = PropertyBool.create("side_b");
 
   /** The whole box, running along x. */
   private static final AxisAlignedBB RUN_BOX = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
@@ -61,7 +71,7 @@ public class BlockTrenchBox extends AbstractBlockSiteAxial {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, AXIS, UP);
+    return new BlockStateContainer(this, AXIS, UP, SIDE_A, SIDE_B);
   }
 
   @Override
@@ -69,7 +79,17 @@ public class BlockTrenchBox extends AbstractBlockSiteAxial {
   @Nonnull
   public IBlockState getActualState(@Nonnull IBlockState state, @Nonnull IBlockAccess worldIn,
       @Nonnull BlockPos pos) {
-    return state.withProperty(UP, worldIn.getBlockState(pos.up()).getBlock() == this);
+    boolean alongX = state.getValue(AXIS) == EnumFacing.Axis.X;
+    BlockPos a = alongX ? pos.north() : pos.east();
+    BlockPos b = alongX ? pos.south() : pos.west();
+    return state.withProperty(UP, worldIn.getBlockState(pos.up()).getBlock() == this)
+        .withProperty(SIDE_A, !joins(worldIn, a, state))
+        .withProperty(SIDE_B, !joins(worldIn, b, state));
+  }
+
+  private boolean joins(IBlockAccess world, BlockPos pos, IBlockState state) {
+    IBlockState other = world.getBlockState(pos);
+    return other.getBlock() == this && other.getValue(AXIS) == state.getValue(AXIS);
   }
 
   @Override
@@ -88,9 +108,15 @@ public class BlockTrenchBox extends AbstractBlockSiteAxial {
       @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox,
       @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn,
       boolean isActualState) {
-    AxisAlignedBB[] panels = state.getValue(AXIS) == EnumFacing.Axis.X ? PANELS_X : PANELS_Z;
-    for (AxisAlignedBB panel : panels) {
-      addCollisionBoxToList(pos, entityBox, collidingBoxes, panel);
+    IBlockState a = isActualState ? state : state.getActualState(worldIn, pos);
+    AxisAlignedBB[] panels = a.getValue(AXIS) == EnumFacing.Axis.X ? PANELS_X : PANELS_Z;
+    // PANELS_Z lists the west panel first; side A of a box along z is its east.
+    boolean alongX = a.getValue(AXIS) == EnumFacing.Axis.X;
+    if (a.getValue(alongX ? SIDE_A : SIDE_B)) {
+      addCollisionBoxToList(pos, entityBox, collidingBoxes, panels[0]);
+    }
+    if (a.getValue(alongX ? SIDE_B : SIDE_A)) {
+      addCollisionBoxToList(pos, entityBox, collidingBoxes, panels[1]);
     }
   }
 }
