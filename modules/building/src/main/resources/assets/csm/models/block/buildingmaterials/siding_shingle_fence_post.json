@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_post",
+  "textures": {
+    "texture": "csm:blocks/buildingmaterials/siding/siding_shingle",
+    "particle": "csm:blocks/buildingmaterials/siding/siding_shingle"
+  }
+}

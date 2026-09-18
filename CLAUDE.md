@@ -421,6 +421,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   `gen_cmu.py`'s blockstates with one 32 px texture on every face. The noise wraps at the tile
   edge and its lattices (3 and 5 cells) deliberately do not divide the tile, or the mottling
   reads as a grid; `--check` fails on drift
+- `gen_siding.py` -- the four siding profiles (fiber cement lap, board and batten, cedar shingle,
+  vinyl), one colour each, as sets on `gen_cmu.py`'s blockstates. Courses are 8 px on a 32 px
+  texture so a slab's edge lands on a course line; `--check` fails on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

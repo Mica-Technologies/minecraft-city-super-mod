@@ -1,0 +1,20 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/buildingmaterials/siding/siding_shingle_top",
+      "bottom": "csm:blocks/buildingmaterials/siding/siding_shingle_top",
+      "side": "csm:blocks/buildingmaterials/siding/siding_shingle",
+      "particle": "csm:blocks/buildingmaterials/siding/siding_shingle"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

@@ -338,6 +338,19 @@ public final class CsmFabricatorCosts {
       }
       return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2), dye);
     }
+    // Siding is not masonry, and the fallback below would make a cedar shingle out of concrete.
+    // Fiber cement is cement and cellulose fibre; vinyl is a thin coloured sheet; the rest is
+    // timber.
+    if (CsmBlockDisplayNames.hasWord(registryName, "siding")) {
+      if (CsmBlockDisplayNames.hasWord(registryName, "cement")) {
+        return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
+            FabricatorIngredient.any(MC_PAPER, 1));
+      }
+      if (CsmBlockDisplayNames.hasWord(registryName, "vinyl")) {
+        return cost(FabricatorIngredient.any(MC_PAPER, 2), FabricatorIngredient.any(MC_DYE, 1));
+      }
+      return cost(FabricatorIngredient.any(MC_PLANKS, 2));
+    }
     // Everything else in this tab is masonry and cast material.
     return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
         FabricatorIngredient.any(MC_CLAY_BALL, 1));
