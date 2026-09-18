@@ -2,7 +2,7 @@
 
 The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them.
 
-!!! info "44 blocks in this tab"
+!!! info "60 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,10 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Acoustic Wall Panel (Blue) | `csm:wall_acoustic_blue` |  |  |  |  |
+| Acoustic Wall Panel (Charcoal) | `csm:wall_acoustic_charcoal` |  |  |  |  |
+| Acoustic Wall Panel (Grey) | `csm:wall_acoustic_grey` |  |  |  |  |
+| Beadboard (White) | `csm:wall_beadboard_white` |  |  |  |  |
 | Carpet Tile (Blue) | `csm:floor_carpet_blue` |  |  |  |  |
 | Carpet Tile (Charcoal) | `csm:floor_carpet_charcoal` |  |  |  |  |
 | Carpet Tile (Grey) | `csm:floor_carpet_grey` |  |  |  |  |
@@ -27,6 +31,11 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Ceiling Tile (Standard 3) | `csm:cts3` | 2 | 10 | pickaxe | 1 |
 | Ceramic Floor Tile (Grey) | `csm:floor_ceramic_grey` |  |  |  |  |
 | Ceramic Floor Tile (White) | `csm:floor_ceramic_white` |  |  |  |  |
+| Ceramic Wall Tile (Green Subway) | `csm:wall_tile_subway_green` |  |  |  |  |
+| Ceramic Wall Tile (White Square) | `csm:wall_tile_square_white` |  |  |  |  |
+| Ceramic Wall Tile (White Subway) | `csm:wall_tile_subway_white` |  |  |  |  |
+| Corner Guard (Stainless) | `csm:corner_guard_steel` |  |  |  |  |
+| Corner Guard (White Vinyl) | `csm:corner_guard_white` |  |  |  |  |
 | Curtain (Beige) | `csm:curtain_beige` | 0.3 | 1 | axe | 0 |
 | Curtain (Grey) | `csm:curtain_grey` | 0.3 | 1 | axe | 0 |
 | Curtain (Navy) | `csm:curtain_navy` | 0.3 | 1 | axe | 0 |
@@ -36,6 +45,12 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Oak Hardwood Fence | `csm:hardwood_oak_fence` | 2 | 10 | axe | 0 |
 | Oak Hardwood Slab | `csm:hardwood_oak_slab` | 2 | 10 | axe | 0 |
 | Oak Hardwood Stairs | `csm:hardwood_oak_stairs` | 2 | 10 | axe | 0 |
+| Painted Drywall (Greige) | `csm:wall_paint_greige` |  |  |  |  |
+| Painted Drywall (Light Grey) | `csm:wall_paint_grey` |  |  |  |  |
+| Painted Drywall (Off-White) | `csm:wall_paint_offwhite` |  |  |  |  |
+| Painted Drywall (Pale Blue) | `csm:wall_paint_blue` |  |  |  |  |
+| Painted Drywall (Sage) | `csm:wall_paint_sage` |  |  |  |  |
+| Painted Drywall (White) | `csm:wall_paint_white` |  |  |  |  |
 | Polished Concrete | `csm:polished_concrete` | 2 | 10 | pickaxe | 1 |
 | Polished Concrete Fence | `csm:polished_concrete_fence` | 2 | 10 | pickaxe | 1 |
 | Polished Concrete Floor | `csm:floor_polished_concrete` |  |  |  |  |
@@ -55,5 +70,6 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Walnut Hardwood Fence | `csm:hardwood_walnut_fence` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Slab | `csm:hardwood_walnut_slab` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Stairs | `csm:hardwood_walnut_stairs` | 2 | 10 | axe | 0 |
+| Wood Slat Wall (Oak) | `csm:wall_slatwall_oak` |  |  |  |  |
 
 </div>

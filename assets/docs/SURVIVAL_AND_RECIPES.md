@@ -130,7 +130,9 @@ Rules are applied in this order:
    Interior Finishes, a venetian blind is a Sheet Metal, shades and vertical blinds 2 paper, and
    curtains 2 paper + a dye; flooring is priced by material (carpet tile a wool, vinyl tile paper +
    a dye, ceramic tile 2 clay, hardwood 2 planks, polished concrete a Concrete Mix, rubber a slime
-   ball); the ceiling tiles keep Concrete Mix + a clay ball. The Construction Site tab is priced by noun: scaffold is a Pole Section
+   ball); wall finishes likewise (drywall paper + a dye, wall tile 2 clay, acoustic panels a wool,
+   beadboard and slat wall a plank, a corner guard an iron ingot or, vinyl, paper + a dye); the
+   ceiling tiles keep Concrete Mix + a clay ball. The Construction Site tab is priced by noun: scaffold is a Pole Section
    + planks, formwork 2 planks + a Fastener Kit, a shore a Pole Section + a Fastener Kit, rebar an
    iron ingot, a silt fence planks + paper, a trench plate 2 Sheet Metal and a trench box 2 Sheet Metal + a
    Pole Section, a stockpile layer one dirt, gravel or sand, a load on a
