@@ -198,6 +198,28 @@ CONCRETE_DARK = (148, 148, 145, 255)
 CONCRETE_LIGHT = (184, 184, 179, 255)
 
 
+# Red oxide shop primer: the colour structural steel arrives on site in, before it is painted or
+# fireproofed. Duller and browner than a red paint, and unevenly covered, because it is a primer
+# sprayed on quickly rather than a finish.
+PRIMER_BASE = (150, 74, 52, 255)
+PRIMER_DARK = (126, 60, 42, 255)
+PRIMER_LIGHT = (174, 92, 66, 255)
+
+
+def steel_primer():
+    rng = random.Random(20260924)
+    img = Image.new("RGBA", (SIZE, SIZE), PRIMER_BASE)
+    px = img.load()
+    for y in range(SIZE):
+        for x in range(SIZE):
+            roll = rng.random()
+            if roll < 0.2:
+                px[x, y] = PRIMER_DARK
+            elif roll < 0.36:
+                px[x, y] = PRIMER_LIGHT
+    return img
+
+
 def concrete_topping():
     rng = random.Random(20260923)
     img = Image.new("RGBA", (SIZE, SIZE), CONCRETE_BASE)
@@ -230,6 +252,7 @@ TEXTURES = {
     "wood_stud.png": wood_stud,
     "wood_plate.png": wood_plate,
     "concrete_topping.png": concrete_topping,
+    "steel_primer.png": steel_primer,
 }
 
 # --------------------------------------------------------------------------------------------
@@ -528,6 +551,99 @@ RAFTER_LEN = 3.5
 def rafter_model():
     return [_span(6, 5, -RAFTER_LEN, 10, 11, 16 + RAFTER_LEN,
                   rotation={"origin": [8, 8, 8], "axis": "x", "angle": 45})]
+
+
+# --------------------------------------------------------------------------------------------
+# Structural steel
+# --------------------------------------------------------------------------------------------
+#
+# Wide-flange sections: two flanges either side of a web, which is the shape nearly every column
+# and beam in a steel building actually is. Drawn once and worn in two finishes -- red oxide shop
+# primer, which is how steel arrives, and galvanized, which is how it stays outside.
+#
+# These reuse the spanning members' base and its AXIS property. For a beam the axis is the span;
+# for a column it is which way the flanges face. Both want the same quarter turn, so both get it
+# from the same place.
+
+W_FLANGE_X0, W_FLANGE_X1 = 4, 12   # flange width
+W_FLANGE_A, W_FLANGE_B = 5, 11     # the two flange planes
+W_FLANGE_T = 1                     # flange thickness
+W_WEB_X0, W_WEB_X1 = 7, 9          # web thickness
+
+
+def _w_section(y0, y1):
+    """A wide-flange section standing up through the block, from y0 to y1."""
+    return [
+        _span(W_FLANGE_X0, y0, W_FLANGE_A, W_FLANGE_X1, y1, W_FLANGE_A + W_FLANGE_T),
+        _span(W_FLANGE_X0, y0, W_FLANGE_B - W_FLANGE_T, W_FLANGE_X1, y1, W_FLANGE_B),
+        _span(W_WEB_X0, y0, W_FLANGE_A + W_FLANGE_T, W_WEB_X1, y1, W_FLANGE_B - W_FLANGE_T),
+    ]
+
+
+def structural_models():
+    models = {}
+
+    # A column: the section standing the full height of the block.
+    models["struct_steel_column"] = _w_section(0, 16)
+
+    # A beam: the same section laid down, spanning north-south. Flanges top and bottom.
+    models["struct_steel_beam"] = [
+        _span(W_FLANGE_X0, 3, 0, W_FLANGE_X1, 4, 16),
+        _span(W_FLANGE_X0, 12, 0, W_FLANGE_X1, 13, 16),
+        _span(W_WEB_X0, 4, 0, W_WEB_X1, 12, 16),
+    ]
+
+    # A base plate: the column landing on a plate, held down by four anchor bolts.
+    bolts = [_span(bx, 1, bz, bx + 1.5, 2.5, bz + 1.5)
+             for bx in (3, 11.5) for bz in (3, 11.5)]
+    models["struct_steel_base_plate"] = ([_span(2, 0, 2, 14, 1, 14)] + bolts
+                                         + _w_section(1, 16))
+
+    # A bolted connection: a gusset plate on the column flange, with its bolt group. The plate sits
+    # just outside the flange rather than in it, so nothing shares a plane with anything.
+    gusset = [_span(5, 5, W_FLANGE_B, 11, 12, W_FLANGE_B + 1)]
+    gusset += [_span(gx, gy, W_FLANGE_B + 1, gx + 1, gy + 1, W_FLANGE_B + 2)
+               for gx in (6, 9) for gy in (6, 10)]
+    models["struct_steel_connection"] = _w_section(0, 16) + gusset
+
+    # An X-brace: two flats crossing corner to corner. Drawn to the block's diagonal and rotated
+    # without rescale, for the reason the rafter is -- a 16 long box rotated 45 spans only 11.3.
+    models["struct_steel_brace_x"] = [
+        _span(6, 7, -RAFTER_LEN, 10, 9, 16 + RAFTER_LEN,
+              rotation={"origin": [8, 8, 8], "axis": "x", "angle": 45}),
+        _span(6, 7, -RAFTER_LEN, 10, 9, 16 + RAFTER_LEN,
+              rotation={"origin": [8, 8, 8], "axis": "x", "angle": -45}),
+    ]
+    return models
+
+
+# shape, class stem, model, and the four display names of the SHAPE (the finish is added after)
+STRUCTURAL = [
+    ("steel_column", "SteelColumn", "struct_steel_column",
+     "Steel Column", "Columna de Acero", "Stahlst\u00fctze", "St\u00e5lpelare"),
+    ("steel_beam", "SteelBeam", "struct_steel_beam",
+     "Steel Beam", "Viga de Acero", "Stahltr\u00e4ger", "St\u00e5lbalk"),
+    ("steel_base_plate", "SteelBasePlate", "struct_steel_base_plate",
+     "Steel Base Plate", "Placa Base de Acero", "Fu\u00dfplatte", "St\u00e5lfotpl\u00e5t"),
+    ("steel_connection", "SteelConnection", "struct_steel_connection",
+     "Steel Connection", "Uni\u00f3n de Acero", "Stahlanschluss", "St\u00e5lknutpunkt"),
+    ("steel_brace_x", "SteelBraceX", "struct_steel_brace_x",
+     "Steel X-Brace", "Arriostramiento en X", "Stahl-Kreuzverband", "St\u00e5lkryss"),
+]
+
+# The finish a member wears: its suffix, its texture, and what each language calls it.
+#
+# The bracketed finish also keeps these clear of a trap in the Fabricator's pricing. It matches a
+# list of mounting-hardware NOUNS before it ever looks at the tab, and that list holds "plate" and
+# "base" -- so a block called "Steel Base Plate" would be priced as a bracket. Ending the name with
+# the finish moves the last word out of that list. Verified with audit_fabricator_costs.py, not
+# assumed.
+FINISHES = [
+    ("primer", "steel_primer",
+     "Primer", "Imprimaci\u00f3n", "Grundiert", "Grundm\u00e5lad"),
+    ("galvanized", "steel_track",
+     "Galvanized", "Galvanizado", "Verzinkt", "F\u00f6rzinkad"),
+]
 
 
 def rafter_blockstate(name):
@@ -972,6 +1088,19 @@ def write_all(tex_dir, shared_dir, model_dir, state_dir):
         _write_json(os.path.join(state_dir, name + ".json"), rafter_blockstate(name))
         written.append(("state", name + ".json"))
 
+    structural = structural_models()
+    for shape, _stem, model, _en, _es, _de, _sv in STRUCTURAL:
+        for suffix, texture, _fen, _fes, _fde, _fsv in FINISHES:
+            name = "%s_%s" % (shape, suffix)
+            _write_json(os.path.join(model_dir, name + ".json"),
+                        {"parent": "block/block",
+                         "textures": {"body": TEX_REF % texture,
+                                      "particle": TEX_REF % texture},
+                         "elements": structural[model]})
+            written.append(("model", name + ".json"))
+            _write_json(os.path.join(state_dir, name + ".json"), span_blockstate(name))
+            written.append(("state", name + ".json"))
+
     return written
 
 
@@ -997,6 +1126,19 @@ def fragments():
         lines.append("    initTabBlock(%s.class, fmlPreInitializationEvent); // %s"
                      % (entry["class"], entry["lang"]["en_us"]))
     return "\n".join(lines)
+
+
+def structural_entries():
+    """(registry name, class name, per-language display name) for every structural member."""
+    langs = ("en_us", "es_es", "de_de", "sv_se")
+    out = []
+    for shape, stem, _model, *shape_names in STRUCTURAL:
+        for suffix, _tex, *finish_names in FINISHES:
+            names = {lang: "%s (%s)" % (shape_names[i], finish_names[i])
+                     for i, lang in enumerate(langs)}
+            cls = "Block%s%s" % (stem, suffix.capitalize())
+            out.append(("%s_%s" % (shape, suffix), cls, names))
+    return out
 
 
 def main():

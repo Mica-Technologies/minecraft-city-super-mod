@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/steel_connection_primer"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/steel_connection_primer",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/steel_connection_primer"
+    }
+  }
+}

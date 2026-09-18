@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/steel_connection_galvanized"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/steel_connection_galvanized",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/steel_connection_galvanized"
+    }
+  }
+}

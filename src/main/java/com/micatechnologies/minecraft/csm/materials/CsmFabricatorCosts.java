@@ -217,7 +217,12 @@ public final class CsmFabricatorCosts {
     }
 
     // 4. Mounting hardware.
-    if (matches(noun, MOUNT_NOUNS)) {
+    //
+    // Never in the framing tab. This list holds "plate" and "base", and it is consulted before
+    // any tab is looked at, so a structural base plate and a timber sole plate were both being
+    // priced as brackets — and the timber one in sheet metal, which is not even the right
+    // material. A plate that a building stands on is structure, not hardware.
+    if (!TAB_STRUCTURE_FRAMING.equals(tabId) && matches(noun, MOUNT_NOUNS)) {
       return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }

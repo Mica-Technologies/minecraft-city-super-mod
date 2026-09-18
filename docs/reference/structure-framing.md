@@ -2,7 +2,7 @@
 
 Steel and wood stud walls, the structure that spans between them, and structural steel.
 
-!!! info "22 blocks in this tab"
+!!! info "32 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -17,12 +17,22 @@ Steel and wood stud walls, the structure that spans between them, and structural
 | Metal Deck with Concrete | `csm:metal_roof_deck_concrete` | 2.0 | 10 | pickaxe | 1 |
 | Metal Roof Deck | `csm:metal_roof_deck` | 1.5 | 8 | pickaxe | 1 |
 | Open-Web Bar Joist | `csm:bar_joist` | 1.5 | 8 | pickaxe | 1 |
+| Steel Base Plate (Galvanized) | `csm:steel_base_plate_galvanized` | 2.0 | 12 | pickaxe | 1 |
+| Steel Base Plate (Primer) | `csm:steel_base_plate_primer` | 2.0 | 12 | pickaxe | 1 |
+| Steel Beam (Galvanized) | `csm:steel_beam_galvanized` | 2.0 | 12 | pickaxe | 1 |
+| Steel Beam (Primer) | `csm:steel_beam_primer` | 2.0 | 12 | pickaxe | 1 |
+| Steel Column (Galvanized) | `csm:steel_column_galvanized` | 2.0 | 12 | pickaxe | 1 |
+| Steel Column (Primer) | `csm:steel_column_primer` | 2.0 | 12 | pickaxe | 1 |
+| Steel Connection (Galvanized) | `csm:steel_connection_galvanized` | 2.0 | 12 | pickaxe | 1 |
+| Steel Connection (Primer) | `csm:steel_connection_primer` | 2.0 | 12 | pickaxe | 1 |
 | Steel Stud Wall | `csm:steel_stud_wall` | 1.5 | 8 | pickaxe | 1 |
 | Steel Stud Wall (Braced) | `csm:steel_stud_wall_braced` | 1.5 | 8 | pickaxe | 1 |
 | Steel Stud Wall (Door Opening) | `csm:steel_stud_wall_door` | 1.5 | 8 | pickaxe | 1 |
 | Steel Stud Wall (Narrow) | `csm:steel_stud_wall_narrow` | 1.5 | 8 | pickaxe | 1 |
 | Steel Stud Wall (Window Opening) | `csm:steel_stud_wall_window` | 1.5 | 8 | pickaxe | 1 |
 | Steel Track | `csm:steel_track` | 1.5 | 8 | pickaxe | 1 |
+| Steel X-Brace (Galvanized) | `csm:steel_brace_x_galvanized` | 2.0 | 12 | pickaxe | 1 |
+| Steel X-Brace (Primer) | `csm:steel_brace_x_primer` | 2.0 | 12 | pickaxe | 1 |
 | Wood I-Joist | `csm:wood_i_joist` | 1.0 | 5 | axe | 0 |
 | Wood Joist | `csm:wood_joist` | 1.0 | 5 | axe | 0 |
 | Wood Rafter | `csm:wood_rafter` | 1.0 | 5 | axe | 0 |
