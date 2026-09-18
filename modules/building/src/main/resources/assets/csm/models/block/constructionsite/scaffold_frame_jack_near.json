@@ -19,22 +19,58 @@
       ],
       "faces": {
         "north": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            14,
+            15.5,
+            16.0,
+            16.0
+          ]
         },
         "south": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            15.5,
+            2,
+            16.0
+          ]
         },
         "east": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            13.5,
+            15.5,
+            15.5,
+            16.0
+          ]
         },
         "west": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.5,
+            15.5,
+            2.5,
+            16.0
+          ]
         },
         "up": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            0.5,
+            2,
+            2.5
+          ]
         },
         "down": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            13.5,
+            2,
+            15.5
+          ]
         }
       }
     },
@@ -51,22 +87,58 @@
       ],
       "faces": {
         "north": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            14.75,
+            13.25,
+            16.0,
+            14.0
+          ]
         },
         "south": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            13.25,
+            1.25,
+            14.0
+          ]
         },
         "east": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            13.75,
+            13.25,
+            15.25,
+            14.0
+          ]
         },
         "west": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.75,
+            13.25,
+            2.25,
+            14.0
+          ]
         },
         "up": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            0.75,
+            1.25,
+            2.25
+          ]
         },
         "down": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            13.75,
+            1.25,
+            15.25
+          ]
         }
       }
     },
@@ -83,22 +155,58 @@
       ],
       "faces": {
         "north": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            14,
+            15.5,
+            16.0,
+            16.0
+          ]
         },
         "south": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            15.5,
+            2,
+            16.0
+          ]
         },
         "east": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.5,
+            15.5,
+            2.5,
+            16.0
+          ]
         },
         "west": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            13.5,
+            15.5,
+            15.5,
+            16.0
+          ]
         },
         "up": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            13.5,
+            2,
+            15.5
+          ]
         },
         "down": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            0.5,
+            2,
+            2.5
+          ]
         }
       }
     },
@@ -115,22 +223,58 @@
       ],
       "faces": {
         "north": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            14.75,
+            13.25,
+            16.0,
+            14.0
+          ]
         },
         "south": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            13.25,
+            1.25,
+            14.0
+          ]
         },
         "east": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.75,
+            13.25,
+            2.25,
+            14.0
+          ]
         },
         "west": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            13.75,
+            13.25,
+            15.25,
+            14.0
+          ]
         },
         "up": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            13.75,
+            1.25,
+            15.25
+          ]
         },
         "down": {
-          "texture": "#jack"
+          "texture": "#jack",
+          "uv": [
+            0.0,
+            0.75,
+            1.25,
+            2.25
+          ]
         }
       }
     }

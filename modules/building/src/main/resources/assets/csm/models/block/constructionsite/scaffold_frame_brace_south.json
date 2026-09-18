@@ -19,22 +19,58 @@
       ],
       "faces": {
         "north": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "south": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "east": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "west": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "up": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "down": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         }
       },
       "rotation": {
@@ -60,22 +96,58 @@
       ],
       "faces": {
         "north": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "south": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "east": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "west": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "up": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         },
         "down": {
-          "texture": "#tube"
+          "texture": "#tube",
+          "uv": [
+            2,
+            0,
+            3,
+            16
+          ]
         }
       },
       "rotation": {
