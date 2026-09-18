@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_post",
+  "textures": {
+    "texture": "csm:blocks/buildingmaterials/stone/stone_cast",
+    "particle": "csm:blocks/buildingmaterials/stone/stone_cast"
+  }
+}

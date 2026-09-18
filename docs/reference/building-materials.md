@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "148 blocks in this tab"
+!!! info "160 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Ashlar Stone Veneer | `csm:stone_ashlar` | 2 | 10 | pickaxe | 1 |
+| Ashlar Stone Veneer Fence | `csm:stone_ashlar_fence` | 2 | 10 | pickaxe | 1 |
+| Ashlar Stone Veneer Slab | `csm:stone_ashlar_slab` | 2 | 10 | pickaxe | 1 |
+| Ashlar Stone Veneer Stairs | `csm:stone_ashlar_stairs` | 2 | 10 | pickaxe | 1 |
 | Black Metal | `csm:blackmetal` | 2 | 10 | pickaxe | 1 |
 | Black Metal Fence | `csm:blackmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Black Metal Slab | `csm:blackmetal_slab` | 2 | 10 | pickaxe | 1 |
@@ -37,6 +41,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Buff Brick Fence | `csm:brick_buff_fence` | 2 | 10 | pickaxe | 1 |
 | Buff Brick Slab | `csm:brick_buff_slab` | 2 | 10 | pickaxe | 1 |
 | Buff Brick Stairs | `csm:brick_buff_stairs` | 2 | 10 | pickaxe | 1 |
+| Cast Stone Veneer | `csm:stone_cast` | 2 | 10 | pickaxe | 1 |
+| Cast Stone Veneer Fence | `csm:stone_cast_fence` | 2 | 10 | pickaxe | 1 |
+| Cast Stone Veneer Slab | `csm:stone_cast_slab` | 2 | 10 | pickaxe | 1 |
+| Cast Stone Veneer Stairs | `csm:stone_cast_stairs` | 2 | 10 | pickaxe | 1 |
 | Cedar Shingle Siding | `csm:siding_shingle` | 2 | 5 | axe | 0 |
 | Cedar Shingle Siding Fence | `csm:siding_shingle_fence` | 2 | 5 | axe | 0 |
 | Cedar Shingle Siding Slab | `csm:siding_shingle_slab` | 2 | 5 | axe | 0 |
@@ -61,6 +69,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Fiber Cement Lap Siding Fence | `csm:siding_lap_fence` | 2 | 10 | pickaxe | 1 |
 | Fiber Cement Lap Siding Slab | `csm:siding_lap_slab` | 2 | 10 | pickaxe | 1 |
 | Fiber Cement Lap Siding Stairs | `csm:siding_lap_stairs` | 2 | 10 | pickaxe | 1 |
+| Fieldstone Veneer | `csm:stone_fieldstone` | 2 | 10 | pickaxe | 1 |
+| Fieldstone Veneer Fence | `csm:stone_fieldstone_fence` | 2 | 10 | pickaxe | 1 |
+| Fieldstone Veneer Slab | `csm:stone_fieldstone_slab` | 2 | 10 | pickaxe | 1 |
+| Fieldstone Veneer Stairs | `csm:stone_fieldstone_stairs` | 2 | 10 | pickaxe | 1 |
 | Glazed Block | `csm:cmu_glazed` | 2 | 10 | pickaxe | 1 |
 | Glazed Block Fence | `csm:cmu_glazed_fence` | 2 | 10 | pickaxe | 1 |
 | Glazed Block Slab | `csm:cmu_glazed_slab` | 2 | 10 | pickaxe | 1 |

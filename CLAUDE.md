@@ -427,6 +427,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_cladding.py` -- the four metal and panel cladding profiles (corrugated, standing seam,
   insulated panel, composite panel). The profile is shaded into a 32 px texture rather than
   modelled, with every rib pitch dividing the block; `--check` fails on drift
+- `gen_stone.py` -- the three stone veneers (ashlar, fieldstone, cast stone). Fieldstone is a
+  Voronoi partition measured on a torus, so its stones wrap across block seams; `--check` fails
+  on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

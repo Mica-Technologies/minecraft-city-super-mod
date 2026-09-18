@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "half_slab",
+    "textures": {
+      "bottom": "csm:blocks/buildingmaterials/stone/stone_fieldstone_top",
+      "top": "csm:blocks/buildingmaterials/stone/stone_fieldstone_top",
+      "side": "csm:blocks/buildingmaterials/stone/stone_fieldstone"
+    }
+  },
+  "variants": {
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:buildingmaterials/stone_fieldstone_slab_top"
+      }
+    },
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

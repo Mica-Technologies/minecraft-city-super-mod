@@ -117,8 +117,8 @@ Rules are applied in this order:
 2. **Road signs** take a Sign Blank. Note "Sign Pole" is a pole by rule 1, while "Sign Pole 4-Way
    Sign" ends in *sign* and is a sign.
 3. **Building materials** from base class; coloured metal adds its matching dye (iridescent uses
-   prismarine crystals). Masonry and plaster -- concrete block, brick, stucco -- take Concrete Mix
-   + a clay ball. Siding is priced by what it is made of: fiber cement is Concrete Mix + paper,
+   prismarine crystals). Masonry and plaster -- concrete block, brick, stucco, cast stone -- take
+   Concrete Mix + a clay ball; natural stone veneer takes cobblestone + Concrete Mix. Siding is priced by what it is made of: fiber cement is Concrete Mix + paper,
    vinyl is 2 paper + any dye, and wood siding is 2 planks. Metal and panel cladding is 2 Sheet
    Metal + a Fastener Kit.
 4. **Mounting hardware** — mount, bracket, backplate, cover, visor, base, plate, arm, top — takes
