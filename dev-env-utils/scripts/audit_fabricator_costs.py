@@ -150,6 +150,11 @@ def cost_for(registry, info, ancestors):
             return ("planks x2",)
         return ("CONCRETE_MIX", "clay_ball")
 
+    if tab == "tabconstructionsite":
+        if has_word(registry, "scaffold"):
+            return ("POLE_SECTION", "planks")
+        return ("SHEET_METAL", "FASTENER_KIT")
+
     if tab == "tabinteriorfinishes":
         return ("CONCRETE_MIX", "clay_ball")
 

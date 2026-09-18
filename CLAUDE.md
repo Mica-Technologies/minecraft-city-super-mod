@@ -434,6 +434,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_stone.py` -- the three stone veneers (ashlar, fieldstone, cast stone). Fieldstone is a
   Voronoi partition measured on a torus, so its stones wrap across block seams; `--check` fails
   on drift
+- `gen_scaffold.py` -- the frame scaffold: its textures, part models and the multipart blockstate
+  that picks frames, braces, deck and jacks from the neighbours. Only the facing is stored, so the
+  look can change here without touching a placed block; `--check` fails on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

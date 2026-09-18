@@ -1,0 +1,92 @@
+{
+  "textures": {
+    "tube": "csm:blocks/constructionsite/scaffold_tube",
+    "plank": "csm:blocks/constructionsite/scaffold_plank",
+    "jack": "csm:blocks/constructionsite/scaffold_jack",
+    "particle": "csm:blocks/constructionsite/scaffold_tube"
+  },
+  "elements": [
+    {
+      "from": [
+        -3.3200000000000003,
+        7.7,
+        15.4
+      ],
+      "to": [
+        19.32,
+        8.3,
+        15.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tube"
+        },
+        "south": {
+          "texture": "#tube"
+        },
+        "east": {
+          "texture": "#tube"
+        },
+        "west": {
+          "texture": "#tube"
+        },
+        "up": {
+          "texture": "#tube"
+        },
+        "down": {
+          "texture": "#tube"
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          8.0,
+          15.6
+        ],
+        "axis": "z",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        -3.3200000000000003,
+        7.7,
+        14.9
+      ],
+      "to": [
+        19.32,
+        8.3,
+        15.3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tube"
+        },
+        "south": {
+          "texture": "#tube"
+        },
+        "east": {
+          "texture": "#tube"
+        },
+        "west": {
+          "texture": "#tube"
+        },
+        "up": {
+          "texture": "#tube"
+        },
+        "down": {
+          "texture": "#tube"
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          8.0,
+          15.1
+        ],
+        "axis": "z",
+        "angle": -45
+      }
+    }
+  ]
+}

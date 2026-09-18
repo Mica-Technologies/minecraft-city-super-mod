@@ -96,6 +96,9 @@ _LANG_RE = re.compile(r'^tile\.([a-z0-9_]+)\.name=(.*)$')
 TABS = {
     "tabbuildingmaterials": ("building-materials", "Building Materials",
                              "Bulk material sets, with matching stairs, slabs and fences."),
+    "tabconstructionsite": ("construction-site", "Construction Site",
+                            "What stands around a building while it goes up: scaffolding, "
+                            "formwork, earthworks, site logistics and facilities."),
     "tabfurniture": ("furniture", "Furniture",
                      "Interior fittings: seating, counters, appliances and fixtures."),
     "tabgaming": ("gaming", "Gaming",
@@ -132,8 +135,8 @@ TABS = {
                 "load, and the hidden pieces other blocks place for themselves."),
 }
 
-PAGE_ORDER = ["tabbuildingmaterials", "tabfurniture", "tabgaming", "tabhvac",
-              "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
+PAGE_ORDER = ["tabbuildingmaterials", "tabconstructionsite", "tabfurniture", "tabgaming",
+              "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
               "tabnovelties", "tabpowergrid", "tabroadsigns", "tabstructureframing",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabnone"]
 

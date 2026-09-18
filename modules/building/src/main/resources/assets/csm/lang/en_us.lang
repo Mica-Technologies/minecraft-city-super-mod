@@ -1,4 +1,5 @@
 itemGroup.tabbuildingmaterials=CSM: Building Materials
+itemGroup.tabconstructionsite=CSM: Construction Site
 itemGroup.tabinteriorfinishes=CSM: Interior Finishes
 itemGroup.tabstructureframing=CSM: Structure & Framing
 tile.bar_joist.name=Open-Web Bar Joist
@@ -151,6 +152,7 @@ tile.redmetal_fence.name=Red Metal Fence
 tile.redmetal_slab.name=Red Metal Slab
 tile.redmetal_slab_double.name=Red Metal Double Slab
 tile.redmetal_stairs.name=Red Metal Stairs
+tile.scaffold_frame.name=Frame Scaffold
 tile.siding_boardbatten.name=Board and Batten Siding
 tile.siding_boardbatten_fence.name=Board and Batten Siding Fence
 tile.siding_boardbatten_slab.name=Board and Batten Siding Slab
