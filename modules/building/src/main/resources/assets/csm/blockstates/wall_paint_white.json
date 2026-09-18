@@ -1,0 +1,44 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:wallfinish/wall_paint_white"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_white"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_white",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_white",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_white",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -566,6 +566,23 @@ public final class CsmFabricatorCosts {
     if (CsmBlockDisplayNames.hasWord(registryName, "curtain")) {
       return cost(FabricatorIngredient.any(MC_PAPER, 2), FabricatorIngredient.any(MC_DYE, 1));
     }
+    // Wall finishes: drywall is paper and paint, acoustic panels fabric, beadboard and slat
+    // wall timber (tile falls to ceramic, below); a corner guard is steel, or vinyl.
+    if (CsmBlockDisplayNames.hasWord(registryName, "guard")) {
+      return CsmBlockDisplayNames.hasWord(registryName, "stainless")
+          ? cost(FabricatorIngredient.any(MC_IRON_INGOT, 1))
+          : cost(FabricatorIngredient.any(MC_PAPER, 1), FabricatorIngredient.any(MC_DYE, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "drywall")) {
+      return cost(FabricatorIngredient.any(MC_PAPER, 1), FabricatorIngredient.any(MC_DYE, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "acoustic")) {
+      return cost(FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "beadboard")
+        || CsmBlockDisplayNames.hasWord(registryName, "slat")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 1));
+    }
     // Flooring, by what it is made of: carpet tile is wool, vinyl tile paper and a dye,
     // ceramic tile fired clay, hardwood planks, polished concrete Concrete Mix, and rubber
     // the nearest vanilla thing to rubber.

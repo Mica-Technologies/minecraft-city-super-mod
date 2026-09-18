@@ -8,6 +8,7 @@ The glazing the window treatments hang against is in `WALL_MATERIALS.md` § Glaz
 |---|---|---|
 | Ceilings | the popcorn ceiling and ceiling tiles (`BlockPCC`, `BlockCT*`, `BlockDCT*`) | -- |
 | Window treatments | Venetian Blind (White); Roller Shade (White, Grey, Blackout); Vertical Blind (White); Curtain (Beige, Grey, Navy); Sheer Curtain | `gen_window_treatments.py` |
+| Wall finishes | Painted Drywall (six colours); Ceramic Wall Tile (White Subway, Green Subway, White Square); Acoustic Wall Panel (Grey, Blue, Charcoal); Beadboard (White); Wood Slat Wall (Oak); Corner Guard (Stainless, White Vinyl) | `gen_wall_finishes.py` |
 | Flooring | Carpet Tile (Grey, Blue, Charcoal); Vinyl Composition Tile (White, Beige); Ceramic Floor Tile (White, Grey); Hardwood Floor (Oak, Walnut); Polished Concrete Floor; Rubber Floor (Studded); and the Polished Concrete, Oak Hardwood and Walnut Hardwood sets | `gen_flooring.py` |
 
 ## Window treatments
@@ -78,3 +79,28 @@ all.
 
 Priced by what they are made of: carpet tile a wool, vinyl tile paper and a dye, ceramic two clay,
 hardwood two planks, polished concrete a Concrete Mix, rubber a slime ball.
+
+## Wall finishes
+
+A thin panel hung on the face of any wall, as a blind hangs against a window (`BlockWallFinish`,
+constructed by registry name `wall_<kind>_<colour>`): painted drywall in six colours, ceramic wall
+tile, fabric acoustic panels, beadboard and a wood slat wall. Chosen over full-block sets
+(2026-09-18) so a finish goes on whatever the wall is built of.
+
+- **Facing** is the way to the wall, from the face it was placed against, and the only stored
+  state.
+- **Finishes of one kind on the same wall join**, and trim is drawn only where it belongs: a
+  tile's bullnose cap and a beadboard's chair rail on the top course of the run (so a two-block
+  run of tile under paint is a wainscot), an edge trim at the run's ends, and an acoustic panel's
+  frame round the outside of the whole panel. Paint has no trim. Left and right are as seen from
+  the room, facing the wall, as the blinds' are.
+- **Corner guards** (`BlockCornerGuard`, stainless or white vinyl) sit on the wall face beside an
+  outside corner: the half of the face that was clicked picks the edge, one flange lies on the
+  face and the other wraps round onto the wall's end face, outside the guard's own cell. A guard
+  placed on another takes its facing and edge, so a stack is one guard.
+- **Harvesting.** Drywall and vinyl are clay to the game, which comes off by hand; rock would
+  need a pickaxe to drop anything. Tile is rock and takes a pickaxe, stainless an iron one.
+
+Priced by material: drywall paper and a dye, wall tile two clay (it is ceramic), acoustic panels a
+wool, beadboard and slat wall a plank, a stainless guard an iron ingot and a vinyl one paper and a
+dye.

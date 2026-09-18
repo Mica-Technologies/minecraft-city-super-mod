@@ -1,0 +1,77 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_slatwall_felt",
+    "slat": "csm:blocks/wallfinish/wall_slatwall_oak",
+    "particle": "csm:blocks/wallfinish/wall_slatwall_felt"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        1,
+        16,
+        1.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#slat",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#slat",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#slat",
+          "uv": [
+            14.25,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#slat",
+          "uv": [
+            0,
+            0,
+            1.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#slat",
+          "uv": [
+            0,
+            0,
+            1,
+            1.75
+          ]
+        },
+        "down": {
+          "texture": "#slat",
+          "uv": [
+            0,
+            14.25,
+            1,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

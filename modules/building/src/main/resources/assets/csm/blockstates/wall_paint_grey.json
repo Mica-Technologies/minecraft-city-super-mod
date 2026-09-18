@@ -1,0 +1,44 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:wallfinish/wall_paint_grey"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_grey"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_grey",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_grey",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_grey",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -16,7 +16,9 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinish;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetPolishedConcrete;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodOak;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodWalnut;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCornerGuard;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWallFinish;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWindowTreatment;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
@@ -132,5 +134,23 @@ public class CsmTabInteriorFinishes extends CsmTab {
         fmlPreInitializationEvent); // Oak Hardwood Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetHardwoodWalnut.class,
         fmlPreInitializationEvent); // Walnut Hardwood Set (Block, Fence, Slab, Stairs)
+
+    // Wall finishes hung on any wall, and corner guards.
+    initTabBlock(new BlockWallFinish("wall_paint_white")); // Painted Drywall (White)
+    initTabBlock(new BlockWallFinish("wall_paint_offwhite")); // Painted Drywall (Off-White)
+    initTabBlock(new BlockWallFinish("wall_paint_greige")); // Painted Drywall (Greige)
+    initTabBlock(new BlockWallFinish("wall_paint_grey")); // Painted Drywall (Light Grey)
+    initTabBlock(new BlockWallFinish("wall_paint_blue")); // Painted Drywall (Pale Blue)
+    initTabBlock(new BlockWallFinish("wall_paint_sage")); // Painted Drywall (Sage)
+    initTabBlock(new BlockWallFinish("wall_tile_subway_white")); // Ceramic Wall Tile (White Subway)
+    initTabBlock(new BlockWallFinish("wall_tile_subway_green")); // Ceramic Wall Tile (Green Subway)
+    initTabBlock(new BlockWallFinish("wall_tile_square_white")); // Ceramic Wall Tile (White Square)
+    initTabBlock(new BlockWallFinish("wall_acoustic_grey")); // Acoustic Wall Panel (Grey)
+    initTabBlock(new BlockWallFinish("wall_acoustic_blue")); // Acoustic Wall Panel (Blue)
+    initTabBlock(new BlockWallFinish("wall_acoustic_charcoal")); // Acoustic Wall Panel (Charcoal)
+    initTabBlock(new BlockWallFinish("wall_beadboard_white")); // Beadboard (White)
+    initTabBlock(new BlockWallFinish("wall_slatwall_oak")); // Wood Slat Wall (Oak)
+    initTabBlock(new BlockCornerGuard("corner_guard_steel")); // Corner Guard (Stainless)
+    initTabBlock(new BlockCornerGuard("corner_guard_white")); // Corner Guard (White Vinyl)
   }
 }

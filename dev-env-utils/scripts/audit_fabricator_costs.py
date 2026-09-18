@@ -233,6 +233,14 @@ def cost_for(registry, info, ancestors):
             return ("paper x2",)
         if has_word(registry, "curtain"):
             return ("paper x2", "dye")
+        if has_word(registry, "guard"):
+            return ("iron_ingot",) if has_word(registry, "stainless") else ("paper", "dye")
+        if has_word(registry, "drywall"):
+            return ("paper", "dye")
+        if has_word(registry, "acoustic"):
+            return ("wool",)
+        if has_word(registry, "beadboard") or has_word(registry, "slat"):
+            return ("planks",)
         if has_word(registry, "carpet"):
             return ("wool",)
         if has_word(registry, "vinyl"):

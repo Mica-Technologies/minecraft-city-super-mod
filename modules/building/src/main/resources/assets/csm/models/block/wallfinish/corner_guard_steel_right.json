@@ -1,0 +1,144 @@
+{
+  "textures": {
+    "guard": "csm:blocks/wallfinish/corner_guard_steel",
+    "particle": "csm:blocks/wallfinish/corner_guard_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        14.5,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        0.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#guard",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#guard",
+          "uv": [
+            14.5,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#guard",
+          "uv": [
+            15.25,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#guard",
+          "uv": [
+            0,
+            0,
+            0.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#guard",
+          "uv": [
+            14.5,
+            0,
+            16.0,
+            0.75
+          ]
+        },
+        "down": {
+          "texture": "#guard",
+          "uv": [
+            14.5,
+            15.25,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        16,
+        0,
+        -1.5
+      ],
+      "to": [
+        16.75,
+        16,
+        0.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#guard",
+          "uv": [
+            15.25,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#guard",
+          "uv": [
+            0,
+            0,
+            0.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#guard",
+          "uv": [
+            15.25,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#guard",
+          "uv": [
+            0.0,
+            0,
+            0.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#guard",
+          "uv": [
+            0,
+            0.0,
+            0.75,
+            0.75
+          ]
+        },
+        "down": {
+          "texture": "#guard",
+          "uv": [
+            0,
+            15.25,
+            0.75,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

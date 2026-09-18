@@ -1,0 +1,37 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:wallfinish/corner_guard_white_left"
+    },
+    "edge=left,facing=north": {
+      "model": "csm:wallfinish/corner_guard_white_left"
+    },
+    "edge=right,facing=north": {
+      "model": "csm:wallfinish/corner_guard_white_right"
+    },
+    "edge=left,facing=east": {
+      "model": "csm:wallfinish/corner_guard_white_left",
+      "y": 90
+    },
+    "edge=right,facing=east": {
+      "model": "csm:wallfinish/corner_guard_white_right",
+      "y": 90
+    },
+    "edge=left,facing=south": {
+      "model": "csm:wallfinish/corner_guard_white_left",
+      "y": 180
+    },
+    "edge=right,facing=south": {
+      "model": "csm:wallfinish/corner_guard_white_right",
+      "y": 180
+    },
+    "edge=left,facing=west": {
+      "model": "csm:wallfinish/corner_guard_white_left",
+      "y": 270
+    },
+    "edge=right,facing=west": {
+      "model": "csm:wallfinish/corner_guard_white_right",
+      "y": 270
+    }
+  }
+}
