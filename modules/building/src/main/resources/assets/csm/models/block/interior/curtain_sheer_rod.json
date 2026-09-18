@@ -1,0 +1,77 @@
+{
+  "textures": {
+    "fabric": "csm:blocks/interior/curtain_sheer",
+    "rod": "csm:blocks/interior/curtain_rod",
+    "particle": "csm:blocks/interior/curtain_sheer"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        14.8,
+        1.8
+      ],
+      "to": [
+        16,
+        15.4,
+        2.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rod",
+          "uv": [
+            0,
+            0.6,
+            16,
+            1.2
+          ]
+        },
+        "south": {
+          "texture": "#rod",
+          "uv": [
+            0,
+            0.6,
+            16,
+            1.2
+          ]
+        },
+        "east": {
+          "texture": "#rod",
+          "uv": [
+            13.6,
+            0.6,
+            14.2,
+            1.2
+          ]
+        },
+        "west": {
+          "texture": "#rod",
+          "uv": [
+            1.8,
+            0.6,
+            2.4,
+            1.2
+          ]
+        },
+        "up": {
+          "texture": "#rod",
+          "uv": [
+            0,
+            1.8,
+            16,
+            2.4
+          ]
+        },
+        "down": {
+          "texture": "#rod",
+          "uv": [
+            0,
+            13.6,
+            16,
+            14.2
+          ]
+        }
+      }
+    }
+  ]
+}

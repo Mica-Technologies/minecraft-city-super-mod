@@ -1,0 +1,78 @@
+{
+  "textures": {
+    "slat": "csm:blocks/interior/blind_slat",
+    "closed": "csm:blocks/interior/blind_slats_closed",
+    "rail": "csm:blocks/interior/blind_rail_white",
+    "particle": "csm:blocks/interior/blind_slat"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0.5
+      ],
+      "to": [
+        16,
+        0.6,
+        2.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            15.4,
+            16,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            15.4,
+            16,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            13.9,
+            15.4,
+            15.5,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            0.5,
+            15.4,
+            2.1,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            0.5,
+            16,
+            2.1
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            13.9,
+            16,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}

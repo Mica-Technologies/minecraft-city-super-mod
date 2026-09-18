@@ -1,0 +1,41 @@
+{
+  "textures": {
+    "fabric": "csm:blocks/interior/shade_fabric_blackout",
+    "rail": "csm:blocks/interior/shade_rail_blackout",
+    "particle": "csm:blocks/interior/shade_fabric_blackout"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1.2
+      ],
+      "to": [
+        16,
+        16,
+        1.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fabric",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#fabric",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

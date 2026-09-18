@@ -1,0 +1,77 @@
+{
+  "textures": {
+    "fabric": "csm:blocks/interior/shade_fabric_white",
+    "rail": "csm:blocks/interior/shade_rail_white",
+    "particle": "csm:blocks/interior/shade_fabric_white"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0.9
+      ],
+      "to": [
+        16,
+        0.8,
+        1.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            15.2,
+            16,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            15.2,
+            16,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            14.3,
+            15.2,
+            15.1,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            0.9,
+            15.2,
+            1.7,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            0.9,
+            16,
+            1.7
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            14.3,
+            16,
+            15.1
+          ]
+        }
+      }
+    }
+  ]
+}

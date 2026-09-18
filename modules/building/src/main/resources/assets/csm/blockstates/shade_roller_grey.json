@@ -1,0 +1,412 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:interior/shade_roller_grey_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_cassette"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_cassette",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_cassette",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_cassette",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric"
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_top"
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_bottom"
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "true",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "true",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "true",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "true",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "true",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_top"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "true",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "true",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "true",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_high"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_high",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_high",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_high",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_half"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_half",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_half",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_fabric_half",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_mid"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_mid",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_mid",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "down": "false",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/shade_roller_grey_bar_mid",
+        "y": 270
+      }
+    }
+  ]
+}

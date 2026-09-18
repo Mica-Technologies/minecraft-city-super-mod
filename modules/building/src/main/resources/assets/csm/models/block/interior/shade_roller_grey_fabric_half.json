@@ -1,0 +1,41 @@
+{
+  "textures": {
+    "fabric": "csm:blocks/interior/shade_fabric_grey",
+    "rail": "csm:blocks/interior/shade_rail_grey",
+    "particle": "csm:blocks/interior/shade_fabric_grey"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        8,
+        1.2
+      ],
+      "to": [
+        16,
+        14.0,
+        1.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fabric",
+          "uv": [
+            0,
+            2.0,
+            16,
+            8.0
+          ]
+        },
+        "south": {
+          "texture": "#fabric",
+          "uv": [
+            0,
+            2.0,
+            16,
+            8.0
+          ]
+        }
+      }
+    }
+  ]
+}

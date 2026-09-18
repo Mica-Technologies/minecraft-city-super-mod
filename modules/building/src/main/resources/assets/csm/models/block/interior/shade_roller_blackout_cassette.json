@@ -1,0 +1,77 @@
+{
+  "textures": {
+    "fabric": "csm:blocks/interior/shade_fabric_blackout",
+    "rail": "csm:blocks/interior/shade_rail_blackout",
+    "particle": "csm:blocks/interior/shade_fabric_blackout"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        14.0,
+        0.3
+      ],
+      "to": [
+        16,
+        16,
+        2.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            0,
+            16,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            0,
+            16,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            13.5,
+            0,
+            15.7,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            0.3,
+            0,
+            2.5,
+            2.0
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            0.3,
+            16,
+            2.5
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            13.5,
+            16,
+            15.7
+          ]
+        }
+      }
+    }
+  ]
+}

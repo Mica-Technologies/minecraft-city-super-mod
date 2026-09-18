@@ -13,6 +13,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT1;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT2;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT3;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWindowTreatment;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -97,5 +98,16 @@ public class CsmTabInteriorFinishes extends CsmTab {
     initTabBlock(BlockDCT1.class, fmlPreInitializationEvent); // DCT1
     initTabBlock(BlockDCT2.class, fmlPreInitializationEvent); // DCT2
     initTabBlock(BlockDCT3.class, fmlPreInitializationEvent); // DCT3
+
+    // Window treatments: blinds, shades and curtains, hung against a window.
+    initTabBlock(new BlockWindowTreatment("blind_venetian_white")); // Venetian Blind (White)
+    initTabBlock(new BlockWindowTreatment("shade_roller_white")); // Roller Shade (White)
+    initTabBlock(new BlockWindowTreatment("shade_roller_grey")); // Roller Shade (Grey)
+    initTabBlock(new BlockWindowTreatment("shade_roller_blackout")); // Roller Shade (Blackout)
+    initTabBlock(new BlockWindowTreatment("blind_vertical_white")); // Vertical Blind (White)
+    initTabBlock(new BlockWindowTreatment("curtain_beige")); // Curtain (Beige)
+    initTabBlock(new BlockWindowTreatment("curtain_grey")); // Curtain (Grey)
+    initTabBlock(new BlockWindowTreatment("curtain_navy")); // Curtain (Navy)
+    initTabBlock(new BlockWindowTreatment("curtain_sheer")); // Sheer Curtain
   }
 }

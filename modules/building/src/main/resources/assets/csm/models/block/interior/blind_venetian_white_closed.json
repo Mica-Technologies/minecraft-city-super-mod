@@ -1,0 +1,42 @@
+{
+  "textures": {
+    "slat": "csm:blocks/interior/blind_slat",
+    "closed": "csm:blocks/interior/blind_slats_closed",
+    "rail": "csm:blocks/interior/blind_rail_white",
+    "particle": "csm:blocks/interior/blind_slat"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1.2
+      ],
+      "to": [
+        16,
+        16,
+        1.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#closed",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#closed",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}
