@@ -311,6 +311,11 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   veneer: the six generators and the set shape they share, why brick is 32 px, why brick trims are
   blocks and not a state, how each material is told from its nearest neighbour, the name-driven
   Fabricator pricing, and the traps (a name decides a price, fine detail mipmaps away)
+- `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
+  crane: why the scaffold's look is actual state and its sides three-valued, the guardrail that
+  needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
+  or baked models, the display list with the slew outside it, climbing by inserting sections, and
+  the UV traps (explicit UVs past 0..16, shift a span a whole block, never clamp it)
 - `assets/docs/FIRE_ALARM_SYSTEM.md` -- MovingSound architecture, channel system, sound standards, full inventory
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
 - `assets/docs/LANE_CONTROL_SYSTEM.md` -- Reversible lanes: the lane control signal, its own

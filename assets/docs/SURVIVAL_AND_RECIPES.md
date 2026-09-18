@@ -120,7 +120,10 @@ Rules are applied in this order:
    prismarine crystals). Masonry and plaster -- concrete block, brick, stucco, cast stone -- take
    Concrete Mix + a clay ball; natural stone veneer takes cobblestone + Concrete Mix. Siding is priced by what it is made of: fiber cement is Concrete Mix + paper,
    vinyl is 2 paper + any dye, and wood siding is 2 planks. Metal and panel cladding is 2 Sheet
-   Metal + a Fastener Kit.
+   Metal + a Fastener Kit. The Construction Site tab is priced by noun: scaffold is a Pole Section
+   + planks, formwork 2 planks + a Fastener Kit, a shore a Pole Section + a Fastener Kit, rebar an
+   iron ingot, and the tower crane head 4 Pole Sections + a Control Board + a Wiring Harness (its
+   masts are poles by rule 1); anything else there is Sheet Metal + a Fastener Kit.
 4. **Mounting hardware** — mount, bracket, backplate, cover, visor, base, plate, arm, top — takes
    Sheet Metal + Fastener Kit rather than its subsystem's electronics.
 5. **Optical devices** (camera, ALPR, radar, lidar) take Optical Sensor + Control Board.
