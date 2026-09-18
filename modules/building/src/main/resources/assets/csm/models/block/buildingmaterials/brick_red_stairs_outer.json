@@ -1,0 +1,8 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "bottom": "csm:blocks/buildingmaterials/brick/brick_red_top",
+    "top": "csm:blocks/buildingmaterials/brick/brick_red_top",
+    "side": "csm:blocks/buildingmaterials/brick/brick_red"
+  }
+}

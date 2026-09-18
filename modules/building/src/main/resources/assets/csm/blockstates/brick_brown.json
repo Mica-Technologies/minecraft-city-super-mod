@@ -1,0 +1,20 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/buildingmaterials/brick/brick_brown_top",
+      "bottom": "csm:blocks/buildingmaterials/brick/brick_brown_top",
+      "side": "csm:blocks/buildingmaterials/brick/brick_brown",
+      "particle": "csm:blocks/buildingmaterials/brick/brick_brown"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

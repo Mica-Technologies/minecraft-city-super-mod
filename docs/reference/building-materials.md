@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "76 blocks in this tab"
+!!! info "104 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -19,6 +19,20 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Blue Metal Fence | `csm:bluemetal_fence` | 2 | 10 | pickaxe | 1 |
 | Blue Metal Slab | `csm:bluemetal_slab` | 2 | 10 | pickaxe | 1 |
 | Blue Metal Stairs | `csm:bluemetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Brown Brick | `csm:brick_brown` | 2 | 10 | pickaxe | 1 |
+| Brown Brick (Header Course) | `csm:brick_brown_header` | 2 | 10 | pickaxe | 1 |
+| Brown Brick (Soldier Course) | `csm:brick_brown_soldier` | 2 | 10 | pickaxe | 1 |
+| Brown Brick (Weep Holes) | `csm:brick_brown_weep` | 2 | 10 | pickaxe | 1 |
+| Brown Brick Fence | `csm:brick_brown_fence` | 2 | 10 | pickaxe | 1 |
+| Brown Brick Slab | `csm:brick_brown_slab` | 2 | 10 | pickaxe | 1 |
+| Brown Brick Stairs | `csm:brick_brown_stairs` | 2 | 10 | pickaxe | 1 |
+| Buff Brick | `csm:brick_buff` | 2 | 10 | pickaxe | 1 |
+| Buff Brick (Header Course) | `csm:brick_buff_header` | 2 | 10 | pickaxe | 1 |
+| Buff Brick (Soldier Course) | `csm:brick_buff_soldier` | 2 | 10 | pickaxe | 1 |
+| Buff Brick (Weep Holes) | `csm:brick_buff_weep` | 2 | 10 | pickaxe | 1 |
+| Buff Brick Fence | `csm:brick_buff_fence` | 2 | 10 | pickaxe | 1 |
+| Buff Brick Slab | `csm:brick_buff_slab` | 2 | 10 | pickaxe | 1 |
+| Buff Brick Stairs | `csm:brick_buff_stairs` | 2 | 10 | pickaxe | 1 |
 | Concrete Block | `csm:cmu_standard` | 2 | 10 | pickaxe | 1 |
 | Concrete Block Fence | `csm:cmu_standard_fence` | 2 | 10 | pickaxe | 1 |
 | Concrete Block Slab | `csm:cmu_standard_slab` | 2 | 10 | pickaxe | 1 |
@@ -35,6 +49,13 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Green Metal Fence | `csm:greenmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Green Metal Slab | `csm:greenmetal_slab` | 2 | 10 | pickaxe | 1 |
 | Green Metal Stairs | `csm:greenmetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Grey Brick | `csm:brick_grey` | 2 | 10 | pickaxe | 1 |
+| Grey Brick (Header Course) | `csm:brick_grey_header` | 2 | 10 | pickaxe | 1 |
+| Grey Brick (Soldier Course) | `csm:brick_grey_soldier` | 2 | 10 | pickaxe | 1 |
+| Grey Brick (Weep Holes) | `csm:brick_grey_weep` | 2 | 10 | pickaxe | 1 |
+| Grey Brick Fence | `csm:brick_grey_fence` | 2 | 10 | pickaxe | 1 |
+| Grey Brick Slab | `csm:brick_grey_slab` | 2 | 10 | pickaxe | 1 |
+| Grey Brick Stairs | `csm:brick_grey_stairs` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block | `csm:cmu_groundface` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block Fence | `csm:cmu_groundface_fence` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block Slab | `csm:cmu_groundface_slab` | 2 | 10 | pickaxe | 1 |
@@ -67,6 +88,13 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Purple Metal Fence | `csm:purplemetal_fence` | 2 | 10 | pickaxe | 1 |
 | Purple Metal Slab | `csm:purplemetal_slab` | 2 | 10 | pickaxe | 1 |
 | Purple Metal Stairs | `csm:purplemetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Red Brick | `csm:brick_red` | 2 | 10 | pickaxe | 1 |
+| Red Brick (Header Course) | `csm:brick_red_header` | 2 | 10 | pickaxe | 1 |
+| Red Brick (Soldier Course) | `csm:brick_red_soldier` | 2 | 10 | pickaxe | 1 |
+| Red Brick (Weep Holes) | `csm:brick_red_weep` | 2 | 10 | pickaxe | 1 |
+| Red Brick Fence | `csm:brick_red_fence` | 2 | 10 | pickaxe | 1 |
+| Red Brick Slab | `csm:brick_red_slab` | 2 | 10 | pickaxe | 1 |
+| Red Brick Stairs | `csm:brick_red_stairs` | 2 | 10 | pickaxe | 1 |
 | Red Metal | `csm:redmetal` | 2 | 10 | pickaxe | 1 |
 | Red Metal Fence | `csm:redmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Red Metal Slab | `csm:redmetal_slab` | 2 | 10 | pickaxe | 1 |
