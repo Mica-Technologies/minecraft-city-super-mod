@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockCraneMast;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockFormworkWall;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockPostShore;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockRebarBundle;
@@ -99,5 +100,8 @@ public class CsmTabConstructionSite extends CsmTab {
     initTabBlock(new BlockSiteProp("rebar_cage", Material.IRON, SoundType.METAL, "pickaxe",
         BlockSiteProp.box16(3.4, 0, 3.4, 12.6, 16, 12.6))); // Rebar Column Cage
     initTabBlock(BlockRebarBundle.class, fmlPreInitializationEvent); // Rebar Bundle
+
+    // The tower crane.
+    initTabBlock(BlockCraneMast.class, fmlPreInitializationEvent); // Tower Crane Mast
   }
 }

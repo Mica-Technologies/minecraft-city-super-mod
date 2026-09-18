@@ -65,7 +65,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockScaffoldFrame extends AbstractBlock {
+public class BlockScaffoldFrame extends AbstractBlock implements ICsmSiteClimbable {
 
   /**
    * The axis the frames run across. Stored.

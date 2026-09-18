@@ -11,7 +11,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
- * Lets the local player climb a {@link BlockScaffoldFrame} by holding jump.
+ * Lets the local player climb a scaffold or a crane mast -- any {@link ICsmSiteClimbable} --
+ * by holding jump.
  *
  * <p>1.12 climbs a ladder only while the climber is pushing against something solid: the
  * ladder's own box, or the wall behind it. A scaffold has no side collision -- the player stands
@@ -64,7 +65,7 @@ public final class ScaffoldClimbHandler {
     }
     BlockPos feet = new BlockPos(MathHelper.floor(player.posX),
         MathHelper.floor(player.getEntityBoundingBox().minY), MathHelper.floor(player.posZ));
-    if (player.world.getBlockState(feet).getBlock() instanceof BlockScaffoldFrame) {
+    if (player.world.getBlockState(feet).getBlock() instanceof ICsmSiteClimbable) {
       player.motionY = CLIMB_SPEED;
     }
   }
