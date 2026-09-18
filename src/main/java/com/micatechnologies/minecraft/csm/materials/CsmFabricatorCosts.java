@@ -400,6 +400,13 @@ public final class CsmFabricatorCosts {
     if (CsmBlockDisplayNames.hasWord(registryName, "rebar")) {
       return cost(FabricatorIngredient.any(MC_IRON_INGOT, 1));
     }
+    // A crane head is the whole slewing unit: the jib's steelwork, and the cab's controls and
+    // wiring. Crane masts never reach here -- the pole rule takes anything named a mast first.
+    if (CsmBlockDisplayNames.hasWord(registryName, "crane")) {
+      return cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 4),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
     return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
         FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
   }

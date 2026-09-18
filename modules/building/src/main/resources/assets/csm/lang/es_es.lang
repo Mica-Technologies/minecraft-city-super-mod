@@ -94,6 +94,7 @@ tile.coppermetal_fence.name=Cerca de Metal de Cobre
 tile.coppermetal_slab.name=Losa de Metal de Cobre
 tile.coppermetal_slab_double.name=Losa Doble de Metal de Cobre
 tile.coppermetal_stairs.name=Escalera de Metal de Cobre
+tile.crane_head.name=Cabeza de Grúa Torre
 tile.crane_mast.name=Mástil de Grúa Torre
 tile.crane_mast.red.name=Mástil de Grúa Torre (Rojo)
 tile.crane_mast.white.name=Mástil de Grúa Torre (Blanco)

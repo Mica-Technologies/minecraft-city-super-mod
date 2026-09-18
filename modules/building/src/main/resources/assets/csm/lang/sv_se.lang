@@ -94,6 +94,7 @@ tile.coppermetal_fence.name=Koppar Metallstaket
 tile.coppermetal_slab.name=Koppar Metallplatta
 tile.coppermetal_slab_double.name=Koppar Dubbel Metallplatta
 tile.coppermetal_stairs.name=Koppar Metalltrappa
+tile.crane_head.name=Tornkranstopp
 tile.crane_mast.name=Tornkranmast
 tile.crane_mast.red.name=Tornkranmast (Röd)
 tile.crane_mast.white.name=Tornkranmast (Vit)

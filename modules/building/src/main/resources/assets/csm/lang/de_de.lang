@@ -94,6 +94,7 @@ tile.coppermetal_fence.name=Kupferner Metallzaun
 tile.coppermetal_slab.name=Kupferne Metallstufe
 tile.coppermetal_slab_double.name=Kupferne Metall-Doppelstufe
 tile.coppermetal_stairs.name=Kupferne Metalltreppe
+tile.crane_head.name=Turmdrehkran-Oberteil
 tile.crane_mast.name=Turmdrehkran-Mast
 tile.crane_mast.red.name=Turmdrehkran-Mast (Rot)
 tile.crane_mast.white.name=Turmdrehkran-Mast (Weiß)

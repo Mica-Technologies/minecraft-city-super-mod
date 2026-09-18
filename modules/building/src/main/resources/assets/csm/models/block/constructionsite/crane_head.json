@@ -1,0 +1,148 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "chord": "csm:blocks/constructionsite/crane_chord_yellow",
+    "lace": "csm:blocks/constructionsite/crane_lace_yellow",
+    "ladder": "csm:blocks/constructionsite/scaffold_tube",
+    "anchor": "csm:blocks/constructionsite/scaffold_jack",
+    "particle": "csm:blocks/constructionsite/crane_chord_yellow"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        11,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#anchor",
+          "uv": [
+            2,
+            5,
+            14,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#anchor",
+          "uv": [
+            2,
+            5,
+            14,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#anchor",
+          "uv": [
+            2,
+            5,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#anchor",
+          "uv": [
+            2,
+            5,
+            14,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#anchor",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#anchor",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        11,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chord",
+          "uv": [
+            0,
+            0,
+            16,
+            5
+          ]
+        },
+        "south": {
+          "texture": "#chord",
+          "uv": [
+            0,
+            0,
+            16,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#chord",
+          "uv": [
+            0,
+            0,
+            16,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#chord",
+          "uv": [
+            0,
+            0,
+            16,
+            5
+          ]
+        },
+        "up": {
+          "texture": "#chord",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#chord",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}
