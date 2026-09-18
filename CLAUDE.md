@@ -314,7 +314,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
   crane: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
-  or baked models, the display list with the slew outside it, climbing by inserting sections, and
+  or baked models, the display list with the slew outside it, how its deck and walkways are made
+  solid without blocks, climbing by inserting sections, and
   the UV traps (explicit UVs past 0..16, shift a span a whole block, never clamp it)
 - `assets/docs/FIRE_ALARM_SYSTEM.md` -- MovingSound architecture, channel system, sound standards, full inventory
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
