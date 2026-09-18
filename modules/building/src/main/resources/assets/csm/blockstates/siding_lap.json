@@ -1,0 +1,20 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/buildingmaterials/siding/siding_lap_top",
+      "bottom": "csm:blocks/buildingmaterials/siding/siding_lap_top",
+      "side": "csm:blocks/buildingmaterials/siding/siding_lap",
+      "particle": "csm:blocks/buildingmaterials/siding/siding_lap"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

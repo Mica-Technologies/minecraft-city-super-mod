@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_inventory",
+  "textures": {
+    "texture": "csm:blocks/buildingmaterials/siding/siding_lap",
+    "particle": "csm:blocks/buildingmaterials/siding/siding_lap"
+  }
+}

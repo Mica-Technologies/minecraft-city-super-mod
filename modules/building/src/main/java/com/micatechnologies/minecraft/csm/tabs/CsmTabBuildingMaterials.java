@@ -28,6 +28,10 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickRed;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStuccoSmooth;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStuccoSandfloat;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStuccoKnockdown;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSidingLap;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSidingBoardbatten;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSidingShingle;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSidingVinyl;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -159,5 +163,13 @@ public class CsmTabBuildingMaterials extends CsmTab {
         fmlPreInitializationEvent); // Sand Float Stucco Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetStuccoKnockdown.class,
         fmlPreInitializationEvent); // Knockdown Stucco Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetSidingLap.class,
+        fmlPreInitializationEvent); // Fiber Cement Lap Siding Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetSidingBoardbatten.class,
+        fmlPreInitializationEvent); // Board and Batten Siding Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetSidingShingle.class,
+        fmlPreInitializationEvent); // Cedar Shingle Siding Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetSidingVinyl.class,
+        fmlPreInitializationEvent); // Vinyl Siding Set (Block, Fence, Slab, Stairs)
   }
 }

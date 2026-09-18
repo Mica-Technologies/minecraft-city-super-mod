@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "csm:blocks/buildingmaterials/siding/siding_shingle_top",
+    "top": "csm:blocks/buildingmaterials/siding/siding_shingle_top",
+    "side": "csm:blocks/buildingmaterials/siding/siding_shingle"
+  }
+}
