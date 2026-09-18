@@ -1,0 +1,710 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:buildingmaterials/wood_stud_wall_inventory"
+    },
+    "inventory_batt": {
+      "model": "csm:buildingmaterials/wood_stud_wall_inventory_batt"
+    },
+    "inventory_mineral": {
+      "model": "csm:buildingmaterials/wood_stud_wall_inventory_mineral"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "true",
+            "east": "true"
+          },
+          {
+            "east": "true",
+            "south": "true"
+          },
+          {
+            "south": "true",
+            "west": "true"
+          },
+          {
+            "west": "true",
+            "north": "true"
+          },
+          {
+            "north": "true",
+            "east": "false",
+            "south": "false",
+            "west": "false"
+          },
+          {
+            "north": "false",
+            "east": "true",
+            "south": "false",
+            "west": "false"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "true",
+            "west": "false"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_post"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_stud",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_stud",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_stud",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_stud",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_stud",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_stud",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_stud",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_stud",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_bottom",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_bottom",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_bottom",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_bottom",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_bottom",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_bottom",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_bottom",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_bottom",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "east": "false",
+        "west": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_track_bottom"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "west": "true",
+        "north": "false",
+        "south": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_track_bottom"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_track_bottom"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_top",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_top",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_top",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_top",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_top",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_top",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_top",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_track_top",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "east": "false",
+        "west": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_track_top"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "west": "true",
+        "north": "false",
+        "south": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_track_top"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_track_top"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_batt",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_batt",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_batt",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_batt",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_batt",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_batt",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_batt",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_batt",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "east": "false",
+        "west": "false",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_insulation_batt"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "west": "true",
+        "north": "false",
+        "south": "false",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_insulation_batt"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "insulation": "batt"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_insulation_batt"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_mineral",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_mineral",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_mineral",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_mineral",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_mineral",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_mineral",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_mineral",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_arm_insulation_mineral",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "east": "false",
+        "west": "false",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_insulation_mineral"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "west": "true",
+        "north": "false",
+        "south": "false",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_insulation_mineral"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "insulation": "mineral"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/wood_stud_wall_hub_insulation_mineral"
+      }
+    }
+  ]
+}

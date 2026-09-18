@@ -177,6 +177,8 @@ def cost_for(registry, info, ancestors):
     if tab == "tabpowergrid":
         return ("POLE_SECTION", "WIRING_HARNESS")
     if tab == "tabstructureframing":
+        if has_word(registry, "wood"):
+            return ("planks x2", "FASTENER_KIT")
         return ("SHEET_METAL x2", "FASTENER_KIT")
     if tab == "tabtechnology":
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
