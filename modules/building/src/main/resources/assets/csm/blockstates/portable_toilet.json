@@ -1,22 +1,41 @@
 {
-  "variants": {
-    "facing=north": {
-      "model": "csm:constructionsite/portable_toilet"
-    },
-    "facing=east": {
-      "model": "csm:constructionsite/portable_toilet",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:constructionsite/portable_toilet",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:constructionsite/portable_toilet",
-      "y": 270
-    },
-    "inventory": {
-      "model": "csm:constructionsite/portable_toilet"
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:constructionsite/portable_toilet",
+    "transform": {
+      "scale": [
+        1,
+        1.15,
+        1
+      ],
+      "translation": [
+        0,
+        0.075,
+        0
+      ]
     }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "upper": {
+      "false": {},
+      "true": {
+        "model": "csm:constructionsite/portable_toilet_upper"
+      }
+    },
+    "inventory": [
+      {}
+    ]
   }
 }
