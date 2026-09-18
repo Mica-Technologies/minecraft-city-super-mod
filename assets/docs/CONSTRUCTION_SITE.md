@@ -129,8 +129,18 @@ atlas, so the whole crane is one texture.
 | Hammerhead | the flat-top plus an A-frame tower head with pendant lines to both jibs |
 | Luffing jib | a jib pinned at the slewing unit and raked up at the luff angle, held by ropes from a short A-frame; the hook hangs from the tip, as a luffing crane has no trolley |
 
-Red aviation lights at the top and the jib tip are drawn full-bright (per-vertex lightmap in
-`DefaultVertexFormats.BLOCK`).
+**Aviation lights.** Red obstruction lights sit at the jib tip, the counter-jib's end and the
+hammerhead's apex. They flash like an FAA L-864: thirty a minute, a 90 ms rise, a 700 ms hold and a
+fade, dark for the rest of the two-second cycle. Every light on one crane flashes together; each
+crane takes its own phase from its position, so a skyline of cranes shares the rate but not the
+step (real lights only have to share the rate). The lens housing is geometry in the display list;
+the flash cannot be, since it changes every frame, so `CraneGeometry` records each lens centre and
+the renderer draws, outside the list, the lens again full-bright and two camera-facing halos from
+`crane_glow.png` (drawn by `gen_crane.py`: a hot core on a long soft tail that reaches zero before
+the quad's edge), added onto what is behind them with depth writes off. The halos grow a little
+with distance -- a lens the size of a block is under a pixel from across a city, and a real light
+reads as a point of light at any range. They are not gated on the strobe-effect config: thirty
+slow red flashes a minute are not a strobe.
 
 **Configuration** (`TileEntityCraneHead`, NBT short keys `m l j s t h f g cx cz`):
 

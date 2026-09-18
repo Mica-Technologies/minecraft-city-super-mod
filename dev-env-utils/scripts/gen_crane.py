@@ -32,6 +32,7 @@ The element helpers are gen_scaffold's, so every face carries fitted UVs (see _f
 
 import argparse
 import filecmp
+import math
 import os
 import random
 import shutil
@@ -136,6 +137,30 @@ def lacing_texture(livery):
 # --------------------------------------------------------------------------------------------
 
 box = sc._box
+
+
+GLOW_SIZE = 64            # the aviation light's halo texture
+
+
+def glow_texture():
+    """The halo drawn around an aviation light while it is lit: white, so the renderer tints it,
+    with alpha falling off from a hot centre. A tight core on a long soft tail, rather than one
+    gaussian, is what makes a small quad read as light spilling out of a lamp; the tail reaches
+    zero before the edge so the quad's square outline never shows."""
+    n = GLOW_SIZE
+    img = Image.new("RGBA", (n, n), (255, 255, 255, 0))
+    px = img.load()
+    c = (n - 1) / 2.0
+    for y in range(n):
+        for x in range(n):
+            r = math.hypot(x - c, y - c) / (n / 2.0)
+            if r >= 1.0:
+                continue
+            core = math.exp(-(r / 0.15) ** 2)
+            tail = (1.0 - r) ** 1.8
+            a = min(1.0, 0.8 * core + 0.85 * tail)
+            px[x, y] = (255, 255, 255, int(round(a * 255)))
+    return img
 
 
 def _chords(c0, c1):
@@ -347,6 +372,8 @@ def write_all(tex_dir, model_dir, state_dir):
         chord_texture(liv).save(os.path.join(tex_dir, "crane_chord_%s.png" % liv))
         lacing_texture(liv).save(os.path.join(tex_dir, "crane_lace_%s.png" % liv))
         written += [("tex", "crane_chord_%s.png" % liv), ("tex", "crane_lace_%s.png" % liv)]
+    glow_texture().save(os.path.join(tex_dir, "crane_glow.png"))
+    written.append(("tex", "crane_glow.png"))
     for name, body in sorted(part_models().items()):
         gen_cmu._write_json(os.path.join(model_dir, name + ".json"), body)
         written.append(("model", name + ".json"))
