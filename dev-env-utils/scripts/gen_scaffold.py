@@ -131,12 +131,50 @@ TEXTURES = {"scaffold_tube": tube_texture, "scaffold_plank": plank_texture,
 FACES = ("north", "south", "east", "west", "up", "down")
 
 
-def _box(x0, y0, z0, x1, y1, z1, tex, rotation=None):
+def _clamp16(v):
+    return round(max(0.0, min(16.0, v)), 4)
+
+
+def _position_uv(face, f, t):
+    """The UV Minecraft would derive from the element's position, clamped to the texture.
+
+    Unclamped, a face that reaches past the cell gets UVs outside 0..16, and outside 0..16 the atlas
+    does not wrap: it samples whatever sprites sit next to this one. The first scaffold's braces
+    did exactly that -- only the stretch of each brace that fell on the tube texture was drawn as
+    steel, so the braces looked short and floating, and the rest was painted from other blocks.
+    """
+    uv = {"down": (f[0], 16 - t[2], t[0], 16 - f[2]),
+          "up": (f[0], f[2], t[0], t[2]),
+          "north": (16 - t[0], 16 - t[1], 16 - f[0], 16 - f[1]),
+          "south": (f[0], 16 - t[1], t[0], 16 - f[1]),
+          "west": (f[2], 16 - t[1], t[2], 16 - f[1]),
+          "east": (16 - t[2], 16 - t[1], 16 - f[2], 16 - f[1])}[face]
+    return [_clamp16(v) for v in uv]
+
+
+# A brace is one flat bar, so every face takes the same thin strip of the tube texture rather than
+# a position-derived window: the bar is longer than the cell, and no window of it fits the texture.
+BRACE_UV = [2, 0, 3, 16]
+
+
+def _box(x0, y0, z0, x1, y1, z1, tex, rotation=None, uv=None):
+    f, t = (x0, y0, z0), (x1, y1, z1)
     box = {"from": [x0, y0, z0], "to": [x1, y1, z1],
-           "faces": {f: {"texture": tex} for f in FACES}}
+           "faces": {face: {"texture": tex,
+                            "uv": list(uv) if uv else _position_uv(face, f, t)}
+                     for face in FACES}}
     if rotation is not None:
         box["rotation"] = rotation
     return box
+
+
+def _reuv(m):
+    """Re-derive a mirrored element's UVs from its new position; a brace keeps its strip."""
+    f, t = m["from"], m["to"]
+    for face, spec in m["faces"].items():
+        if spec.get("uv") != BRACE_UV:
+            spec["uv"] = _position_uv(face, f, t)
+    return m
 
 
 def _mirror_x(elements):
@@ -149,7 +187,7 @@ def _mirror_x(elements):
             m["rotation"]["origin"][0] = 16 - m["rotation"]["origin"][0]
             if m["rotation"]["axis"] != "x":
                 m["rotation"]["angle"] = -m["rotation"]["angle"]
-        out.append(m)
+        out.append(_reuv(m))
     return out
 
 
@@ -163,7 +201,7 @@ def _mirror_z(elements):
             m["rotation"]["origin"][2] = 16 - m["rotation"]["origin"][2]
             if m["rotation"]["axis"] != "z":
                 m["rotation"]["angle"] = -m["rotation"]["angle"]
-        out.append(m)
+        out.append(_reuv(m))
     return out
 
 
@@ -188,9 +226,11 @@ def brace_north():
     (za0, za1), (zb0, zb1) = (BRACE_Z[0], BRACE_Z[0] + BRACE_T), (BRACE_Z[1], BRACE_Z[1] + BRACE_T)
     return [
         _box(c - DIAG_HALF, c - BRACE_W / 2, za0, c + DIAG_HALF, c + BRACE_W / 2, za1, t,
-             rotation={"origin": [c, c, (za0 + za1) / 2], "axis": "z", "angle": 45}),
+             rotation={"origin": [c, c, (za0 + za1) / 2], "axis": "z", "angle": 45},
+             uv=BRACE_UV),
         _box(c - DIAG_HALF, c - BRACE_W / 2, zb0, c + DIAG_HALF, c + BRACE_W / 2, zb1, t,
-             rotation={"origin": [c, c, (zb0 + zb1) / 2], "axis": "z", "angle": -45}),
+             rotation={"origin": [c, c, (zb0 + zb1) / 2], "axis": "z", "angle": -45},
+             uv=BRACE_UV),
     ]
 
 
