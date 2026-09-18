@@ -65,7 +65,9 @@ public final class ScaffoldClimbHandler {
     }
     BlockPos feet = new BlockPos(MathHelper.floor(player.posX),
         MathHelper.floor(player.getEntityBoundingBox().minY), MathHelper.floor(player.posZ));
-    if (player.world.getBlockState(feet).getBlock() instanceof ICsmSiteClimbable) {
+    if (player.world.getBlockState(feet).getBlock() instanceof ICsmSiteClimbable
+        || CraneCollision.isClimbingOut(player.world, feet, player.posX, player.posZ,
+        player.getEntityBoundingBox().minY)) {
       player.motionY = CLIMB_SPEED;
     }
   }

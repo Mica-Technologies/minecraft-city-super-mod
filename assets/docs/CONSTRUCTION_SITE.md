@@ -74,9 +74,8 @@ axis (`AbstractBlockSiteAxial`); the wall form runs and stacks with no neighbour
 because every part of it is the full length and height of its cell. The post shore reads its
 stack: a real shore is two or three blocks tall, so each block works out its part (the outer
 tube where the stack carries on; the adjusting collar, inner tube and U-head where it ends; a base
-plate at its foot) and nothing
-is stored. The column form, rebar mat, dowels and cage are one class, `BlockSiteProp`, constructed
-by registry name -- a ThreadLocal hands the name to the constructor, as `BlockBrickTrim` does.
+plate at its foot) and nothing is stored. The column form, rebar mat, dowels and cage are one
+class, `BlockSiteProp`, constructed by registry name -- a ThreadLocal hands the name to the constructor, as `BlockBrickTrim` does.
 
 ## Tower crane
 
@@ -91,7 +90,8 @@ under the head, the way a real crane is jacked.
 creative stack per livery (`ItemBlockCraneLivery`, which names each with
 `tile.<name>.<livery>.name`). A base section with anchor feet is drawn where the block below is not
 mast. The mast is climbable with a ladder up the inside of its north face; a player slides back
-down when jump is released (the vanilla ladder rule -- there is no deck), and sneaking holds on.
+down when jump is released (the vanilla ladder rule), and sneaking holds on. At the top it comes
+out onto the slewing deck (see "Standing on the crane").
 
 - **Lacing is a cutout texture on a plane per face; the chords are geometry.** A 1x1 face's
   chord-to-chord diagonal is not an angle a JSON element can be turned to (22.5 degree steps). A
@@ -108,12 +108,13 @@ down when jump is released (the vanilla ladder rule -- there is no deck), and sn
 
 `crane_head` goes only on a mast top. On placement it reads the mast under it -- 1x1 or 2x2, the
 livery, and on a 2x2 where the section's centre is from the quarter it was placed on -- so the
-slewing unit is centred on the mast whichever quarter the head went on. It draws a platform deck
-as its block model and everything else from `TileEntityCraneHeadRenderer`.
+slewing unit is centred on the mast whichever quarter the head went on. The block draws nothing
+in the world; everything above the mast comes from `TileEntityCraneHeadRenderer`.
 
 **Why a renderer and not jib blocks.** Only a renderer can slew, move the trolley, and rake a
 luffing jib; a jib built of blocks would be static, and a raked one would be a job the size of the
-mast arm curves. The cost, accepted: the jib has no collision.
+mast arm curves. The cost is that nothing the renderer draws has collision of its own -- see
+"Standing on the crane" below for how it gets some.
 
 **Why Java geometry and not a baked model.** Jib length is a screen value; a baked model per length,
 per model, per livery is thousands of files. `CraneGeometry` builds the unit at run time: bars
@@ -162,6 +163,34 @@ the list.
 - Measured: three cranes of different models in view at 1,147 fps, each whole from 150 blocks. The
   renderer has not shown up as a cost worth a performance note.
 
+### Standing on the crane
+
+A player climbs the mast and comes out onto the slewing deck, then can walk the counter-jib (up
+onto the winch and over the ballast), stand on the cab roof, and walk the jib's bottom chords out
+to the tip. None of that is a block: `CraneCollision` adds it from `GetCollisionBoxesEvent`, on
+both sides, for every loaded crane whose reach the queried box is inside (heads register
+themselves in `validate` and leave in `invalidate`/`onChunkUnload`). A block's own collision could
+not do it -- 1.12 only asks blocks within a cell of an entity, and the jib is up to eighty blocks
+long -- so the head block has none at all.
+
+- **The parts follow the slew.** At a multiple of 90 degrees each part is one exact box; at any
+  other slew it is filled with small squares (0.2 blocks at scale 1, each big enough to cover its
+  own cell at any angle), made only near the queried box, so a long jib costs nothing extra.
+- **The sizes mirror `CraneGeometry`.** Change a part's size there and change it here.
+- **The deck is solid from above and not to a sneaking entity**, like the scaffold deck: sneak on
+  it to drop back into the mast and climb down. Everything else is solid from every side, which is
+  what lets a player step up from the deck onto a walkway.
+- **Nothing reaches into the mast's column**, so no part catches a climber's head.
+- **Climbing out.** The head used to be a ladder with a one-block platform. On a 2x2 a player who climbed a
+  quarter the head is not on came out into air, dropped back into the mast and bobbed there for
+  ever. Now the climb handler keeps a player climbing while their feet are in the cell above a
+  mast top at the head's height, until they are over the deck (`CraneCollision.isClimbingOut`).
+- The luffing jib is raked too steeply to walk, so it has no walkway; its deck, cab and
+  counter-jib do.
+- **Two cranes too close together collide with each other's parts**, as they would for real:
+  when testing, a neighbour's counter-jib over a mast top stops a climber below the deck, which
+  looks exactly like the climb being broken.
+
 ### The screen
 
 Right-click any block of a crane with an empty hand -- including the foot of its mast, since the
@@ -202,7 +231,6 @@ both.
 | Idle slewing / trolley animation | Changes the caching from per-configuration geometry to a per-frame transform; static first |
 | A hook that lifts blocks or entities | A different feature: entities, physics, permissions |
 | Riding in the cab | Needs a seat entity and camera work |
-| A walkable jib | The renderer gives none by design; invisible collision blocks could be added |
 | A dark grey livery | The user chose yellow, red and white; one more texture set |
 | Mobile and crawler cranes | A different machine |
 

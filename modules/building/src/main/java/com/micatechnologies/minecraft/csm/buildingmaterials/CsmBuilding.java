@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.constructionsite.BuildingGuiProvider;
+import com.micatechnologies.minecraft.csm.constructionsite.CraneCollision;
 import com.micatechnologies.minecraft.csm.constructionsite.CraneHeadConfigPacket;
 import com.micatechnologies.minecraft.csm.constructionsite.CraneHeadConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldRailCollision;
@@ -68,6 +69,8 @@ public class CsmBuilding {
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
     // Guardrail collision that a jump would otherwise clear. Both sides, so they agree.
     ScaffoldRailCollision.register();
+    // A tower crane's deck, walkways and cab, which its renderer draws but no block backs.
+    CraneCollision.register();
     CsmGuiRegistry.register(new BuildingGuiProvider());
     // The packet order here fixes this channel's discriminators; only append to it.
     NETWORK.registerMessage(CraneHeadConfigPacketHandler.class, CraneHeadConfigPacket.class,

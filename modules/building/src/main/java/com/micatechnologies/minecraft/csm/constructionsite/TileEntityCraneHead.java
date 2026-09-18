@@ -210,24 +210,43 @@ public class TileEntityCraneHead extends AbstractTileEntity {
   }
 
   /**
-   * Frees the renderer's compiled geometry when the head goes away. Client only; the renderer
-   * class is never touched on a server.
+   * Frees the renderer's compiled geometry and the crane's collision when the head goes away. The
+   * renderer class is never touched on a server.
    *
    * @since 1.0
    */
   @Override
   public void invalidate() {
     super.invalidate();
-    if (world != null && world.isRemote) {
-      TileEntityCraneHeadRenderer.release(pos);
-    }
+    gone();
   }
 
   @Override
   public void onChunkUnload() {
     super.onChunkUnload();
-    if (world != null && world.isRemote) {
-      TileEntityCraneHeadRenderer.release(pos);
+    gone();
+  }
+
+  private void gone() {
+    if (world != null) {
+      CraneCollision.remove(this);
+      if (world.isRemote) {
+        TileEntityCraneHeadRenderer.release(pos);
+      }
+    }
+  }
+
+  /**
+   * Makes the crane's deck, walkways and cab solid (see {@link CraneCollision}) once the head is
+   * in a world. Called when the tile entity is added to a chunk, on both sides.
+   *
+   * @since 1.0
+   */
+  @Override
+  public void validate() {
+    super.validate();
+    if (world != null) {
+      CraneCollision.add(this);
     }
   }
 

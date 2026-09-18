@@ -32,21 +32,14 @@ import net.minecraft.world.World;
  * the section, not on whichever quarter the head was put on, and because the jib can be forty or
  * eighty blocks long and slew any way. See {@link TileEntityCraneHead}.</p>
  *
- * <p>It can only be placed on a mast top. It is climbed into from the mast below, and its top is
- * a platform that is solid to someone standing on it and not sneaking, as the scaffold's deck
- * is.</p>
+ * <p>It can only be placed on a mast top. The block itself has no collision: the deck, walkways
+ * and cab are made solid by {@link CraneCollision}, which follows the slew and reaches the whole
+ * length of the jib, where a block's collision could not.</p>
  *
  * @version 1.0
  * @since 2026.9
  */
-public class BlockCraneHead extends AbstractBlock implements ICsmTileEntityProvider,
-    ICsmSiteClimbable {
-
-  /** The platform on top of the slewing ring. */
-  private static final AxisAlignedBB PLATFORM = BlockSiteProp.box16(0, 12, 0, 16, 16, 16);
-
-  /** How far below the platform's top an entity's feet may be and still stand on it. */
-  private static final double STANDING_TOLERANCE = 1.0E-3;
+public class BlockCraneHead extends AbstractBlock implements ICsmTileEntityProvider {
 
   /**
    * Constructs a {@link BlockCraneHead}.
@@ -156,15 +149,8 @@ public class BlockCraneHead extends AbstractBlock implements ICsmTileEntityProvi
     return true;
   }
 
-  @Override
-  public boolean isLadder(IBlockState state, IBlockAccess world, BlockPos pos,
-      EntityLivingBase entity) {
-    return true;
-  }
-
   /**
-   * The platform, and only to something standing on it and not sneaking, so a player climbing
-   * the mast comes up through it and one standing on it can sneak back down.
+   * None: see {@link CraneCollision}.
    *
    * @since 1.0
    */
@@ -174,14 +160,14 @@ public class BlockCraneHead extends AbstractBlock implements ICsmTileEntityProvi
       @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox,
       @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn,
       boolean isActualState) {
-    if (entityIn != null) {
-      boolean above = entityIn.getEntityBoundingBox().minY
-          >= pos.getY() + PLATFORM.maxY - STANDING_TOLERANCE;
-      if (!above || entityIn.isSneaking()) {
-        return;
-      }
-    }
-    addCollisionBoxToList(pos, entityBox, collidingBoxes, PLATFORM);
+  }
+
+  @Override
+  @SuppressWarnings("deprecation")
+  @Nullable
+  public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState,
+      @Nonnull IBlockAccess worldIn, @Nonnull BlockPos pos) {
+    return NULL_AABB;
   }
 
   @Override
