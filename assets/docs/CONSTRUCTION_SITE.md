@@ -201,12 +201,30 @@ object, with no seams inside it.
 
 ### Props with a front
 
-`BlockSiteFacingProp`, one class by registry name, facing the player who places it: the portable
-toilet (two blocks tall, blue moulded walls, the door with its vent and vacancy indicator, a
-translucent white roof; its icon is scaled down like the temporary fence's), the gang box (a
-safety-yellow job box with a diamond-plate lid), and the concrete washout (a lined steel pan of
+`BlockSiteFacingProp`, one class by registry name, facing the player who places it: the gang box
+(a safety-yellow job box with a diamond-plate lid), the concrete washout (a lined steel pan of
 settled slurry with its sign at the front, the legend drawn as its layout since a legend is not
-legible at sixteen pixels).
+legible at sixteen pixels), and the portable toilet.
+
+**The portable toilet can be used** (`BlockPortableToilet`, on `BlockSiteFacingProp`): right-click
+it and you are inside, sitting on the seat facing the door; sneak to come back out through the
+door. One person at a time.
+
+- **The sitting is the game's own riding**, on Core's `EntityCsmSeat`: an invisible entity spawned
+  on the seat, which the player mounts and which goes as soon as it has no rider or its block is
+  gone. It is never saved. When a rider gets off, the game drops them in the first free space
+  round the seat, which from inside a toilet can be out through the back wall; the seat moves them
+  to the block in front of the door on its next update, after the game has placed them.
+- **It is two blocks, as a door is.** The game ray-tests only the block in each cell a look passes
+  through, so a look at the upper half of the door -- where a standing player looks -- hit the
+  empty cell above and missed. The upper half (`upper`, stored) draws nothing and is there to be
+  clicked; placing the lower places it, breaking either takes both and drops one toilet.
+- **It has an inside**: walls drawn inside and out, the back of the door with its latch, the toilet
+  box along the back wall with a black seat, a paper roll, and the translucent roof seen from below.
+- **It is stretched to a real unit's 2.3 blocks** by its blockstate (Forge format, `transform`
+  scale `[1, 1.15, 1]`, lifted back onto the ground by 0.075 blocks), since a block model cannot be
+  drawn taller than two. It fills its cell less a quarter pixel each side, so a row of them stand
+  side by side. Its icon is scaled down like the temporary fence's.
 
 ## Tower crane
 

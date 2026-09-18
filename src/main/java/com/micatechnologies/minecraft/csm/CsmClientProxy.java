@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmVersionChecker;
+import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
+import com.micatechnologies.minecraft.csm.codeutils.RenderCsmSeat;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
 import net.minecraft.client.Minecraft;
@@ -16,6 +18,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
@@ -40,6 +43,8 @@ public class CsmClientProxy implements ICsmProxy {
   @Override
   public void preInit(FMLPreInitializationEvent event) {
     OBJLoader.INSTANCE.addDomain("csm");
+    // The seat a block that can be sat in puts its rider on: drawn as nothing.
+    RenderingRegistry.registerEntityRenderingHandler(EntityCsmSeat.class, RenderCsmSeat::new);
 
     // Register on the event bus early so we receive ModelRegistryEvent (fires during preInit)
     MinecraftForge.EVENT_BUS.register(this);

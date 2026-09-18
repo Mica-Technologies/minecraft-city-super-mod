@@ -70,7 +70,7 @@ BLOCKS.update({
 
 # The facing props' boxes, front to the north, in sixteenths -- the Java registration uses these.
 BOXES = {
-    "portable_toilet": (1, 0, 1, 15, 31, 15),
+    "portable_toilet": (0.25, 0, 0.25, 15.75, 16, 15.75),   # its lower half; see BlockPortableToilet
     "gang_box": (0, 0, 2.5, 16, 10.5, 13.5),
     "concrete_washout": (0, 0, 0, 16, 5, 16),
 }
@@ -232,6 +232,19 @@ def toilet_door(upper):
     return img
 
 
+def toilet_inside():
+    """Inside a portable toilet: the same moulded plastic, plain and a shade lighter."""
+    return _canvas(20261529, (70, 116, 190), 4)[0]
+
+
+def toilet_door_inside():
+    """The back of the door: plain plastic with the slide latch."""
+    img, px, rng = _canvas(20261531, (70, 116, 190), 4)
+    for x in (2, 3, 4):
+        px[x, 8] = _shift((200, 202, 204), rng.uniform(-6, 6))
+    return img
+
+
 def toilet_roof():
     """The translucent white roof that lets the light in."""
     return _canvas(20261524, (232, 234, 230), 4)[0]
@@ -296,6 +309,7 @@ def textures():
            "trailer_trim": frame((232, 232, 226), 20261518, d=-40),
            "toilet_side": toilet_side(), "toilet_door_lower": toilet_door(0),
            "toilet_door_upper": toilet_door(1), "toilet_roof": toilet_roof(),
+           "toilet_inside": toilet_inside(), "toilet_door_inside": toilet_door_inside(),
            "gangbox_side": gangbox_side(), "gangbox_lid": gangbox_lid(),
            "site_dark_steel": dark_steel(), "washout_slurry": washout_slurry(),
            "washout_sign": washout_sign()}
@@ -369,12 +383,38 @@ def dumpster_floor_box():
 
 # Facing props, front to the north.
 
+T_WALL = 0.5          # the toilet's moulded wall
+T_IN = 0.25           # how far its walls sit in from the cell face, so a row of them do not touch
+T_TOP = 29.0          # wall height, before the blockstate stretches it
+
+
 def portable_toilet():
-    els = [retex(box(1, 0, 1, 15, 16, 15, "#side"), {"north": "#doorlow"}),
-           retex(box(1, 16, 1, 15, 29, 15, "#side", faces=("north", "south", "east", "west")),
-                 {"north": "#doorhigh"}),
-           box(0.5, 29, 0.5, 15.5, 31, 15.5, "#roof"),
-           box(11, 31, 11, 12.5, 32, 12.5, "#roof")]
+    """A portable toilet you can sit in, front (the door) to the north: walls drawn inside and out
+    since a player sits in there, the door's back, the toilet box along the back wall with its
+    black seat, a paper roll, and the translucent roof. Drawn 2 blocks tall; the blockstate
+    stretches it to a real unit's 2.3."""
+    a, b = T_IN, 16 - T_IN
+    w = T_WALL
+    wall_faces = ("north", "south", "east", "west")
+    els = [box(a, 0, a, b, 0.5, b, "#inside", faces=("up", "down")),
+           # Back and side walls: painted outside, plain inside.
+           retex(box(a, 0.5, b - w, b, T_TOP, b, "#side", faces=wall_faces),
+                 {"north": "#inside"}),
+           retex(box(a, 0.5, a + w, a + w, T_TOP, b - w, "#side", faces=wall_faces),
+                 {"east": "#inside"}),
+           retex(box(b - w, 0.5, a + w, b, T_TOP, b - w, "#side", faces=wall_faces),
+                 {"west": "#inside"}),
+           # The front, which is the door: its face outside, its back inside.
+           retex(box(a, 0.5, a, b, 16, a + w, "#side", faces=wall_faces),
+                 {"north": "#doorlow", "south": "#doorinside"}),
+           retex(box(a, 16, a, b, T_TOP, a + w, "#side", faces=wall_faces),
+                 {"north": "#doorhigh", "south": "#doorinside"}),
+           box(0, T_TOP, 0, 16, 31, 16, "#roof"),
+           box(11, 31, 11, 12.5, 32, 12.5, "#roof"),
+           # The toilet: a box along the back wall, its seat, and the paper.
+           box(2, 0.5, 9, 14, 7, b - w, "#inside"),
+           box(5, 7, 10, 11, 7.5, 14, "#seat"),
+           box(b - w - 1.5, 9, 6, b - w, 10.5, 7.5, "#roof")]
     return els
 
 
@@ -517,11 +557,13 @@ def models():
 
     out["portable_toilet"] = _model(portable_toilet(), {
         "side": _t("toilet_side"), "doorlow": _t("toilet_door_lower"),
-        "doorhigh": _t("toilet_door_upper"), "roof": _t("toilet_roof")}, "side",
-        parent="block/block")
+        "doorhigh": _t("toilet_door_upper"), "roof": _t("toilet_roof"),
+        "inside": _t("toilet_inside"), "doorinside": _t("toilet_door_inside"),
+        "seat": _t("site_dark_steel")}, "side", parent="block/block")
     out["portable_toilet"]["display"] = {"gui": {"rotation": [30, 225, 0],
                                                  "translation": [0, -2.5, 0],
                                                  "scale": [0.36, 0.36, 0.36]}}
+    out["portable_toilet_upper"] = {"textures": {"particle": _t("toilet_side")}, "elements": []}
     out["gang_box"] = _model(gang_box(), {"side": _t("gangbox_side"), "lid": _t("gangbox_lid"),
                                           "dark": _t("site_dark_steel")}, "side",
                              parent="block/block")
@@ -529,6 +571,26 @@ def models():
         "pan": _t("site_dark_steel"), "slurry": _t("washout_slurry"),
         "sign": _t("washout_sign")}, "slurry", parent="block/block")
     return out
+
+
+TOILET_STRETCH = 1.15    # 2 blocks as drawn, 2.3 as stood: a real unit's height
+
+
+def toilet_state(ref):
+    """The toilet's blockstate, in Forge's format so it can stretch the model upward: a block model
+    cannot be drawn taller than two blocks. The stretch is about the block's centre, so it is
+    lifted back onto the ground by what the stretch pushed below it (block units, as a Forge
+    transform is)."""
+    lift = round(0.5 * (TOILET_STRETCH - 1), 4)
+    return {"forge_marker": 1,
+            "defaults": {"model": ref,
+                         "transform": {"scale": [1, TOILET_STRETCH, 1],
+                                       "translation": [0, lift, 0]}},
+            "variants": {"facing": {side: ({"y": rot} if rot else {}) for side, rot in SIDES},
+                         # The upper half is only there to be clicked: it draws nothing.
+                         "upper": {"false": {},
+                                   "true": {"model": MODEL_REF % "portable_toilet_upper"}},
+                         "inventory": [{}]}}
 
 
 def blockstates():
@@ -586,6 +648,9 @@ def blockstates():
 
     for name in BOXES:
         ref = MODEL_REF % name
+        if name == "portable_toilet":
+            out[name] = toilet_state(ref)
+            continue
         variants = {"facing=%s" % side: ({"model": ref, "y": rot} if rot else {"model": ref})
                     for side, rot in SIDES}
         variants["inventory"] = {"model": ref}

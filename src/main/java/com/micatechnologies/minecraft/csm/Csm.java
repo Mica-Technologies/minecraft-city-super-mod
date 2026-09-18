@@ -18,6 +18,7 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmSoundRegistry;
+import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
@@ -27,6 +28,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,6 +44,8 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
@@ -400,6 +404,25 @@ public class Csm {
   @SubscribeEvent
   public void registerSounds(RegistryEvent.Register<SoundEvent> event) {
     CsmSoundRegistry.registerAll(event);
+  }
+
+  /**
+   * Registers the mod's entities: today only {@link EntityCsmSeat}, the invisible seat a block
+   * that can be sat in (the portable toilet) puts its rider on. It is Core's, like every other
+   * registration, so a module that uses it never touches a Forge registry.
+   *
+   * @param event the entity registry event
+   *
+   * @since 2026.9
+   */
+  @SubscribeEvent
+  public void registerEntities(RegistryEvent.Register<EntityEntry> event) {
+    event.getRegistry().register(EntityEntryBuilder.create()
+        .entity(EntityCsmSeat.class)
+        .id(new ResourceLocation(CsmConstants.MOD_NAMESPACE, "seat"), 0)
+        .name(CsmConstants.MOD_NAMESPACE + ".seat")
+        .tracker(64, 20, false)
+        .build());
   }
 
   /**

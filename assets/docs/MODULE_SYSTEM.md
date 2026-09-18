@@ -54,6 +54,9 @@ That is why Building Materials is `csm_building` and not `csm_buildingmaterials`
 - `CsmRegistry` — blocks and items self-register into it from `AbstractBlock`/`AbstractItem`
   constructors.
 - Tile-entity registration (name and class dedup) and `OBJLoader.addDomain("csm")`.
+- Entity registration: `EntityCsmSeat` (`csm:seat`), the invisible seat any module's block can sit
+  a player on with `EntityCsmSeat.sit` (first user: the portable toilet), and its renderer, which
+  draws nothing.
 - `CsmTab` — tab discovery, load order, hidden-tab support, and the conditional
   `initTabBlockIfLoaded`/`initTabItemIfLoaded` helpers.
 - `config/csm.cfg`, `CitySuperModVariables` world data, `CommandCsm`, `CsmVersionChecker`,
