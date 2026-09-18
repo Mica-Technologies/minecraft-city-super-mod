@@ -1,0 +1,560 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "ply": "csm:blocks/constructionsite/form_ply",
+    "lumber": "csm:blocks/constructionsite/form_lumber",
+    "concrete": "csm:blocks/constructionsite/form_concrete",
+    "rebar": "csm:blocks/constructionsite/rebar",
+    "cap": "csm:blocks/constructionsite/rebar_cap",
+    "clamp": "csm:blocks/constructionsite/form_clamp",
+    "steel": "csm:blocks/constructionsite/scaffold_tube",
+    "plank": "csm:blocks/constructionsite/scaffold_plank",
+    "particle": "csm:blocks/constructionsite/rebar"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        1.5,
+        1.75
+      ],
+      "to": [
+        16,
+        2,
+        2.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            14,
+            16,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            14,
+            16,
+            14.5
+          ]
+        },
+        "east": {
+          "texture": "#rebar",
+          "uv": [
+            13.75,
+            14,
+            14.25,
+            14.5
+          ]
+        },
+        "west": {
+          "texture": "#rebar",
+          "uv": [
+            1.75,
+            14,
+            2.25,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            1.75,
+            16,
+            2.25
+          ]
+        },
+        "down": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.75,
+            16,
+            14.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        1.5,
+        5.75
+      ],
+      "to": [
+        16,
+        2,
+        6.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            14,
+            16,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            14,
+            16,
+            14.5
+          ]
+        },
+        "east": {
+          "texture": "#rebar",
+          "uv": [
+            9.75,
+            14,
+            10.25,
+            14.5
+          ]
+        },
+        "west": {
+          "texture": "#rebar",
+          "uv": [
+            5.75,
+            14,
+            6.25,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            5.75,
+            16,
+            6.25
+          ]
+        },
+        "down": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            9.75,
+            16,
+            10.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        1.5,
+        9.75
+      ],
+      "to": [
+        16,
+        2,
+        10.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            14,
+            16,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            14,
+            16,
+            14.5
+          ]
+        },
+        "east": {
+          "texture": "#rebar",
+          "uv": [
+            5.75,
+            14,
+            6.25,
+            14.5
+          ]
+        },
+        "west": {
+          "texture": "#rebar",
+          "uv": [
+            9.75,
+            14,
+            10.25,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            9.75,
+            16,
+            10.25
+          ]
+        },
+        "down": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            5.75,
+            16,
+            6.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        1.5,
+        13.75
+      ],
+      "to": [
+        16,
+        2,
+        14.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            14,
+            16,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            14,
+            16,
+            14.5
+          ]
+        },
+        "east": {
+          "texture": "#rebar",
+          "uv": [
+            1.75,
+            14,
+            2.25,
+            14.5
+          ]
+        },
+        "west": {
+          "texture": "#rebar",
+          "uv": [
+            13.75,
+            14,
+            14.25,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.75,
+            16,
+            14.25
+          ]
+        },
+        "down": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            1.75,
+            16,
+            2.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.75,
+        2,
+        0
+      ],
+      "to": [
+        2.25,
+        2.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rebar",
+          "uv": [
+            13.75,
+            13.5,
+            14.25,
+            14.0
+          ]
+        },
+        "south": {
+          "texture": "#rebar",
+          "uv": [
+            1.75,
+            13.5,
+            2.25,
+            14.0
+          ]
+        },
+        "east": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.5,
+            16,
+            14.0
+          ]
+        },
+        "west": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.5,
+            16,
+            14.0
+          ]
+        },
+        "up": {
+          "texture": "#rebar",
+          "uv": [
+            1.75,
+            0,
+            2.25,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#rebar",
+          "uv": [
+            1.75,
+            0,
+            2.25,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.75,
+        2,
+        0
+      ],
+      "to": [
+        6.25,
+        2.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rebar",
+          "uv": [
+            9.75,
+            13.5,
+            10.25,
+            14.0
+          ]
+        },
+        "south": {
+          "texture": "#rebar",
+          "uv": [
+            5.75,
+            13.5,
+            6.25,
+            14.0
+          ]
+        },
+        "east": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.5,
+            16,
+            14.0
+          ]
+        },
+        "west": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.5,
+            16,
+            14.0
+          ]
+        },
+        "up": {
+          "texture": "#rebar",
+          "uv": [
+            5.75,
+            0,
+            6.25,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#rebar",
+          "uv": [
+            5.75,
+            0,
+            6.25,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        9.75,
+        2,
+        0
+      ],
+      "to": [
+        10.25,
+        2.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rebar",
+          "uv": [
+            5.75,
+            13.5,
+            6.25,
+            14.0
+          ]
+        },
+        "south": {
+          "texture": "#rebar",
+          "uv": [
+            9.75,
+            13.5,
+            10.25,
+            14.0
+          ]
+        },
+        "east": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.5,
+            16,
+            14.0
+          ]
+        },
+        "west": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.5,
+            16,
+            14.0
+          ]
+        },
+        "up": {
+          "texture": "#rebar",
+          "uv": [
+            9.75,
+            0,
+            10.25,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#rebar",
+          "uv": [
+            9.75,
+            0,
+            10.25,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.75,
+        2,
+        0
+      ],
+      "to": [
+        14.25,
+        2.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rebar",
+          "uv": [
+            1.75,
+            13.5,
+            2.25,
+            14.0
+          ]
+        },
+        "south": {
+          "texture": "#rebar",
+          "uv": [
+            13.75,
+            13.5,
+            14.25,
+            14.0
+          ]
+        },
+        "east": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.5,
+            16,
+            14.0
+          ]
+        },
+        "west": {
+          "texture": "#rebar",
+          "uv": [
+            0,
+            13.5,
+            16,
+            14.0
+          ]
+        },
+        "up": {
+          "texture": "#rebar",
+          "uv": [
+            13.75,
+            0,
+            14.25,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#rebar",
+          "uv": [
+            13.75,
+            0,
+            14.25,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

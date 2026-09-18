@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "csm:constructionsite/formwork_wall"
+    },
+    "axis=z": {
+      "model": "csm:constructionsite/formwork_wall",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:constructionsite/formwork_wall"
+    }
+  }
+}

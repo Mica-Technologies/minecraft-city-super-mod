@@ -440,6 +440,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   each; everything else is actual state, so the look can change here without touching a placed
   block. Sides are three-valued (scaffold/open/rail) to hold the state count at 5,184; `--check`
   fails on drift
+- `gen_formwork.py` -- the construction site's formwork, shoring and rebar: wall and column forms,
+  the stack-aware post shore, and rebar mat, dowels, column cage and bundle. Reuses gen_scaffold's
+  element helpers so every face has fitted UVs; `--check` fails on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

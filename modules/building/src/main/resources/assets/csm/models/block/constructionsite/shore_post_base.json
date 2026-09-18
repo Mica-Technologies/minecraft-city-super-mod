@@ -1,0 +1,83 @@
+{
+  "textures": {
+    "ply": "csm:blocks/constructionsite/form_ply",
+    "lumber": "csm:blocks/constructionsite/form_lumber",
+    "concrete": "csm:blocks/constructionsite/form_concrete",
+    "rebar": "csm:blocks/constructionsite/rebar",
+    "cap": "csm:blocks/constructionsite/rebar_cap",
+    "clamp": "csm:blocks/constructionsite/form_clamp",
+    "steel": "csm:blocks/constructionsite/scaffold_tube",
+    "plank": "csm:blocks/constructionsite/scaffold_plank",
+    "particle": "csm:blocks/constructionsite/scaffold_tube"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        0,
+        5
+      ],
+      "to": [
+        11,
+        0.5,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#clamp",
+          "uv": [
+            5,
+            15.5,
+            11,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#clamp",
+          "uv": [
+            5,
+            15.5,
+            11,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#clamp",
+          "uv": [
+            5,
+            15.5,
+            11,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#clamp",
+          "uv": [
+            5,
+            15.5,
+            11,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#clamp",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#clamp",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:constructionsite/shore_post_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/shore_post_tube"
+      }
+    },
+    {
+      "when": {
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/shore_post_top"
+      }
+    },
+    {
+      "when": {
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/shore_post_base"
+      }
+    }
+  ]
+}
