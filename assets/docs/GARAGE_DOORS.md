@@ -30,10 +30,12 @@ inside to the north, so outside its own block's cell), with its tracks on the wa
 opening -- where a real one is. It was first drawn inside the opening, and the bend of the track
 over the top then ran into the wall over the opening and the tracks into the jambs. From the street
 it reads recessed by the wall's full thickness. A closed door has a one-pixel lip past each side
-(into the track) and over the top, so there is no slit where it meets the wall; the lip is not
-drawn while the door moves. Its collision and selection box is out there with it: a box outside
-its cell still collides, since entities gather boxes from the blocks around them, and is still hit
-by a ray that crosses the cell.
+(into the track) and over the top, so there is no slit where it meets the wall; the lip is not drawn
+while the door moves. Its collision box is out there with it -- a box outside its cell still
+collides, since entities gather boxes from the blocks around them -- but the box that is clicked is
+not: a ray is tested against a block only from where it enters that block's cell, so from inside the
+garage a click box out where the panels are is already behind the ray, and the door could be clicked
+only from the street. The click box sits on the cell's inside face, just behind the panels.
 
 ## Why it costs nothing at rest
 

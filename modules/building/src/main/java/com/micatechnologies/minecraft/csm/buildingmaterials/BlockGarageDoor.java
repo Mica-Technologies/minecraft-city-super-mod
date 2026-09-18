@@ -111,16 +111,23 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
   private static final Material DOOR_STEEL = new Material(MapColor.IRON);
 
   /**
-   * The door's plane, with the inside to the north: just behind the wall, past the opening's
-   * inside face and so outside the block's own cell, where the door is drawn. A box outside its
-   * cell still collides (entities gather boxes from the blocks around them) and is still hit by a
-   * ray that crosses the cell.
+   * What the door collides with, with the inside to the north: its panels, just behind the wall,
+   * past the opening's inside face and so outside the block's own cell. That is fine for
+   * collision -- entities gather boxes from the blocks around them.
    */
   private static final AxisAlignedBB PLANE_NORTH =
       new AxisAlignedBB(0, 0, -2.5 / 16.0, 1, 1, -0.5 / 16.0);
+  /**
+   * What is clicked, which must stay INSIDE the cell: a ray is tested against a block only from
+   * where it enters that block's cell, so from inside the garage a box out where the panels are
+   * is already behind the ray by then, and the door could only be clicked from the street. This
+   * sits on the cell's inside face, right behind the panels.
+   */
+  private static final AxisAlignedBB SELECT_NORTH =
+      new AxisAlignedBB(0, 0, 0, 1, 1, 2 / 16.0);
   /** What can be clicked on an open door: a strip along the top of its top course. */
   private static final AxisAlignedBB HEAD_NORTH =
-      new AxisAlignedBB(0, 13 / 16.0, -2.5 / 16.0, 1, 1, 0);
+      new AxisAlignedBB(0, 13 / 16.0, 0, 1, 1, 2 / 16.0);
 
   /** Which door blocks were last seen powered, per world, to act only on a rising edge. */
   private static final Map<World, Set<BlockPos>> POWERED =
@@ -523,7 +530,7 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
   @Nonnull
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     EnumFacing f = state.getValue(FACING);
-    return turn(state.getValue(MOTION) == Motion.OPEN ? HEAD_NORTH : PLANE_NORTH, f);
+    return turn(state.getValue(MOTION) == Motion.OPEN ? HEAD_NORTH : SELECT_NORTH, f);
   }
 
   /**
