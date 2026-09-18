@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
  *
  * <p>{@link FramingInsulation} is a block state, so that an insulated wall costs no registry name,
  * blockstate, model or tab class of its own. A state nothing carries, though, is a state nothing
- * can place: without this the three values would be reachable only through {@code /setblock}. This
+ * can place: without this the insulated value would be reachable only through {@code /setblock}. This
  * gives each of them an item, a name and a place in the creative tab.</p>
  *
  * <p>The uninsulated wall keeps the block's own translation key, so the common case reads as

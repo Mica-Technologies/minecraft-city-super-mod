@@ -122,7 +122,6 @@ def steel_track():
 # streaks rather than as even speckle. Kept dull -- it sits in shadow between the studs, and a
 # saturated pink reads as plastic.
 BATT = ((196, 146, 158, 255), (176, 124, 138, 255), (208, 162, 172, 255))
-MINERAL = ((150, 140, 128, 255), (130, 120, 110, 255), (166, 156, 144, 255))
 
 
 def _fibrous(seed, palette):
@@ -147,10 +146,6 @@ def _fibrous(seed, palette):
 
 def insulation_batt():
     return _fibrous(20260919, BATT)
-
-
-def insulation_mineral():
-    return _fibrous(20260920, MINERAL)
 
 
 # Dimensional lumber. Softwood framing is pale and yellowish, with the grain running the length of
@@ -248,7 +243,6 @@ TEXTURES = {
     "steel_stud.png": steel_stud,
     "steel_track.png": steel_track,
     "insulation_batt.png": insulation_batt,
-    "insulation_mineral.png": insulation_mineral,
     "wood_stud.png": wood_stud,
     "wood_plate.png": wood_plate,
     "concrete_topping.png": concrete_topping,
@@ -735,8 +729,8 @@ def _apply(model, y=None):
 
 
 def _inventory(name, insulated=False):
-    """The item models. Each insulation gets a variant of its own so the three stacks in the
-    creative tab are told apart by their icons and not only by their names."""
+    """The item models. Each insulation gets a variant of its own so the stacks in the creative
+    tab are told apart by their icons and not only by their names."""
     out = {"inventory": {"model": MODEL_REF % (name + "_inventory")}}
     if insulated:
         for material in INSULATIONS:
@@ -745,7 +739,7 @@ def _inventory(name, insulated=False):
     return out
 
 
-INSULATIONS = ("batt", "mineral")
+INSULATIONS = ("batt",)
 
 
 def wall_blockstate(name, extra_arms=(), insulated=False, extra_hubs=()):
@@ -925,13 +919,12 @@ FLAVOURS = {
 # Catalogue
 # --------------------------------------------------------------------------------------------
 
-# What each insulation is called. Batt is glass wool and mineral is rock wool, which is what the
-# German and Swedish names say outright; English and Spanish name the product instead.
+# What the insulation is called. Batt is glass wool, which is what the German and Swedish names
+# say outright; English and Spanish name the product instead. Mineral wool was a second kind and
+# was removed as more detail than a builder wants; see FramingInsulation.
 INSULATION_LANG = {
     "batt": {"en_us": "Batt Insulation", "es_es": "Aislamiento de Fibra",
              "de_de": "Glaswolle", "sv_se": "Glasull"},
-    "mineral": {"en_us": "Mineral Wool", "es_es": "Lana Mineral",
-                "de_de": "Steinwolle", "sv_se": "Stenull"},
 }
 
 

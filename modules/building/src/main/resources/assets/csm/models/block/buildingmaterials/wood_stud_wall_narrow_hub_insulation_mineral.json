@@ -1,9 +1,0 @@
-{
-  "parent": "csm:block/buildingmaterials/shared_models/framing/framing_narrow_hub_insulation",
-  "textures": {
-    "stud": "csm:blocks/buildingmaterials/framing/wood_stud",
-    "track": "csm:blocks/buildingmaterials/framing/wood_plate",
-    "particle": "csm:blocks/buildingmaterials/framing/wood_plate",
-    "insulation": "csm:blocks/buildingmaterials/framing/insulation_mineral"
-  }
-}
