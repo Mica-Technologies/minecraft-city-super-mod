@@ -314,7 +314,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   the traps (a name decides a price, fine detail mipmaps away)
 - `assets/docs/INTERIOR_FINISHES.md` -- The Interior Finishes tab: window blinds, shades and
   curtains (their own block hung against any window, joining into one blind, click to cycle the
-  whole blind, redstone to close it, light taken by state), and where the decor track grows next
+  whole blind, redstone to close it, light taken by state), flooring (overlays on any floor and
+  full-block sets, why a tile grid is never turned), and where the decor track grows next
 - `assets/docs/GARAGE_DOORS.md` -- Sectional, roll-up and grille garage doors built to the size
   of the opening: why a door at rest is baked models with no tile entity and only the anchor of a
   moving one has a renderer, the sectional door's path round the bend shared between its OBJ
@@ -451,6 +452,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_window_treatments.py` -- window blinds, shades and curtains (`BlockWindowTreatment`): the
   parts that belong to the whole blind (headrail, bottom rail, bunched curtain) drawn only on the
   course or end they belong to; `--check` fails on drift
+- `gen_flooring.py` -- the floor finishes: one-pixel overlays (`BlockFloorFinish`, carpet, vinyl
+  and ceramic tile, hardwood, polished concrete, rubber) whose blockstates pick a turn or a second
+  drawing per block position so a floor shows no repeat, and the polished concrete and hardwood
+  full-block sets; `--check` fails on drift
 - `gen_garage_doors.py` -- the garage doors, opener and hanger: textures, the part models drawn
   on the edge of the door they belong to, the sectional door's ceiling runs and tracks and the
   opener's rail as OBJ per length, and the multipart blockstates; `--check` fails on drift

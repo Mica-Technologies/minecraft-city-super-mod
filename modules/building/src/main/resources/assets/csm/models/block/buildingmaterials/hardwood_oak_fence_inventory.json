@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_inventory",
+  "textures": {
+    "texture": "csm:blocks/flooring/hardwood_oak",
+    "particle": "csm:blocks/flooring/hardwood_oak"
+  }
+}

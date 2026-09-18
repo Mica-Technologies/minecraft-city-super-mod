@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/flooring/hardwood_walnut_top",
+      "bottom": "csm:blocks/flooring/hardwood_walnut_top",
+      "side": "csm:blocks/flooring/hardwood_walnut",
+      "particle": "csm:blocks/flooring/hardwood_walnut"
+    }
+  },
+  "variants": {
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

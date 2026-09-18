@@ -227,6 +227,18 @@ def cost_for(registry, info, ancestors):
             return ("paper x2",)
         if has_word(registry, "curtain"):
             return ("paper x2", "dye")
+        if has_word(registry, "carpet"):
+            return ("wool",)
+        if has_word(registry, "vinyl"):
+            return ("paper", "dye")
+        if has_word(registry, "ceramic"):
+            return ("clay_ball x2",)
+        if has_word(registry, "hardwood"):
+            return ("planks x2",)
+        if has_word(registry, "polished"):
+            return ("CONCRETE_MIX",)
+        if has_word(registry, "rubber"):
+            return ("slime_ball",)
         return ("CONCRETE_MIX", "clay_ball")
 
     # Never in the framing tab: see the note in CsmFabricatorCosts. A base plate and a

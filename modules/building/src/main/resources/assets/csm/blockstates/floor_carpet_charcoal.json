@@ -1,0 +1,41 @@
+{
+  "variants": {
+    "axis=x": [
+      {
+        "model": "csm:flooring/floor_carpet_charcoal"
+      },
+      {
+        "model": "csm:flooring/floor_carpet_charcoal",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_carpet_charcoal",
+        "y": 180
+      },
+      {
+        "model": "csm:flooring/floor_carpet_charcoal",
+        "y": 270
+      }
+    ],
+    "axis=z": [
+      {
+        "model": "csm:flooring/floor_carpet_charcoal"
+      },
+      {
+        "model": "csm:flooring/floor_carpet_charcoal",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_carpet_charcoal",
+        "y": 180
+      },
+      {
+        "model": "csm:flooring/floor_carpet_charcoal",
+        "y": 270
+      }
+    ],
+    "inventory": {
+      "model": "csm:flooring/floor_carpet_charcoal"
+    }
+  }
+}

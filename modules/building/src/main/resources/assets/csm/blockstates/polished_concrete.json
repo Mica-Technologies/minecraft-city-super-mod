@@ -1,0 +1,20 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/flooring/polished_concrete",
+      "bottom": "csm:blocks/flooring/polished_concrete",
+      "side": "csm:blocks/flooring/polished_concrete",
+      "particle": "csm:blocks/flooring/polished_concrete"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

@@ -94,6 +94,8 @@ public final class CsmFabricatorCosts {
   private static final String MC_GLASS_PANE = "minecraft:glass_pane";
   private static final String MC_GRAVEL = "minecraft:gravel";
   private static final String MC_SAND = "minecraft:sand";
+  private static final String MC_WOOL = "minecraft:wool";
+  private static final String MC_SLIME_BALL = "minecraft:slime_ball";
 
   /** Display-name nouns meaning the block is a vertical structural member. */
   private static final String[] POLE_NOUNS = {"pole", "mast", "crossarm", "standard", "post"};
@@ -550,6 +552,27 @@ public final class CsmFabricatorCosts {
     }
     if (CsmBlockDisplayNames.hasWord(registryName, "curtain")) {
       return cost(FabricatorIngredient.any(MC_PAPER, 2), FabricatorIngredient.any(MC_DYE, 1));
+    }
+    // Flooring, by what it is made of: carpet tile is wool, vinyl tile paper and a dye,
+    // ceramic tile fired clay, hardwood planks, polished concrete Concrete Mix, and rubber
+    // the nearest vanilla thing to rubber.
+    if (CsmBlockDisplayNames.hasWord(registryName, "carpet")) {
+      return cost(FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "vinyl")) {
+      return cost(FabricatorIngredient.any(MC_PAPER, 1), FabricatorIngredient.any(MC_DYE, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "ceramic")) {
+      return cost(FabricatorIngredient.any(MC_CLAY_BALL, 2));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "hardwood")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 2));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "polished")) {
+      return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "rubber")) {
+      return cost(FabricatorIngredient.any(MC_SLIME_BALL, 1));
     }
     return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
         FabricatorIngredient.any(MC_CLAY_BALL, 1));

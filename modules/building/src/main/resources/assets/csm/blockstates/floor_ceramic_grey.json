@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "axis=x": [
+      {
+        "model": "csm:flooring/floor_ceramic_grey"
+      },
+      {
+        "model": "csm:flooring/floor_ceramic_grey_b"
+      }
+    ],
+    "axis=z": [
+      {
+        "model": "csm:flooring/floor_ceramic_grey"
+      },
+      {
+        "model": "csm:flooring/floor_ceramic_grey_b"
+      }
+    ],
+    "inventory": {
+      "model": "csm:flooring/floor_ceramic_grey"
+    }
+  }
+}

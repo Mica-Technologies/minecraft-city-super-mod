@@ -1,0 +1,41 @@
+{
+  "variants": {
+    "axis=x": [
+      {
+        "model": "csm:flooring/floor_rubber_studded"
+      },
+      {
+        "model": "csm:flooring/floor_rubber_studded",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_rubber_studded",
+        "y": 180
+      },
+      {
+        "model": "csm:flooring/floor_rubber_studded",
+        "y": 270
+      }
+    ],
+    "axis=z": [
+      {
+        "model": "csm:flooring/floor_rubber_studded"
+      },
+      {
+        "model": "csm:flooring/floor_rubber_studded",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_rubber_studded",
+        "y": 180
+      },
+      {
+        "model": "csm:flooring/floor_rubber_studded",
+        "y": 270
+      }
+    ],
+    "inventory": {
+      "model": "csm:flooring/floor_rubber_studded"
+    }
+  }
+}
