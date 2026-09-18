@@ -412,6 +412,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   blockstates and six models each set needs. The bond is drawn at 8 x 4 px, two units across
   a block and four courses up it, because a real 8 x 16 in unit does not divide sixteen
   pixels; `--check` fails on drift
+- `gen_masonry.py` -- the four brick colours: each a block/stairs/slab/fence set, reusing
+  `gen_cmu.py`'s blockstates and models, plus soldier, header and weep-hole trim blocks
+  (`BlockBrickTrim`, one class constructed by name). Drawn at 32 px, 16 x 4 units and eight
+  courses a block, because at 16 px the only bond that tiles is the CMU's own; `--check` fails
+  on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

@@ -1,0 +1,50 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "stairs",
+    "textures": {
+      "bottom": "csm:blocks/buildingmaterials/brick/brick_grey_top",
+      "top": "csm:blocks/buildingmaterials/brick/brick_grey_top",
+      "side": "csm:blocks/buildingmaterials/brick/brick_grey"
+    }
+  },
+  "variants": {
+    "facing": {
+      "east": {},
+      "north": {
+        "y": 270
+      },
+      "south": {
+        "y": 90
+      },
+      "west": {
+        "y": 180
+      }
+    },
+    "half": {
+      "bottom": {},
+      "top": {}
+    },
+    "shape": {
+      "inner_left": {
+        "model": "csm:buildingmaterials/brick_grey_stairs_inner"
+      },
+      "inner_right": {
+        "model": "csm:buildingmaterials/brick_grey_stairs_inner"
+      },
+      "outer_left": {
+        "model": "csm:buildingmaterials/brick_grey_stairs_outer"
+      },
+      "outer_right": {
+        "model": "csm:buildingmaterials/brick_grey_stairs_outer"
+      },
+      "straight": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

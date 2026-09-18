@@ -20,6 +20,11 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetRedMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSilverMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetWhiteMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetYellowMetal;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBrickTrim;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickBrown;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickBuff;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickGrey;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickRed;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -125,5 +130,25 @@ public class CsmTabBuildingMaterials extends CsmTab {
         fmlPreInitializationEvent); // Ground-Face Block Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetCmuGlazed.class,
         fmlPreInitializationEvent); // Glazed Block Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetBrickRed.class,
+        fmlPreInitializationEvent); // Red Brick Set (Block, Fence, Slab, Stairs)
+    initTabBlock(new BlockBrickTrim("brick_red_soldier")); // Red Brick (Soldier Course)
+    initTabBlock(new BlockBrickTrim("brick_red_header")); // Red Brick (Header Course)
+    initTabBlock(new BlockBrickTrim("brick_red_weep")); // Red Brick (Weep Holes)
+    initTabBlock(BlockSetBrickBrown.class,
+        fmlPreInitializationEvent); // Brown Brick Set (Block, Fence, Slab, Stairs)
+    initTabBlock(new BlockBrickTrim("brick_brown_soldier")); // Brown Brick (Soldier Course)
+    initTabBlock(new BlockBrickTrim("brick_brown_header")); // Brown Brick (Header Course)
+    initTabBlock(new BlockBrickTrim("brick_brown_weep")); // Brown Brick (Weep Holes)
+    initTabBlock(BlockSetBrickBuff.class,
+        fmlPreInitializationEvent); // Buff Brick Set (Block, Fence, Slab, Stairs)
+    initTabBlock(new BlockBrickTrim("brick_buff_soldier")); // Buff Brick (Soldier Course)
+    initTabBlock(new BlockBrickTrim("brick_buff_header")); // Buff Brick (Header Course)
+    initTabBlock(new BlockBrickTrim("brick_buff_weep")); // Buff Brick (Weep Holes)
+    initTabBlock(BlockSetBrickGrey.class,
+        fmlPreInitializationEvent); // Grey Brick Set (Block, Fence, Slab, Stairs)
+    initTabBlock(new BlockBrickTrim("brick_grey_soldier")); // Grey Brick (Soldier Course)
+    initTabBlock(new BlockBrickTrim("brick_grey_header")); // Grey Brick (Header Course)
+    initTabBlock(new BlockBrickTrim("brick_grey_weep")); // Grey Brick (Weep Holes)
   }
 }

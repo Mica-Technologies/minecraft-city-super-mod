@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "csm:blocks/buildingmaterials/brick/brick_brown_top",
+    "top": "csm:blocks/buildingmaterials/brick/brick_brown_top",
+    "side": "csm:blocks/buildingmaterials/brick/brick_brown"
+  }
+}
