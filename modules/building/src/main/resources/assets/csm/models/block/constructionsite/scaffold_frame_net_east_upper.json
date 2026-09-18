@@ -1,0 +1,44 @@
+{
+  "textures": {
+    "tube": "csm:blocks/constructionsite/scaffold_tube",
+    "plank": "csm:blocks/constructionsite/scaffold_plank",
+    "jack": "csm:blocks/constructionsite/scaffold_jack",
+    "net": "csm:blocks/constructionsite/scaffold_net",
+    "wheel": "csm:blocks/constructionsite/scaffold_wheel",
+    "particle": "csm:blocks/constructionsite/scaffold_tube"
+  },
+  "elements": [
+    {
+      "from": [
+        16.05,
+        16,
+        0
+      ],
+      "to": [
+        16.05,
+        32,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#net",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#net",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

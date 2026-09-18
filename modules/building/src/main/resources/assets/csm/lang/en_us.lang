@@ -1,3 +1,6 @@
+item.scaffold_casters.name=Scaffold Casters
+item.scaffold_ladder_frame.name=Scaffold Ladder Frame
+item.scaffold_netting.name=Scaffold Debris Netting
 itemGroup.tabbuildingmaterials=CSM: Building Materials
 itemGroup.tabconstructionsite=CSM: Construction Site
 itemGroup.tabinteriorfinishes=CSM: Interior Finishes

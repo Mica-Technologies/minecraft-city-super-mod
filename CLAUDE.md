@@ -435,8 +435,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   Voronoi partition measured on a torus, so its stones wrap across block seams; `--check` fails
   on drift
 - `gen_scaffold.py` -- the frame scaffold: its textures, part models and the multipart blockstate
-  that picks frames, braces, deck and jacks from the neighbours. Only the facing is stored, so the
-  look can change here without touching a placed block; `--check` fails on drift
+  that picks frames, braces, deck, jacks and guardrails from the neighbours, plus the three add-on
+  items' icons. Stored: the frame axis and the add-ons (ladder frame, netting, casters), one bit
+  each; everything else is actual state, so the look can change here without touching a placed
+  block. Sides are three-valued (scaffold/open/rail) to hold the state count at 5,184; `--check`
+  fails on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

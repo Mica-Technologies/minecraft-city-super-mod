@@ -247,7 +247,11 @@ needs a condition on that module, or a Core-only install logs a parsing error fo
 ```
 
 `recipes/span_wire_tool.json` is the live example: the recipe id stays `csm:span_wire_tool`, and it
-is simply skipped when Roads & Traffic is not installed.
+is simply skipped when Roads & Traffic is not installed. The scaffold add-ons from Building
+Materials follow the same pattern: `scaffold_netting` (string around a green dye, 4),
+`scaffold_casters` (two iron ingots over a Fastener Kit, 4) and `scaffold_ladder_frame` (a ladder
+over a Pole Section, 2), each conditioned on `csm_building`. They are items, fitted to a placed
+scaffold by right-clicking it, so the Fabricator cannot make them.
 
 ## Verifying recipes
 

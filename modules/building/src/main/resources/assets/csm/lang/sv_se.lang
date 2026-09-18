@@ -1,3 +1,6 @@
+item.scaffold_casters.name=Ställningshjul
+item.scaffold_ladder_frame.name=Ställningsstegram
+item.scaffold_netting.name=Ställningsnät
 itemGroup.tabbuildingmaterials=CSM: Byggmaterial
 itemGroup.tabconstructionsite=CSM: Byggarbetsplats
 itemGroup.tabinteriorfinishes=CSM: Invändiga Ytskikt

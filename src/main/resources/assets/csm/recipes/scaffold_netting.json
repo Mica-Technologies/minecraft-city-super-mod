@@ -1,0 +1,27 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_building"
+    }
+  ],
+  "pattern": [
+    "SSS",
+    "SGS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    },
+    "G": {
+      "type": "forge:ore_dict",
+      "ore": "dyeGreen"
+    }
+  },
+  "result": {
+    "item": "csm:scaffold_netting",
+    "count": 4
+  }
+}
