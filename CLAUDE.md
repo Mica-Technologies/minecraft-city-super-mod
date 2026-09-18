@@ -321,6 +321,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   of the opening: why a door at rest is baked models with no tile entity and only the anchor of a
   moving one has a renderer, the sectional door's path round the bend shared between its OBJ
   ceiling runs and the renderer, the hardware, and the opener and the stackable hanger
+- `assets/docs/DOORS.md` -- Twelve two-block doors, pairs, redstone, the Door Closer add-on and
+  keypad locks: the state split between the halves, why the open model is written out rather than
+  rotated, the swing drawn from the resting models by a tile entity that never ticks, and why
+  locks are world saved data
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
   crane, site fences, earthworks, logistics and facilities: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
@@ -461,6 +465,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   tile, acoustic panels, beadboard, slat wall) with caps, edge trims and frames drawn only at the
   edges of a joined run, and the corner guards (`BlockCornerGuard`) that wrap an outside corner
   into the next cell; `--check` fails on drift
+- `gen_doors.py` -- the doors: two halves per door, left and right hinge, and the open pose written
+  as the closed model turned a quarter about the hinge pivot the swing renderer shares; the door
+  closer's parts and item; `--check` fails on drift
 - `gen_garage_doors.py` -- the garage doors, opener and hanger: textures, the part models drawn
   on the edge of the door they belong to, the sectional door's ceiling runs and tracks and the
   opener's rail as OBJ per length, and the multipart blockstates; `--check` fails on drift

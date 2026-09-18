@@ -17,6 +17,10 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetPolishedConc
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodOak;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodWalnut;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCornerGuard;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinish;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetPolishedConcrete;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodOak;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodWalnut;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWallFinish;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWindowTreatment;

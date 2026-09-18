@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The building module's proxy on the client: the site climb handler, and the crane head's and
- * the moving garage door's renderers.
+ * the moving garage door's and the swinging door's renderers.
  *
  * @version 1.0
  * @since 2026.9
@@ -29,5 +29,7 @@ public class CsmBuildingClientProxy extends CsmBuildingCommonProxy {
         new TileEntityCraneHeadRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGarageDoor.class,
         new TileEntityGarageDoorRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDoorSwing.class,
+        new TileEntityDoorSwingRenderer());
   }
 }

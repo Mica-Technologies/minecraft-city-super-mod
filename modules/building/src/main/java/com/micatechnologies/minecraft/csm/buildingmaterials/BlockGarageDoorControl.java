@@ -204,6 +204,15 @@ public class BlockGarageDoorControl extends AbstractBlock implements ICsmTileEnt
     return true;
   }
 
+  @Override
+  public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+    TileEntity te = worldIn.getTileEntity(pos);
+    if (!worldIn.isRemote && te instanceof TileEntityGarageDoorControl) {
+      ((TileEntityGarageDoorControl) te).removed();
+    }
+    super.breakBlock(worldIn, pos, state);
+  }
+
   // --- tile entity: the link, and the keypad's code ---------------------------------------------
 
   @Nullable

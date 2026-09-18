@@ -341,6 +341,24 @@ public final class CsmFabricatorCosts {
    * relative to the full block, mirroring vanilla's ratios.
    */
   private static List<FabricatorIngredient> buildingMaterialCost(Block block, String registryName) {
+    // Doors, first because "Hollow Metal Door" would otherwise be a coloured metal set: by what
+    // they are made of -- a storefront door glass in an aluminium frame, a hollow metal, fire or
+    // exit door steel sheet, the rest timber. Garage door fittings and the keypad are priced below.
+    if (CsmBlockDisplayNames.hasWord(registryName, "door")
+        && !CsmBlockDisplayNames.hasWord(registryName, "garage")
+        && !CsmBlockDisplayNames.hasWord(registryName, "keypad")) {
+      if (CsmBlockDisplayNames.hasWord(registryName, "storefront")) {
+        return cost(FabricatorIngredient.any(MC_GLASS_PANE, 2),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      }
+      if (CsmBlockDisplayNames.hasWord(registryName, "metal")
+          || CsmBlockDisplayNames.hasWord(registryName, "fire")
+          || CsmBlockDisplayNames.hasWord(registryName, "exit")) {
+        return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      }
+      return cost(FabricatorIngredient.any(MC_PLANKS, 3));
+    }
     if (CsmBlockDisplayNames.hasWord(registryName, "metal")) {
       FabricatorIngredient dye = dyeForMetalColour(registryName);
       if (block instanceof AbstractBlockSlab) {
@@ -565,6 +583,27 @@ public final class CsmFabricatorCosts {
     }
     if (CsmBlockDisplayNames.hasWord(registryName, "curtain")) {
       return cost(FabricatorIngredient.any(MC_PAPER, 2), FabricatorIngredient.any(MC_DYE, 1));
+    }
+    // Flooring, by what it is made of: carpet tile is wool, vinyl tile paper and a dye,
+    // ceramic tile fired clay, hardwood planks, polished concrete Concrete Mix, and rubber
+    // the nearest vanilla thing to rubber.
+    if (CsmBlockDisplayNames.hasWord(registryName, "carpet")) {
+      return cost(FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "vinyl")) {
+      return cost(FabricatorIngredient.any(MC_PAPER, 1), FabricatorIngredient.any(MC_DYE, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "ceramic")) {
+      return cost(FabricatorIngredient.any(MC_CLAY_BALL, 2));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "hardwood")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 2));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "polished")) {
+      return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "rubber")) {
+      return cost(FabricatorIngredient.any(MC_SLIME_BALL, 1));
     }
     // Wall finishes: drywall is paper and paint, acoustic panels fabric, beadboard and slat
     // wall timber (tile falls to ceramic, below); a corner guard is steel, or vinyl.

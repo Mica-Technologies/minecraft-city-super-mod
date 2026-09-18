@@ -94,6 +94,13 @@ public class CsmConfig {
           + "room temperature, and outside temperature.";
   private static final boolean FIELD_DEFAULT_ENABLE_THERMOSTAT_DISPLAY = true;
 
+  private static final String FIELD_KEY_ANIMATE_DOORS = "animateDoors";
+  private static final String FIELD_DESCRIPTION_ANIMATE_DOORS =
+      "Set to false to have doors snap open and shut instead of swinging. This only changes how "
+          + "doors are drawn, so each player's own setting applies and it need not match the "
+          + "server's.";
+  private static final boolean FIELD_DEFAULT_ANIMATE_DOORS = true;
+
   private static final String FIELD_KEY_ARROW_BOARD_SPEED_PERCENT = "arrowBoardSpeedPercent";
   private static final String FIELD_DESCRIPTION_ARROW_BOARD_SPEED_PERCENT =
       "How fast work zone arrow boards run their sequences, as a percentage of the standard "
@@ -119,6 +126,7 @@ public class CsmConfig {
 
   private static boolean enableUpdateCheck;
   private static boolean enableThermostatDisplay;
+  private static boolean animateDoors = FIELD_DEFAULT_ANIMATE_DOORS;
 
   /**
    * How fast arrow boards run their sequences, as a percentage of the standard rate.
@@ -192,6 +200,8 @@ public class CsmConfig {
     enableThermostatDisplay = config.getBoolean(FIELD_KEY_ENABLE_THERMOSTAT_DISPLAY,
         CATEGORY_GENERAL, FIELD_DEFAULT_ENABLE_THERMOSTAT_DISPLAY,
         FIELD_DESCRIPTION_ENABLE_THERMOSTAT_DISPLAY);
+    animateDoors = config.getBoolean(FIELD_KEY_ANIMATE_DOORS, CATEGORY_GENERAL,
+        FIELD_DEFAULT_ANIMATE_DOORS, FIELD_DESCRIPTION_ANIMATE_DOORS);
     generateWikiFiles = config.getBoolean(FIELD_KEY_GENERATE_WIKI_FILES, CATEGORY_WIKI,
         FIELD_DEFAULT_GENERATE_WIKI_FILES, FIELD_DESCRIPTION_GENERATE_WIKI_FILES);
     wikiFilesFolder = config.getString(FIELD_KEY_WIKI_FILES_FOLDER, CATEGORY_WIKI,
@@ -327,6 +337,18 @@ public class CsmConfig {
    */
   public static boolean isStrobeEffectEnabled() {
     return enableStrobeEffect;
+  }
+
+  /**
+   * Whether doors swing when they open and shut, rather than snapping. Drawing only: each client
+   * reads its own configuration.
+   *
+   * @return whether doors are animated
+   *
+   * @since 2026.9
+   */
+  public static boolean isDoorAnimationEnabled() {
+    return animateDoors;
   }
 
   /**

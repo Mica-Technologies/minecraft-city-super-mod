@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "189 blocks in this tab"
+!!! info "201 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -15,6 +15,7 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Ashlar Stone Veneer Fence | `csm:stone_ashlar_fence` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Slab | `csm:stone_ashlar_slab` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Stairs | `csm:stone_ashlar_stairs` | 2 | 10 | pickaxe | 1 |
+| Back Door (Half Glass) | `csm:door_back_halfglass` |  |  |  |  |
 | Black Metal | `csm:blackmetal` | 2 | 10 | pickaxe | 1 |
 | Black Metal Fence | `csm:blackmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Black Metal Slab | `csm:blackmetal_slab` | 2 | 10 | pickaxe | 1 |
@@ -76,6 +77,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Corrugated Steel Cladding Fence | `csm:cladding_corrugated_fence` | 3 | 10 | pickaxe | 1 |
 | Corrugated Steel Cladding Slab | `csm:cladding_corrugated_slab` | 3 | 10 | pickaxe | 1 |
 | Corrugated Steel Cladding Stairs | `csm:cladding_corrugated_stairs` | 3 | 10 | pickaxe | 1 |
+| Door Keypad | `csm:garage_door_keypad` | 1 | 5 | pickaxe | 0 |
+| Exit Door (Push Bar) | `csm:door_metal_exit` |  |  |  |  |
 | Fiber Cement Lap Siding | `csm:siding_lap` | 2 | 10 | pickaxe | 1 |
 | Fiber Cement Lap Siding Fence | `csm:siding_lap_fence` | 2 | 10 | pickaxe | 1 |
 | Fiber Cement Lap Siding Slab | `csm:siding_lap_slab` | 2 | 10 | pickaxe | 1 |
@@ -84,6 +87,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Fieldstone Veneer Fence | `csm:stone_fieldstone_fence` | 2 | 10 | pickaxe | 1 |
 | Fieldstone Veneer Slab | `csm:stone_fieldstone_slab` | 2 | 10 | pickaxe | 1 |
 | Fieldstone Veneer Stairs | `csm:stone_fieldstone_stairs` | 2 | 10 | pickaxe | 1 |
+| Fire Door (Wired Lite) | `csm:door_metal_fire` |  |  |  |  |
+| Front Door (Black) | `csm:door_front_black` |  |  |  |  |
+| Front Door (Red) | `csm:door_front_red` |  |  |  |  |
+| Front Door (White) | `csm:door_front_white` |  |  |  |  |
 | Frosted Glass | `csm:glass_frosted` |  |  | pickaxe | 0 |
 | Frosted Glass Pane | `csm:glass_pane_frosted` |  |  | pickaxe | 0 |
 | Garage Door (White Raised Panel) | `csm:garage_door_sectional_white` | 2 | 10 | pickaxe | 0 |
@@ -91,7 +98,6 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Garage Door Button | `csm:garage_door_button` | 1 | 5 | pickaxe | 0 |
 | Garage Door Control Station | `csm:garage_door_station` | 1 | 5 | pickaxe | 0 |
 | Garage Door Hanger | `csm:garage_door_hanger` | 1 | 5 | pickaxe | 0 |
-| Garage Door Keypad | `csm:garage_door_keypad` | 1 | 5 | pickaxe | 0 |
 | Garage Door Opener | `csm:garage_door_opener` | 1 | 5 | pickaxe | 0 |
 | Glazed Block | `csm:cmu_glazed` | 2 | 10 | pickaxe | 1 |
 | Glazed Block Fence | `csm:cmu_glazed_fence` | 2 | 10 | pickaxe | 1 |
@@ -114,10 +120,15 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Ground-Face Block Fence | `csm:cmu_groundface_fence` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block Slab | `csm:cmu_groundface_slab` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block Stairs | `csm:cmu_groundface_stairs` | 2 | 10 | pickaxe | 1 |
+| Hollow Metal Door (Grey) | `csm:door_metal_grey` |  |  |  |  |
 | Insulated Panel Cladding | `csm:cladding_insulated` | 3 | 10 | pickaxe | 1 |
 | Insulated Panel Cladding Fence | `csm:cladding_insulated_fence` | 3 | 10 | pickaxe | 1 |
 | Insulated Panel Cladding Slab | `csm:cladding_insulated_slab` | 3 | 10 | pickaxe | 1 |
 | Insulated Panel Cladding Stairs | `csm:cladding_insulated_stairs` | 3 | 10 | pickaxe | 1 |
+| Interior Door (Oak) | `csm:door_wood_oak` |  |  |  |  |
+| Interior Door (Oak, Vision Lite) | `csm:door_wood_oak_lite` |  |  |  |  |
+| Interior Door (White) | `csm:door_wood_white` |  |  |  |  |
+| Interior Door (White, Vision Lite) | `csm:door_wood_white_lite` |  |  |  |  |
 | Iridescent Metal | `csm:iridescentmetal` | 2 | 10 | pickaxe | 1 |
 | Iridescent Metal Fence | `csm:iridescentmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Iridescent Metal Slab | `csm:iridescentmetal_slab` | 2 | 10 | pickaxe | 1 |
@@ -186,6 +197,7 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Standing Seam Cladding Fence | `csm:cladding_standingseam_fence` | 3 | 10 | pickaxe | 1 |
 | Standing Seam Cladding Slab | `csm:cladding_standingseam_slab` | 3 | 10 | pickaxe | 1 |
 | Standing Seam Cladding Stairs | `csm:cladding_standingseam_stairs` | 3 | 10 | pickaxe | 1 |
+| Storefront Door (Dark Bronze) | `csm:door_storefront_bronze` |  |  |  |  |
 | Vinyl Siding | `csm:siding_vinyl` | 2 | 5 | axe | 0 |
 | Vinyl Siding Fence | `csm:siding_vinyl_fence` | 2 | 5 | axe | 0 |
 | Vinyl Siding Slab | `csm:siding_vinyl_slab` | 2 | 5 | axe | 0 |

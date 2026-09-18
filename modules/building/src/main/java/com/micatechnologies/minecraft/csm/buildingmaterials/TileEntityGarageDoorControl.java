@@ -14,8 +14,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 
 /**
- * What a garage door control remembers: the door (or opener) it is linked to, and for a keypad
- * its code and who owns it. Data only: never ticked, never drawn.
+ * What a door control remembers: the garage door, opener or door it is linked to, and for a keypad
+ * its code and who owns it. Data only: never ticked, never drawn. A keypad linked to a door locks
+ * it ({@link DoorLocks}).
  *
  * <p>The code never leaves the server. The tag a client is sent carries only whether a code is set
  * and who the owner is, which is what the keypad screen needs to show; a client that could read the
@@ -47,8 +48,34 @@ public class TileEntityGarageDoorControl extends AbstractTileEntity {
   private final transient Map<UUID, Long> lockedUntil = new HashMap<>();
 
   void setTarget(BlockPos target) {
+    // A keypad locks the door it is linked to, and no longer the one it was linked to before.
+    boolean keypad = isKeypad();
+    if (keypad && this.target != null) {
+      DoorLocks.get(world).unlock(this.target);
+    }
     this.target = target.toImmutable();
+    if (keypad && world.getBlockState(this.target).getBlock() instanceof BlockBuildingDoor) {
+      DoorLocks.get(world).lock(this.target);
+    }
     markDirtySync(world, pos, true);
+  }
+
+  private boolean isKeypad() {
+    IBlockState state = world.getBlockState(pos);
+    return state.getBlock() instanceof BlockGarageDoorControl
+        && ((BlockGarageDoorControl) state.getBlock()).kind()
+        == BlockGarageDoorControl.Kind.KEYPAD;
+  }
+
+  /**
+   * The control is going: a keypad unlocks the door it locked.
+   *
+   * @since 1.0
+   */
+  void removed() {
+    if (target != null && isKeypad()) {
+      DoorLocks.get(world).unlock(target);
+    }
   }
 
   void setOwner(UUID owner) {
@@ -90,6 +117,10 @@ public class TileEntityGarageDoorControl extends AbstractTileEntity {
     IBlockState state = world.getBlockState(target);
     if (state.getBlock() instanceof BlockGarageDoor) {
       ((BlockGarageDoor) state.getBlock()).command(world, target, command);
+      return true;
+    }
+    if (state.getBlock() instanceof BlockBuildingDoor) {
+      ((BlockBuildingDoor) state.getBlock()).command(world, target, command);
       return true;
     }
     if (state.getBlock() instanceof BlockGarageDoorOpener) {
