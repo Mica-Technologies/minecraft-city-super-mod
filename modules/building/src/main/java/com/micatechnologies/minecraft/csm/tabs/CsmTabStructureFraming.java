@@ -7,6 +7,16 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockHollowMetalDoor
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockJoistGirder;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockMetalRoofDeck;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockMetalRoofDeckConcrete;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelBasePlateGalvanized;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelBasePlatePrimer;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelBeamGalvanized;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelBeamPrimer;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelBraceXGalvanized;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelBraceXPrimer;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelColumnGalvanized;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelColumnPrimer;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelConnectionGalvanized;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelConnectionPrimer;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWall;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallBraced;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallDoor;
@@ -116,5 +126,15 @@ public class CsmTabStructureFraming extends CsmTab {
     initTabBlock(BlockMetalRoofDeckConcrete.class, fmlPreInitializationEvent); // Metal Deck with Concrete
     initTabBlock(BlockCeilingJoist.class, fmlPreInitializationEvent); // Ceiling Joist
     initTabBlock(BlockWoodRafter.class, fmlPreInitializationEvent); // Wood Rafter
+    initTabBlock(BlockSteelColumnPrimer.class, fmlPreInitializationEvent); // Steel Column (Primer)
+    initTabBlock(BlockSteelColumnGalvanized.class, fmlPreInitializationEvent); // Steel Column (Galvanized)
+    initTabBlock(BlockSteelBeamPrimer.class, fmlPreInitializationEvent); // Steel Beam (Primer)
+    initTabBlock(BlockSteelBeamGalvanized.class, fmlPreInitializationEvent); // Steel Beam (Galvanized)
+    initTabBlock(BlockSteelBasePlatePrimer.class, fmlPreInitializationEvent); // Steel Base Plate (Primer)
+    initTabBlock(BlockSteelBasePlateGalvanized.class, fmlPreInitializationEvent); // Steel Base Plate (Galvanized)
+    initTabBlock(BlockSteelConnectionPrimer.class, fmlPreInitializationEvent); // Steel Connection (Primer)
+    initTabBlock(BlockSteelConnectionGalvanized.class, fmlPreInitializationEvent); // Steel Connection (Galvanized)
+    initTabBlock(BlockSteelBraceXPrimer.class, fmlPreInitializationEvent); // Steel X-Brace (Primer)
+    initTabBlock(BlockSteelBraceXGalvanized.class, fmlPreInitializationEvent); // Steel X-Brace (Galvanized)
   }
 }

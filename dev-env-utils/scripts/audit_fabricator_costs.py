@@ -143,7 +143,9 @@ def cost_for(registry, info, ancestors):
     if tab == "tabinteriorfinishes":
         return ("CONCRETE_MIX", "clay_ball")
 
-    if noun in MOUNT_NOUNS:
+    # Never in the framing tab: see the note in CsmFabricatorCosts. A base plate and a
+    # sole plate are structure, not brackets.
+    if tab != "tabstructureframing" and noun in MOUNT_NOUNS:
         return ("SHEET_METAL", "FASTENER_KIT")
 
     if has_any(registry, OPTICAL_WORDS):

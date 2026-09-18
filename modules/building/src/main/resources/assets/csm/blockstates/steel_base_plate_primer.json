@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/steel_base_plate_primer"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/steel_base_plate_primer",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/steel_base_plate_primer"
+    }
+  }
+}

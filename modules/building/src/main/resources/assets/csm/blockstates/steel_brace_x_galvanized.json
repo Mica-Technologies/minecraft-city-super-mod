@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/steel_brace_x_galvanized"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/steel_brace_x_galvanized",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/steel_brace_x_galvanized"
+    }
+  }
+}
