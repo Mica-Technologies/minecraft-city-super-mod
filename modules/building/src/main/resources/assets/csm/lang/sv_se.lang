@@ -1,3 +1,6 @@
+gui.csm.crane.climb.blocked=Något är i vägen för kranen att klättra
+gui.csm.crane.climb.limit=Kranen är vid bygghöjdsgränsen
+gui.csm.crane.climb.pieces=En 2x2-kran klättrar en hel sektion: fyra mastdelar
 gui.csm.crane.hook=Kroksänkning
 gui.csm.crane.jib=Bomlängd
 gui.csm.crane.livery.red=Röd

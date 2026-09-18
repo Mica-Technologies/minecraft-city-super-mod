@@ -1,3 +1,6 @@
+gui.csm.crane.climb.blocked=Something is in the way of the crane climbing
+gui.csm.crane.climb.limit=The crane is at the build limit
+gui.csm.crane.climb.pieces=A 2x2 crane climbs a whole section: four mast pieces
 gui.csm.crane.hook=Hook drop
 gui.csm.crane.jib=Jib length
 gui.csm.crane.livery.red=Red

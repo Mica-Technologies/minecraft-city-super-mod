@@ -1,3 +1,6 @@
+gui.csm.crane.climb.blocked=Etwas ist dem Kran beim Klettern im Weg
+gui.csm.crane.climb.limit=Der Kran ist an der Bauhöhengrenze
+gui.csm.crane.climb.pieces=Ein 2x2-Kran klettert um einen ganzen Schuss: vier Mastteile
 gui.csm.crane.hook=Hakenhöhe
 gui.csm.crane.jib=Auslegerlänge
 gui.csm.crane.livery.red=Rot
