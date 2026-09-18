@@ -1,0 +1,98 @@
+{
+  "variants": {
+    "inventory_yellow": {
+      "model": "csm:constructionsite/crane_mast_yellow_inventory"
+    },
+    "inventory_red": {
+      "model": "csm:constructionsite/crane_mast_red_inventory"
+    },
+    "inventory_white": {
+      "model": "csm:constructionsite/crane_mast_white_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_ladder"
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_yellow_chords"
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_yellow_base"
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_yellow_lacing"
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_red_chords"
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_red_base"
+      }
+    },
+    {
+      "when": {
+        "livery": "red"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_red_lacing"
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_white_chords"
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_white_base"
+      }
+    },
+    {
+      "when": {
+        "livery": "white"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_white_lacing"
+      }
+    }
+  ]
+}

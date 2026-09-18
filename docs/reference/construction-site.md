@@ -2,7 +2,7 @@
 
 What stands around a building while it goes up: scaffolding, formwork, earthworks, site logistics and facilities.
 
-!!! info "8 blocks in this tab"
+!!! info "9 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -18,6 +18,7 @@ What stands around a building while it goes up: scaffolding, formwork, earthwork
 | Rebar Column Cage | `csm:rebar_cage` |  |  |  |  |
 | Rebar Dowels | `csm:rebar_dowels` |  |  |  |  |
 | Rebar Mat | `csm:rebar_mat` |  |  |  |  |
+| Tower Crane Mast | `csm:crane_mast` | 3 | 12 | pickaxe | 1 |
 | Wall Formwork | `csm:formwork_wall` |  |  |  |  |
 
 </div>

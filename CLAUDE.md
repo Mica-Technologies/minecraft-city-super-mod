@@ -443,6 +443,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_formwork.py` -- the construction site's formwork, shoring and rebar: wall and column forms,
   the stack-aware post shore, and rebar mat, dowels, column cage and bundle. Reuses gen_scaffold's
   element helpers so every face has fitted UVs; `--check` fails on drift
+- `gen_crane.py` -- the tower crane mast in three liveries: 3D corner chords, and the lacing drawn
+  into a cutout texture on a plane per face -- a 1x1 face's chord-to-chord diagonal is not an angle
+  an element can be turned to, and a texture diagonal can be any angle and meets the chord at the
+  cell edge; `--check` fails on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

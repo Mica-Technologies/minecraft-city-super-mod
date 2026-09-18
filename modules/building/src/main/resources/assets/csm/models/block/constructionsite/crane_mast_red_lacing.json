@@ -1,0 +1,139 @@
+{
+  "textures": {
+    "chord": "csm:blocks/constructionsite/crane_chord_red",
+    "lace": "csm:blocks/constructionsite/crane_lace_red",
+    "ladder": "csm:blocks/constructionsite/scaffold_tube",
+    "anchor": "csm:blocks/constructionsite/scaffold_jack",
+    "particle": "csm:blocks/constructionsite/crane_chord_red"
+  },
+  "elements": [
+    {
+      "from": [
+        2.0,
+        0,
+        1.25
+      ],
+      "to": [
+        14.0,
+        16,
+        1.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lace",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#lace",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.0,
+        0,
+        14.75
+      ],
+      "to": [
+        14.0,
+        16,
+        14.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lace",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#lace",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.25,
+        0,
+        2.0
+      ],
+      "to": [
+        1.25,
+        16,
+        14.0
+      ],
+      "faces": {
+        "east": {
+          "texture": "#lace",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#lace",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.75,
+        0,
+        2.0
+      ],
+      "to": [
+        14.75,
+        16,
+        14.0
+      ],
+      "faces": {
+        "east": {
+          "texture": "#lace",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#lace",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}
