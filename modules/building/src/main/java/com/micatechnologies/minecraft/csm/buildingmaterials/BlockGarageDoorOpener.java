@@ -125,18 +125,24 @@ public class BlockGarageDoorOpener extends AbstractBlock {
   }
 
   /**
-   * Opens or closes the door the rail leads to, if there is one.
+   * Gives a command to the door the rail leads to, if there is one: its own button and redstone
+   * toggle it, a linked wall control may open, close or stop it.
+   *
+   * @param world   the world
+   * @param pos     the opener
+   * @param state   its state
+   * @param command what to do
    *
    * @return whether a door was found
    */
-  private boolean operate(World world, BlockPos pos, IBlockState state) {
+  boolean operate(World world, BlockPos pos, IBlockState state, BlockGarageDoor.Command command) {
     EnumFacing f = state.getValue(FACING);
     BlockPos wall = pos.offset(f, length(world, pos, f) + 1);
     for (int i = 0; i <= 3; i++) {
       BlockPos p = wall.down(i);
       IBlockState s = world.getBlockState(p);
       if (s.getBlock() instanceof BlockGarageDoor) {
-        ((BlockGarageDoor) s.getBlock()).toggle(world, p);
+        ((BlockGarageDoor) s.getBlock()).command(world, p, command);
         return true;
       }
     }
@@ -148,10 +154,11 @@ public class BlockGarageDoorOpener extends AbstractBlock {
       EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY,
       float hitZ) {
     if (playerIn.isSneaking()) {
-      return false;
+      // The second half of linking a wall control to this door; see GarageDoorLinks.
+      return hand == EnumHand.MAIN_HAND && GarageDoorLinks.finish(playerIn, worldIn, pos);
     }
     if (!worldIn.isRemote) {
-      operate(worldIn, pos, state);
+      operate(worldIn, pos, state, BlockGarageDoor.Command.TOGGLE);
     }
     return true;
   }
@@ -174,7 +181,7 @@ public class BlockGarageDoorOpener extends AbstractBlock {
     boolean was = seen.contains(pos);
     if (powered && !was) {
       seen.add(pos.toImmutable());
-      operate(worldIn, pos, state);
+      operate(worldIn, pos, state, BlockGarageDoor.Command.TOGGLE);
     } else if (!powered && was) {
       seen.remove(pos);
     }

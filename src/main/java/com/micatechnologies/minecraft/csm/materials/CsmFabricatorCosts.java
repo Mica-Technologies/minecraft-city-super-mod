@@ -387,6 +387,19 @@ public final class CsmFabricatorCosts {
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
     }
+    // Wall controls: a keypad is a board in a housing, a station switches in a box, a button a
+    // switch on a length of wire.
+    if (CsmBlockDisplayNames.hasWord(registryName, "keypad")) {
+      return cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "station")) {
+      return cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "button")) {
+      return cost(FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
     if (CsmBlockDisplayNames.hasWord(registryName, "hanger")) {
       return cost(FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }

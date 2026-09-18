@@ -1,8 +1,11 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
+import com.micatechnologies.minecraft.csm.buildingmaterials.GuiGarageKeypad;
+import com.micatechnologies.minecraft.csm.buildingmaterials.TileEntityGarageDoorControl;
 import com.micatechnologies.minecraft.csm.codeutils.gui.ICsmGuiProvider;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,9 +24,21 @@ public class BuildingGuiProvider implements ICsmGuiProvider {
    */
   public static final int CRANE_GUI_ID = 25;
 
+  /**
+   * The garage door keypad's PIN screen.
+   *
+   * @since 1.0
+   */
+  public static final int KEYPAD_GUI_ID = 26;
+
   @Nullable
   @Override
   public Object getClientGuiElement(int id, EntityPlayer player, World world, BlockPos pos) {
+    if (id == KEYPAD_GUI_ID) {
+      TileEntity te = world.getTileEntity(pos);
+      return te instanceof TileEntityGarageDoorControl
+          ? new GuiGarageKeypad((TileEntityGarageDoorControl) te, pos, player) : null;
+    }
     if (id != CRANE_GUI_ID) {
       return null;
     }

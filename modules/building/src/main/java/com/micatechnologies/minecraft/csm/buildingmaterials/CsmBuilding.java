@@ -75,6 +75,8 @@ public class CsmBuilding {
     // The packet order here fixes this channel's discriminators; only append to it.
     NETWORK.registerMessage(CraneHeadConfigPacketHandler.class, CraneHeadConfigPacket.class,
         Side.SERVER);
+    NETWORK.registerMessage(GarageKeypadPacketHandler.class, GarageKeypadPacket.class,
+        Side.SERVER);
     proxy.preInit(event);
   }
 

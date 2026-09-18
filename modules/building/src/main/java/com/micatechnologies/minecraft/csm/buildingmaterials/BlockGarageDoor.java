@@ -68,7 +68,7 @@ import net.minecraft.world.World;
  * height, which is how far back along the ceiling its track runs and an open door's panels lie. The
  * models come from {@code dev-env-utils/scripts/gen_garage_doors.py}.</p>
  *
- * @version 1.0
+ * @version 1.1
  * @since 2026.9
  */
 public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProvider {
@@ -315,24 +315,36 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
   }
 
   /**
-   * Starts the whole door moving to the other state: every block of it goes {@link Motion#MOVING}
-   * and the anchor -- its lowest block furthest anticlockwise -- {@link Motion#ANCHOR}, which
-   * gives it the tile entity that animates the door and finishes the move. Nothing happens while it
-   * is already moving.
+   * What a door can be told to do: toggle (one button: start it, stop it while it moves, reverse
+   * it once stopped), open, close, or stop.
    *
-   * @param world the world
-   * @param pos   a block of the door
-   *
-   * @since 1.0
+   * @since 1.1
    */
-  void toggle(World world, BlockPos pos) {
+  public enum Command {
+    TOGGLE, OPEN, CLOSE, STOP
+  }
+
+  /**
+   * Obeys a command given to any block of the door.
+   *
+   * <p>A door at rest that is told to move goes {@link Motion#MOVING}, all but its anchor -- its
+   * lowest block furthest anticlockwise -- which goes {@link Motion#ANCHOR} and so takes the tile
+   * entity that animates the door and finishes the move. A door already moving or stopped
+   * part-way hands the command to that tile entity.</p>
+   *
+   * @param world   the world
+   * @param pos     a block of the door
+   * @param command what to do
+   *
+   * @since 1.1
+   */
+  public void command(World world, BlockPos pos, Command command) {
     IBlockState state = world.getBlockState(pos);
-    if (state.getValue(MOTION).moving()) {
+    if (state.getBlock() != this) {
       return;
     }
     EnumFacing f = state.getValue(FACING);
     Set<BlockPos> blocks = door(world, pos, f);
-    boolean opening = state.getValue(MOTION) == Motion.CLOSED;
     // The anchor: lowest, then furthest anticlockwise. The extent is measured from it.
     EnumFacing ccw = f.rotateYCCW();
     BlockPos anchor = null;
@@ -353,6 +365,32 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
         anchorSide = side;
       }
     }
+    if (state.getValue(MOTION).moving()) {
+      TileEntity te = world.getTileEntity(anchor);
+      if (te instanceof TileEntityGarageDoor) {
+        ((TileEntityGarageDoor) te).command(command, world.getTotalWorldTime());
+      }
+      return;
+    }
+    boolean open = state.getValue(MOTION) == Motion.OPEN;
+    int dir;
+    switch (command) {
+      case OPEN:
+        dir = open ? 0 : 1;
+        break;
+      case CLOSE:
+        dir = open ? -1 : 0;
+        break;
+      case STOP:
+        dir = 0;
+        break;
+      default:
+        dir = open ? -1 : 1;
+        break;
+    }
+    if (dir == 0) {
+      return;
+    }
     int width = maxSide - minSide + 1;
     int height = maxY - minY + 1;
     for (BlockPos p : blocks) {
@@ -364,7 +402,8 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
         3);
     TileEntity te = world.getTileEntity(anchor);
     if (te instanceof TileEntityGarageDoor) {
-      ((TileEntityGarageDoor) te).start(width, height, opening, world.getTotalWorldTime());
+      ((TileEntityGarageDoor) te).begin(width, height, open ? 1.0 : 0.0, dir,
+          world.getTotalWorldTime());
     }
     world.playSound(null, anchor, kind() == Kind.SECTIONAL ? SoundEvents.BLOCK_PISTON_EXTEND
         : SoundEvents.BLOCK_IRON_TRAPDOOR_OPEN, SoundCategory.BLOCKS, 0.6F, 0.5F);
@@ -415,7 +454,7 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
         TileEntityGarageDoor door = (TileEntityGarageDoor) te;
         super.breakBlock(worldIn, pos, state);
         finish(worldIn, pos, state.getValue(FACING), door.getWidth(), door.getHeight(),
-            door.isOpening());
+            door.endsOpen());
         return;
       }
     }
@@ -427,10 +466,11 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
       EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY,
       float hitZ) {
     if (playerIn.isSneaking()) {
-      return false;
+      // The second half of linking a wall control to this door; see GarageDoorLinks.
+      return hand == EnumHand.MAIN_HAND && GarageDoorLinks.finish(playerIn, worldIn, pos);
     }
     if (!worldIn.isRemote) {
-      toggle(worldIn, pos);
+      command(worldIn, pos, Command.TOGGLE);
     }
     return true;
   }
@@ -453,7 +493,7 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
     boolean was = seen.contains(pos);
     if (powered && !was) {
       seen.add(pos.toImmutable());
-      toggle(worldIn, pos);
+      command(worldIn, pos, Command.TOGGLE);
     } else if (!powered && was) {
       seen.remove(pos);
     }

@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGroundfac
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuSplitface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuStandard;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorControl;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorHanger;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorOpener;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
@@ -229,5 +230,8 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockGarageDoor("garage_door_grille")); // Security Grille
     initTabBlock(BlockGarageDoorOpener.class, fmlPreInitializationEvent); // Garage Door Opener
     initTabBlock(BlockGarageDoorHanger.class, fmlPreInitializationEvent); // Garage Door Hanger
+    initTabBlock(new BlockGarageDoorControl("garage_door_button")); // Garage Door Button
+    initTabBlock(new BlockGarageDoorControl("garage_door_station")); // Garage Door Control Station
+    initTabBlock(new BlockGarageDoorControl("garage_door_keypad")); // Garage Door Keypad
   }
 }

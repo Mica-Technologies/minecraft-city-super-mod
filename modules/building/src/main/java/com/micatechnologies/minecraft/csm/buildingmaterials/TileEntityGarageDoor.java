@@ -3,8 +3,10 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import javax.annotation.Nonnull;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -12,16 +14,20 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
- * A garage door in motion: exists only on the door's anchor block, only while the door moves.
+ * A garage door that is not at rest: exists only on the door's anchor block, only while the door
+ * is moving or stopped part-way.
  *
- * <p>It holds what the move needs -- the door's size, which way it is going, and the world tick it
- * started on -- and the renderer draws the travelling curtain or panels from those and the world
- * time, so the server and every client agree without sending positions. On the server it ends the
- * move when the time is up, setting every block of the door to its new state; that state asks for
- * no tile entity, and {@link #shouldRefresh} lets this one go with it. See
- * {@link BlockGarageDoor}.</p>
+ * <p>Where the door is is one number, its <em>position</em>, 0 closed to 1 open. The tile entity
+ * holds the position at the last change, the direction since then (+1 opening, -1 closing, 0
+ * stopped) and the world tick of that change, so the position at any moment is worked out from the
+ * world time -- the server and every client agree without sending positions, and the renderer
+ * draws the door there. A command (open, close, stop, or a toggle, which stops a moving door and
+ * reverses a stopped one, as a one-button opener does) sets a new starting point. On the server,
+ * when the position reaches the end it is heading for, every block of the door is set to rest open
+ * or closed; that state asks for no tile entity, and {@link #shouldRefresh} lets this one go with
+ * it. See {@link BlockGarageDoor}.</p>
  *
- * @version 1.0
+ * @version 1.1
  * @since 2026.9
  */
 public class TileEntityGarageDoor extends AbstractTickableTileEntity {
@@ -41,25 +47,72 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
 
   private int width = 1;
   private int height = 1;
-  private boolean opening = true;
+  /** The position at {@link #startTick}. */
+  private double from;
+  /** +1 opening, -1 closing, 0 stopped. */
+  private int dir;
+  /** The last direction it moved in, which a toggle of a stopped door reverses. */
+  private int lastDir = 1;
   private long startTick;
 
   /**
-   * Starts a move. Called on the server as the door goes into its moving state.
+   * Starts the door moving from rest. Called on the server as the door leaves its resting state.
    *
-   * @param width   the door's width in blocks
-   * @param height  its height
-   * @param opening whether it is opening
-   * @param now     the world tick
+   * @param width  the door's width in blocks
+   * @param height its height
+   * @param from   where it starts: 0 closed, 1 open
+   * @param dir    +1 to open, -1 to close
+   * @param now    the world tick
    *
-   * @since 1.0
+   * @since 1.1
    */
-  void start(int width, int height, boolean opening, long now) {
+  void begin(int width, int height, double from, int dir, long now) {
     this.width = width;
     this.height = height;
-    this.opening = opening;
+    this.from = from;
+    this.dir = dir;
+    this.lastDir = dir;
     this.startTick = now;
     markDirtySync(world, pos, true);
+  }
+
+  /**
+   * Obeys a command given while the door is not at rest.
+   *
+   * @param command what was asked
+   * @param now     the world tick
+   *
+   * @since 1.1
+   */
+  void command(BlockGarageDoor.Command command, long now) {
+    double at = positionAt(now);
+    int next;
+    switch (command) {
+      case OPEN:
+        next = 1;
+        break;
+      case CLOSE:
+        next = -1;
+        break;
+      case STOP:
+        next = 0;
+        break;
+      default:
+        next = dir != 0 ? 0 : -lastDir;
+        break;
+    }
+    if (next == dir) {
+      return;
+    }
+    from = at;
+    dir = next;
+    if (next != 0) {
+      lastDir = next;
+    }
+    startTick = now;
+    markDirtySync(world, pos, true);
+    world.playSound(null, pos, next == 0 ? SoundEvents.BLOCK_IRON_TRAPDOOR_CLOSE
+        : SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.5F, 0.6F);
   }
 
   public int getWidth() {
@@ -70,13 +123,24 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
     return height;
   }
 
-  public boolean isOpening() {
-    return opening;
+  /**
+   * Which way a move ended by breaking the anchor should go: the way it was going, or, stopped,
+   * the nearer end.
+   *
+   * @return whether the door should end up open
+   *
+   * @since 1.1
+   */
+  boolean endsOpen() {
+    if (dir != 0) {
+      return dir > 0;
+    }
+    return from >= 0.5;
   }
 
   /**
-   * How far the door has to travel, in blocks: a roll-up's curtain up out of the opening, a
-   * sectional door's bottom edge up past the opening and round the bend.
+   * How far the door has to travel, in blocks, from closed to open: a roll-up's curtain up out of
+   * the opening, a sectional door's bottom edge up past the opening and round the bend.
    *
    * @return the travel
    *
@@ -91,7 +155,7 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
   }
 
   /**
-   * The move's duration in ticks.
+   * The time a full move takes, in ticks.
    *
    * @return the duration
    *
@@ -101,21 +165,25 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
     return Math.max(10L, Math.round(travel() / SPEED * 20.0));
   }
 
+  private double positionAt(double tick) {
+    double p = from + dir * (tick - startTick) / duration();
+    return Math.max(0.0, Math.min(1.0, p));
+  }
+
   /**
-   * How far through the move the door is, 0 to 1.
+   * Where the door is, 0 closed to 1 open.
    *
    * @param partialTicks the partial tick
    *
-   * @return the progress
+   * @return the position
    *
-   * @since 1.0
+   * @since 1.1
    */
-  public double progress(float partialTicks) {
+  public double position(float partialTicks) {
     if (startTick == 0L) {
-      return 0.0; // not yet synced
+      return from; // not yet synced
     }
-    double t = (world.getTotalWorldTime() - startTick) + partialTicks;
-    return Math.max(0.0, Math.min(1.0, t / duration()));
+    return positionAt(world.getTotalWorldTime() + partialTicks);
   }
 
   @Override
@@ -125,7 +193,7 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
 
   @Override
   public boolean pauseTicking() {
-    return false;
+    return dir == 0;
   }
 
   @Override
@@ -135,17 +203,18 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
 
   @Override
   public void onTick() {
-    if (world.getTotalWorldTime() - startTick >= duration()) {
+    double p = positionAt(world.getTotalWorldTime());
+    if ((dir > 0 && p >= 1.0) || (dir < 0 && p <= 0.0)) {
       IBlockState state = world.getBlockState(pos);
       if (state.getBlock() instanceof BlockGarageDoor) {
         ((BlockGarageDoor) state.getBlock()).finish(world, pos,
-            state.getValue(BlockGarageDoor.FACING), width, height, opening);
+            state.getValue(BlockGarageDoor.FACING), width, height, dir > 0);
       }
     }
   }
 
   /**
-   * Goes when the block stops moving (or is no longer a door).
+   * Goes when the door comes to rest (or the block is no longer a door).
    *
    * @since 1.0
    */
@@ -159,14 +228,19 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
   // NBT keys, short as every CSM tile entity's are.
   private static final String KEY_W = "w";
   private static final String KEY_H = "h";
-  private static final String KEY_OPENING = "o";
+  private static final String KEY_FROM = "p";
+  private static final String KEY_DIR = "d";
+  private static final String KEY_LAST_DIR = "l";
   private static final String KEY_START = "t";
 
   @Override
   public void readNBT(NBTTagCompound compound) {
     width = Math.max(1, Math.min(16, compound.getInteger(KEY_W)));
     height = Math.max(1, Math.min(16, compound.getInteger(KEY_H)));
-    opening = compound.getBoolean(KEY_OPENING);
+    double f = compound.getDouble(KEY_FROM);
+    from = Double.isFinite(f) ? Math.max(0.0, Math.min(1.0, f)) : 0.0;
+    dir = Integer.signum(compound.getInteger(KEY_DIR));
+    lastDir = compound.getInteger(KEY_LAST_DIR) < 0 ? -1 : 1;
     startTick = compound.getLong(KEY_START);
   }
 
@@ -174,7 +248,9 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     compound.setInteger(KEY_W, width);
     compound.setInteger(KEY_H, height);
-    compound.setBoolean(KEY_OPENING, opening);
+    compound.setDouble(KEY_FROM, from);
+    compound.setInteger(KEY_DIR, dir);
+    compound.setInteger(KEY_LAST_DIR, lastDir);
     compound.setLong(KEY_START, startTick);
     return compound;
   }
