@@ -1,0 +1,8 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "bottom": "csm:blocks/buildingmaterials/cmu/cmu_groundface_top",
+    "top": "csm:blocks/buildingmaterials/cmu/cmu_groundface_top",
+    "side": "csm:blocks/buildingmaterials/cmu/cmu_groundface"
+  }
+}

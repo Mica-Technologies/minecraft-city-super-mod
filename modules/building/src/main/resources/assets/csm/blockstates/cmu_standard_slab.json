@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "half_slab",
+    "textures": {
+      "bottom": "csm:blocks/buildingmaterials/cmu/cmu_standard_top",
+      "top": "csm:blocks/buildingmaterials/cmu/cmu_standard_top",
+      "side": "csm:blocks/buildingmaterials/cmu/cmu_standard"
+    }
+  },
+  "variants": {
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:buildingmaterials/cmu_standard_slab_top"
+      }
+    },
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

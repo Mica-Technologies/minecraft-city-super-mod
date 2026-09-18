@@ -408,6 +408,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   geometry for 11 models, draws the shared metal/shade/lens swatch textures, and emits all 33
   blockstates plus lang and tab-registration fragments from one catalogue, so an id cannot drift
   from its blockstate
+- `gen_cmu.py` -- the four concrete masonry sets: the coursed textures, and the five
+  blockstates and six models each set needs. The bond is drawn at 8 x 4 px, two units across
+  a block and four courses up it, because a real 8 x 16 in unit does not divide sixteen
+  pixels; `--check` fails on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

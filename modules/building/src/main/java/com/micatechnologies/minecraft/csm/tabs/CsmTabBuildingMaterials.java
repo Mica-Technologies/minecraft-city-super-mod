@@ -1,6 +1,10 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGlazed;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGroundface;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuSplitface;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuStandard;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlackMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlueMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCopperMetal;
@@ -113,5 +117,13 @@ public class CsmTabBuildingMaterials extends CsmTab {
         fmlPreInitializationEvent); // Yellow Metal Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetIridescentMetal.class,
         fmlPreInitializationEvent); // Iridescent Metal Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetCmuStandard.class,
+        fmlPreInitializationEvent); // Concrete Block Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetCmuSplitface.class,
+        fmlPreInitializationEvent); // Split-Face Block Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetCmuGroundface.class,
+        fmlPreInitializationEvent); // Ground-Face Block Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetCmuGlazed.class,
+        fmlPreInitializationEvent); // Glazed Block Set (Block, Fence, Slab, Stairs)
   }
 }
