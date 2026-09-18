@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:constructionsite/trench_plate_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:constructionsite/trench_plate_body"
+      }
+    },
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_plate_edge"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_plate_edge",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_plate_edge",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_plate_edge",
+        "y": 270
+      }
+    }
+  ]
+}
