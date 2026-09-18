@@ -312,10 +312,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   blocks and not a state, how each material is told from its nearest neighbour, the name-driven
   Fabricator pricing, and the traps (a name decides a price, fine detail mipmaps away)
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
-  crane, site fences and earthworks: why the scaffold's look is actual state and its sides three-valued, the guardrail that
+  crane, site fences, earthworks, logistics and facilities: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
   or baked models, the display list with the slew outside it, how its deck and walkways are made
-  solid without blocks, climbing by inserting sections, and
+  solid without blocks, climbing by inserting sections, containers built to size, and
   the UV traps (explicit UVs past 0..16, shift a span a whole block, never clamp it)
 - `assets/docs/FIRE_ALARM_SYSTEM.md` -- MovingSound architecture, channel system, sound standards, full inventory
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
@@ -456,6 +456,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_earthworks.py` -- the trench plate (edge bar only on open sides, so plates side by side are
   one plate), the stacking trench box, and soil/gravel/sand stockpiles in eight layers like snow;
   `--check` fails on drift
+- `gen_logistics.py` -- the construction site's loads: brick, block, drywall and bagged concrete
+  pallets, lumber stack, insulation rolls, pipe and conduit bundles, wire spool (one axial class,
+  `BlockSiteAxialProp`); round things are a square plus the same square turned 45; `--check`
+- `gen_facilities.py` -- build-to-size shipping containers and roll-off dumpsters (four colours)
+  and the job trailer's wall/window/door (`BlockSiteShell`: walls only on outside faces, rails
+  only on outside edges), plus the portable toilet, gang box and concrete washout
+  (`BlockSiteFacingProp`); `--check` fails on drift
 - `gen_fencing.py` -- the site and chain-link fences (one class, `BlockSiteFence`): temporary
   fence with and without privacy screen, silt fence, stacking chain-link in two finishes and its
   barbed-wire top. The mesh is a zero-thickness cutout plane, a panel is drawn once running east

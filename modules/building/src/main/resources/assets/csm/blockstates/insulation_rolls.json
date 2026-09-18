@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "csm:constructionsite/insulation_rolls"
+    },
+    "axis=z": {
+      "model": "csm:constructionsite/insulation_rolls",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:constructionsite/insulation_rolls"
+    }
+  }
+}

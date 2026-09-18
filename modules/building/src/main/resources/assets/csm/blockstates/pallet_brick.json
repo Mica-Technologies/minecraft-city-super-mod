@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "csm:constructionsite/pallet_brick"
+    },
+    "axis=z": {
+      "model": "csm:constructionsite/pallet_brick",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:constructionsite/pallet_brick"
+    }
+  }
+}

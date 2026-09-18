@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "csm:constructionsite/pipe_bundle"
+    },
+    "axis=z": {
+      "model": "csm:constructionsite/pipe_bundle",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:constructionsite/pipe_bundle"
+    }
+  }
+}

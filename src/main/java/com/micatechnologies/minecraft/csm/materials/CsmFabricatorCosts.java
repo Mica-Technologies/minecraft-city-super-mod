@@ -432,6 +432,57 @@ public final class CsmFabricatorCosts {
     if (CsmBlockDisplayNames.hasWord(registryName, "silt")) {
       return cost(FabricatorIngredient.any(MC_PLANKS, 1), FabricatorIngredient.any(MC_PAPER, 1));
     }
+    // Site logistics: what the load is, and the pallet or dunnage under it.
+    if (CsmBlockDisplayNames.hasWord(registryName, "pallet")) {
+      if (CsmBlockDisplayNames.hasWord(registryName, "brick")) {
+        return cost(FabricatorIngredient.any(MC_PLANKS, 1),
+            FabricatorIngredient.any(MC_CLAY_BALL, 2));
+      }
+      if (CsmBlockDisplayNames.hasWord(registryName, "drywall")) {
+        return cost(FabricatorIngredient.any(MC_PLANKS, 1), FabricatorIngredient.any(MC_PAPER, 2));
+      }
+      if (CsmBlockDisplayNames.hasWord(registryName, "block")) {
+        return cost(FabricatorIngredient.any(MC_PLANKS, 1),
+            FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
+      }
+      return cost(FabricatorIngredient.any(MC_PLANKS, 1),
+          FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 2));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "lumber")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 3));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "insulation")
+        || CsmBlockDisplayNames.hasWord(registryName, "pvc")) {
+      return cost(FabricatorIngredient.any(MC_PAPER, 2), FabricatorIngredient.any(MC_DYE, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "conduit")) {
+      return cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "spool")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    // Site facilities. A container or dumpster is priced per block of it, as it is built.
+    if (CsmBlockDisplayNames.hasWord(registryName, "container")
+        || CsmBlockDisplayNames.hasWord(registryName, "dumpster")) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "trailer")) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.any(MC_PLANKS, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "toilet")) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.any(MC_DYE, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "gang")) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "washout")) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.any(MC_PAPER, 1));
+    }
     // A crane head is the whole slewing unit: the jib's steelwork, and the cab's controls and
     // wiring. Crane masts never reach here -- the pole rule takes anything named a mast first.
     if (CsmBlockDisplayNames.hasWord(registryName, "crane")) {

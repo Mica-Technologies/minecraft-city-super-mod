@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "csm:constructionsite/portable_toilet"
+    },
+    "facing=east": {
+      "model": "csm:constructionsite/portable_toilet",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:constructionsite/portable_toilet",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:constructionsite/portable_toilet",
+      "y": 270
+    },
+    "inventory": {
+      "model": "csm:constructionsite/portable_toilet"
+    }
+  }
+}

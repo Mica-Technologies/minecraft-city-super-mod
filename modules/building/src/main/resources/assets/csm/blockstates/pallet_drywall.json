@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "csm:constructionsite/pallet_drywall"
+    },
+    "axis=z": {
+      "model": "csm:constructionsite/pallet_drywall",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:constructionsite/pallet_drywall"
+    }
+  }
+}

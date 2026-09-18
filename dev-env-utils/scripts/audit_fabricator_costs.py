@@ -173,6 +173,32 @@ def cost_for(registry, info, ancestors):
             return ("dirt",)
         if has_word(registry, "silt"):
             return ("planks", "paper")
+        if has_word(registry, "pallet"):
+            if has_word(registry, "brick"):
+                return ("planks", "clay_ball x2")
+            if has_word(registry, "drywall"):
+                return ("planks", "paper x2")
+            if has_word(registry, "block"):
+                return ("planks", "CONCRETE_MIX")
+            return ("planks", "CONCRETE_MIX x2")
+        if has_word(registry, "lumber"):
+            return ("planks x3",)
+        if has_word(registry, "insulation") or has_word(registry, "pvc"):
+            return ("paper x2", "dye")
+        if has_word(registry, "conduit"):
+            return ("POLE_SECTION",)
+        if has_word(registry, "spool"):
+            return ("planks", "WIRING_HARNESS")
+        if has_word(registry, "container") or has_word(registry, "dumpster"):
+            return ("SHEET_METAL x2",)
+        if has_word(registry, "trailer"):
+            return ("SHEET_METAL", "planks")
+        if has_word(registry, "toilet"):
+            return ("SHEET_METAL", "dye")
+        if has_word(registry, "gang"):
+            return ("SHEET_METAL x2", "FASTENER_KIT")
+        if has_word(registry, "washout"):
+            return ("SHEET_METAL", "paper")
         if has_word(registry, "crane"):
             return ("POLE_SECTION x4", "CONTROL_BOARD", "WIRING_HARNESS")
         return ("SHEET_METAL", "FASTENER_KIT")
