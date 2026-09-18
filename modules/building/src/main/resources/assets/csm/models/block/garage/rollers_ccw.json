@@ -1,0 +1,144 @@
+{
+  "textures": {
+    "plate": "csm:blocks/garage/garage_plate",
+    "particle": "csm:blocks/garage/garage_plate"
+  },
+  "elements": [
+    {
+      "from": [
+        0.5,
+        7,
+        0.25
+      ],
+      "to": [
+        2.5,
+        9,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            13.5,
+            7,
+            15.5,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            7,
+            2.5,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            15,
+            7,
+            15.75,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            0.25,
+            7,
+            1.0,
+            9
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            0.25,
+            2.5,
+            1.0
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            15,
+            2.5,
+            15.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        15,
+        0.25
+      ],
+      "to": [
+        2.5,
+        16,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            13.5,
+            0,
+            15.5,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            0,
+            2.5,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            15,
+            0,
+            15.75,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            0.25,
+            0,
+            1.0,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            0.25,
+            2.5,
+            1.0
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            15,
+            2.5,
+            15.75
+          ]
+        }
+      }
+    }
+  ]
+}

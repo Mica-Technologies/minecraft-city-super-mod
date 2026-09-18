@@ -379,6 +379,24 @@ public final class CsmFabricatorCosts {
       }
       return cost(FabricatorIngredient.any(MC_PLANKS, 2));
     }
+    // A garage door opener is a motor and its board in a housing; a hanger is a length of angle.
+    if (CsmBlockDisplayNames.hasWord(registryName, "opener")) {
+      return cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "hanger")) {
+      return cost(FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    // A garage door is steel sheet on its tracks; a grille is iron links.
+    if (CsmBlockDisplayNames.hasWord(registryName, "door")) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "grille")) {
+      return cost(FabricatorIngredient.any(MC_IRON_INGOT, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
     // Glass is priced from vanilla glass (panes from panes), plus what makes the kind: a dye for
     // a tint, one-way or frosted glass, wire for wired glass, and two more layers laminated in
     // for bullet-resistant.

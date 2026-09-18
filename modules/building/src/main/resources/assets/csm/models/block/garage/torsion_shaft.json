@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "shaft": "csm:blocks/garage/garage_shaft",
+    "particle": "csm:blocks/garage/garage_shaft"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        25.5,
+        -2.5
+      ],
+      "to": [
+        16,
+        26.5,
+        -1.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shaft",
+          "uv": [
+            0,
+            5.5,
+            16,
+            6.5
+          ]
+        },
+        "south": {
+          "texture": "#shaft",
+          "uv": [
+            0,
+            5.5,
+            16,
+            6.5
+          ]
+        },
+        "east": {
+          "texture": "#shaft",
+          "uv": [
+            1.5,
+            5.5,
+            2.5,
+            6.5
+          ]
+        },
+        "west": {
+          "texture": "#shaft",
+          "uv": [
+            13.5,
+            5.5,
+            14.5,
+            6.5
+          ]
+        },
+        "up": {
+          "texture": "#shaft",
+          "uv": [
+            0,
+            13.5,
+            16,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#shaft",
+          "uv": [
+            0,
+            1.5,
+            16,
+            2.5
+          ]
+        }
+      }
+    }
+  ]
+}

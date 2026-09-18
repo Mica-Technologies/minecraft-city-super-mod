@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "strap": "csm:blocks/garage/garage_perforated",
+    "particle": "csm:blocks/garage/garage_perforated"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        15,
+        7.25
+      ],
+      "to": [
+        14,
+        16,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#strap",
+          "uv": [
+            2,
+            0,
+            14,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#strap",
+          "uv": [
+            2,
+            0,
+            14,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            0,
+            8.75,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            0,
+            8.75,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#strap",
+          "uv": [
+            2,
+            7.25,
+            14,
+            8.75
+          ]
+        },
+        "down": {
+          "texture": "#strap",
+          "uv": [
+            2,
+            7.25,
+            14,
+            8.75
+          ]
+        }
+      }
+    }
+  ]
+}

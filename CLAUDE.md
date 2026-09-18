@@ -315,6 +315,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/INTERIOR_FINISHES.md` -- The Interior Finishes tab: window blinds, shades and
   curtains (their own block hung against any window, joining into one blind, click to cycle the
   whole blind, redstone to close it, light taken by state), and where the decor track grows next
+- `assets/docs/GARAGE_DOORS.md` -- Sectional, roll-up and grille garage doors built to the size
+  of the opening: why a door at rest is baked models with no tile entity and only the anchor of a
+  moving one has a renderer, the sectional door's path round the bend shared between its OBJ
+  ceiling runs and the renderer, the hardware, and the opener and the stackable hanger
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
   crane, site fences, earthworks, logistics and facilities: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
@@ -447,6 +451,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_window_treatments.py` -- window blinds, shades and curtains (`BlockWindowTreatment`): the
   parts that belong to the whole blind (headrail, bottom rail, bunched curtain) drawn only on the
   course or end they belong to; `--check` fails on drift
+- `gen_garage_doors.py` -- the garage doors, opener and hanger: textures, the part models drawn
+  on the edge of the door they belong to, the sectional door's ceiling runs and tracks and the
+  opener's rail as OBJ per length, and the multipart blockstates; `--check` fails on drift
 - `gen_glazing.py` -- the glazing: eight kinds of glass (clear, three tints, one-way, wired,
   bullet-resistant, frosted) as blocks and panes that join into one window with a frame only
   around its outside. One-way glass is two textures on two faces, since the back of a face is

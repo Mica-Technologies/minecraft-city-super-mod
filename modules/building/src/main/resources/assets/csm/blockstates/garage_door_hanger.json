@@ -1,0 +1,196 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:garage/garage_door_hanger_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "position": "center"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_centre"
+      }
+    },
+    {
+      "when": {
+        "position": "center",
+        "bottom": "false"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_centre_low"
+      }
+    },
+    {
+      "when": {
+        "position": "center",
+        "bottom": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_centre_foot"
+      }
+    },
+    {
+      "when": {
+        "position": "center",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_centre_cleat"
+      }
+    },
+    {
+      "when": {
+        "position": "north"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge"
+      }
+    },
+    {
+      "when": {
+        "position": "north",
+        "bottom": "false"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_low"
+      }
+    },
+    {
+      "when": {
+        "position": "north",
+        "bottom": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_foot"
+      }
+    },
+    {
+      "when": {
+        "position": "north",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_cleat"
+      }
+    },
+    {
+      "when": {
+        "position": "east"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "position": "east",
+        "bottom": "false"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_low",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "position": "east",
+        "bottom": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_foot",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "position": "east",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_cleat",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "position": "south"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "position": "south",
+        "bottom": "false"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_low",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "position": "south",
+        "bottom": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_foot",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "position": "south",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_cleat",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "position": "west"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "position": "west",
+        "bottom": "false"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_low",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "position": "west",
+        "bottom": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_foot",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "position": "west",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:garage/hanger_edge_cleat",
+        "y": 270
+      }
+    }
+  ]
+}

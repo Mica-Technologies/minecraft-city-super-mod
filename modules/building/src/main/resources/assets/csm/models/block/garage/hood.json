@@ -1,0 +1,67 @@
+{
+  "textures": {
+    "hood": "csm:blocks/garage/garage_hood",
+    "particle": "csm:blocks/garage/garage_hood"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        16,
+        -8
+      ],
+      "to": [
+        16,
+        26,
+        0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hood",
+          "uv": [
+            0,
+            6,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#hood",
+          "uv": [
+            0,
+            8,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#hood",
+          "uv": [
+            0,
+            0,
+            16,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#hood",
+          "uv": [
+            0,
+            6,
+            8,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#hood",
+          "uv": [
+            8,
+            6,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

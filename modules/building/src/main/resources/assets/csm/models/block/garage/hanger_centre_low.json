@@ -1,0 +1,144 @@
+{
+  "textures": {
+    "strap": "csm:blocks/garage/garage_perforated",
+    "particle": "csm:blocks/garage/garage_perforated"
+  },
+  "elements": [
+    {
+      "from": [
+        7.25,
+        0,
+        7.25
+      ],
+      "to": [
+        8.75,
+        4.5,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            11.5,
+            8.75,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            11.5,
+            8.75,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#strap",
+          "uv": [
+            8,
+            11.5,
+            8.75,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            11.5,
+            8.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            7.25,
+            8.75,
+            8.0
+          ]
+        },
+        "down": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            8,
+            8.75,
+            8.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.25,
+        0,
+        8
+      ],
+      "to": [
+        8,
+        4.5,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#strap",
+          "uv": [
+            8,
+            11.5,
+            8.75,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            11.5,
+            8.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            11.5,
+            8.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#strap",
+          "uv": [
+            8,
+            11.5,
+            8.75,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            8,
+            8.0,
+            8.75
+          ]
+        },
+        "down": {
+          "texture": "#strap",
+          "uv": [
+            7.25,
+            7.25,
+            8.0,
+            8.0
+          ]
+        }
+      }
+    }
+  ]
+}

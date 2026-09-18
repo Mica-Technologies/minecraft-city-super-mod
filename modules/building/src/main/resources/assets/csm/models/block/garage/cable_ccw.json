@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "cable": "csm:blocks/garage/garage_cable",
+    "particle": "csm:blocks/garage/garage_cable"
+  },
+  "elements": [
+    {
+      "from": [
+        1.6,
+        0,
+        -0.3
+      ],
+      "to": [
+        1.9,
+        16,
+        0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cable",
+          "uv": [
+            14.1,
+            0,
+            14.4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cable",
+          "uv": [
+            1.6,
+            0,
+            1.9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cable",
+          "uv": [
+            0,
+            0,
+            0.3,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cable",
+          "uv": [
+            15.7,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#cable",
+          "uv": [
+            1.6,
+            15.7,
+            1.9,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#cable",
+          "uv": [
+            1.6,
+            0,
+            1.9,
+            0.3
+          ]
+        }
+      }
+    }
+  ]
+}
