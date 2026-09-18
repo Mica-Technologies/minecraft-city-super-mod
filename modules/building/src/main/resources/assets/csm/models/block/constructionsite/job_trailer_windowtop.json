@@ -16,17 +16,17 @@
     {
       "from": [
         0,
-        15.5,
-        0
+        0,
+        0.5
       ],
       "to": [
         16,
-        15.5,
-        16
+        16,
+        0.5
       ],
       "faces": {
-        "up": {
-          "texture": "#roof",
+        "north": {
+          "texture": "#windowtop",
           "uv": [
             0,
             0,

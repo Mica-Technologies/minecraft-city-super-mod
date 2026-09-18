@@ -2,6 +2,9 @@
   "textures": {
     "wall": "csm:blocks/constructionsite/trailer_wall",
     "window": "csm:blocks/constructionsite/trailer_window",
+    "windowbottom": "csm:blocks/constructionsite/trailer_window_bottom",
+    "windowtop": "csm:blocks/constructionsite/trailer_window_top",
+    "windowmiddle": "csm:blocks/constructionsite/trailer_window_middle",
     "doorlow": "csm:blocks/constructionsite/trailer_door_lower",
     "doorhigh": "csm:blocks/constructionsite/trailer_door_upper",
     "roof": "csm:blocks/constructionsite/trailer_roof",

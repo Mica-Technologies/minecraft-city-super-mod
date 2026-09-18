@@ -41,12 +41,13 @@ import net.minecraft.world.World;
  *       with a lip along the top, and only its walls and floor collide, so it can be filled.</li>
  *   <li>The <b>job trailer</b> is three blocks that join each other -- plain wall, window and door
  *       -- so a trailer is built with its windows and door where you want them. A door stacked on
- *       a door draws the door's upper half.</li>
+ *       a door draws the door's upper half, and windows stacked on windows are one tall window,
+ *       framed only at its top and bottom.</li>
  * </ul>
  *
- * <p>Stored: the facing, which only a container uses. The six neighbours and whether a door has a
- * door below it are actual state. The models come from
- * {@code dev-env-utils/scripts/gen_facilities.py}.</p>
+ * <p>Stored: the facing, which only a container uses. The six neighbours, and whether the same
+ * block is below and above (for a door's halves and a tall window), are actual state. The models
+ * come from {@code dev-env-utils/scripts/gen_facilities.py}.</p>
  *
  * @version 1.0
  * @since 2026.9
@@ -62,6 +63,8 @@ public class BlockSiteShell extends AbstractBlock {
   public static final PropertyBool DOWN = PropertyBool.create("down");
   /** A door block with another door block under it: it draws the door's upper half. */
   public static final PropertyBool UPPER = PropertyBool.create("upper");
+  /** The same block above: a window stacked under a window leaves its top open to join it. */
+  public static final PropertyBool TOPPED = PropertyBool.create("topped");
 
   /** Steel that comes down by hand, as the scaffold's does. */
   private static final Material SHELL_STEEL = new Material(MapColor.IRON);
@@ -109,7 +112,8 @@ public class BlockSiteShell extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, UPPER);
+    return new BlockStateContainer(this, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, UPPER,
+        TOPPED);
   }
 
   @Override
@@ -147,7 +151,8 @@ public class BlockSiteShell extends AbstractBlock {
         .withProperty(WEST, joins(worldIn, pos.west()))
         .withProperty(UP, joins(worldIn, pos.up()))
         .withProperty(DOWN, joins(worldIn, pos.down()))
-        .withProperty(UPPER, worldIn.getBlockState(pos.down()).getBlock() == this);
+        .withProperty(UPPER, worldIn.getBlockState(pos.down()).getBlock() == this)
+        .withProperty(TOPPED, worldIn.getBlockState(pos.up()).getBlock() == this);
   }
 
   /**
