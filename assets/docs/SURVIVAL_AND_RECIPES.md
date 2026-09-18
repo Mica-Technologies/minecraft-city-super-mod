@@ -122,7 +122,9 @@ Rules are applied in this order:
    vinyl is 2 paper + any dye, and wood siding is 2 planks. Metal and panel cladding is 2 Sheet
    Metal + a Fastener Kit, and chain-link fencing and its barbed-wire top an iron ingot + a
    Fastener Kit. Glazing is vanilla glass (panes from glass panes): clear glass alone, tinted,
-   one-way and frosted + a dye, wired + a Fastener Kit, bullet-resistant three of it. In
+   one-way and frosted + a dye, wired + a Fastener Kit, bullet-resistant three of it. A garage
+   door is a Sheet Metal + a Fastener Kit, the security grille an iron ingot + a Fastener Kit, the
+   opener an Enclosure Shell + a Control Board + a Wiring Harness, and a hanger a Fastener Kit. In
    Interior Finishes, a venetian blind is a Sheet Metal, shades and vertical blinds 2 paper, and
    curtains 2 paper + a dye; the ceiling tiles keep Concrete Mix + a clay ball. The Construction Site tab is priced by noun: scaffold is a Pole Section
    + planks, formwork 2 planks + a Fastener Kit, a shore a Pole Section + a Fastener Kit, rebar an

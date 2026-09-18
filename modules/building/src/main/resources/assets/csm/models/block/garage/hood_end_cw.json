@@ -1,0 +1,67 @@
+{
+  "textures": {
+    "plate": "csm:blocks/garage/garage_plate",
+    "particle": "csm:blocks/garage/garage_plate"
+  },
+  "elements": [
+    {
+      "from": [
+        16,
+        15,
+        -9
+      ],
+      "to": [
+        16.5,
+        27,
+        0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            15.5,
+            0.0,
+            16.0,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            7,
+            0.0,
+            16,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            0.0,
+            9,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            7,
+            0.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            0,
+            0.5,
+            9
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "textures": {
+    "chain": "csm:blocks/garage/garage_chain",
+    "particle": "csm:blocks/garage/garage_chain"
+  },
+  "elements": [
+    {
+      "from": [
+        16.5,
+        0,
+        -7.25
+      ],
+      "to": [
+        17,
+        21,
+        -6.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chain",
+          "uv": [
+            15,
+            0.0,
+            15.5,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#chain",
+          "uv": [
+            0.5,
+            0.0,
+            1.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#chain",
+          "uv": [
+            6.75,
+            0.0,
+            7.25,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#chain",
+          "uv": [
+            8.75,
+            0.0,
+            9.25,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#chain",
+          "uv": [
+            0.5,
+            8.75,
+            1.0,
+            9.25
+          ]
+        },
+        "down": {
+          "texture": "#chain",
+          "uv": [
+            0.5,
+            6.75,
+            1.0,
+            7.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        16.5,
+        0,
+        -1.25
+      ],
+      "to": [
+        17,
+        21,
+        -0.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chain",
+          "uv": [
+            15,
+            0.0,
+            15.5,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#chain",
+          "uv": [
+            0.5,
+            0.0,
+            1.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#chain",
+          "uv": [
+            0.75,
+            0.0,
+            1.25,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#chain",
+          "uv": [
+            14.75,
+            0.0,
+            15.25,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#chain",
+          "uv": [
+            0.5,
+            14.75,
+            1.0,
+            15.25
+          ]
+        },
+        "down": {
+          "texture": "#chain",
+          "uv": [
+            0.5,
+            0.75,
+            1.0,
+            1.25
+          ]
+        }
+      }
+    }
+  ]
+}

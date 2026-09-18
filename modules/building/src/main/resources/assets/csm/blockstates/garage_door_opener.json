@@ -1,0 +1,512 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:garage/garage_door_opener_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_motor"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_motor",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_motor",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_motor",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_cleat"
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_cleat",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_cleat",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_cleat",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "0",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_0.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "0",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "0",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "0",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "1",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_1.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "1",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_1.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "1",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_1.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "1",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_1.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "2",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_2.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "2",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_2.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "2",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_2.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "2",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_2.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "3",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_3.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "3",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_3.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "3",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_3.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "3",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_3.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "4",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_4.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "4",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_4.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "4",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_4.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "4",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_4.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "5",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_5.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "5",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_5.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "5",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_5.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "5",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_5.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "6",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_6.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "6",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_6.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "6",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_6.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "6",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_6.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "7",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_7.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "7",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_7.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "7",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_7.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "7",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_7.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "8",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_8.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "8",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_8.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "8",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_8.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "8",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_8.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "9",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_9.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "9",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_9.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "9",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_9.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "9",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_9.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "length": "10",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_10.obj"
+      }
+    },
+    {
+      "when": {
+        "length": "10",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_10.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "length": "10",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_10.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "length": "10",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/opener_rail_10.obj",
+        "y": 270
+      }
+    }
+  ]
+}

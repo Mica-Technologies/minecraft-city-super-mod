@@ -5,6 +5,10 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGlazed;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGroundface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuSplitface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuStandard;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorHanger;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorOpener;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGlazing;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGlazingPane;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlackMetal;
@@ -216,5 +220,14 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockGlazingPane("glass_pane_bullet")); // Bullet-Resistant Glass Pane
     initTabBlock(new BlockGlazing("glass_frosted")); // Frosted Glass
     initTabBlock(new BlockGlazingPane("glass_pane_frosted")); // Frosted Glass Pane
+
+    // Garage doors: built to the size of the opening, animated only while they move.
+    initTabBlock(new BlockGarageDoor("garage_door_sectional_white")); // Garage Door (White Raised Panel)
+    initTabBlock(new BlockGarageDoor("garage_door_sectional_windowed")); // Garage Door (Windowed)
+    initTabBlock(new BlockGarageDoor("garage_door_sectional_commercial")); // Sectional Door (Commercial Steel)
+    initTabBlock(new BlockGarageDoor("garage_door_rollup_galvanized")); // Roll-Up Door (Galvanized)
+    initTabBlock(new BlockGarageDoor("garage_door_grille")); // Security Grille
+    initTabBlock(BlockGarageDoorOpener.class, fmlPreInitializationEvent); // Garage Door Opener
+    initTabBlock(BlockGarageDoorHanger.class, fmlPreInitializationEvent); // Garage Door Hanger
   }
 }

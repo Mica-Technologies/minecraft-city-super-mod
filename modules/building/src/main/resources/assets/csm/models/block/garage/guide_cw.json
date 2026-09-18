@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "track": "csm:blocks/garage/garage_track",
+    "particle": "csm:blocks/garage/garage_track"
+  },
+  "elements": [
+    {
+      "from": [
+        14.75,
+        0,
+        0.5
+      ],
+      "to": [
+        16,
+        16,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#track",
+          "uv": [
+            0,
+            0,
+            1.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#track",
+          "uv": [
+            14.75,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#track",
+          "uv": [
+            13,
+            0,
+            15.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#track",
+          "uv": [
+            0.5,
+            0,
+            3.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#track",
+          "uv": [
+            14.75,
+            0.5,
+            16.0,
+            3.0
+          ]
+        },
+        "down": {
+          "texture": "#track",
+          "uv": [
+            14.75,
+            13,
+            16.0,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}

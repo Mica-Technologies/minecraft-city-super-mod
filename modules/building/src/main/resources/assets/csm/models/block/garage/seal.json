@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "seal": "csm:blocks/garage/garage_seal",
+    "particle": "csm:blocks/garage/garage_seal"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0.75
+      ],
+      "to": [
+        16,
+        0.5,
+        3.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#seal",
+          "uv": [
+            0,
+            15.5,
+            16,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#seal",
+          "uv": [
+            0,
+            15.5,
+            16,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#seal",
+          "uv": [
+            12.75,
+            15.5,
+            15.25,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#seal",
+          "uv": [
+            0.75,
+            15.5,
+            3.25,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#seal",
+          "uv": [
+            0,
+            0.75,
+            16,
+            3.25
+          ]
+        },
+        "down": {
+          "texture": "#seal",
+          "uv": [
+            0,
+            12.75,
+            16,
+            15.25
+          ]
+        }
+      }
+    }
+  ]
+}

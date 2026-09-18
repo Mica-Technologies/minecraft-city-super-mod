@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "179 blocks in this tab"
+!!! info "186 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -86,6 +86,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Fieldstone Veneer Stairs | `csm:stone_fieldstone_stairs` | 2 | 10 | pickaxe | 1 |
 | Frosted Glass | `csm:glass_frosted` |  |  | pickaxe | 0 |
 | Frosted Glass Pane | `csm:glass_pane_frosted` |  |  | pickaxe | 0 |
+| Garage Door (White Raised Panel) | `csm:garage_door_sectional_white` | 2 | 10 | pickaxe | 0 |
+| Garage Door (Windowed) | `csm:garage_door_sectional_windowed` | 2 | 10 | pickaxe | 0 |
+| Garage Door Hanger | `csm:garage_door_hanger` | 1 | 5 | pickaxe | 0 |
+| Garage Door Opener | `csm:garage_door_opener` | 1 | 5 | pickaxe | 0 |
 | Glazed Block | `csm:cmu_glazed` | 2 | 10 | pickaxe | 1 |
 | Glazed Block Fence | `csm:cmu_glazed_fence` | 2 | 10 | pickaxe | 1 |
 | Glazed Block Slab | `csm:cmu_glazed_slab` | 2 | 10 | pickaxe | 1 |
@@ -156,10 +160,13 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Red Metal Fence | `csm:redmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Red Metal Slab | `csm:redmetal_slab` | 2 | 10 | pickaxe | 1 |
 | Red Metal Stairs | `csm:redmetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Roll-Up Door (Galvanized) | `csm:garage_door_rollup_galvanized` | 2 | 10 | pickaxe | 0 |
 | Sand Float Stucco | `csm:stucco_sandfloat` | 2 | 10 | pickaxe | 1 |
 | Sand Float Stucco Fence | `csm:stucco_sandfloat_fence` | 2 | 10 | pickaxe | 1 |
 | Sand Float Stucco Slab | `csm:stucco_sandfloat_slab` | 2 | 10 | pickaxe | 1 |
 | Sand Float Stucco Stairs | `csm:stucco_sandfloat_stairs` | 2 | 10 | pickaxe | 1 |
+| Sectional Door (Commercial Steel) | `csm:garage_door_sectional_commercial` | 2 | 10 | pickaxe | 0 |
+| Security Grille | `csm:garage_door_grille` | 2 | 10 | pickaxe | 0 |
 | Silver Metal | `csm:silvermetal` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Fence | `csm:silvermetal_fence` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Slab | `csm:silvermetal_slab` | 2 | 10 | pickaxe | 1 |

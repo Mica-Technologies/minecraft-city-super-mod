@@ -1,0 +1,423 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:garage/garage_door_rollup_galvanized_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "ccw": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/guide_ccw"
+      }
+    },
+    {
+      "when": {
+        "ccw": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/guide_ccw",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "ccw": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/guide_ccw",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "ccw": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/guide_ccw",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cw": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/guide_cw"
+      }
+    },
+    {
+      "when": {
+        "cw": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/guide_cw",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cw": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/guide_cw",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cw": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/guide_cw",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/hood"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/hood",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/hood",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/hood",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "ccw": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/hood_end_ccw"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "ccw": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/hood_end_ccw",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "ccw": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/hood_end_ccw",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "ccw": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/hood_end_ccw",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/hood_end_cw"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/hood_end_cw",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/hood_end_cw",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/hood_end_cw",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/chain_wheel"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/chain_wheel",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/chain_wheel",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/chain_wheel",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "cw": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/hand_chain"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "cw": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/hand_chain",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "cw": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/hand_chain",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "cw": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/hand_chain",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/hand_chain_top"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/hand_chain_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/hand_chain_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "cw": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/hand_chain_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_curtain"
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_curtain",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_curtain",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_curtain",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_bar"
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_bar",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_bar",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_bar",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -148,6 +148,14 @@ def cost_for(registry, info, ancestors):
             if has_word(registry, "vinyl"):
                 return ("paper x2", "dye")
             return ("planks x2",)
+        if has_word(registry, "opener"):
+            return ("ENCLOSURE_SHELL", "CONTROL_BOARD", "WIRING_HARNESS")
+        if has_word(registry, "hanger"):
+            return ("FASTENER_KIT",)
+        if has_word(registry, "door"):
+            return ("SHEET_METAL", "FASTENER_KIT")
+        if has_word(registry, "grille"):
+            return ("iron_ingot", "FASTENER_KIT")
         if has_word(registry, "glass"):
             glass = "glass_pane" if has_word(registry, "pane") else "glass"
             if has_word(registry, "bullet"):
