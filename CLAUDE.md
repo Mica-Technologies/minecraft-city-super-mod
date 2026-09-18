@@ -307,6 +307,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   why the track is left out between courses, why insulation needed sub-blocks to be obtainable at
   all, why there are no roof trusses, and the traps (a narrow member's UV window, `registerModels`
   and metadata, an `OR` that cannot take a sibling key, plates priced as brackets)
+- `assets/docs/WALL_MATERIALS.md` -- Concrete block, brick, stucco, siding, cladding and stone
+  veneer: the six generators and the set shape they share, why brick is 32 px, why brick trims are
+  blocks and not a state, how each material is told from its nearest neighbour, the name-driven
+  Fabricator pricing, and the traps (a name decides a price, fine detail mipmaps away)
 - `assets/docs/FIRE_ALARM_SYSTEM.md` -- MovingSound architecture, channel system, sound standards, full inventory
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
 - `assets/docs/LANE_CONTROL_SYSTEM.md` -- Reversible lanes: the lane control signal, its own

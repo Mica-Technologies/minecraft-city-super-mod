@@ -59,7 +59,7 @@ making a city look and behave like one.
 | **Lighting** | Street and area lighting with a four-state on/off control, plus a decorative pendant and sconce family. |
 | **HVAC** | Heating and cooling that simulates room temperature rather than just looking the part. |
 | **Power grid** | Utility poles and distribution hardware carrying Forge Energy. |
-| **Building materials** | Concrete, brick, metal and tile with matching stairs, slabs and fences. |
+| **Building materials** | Concrete block, brick, stucco, siding, metal cladding, stone veneer and coloured metal, with matching stairs, slabs and fences. |
 
 It is aimed at creative building, but **everything is obtainable in survival** through a two-tier
 chain: vanilla ores become CSM parts at a crafting table, and parts become blocks in the CSM
