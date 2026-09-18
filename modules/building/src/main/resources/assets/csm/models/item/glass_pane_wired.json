@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "csm:items/glazing/glass_pane_wired"
+  }
+}

@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "163 blocks in this tab"
+!!! info "179 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -23,10 +23,14 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Blue Metal Fence | `csm:bluemetal_fence` | 2 | 10 | pickaxe | 1 |
 | Blue Metal Slab | `csm:bluemetal_slab` | 2 | 10 | pickaxe | 1 |
 | Blue Metal Stairs | `csm:bluemetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Blue Tinted Glass | `csm:glass_blue` |  |  | pickaxe | 0 |
+| Blue Tinted Glass Pane | `csm:glass_pane_blue` |  |  | pickaxe | 0 |
 | Board and Batten Siding | `csm:siding_boardbatten` | 2 | 5 | axe | 0 |
 | Board and Batten Siding Fence | `csm:siding_boardbatten_fence` | 2 | 5 | axe | 0 |
 | Board and Batten Siding Slab | `csm:siding_boardbatten_slab` | 2 | 5 | axe | 0 |
 | Board and Batten Siding Stairs | `csm:siding_boardbatten_stairs` | 2 | 5 | axe | 0 |
+| Bronze Tinted Glass | `csm:glass_bronze` |  |  | pickaxe | 0 |
+| Bronze Tinted Glass Pane | `csm:glass_pane_bronze` |  |  | pickaxe | 0 |
 | Brown Brick | `csm:brick_brown` | 2 | 10 | pickaxe | 1 |
 | Brown Brick (Header Course) | `csm:brick_brown_header` | 2 | 10 | pickaxe | 1 |
 | Brown Brick (Soldier Course) | `csm:brick_brown_soldier` | 2 | 10 | pickaxe | 1 |
@@ -41,6 +45,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Buff Brick Fence | `csm:brick_buff_fence` | 2 | 10 | pickaxe | 1 |
 | Buff Brick Slab | `csm:brick_buff_slab` | 2 | 10 | pickaxe | 1 |
 | Buff Brick Stairs | `csm:brick_buff_stairs` | 2 | 10 | pickaxe | 1 |
+| Bullet-Resistant Glass | `csm:glass_bullet` |  |  | pickaxe | 0 |
+| Bullet-Resistant Glass Pane | `csm:glass_pane_bullet` |  |  | pickaxe | 0 |
 | Cast Stone Veneer | `csm:stone_cast` | 2 | 10 | pickaxe | 1 |
 | Cast Stone Veneer Fence | `csm:stone_cast_fence` | 2 | 10 | pickaxe | 1 |
 | Cast Stone Veneer Slab | `csm:stone_cast_slab` | 2 | 10 | pickaxe | 1 |
@@ -52,6 +58,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Chain-Link Barbed Wire Top | `csm:chainlink_barbed_top` |  |  |  |  |
 | Chain-Link Fence | `csm:chainlink_fence` |  |  |  |  |
 | Chain-Link Fence (Black) | `csm:chainlink_fence_black` |  |  |  |  |
+| Clear Glass | `csm:glass_clear` |  |  | pickaxe | 0 |
+| Clear Glass Pane | `csm:glass_pane_clear` |  |  | pickaxe | 0 |
 | Composite Panel Cladding | `csm:cladding_composite` | 3 | 10 | pickaxe | 1 |
 | Composite Panel Cladding Fence | `csm:cladding_composite_fence` | 3 | 10 | pickaxe | 1 |
 | Composite Panel Cladding Slab | `csm:cladding_composite_slab` | 3 | 10 | pickaxe | 1 |
@@ -76,6 +84,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Fieldstone Veneer Fence | `csm:stone_fieldstone_fence` | 2 | 10 | pickaxe | 1 |
 | Fieldstone Veneer Slab | `csm:stone_fieldstone_slab` | 2 | 10 | pickaxe | 1 |
 | Fieldstone Veneer Stairs | `csm:stone_fieldstone_stairs` | 2 | 10 | pickaxe | 1 |
+| Frosted Glass | `csm:glass_frosted` |  |  | pickaxe | 0 |
+| Frosted Glass Pane | `csm:glass_pane_frosted` |  |  | pickaxe | 0 |
 | Glazed Block | `csm:cmu_glazed` | 2 | 10 | pickaxe | 1 |
 | Glazed Block Fence | `csm:cmu_glazed_fence` | 2 | 10 | pickaxe | 1 |
 | Glazed Block Slab | `csm:cmu_glazed_slab` | 2 | 10 | pickaxe | 1 |
@@ -91,6 +101,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Grey Brick Fence | `csm:brick_grey_fence` | 2 | 10 | pickaxe | 1 |
 | Grey Brick Slab | `csm:brick_grey_slab` | 2 | 10 | pickaxe | 1 |
 | Grey Brick Stairs | `csm:brick_grey_stairs` | 2 | 10 | pickaxe | 1 |
+| Grey Tinted Glass | `csm:glass_grey` |  |  | pickaxe | 0 |
+| Grey Tinted Glass Pane | `csm:glass_pane_grey` |  |  | pickaxe | 0 |
 | Ground-Face Block | `csm:cmu_groundface` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block Fence | `csm:cmu_groundface_fence` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block Slab | `csm:cmu_groundface_slab` | 2 | 10 | pickaxe | 1 |
@@ -119,6 +131,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Magenta Metal Fence | `csm:magentametal_fence` | 2 | 10 | pickaxe | 1 |
 | Magenta Metal Slab | `csm:magentametal_slab` | 2 | 10 | pickaxe | 1 |
 | Magenta Metal Stairs | `csm:magentametal_stairs` | 2 | 10 | pickaxe | 1 |
+| One-Way Glass | `csm:glass_oneway` |  |  | pickaxe | 0 |
+| One-Way Glass Pane | `csm:glass_pane_oneway` |  |  | pickaxe | 0 |
 | Orange Metal | `csm:orangemetal` | 2 | 10 | pickaxe | 1 |
 | Orange Metal Fence | `csm:orangemetal_fence` | 2 | 10 | pickaxe | 1 |
 | Orange Metal Slab | `csm:orangemetal_slab` | 2 | 10 | pickaxe | 1 |
@@ -170,6 +184,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | White Metal Fence | `csm:whitemetal_fence` | 2 | 10 | pickaxe | 1 |
 | White Metal Slab | `csm:whitemetal_slab` | 2 | 10 | pickaxe | 1 |
 | White Metal Stairs | `csm:whitemetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Wired Glass | `csm:glass_wired` |  |  | pickaxe | 0 |
+| Wired Glass Pane | `csm:glass_pane_wired` |  |  | pickaxe | 0 |
 | Yellow Metal | `csm:yellowmetal` | 2 | 10 | pickaxe | 1 |
 | Yellow Metal Fence | `csm:yellowmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Yellow Metal Slab | `csm:yellowmetal_slab` | 2 | 10 | pickaxe | 1 |
