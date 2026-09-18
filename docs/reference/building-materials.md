@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "60 blocks in this tab"
+!!! info "76 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -19,14 +19,26 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Blue Metal Fence | `csm:bluemetal_fence` | 2 | 10 | pickaxe | 1 |
 | Blue Metal Slab | `csm:bluemetal_slab` | 2 | 10 | pickaxe | 1 |
 | Blue Metal Stairs | `csm:bluemetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Concrete Block | `csm:cmu_standard` | 2 | 10 | pickaxe | 1 |
+| Concrete Block Fence | `csm:cmu_standard_fence` | 2 | 10 | pickaxe | 1 |
+| Concrete Block Slab | `csm:cmu_standard_slab` | 2 | 10 | pickaxe | 1 |
+| Concrete Block Stairs | `csm:cmu_standard_stairs` | 2 | 10 | pickaxe | 1 |
 | Copper Metal | `csm:coppermetal` | 2 | 10 | pickaxe | 1 |
 | Copper Metal Fence | `csm:coppermetal_fence` | 2 | 10 | pickaxe | 1 |
 | Copper Metal Slab | `csm:coppermetal_slab` | 2 | 10 | pickaxe | 1 |
 | Copper Metal Stairs | `csm:coppermetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Glazed Block | `csm:cmu_glazed` | 2 | 10 | pickaxe | 1 |
+| Glazed Block Fence | `csm:cmu_glazed_fence` | 2 | 10 | pickaxe | 1 |
+| Glazed Block Slab | `csm:cmu_glazed_slab` | 2 | 10 | pickaxe | 1 |
+| Glazed Block Stairs | `csm:cmu_glazed_stairs` | 2 | 10 | pickaxe | 1 |
 | Green Metal | `csm:greenmetal` | 2 | 10 | pickaxe | 1 |
 | Green Metal Fence | `csm:greenmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Green Metal Slab | `csm:greenmetal_slab` | 2 | 10 | pickaxe | 1 |
 | Green Metal Stairs | `csm:greenmetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Ground-Face Block | `csm:cmu_groundface` | 2 | 10 | pickaxe | 1 |
+| Ground-Face Block Fence | `csm:cmu_groundface_fence` | 2 | 10 | pickaxe | 1 |
+| Ground-Face Block Slab | `csm:cmu_groundface_slab` | 2 | 10 | pickaxe | 1 |
+| Ground-Face Block Stairs | `csm:cmu_groundface_stairs` | 2 | 10 | pickaxe | 1 |
 | Iridescent Metal | `csm:iridescentmetal` | 2 | 10 | pickaxe | 1 |
 | Iridescent Metal Fence | `csm:iridescentmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Iridescent Metal Slab | `csm:iridescentmetal_slab` | 2 | 10 | pickaxe | 1 |
@@ -63,6 +75,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Silver Metal Fence | `csm:silvermetal_fence` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Slab | `csm:silvermetal_slab` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Stairs | `csm:silvermetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Split-Face Block | `csm:cmu_splitface` | 2 | 10 | pickaxe | 1 |
+| Split-Face Block Fence | `csm:cmu_splitface_fence` | 2 | 10 | pickaxe | 1 |
+| Split-Face Block Slab | `csm:cmu_splitface_slab` | 2 | 10 | pickaxe | 1 |
+| Split-Face Block Stairs | `csm:cmu_splitface_stairs` | 2 | 10 | pickaxe | 1 |
 | White Metal | `csm:whitemetal` | 2 | 10 | pickaxe | 1 |
 | White Metal Fence | `csm:whitemetal_fence` | 2 | 10 | pickaxe | 1 |
 | White Metal Slab | `csm:whitemetal_slab` | 2 | 10 | pickaxe | 1 |

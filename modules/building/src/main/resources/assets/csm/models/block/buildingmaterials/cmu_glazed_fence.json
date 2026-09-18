@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_side",
+  "textures": {
+    "texture": "csm:blocks/buildingmaterials/cmu/cmu_glazed",
+    "particle": "csm:blocks/buildingmaterials/cmu/cmu_glazed"
+  }
+}

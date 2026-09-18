@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/buildingmaterials/cmu/cmu_splitface_top",
+      "bottom": "csm:blocks/buildingmaterials/cmu/cmu_splitface_top",
+      "side": "csm:blocks/buildingmaterials/cmu/cmu_splitface",
+      "particle": "csm:blocks/buildingmaterials/cmu/cmu_splitface"
+    }
+  },
+  "variants": {
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

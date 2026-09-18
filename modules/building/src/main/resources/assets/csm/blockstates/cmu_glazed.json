@@ -1,0 +1,20 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/buildingmaterials/cmu/cmu_glazed_top",
+      "bottom": "csm:blocks/buildingmaterials/cmu/cmu_glazed_top",
+      "side": "csm:blocks/buildingmaterials/cmu/cmu_glazed",
+      "particle": "csm:blocks/buildingmaterials/cmu/cmu_glazed"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}
