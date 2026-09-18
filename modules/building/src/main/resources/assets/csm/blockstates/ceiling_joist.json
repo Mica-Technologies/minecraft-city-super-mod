@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/ceiling_joist"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/ceiling_joist",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/ceiling_joist"
+    }
+  }
+}

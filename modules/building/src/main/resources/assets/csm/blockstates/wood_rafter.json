@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "csm:buildingmaterials/wood_rafter"
+    },
+    "facing=east": {
+      "model": "csm:buildingmaterials/wood_rafter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:buildingmaterials/wood_rafter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:buildingmaterials/wood_rafter",
+      "y": 270
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/wood_rafter"
+    }
+  }
+}

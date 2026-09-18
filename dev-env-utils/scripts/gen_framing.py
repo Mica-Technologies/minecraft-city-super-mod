@@ -500,7 +500,47 @@ def span_models():
         _span(12, 13, 0, 16, 15, 16, broad="#topping"),
         _span(0, 15, 0, 16, 16, 16, broad="#topping"),
     ]
+    # A ceiling joist sits at the TOP of its block, on the plate, with the ceiling hung under it.
+    # Shallower than a floor joist because it carries a ceiling and not a floor.
+    models["span_ceiling_joist"] = [_span(6, 10, 0, 10, 16, 16)]
     return models
+
+
+# --------------------------------------------------------------------------------------------
+# The rafter
+# --------------------------------------------------------------------------------------------
+#
+# A pitched ROOF TRUSS cannot be one block: element rotation allows one axis and only 22.5 or 45
+# degrees, and a real truss spans six to twelve blocks with its chord rising the whole way, so the
+# chord leaves its block after one or two. A RAFTER at 45 degrees has no such problem. It runs
+# corner to corner of its own block, so stacking blocks diagonally gives an unbroken 12:12 roof
+# slope that carries on as far as it is built -- which is the thing the trusses were wanted for.
+#
+# The member is drawn longer than the block and then rotated WITHOUT rescale. Rotating a 16-long
+# box by 45 leaves it spanning only 11.3 of the block, with a gap at each corner that would show
+# as a break at every step of the slope. Drawn 22.6 long it lands exactly corner to corner.
+# 16 * sqrt(2) = 22.63 is the block's diagonal, so the member starts 3.31 past each face.
+# Rounded up a little, so consecutive rafters overlap rather than leaving a hairline gap at
+# every step of the slope.
+RAFTER_LEN = 3.5
+
+
+def rafter_model():
+    return [_span(6, 5, -RAFTER_LEN, 10, 11, 16 + RAFTER_LEN,
+                  rotation={"origin": [8, 8, 8], "axis": "x", "angle": 45})]
+
+
+def rafter_blockstate(name):
+    """Four facings, not two axes: a roof has a slope each side of its ridge, and a quarter turn
+    cannot mirror a slope."""
+    model = MODEL_REF % name
+    return {"variants": {
+        "facing=north": {"model": model},
+        "facing=east": {"model": model, "y": 90},
+        "facing=south": {"model": model, "y": 180},
+        "facing=west": {"model": model, "y": 270},
+        "inventory": {"model": model},
+    }}
 
 
 def span_blockstate(name):
@@ -529,6 +569,14 @@ SPANS = [
      "steel_track", "concrete_topping",
      "Metal Deck with Concrete", "Chapa Colaborante con Hormig\u00f3n",
      "Verbunddecke", "Takpl\u00e5t med Betong"),
+    ("ceiling_joist", "BlockCeilingJoist", "span_ceiling_joist", "wood_plate", None,
+     "Ceiling Joist", "Vigueta de Techo", "Deckenbalken", "Takbj\u00e4lke"),
+]
+
+# Drawn and rotated differently from the spans, so it is listed apart from them.
+RAFTERS = [
+    ("wood_rafter", "BlockWoodRafter", "wood_plate",
+     "Wood Rafter", "Cabio de Madera", "Dachsparren", "Takstol av Tr\u00e4"),
 ]
 
 
@@ -915,6 +963,15 @@ def write_all(tex_dir, shared_dir, model_dir, state_dir):
         _write_json(os.path.join(state_dir, name + ".json"), span_blockstate(name))
         written.append(("state", name + ".json"))
 
+    for name, _cls, body, _en, _es, _de, _sv in RAFTERS:
+        _write_json(os.path.join(model_dir, name + ".json"),
+                    {"parent": "block/block",
+                     "textures": {"body": TEX_REF % body, "particle": TEX_REF % body},
+                     "elements": rafter_model()})
+        written.append(("model", name + ".json"))
+        _write_json(os.path.join(state_dir, name + ".json"), rafter_blockstate(name))
+        written.append(("state", name + ".json"))
+
     return written
 
 
@@ -931,6 +988,8 @@ def fragments():
         idx = {"en_us": 5, "es_es": 6, "de_de": 7, "sv_se": 8}[lang]
         for span in SPANS:
             lines.append("tile.%s.name=%s" % (span[0], span[idx]))
+        for rafter in RAFTERS:
+            lines.append("tile.%s.name=%s" % (rafter[0], rafter[idx - 2]))
         lines.append("")
     lines.append("# tab registration, in CsmTabStructureFraming.initTabElements")
     lines.append("")
