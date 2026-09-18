@@ -14,6 +14,12 @@ a diagonal can be any angle and lands on the chord exactly at the cell's edge, s
 continuous up the whole mast. From any distance it reads as lattice, and it is two quads a face
 on a mast that may be two hundred and fifty blocks tall.
 
+THE 2x2 MAST. Each block is one quarter of a 2x2 section and works out which quarter from its
+neighbours, so nothing is stored but the livery. Only the north-west quarter is drawn; the
+blockstate turns it for the other three. A 2x2 face is two blocks wide, so its X spans a panel
+two blocks high: each block draws its half across and its half up, the half up chosen by whether
+its y is odd or even, so stacked sections stay in step wherever the mast starts.
+
 A ladder runs up the inside of the north face, as on the user's first reference, and a heavier
 base section -- wider chords and anchor plates -- is drawn where the mast stands on something
 that is not mast.
@@ -45,6 +51,7 @@ TEX_REF = sc.TEX_REF
 MODEL_REF = sc.MODEL_REF
 
 NAME = "crane_mast"
+LARGE = "crane_mast_large"
 
 # livery -> (paint colour, name in each language)
 LIVERIES = {
@@ -54,6 +61,8 @@ LIVERIES = {
 }
 LIVERY_ORDER = ["yellow", "red", "white"]
 LANG = ("Tower Crane Mast", "Mástil de Grúa Torre", "Turmdrehkran-Mast", "Tornkranmast")
+LARGE_LANG = ("Tower Crane Mast (2x2)", "Mástil de Grúa Torre (2x2)", "Turmdrehkran-Mast (2x2)",
+              "Tornkranmast (2x2)")
 
 # --------------------------------------------------------------------------------------------
 # Geometry catalogue, in sixteenths
@@ -65,6 +74,9 @@ FACE_INSET = 1.25         # the lacing plane sits mid-chord, this far in from th
 LADDER_RAILS = (6.0, 10.0)
 LADDER_Z = 2.25           # inside the north face's lacing
 RUNG_PITCH = 4.0
+
+LARGE_CHORD = (0.5, 3.0)  # a 2x2 section's chord, at its outer corner only
+LARGE_BASE_CHORD = (0.25, 3.5)
 
 LACE_SIZE = 32            # lacing texture resolution
 LACE_W = 2                # lacing member width in texture pixels
@@ -173,6 +185,67 @@ def base():
     return out
 
 
+def large_chord():
+    """The north-west quarter's chord, at the section's outer corner."""
+    c0, c1 = LARGE_CHORD
+    return [box(c0, 0, c0, c1, 16, c1, "#chord")]
+
+
+def large_base():
+    """The north-west quarter's base: a heavier chord on an anchor plate."""
+    c0, c1 = LARGE_BASE_CHORD
+    return [box(c0, 0, c0, c1, 16, c1, "#chord"), box(0, 0, 0, 4, 1, 4, "#anchor")]
+
+
+def large_lacing(upper):
+    """The north-west quarter's share of its two outer faces' lacing: from its chord to the cell
+    edge, where the next quarter's share carries on. Each face's X spans the whole two-block face
+    and two blocks up, so this quarter shows half of it across and, by ``upper``, half of it up.
+    The two faces take opposite halves across, which is what makes each face whole once the
+    quarter is turned into the other three corners."""
+    c = LARGE_CHORD[1]
+    i = (LARGE_CHORD[0] + LARGE_CHORD[1]) / 2
+    v0, v1 = (0, 8) if upper else (8, 16)
+    return [
+        box(c, 0, i, 16, 16, i, "#lace", faces=("north", "south"), uv=[0, v0, 8, v1]),
+        box(i, 0, c, i, 16, 16, "#lace", faces=("east", "west"), uv=[8, v0, 16, v1]),
+    ]
+
+
+def large_inventory():
+    """A whole 2x2 section, centred on the item's cell (-8..24), for the item icon."""
+    c0, c1 = LARGE_CHORD
+    lo, hi = c0 - 8, 32 - c0 - 8
+    a, b = c1 - 8, 32 - c1 - 8
+    i, o = (c0 + c1) / 2 - 8, 32 - (c0 + c1) / 2 - 8
+    els = []
+    for x0, x1 in ((lo, a), (b, hi)):
+        for z0, z1 in ((lo, a), (b, hi)):
+            els.append(box(x0, 0, z0, x1, 16, z1, "#chord"))
+    full = [0, 0, 16, 16]
+    els += [
+        box(a, 0, i, b, 16, i, "#lace", faces=("north", "south"), uv=full),
+        box(a, 0, o, b, 16, o, "#lace", faces=("north", "south"), uv=full),
+        box(i, 0, a, i, 16, b, "#lace", faces=("east", "west"), uv=full),
+        box(o, 0, a, o, 16, b, "#lace", faces=("east", "west"), uv=full),
+    ]
+    return els
+
+
+# The item icon of a 2x2 section is twice the size of a block, so every view is scaled by half.
+LARGE_DISPLAY = {
+    "gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0], "scale": [0.32, 0.32, 0.32]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.13, 0.13, 0.13]},
+    "fixed": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.25, 0.25, 0.25]},
+    "thirdperson_righthand": {"rotation": [75, 45, 0], "translation": [0, 2.5, 0],
+                              "scale": [0.19, 0.19, 0.19]},
+    "firstperson_righthand": {"rotation": [0, 45, 0], "translation": [0, 0, 0],
+                              "scale": [0.2, 0.2, 0.2]},
+    "firstperson_lefthand": {"rotation": [0, 225, 0], "translation": [0, 0, 0],
+                             "scale": [0.2, 0.2, 0.2]},
+}
+
+
 def _textures(livery):
     return {"chord": TEX_REF % ("crane_chord_" + livery),
             "lace": TEX_REF % ("crane_lace_" + livery),
@@ -196,10 +269,48 @@ def part_models():
         out["%s_%s_base" % (NAME, liv)] = _model(base(), liv)
         out["%s_%s_inventory" % (NAME, liv)] = _model(
             _chords(*CHORD) + lacing() + ladder(), liv, parent="block/block")
+    for liv in LIVERY_ORDER:
+        out["%s_%s_chord" % (LARGE, liv)] = _model(large_chord(), liv)
+        out["%s_%s_base" % (LARGE, liv)] = _model(large_base(), liv)
+        out["%s_%s_lacing_lower" % (LARGE, liv)] = _model(large_lacing(False), liv)
+        out["%s_%s_lacing_upper" % (LARGE, liv)] = _model(large_lacing(True), liv)
+        inv = _model(large_inventory(), liv, parent="block/block")
+        inv["display"] = LARGE_DISPLAY
+        out["%s_%s_inventory" % (LARGE, liv)] = inv
     out[NAME + "_ladder"] = {"textures": {"ladder": TEX_REF % "scaffold_tube",
                                           "particle": TEX_REF % "scaffold_tube"},
                              "elements": ladder()}
     return out
+
+
+# A quarter drawn for the north-west corner, turned into the others. y 90 carries north-west to
+# north-east, 180 to south-east, 270 to south-west.
+CORNERS = (("nw", None), ("ne", 90), ("se", 180), ("sw", 270))
+
+
+def large_blockstate():
+    parts = []
+    for corner, y in CORNERS:
+        def ap(model):
+            a = {"model": MODEL_REF % model}
+            if y is not None:
+                a["y"] = y
+            return a
+        if corner == "nw":
+            parts.append({"when": {"corner": "nw"}, "apply": ap(NAME + "_ladder")})
+        for liv in LIVERY_ORDER:
+            w = {"livery": liv, "corner": corner}
+            parts += [
+                {"when": dict(w, down="true"), "apply": ap("%s_%s_chord" % (LARGE, liv))},
+                {"when": dict(w, down="false"), "apply": ap("%s_%s_base" % (LARGE, liv))},
+                {"when": dict(w, half="lower"),
+                 "apply": ap("%s_%s_lacing_lower" % (LARGE, liv))},
+                {"when": dict(w, half="upper"),
+                 "apply": ap("%s_%s_lacing_upper" % (LARGE, liv))},
+            ]
+    variants = {"inventory_" + liv: {"model": MODEL_REF % ("%s_%s_inventory" % (LARGE, liv))}
+                for liv in LIVERY_ORDER}
+    return {"variants": variants, "multipart": parts}
 
 
 def blockstate():
@@ -233,7 +344,8 @@ def write_all(tex_dir, model_dir, state_dir):
         gen_cmu._write_json(os.path.join(model_dir, name + ".json"), body)
         written.append(("model", name + ".json"))
     gen_cmu._write_json(os.path.join(state_dir, NAME + ".json"), blockstate())
-    written.append(("state", NAME + ".json"))
+    gen_cmu._write_json(os.path.join(state_dir, LARGE + ".json"), large_blockstate())
+    written += [("state", NAME + ".json"), ("state", LARGE + ".json")]
     return written
 
 
@@ -241,13 +353,23 @@ LANGS = gen_cmu.LANGS
 
 
 def lang_entries():
+    """Every mast name: the base name the guidebook and pricing look up, and one per livery."""
     out = []
-    for liv in LIVERY_ORDER:
-        colour = dict(zip(LANGS, LIVERIES[liv][1]))
-        base_name = dict(zip(LANGS, LANG))
-        out.append(("tile.%s.%s.name" % (NAME, liv),
-                    {lang: "%s (%s)" % (base_name[lang], colour[lang]) for lang in LANGS}))
+    for name, names in ((NAME, LANG), (LARGE, LARGE_LANG)):
+        base_name = dict(zip(LANGS, names))
+        out.append(("tile.%s.name" % name, base_name))
+        for liv in LIVERY_ORDER:
+            colour = dict(zip(LANGS, LIVERIES[liv][1]))
+            out.append(("tile.%s.%s.name" % (name, liv),
+                        {lang: sc_join(base_name[lang], colour[lang]) for lang in LANGS}))
     return out
+
+
+def sc_join(base_name, colour):
+    """A livery folded into the name's own bracket if it has one: "Mast (2x2, Yellow)"."""
+    if base_name.endswith(")"):
+        return base_name[:-1] + ", " + colour + ")"
+    return "%s (%s)" % (base_name, colour)
 
 
 def fragments():

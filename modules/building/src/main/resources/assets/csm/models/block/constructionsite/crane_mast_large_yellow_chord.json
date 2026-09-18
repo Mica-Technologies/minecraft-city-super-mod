@@ -1,0 +1,79 @@
+{
+  "textures": {
+    "chord": "csm:blocks/constructionsite/crane_chord_yellow",
+    "lace": "csm:blocks/constructionsite/crane_lace_yellow",
+    "ladder": "csm:blocks/constructionsite/scaffold_tube",
+    "anchor": "csm:blocks/constructionsite/scaffold_jack",
+    "particle": "csm:blocks/constructionsite/crane_chord_yellow"
+  },
+  "elements": [
+    {
+      "from": [
+        0.5,
+        0,
+        0.5
+      ],
+      "to": [
+        3.0,
+        16,
+        3.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chord",
+          "uv": [
+            13.0,
+            0,
+            15.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            0,
+            3.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#chord",
+          "uv": [
+            13.0,
+            0,
+            15.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            0,
+            3.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            0.5,
+            3.0,
+            3.0
+          ]
+        },
+        "down": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            13.0,
+            3.0,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}
