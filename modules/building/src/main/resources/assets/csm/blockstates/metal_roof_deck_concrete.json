@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/metal_roof_deck_concrete"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/metal_roof_deck_concrete",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/metal_roof_deck_concrete"
+    }
+  }
+}
