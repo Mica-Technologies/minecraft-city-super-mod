@@ -86,16 +86,7 @@
         "east": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/temp_fence_screen"
-      }
-    },
-    {
-      "when": {
-        "south": "true"
-      },
-      "apply": {
-        "model": "csm:constructionsite/temp_fence_screen",
-        "y": 90
+        "model": "csm:constructionsite/temp_fence_screen_east"
       }
     },
     {
@@ -103,8 +94,16 @@
         "west": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/temp_fence_screen",
-        "y": 180
+        "model": "csm:constructionsite/temp_fence_screen_west"
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/temp_fence_screen_east",
+        "y": 90
       }
     },
     {
@@ -112,8 +111,8 @@
         "north": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/temp_fence_screen",
-        "y": 270
+        "model": "csm:constructionsite/temp_fence_screen_west",
+        "y": 90
       }
     }
   ]

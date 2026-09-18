@@ -355,9 +355,12 @@ def models():
                                       parent="block/block")
     out["temp_fence_foot"] = _model(temp_foot(), TEMP_TEXTURES, "foot")
     out["temp_fence_half"] = _model(temp_half(False), TEMP_TEXTURES, "frame")
-    out["temp_fence_screen"] = _model(
-        [e for e in temp_half(True) if e["faces"]["north"]["texture"] == "#screen"],
-        TEMP_TEXTURES, "frame")
+    # The screen hangs on one side of the mesh. Turning the east half's screen 180 degrees for the
+    # west half would move it to the other side, so each panel would have it in front of the mesh
+    # on one half and behind it on the other: the west half gets its own, mirrored only in x.
+    screen = [e for e in temp_half(True) if e["faces"]["north"]["texture"] == "#screen"]
+    out["temp_fence_screen_east"] = _model(screen, TEMP_TEXTURES, "frame")
+    out["temp_fence_screen_west"] = _model(_mirror_x(screen), TEMP_TEXTURES, "frame")
     for screen, name in ((False, "temp_fence_inventory"), (True, "temp_fence_screened_inventory")):
         half = temp_half(screen)
         out[name] = _model(temp_foot() + half + _mirror_x(half), TEMP_TEXTURES, "frame",
@@ -431,7 +434,16 @@ def blockstates():
                  {"when": _along_z_only(), "apply": {"model": _ref("temp_fence_foot"), "y": 90}}]
         parts += _sides("temp_fence_half")
         if screen:
-            parts += _sides("temp_fence_screen")
+            # East and west keep the screen on the south side; turned a quarter for a run along z,
+            # both halves put it on the west.
+            for side, model, rot in (("east", "temp_fence_screen_east", 0),
+                                     ("west", "temp_fence_screen_west", 0),
+                                     ("south", "temp_fence_screen_east", 90),
+                                     ("north", "temp_fence_screen_west", 90)):
+                apply = {"model": _ref(model)}
+                if rot:
+                    apply["y"] = rot
+                parts.append({"when": {side: "true"}, "apply": apply})
         out[name] = {"variants": {"inventory": {"model": _ref(name + "_inventory")}},
                      "multipart": parts}
     out["silt_fence"] = {"variants": {"inventory": {"model": _ref("silt_fence_inventory")}},
