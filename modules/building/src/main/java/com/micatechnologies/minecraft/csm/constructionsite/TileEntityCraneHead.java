@@ -188,7 +188,48 @@ public class TileEntityCraneHead extends AbstractTileEntity {
     return compound;
   }
 
-  // --- rendering reach -------------------------------------------------------------------------
+  // --- rendering -------------------------------------------------------------------------------
+
+  /**
+   * A hash of everything the renderer's geometry depends on -- not the slew, which it applies as
+   * a rotation outside the compiled geometry. A change here recompiles it.
+   *
+   * @return the key
+   *
+   * @since 1.0
+   */
+  public int renderKey() {
+    int k = model.ordinal();
+    k = k * 31 + livery.ordinal();
+    k = k * 31 + jibLength;
+    k = k * 31 + getScale();
+    k = k * 31 + Math.round(trolley * 1000F);
+    k = k * 31 + hookDrop;
+    k = k * 31 + Math.round(luff * 10F);
+    return k;
+  }
+
+  /**
+   * Frees the renderer's compiled geometry when the head goes away. Client only; the renderer
+   * class is never touched on a server.
+   *
+   * @since 1.0
+   */
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    if (world != null && world.isRemote) {
+      TileEntityCraneHeadRenderer.release(pos);
+    }
+  }
+
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    if (world != null && world.isRemote) {
+      TileEntityCraneHeadRenderer.release(pos);
+    }
+  }
 
   /**
    * How far the crane reaches from its centre in any direction it could slew to, in blocks.
