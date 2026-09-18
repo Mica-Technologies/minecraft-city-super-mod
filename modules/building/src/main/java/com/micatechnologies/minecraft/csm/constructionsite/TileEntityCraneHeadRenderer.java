@@ -38,7 +38,8 @@ import org.lwjgl.opengl.GL11;
  * changes every frame, so it is drawn here, outside the compiled list: the lens again, bright,
  * and two halos turned to face the camera -- a tight one and a wide soft one -- added onto what
  * is behind them. The halos grow a little with distance, so a lit crane still reads as a red
- * point from far across a city, where the lens itself is less than a pixel.</p>
+ * point from far across a city, where the lens itself is less than a pixel. In daylight the halos
+ * fade -- the wide one almost away -- since a real light by day is a bright lens, not a glow.</p>
  *
  * @version 1.0
  * @since 2026.9
@@ -116,8 +117,20 @@ public class TileEntityCraneHeadRenderer extends TileEntitySpecialRenderer<TileE
     long phase = Math.floorMod(pos.hashCode() * 2654435761L, CYCLE_MS);
     float intensity = flash(CsmRenderUtils.gameMillis(te.getWorld(), partialTicks) + phase);
     if (intensity > 0F && entry.lamps.length > 0) {
-      drawLights(entry.lamps, te, cx, y, cz, intensity);
+      drawLights(entry.lamps, te, cx, y, cz, intensity, ambient(te, light, partialTicks));
     }
+  }
+
+  /**
+   * How bright it is around the crane, 0 (night, or under cover) to 1 (open sky at noon): the
+   * sun's brightness, which also falls in rain, times how much sky the head can see. A halo is
+   * what a light looks like against the dark; in daylight a real one shows as little more than a
+   * bright lens, so the halos are faded by this.
+   */
+  private static float ambient(TileEntityCraneHead te, int light, float partialTicks) {
+    float sun = (te.getWorld().getSunBrightness(partialTicks) - 0.2F) / 0.8F;
+    float sky = ((light >> 20) & 15) / 15F;
+    return Math.max(0F, Math.min(1F, sun)) * sky;
   }
 
   /**
@@ -149,10 +162,13 @@ public class TileEntityCraneHeadRenderer extends TileEntitySpecialRenderer<TileE
 
   /**
    * Draws every lit lamp: the lens, then a tight and a wide halo, each added onto what is behind
-   * it. {@code (cx, y, cz)} is the crane's centre relative to the camera.
+   * it. {@code (cx, y, cz)} is the crane's centre relative to the camera; {@code ambient} (see
+   * {@link #ambient}) fades the halos in daylight, the wide one most, and leaves the lens alone.
    */
   private void drawLights(double[][] lamps, TileEntityCraneHead te, double cx, double y,
-      double cz, float intensity) {
+      double cz, float intensity, float ambient) {
+    float inner = intensity * (1F - 0.6F * ambient);
+    float outer = 0.6F * intensity * (1F - 0.85F * ambient);
     double s = te.getScale();
     double a = Math.toRadians(te.getSlew());
     double cos = Math.cos(a);
@@ -178,8 +194,8 @@ public class TileEntityCraneHeadRenderer extends TileEntitySpecialRenderer<TileE
       double dist = Math.sqrt(px * px + py * py + pz * pz);
       double far = Math.min(dist, 256.0);
       lens(buf, px, py, pz, 0.095 * s, 0.105 * s, intensity);
-      halo(buf, px, py, pz, dist, 0.75 * s + far * 0.012, intensity);
-      halo(buf, px, py, pz, dist, 2.4 * s + far * 0.035, 0.6F * intensity);
+      halo(buf, px, py, pz, dist, 0.75 * s + far * 0.012, inner);
+      halo(buf, px, py, pz, dist, 2.4 * s + far * 0.035, outer);
     }
     tessellator.draw();
 

@@ -139,7 +139,10 @@ the renderer draws, outside the list, the lens again full-bright and two camera-
 `crane_glow.png` (drawn by `gen_crane.py`: a hot core on a long soft tail that reaches zero before
 the quad's edge), added onto what is behind them with depth writes off. The halos grow a little
 with distance -- a lens the size of a block is under a pixel from across a city, and a real light
-reads as a point of light at any range. They are not gated on the strobe-effect config: thirty
+reads as a point of light at any range. By day the halos fade by the sun's brightness times the
+sky the head can see -- the tight one to 40%, the wide one almost away -- since a real light in
+daylight is a bright lens, not a glow; at night, in rain or under cover they are at full. They
+are not gated on the strobe-effect config: thirty
 slow red flashes a minute are not a strobe.
 
 **Configuration** (`TileEntityCraneHead`, NBT short keys `m l j s t h f g cx cz`):
