@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_inventory",
+  "textures": {
+    "texture": "csm:blocks/buildingmaterials/cladding/cladding_corrugated",
+    "particle": "csm:blocks/buildingmaterials/cladding/cladding_corrugated"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "csm:blocks/buildingmaterials/cladding/cladding_standingseam_top",
+    "top": "csm:blocks/buildingmaterials/cladding/cladding_standingseam_top",
+    "side": "csm:blocks/buildingmaterials/cladding/cladding_standingseam"
+  }
+}

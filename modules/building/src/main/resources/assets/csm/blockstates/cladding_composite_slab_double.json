@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/buildingmaterials/cladding/cladding_composite_top",
+      "bottom": "csm:blocks/buildingmaterials/cladding/cladding_composite_top",
+      "side": "csm:blocks/buildingmaterials/cladding/cladding_composite",
+      "particle": "csm:blocks/buildingmaterials/cladding/cladding_composite"
+    }
+  },
+  "variants": {
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

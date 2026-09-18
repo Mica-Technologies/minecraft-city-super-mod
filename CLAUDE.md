@@ -424,6 +424,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_siding.py` -- the four siding profiles (fiber cement lap, board and batten, cedar shingle,
   vinyl), one colour each, as sets on `gen_cmu.py`'s blockstates. Courses are 8 px on a 32 px
   texture so a slab's edge lands on a course line; `--check` fails on drift
+- `gen_cladding.py` -- the four metal and panel cladding profiles (corrugated, standing seam,
+  insulated panel, composite panel). The profile is shaded into a 32 px texture rather than
+  modelled, with every rib pitch dividing the block; `--check` fails on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

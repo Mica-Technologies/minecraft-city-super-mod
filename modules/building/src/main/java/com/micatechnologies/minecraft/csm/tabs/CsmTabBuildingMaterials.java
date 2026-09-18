@@ -32,6 +32,10 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSidingLap;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSidingBoardbatten;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSidingShingle;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSidingVinyl;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCladdingCorrugated;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCladdingStandingseam;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCladdingInsulated;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCladdingComposite;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -171,5 +175,13 @@ public class CsmTabBuildingMaterials extends CsmTab {
         fmlPreInitializationEvent); // Cedar Shingle Siding Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetSidingVinyl.class,
         fmlPreInitializationEvent); // Vinyl Siding Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetCladdingCorrugated.class,
+        fmlPreInitializationEvent); // Corrugated Steel Cladding Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetCladdingStandingseam.class,
+        fmlPreInitializationEvent); // Standing Seam Cladding Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetCladdingInsulated.class,
+        fmlPreInitializationEvent); // Insulated Panel Cladding Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetCladdingComposite.class,
+        fmlPreInitializationEvent); // Composite Panel Cladding Set (Block, Fence, Slab, Stairs)
   }
 }
