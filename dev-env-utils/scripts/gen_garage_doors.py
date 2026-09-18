@@ -78,6 +78,17 @@ FITTINGS = {
                            "Garagentor-Abhängung", "Garageportsupphängning"),
 }
 
+# The wall controls (BlockGarageDoorControl, one class constructed by name), linked to a door by
+# sneak-clicking the control and then the door.
+CONTROLS = {
+    "garage_door_button": ("Garage Door Button", "Pulsador de Puerta de Garaje",
+                           "Garagentor-Taster", "Garageportsknapp"),
+    "garage_door_station": ("Garage Door Control Station", "Botonera de Puerta de Garaje",
+                            "Garagentor-Bedienstation", "Garageportens Manöverpanel"),
+    "garage_door_keypad": ("Garage Door Keypad", "Teclado de Puerta de Garaje",
+                           "Garagentor-Codeschloss", "Garageportens Kodlås"),
+}
+
 # SHARED with BlockGarageDoorOpener.MAX_LENGTH: the longest rail, in blocks of air between the
 # opener and the wall over the door.
 MAX_RAIL = 10
@@ -323,6 +334,56 @@ def bar():
     return _canvas(20261812, (150, 152, 156), 3)[0]
 
 
+def control_plate():
+    """The push button's wall plate: white plastic."""
+    return _canvas(20261822, (232, 230, 224), 2)[0]
+
+
+def control_lamp():
+    """The push button itself, lit from inside: a warm amber, brightest in the middle."""
+    img, px, _ = _canvas(20261823, (255, 196, 96), 3)
+    for y in range(16):
+        for x in range(16):
+            d = -18 * (abs(x - 7.5) + abs(y - 7.5)) / 15
+            px[x, y] = _shift((255, 206, 110), d)
+    return img
+
+
+def control_housing():
+    """The control station's enclosure: dark grey, powder coated."""
+    return _canvas(20261824, (70, 72, 76), 3)[0]
+
+
+def control_colour(rgb, seed):
+    return _canvas(seed, rgb, 4)[0]
+
+
+def keypad_face():
+    """A keypad's face, drawn over the whole texture and mapped whole onto the keypad's front (6 x
+    9 px, so it is squeezed to 3:8 across and 9:16 down -- the keys are drawn 3 x 2 to come out
+    square): a bezel, a lit display across the top and twelve backlit keys, three by four."""
+    img, px, _ = _canvas(20261827, (30, 30, 32), 3)
+    for i in range(16):
+        for j in (0, 15):
+            px[i, j] = _shift((60, 58, 56), 0)
+            px[j, i] = _shift((60, 58, 56), 0)
+    for x in range(2, 14):
+        for y in range(2, 4):
+            px[x, y] = _shift((80, 168, 92), -10 if y == 3 else 0)
+    for row in range(4):
+        for col in range(3):
+            for dx in range(3):
+                for dy in range(2):
+                    x, y = 2 + col * 5 + dx, 5 + row * 3 + dy
+                    px[x, y] = _shift((218, 224, 218), -30 if dy == 1 else 0)
+    return img
+
+
+def keypad_body():
+    """The keypad's cast housing: dark bronze."""
+    return _canvas(20261828, (74, 60, 46), 3)[0]
+
+
 def textures():
     return {
         "white_face": white_face(), "white_back": white_back(),
@@ -334,6 +395,12 @@ def textures():
         "garage_shaft": shaft(), "garage_plate": plate(), "garage_cable": cable(),
         "garage_chain": chain(), "garage_motor": motor(), "garage_lens": lens(),
         "garage_rail": rail(),
+        "control_plate": control_plate(), "control_lamp": control_lamp(),
+        "control_housing": control_housing(),
+        "control_open": control_colour((60, 150, 70), 20261825),
+        "control_close": control_colour((230, 230, 226), 20261829),
+        "control_stop": control_colour((196, 40, 36), 20261826),
+        "keypad_face": keypad_face(), "keypad_body": keypad_body(),
     }
 
 
@@ -517,6 +584,30 @@ def opener_cleat():
     return [box(2, 15, 8, 14, 16, 9, "#strap")]
 
 
+# The wall controls, drawn with the front to the north and the wall behind them to the south.
+def control_button():
+    return [box(5, 5, 15, 11, 11, 16, "#plate"),
+            box(6.5, 6.5, 14.25, 9.5, 9.5, 15, "#lamp")]
+
+
+def control_station():
+    """The OPEN / CLOSE / STOP station: two buttons over a larger stop button, top to bottom as
+    BlockGarageDoorControl reads the click."""
+    return [box(5.5, 3, 14.5, 10.5, 13, 16, "#housing"),
+            box(7, 10, 14, 9, 12, 14.5, "#open"),
+            box(7, 7, 14, 9, 9, 14.5, "#close"),
+            box(6.5, 3.75, 13.75, 9.5, 6.25, 14.5, "#stop")]
+
+
+def control_keypad():
+    body = box(5, 3.5, 15, 11, 12.5, 16, "#body")
+    # The face texture is mapped whole onto the front rather than by position: a 6 x 9 px window
+    # of a 16 px drawing leaves no room for a margin, and cut the edge keys off.
+    body["faces"]["north"] = {"texture": "#face", "uv": [0, 0, 16, 16]}
+    # A little rain hood over the keys.
+    return [body, box(5, 12.5, 14, 11, 13, 16, "#body")]
+
+
 def _model(elements, textures, parent=None):
     t = dict(textures)
     t["particle"] = next(iter(textures.values()))
@@ -575,6 +666,13 @@ def models():
         "elements": hanger_strap(0, 16, True) + hanger_cleat(True) + hanger_foot(True)}
     op = {"motor": _t("garage_motor"), "lens": _t("garage_lens"), "rail": _t("garage_rail"),
           "strap": _t("garage_perforated")}
+    out["garage_door_button"] = _model(control_button(), {
+        "plate": _t("control_plate"), "lamp": _t("control_lamp")})
+    out["garage_door_station"] = _model(control_station(), {
+        "housing": _t("control_housing"), "open": _t("control_open"),
+        "close": _t("control_close"), "stop": _t("control_stop")})
+    out["garage_door_keypad"] = _model(control_keypad(), {
+        "body": _t("keypad_body"), "face": _t("keypad_face")})
     out["opener_motor"] = _model(opener_motor(), op)
     out["opener_cleat"] = _model(opener_cleat(), strap)
     out["garage_door_opener_inventory"] = {
@@ -895,6 +993,14 @@ def blockstates():
     out = {name: state_for(name) for name in BLOCKS}
     out["garage_door_hanger"] = hanger_state()
     out["garage_door_opener"] = opener_state()
+    for name in CONTROLS:
+        variants = {"inventory": {"model": MODEL_REF % name}}
+        for side, rot in SIDES:
+            v = {"model": MODEL_REF % name}
+            if rot:
+                v["y"] = rot
+            variants["facing=" + side] = v
+        out[name] = {"variants": variants}
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -924,11 +1030,61 @@ def write_all(tex_dir, model_dir, state_dir):
 
 LANGS = gen_cmu.LANGS
 
+# What the controls and the keypad screen say.
+MESSAGES = {
+    "gui.csm.garage.link_start": (
+        "Now sneak-click the garage door or its opener, with an empty hand",
+        "Ahora pulsa agachado la puerta de garaje o su abridor, con la mano vacía",
+        "Jetzt mit leerer Hand geduckt auf das Garagentor oder seinen Antrieb klicken",
+        "Smyg-klicka nu på garageporten eller dess öppnare, med tom hand"),
+    "gui.csm.garage.link_done": (
+        "Linked to the garage door", "Vinculado a la puerta de garaje",
+        "Mit dem Garagentor verbunden", "Kopplad till garageporten"),
+    "gui.csm.garage.not_linked": (
+        "Not linked: sneak-click this, then a garage door",
+        "Sin vincular: pulsa esto agachado y luego una puerta de garaje",
+        "Nicht verbunden: dies geduckt anklicken, dann ein Garagentor",
+        "Inte kopplad: smyg-klicka på denna och sedan på en garageport"),
+    "gui.csm.garage.not_owner": (
+        "Only this keypad's owner can do that", "Solo el dueño de este teclado puede hacerlo",
+        "Das kann nur der Besitzer dieses Codeschlosses", "Bara kodlåsets ägare kan göra det"),
+    "gui.csm.garage.keypad_wrong": (
+        "Wrong code", "Código incorrecto", "Falscher Code", "Fel kod"),
+    "gui.csm.garage.keypad_locked": (
+        "Too many wrong codes: try again shortly",
+        "Demasiados códigos incorrectos: inténtalo en un momento",
+        "Zu viele falsche Codes: gleich noch einmal versuchen",
+        "För många fel koder: försök igen om en stund"),
+    "gui.csm.garage.keypad_no_code": (
+        "This keypad has no code set yet", "Este teclado aún no tiene código",
+        "Für dieses Codeschloss ist noch kein Code gesetzt", "Kodlåset har ingen kod ännu"),
+    "gui.csm.garage.keypad_code_set": (
+        "Code set", "Código establecido", "Code gesetzt", "Koden är satt"),
+    "gui.csm.garage.keypad": (
+        "Keypad", "Teclado", "Codeschloss", "Kodlås"),
+    "gui.csm.garage.keypad_clear": ("CLR", "BOR", "LÖS", "RAD"),
+    "gui.csm.garage.keypad_enter": ("ENT", "OK", "OK", "OK"),
+    "gui.csm.garage.keypad_set": (
+        "Set Code", "Fijar Código", "Code Setzen", "Sätt Kod"),
+    "gui.csm.garage.keypad_hint_set": (
+        "No code yet: type 4 to 6 digits and press Set Code",
+        "Sin código: escribe de 4 a 6 dígitos y pulsa Fijar Código",
+        "Noch kein Code: 4 bis 6 Ziffern eingeben und Code Setzen drücken",
+        "Ingen kod än: skriv 4 till 6 siffror och tryck Sätt Kod"),
+    "gui.csm.garage.keypad_hint_owner": (
+        "You own this keypad: Set Code changes the code",
+        "Este teclado es tuyo: Fijar Código cambia el código",
+        "Dieses Codeschloss gehört dir: Code Setzen ändert den Code",
+        "Du äger kodlåset: Sätt Kod ändrar koden"),
+}
+
 
 def lang_entries():
     out = [("tile.%s.name" % name, dict(zip(LANGS, names)))
            for name, (_, _, names) in BLOCKS.items()]
     out += [("tile.%s.name" % name, dict(zip(LANGS, names))) for name, names in FITTINGS.items()]
+    out += [("tile.%s.name" % name, dict(zip(LANGS, names))) for name, names in CONTROLS.items()]
+    out += [(key, dict(zip(LANGS, names))) for key, names in MESSAGES.items()]
     return out
 
 

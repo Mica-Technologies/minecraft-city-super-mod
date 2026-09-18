@@ -13,6 +13,9 @@ while they are not moving.
 | Security Grille | `BlockGarageDoor("garage_door_grille")` | coiling, see-through |
 | Garage Door Opener | `BlockGarageDoorOpener` | works the door its rail leads to |
 | Garage Door Hanger | `BlockGarageDoorHanger` | holds up an opener or a ceiling track |
+| Garage Door Button | `BlockGarageDoorControl("garage_door_button")` | lit wall button: start, stop, reverse |
+| Garage Door Control Station | `BlockGarageDoorControl("garage_door_station")` | OPEN / CLOSE / STOP |
+| Garage Door Keypad | `BlockGarageDoorControl("garage_door_keypad")` | PIN code, then as the button |
 
 Every asset comes from `dev-env-utils/scripts/gen_garage_doors.py` (`--check` fails on drift).
 
@@ -42,20 +45,27 @@ only from the street. The click box sits on the cell's inside face, just behind 
 A door that is open or closed is baked block models and nothing else: no tile entity, no renderer,
 no tick. A street of garage doors draws like a street of walls.
 
-Only while a door moves does one block of it, the **anchor** (its lowest block, furthest
-anticlockwise), hold a `TileEntityGarageDoor`. That block's `motion` is `anchor`, the others'
-`moving`, and `hasTileEntity(state)` is true for the anchor state alone, so the tile entity comes
-with the state and goes with it: when the move ends the anchor sets every block to `open` or
-`closed`, and `shouldRefresh` drops the tile entity. The renderer draws the whole moving door from
-the anchor -- the curtain or every panel, turned to the facing, lit block by block -- and draws
-only for the second or three the move takes. The door's size, direction and the world tick the move
-started on are all the tile entity holds; the renderer works out where everything is from the world
-time, so the server and every client agree without sending positions.
+Only while a door moves, or stands stopped part-way, does one block of it, the **anchor** (its
+lowest block, furthest anticlockwise), hold a `TileEntityGarageDoor`. That block's `motion` is
+`anchor`, the others' `moving`, and `hasTileEntity(state)` is true for the anchor state alone, so
+the tile entity comes with the state and goes with it: when the move ends the anchor sets every
+block to `open` or `closed`, and `shouldRefresh` drops the tile entity. The renderer draws the whole
+moving door from the anchor -- the curtain or every panel, turned to the facing, lit block by block
+-- and draws only for the second or three the move takes. Where the door is is one number, its
+position (0 closed to 1 open); the tile entity holds the position at the last command, the direction
+since (+1, -1, or 0 stopped) and the world tick of that command, and the renderer works out the rest
+from the world time, so the server and every client agree without sending positions. The door is
+eased by position, not time, so it slows into both ends however often it was stopped on the way. A
+stopped door keeps its tile entity and renderer -- it has to be drawn part-way -- but does not tick.
 
 - `motion` and facing are the four metadata bits. Which neighbours are the same door is actual
   state (`ccw`, `cw`, `up`, `down`, in the model's frame), so everything that belongs to the whole
   door is drawn only on the block at that edge of it.
-- Breaking the anchor mid-move finishes the move for the rest of the door at once. Saving mid-move
+- A command is toggle, open, close or stop. Toggle is a one-button opener's: it starts a door at
+  rest, stops a moving one, and reverses a stopped one. Clicking the door, redstone, the opener and
+  the wall button toggle; the control station sends open, close and stop.
+- Breaking the anchor mid-move finishes the move for the rest of the door at once (a stopped
+  door goes to its nearer end). Saving mid-move
   keeps the anchor's tile entity; loaded again, the move is already over and finishes on the first
   tick.
 - A closed or moving door keeps the light out (opacity 15, lit by its neighbours so it does not
@@ -116,16 +126,43 @@ hanger against the edge of the door's end column, in the cell where the track en
 behind the door as the door is tall, plus one), and stack it up to the ceiling. Over an opener, a
 hanger in the middle carries the opener's own strap on up to the ceiling.
 
+## Wall controls
+
+Three controls, one class (`BlockGarageDoorControl`, by registry name), each on a wall facing out
+from it: the lit push button inside a garage (it gives off a little light), the commercial OPEN /
+CLOSE / STOP station (which button is told by where on it the click landed), and the PIN keypad
+outside.
+
+**Linking.** Sneak-click the control, then within thirty seconds sneak-click any block of the door
+or its opener, both with an empty hand -- in 1.12 a sneak-click reaches a block only when both hands
+are empty. The link lives in a `TileEntityGarageDoorControl`, data only: never ticked, never drawn.
+The started link is remembered per player on each side (`GarageDoorLinks`), and the two sides are
+kept apart because a singleplayer game runs both in one process: one side finishing the link must
+not take it from the other before it has seen the click.
+
+**The keypad.** Clicking it opens a PIN screen (`GuiGarageKeypad`); a right code toggles the door,
+a wrong one buzzes. The player who put it up owns it: only they can set the code (4 to 6 digits) or
+relink it, and a keypad put up by a command belongs to whoever first sets a code. The code never
+leaves the server -- the tile entity's client tag carries only whether a code is set and who owns
+it -- and the screen sends what was typed (`GarageKeypadPacket`, fixed size, reach-checked) for the
+server to judge. Five wrong codes lock that player out of that keypad for thirty seconds.
+
 ## Cost
 
 A door is a Sheet Metal + a Fastener Kit, the grille an iron ingot + a Fastener Kit, the opener an
-Enclosure Shell + a Control Board + a Wiring Harness, and a hanger a Fastener Kit.
+Enclosure Shell + a Control Board + a Wiring Harness, and a hanger a Fastener Kit. The keypad is an
+Enclosure Shell + a Control Board, the control station an Enclosure Shell + a Wiring Harness, and
+the button a Wiring Harness.
 
 ## Traps
 
 - **A rule on "door" catches every door in its tab.** The Building Materials cost rules match whole
-  words in the display name; the opener and the hanger are matched first because their names
-  contain "door" too.
+  words in the display name; the opener, the hanger and the controls are matched first because
+  their names contain "door" too.
+- **A click box must stay inside its cell.** A ray is tested against a block only from where it
+  enters the block's cell (see Building one).
+- **A GUI button is 20 px tall.** Vanilla's button texture is 20 px; a taller button shows the next
+  row of the sheet as a stripe along its bottom.
 - **The block index needs a literal.** The doors are constructed by registry name; the opener and
   hanger return theirs from `getBlockRegistryName`, and the guidebook finds all of them.
 - **`audit_obj_models.py` reads only the first three vertices of a face.** These OBJs are quads,

@@ -150,6 +150,12 @@ def cost_for(registry, info, ancestors):
             return ("planks x2",)
         if has_word(registry, "opener"):
             return ("ENCLOSURE_SHELL", "CONTROL_BOARD", "WIRING_HARNESS")
+        if has_word(registry, "keypad"):
+            return ("ENCLOSURE_SHELL", "CONTROL_BOARD")
+        if has_word(registry, "station"):
+            return ("ENCLOSURE_SHELL", "WIRING_HARNESS")
+        if has_word(registry, "button"):
+            return ("WIRING_HARNESS",)
         if has_word(registry, "hanger"):
             return ("FASTENER_KIT",)
         if has_word(registry, "door"):

@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:garage/garage_door_keypad"
+    },
+    "facing=north": {
+      "model": "csm:garage/garage_door_keypad"
+    },
+    "facing=east": {
+      "model": "csm:garage/garage_door_keypad",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:garage/garage_door_keypad",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:garage/garage_door_keypad",
+      "y": 270
+    }
+  }
+}

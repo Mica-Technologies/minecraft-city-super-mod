@@ -124,7 +124,9 @@ Rules are applied in this order:
    Fastener Kit. Glazing is vanilla glass (panes from glass panes): clear glass alone, tinted,
    one-way and frosted + a dye, wired + a Fastener Kit, bullet-resistant three of it. A garage
    door is a Sheet Metal + a Fastener Kit, the security grille an iron ingot + a Fastener Kit, the
-   opener an Enclosure Shell + a Control Board + a Wiring Harness, and a hanger a Fastener Kit. In
+   opener an Enclosure Shell + a Control Board + a Wiring Harness, a hanger a Fastener Kit, the
+   keypad an Enclosure Shell + a Control Board, the control station an Enclosure Shell + a Wiring
+   Harness and the wall button a Wiring Harness. In
    Interior Finishes, a venetian blind is a Sheet Metal, shades and vertical blinds 2 paper, and
    curtains 2 paper + a dye; flooring is priced by material (carpet tile a wool, vinyl tile paper +
    a dye, ceramic tile 2 clay, hardwood 2 planks, polished concrete a Concrete Mix, rubber a slime

@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "186 blocks in this tab"
+!!! info "189 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -88,7 +88,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Frosted Glass Pane | `csm:glass_pane_frosted` |  |  | pickaxe | 0 |
 | Garage Door (White Raised Panel) | `csm:garage_door_sectional_white` | 2 | 10 | pickaxe | 0 |
 | Garage Door (Windowed) | `csm:garage_door_sectional_windowed` | 2 | 10 | pickaxe | 0 |
+| Garage Door Button | `csm:garage_door_button` | 1 | 5 | pickaxe | 0 |
+| Garage Door Control Station | `csm:garage_door_station` | 1 | 5 | pickaxe | 0 |
 | Garage Door Hanger | `csm:garage_door_hanger` | 1 | 5 | pickaxe | 0 |
+| Garage Door Keypad | `csm:garage_door_keypad` | 1 | 5 | pickaxe | 0 |
 | Garage Door Opener | `csm:garage_door_opener` | 1 | 5 | pickaxe | 0 |
 | Glazed Block | `csm:cmu_glazed` | 2 | 10 | pickaxe | 1 |
 | Glazed Block Fence | `csm:cmu_glazed_fence` | 2 | 10 | pickaxe | 1 |

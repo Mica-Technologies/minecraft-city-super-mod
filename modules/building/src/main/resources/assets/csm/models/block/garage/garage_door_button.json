@@ -1,0 +1,145 @@
+{
+  "textures": {
+    "plate": "csm:blocks/garage/control_plate",
+    "lamp": "csm:blocks/garage/control_lamp",
+    "particle": "csm:blocks/garage/control_plate"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        5,
+        15
+      ],
+      "to": [
+        11,
+        11,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            5,
+            1,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            15,
+            5,
+            16,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            5,
+            15,
+            11,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        6.5,
+        14.25
+      ],
+      "to": [
+        9.5,
+        9.5,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lamp",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ]
+        },
+        "south": {
+          "texture": "#lamp",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ]
+        },
+        "east": {
+          "texture": "#lamp",
+          "uv": [
+            1,
+            6.5,
+            1.75,
+            9.5
+          ]
+        },
+        "west": {
+          "texture": "#lamp",
+          "uv": [
+            14.25,
+            6.5,
+            15.0,
+            9.5
+          ]
+        },
+        "up": {
+          "texture": "#lamp",
+          "uv": [
+            6.5,
+            14.25,
+            9.5,
+            15.0
+          ]
+        },
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            6.5,
+            1,
+            9.5,
+            1.75
+          ]
+        }
+      }
+    }
+  ]
+}

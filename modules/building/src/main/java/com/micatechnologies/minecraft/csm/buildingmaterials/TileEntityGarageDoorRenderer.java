@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 /**
- * Draws a garage door while it moves: a roll-up's curtain or a grille rising into (or coming down
+ * Draws a garage door while it moves or stands stopped part-way: a roll-up's curtain or a grille rising into (or coming down
  * from) the top of its opening, or a sectional door's panels running up the track, round the bend
  * and back along the ceiling. Alive only for the seconds a move takes, so nothing is cached; at
  * rest the door is baked block models and this is never called.
@@ -56,9 +56,10 @@ public class TileEntityGarageDoorRenderer extends TileEntitySpecialRenderer<Tile
     this.world = te.getWorld();
     this.anchor = te.getPos();
     this.facing = state.getValue(BlockGarageDoor.FACING);
-    double t = te.progress(partialTicks);
-    double eased = t * t * (3 - 2 * t);
-    double moved = (te.isOpening() ? eased : 1 - eased) * te.travel();
+    // Eased by position, not by time, so a door slows into both ends however often it was stopped
+    // and started on the way.
+    double p = te.position(partialTicks);
+    double moved = p * p * (3 - 2 * p) * te.travel();
 
     bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
     GlStateManager.pushMatrix();

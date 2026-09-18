@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:garage/garage_door_station"
+    },
+    "facing=north": {
+      "model": "csm:garage/garage_door_station"
+    },
+    "facing=east": {
+      "model": "csm:garage/garage_door_station",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:garage/garage_door_station",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:garage/garage_door_station",
+      "y": 270
+    }
+  }
+}
