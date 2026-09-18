@@ -310,7 +310,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/WALL_MATERIALS.md` -- Concrete block, brick, stucco, siding, cladding and stone
   veneer: the six generators and the set shape they share, why brick is 32 px, why brick trims are
   blocks and not a state, how each material is told from its nearest neighbour, the name-driven
-  Fabricator pricing, and the traps (a name decides a price, fine detail mipmaps away)
+  Fabricator pricing, the glazing (glass that joins into one framed window, one-way glass), and
+  the traps (a name decides a price, fine detail mipmaps away)
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
   crane, site fences, earthworks, logistics and facilities: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
@@ -440,6 +441,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_stone.py` -- the three stone veneers (ashlar, fieldstone, cast stone). Fieldstone is a
   Voronoi partition measured on a torus, so its stones wrap across block seams; `--check` fails
   on drift
+- `gen_glazing.py` -- the glazing: eight kinds of glass (clear, three tints, one-way, wired,
+  bullet-resistant, frosted) as blocks and panes that join into one window with a frame only
+  around its outside. One-way glass is two textures on two faces, since the back of a face is
+  never drawn; a pane arm is drawn east and west, never turned 180; `--check` fails on drift
 - `gen_scaffold.py` -- the frame scaffold: its textures, part models and the multipart blockstate
   that picks frames, braces, deck, jacks and guardrails from the neighbours, plus the three add-on
   items' icons. Stored: the frame axis and the add-ons (ladder frame, netting, casters), one bit

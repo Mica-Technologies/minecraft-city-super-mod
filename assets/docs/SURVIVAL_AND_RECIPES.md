@@ -121,7 +121,8 @@ Rules are applied in this order:
    Concrete Mix + a clay ball; natural stone veneer takes cobblestone + Concrete Mix. Siding is priced by what it is made of: fiber cement is Concrete Mix + paper,
    vinyl is 2 paper + any dye, and wood siding is 2 planks. Metal and panel cladding is 2 Sheet
    Metal + a Fastener Kit, and chain-link fencing and its barbed-wire top an iron ingot + a
-   Fastener Kit. The Construction Site tab is priced by noun: scaffold is a Pole Section
+   Fastener Kit. Glazing is vanilla glass (panes from glass panes): clear glass alone, tinted,
+   one-way and frosted + a dye, wired + a Fastener Kit, bullet-resistant three of it. The Construction Site tab is priced by noun: scaffold is a Pole Section
    + planks, formwork 2 planks + a Fastener Kit, a shore a Pole Section + a Fastener Kit, rebar an
    iron ingot, a silt fence planks + paper, a trench plate 2 Sheet Metal and a trench box 2 Sheet Metal + a
    Pole Section, a stockpile layer one dirt, gravel or sand, a load on a

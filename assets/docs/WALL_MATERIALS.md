@@ -151,6 +151,40 @@ visible repeat, each cell a stone of its own colour, rounded by shading, in rece
 stone** is manufactured: ashlar's order without its variation, in units a block wide and half a
 block tall. At brick-like proportions it read as buff brick.
 
+## Glazing
+
+Glass that joins into one window, in the same tab: eight kinds -- clear; grey, bronze and blue
+tint; one-way; wired; bullet-resistant; frosted (`GlassKind`) -- each as a full block
+(`BlockGlazing`) and a pane (`BlockGlazingPane`), sixteen blocks from `gen_glazing.py`. All are one
+class per form, constructed by registry name (`glass_<kind>`, `glass_pane_<kind>`).
+
+- **Glass of one kind joins with no seams; a thin dark bronze frame runs only around the outside
+  of the whole window.** A block draws no face against the same glass (`shouldSideBeRendered`)
+  and a frame rail only along an edge where both faces are outside, the rule the site containers
+  use. A pane's sides are three-valued (`Side`): `none` (no pane that way), `edge` (it runs to the
+  block's edge and meets a wall or different glass -- framed there) or `glass` (it runs on into the
+  same glass -- no frame); frames go along the top where no pane of the same glass is above and
+  the bottom where none is below, and a mullion stands where the pane turns, branches or ends
+  free. Different kinds are different windows, so a frame runs between them.
+- **One-way glass needs nothing but two textures.** It is dark on its outside face and clear on the
+  inside one, and Minecraft never draws the back of a face, so from outside only the dark face is
+  seen and from inside only the clear one. The outside is the way the placer was looking (they
+  are taken to be standing inside). A pane's facing is turned a quarter in its actual state if it
+  runs along the pane.
+- **A pane's arm is drawn twice, running east and running west, never turned 180 degrees**:
+  turning it would move the dark face to the other side of the glass on half of every pane (the
+  privacy-screen trap from `CONSTRUCTION_SITE.md`). The blockstate turns those two onto the north
+  and south arms by the facing.
+- **Frames stand a quarter pixel proud of the glass**, so an opaque frame and a translucent face
+  never share a plane.
+- **The glass textures are one flat tint with a little noise.** A streak or a glint would repeat on
+  every block of a big window and read as a pattern. Wired glass is 32 px so its mesh can be half
+  a pixel wide.
+- Everything is on the translucent layer. The glass drops itself, unlike vanilla glass.
+  Bullet-resistant glass is hardness 25 and blast resistance 2000; the rest break like glass.
+- A pane's inventory icon is a flat item texture (the glass in its frame), from
+  `models/item`; a block's is the block with its full frame.
+
 ## Pricing
 
 `CsmFabricatorCosts.buildingMaterialCost` decides by **whole words in the English display name**,

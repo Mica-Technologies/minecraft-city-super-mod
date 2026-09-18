@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "frame": "csm:blocks/glazing/glazing_frame",
+    "particle": "csm:blocks/glazing/glazing_frame"
+  },
+  "elements": [
+    {
+      "from": [
+        8,
+        15,
+        7.0
+      ],
+      "to": [
+        16,
+        16,
+        9.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            8,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            0,
+            16,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            7.0,
+            0,
+            9.0,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            7.0,
+            0,
+            9.0,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            7.0,
+            16,
+            9.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            7.0,
+            16,
+            9.0
+          ]
+        }
+      }
+    }
+  ]
+}

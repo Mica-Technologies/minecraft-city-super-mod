@@ -5,6 +5,8 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGlazed;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGroundface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuSplitface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuStandard;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGlazing;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGlazingPane;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlackMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlueMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCopperMetal;
@@ -196,5 +198,23 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockSiteFence("chainlink_fence")); // Chain-Link Fence
     initTabBlock(new BlockSiteFence("chainlink_fence_black")); // Chain-Link Fence (Black)
     initTabBlock(new BlockSiteFence("chainlink_barbed_top")); // Chain-Link Barbed Wire Top
+
+    // Glazing: each kind of glass as a block and a pane.
+    initTabBlock(new BlockGlazing("glass_clear")); // Clear Glass
+    initTabBlock(new BlockGlazingPane("glass_pane_clear")); // Clear Glass Pane
+    initTabBlock(new BlockGlazing("glass_grey")); // Grey Tinted Glass
+    initTabBlock(new BlockGlazingPane("glass_pane_grey")); // Grey Tinted Glass Pane
+    initTabBlock(new BlockGlazing("glass_bronze")); // Bronze Tinted Glass
+    initTabBlock(new BlockGlazingPane("glass_pane_bronze")); // Bronze Tinted Glass Pane
+    initTabBlock(new BlockGlazing("glass_blue")); // Blue Tinted Glass
+    initTabBlock(new BlockGlazingPane("glass_pane_blue")); // Blue Tinted Glass Pane
+    initTabBlock(new BlockGlazing("glass_oneway")); // One-Way Glass
+    initTabBlock(new BlockGlazingPane("glass_pane_oneway")); // One-Way Glass Pane
+    initTabBlock(new BlockGlazing("glass_wired")); // Wired Glass
+    initTabBlock(new BlockGlazingPane("glass_pane_wired")); // Wired Glass Pane
+    initTabBlock(new BlockGlazing("glass_bullet")); // Bullet-Resistant Glass
+    initTabBlock(new BlockGlazingPane("glass_pane_bullet")); // Bullet-Resistant Glass Pane
+    initTabBlock(new BlockGlazing("glass_frosted")); // Frosted Glass
+    initTabBlock(new BlockGlazingPane("glass_pane_frosted")); // Frosted Glass Pane
   }
 }

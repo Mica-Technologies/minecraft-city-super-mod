@@ -90,6 +90,8 @@ public final class CsmFabricatorCosts {
   private static final String MC_PAPER = "minecraft:paper";
   private static final String MC_PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
   private static final String MC_DIRT = "minecraft:dirt";
+  private static final String MC_GLASS = "minecraft:glass";
+  private static final String MC_GLASS_PANE = "minecraft:glass_pane";
   private static final String MC_GRAVEL = "minecraft:gravel";
   private static final String MC_SAND = "minecraft:sand";
 
@@ -376,6 +378,24 @@ public final class CsmFabricatorCosts {
         return cost(FabricatorIngredient.any(MC_PAPER, 2), FabricatorIngredient.any(MC_DYE, 1));
       }
       return cost(FabricatorIngredient.any(MC_PLANKS, 2));
+    }
+    // Glass is priced from vanilla glass (panes from panes), plus what makes the kind: a dye for
+    // a tint, one-way or frosted glass, wire for wired glass, and two more layers laminated in
+    // for bullet-resistant.
+    if (CsmBlockDisplayNames.hasWord(registryName, "glass")) {
+      boolean pane = CsmBlockDisplayNames.hasWord(registryName, "pane");
+      String glass = pane ? MC_GLASS_PANE : MC_GLASS;
+      if (CsmBlockDisplayNames.hasWord(registryName, "bullet")) {
+        return cost(FabricatorIngredient.any(glass, 3));
+      }
+      if (CsmBlockDisplayNames.hasWord(registryName, "wired")) {
+        return cost(FabricatorIngredient.any(glass, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      }
+      if (CsmBlockDisplayNames.hasWord(registryName, "clear")) {
+        return cost(FabricatorIngredient.any(glass, 1));
+      }
+      return cost(FabricatorIngredient.any(glass, 1), FabricatorIngredient.any(MC_DYE, 1));
     }
     // Chain-link is galvanized or coated steel wire on steel pipe, and its barbed-wire top is the
     // same wire; the masonry fallback below would make it out of concrete.

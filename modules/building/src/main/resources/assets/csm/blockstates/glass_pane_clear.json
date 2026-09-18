@@ -1,0 +1,326 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "east": "edge|glass",
+        "facing": "north|west"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_east"
+      }
+    },
+    {
+      "when": {
+        "east": "edge|glass",
+        "facing": "south|east"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_west",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "edge|glass",
+        "facing": "north|west"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_west"
+      }
+    },
+    {
+      "when": {
+        "west": "edge|glass",
+        "facing": "south|east"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_east",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "edge|glass",
+        "facing": "east|north"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_east",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "edge|glass",
+        "facing": "west|south"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_west",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "edge|glass",
+        "facing": "east|north"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_west",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "edge|glass",
+        "facing": "west|south"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_east",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none",
+        "facing": "north|west"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_east"
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none",
+        "facing": "north|west"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_west"
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none",
+        "facing": "south|east"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_west",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none",
+        "facing": "south|east"
+      },
+      "apply": {
+        "model": "csm:glazing/glass_pane_clear_east",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_edge"
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_top"
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_bottom"
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_edge",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "east": "edge"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_edge"
+      }
+    },
+    {
+      "when": {
+        "east": "edge|glass",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_top"
+      }
+    },
+    {
+      "when": {
+        "east": "edge|glass",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_bottom"
+      }
+    },
+    {
+      "when": {
+        "south": "edge"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_edge",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "edge|glass",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "edge|glass",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "edge"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_edge",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "edge|glass",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "edge|glass",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "edge"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_edge",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "edge|glass",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "edge|glass",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "post": "true"
+      },
+      "apply": {
+        "model": "csm:glazing/glazing_pane_post"
+      }
+    }
+  ]
+}
