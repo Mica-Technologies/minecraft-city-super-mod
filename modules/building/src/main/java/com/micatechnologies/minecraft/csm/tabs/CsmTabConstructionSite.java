@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockCraneMast;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockCraneMastLarge;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockFormworkWall;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockPostShore;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockRebarBundle;
@@ -103,5 +104,6 @@ public class CsmTabConstructionSite extends CsmTab {
 
     // The tower crane.
     initTabBlock(BlockCraneMast.class, fmlPreInitializationEvent); // Tower Crane Mast
+    initTabBlock(BlockCraneMastLarge.class, fmlPreInitializationEvent); // Tower Crane Mast (2x2)
   }
 }

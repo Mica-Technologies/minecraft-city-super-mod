@@ -1,0 +1,147 @@
+{
+  "textures": {
+    "chord": "csm:blocks/constructionsite/crane_chord_yellow",
+    "lace": "csm:blocks/constructionsite/crane_lace_yellow",
+    "ladder": "csm:blocks/constructionsite/scaffold_tube",
+    "anchor": "csm:blocks/constructionsite/scaffold_jack",
+    "particle": "csm:blocks/constructionsite/crane_chord_yellow"
+  },
+  "elements": [
+    {
+      "from": [
+        0.25,
+        0,
+        0.25
+      ],
+      "to": [
+        3.5,
+        16,
+        3.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chord",
+          "uv": [
+            12.5,
+            0,
+            15.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#chord",
+          "uv": [
+            0.25,
+            0,
+            3.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#chord",
+          "uv": [
+            12.5,
+            0,
+            15.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#chord",
+          "uv": [
+            0.25,
+            0,
+            3.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#chord",
+          "uv": [
+            0.25,
+            0.25,
+            3.5,
+            3.5
+          ]
+        },
+        "down": {
+          "texture": "#chord",
+          "uv": [
+            0.25,
+            12.5,
+            3.5,
+            15.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        4,
+        1,
+        4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#anchor",
+          "uv": [
+            12,
+            15,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#anchor",
+          "uv": [
+            0,
+            15,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#anchor",
+          "uv": [
+            12,
+            15,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#anchor",
+          "uv": [
+            0,
+            15,
+            4,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#anchor",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#anchor",
+          "uv": [
+            0,
+            12,
+            4,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

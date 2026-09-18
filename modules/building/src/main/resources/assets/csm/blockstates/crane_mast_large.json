@@ -1,0 +1,539 @@
+{
+  "variants": {
+    "inventory_yellow": {
+      "model": "csm:constructionsite/crane_mast_large_yellow_inventory"
+    },
+    "inventory_red": {
+      "model": "csm:constructionsite/crane_mast_large_red_inventory"
+    },
+    "inventory_white": {
+      "model": "csm:constructionsite/crane_mast_large_white_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "corner": "nw"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_ladder"
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "nw",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_chord"
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "nw",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_base"
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "nw",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_lacing_lower"
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "nw",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_lacing_upper"
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "nw",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_chord"
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "nw",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_base"
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "nw",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_lacing_lower"
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "nw",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_lacing_upper"
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "nw",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_chord"
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "nw",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_base"
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "nw",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_lacing_lower"
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "nw",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_lacing_upper"
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "ne",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_chord",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "ne",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_base",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "ne",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_lacing_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "ne",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_lacing_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "ne",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_chord",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "ne",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_base",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "ne",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_lacing_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "ne",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_lacing_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "ne",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_chord",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "ne",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_base",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "ne",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_lacing_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "ne",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_lacing_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "se",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_chord",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "se",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_base",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "se",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_lacing_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "se",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_lacing_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "se",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_chord",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "se",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_base",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "se",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_lacing_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "se",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_lacing_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "se",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_chord",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "se",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_base",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "se",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_lacing_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "se",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_lacing_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "sw",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_chord",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "sw",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_base",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "sw",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_lacing_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "yellow",
+        "corner": "sw",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_yellow_lacing_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "sw",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_chord",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "sw",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_base",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "sw",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_lacing_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "red",
+        "corner": "sw",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_red_lacing_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "sw",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_chord",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "sw",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_base",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "sw",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_lacing_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "livery": "white",
+        "corner": "sw",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:constructionsite/crane_mast_large_white_lacing_upper",
+        "y": 270
+      }
+    }
+  ]
+}
