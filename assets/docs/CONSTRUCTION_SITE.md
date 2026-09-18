@@ -106,6 +106,10 @@ in a straight run. Fences join their own family -- both temporary fences, both c
 - **A panel is drawn once**, running east from the post, and the multipart blockstate turns it onto
   the other three sides. The temporary fence's foot turns to lie along the run; a lone fence gets
   it along x.
+- **Except anything that hangs on one side of the panel.** Turning the east half 180 degrees for the
+  west half also moves an off-centre part to the other side, so the privacy screen came out in
+  front of the mesh on one half of every panel and behind it on the other. The screen has an east
+  and a west model instead, mirrored only in x, and a run along z turns both a quarter.
 - **The barbed wire is a strip of texture**, not geometry: a plane two pixels tall sampling the rows
   of `barbed_wire.png` the wire is drawn on (explicit UVs), because a barb in elements is eight
   boxes and a fence has dozens of barbs.
