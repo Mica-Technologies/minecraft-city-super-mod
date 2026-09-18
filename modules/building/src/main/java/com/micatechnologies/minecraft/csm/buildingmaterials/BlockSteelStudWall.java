@@ -15,4 +15,14 @@ public class BlockSteelStudWall extends AbstractBlockSteelFraming {
   public String getBlockRegistryName() {
     return "steel_stud_wall";
   }
+
+  /**
+   * Has open stud bays, so it offers the three insulation variants.
+   *
+   * @since 1.0
+   */
+  @Override
+  public boolean supportsInsulation() {
+    return true;
+  }
 }
