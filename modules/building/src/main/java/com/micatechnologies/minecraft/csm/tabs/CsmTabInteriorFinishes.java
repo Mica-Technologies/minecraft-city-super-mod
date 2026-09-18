@@ -12,6 +12,10 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCTS3;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT1;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT2;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT3;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinish;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetPolishedConcrete;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodOak;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodWalnut;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWindowTreatment;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
@@ -109,5 +113,24 @@ public class CsmTabInteriorFinishes extends CsmTab {
     initTabBlock(new BlockWindowTreatment("curtain_grey")); // Curtain (Grey)
     initTabBlock(new BlockWindowTreatment("curtain_navy")); // Curtain (Navy)
     initTabBlock(new BlockWindowTreatment("curtain_sheer")); // Sheer Curtain
+
+    // Flooring: finishes laid over any floor, and the sets built of them.
+    initTabBlock(new BlockFloorFinish("floor_carpet_grey")); // Carpet Tile (Grey)
+    initTabBlock(new BlockFloorFinish("floor_carpet_blue")); // Carpet Tile (Blue)
+    initTabBlock(new BlockFloorFinish("floor_carpet_charcoal")); // Carpet Tile (Charcoal)
+    initTabBlock(new BlockFloorFinish("floor_vct_white")); // Vinyl Composition Tile (White)
+    initTabBlock(new BlockFloorFinish("floor_vct_beige")); // Vinyl Composition Tile (Beige)
+    initTabBlock(new BlockFloorFinish("floor_ceramic_white")); // Ceramic Floor Tile (White)
+    initTabBlock(new BlockFloorFinish("floor_ceramic_grey")); // Ceramic Floor Tile (Grey)
+    initTabBlock(new BlockFloorFinish("floor_hardwood_oak")); // Hardwood Floor (Oak)
+    initTabBlock(new BlockFloorFinish("floor_hardwood_walnut")); // Hardwood Floor (Walnut)
+    initTabBlock(new BlockFloorFinish("floor_polished_concrete")); // Polished Concrete Floor
+    initTabBlock(new BlockFloorFinish("floor_rubber_studded")); // Rubber Floor (Studded)
+    initTabBlock(BlockSetPolishedConcrete.class,
+        fmlPreInitializationEvent); // Polished Concrete Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetHardwoodOak.class,
+        fmlPreInitializationEvent); // Oak Hardwood Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetHardwoodWalnut.class,
+        fmlPreInitializationEvent); // Walnut Hardwood Set (Block, Fence, Slab, Stairs)
   }
 }

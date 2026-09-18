@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "half_slab",
+    "textures": {
+      "bottom": "csm:blocks/flooring/polished_concrete",
+      "top": "csm:blocks/flooring/polished_concrete",
+      "side": "csm:blocks/flooring/polished_concrete"
+    }
+  },
+  "variants": {
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:buildingmaterials/polished_concrete_slab_top"
+      }
+    },
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

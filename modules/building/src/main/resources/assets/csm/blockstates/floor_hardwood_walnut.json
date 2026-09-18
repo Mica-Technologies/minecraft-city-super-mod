@@ -1,0 +1,41 @@
+{
+  "variants": {
+    "axis=x": [
+      {
+        "model": "csm:flooring/floor_hardwood_walnut"
+      },
+      {
+        "model": "csm:flooring/floor_hardwood_walnut",
+        "y": 180
+      },
+      {
+        "model": "csm:flooring/floor_hardwood_walnut_b"
+      },
+      {
+        "model": "csm:flooring/floor_hardwood_walnut_b",
+        "y": 180
+      }
+    ],
+    "axis=z": [
+      {
+        "model": "csm:flooring/floor_hardwood_walnut",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_hardwood_walnut",
+        "y": 270
+      },
+      {
+        "model": "csm:flooring/floor_hardwood_walnut_b",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_hardwood_walnut_b",
+        "y": 270
+      }
+    ],
+    "inventory": {
+      "model": "csm:flooring/floor_hardwood_walnut"
+    }
+  }
+}

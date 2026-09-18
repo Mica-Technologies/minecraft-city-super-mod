@@ -1,0 +1,71 @@
+{
+  "variants": {
+    "axis=x": [
+      {
+        "model": "csm:flooring/floor_polished_concrete"
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete",
+        "y": 180
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete",
+        "y": 270
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete_b"
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete_b",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete_b",
+        "y": 180
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete_b",
+        "y": 270
+      }
+    ],
+    "axis=z": [
+      {
+        "model": "csm:flooring/floor_polished_concrete"
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete",
+        "y": 180
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete",
+        "y": 270
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete_b"
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete_b",
+        "y": 90
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete_b",
+        "y": 180
+      },
+      {
+        "model": "csm:flooring/floor_polished_concrete_b",
+        "y": 270
+      }
+    ],
+    "inventory": {
+      "model": "csm:flooring/floor_polished_concrete"
+    }
+  }
+}

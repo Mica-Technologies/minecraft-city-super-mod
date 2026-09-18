@@ -8,6 +8,7 @@ The glazing the window treatments hang against is in `WALL_MATERIALS.md` § Glaz
 |---|---|---|
 | Ceilings | the popcorn ceiling and ceiling tiles (`BlockPCC`, `BlockCT*`, `BlockDCT*`) | -- |
 | Window treatments | Venetian Blind (White); Roller Shade (White, Grey, Blackout); Vertical Blind (White); Curtain (Beige, Grey, Navy); Sheer Curtain | `gen_window_treatments.py` |
+| Flooring | Carpet Tile (Grey, Blue, Charcoal); Vinyl Composition Tile (White, Beige); Ceramic Floor Tile (White, Grey); Hardwood Floor (Oak, Walnut); Polished Concrete Floor; Rubber Floor (Studded); and the Polished Concrete, Oak Hardwood and Walnut Hardwood sets | `gen_flooring.py` |
 
 ## Window treatments
 
@@ -51,3 +52,29 @@ looking at the window -- so they turn with it.
   blind shows no repeat.
 - Priced by what they are made of: venetian (aluminium) a Sheet Metal, shades and vertical blinds 2
   paper, curtains 2 paper and a dye.
+
+## Flooring
+
+Two ways to floor a room, both chosen on purpose (2026-09-18):
+
+- **An overlay** (`BlockFloorFinish`, constructed by registry name `floor_<material>_<colour>`) --
+  a one-pixel finish laid on top of any floor, as vanilla carpet is. It needs a solid top under it
+  and comes up, dropping itself, when that goes. Eleven: carpet tile in three colours, vinyl
+  composition tile and ceramic tile in two, oak and walnut hardwood, polished concrete and studded
+  rubber.
+- **A full-block set** (block, stairs, slab and fence, on `gen_cmu.py`'s blockstates) for the
+  finishes that are also a structure: polished concrete, oak and walnut hardwood. A hardwood block
+  shows the boards on its top and their edges on its sides.
+
+**No visible repeat.** An overlay's blockstate is a list of models the game picks between by block
+position. Carpet tile is laid quarter-turned, and hardwood and polished concrete have two drawings
+each (board joints in different places). Hardwood keeps its boards running the way it was laid
+(`axis`, the only stored state) and only turns end for end.
+
+**A tile grid is never turned.** Ceramic and vinyl tile draw their joints on two edges of the
+texture, so a turned block would double the joint at one seam and lose it at the next; they vary
+by a second, differently shaded drawing instead. For the same reason carpet tile draws no seam at
+all.
+
+Priced by what they are made of: carpet tile a wool, vinyl tile paper and a dye, ceramic two clay,
+hardwood two planks, polished concrete a Concrete Mix, rubber a slime ball.

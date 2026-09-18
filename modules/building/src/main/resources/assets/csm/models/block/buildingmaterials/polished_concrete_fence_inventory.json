@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_inventory",
+  "textures": {
+    "texture": "csm:blocks/flooring/polished_concrete",
+    "particle": "csm:blocks/flooring/polished_concrete"
+  }
+}

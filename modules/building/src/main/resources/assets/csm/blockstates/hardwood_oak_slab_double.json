@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/flooring/hardwood_oak_top",
+      "bottom": "csm:blocks/flooring/hardwood_oak_top",
+      "side": "csm:blocks/flooring/hardwood_oak",
+      "particle": "csm:blocks/flooring/hardwood_oak"
+    }
+  },
+  "variants": {
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}
