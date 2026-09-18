@@ -1,4 +1,5 @@
 itemGroup.tabbuildingmaterials=CSM: Byggmaterial
+itemGroup.tabconstructionsite=CSM: Byggarbetsplats
 itemGroup.tabinteriorfinishes=CSM: Invändiga Ytskikt
 itemGroup.tabstructureframing=CSM: Stomme & Regelverk
 tile.bar_joist.name=Förvandlingsbalk
@@ -151,6 +152,7 @@ tile.redmetal_fence.name=Rött Metallstaket
 tile.redmetal_slab.name=Röd Metallplatta
 tile.redmetal_slab_double.name=Röd Dubbel Metallplatta
 tile.redmetal_stairs.name=Röd Metalltrappa
+tile.scaffold_frame.name=Ramställning
 tile.siding_boardbatten.name=Lockpanel
 tile.siding_boardbatten_fence.name=Lockpanel Staket
 tile.siding_boardbatten_slab.name=Lockpanel Platta

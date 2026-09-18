@@ -66,6 +66,7 @@ import net.minecraft.creativetab.CreativeTabs;
 public final class CsmFabricatorCosts {
 
   private static final String TAB_BUILDING_MATERIALS = "tabbuildingmaterials";
+  private static final String TAB_CONSTRUCTION_SITE = "tabconstructionsite";
   private static final String TAB_FURNITURE = "tabfurniture";
   private static final String TAB_GAMING = "tabgaming";
   private static final String TAB_HVAC = "tabhvac";
@@ -207,6 +208,13 @@ public final class CsmFabricatorCosts {
     // 3. Building materials.
     if (TAB_BUILDING_MATERIALS.equals(tabId)) {
       return buildingMaterialCost(block, registryName);
+    }
+
+    // 3a. The construction site. Priced here, before the mounting-hardware rule, because a site
+    // is full of things whose names end in "base" or "plate" -- a screw-jack base, a trench
+    // plate -- that are not brackets.
+    if (TAB_CONSTRUCTION_SITE.equals(tabId)) {
+      return constructionSiteCost(registryName);
     }
 
     // 3b. Interior finishes. Priced here rather than in the tab switch below because
@@ -368,6 +376,19 @@ public final class CsmFabricatorCosts {
     // Everything else in this tab is masonry and cast material.
     return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
         FabricatorIngredient.any(MC_CLAY_BALL, 1));
+  }
+
+  /**
+   * Prices the construction site. Scaffolding is steel tube and a plank deck; anything else in the
+   * tab takes steel and fixings until its phase gives it a rule of its own.
+   */
+  private static List<FabricatorIngredient> constructionSiteCost(String registryName) {
+    if (CsmBlockDisplayNames.hasWord(registryName, "scaffold")) {
+      return cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+          FabricatorIngredient.any(MC_PLANKS, 1));
+    }
+    return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+        FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
   }
 
   /**

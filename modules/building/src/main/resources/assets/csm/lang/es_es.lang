@@ -1,4 +1,5 @@
 itemGroup.tabbuildingmaterials=CSM: Materiales de Construcción
+itemGroup.tabconstructionsite=CSM: Obra en Construcción
 itemGroup.tabinteriorfinishes=CSM: Acabados Interiores
 itemGroup.tabstructureframing=CSM: Estructura y Entramado
 tile.bar_joist.name=Vigueta de Celosía
@@ -151,6 +152,7 @@ tile.redmetal_fence.name=Cerca de Metal Rojo
 tile.redmetal_slab.name=Losa de Metal Rojo
 tile.redmetal_slab_double.name=Losa Doble de Metal Rojo
 tile.redmetal_stairs.name=Escalera de Metal Rojo
+tile.scaffold_frame.name=Andamio de Marco
 tile.siding_boardbatten.name=Revestimiento de Tabla y Listón
 tile.siding_boardbatten_fence.name=Revestimiento de Tabla y Listón Valla
 tile.siding_boardbatten_slab.name=Revestimiento de Tabla y Listón Losa

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldClimbHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
@@ -43,5 +44,10 @@ public class CsmBuilding {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
+    // Jump-to-climb for the scaffold. Client only: the client decides its own player's movement,
+    // and the handler class does not exist on a dedicated server.
+    if (event.getSide().isClient()) {
+      ScaffoldClimbHandler.register();
+    }
   }
 }

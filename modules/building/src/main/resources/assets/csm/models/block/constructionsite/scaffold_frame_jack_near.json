@@ -1,0 +1,138 @@
+{
+  "textures": {
+    "tube": "csm:blocks/constructionsite/scaffold_tube",
+    "plank": "csm:blocks/constructionsite/scaffold_plank",
+    "jack": "csm:blocks/constructionsite/scaffold_jack",
+    "particle": "csm:blocks/constructionsite/scaffold_tube"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0.5
+      ],
+      "to": [
+        2,
+        0.5,
+        2.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#jack"
+        },
+        "south": {
+          "texture": "#jack"
+        },
+        "east": {
+          "texture": "#jack"
+        },
+        "west": {
+          "texture": "#jack"
+        },
+        "up": {
+          "texture": "#jack"
+        },
+        "down": {
+          "texture": "#jack"
+        }
+      }
+    },
+    {
+      "from": [
+        -0.25,
+        2.0,
+        0.75
+      ],
+      "to": [
+        1.25,
+        2.75,
+        2.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#jack"
+        },
+        "south": {
+          "texture": "#jack"
+        },
+        "east": {
+          "texture": "#jack"
+        },
+        "west": {
+          "texture": "#jack"
+        },
+        "up": {
+          "texture": "#jack"
+        },
+        "down": {
+          "texture": "#jack"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        13.5
+      ],
+      "to": [
+        2,
+        0.5,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#jack"
+        },
+        "south": {
+          "texture": "#jack"
+        },
+        "east": {
+          "texture": "#jack"
+        },
+        "west": {
+          "texture": "#jack"
+        },
+        "up": {
+          "texture": "#jack"
+        },
+        "down": {
+          "texture": "#jack"
+        }
+      }
+    },
+    {
+      "from": [
+        -0.25,
+        2.0,
+        13.75
+      ],
+      "to": [
+        1.25,
+        2.75,
+        15.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#jack"
+        },
+        "south": {
+          "texture": "#jack"
+        },
+        "east": {
+          "texture": "#jack"
+        },
+        "west": {
+          "texture": "#jack"
+        },
+        "up": {
+          "texture": "#jack"
+        },
+        "down": {
+          "texture": "#jack"
+        }
+      }
+    }
+  ]
+}

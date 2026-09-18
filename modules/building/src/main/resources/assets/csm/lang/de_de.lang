@@ -1,4 +1,5 @@
 itemGroup.tabbuildingmaterials=CSM: Baumaterialien
+itemGroup.tabconstructionsite=CSM: Baustelle
 itemGroup.tabinteriorfinishes=CSM: Innenausbau
 itemGroup.tabstructureframing=CSM: Tragwerk & Ständerbau
 tile.bar_joist.name=Gitterträger
@@ -151,6 +152,7 @@ tile.redmetal_fence.name=Roter Metallzaun
 tile.redmetal_slab.name=Rote Metallstufe
 tile.redmetal_slab_double.name=Rote Metall-Doppelstufe
 tile.redmetal_stairs.name=Rote Metalltreppe
+tile.scaffold_frame.name=Rahmengerüst
 tile.siding_boardbatten.name=Boden-Deckel-Schalung
 tile.siding_boardbatten_fence.name=Boden-Deckel-Schalung Zaun
 tile.siding_boardbatten_slab.name=Boden-Deckel-Schalung Stufe

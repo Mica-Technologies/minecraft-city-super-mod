@@ -1,0 +1,142 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:constructionsite/scaffold_frame_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north|south"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_frame_near"
+      }
+    },
+    {
+      "when": {
+        "facing": "north|south",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_frame_far"
+      }
+    },
+    {
+      "when": {
+        "facing": "north|south",
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_brace_north"
+      }
+    },
+    {
+      "when": {
+        "facing": "north|south",
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_brace_south"
+      }
+    },
+    {
+      "when": {
+        "facing": "north|south",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_deck"
+      }
+    },
+    {
+      "when": {
+        "facing": "north|south",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_jack_near"
+      }
+    },
+    {
+      "when": {
+        "facing": "north|south",
+        "down": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_jack_far"
+      }
+    },
+    {
+      "when": {
+        "facing": "east|west"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_frame_near",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east|west",
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_frame_far",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east|west",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_brace_north",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east|west",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_brace_south",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east|west",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_deck",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east|west",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_jack_near",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east|west",
+        "down": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_jack_far",
+        "y": 90
+      }
+    }
+  ]
+}
