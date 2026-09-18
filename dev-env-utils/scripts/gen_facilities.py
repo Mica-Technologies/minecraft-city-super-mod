@@ -96,11 +96,13 @@ def container_wall(rgb, seed):
 
 
 def container_door(rgb, seed):
-    """A door leaf: flat panel, a horizontal stiffener top and bottom, and two locking bars."""
+    """A door leaf: flat panel and two locking bars. Nothing runs across it: a container is built
+    two to four blocks high, and a line across every block of a door reads as seams; the frame
+    rails close its top and bottom."""
     img, px, rng = _canvas(seed, rgb, 4)
     for y in range(16):
         for x in range(16):
-            px[x, y] = _shift(rgb, 6 + (-14 if y in (0, 15) else 0) + rng.uniform(-3, 3))
+            px[x, y] = _shift(rgb, 6 + rng.uniform(-3, 3))
     for x in (3, 12):
         for y in range(16):
             px[x, y] = _shift((176, 180, 182), rng.uniform(-8, 8))
@@ -160,10 +162,12 @@ def trailer_wall():
     return img
 
 
-def trailer_window():
-    """A sliding window: a grey frame, dark tinted glass in two panes, a glint across it."""
+def trailer_window(top=True, bottom=True):
+    """A sliding window: a grey frame, dark tinted glass in two panes, a glint across it. A window
+    stacked on a window leaves out the frame between them ({top} and {bottom} say which of its own
+    frame rows it keeps), so stacked window blocks are one tall window."""
     img, px, rng = _canvas(20261514, (200, 202, 200), 3)
-    for y in range(2, 14):
+    for y in range(2 if top else 0, 14 if bottom else 16):
         for x in range(2, 14):
             if x in (7, 8):
                 px[x, y] = _shift((170, 172, 170), rng.uniform(-3, 3))
@@ -284,6 +288,9 @@ def washout_sign():
 def textures():
     out = {"shell_floor": shell_floor(), "dumpster_floor": dumpster_floor(),
            "trailer_wall": trailer_wall(), "trailer_window": trailer_window(),
+           "trailer_window_bottom": trailer_window(top=False),
+           "trailer_window_top": trailer_window(bottom=False),
+           "trailer_window_middle": trailer_window(top=False, bottom=False),
            "trailer_door_lower": trailer_door(0), "trailer_door_upper": trailer_door(1),
            "trailer_roof": trailer_roof(),
            "trailer_trim": frame((232, 232, 226), 20261518, d=-40),
@@ -490,9 +497,12 @@ def models():
         out[d + "_inventory"] = _model(lone, tex, "wall", parent="block/block")
 
     tex = {"wall": _t("trailer_wall"), "window": _t("trailer_window"),
+           "windowbottom": _t("trailer_window_bottom"), "windowtop": _t("trailer_window_top"),
+           "windowmiddle": _t("trailer_window_middle"),
            "doorlow": _t("trailer_door_lower"), "doorhigh": _t("trailer_door_upper"),
            "roof": _t("trailer_roof"), "frame": _t("trailer_trim"), "floor": _t("shell_floor")}
-    for key in ("wall", "window", "doorlow", "doorhigh"):
+    for key in ("wall", "window", "windowbottom", "windowtop", "windowmiddle", "doorlow",
+                "doorhigh"):
         out["job_trailer_" + key] = _model(wall_plane("#" + key), tex, "wall")
     out["job_trailer_roof"] = _model(roof_plane("#roof"), tex, "wall")
     out["job_trailer_floor"] = _model(floor_plane("#floor"), tex, "wall")
@@ -551,7 +561,16 @@ def blockstates():
                       ("job_trailer_door", None)):
         parts = []
         for side, rot in SIDES:
-            if key:
+            if key == "window":
+                # Windows stacked on windows are one tall window: each keeps only the frame rows
+                # that are the whole window's top or bottom.
+                for upper, topped, model in (("false", "false", "window"),
+                                             ("false", "true", "windowbottom"),
+                                             ("true", "true", "windowmiddle"),
+                                             ("true", "false", "windowtop")):
+                    parts.append({"when": {side: "false", "upper": upper, "topped": topped},
+                                  "apply": _apply("job_trailer_" + model, rot)})
+            elif key:
                 parts.append({"when": {side: "false"},
                               "apply": _apply("job_trailer_" + key, rot)})
             else:

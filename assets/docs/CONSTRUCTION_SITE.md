@@ -181,7 +181,13 @@ object, with no seams inside it.
   and floor collide, so a dumpster can be stood in and filled.
 - **The job trailer** is three blocks that all join one trailer: plain wall, window and door, so the
   windows and door go where they are placed. A door block with a door block under it draws the
-  door's upper half (the light); on its own it draws the lower half (the handle).
+  door's upper half (the light); on its own it draws the lower half (the handle). Window blocks
+  stacked on window blocks are one tall window: each keeps only the frame rows that are the whole
+  window's top or bottom (`upper` / `topped`, actual state). A real site office is three to four
+  blocks tall -- build it that high; nothing about these blocks assumes a height.
+- **Nothing drawn across a block that a tall object repeats.** The container door texture once had
+  a stiffener row at the top and bottom of every block, which striped a three-high door; the door
+  is now plain but for its lock bars, and the frame rails close its top and bottom.
 - Walls are zero-thickness planes half a pixel in from the cell face, so the rails stand proud of
   them, and every face takes positional UVs, so the corrugation or siding runs unbroken across
   every block of a wall.

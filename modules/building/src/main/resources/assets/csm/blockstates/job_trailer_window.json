@@ -7,7 +7,9 @@
   "multipart": [
     {
       "when": {
-        "north": "false"
+        "north": "false",
+        "upper": "false",
+        "topped": "false"
       },
       "apply": {
         "model": "csm:constructionsite/job_trailer_window"
@@ -15,7 +17,39 @@
     },
     {
       "when": {
-        "east": "false"
+        "north": "false",
+        "upper": "false",
+        "topped": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowbottom"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "upper": "true",
+        "topped": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowmiddle"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "upper": "true",
+        "topped": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowtop"
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "upper": "false",
+        "topped": "false"
       },
       "apply": {
         "model": "csm:constructionsite/job_trailer_window",
@@ -24,7 +58,42 @@
     },
     {
       "when": {
-        "south": "false"
+        "east": "false",
+        "upper": "false",
+        "topped": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowbottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "upper": "true",
+        "topped": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowmiddle",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "upper": "true",
+        "topped": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowtop",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "upper": "false",
+        "topped": "false"
       },
       "apply": {
         "model": "csm:constructionsite/job_trailer_window",
@@ -33,10 +102,78 @@
     },
     {
       "when": {
-        "west": "false"
+        "south": "false",
+        "upper": "false",
+        "topped": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowbottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "upper": "true",
+        "topped": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowmiddle",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "upper": "true",
+        "topped": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowtop",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "upper": "false",
+        "topped": "false"
       },
       "apply": {
         "model": "csm:constructionsite/job_trailer_window",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "upper": "false",
+        "topped": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowbottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "upper": "true",
+        "topped": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowmiddle",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "upper": "true",
+        "topped": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_windowtop",
         "y": 270
       }
     },
