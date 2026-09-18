@@ -90,7 +90,7 @@ container per jar.
 | `modules/powergrid` | `csm_powergrid` | CSM: Power Grid | `powergrid` |
 | `modules/technology` | `csm_technology` | CSM: Technology | `technology` |
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties` |
-| `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials` |
+| `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -302,6 +302,11 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/MODULE_SYSTEM.md` -- Core plus nine optional module jars: what each owns, how
   registration still works across jars, the Core service registries, adding a module, the traps
 - `assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md` -- Every abstract class, constructors, rotation, meta encoding, registration
+- `assets/docs/FRAMING_SYSTEM.md` -- Stud walls, joists, deck and structural steel: why a wall is
+  drawn post-and-arm rather than as a panel, why its post appears only at junctions and run ends,
+  why the track is left out between courses, why insulation needed sub-blocks to be obtainable at
+  all, why there are no roof trusses, and the traps (a narrow member's UV window, `registerModels`
+  and metadata, an `OR` that cannot take a sibling key, plates priced as brackets)
 - `assets/docs/FIRE_ALARM_SYSTEM.md` -- MovingSound architecture, channel system, sound standards, full inventory
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
 - `assets/docs/LANE_CONTROL_SYSTEM.md` -- Reversible lanes: the lane control signal, its own
@@ -403,6 +408,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   geometry for 11 models, draws the shared metal/shade/lens swatch textures, and emits all 33
   blockstates plus lang and tab-registration fragments from one catalogue, so an id cannot drift
   from its blockstate
+- `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
+  each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
+  `--fragments` prints the lang and tab-registration lines. It was made to reproduce the
+  hand-built first block byte-identically before any other block entered its catalogue, which is
+  the only way to know a generator describes what was actually looked at in game
 - `audit_obj_models.py` -- checks generated OBJ models for the faults that only show up in game:
   coplanar overlapping faces and faces lying on a block boundary (both z-fighting), inconsistent
   winding (a surface that culls from the side you are looking at), and open boundary edges
