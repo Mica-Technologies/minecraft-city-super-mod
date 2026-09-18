@@ -1,3 +1,6 @@
+gui.csm.crane.climb.blocked=Algo impide que la grúa suba
+gui.csm.crane.climb.limit=La grúa está en el límite de altura
+gui.csm.crane.climb.pieces=Una grúa 2x2 sube una sección entera: cuatro piezas de mástil
 gui.csm.crane.hook=Caída del gancho
 gui.csm.crane.jib=Longitud de pluma
 gui.csm.crane.livery.red=Rojo
