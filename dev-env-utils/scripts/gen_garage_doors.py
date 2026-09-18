@@ -8,8 +8,11 @@
 Five blocks, one class (BlockGarageDoor): three sectional overhead doors (white raised panel,
 windowed, commercial steel), a galvanized roll-up door and a security grille. Each is drawn here
 with the INSIDE of the building to the north and the street to the south, and turned by the
-blockstate to the way it faces. The door sits just behind the opening's inside face (z 1..3 of
-16), so from the street it reads recessed in its opening, as a real one is.
+blockstate to the way it faces. The door hangs just behind the wall, past the opening's inside
+face (z -2.5..-0.5 of 16, outside its own cell), with its tracks on the wall beside the opening --
+where a real one is, and where the bend over the top runs through open garage rather than into the
+wall over the opening. A closed door has a one-pixel lip past each side and over the top, so there
+is no slit to see through where it meets the wall.
 
 A door is built to the size of its opening, and what belongs to the whole door is drawn only on
 the block at that edge of it: the side tracks or guides where ccw / cw = false, the roll-up's
@@ -82,10 +85,10 @@ MAX_RAIL = 10
 # SHARED with BlockGarageDoor.MAX_DEPTH and TileEntityGarageDoor.BEND / PLANE.
 MAX_DEPTH = 8
 BEND = 0.375          # radius of the track's bend, blocks
-PLANE_Z = 2.0 / 16    # the panels' mid-plane, z in the north-facing model (inside face at z 0)
+PLANE_Z = -1.5 / 16   # the panels' mid-plane, z in the north-facing model (inside face at z 0)
 HALF = 1.0 / 16       # half a sectional panel's thickness
 TRACK_HALF = 1.5 / 16  # half the track channel's depth about the panels' mid-plane
-TRACK_W = 1.0 / 16    # the track's width across the door
+TRACK_W = 1.5 / 16    # the track's width, outboard of the opening on the wall beside it
 
 # --------------------------------------------------------------------------------------------
 # Textures
@@ -352,12 +355,20 @@ CURTAIN_TEX = {"galvanized": "rollup_galvanized", "grille": "grille_mesh"}
 
 box = sc._box
 retex = gen_logistics.retex
-PZ0, PZ1 = (PLANE_Z - HALF) * 16, (PLANE_Z + HALF) * 16   # 1 .. 3
-TZ0, TZ1 = (PLANE_Z - TRACK_HALF) * 16, (PLANE_Z + TRACK_HALF) * 16  # 0.5 .. 3.5
+PZ0, PZ1 = (PLANE_Z - HALF) * 16, (PLANE_Z + HALF) * 16   # -2.5 .. -0.5
+TZ0, TZ1 = (PLANE_Z - TRACK_HALF) * 16, (PLANE_Z + TRACK_HALF) * 16  # -3 .. 0
 
 
 def panel():
     el = box(0, 0, PZ0, 16, 16, PZ1, "#back", faces=("north", "south", "up", "down"))
+    return [retex(el, {"south": "#face"})]
+
+
+def panel_lip(x0, y0, x1, y1):
+    """A strip of the panel past the opening -- into a track at a side, over the wall at the top
+    -- so a closed door covers the gap where it meets the wall."""
+    el = box(x0, y0, PZ0, x1, y1, PZ1, "#back", faces=("north", "south", "up", "down", "east",
+                                                          "west"))
     return [retex(el, {"south": "#face"})]
 
 
@@ -366,21 +377,26 @@ def seal_el():
 
 
 def track_el(cw):
-    x0, x1 = (16 - TRACK_W * 16, 16) if cw else (0, TRACK_W * 16)
+    x0, x1 = (16, 16 + TRACK_W * 16) if cw else (-TRACK_W * 16, 0)
     return [box(x0, 0, TZ0, x1, 16, TZ1, "#track")]
 
 
 def curtain():
-    return [box(0, 0, 1.5, 16, 16, 2, "#curtain", faces=("north", "south"))]
+    return [box(0, 0, -1, 16, 16, -0.5, "#curtain", faces=("north", "south"))]
+
+
+def curtain_lip(cw):
+    x0, x1 = (16, 17) if cw else (-1, 0)
+    return [box(x0, 0, -1, x1, 16, -0.5, "#curtain", faces=("north", "south"))]
 
 
 def bottom_bar():
-    return [box(0, 0, 1, 16, 1, 2.5, "#bar")]
+    return [box(0, 0, -1.75, 16, 1, -0.25, "#bar")]
 
 
 def guide(cw):
-    x0, x1 = (14.75, 16) if cw else (0, 1.25)
-    return [box(x0, 0, 0.5, x1, 16, 3, "#track")]
+    x0, x1 = (16, 17.25) if cw else (-1.25, 0)
+    return [box(x0, 0, -2, x1, 16, 0, "#track")]
 
 
 def hood_el():
@@ -393,7 +409,7 @@ def hood_el():
 # plate at each end of it and a spring beside each drum, anchored to a centre bracket. Drawn on
 # the top course, above its cell -- the wall over the opening is where a real one is fixed. The
 # heights clear the bend of the panels' track (whose top reaches y 23 at the ceiling run).
-SHAFT_Y, SHAFT_Z = 26.0, -2.0
+SHAFT_Y, SHAFT_Z = 26.0, -4.5
 
 
 def _octagon(x0, x1, yc, zc, r, tex):
@@ -411,72 +427,75 @@ def torsion_shaft():
 def torsion_end():
     """The ccw end: the bearing plate on the wall, the cable drum, the spring and its anchor
     bracket."""
-    els = [box(0, SHAFT_Y - 4, -1, 1, SHAFT_Y + 3, 0, "#plate",
-               faces=("north", "east", "west", "up", "down"))]
-    els += _octagon(1, 2.5, SHAFT_Y, SHAFT_Z, 1.75, "#drum")
-    els += [box(3.5, SHAFT_Y - 1.5, SHAFT_Z - 1.5, 12, SHAFT_Y + 1.5, SHAFT_Z + 1.5, "#spring")]
-    els += [box(12, SHAFT_Y - 4, -1, 13.5, SHAFT_Y + 3, 0, "#plate",
-                faces=("north", "east", "west", "up", "down"))]
-    els += _octagon(11.5, 12.5, SHAFT_Y, SHAFT_Z, 2, "#plate")
+    # The bearing plate stands out from the wall beside the opening, over the track.
+    els = [box(-2, SHAFT_Y - 4, SHAFT_Z - 1.5, -1.5, SHAFT_Y + 3, 0, "#plate")]
+    els += [box(-1.5, SHAFT_Y - 0.5, SHAFT_Z - 0.5, 0, SHAFT_Y + 0.5, SHAFT_Z + 0.5, "#shaft")]
+    # The drum over the door's edge, so its cable falls straight down the door's back.
+    els += _octagon(-0.75, 0.75, SHAFT_Y, SHAFT_Z, 1.75, "#drum")
+    els += [box(2, SHAFT_Y - 1.5, SHAFT_Z - 1.5, 11, SHAFT_Y + 1.5, SHAFT_Z + 1.5, "#spring")]
+    els += [box(11, SHAFT_Y - 4, SHAFT_Z - 1.5, 11.5, SHAFT_Y + 3, 0, "#plate")]
+    els += _octagon(10.5, 11.5, SHAFT_Y, SHAFT_Z, 2, "#plate")
     return els
 
 
 def lift_cable(top):
     """The lift cable, from the bottom bracket up the door's back to the drum."""
-    return [box(1.6, 0, -0.3, 1.9, SHAFT_Y if top else 16, 0, "#cable")]
+    z1 = SHAFT_Z + 1.75
+    return [box(-0.15, 0, z1 - 0.3, 0.15, SHAFT_Y if top else 16, z1, "#cable")]
 
 
 def bottom_bracket():
-    return [box(0.75, 0.5, 0.25, 2.75, 3, 1, "#plate")]
+    return [box(0, 0.5, PZ0 - 0.75, 2, 3, PZ0, "#plate")]
 
 
 def roller_bracket():
     """The hinge bracket carrying a roller into the track, at each section joint."""
-    return [box(0.5, 7, 0.25, 2.5, 9, 1, "#plate"), box(0.5, 15, 0.25, 2.5, 16, 1, "#plate")]
+    return [box(0, 7, PZ0 - 0.75, 2, 9, PZ0, "#plate"),
+            box(0, 15, PZ0 - 0.75, 2, 16, PZ0, "#plate")]
 
 
 # The roll-up's hood end plates and its hand chain, on the cw side where the chain wheel is.
 def hood_end():
-    return [box(-0.5, 15, -9, 0, 27, 0, "#plate",
+    return [box(-1.75, 15, -9, -1.25, 27, 0, "#plate",
                 faces=("north", "west", "east", "up", "down"))]
 
 
 def chain_wheel():
-    return _octagon(16.25, 17.25, 21, -4, 3, "#drum")
+    return _octagon(17.75, 18.75, 21, -4, 3, "#drum")
 
 
 def hand_chain(top):
     y1 = 21 if top else 16
-    return [box(16.5, 0, -7.25, 17, y1, -6.75, "#chain"),
-            box(16.5, 0, -1.25, 17, y1, -0.75, "#chain")]
+    return [box(18, 0, -7.25, 18.5, y1, -6.75, "#chain"),
+            box(18, 0, -1.25, 18.5, y1, -0.75, "#chain")]
 
 
 mirror_x = sc._mirror_x
 
 
 # The hanger, drawn at the NORTH edge of its cell (the blockstate turns it to the others): a
-# perforated angle down the edge, a pixel in from it -- bolted to the inner side of a track that runs
-# along the edge, and so still in view when the door is built hard against a side wall -- a cleat along the ceiling where the ceiling is, and a foot bolted
-# to the side of a track at the height of a sectional door's ceiling run.
+# perforated angle down the edge, bolted to the inner side of a ceiling track that runs just
+# outside the edge (a door's tracks are outboard of its opening), a cleat along the ceiling where
+# the ceiling is, and a foot at the height of a sectional door's ceiling run.
 FOOT_Y = 4.5
 
 
 def hanger_strap(y0, y1, centre):
     if centre:
         return [box(7.25, y0, 7.25, 8.75, y1, 8, "#strap"), box(7.25, y0, 8, 8, y1, 8.75, "#strap")]
-    return [box(6.75, y0, 1, 9.25, y1, 1.5, "#strap"), box(6.75, y0, 1.5, 7.5, y1, 3, "#strap")]
+    return [box(6.75, y0, 0, 9.25, y1, 0.5, "#strap"), box(6.75, y0, 0.5, 7.5, y1, 2, "#strap")]
 
 
 def hanger_cleat(centre):
     if centre:
         return [box(2, 15, 7.25, 14, 16, 8.75, "#strap")]
-    return [box(7, 15, 1, 9, 16, 8, "#strap")]
+    return [box(7, 15, 0, 9, 16, 8, "#strap")]
 
 
 def hanger_foot(centre):
     if centre:
         return [box(6, FOOT_Y, 6, 10, FOOT_Y + 1, 10, "#strap")]
-    return [box(6, FOOT_Y, 1, 10, FOOT_Y + 1.5, 1.5, "#strap")]
+    return [box(6, FOOT_Y, 0, 10, FOOT_Y + 1.5, 0.5, "#strap")]
 
 
 # The opener, drawn facing north (the door to the north): the motor hung under its straps, the
@@ -567,11 +586,20 @@ def models():
             out[name + "_panel"] = _model(panel(), {"face": _t(face), "back": _t(back)})
             out[name + "_panel_top"] = _model(panel(), {"face": _t(face_top),
                                                         "back": _t(back_top)})
+            plain = {"face": _t(face), "back": _t(back)}
+            top = {"face": _t(face_top), "back": _t(back_top)}
+            out[name + "_lip_ccw"] = _model(panel_lip(-1, 0, 0, 16), plain)
+            out[name + "_lip_cw"] = _model(panel_lip(16, 0, 17, 16), plain)
+            out[name + "_lip_ccw_top"] = _model(panel_lip(-1, 0, 0, 17), top)
+            out[name + "_lip_cw_top"] = _model(panel_lip(16, 0, 17, 17), top)
+            out[name + "_lip_top"] = _model(panel_lip(0, 16, 16, 17), top)
             out[name + "_inventory"] = _inventory(_t(face_top), _t(back_top),
                                                   _t("garage_track"))
         else:
             tex = {"curtain": _t(CURTAIN_TEX[style])}
             out[name + "_curtain"] = _model(curtain(), tex)
+            out[name + "_lip_ccw"] = _model(curtain_lip(False), tex)
+            out[name + "_lip_cw"] = _model(curtain_lip(True), tex)
             out[name + "_bar"] = _model(bottom_bar(), {"bar": _t("garage_bar")})
             inv = _inventory(_t(CURTAIN_TEX[style]), _t(CURTAIN_TEX[style]), _t("garage_track"))
             out[name + "_inventory"] = inv
@@ -641,7 +669,7 @@ class Obj:
 def track_obj(depth, cw):
     """The bend and the ceiling run of one side's track: a channel swept along the path."""
     o = Obj("garage_track")
-    x0, x1 = (1 - TRACK_W, 1.0) if cw else (0.0, TRACK_W)
+    x0, x1 = (1.0, 1 + TRACK_W) if cw else (-TRACK_W, 0.0)
     pts = track_path(depth)
     normals = []
     for i in range(len(pts)):
@@ -803,7 +831,12 @@ def state_for(name):
                       ({"motion": "closed", side: "false"}, "rollers_" + side)]
         conds += [({"motion": "closed", "up": "true"}, name + "_panel"),
                   ({"motion": "closed", "up": "false"}, name + "_panel_top"),
-                  ({"motion": "closed", "down": "false"}, "seal")]
+                  ({"motion": "closed", "down": "false"}, "seal"),
+                  ({"motion": "closed", "ccw": "false", "up": "true"}, name + "_lip_ccw"),
+                  ({"motion": "closed", "ccw": "false", "up": "false"}, name + "_lip_ccw_top"),
+                  ({"motion": "closed", "cw": "false", "up": "true"}, name + "_lip_cw"),
+                  ({"motion": "closed", "cw": "false", "up": "false"}, name + "_lip_cw_top"),
+                  ({"motion": "closed", "up": "false"}, name + "_lip_top")]
         for d in range(1, MAX_DEPTH + 1):
             conds.append(({"motion": "open", "up": "false", "depth": str(d)},
                           "%s_run_%d.obj" % (style, d)))
@@ -816,6 +849,8 @@ def state_for(name):
                  ({"up": "true", "cw": "false"}, "hand_chain"),
                  ({"up": "false", "cw": "false"}, "hand_chain_top"),
                  ({"motion": "closed"}, name + "_curtain"),
+                 ({"motion": "closed", "ccw": "false"}, name + "_lip_ccw"),
+                 ({"motion": "closed", "cw": "false"}, name + "_lip_cw"),
                  ({"motion": "closed", "down": "false"}, name + "_bar")]
     return {"variants": {"inventory": {"model": MODEL_REF % (name + "_inventory")}},
             "multipart": _parts(conds)}

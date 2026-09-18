@@ -110,12 +110,17 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
   /** Steel that comes down by hand, as the scaffold's does. */
   private static final Material DOOR_STEEL = new Material(MapColor.IRON);
 
-  /** The door's plane, with the inside to the north: just behind the opening's inside face. */
+  /**
+   * The door's plane, with the inside to the north: just behind the wall, past the opening's
+   * inside face and so outside the block's own cell, where the door is drawn. A box outside its
+   * cell still collides (entities gather boxes from the blocks around them) and is still hit by a
+   * ray that crosses the cell.
+   */
   private static final AxisAlignedBB PLANE_NORTH =
-      new AxisAlignedBB(0, 0, 1 / 16.0, 1, 1, 3 / 16.0);
+      new AxisAlignedBB(0, 0, -2.5 / 16.0, 1, 1, -0.5 / 16.0);
   /** What can be clicked on an open door: a strip along the top of its top course. */
   private static final AxisAlignedBB HEAD_NORTH =
-      new AxisAlignedBB(0, 13 / 16.0, 0, 1, 1, 3 / 16.0);
+      new AxisAlignedBB(0, 13 / 16.0, -2.5 / 16.0, 1, 1, 0);
 
   /** Which door blocks were last seen powered, per world, to act only on a rising edge. */
   private static final Map<World, Set<BlockPos>> POWERED =

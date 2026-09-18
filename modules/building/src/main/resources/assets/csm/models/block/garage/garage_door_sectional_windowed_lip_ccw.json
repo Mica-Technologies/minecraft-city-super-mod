@@ -1,0 +1,77 @@
+{
+  "textures": {
+    "face": "csm:blocks/garage/white_face",
+    "back": "csm:blocks/garage/white_back",
+    "particle": "csm:blocks/garage/white_face"
+  },
+  "elements": [
+    {
+      "from": [
+        -1,
+        0,
+        -2.5
+      ],
+      "to": [
+        0,
+        16,
+        -0.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#back",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#face",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#back",
+          "uv": [
+            15,
+            13.5,
+            16,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#back",
+          "uv": [
+            15,
+            0.5,
+            16,
+            2.5
+          ]
+        },
+        "east": {
+          "texture": "#back",
+          "uv": [
+            0.5,
+            0,
+            2.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#back",
+          "uv": [
+            13.5,
+            0,
+            15.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

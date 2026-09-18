@@ -33,8 +33,11 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
    * horizontal, which starts at the top of the opening.
    */
   static final double BEND = 0.375;
-  /** Where a sectional door's panels sit, inward from the opening's inside face: 2 px. */
-  static final double PLANE = -2 / 16.0;
+  /**
+   * The door's mid-plane, z in the north-facing model frame: just behind the wall, a pixel and a
+   * half past the opening's inside face (z 0). SHARED with gen_garage_doors.PLANE_Z.
+   */
+  static final double PLANE = -1.5 / 16.0;
 
   private int width = 1;
   private int height = 1;
