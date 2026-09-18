@@ -10,8 +10,9 @@ Five blocks:
 - the trench plate (BlockTrenchPlate), the steel road plate laid over an open trench. Plates side
   by side draw as one plate: the raised edge bar runs only along a side with no plate beside it;
 - the trench box (BlockTrenchBox), two steel side panels held apart by spreader pipes, drawn
-  running along x and turned by the blockstate. Boxes end to end and stacked are one box; the top
-  rail and lifting lugs go on the top course only;
+  running along x and turned by the blockstate. Boxes end to end, stacked and side by side are one
+  box: a side joined by another box has no panel and its spreader runs on through, so a box is as
+  wide as it is built; the top rail and lifting lugs go on the top course only;
 - soil, gravel and sand stockpiles (BlockStockpile), eight layers like vanilla snow, so a heap is
   shaped by hand.
 
@@ -179,27 +180,41 @@ def plate_edge():
 PANEL = 1.5           # side panel thickness
 
 
-def trench_box_body():
-    """A box running along x: the two side panels, a stiffener rib inside each, and a spreader
-    pipe across at the rib with a collar at each end."""
-    els = [box(0, 0, 0, 16, 16, PANEL, "#panel"),
-           box(0, 0, 16 - PANEL, 16, 16, 16, "#panel"),
-           box(7, 0, PANEL, 9, 16, PANEL + 0.6, "#panel"),
-           box(7, 0, 16 - PANEL - 0.6, 9, 16, 16 - PANEL, "#panel")]
-    y = 12.0
-    els.append(box(7.2, y - 0.8, PANEL + 0.6, 8.8, y + 0.8, 16 - PANEL - 0.6, "#spreader"))
-    for z0, z1 in ((PANEL + 0.6, PANEL + 1.6), (16 - PANEL - 1.6, 16 - PANEL - 0.6)):
-        els.append(box(6.8, y - 1.2, z0, 9.2, y + 1.2, z1, "#spreader"))
-    return els
+SPREADER_Y = 12.0
+COLLAR = (PANEL + 0.6, PANEL + 1.6)   # the collar where a spreader meets its panel, north side
+
+
+def _pipe(z0, z1):
+    """A length of spreader pipe across the box; no end faces, since its ends always meet a
+    collar or the next length."""
+    y = SPREADER_Y
+    return box(7.2, y - 0.8, z0, 8.8, y + 0.8, z1, "#spreader",
+               faces=("up", "down", "east", "west"))
+
+
+def trench_box_core():
+    """The middle of the spreader pipe, between where the two collars would be. Always drawn."""
+    return [_pipe(COLLAR[1], 16 - COLLAR[1])]
+
+
+def trench_box_side():
+    """A side panel on the north side, its stiffener rib, and the collar where the spreader meets
+    it. The blockstate turns it onto the south side."""
+    y = SPREADER_Y
+    return [box(0, 0, 0, 16, 16, PANEL, "#panel"),
+            box(7, 0, PANEL, 9, 16, PANEL + 0.6, "#panel"),
+            box(6.8, y - 1.2, COLLAR[0], 9.2, y + 1.2, COLLAR[1], "#spreader")]
+
+
+def trench_box_join():
+    """Where another box joins on the north side: no panel, the spreader running on through."""
+    return [_pipe(0, COLLAR[1])]
 
 
 def trench_box_top():
-    """The top course's rail along each panel, and a lifting lug on each."""
-    els = []
-    for z0, z1 in ((-0.25, PANEL + 0.25), (16 - PANEL - 0.25, 16.25)):
-        els.append(box(0, 16, z0, 16, 16.75, z1, "#panel"))
-        els.append(box(6.5, 16.75, z0 + 0.5, 9.5, 18.25, z1 - 0.5, "#panel"))
-    return els
+    """The top course's rail along the north panel, and its lifting lug."""
+    return [box(0, 16, -0.25, 16, 16.75, PANEL + 0.25, "#panel"),
+            box(6.5, 16.75, 0.25, 9.5, 18.25, PANEL - 0.25, "#panel")]
 
 
 def stockpile(layers):
@@ -256,10 +271,13 @@ def models():
         edges += _turned(plate_edge(), q)
     out["trench_plate_inventory"] = _model(plate_body() + edges, PLATE_TEX, "plate",
                                            parent="block/block")
-    out["trench_box_body"] = _model(trench_box_body(), BOX_TEX, "panel")
+    out["trench_box_core"] = _model(trench_box_core(), BOX_TEX, "panel")
+    out["trench_box_side"] = _model(trench_box_side(), BOX_TEX, "panel")
+    out["trench_box_join"] = _model(trench_box_join(), BOX_TEX, "panel")
     out["trench_box_top"] = _model(trench_box_top(), BOX_TEX, "panel")
-    out["trench_box_inventory"] = _model(trench_box_body() + trench_box_top(), BOX_TEX, "panel",
-                                         parent="block/block")
+    lone = (trench_box_core() + trench_box_side() + _turned(trench_box_side(), 2)
+            + trench_box_top() + _turned(trench_box_top(), 2))
+    out["trench_box_inventory"] = _model(lone, BOX_TEX, "panel", parent="block/block")
     for mat in STOCKPILES:
         tex = {"all": TEX_REF % ("stockpile_" + mat)}
         for k in range(1, 9):
@@ -276,6 +294,13 @@ def _ref(model):
 EDGE_SIDES = (("north", 0), ("east", 90), ("south", 180), ("west", 270))
 
 
+def _box_apply(model, rot):
+    a = {"model": _ref(model)}
+    if rot:
+        a["y"] = rot
+    return a
+
+
 def blockstates():
     out = {}
     parts = [{"apply": {"model": _ref("trench_plate_body")}}]
@@ -286,15 +311,21 @@ def blockstates():
         parts.append({"when": {side: "false"}, "apply": apply})
     out["trench_plate"] = {"variants": {"inventory": {"model": _ref("trench_plate_inventory")}},
                            "multipart": parts}
-    out["trench_box"] = {
-        "variants": {"inventory": {"model": _ref("trench_box_inventory")}},
-        "multipart": [
-            {"when": {"axis": "x"}, "apply": {"model": _ref("trench_box_body")}},
-            {"when": {"axis": "z"}, "apply": {"model": _ref("trench_box_body"), "y": 90}},
-            {"when": {"axis": "x", "up": "false"}, "apply": {"model": _ref("trench_box_top")}},
-            {"when": {"axis": "z", "up": "false"},
-             "apply": {"model": _ref("trench_box_top"), "y": 90}},
-        ]}
+    # A side's panel, or the spreader running on into the box beside it; turned a quarter for a
+    # box along z, whose side A is its east.
+    parts = []
+    for axis, base in (("x", 0), ("z", 90)):
+        parts.append({"when": {"axis": axis}, "apply": _box_apply("trench_box_core", base)})
+        for side, turn in (("side_a", 0), ("side_b", 180)):
+            rot = (base + turn) % 360
+            parts.append({"when": {"axis": axis, side: "true"},
+                          "apply": _box_apply("trench_box_side", rot)})
+            parts.append({"when": {"axis": axis, side: "false"},
+                          "apply": _box_apply("trench_box_join", rot)})
+            parts.append({"when": {"axis": axis, side: "true", "up": "false"},
+                          "apply": _box_apply("trench_box_top", rot)})
+    out["trench_box"] = {"variants": {"inventory": {"model": _ref("trench_box_inventory")}},
+                         "multipart": parts}
     for mat in STOCKPILES:
         variants = {"layers=%d" % k: {"model": _ref("stockpile_%s_%d" % (mat, k))}
                     for k in range(1, 9)}

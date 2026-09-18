@@ -131,9 +131,12 @@ in a straight run. Fences join their own family -- both temporary fences, both c
   plate body has only a top and an underside. Priced as 2 Sheet Metal.
 - **Trench Box** (`BlockTrenchBox`, on `AbstractBlockSiteAxial`): two steel side panels held apart
   by an orange spreader pipe, set into a trench. It runs along the placer's line of sight, the way
-  you look down a trench; boxes end to end and stacked are one box, with the top rail and lifting
-  lugs only on the top course (`up`, actual state). Only the panels collide, so a player can walk
-  the trench between them. Priced as 2 Sheet Metal + a Pole Section.
+  you look down a trench; boxes end to end, stacked and side by side are one box, with the top
+  rail and lifting lugs only on the top course (`up`). A side with another box running the same
+  way beside it has no panel, and its spreader runs on through (`side_a`, `side_b`), so a box is
+  built as wide as the trench, with no limit; all of this is actual state. Only the panels
+  collide, so a player can walk the trench between them. Priced as 2 Sheet Metal + a Pole
+  Section, per block.
 - **Soil, Gravel and Sand Stockpiles** (`BlockStockpile`, one class by registry name): eight layers
   like vanilla snow, stored as metadata. Using a stockpile on a pile that is not full adds a layer
   (and uses the item in survival); on a full one it places a new block above. A heap is shaped by
