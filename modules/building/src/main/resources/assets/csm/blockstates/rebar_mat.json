@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:constructionsite/rebar_mat"
+    },
+    "inventory": {
+      "model": "csm:constructionsite/rebar_mat"
+    }
+  }
+}

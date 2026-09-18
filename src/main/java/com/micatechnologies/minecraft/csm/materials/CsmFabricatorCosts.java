@@ -86,6 +86,7 @@ public final class CsmFabricatorCosts {
   private static final String MC_DYE = "minecraft:dye";
   private static final String MC_CLAY_BALL = "minecraft:clay_ball";
   private static final String MC_COBBLESTONE = "minecraft:cobblestone";
+  private static final String MC_IRON_INGOT = "minecraft:iron_ingot";
   private static final String MC_PAPER = "minecraft:paper";
   private static final String MC_PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
 
@@ -379,13 +380,25 @@ public final class CsmFabricatorCosts {
   }
 
   /**
-   * Prices the construction site. Scaffolding is steel tube and a plank deck; anything else in the
-   * tab takes steel and fixings until its phase gives it a rule of its own.
+   * Prices the construction site. Scaffolding is steel tube and a plank deck; formwork is plywood
+   * and timber held with ties; a shore is a steel post and its fittings; rebar is steel bar.
+   * Anything else in the tab takes steel and fixings until its phase gives it a rule of its own.
    */
   private static List<FabricatorIngredient> constructionSiteCost(String registryName) {
     if (CsmBlockDisplayNames.hasWord(registryName, "scaffold")) {
       return cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
           FabricatorIngredient.any(MC_PLANKS, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "formwork")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "shore")) {
+      return cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "rebar")) {
+      return cost(FabricatorIngredient.any(MC_IRON_INGOT, 1));
     }
     return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
         FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));

@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "csm:constructionsite/rebar_bundle"
+    },
+    "axis=z": {
+      "model": "csm:constructionsite/rebar_bundle",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:constructionsite/rebar_bundle"
+    }
+  }
+}

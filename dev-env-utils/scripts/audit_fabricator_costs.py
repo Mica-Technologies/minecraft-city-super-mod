@@ -153,6 +153,12 @@ def cost_for(registry, info, ancestors):
     if tab == "tabconstructionsite":
         if has_word(registry, "scaffold"):
             return ("POLE_SECTION", "planks")
+        if has_word(registry, "formwork"):
+            return ("planks x2", "FASTENER_KIT")
+        if has_word(registry, "shore"):
+            return ("POLE_SECTION", "FASTENER_KIT")
+        if has_word(registry, "rebar"):
+            return ("iron_ingot",)
         return ("SHEET_METAL", "FASTENER_KIT")
 
     if tab == "tabinteriorfinishes":
