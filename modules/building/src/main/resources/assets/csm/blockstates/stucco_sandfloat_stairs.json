@@ -1,0 +1,50 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "stairs",
+    "textures": {
+      "bottom": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat",
+      "top": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat",
+      "side": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat"
+    }
+  },
+  "variants": {
+    "facing": {
+      "east": {},
+      "north": {
+        "y": 270
+      },
+      "south": {
+        "y": 90
+      },
+      "west": {
+        "y": 180
+      }
+    },
+    "half": {
+      "bottom": {},
+      "top": {}
+    },
+    "shape": {
+      "inner_left": {
+        "model": "csm:buildingmaterials/stucco_sandfloat_stairs_inner"
+      },
+      "inner_right": {
+        "model": "csm:buildingmaterials/stucco_sandfloat_stairs_inner"
+      },
+      "outer_left": {
+        "model": "csm:buildingmaterials/stucco_sandfloat_stairs_outer"
+      },
+      "outer_right": {
+        "model": "csm:buildingmaterials/stucco_sandfloat_stairs_outer"
+      },
+      "straight": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

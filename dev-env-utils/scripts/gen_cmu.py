@@ -135,15 +135,16 @@ def top_texture(name):
 # Blockstates and models
 # --------------------------------------------------------------------------------------------
 
-def _faces(name, tex_ref=TEX_REF):
-    side, top = tex_ref % name, tex_ref % (name + "_top")
+def _faces(name, tex_ref=TEX_REF, top_suffix="_top"):
+    side, top = tex_ref % name, tex_ref % (name + top_suffix)
     return side, top
 
 
-def blockstates(name, tex_ref=TEX_REF):
+def blockstates(name, tex_ref=TEX_REF, top_suffix="_top"):
     """The five blockstates of a block/stairs/slab/fence set. ``tex_ref`` is the texture path
-    pattern, which is how gen_masonry.py reuses this for the brick sets."""
-    side, top = _faces(name, tex_ref)
+    pattern, which is how gen_masonry.py and gen_stucco.py reuse this; an empty ``top_suffix``
+    puts the side texture on the top as well, for a finish that looks the same from every face."""
+    side, top = _faces(name, tex_ref, top_suffix)
     three = {"bottom": top, "top": top, "side": side}
     return {
         name: {
@@ -203,8 +204,8 @@ def blockstates(name, tex_ref=TEX_REF):
     }
 
 
-def models(name, tex_ref=TEX_REF):
-    side, top = _faces(name, tex_ref)
+def models(name, tex_ref=TEX_REF, top_suffix="_top"):
+    side, top = _faces(name, tex_ref, top_suffix)
     three = {"bottom": top, "top": top, "side": side}
     fence = {"texture": side, "particle": side}
     return {

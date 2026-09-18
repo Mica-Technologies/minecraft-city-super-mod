@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_side",
+  "textures": {
+    "texture": "csm:blocks/buildingmaterials/stucco/stucco_smooth",
+    "particle": "csm:blocks/buildingmaterials/stucco/stucco_smooth"
+  }
+}

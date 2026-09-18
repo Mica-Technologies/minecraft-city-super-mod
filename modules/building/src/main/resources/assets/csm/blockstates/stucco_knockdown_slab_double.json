@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/buildingmaterials/stucco/stucco_knockdown",
+      "bottom": "csm:blocks/buildingmaterials/stucco/stucco_knockdown",
+      "side": "csm:blocks/buildingmaterials/stucco/stucco_knockdown",
+      "particle": "csm:blocks/buildingmaterials/stucco/stucco_knockdown"
+    }
+  },
+  "variants": {
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

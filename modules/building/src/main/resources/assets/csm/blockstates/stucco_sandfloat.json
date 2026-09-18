@@ -1,0 +1,20 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_bottom_top",
+    "textures": {
+      "top": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat",
+      "bottom": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat",
+      "side": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat",
+      "particle": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}
