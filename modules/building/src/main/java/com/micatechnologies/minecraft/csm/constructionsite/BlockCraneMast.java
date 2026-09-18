@@ -21,6 +21,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -157,6 +158,28 @@ public class BlockCraneMast extends AbstractBlock implements ICsmSiteClimbable {
       Csm.proxy.setCustomModelResourceLocation(item, livery.ordinal(),
           "inventory_" + livery.getName());
     }
+  }
+
+  /**
+   * Opens the crane's configuration with an empty hand, from any block of the crane, so a crane
+   * whose head is two hundred blocks up can be set from the foot of its mast. True on both sides,
+   * or the server goes on to use the held item; the screen opens on the client.
+   *
+   * @since 1.0
+   */
+  @Override
+  public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
+      EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY,
+      float hitZ) {
+    if (hand != EnumHand.MAIN_HAND || !playerIn.getHeldItem(hand).isEmpty()
+        || CraneLocator.findHead(worldIn, pos) == null) {
+      return false;
+    }
+    if (worldIn.isRemote) {
+      playerIn.openGui(Csm.instance, BuildingGuiProvider.CRANE_GUI_ID, worldIn, pos.getX(),
+          pos.getY(), pos.getZ());
+    }
+    return true;
   }
 
   @Override

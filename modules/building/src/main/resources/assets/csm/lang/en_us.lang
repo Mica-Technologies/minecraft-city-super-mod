@@ -1,3 +1,17 @@
+gui.csm.crane.hook=Hook drop
+gui.csm.crane.jib=Jib length
+gui.csm.crane.livery.red=Red
+gui.csm.crane.livery.white=White
+gui.csm.crane.livery.yellow=Yellow
+gui.csm.crane.livery=Livery
+gui.csm.crane.luff=Luff angle
+gui.csm.crane.model.flat_top=Flat-top
+gui.csm.crane.model.hammerhead=Hammerhead
+gui.csm.crane.model.luffing=Luffing jib
+gui.csm.crane.model=Model
+gui.csm.crane.slew=Slew
+gui.csm.crane.title=Tower Crane
+gui.csm.crane.trolley=Trolley
 item.scaffold_casters.name=Scaffold Casters
 item.scaffold_ladder_frame.name=Scaffold Ladder Frame
 item.scaffold_netting.name=Scaffold Debris Netting

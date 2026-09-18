@@ -1,3 +1,17 @@
+gui.csm.crane.hook=Caída del gancho
+gui.csm.crane.jib=Longitud de pluma
+gui.csm.crane.livery.red=Rojo
+gui.csm.crane.livery.white=Blanco
+gui.csm.crane.livery.yellow=Amarillo
+gui.csm.crane.livery=Color
+gui.csm.crane.luff=Ángulo de pluma
+gui.csm.crane.model.flat_top=Flat-top
+gui.csm.crane.model.hammerhead=Martillo
+gui.csm.crane.model.luffing=Pluma abatible
+gui.csm.crane.model=Modelo
+gui.csm.crane.slew=Giro
+gui.csm.crane.title=Grúa Torre
+gui.csm.crane.trolley=Carro
 item.scaffold_casters.name=Ruedas de Andamio
 item.scaffold_ladder_frame.name=Marco Escalera de Andamio
 item.scaffold_netting.name=Malla de Protección de Andamio

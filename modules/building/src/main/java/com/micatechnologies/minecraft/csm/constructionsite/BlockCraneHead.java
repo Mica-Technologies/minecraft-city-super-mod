@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.List;
@@ -11,11 +12,13 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -129,6 +132,28 @@ public class BlockCraneHead extends AbstractBlock implements ICsmTileEntityProvi
   @Nonnull
   public EnumBlockRenderType getRenderType(IBlockState state) {
     return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+  }
+
+  /**
+   * Opens the crane's configuration with an empty hand, from any block of the crane, so a crane
+   * whose head is two hundred blocks up can be set from the foot of its mast. True on both sides,
+   * or the server goes on to use the held item; the screen opens on the client.
+   *
+   * @since 1.0
+   */
+  @Override
+  public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
+      EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY,
+      float hitZ) {
+    if (hand != EnumHand.MAIN_HAND || !playerIn.getHeldItem(hand).isEmpty()
+        || CraneLocator.findHead(worldIn, pos) == null) {
+      return false;
+    }
+    if (worldIn.isRemote) {
+      playerIn.openGui(Csm.instance, BuildingGuiProvider.CRANE_GUI_ID, worldIn, pos.getX(),
+          pos.getY(), pos.getZ());
+    }
+    return true;
   }
 
   @Override

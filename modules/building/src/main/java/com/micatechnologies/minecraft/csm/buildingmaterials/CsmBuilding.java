@@ -3,11 +3,16 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.constructionsite.BuildingGuiProvider;
+import com.micatechnologies.minecraft.csm.constructionsite.CraneHeadConfigPacket;
+import com.micatechnologies.minecraft.csm.constructionsite.CraneHeadConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldRailCollision;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -63,6 +68,10 @@ public class CsmBuilding {
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
     // Guardrail collision that a jump would otherwise clear. Both sides, so they agree.
     ScaffoldRailCollision.register();
+    CsmGuiRegistry.register(new BuildingGuiProvider());
+    // The packet order here fixes this channel's discriminators; only append to it.
+    NETWORK.registerMessage(CraneHeadConfigPacketHandler.class, CraneHeadConfigPacket.class,
+        Side.SERVER);
     proxy.preInit(event);
   }
 

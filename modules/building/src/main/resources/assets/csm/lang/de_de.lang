@@ -1,3 +1,17 @@
+gui.csm.crane.hook=Hakenhöhe
+gui.csm.crane.jib=Auslegerlänge
+gui.csm.crane.livery.red=Rot
+gui.csm.crane.livery.white=Weiß
+gui.csm.crane.livery.yellow=Gelb
+gui.csm.crane.livery=Farbe
+gui.csm.crane.luff=Wippwinkel
+gui.csm.crane.model.flat_top=Obendreher (Flat-Top)
+gui.csm.crane.model.hammerhead=Obendreher mit Turmspitze
+gui.csm.crane.model.luffing=Wippkran
+gui.csm.crane.model=Modell
+gui.csm.crane.slew=Drehung
+gui.csm.crane.title=Turmdrehkran
+gui.csm.crane.trolley=Laufkatze
 item.scaffold_casters.name=Gerüstrollen
 item.scaffold_ladder_frame.name=Gerüst-Leiterrahmen
 item.scaffold_netting.name=Gerüstnetz
