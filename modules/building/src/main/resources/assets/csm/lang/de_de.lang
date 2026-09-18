@@ -1,3 +1,6 @@
+item.scaffold_casters.name=Gerüstrollen
+item.scaffold_ladder_frame.name=Gerüst-Leiterrahmen
+item.scaffold_netting.name=Gerüstnetz
 itemGroup.tabbuildingmaterials=CSM: Baumaterialien
 itemGroup.tabconstructionsite=CSM: Baustelle
 itemGroup.tabinteriorfinishes=CSM: Innenausbau

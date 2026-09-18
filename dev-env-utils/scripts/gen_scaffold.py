@@ -14,14 +14,20 @@ braces with a working deck at the top, which is what a real one looks like. The 
 grows a guardrail on every edge that is a drop; which edges those are is decided in Java
 (BlockScaffoldFrame.needsRail), and only drawn here.
 
-WHAT IS STORED. Only the facing, which says which way the frames run. Every part is decided in
-getActualState from the neighbours, so the look can change completely -- in this file -- without
-invalidating a single placed block. That was a requirement: the first scaffold was built to be
-looked at, and it had to stay cheap to change its mind about.
+WHAT IS STORED. The axis the frames run across, and the three add-ons a player can fit to a placed
+bay with an item -- a ladder frame, debris netting and casters -- one bit each, which is exactly the
+four bits metadata has. Everything else is decided in getActualState from the neighbours, so the
+look can change completely -- in this file -- without invalidating a single placed block. That was a
+requirement: the first scaffold was built to be looked at, and it had to stay cheap to change its
+mind about.
 
-CANONICAL ORIENTATION. Every part is drawn for FACING north: the frames stand on the west and east
-faces (the run goes east-west, along the wall) and the braces on the north and south faces. The
-blockstate turns the lot a quarter for east and west, and names each part's condition in absolute
+SIDES ARE THREE-VALUED. Each side is one property, scaffold / open / rail, rather than a
+neighbour flag and a rail flag. Block states multiply as a product, and with the add-ons stored the
+two-flag form came to 16,384 states; this is 5,184, which is vanilla redstone wire's approach.
+
+CANONICAL ORIENTATION. Every part is drawn for axis z: the frames stand on the west and east faces
+(the run goes east-west, along the wall) and the braces on the north and south faces. The
+blockstate turns the lot a quarter for axis x, and names each part's condition in absolute
 directions for each of the two turns.
 """
 
@@ -52,6 +58,22 @@ NAME = "scaffold_frame"
 LANG = ("Frame Scaffold", "Andamio de Marco", "Rahmengerüst", "Ramställning")
 TAB_LANG = ("CSM: Construction Site", "CSM: Obra en Construcción", "CSM: Baustelle",
             "CSM: Byggarbetsplats")
+
+# The add-on items: registry name, Java class, and name in each language.
+ADDONS = {
+    "scaffold_ladder_frame": ("ItemScaffoldLadderFrame",
+                              ("Scaffold Ladder Frame", "Marco Escalera de Andamio",
+                               "Gerüst-Leiterrahmen", "Ställningsstegram")),
+    "scaffold_netting": ("ItemScaffoldNetting",
+                         ("Scaffold Debris Netting", "Malla de Protección de Andamio",
+                          "Gerüstnetz", "Ställningsnät")),
+    "scaffold_casters": ("ItemScaffoldCasters",
+                         ("Scaffold Casters", "Ruedas de Andamio", "Gerüstrollen",
+                          "Ställningshjul")),
+}
+ITEM_TEX_DIR = os.path.join(MODULE, "textures", "items", "constructionsite")
+ITEM_MODEL_DIR = os.path.join(MODULE, "models", "item")
+ITEM_TEX_REF = "csm:items/constructionsite/%s"
 
 # --------------------------------------------------------------------------------------------
 # Geometry catalogue -- every dimension the look depends on, in 1/16 of a block
@@ -130,8 +152,97 @@ def jack_texture():
     return img
 
 
+NET_SIZE = 32   # finer than the other textures: a knit, not a lattice
+NET_PITCH = 4   # one diamond of the knit, in pixels; divides NET_SIZE so the mesh tiles
+
+
+def net_texture():
+    """Debris netting: a green diamond knit, strands opaque and the gaps clear, so a netted
+    scaffold still shows its frames through it. Drawn at 32 px as diagonal strands both ways. The
+    first version was square strands every other pixel at 16 px, and in game it read as a heavy
+    plastic trellis rather than a knit. Drawn for the cutout layer, which does not mipmap, so the
+    gaps survive at a distance instead of fading to a solid sheet."""
+    rng = random.Random(20261043)
+    img = Image.new("RGBA", (NET_SIZE, NET_SIZE), (0, 0, 0, 0))
+    px = img.load()
+    for y in range(NET_SIZE):
+        for x in range(NET_SIZE):
+            if (x + y) % NET_PITCH == 0 or (x - y) % NET_PITCH == 0:
+                px[x, y] = _shift((58, 132, 76), rng.uniform(-10, 10))
+    return img
+
+
+def wheel_texture():
+    """Caster wheel: dark rubber tread."""
+    rng = random.Random(20261044)
+    img = Image.new("RGBA", (SIZE, SIZE))
+    px = img.load()
+    for y in range(SIZE):
+        for x in range(SIZE):
+            px[x, y] = _shift((44, 44, 46), (4 if x % 2 else -4) + rng.uniform(-3, 3))
+    return img
+
+
 TEXTURES = {"scaffold_tube": tube_texture, "scaffold_plank": plank_texture,
-            "scaffold_jack": jack_texture}
+            "scaffold_jack": jack_texture, "scaffold_net": net_texture,
+            "scaffold_wheel": wheel_texture}
+
+
+# --- item icons -----------------------------------------------------------------------------
+
+def _icon():
+    return Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+
+
+def icon_ladder_frame():
+    """Two legs and the rungs between them."""
+    img = _icon()
+    px = img.load()
+    steel, dark = (190, 195, 199, 255), (120, 125, 130, 255)
+    for y in range(1, 15):
+        for x in (3, 12):
+            px[x, y] = steel
+            px[x + 1, y] = dark
+    for y in (3, 6, 9, 12):
+        for x in range(5, 12):
+            px[x, y] = steel
+    return img
+
+
+def icon_netting():
+    """A roll of green mesh, seen end-on at the right."""
+    img = _icon()
+    px = img.load()
+    for y in range(4, 12):
+        for x in range(1, 12):
+            if x % 2 == 0 or y % 2 == 0:
+                px[x, y] = (52 + (y - 4) * 3, 118 + (y - 4) * 3, 70, 255)
+    for y in range(3, 13):
+        for x in range(11, 15):
+            if (x - 12.5) ** 2 / 4 + (y - 7.5) ** 2 / 25 <= 1:
+                px[x, y] = (40, 96, 56, 255)
+    return img
+
+
+def icon_casters():
+    """A caster: a dark wheel under its steel swivel."""
+    img = _icon()
+    px = img.load()
+    for y in range(SIZE):
+        for x in range(SIZE):
+            d = ((x - 7.5) ** 2 + (y - 10) ** 2) ** 0.5
+            if d <= 4.5:
+                px[x, y] = (44, 44, 46, 255) if d > 1.5 else (150, 150, 150, 255)
+    for y in range(1, 6):
+        for x in range(6, 10):
+            px[x, y] = (190, 195, 199, 255)
+    for x in range(4, 12):
+        px[x, 5] = (120, 125, 130, 255)
+    return img
+
+
+ICONS = {"scaffold_ladder_frame": icon_ladder_frame, "scaffold_netting": icon_netting,
+         "scaffold_casters": icon_casters}
 
 # --------------------------------------------------------------------------------------------
 # Models
@@ -184,12 +295,12 @@ def _position_uv(face, f, t):
 BRACE_UV = [2, 0, 3, 16]
 
 
-def _box(x0, y0, z0, x1, y1, z1, tex, rotation=None, uv=None):
+def _box(x0, y0, z0, x1, y1, z1, tex, rotation=None, uv=None, faces=FACES):
     f, t = (x0, y0, z0), (x1, y1, z1)
     box = {"from": [x0, y0, z0], "to": [x1, y1, z1],
            "faces": {face: {"texture": tex,
                             "uv": list(uv) if uv else _position_uv(face, f, t)}
-                     for face in FACES}}
+                     for face in faces}}
     if rotation is not None:
         box["rotation"] = rotation
     return box
@@ -318,8 +429,52 @@ def rail_west():
     ]
 
 
+# --- Add-ons --------------------------------------------------------------------------------
+
+LADDER_RUNGS = (1.5, 4.5, 7.5, 10.5)  # rung heights on a ladder frame, below the top ledger
+NET_OFFSET = 0.05                     # netting hangs this far outside the cell face, so it never
+                                      # shares a plane with a wall the scaffold stands against
+
+
+def ladder_near():
+    """A ladder frame: the legs and top ledger of the plain frame, with rungs in place of the
+    walk-through arch, so the end of a run reads as the way up."""
+    t = "#tube"
+    z0, z1 = LEG_Z
+    out = [
+        _box(0, 0, z0, TUBE, 16, z0 + TUBE, t),
+        _box(0, 0, z1, TUBE, 16, z1 + TUBE, t),
+        _box(0, LEDGER_Y, z0 + TUBE, TUBE, LEDGER_Y + TUBE, z1, t),
+    ]
+    for y in LADDER_RUNGS:
+        out.append(_box(0, y, z0 + TUBE, TUBE, y + 0.6, z1, t))
+    return out
+
+
+def caster_near():
+    """Casters under the near frame's legs, in place of screw jacks: a wheel and its swivel."""
+    out = []
+    for z0 in LEG_Z:
+        out.append(_box(0.15, 0, z0 - 0.5, TUBE - 0.15, 2, z0 + TUBE + 0.5, "#wheel"))
+        out.append(_box(-0.25, 2, z0 - 0.25, TUBE + 0.25, 3, z0 + TUBE + 0.25, "#jack"))
+    return out
+
+
+def _net_plane_z(y0, y1):
+    """Netting on the north face, from y0 to y1: a single plane, drawn both ways."""
+    z = -NET_OFFSET
+    return [_box(0, y0, z, 16, y1, z, "#net", faces=("north", "south"))]
+
+
+def _net_plane_x(y0, y1):
+    """Netting on the west face."""
+    x = -NET_OFFSET
+    return [_box(x, y0, 0, x, y1, 16, "#net", faces=("east", "west"))]
+
+
 TEXTURE_KEYS = {"tube": TEX_REF % "scaffold_tube", "plank": TEX_REF % "scaffold_plank",
-                "jack": TEX_REF % "scaffold_jack", "particle": TEX_REF % "scaffold_tube"}
+                "jack": TEX_REF % "scaffold_jack", "net": TEX_REF % "scaffold_net",
+                "wheel": TEX_REF % "scaffold_wheel", "particle": TEX_REF % "scaffold_tube"}
 
 
 def _model(elements, parent=None):
@@ -347,6 +502,18 @@ def part_models():
         NAME + "_rail_east": _model(_mirror_x(rail_west())),
         NAME + "_inventory": _model(near + _mirror_x(near) + north + _mirror_z(north) + deck()
                                     + jn + _mirror_x(jn), parent="block/block"),
+        NAME + "_ladder_near": _model(ladder_near()),
+        NAME + "_ladder_far": _model(_mirror_x(ladder_near())),
+        NAME + "_caster_near": _model(caster_near()),
+        NAME + "_caster_far": _model(_mirror_x(caster_near())),
+        NAME + "_net_north": _model(_net_plane_z(0, 16)),
+        NAME + "_net_south": _model(_mirror_z(_net_plane_z(0, 16))),
+        NAME + "_net_west": _model(_net_plane_x(0, 16)),
+        NAME + "_net_east": _model(_mirror_x(_net_plane_x(0, 16))),
+        NAME + "_net_north_upper": _model(_net_plane_z(16, 32)),
+        NAME + "_net_south_upper": _model(_mirror_z(_net_plane_z(16, 32))),
+        NAME + "_net_west_upper": _model(_net_plane_x(16, 32)),
+        NAME + "_net_east_upper": _model(_mirror_x(_net_plane_x(16, 32))),
     }
 
 
@@ -356,10 +523,14 @@ def part_models():
 #
 # The two turns, and for each the absolute side each canonical face lands on. A y rotation of 90
 # carries north to east, east to south, south to west and west to north.
-TURNS = (("north|south", None,
+TURNS = (("z", None,
           {"east": "east", "north": "north", "south": "south", "west": "west"}),
-         ("east|west", 90,
+         ("x", 90,
           {"east": "south", "north": "east", "south": "west", "west": "north"}))
+
+# A side's three values: another scaffold, open, or open and railed. "Not a scaffold" is the
+# condition most parts want, and a multipart value can OR its alternatives with a bar.
+OPEN = "open|rail"
 
 
 def _apply(part, y):
@@ -371,28 +542,46 @@ def _apply(part, y):
 
 def blockstate():
     parts = []
-    for facing, y, side in TURNS:
-        f = {"facing": facing}
+    for axis, y, side in TURNS:
+        f = {"axis": axis}
+        # The frames: walk-through frames, or ladder frames when that add-on is fitted. The far
+        # one only where the run ends.
+        for ladder, frame in (("false", "frame"), ("true", "ladder")):
+            parts += [
+                {"when": dict(f, ladder=ladder), "apply": _apply(frame + "_near", y)},
+                {"when": dict(f, ladder=ladder, **{side["east"]: OPEN}),
+                 "apply": _apply(frame + "_far", y)},
+            ]
         parts += [
-            {"when": dict(f), "apply": _apply("frame_near", y)},
-            {"when": dict(f, **{side["east"]: "false"}), "apply": _apply("frame_far", y)},
-            {"when": dict(f, **{side["north"]: "false"}), "apply": _apply("brace_north", y)},
-            {"when": dict(f, **{side["south"]: "false"}), "apply": _apply("brace_south", y)},
+            {"when": dict(f, **{side["north"]: OPEN}), "apply": _apply("brace_north", y)},
+            {"when": dict(f, **{side["south"]: OPEN}), "apply": _apply("brace_south", y)},
             {"when": dict(f, up="false"), "apply": _apply("deck", y)},
-            {"when": dict(f, down="false"), "apply": _apply("jack_near", y)},
-            {"when": dict(f, down="false", **{side["east"]: "false"}),
-             "apply": _apply("jack_far", y)},
         ]
-        # Guardrails. Which edges get one is decided in Java (the rail_* properties); only the
-        # far posts need the run's end as well, since a post stands over every bay line and the
-        # next bay draws its own near one.
+        # The feet: screw jacks, or casters when that add-on is fitted, where it stands on
+        # something that is not scaffold.
+        for casters, foot in (("false", "jack"), ("true", "caster")):
+            parts += [
+                {"when": dict(f, casters=casters, down="false"),
+                 "apply": _apply(foot + "_near", y)},
+                {"when": dict(f, casters=casters, down="false", **{side["east"]: OPEN}),
+                 "apply": _apply(foot + "_far", y)},
+            ]
+        # Guardrails. Which edges get one is decided in Java (a side's "rail" value); only the far
+        # posts need the run's end as well, since a post stands over every bay line and the next
+        # bay draws its own near one.
         for canon in ("north", "south", "west", "east"):
-            parts.append({"when": dict(f, **{"rail_" + side[canon]: "true"}),
+            parts.append({"when": dict(f, **{side[canon]: "rail"}),
                           "apply": _apply("rail_" + canon, y)})
         for canon in ("north", "south"):
-            parts.append({"when": dict(f, **{"rail_" + side[canon]: "true",
-                                              side["east"]: "false"}),
+            parts.append({"when": dict(f, **{side[canon]: "rail", side["east"]: OPEN}),
                           "apply": _apply("rail_%s_post" % canon, y)})
+        # Debris netting, when fitted: on every open face, and up over the guardrail wherever
+        # there is one.
+        for canon in ("north", "south", "west", "east"):
+            parts.append({"when": dict(f, netted="true", **{side[canon]: OPEN}),
+                          "apply": _apply("net_" + canon, y)})
+            parts.append({"when": dict(f, netted="true", **{side[canon]: "rail"}),
+                          "apply": _apply("net_%s_upper" % canon, y)})
     return {"variants": {"inventory": {"model": MODEL_REF % (NAME + "_inventory")}},
             "multipart": parts}
 
@@ -401,12 +590,22 @@ def blockstate():
 # Writing
 # --------------------------------------------------------------------------------------------
 
-def write_all(tex_dir, model_dir, state_dir):
+def item_model(name):
+    return {"parent": "item/generated", "textures": {"layer0": ITEM_TEX_REF % name}}
+
+
+def write_all(tex_dir, model_dir, state_dir, item_tex_dir, item_model_dir):
     written = []
     os.makedirs(tex_dir, exist_ok=True)
+    os.makedirs(item_tex_dir, exist_ok=True)
     for name, fn in sorted(TEXTURES.items()):
         fn().save(os.path.join(tex_dir, name + ".png"))
         written.append(("tex", name + ".png"))
+    for name, fn in sorted(ICONS.items()):
+        fn().save(os.path.join(item_tex_dir, name + ".png"))
+        written.append(("itex", name + ".png"))
+        gen_cmu._write_json(os.path.join(item_model_dir, name + ".json"), item_model(name))
+        written.append(("imodel", name + ".json"))
     for name, body in sorted(part_models().items()):
         gen_cmu._write_json(os.path.join(model_dir, name + ".json"), body)
         written.append(("model", name + ".json"))
@@ -419,8 +618,11 @@ LANGS = gen_cmu.LANGS
 
 
 def lang_entries():
-    return [("itemGroup.tabconstructionsite", dict(zip(LANGS, TAB_LANG))),
-            ("tile.%s.name" % NAME, dict(zip(LANGS, LANG)))]
+    out = [("itemGroup.tabconstructionsite", dict(zip(LANGS, TAB_LANG))),
+           ("tile.%s.name" % NAME, dict(zip(LANGS, LANG)))]
+    for name, (_, names) in ADDONS.items():
+        out.append(("item.%s.name" % name, dict(zip(LANGS, names))))
+    return out
 
 
 def fragments():
@@ -433,6 +635,8 @@ def fragments():
     lines.append("# tab registration, in CsmTabConstructionSite")
     lines.append("    initTabBlock(BlockScaffoldFrame.class, fmlPreInitializationEvent); // %s"
                  % LANG[0])
+    for name, (cls, names) in ADDONS.items():
+        lines.append("    initTabItem(%s.class, fmlPreInitializationEvent); // %s" % (cls, names[0]))
     return "\n".join(lines)
 
 
@@ -449,10 +653,11 @@ def main():
         print(fragments())
         return 0
 
-    roots = {"tex": TEX_DIR, "model": MODEL_DIR, "state": STATE_DIR}
+    roots = {"tex": TEX_DIR, "model": MODEL_DIR, "state": STATE_DIR, "itex": ITEM_TEX_DIR,
+             "imodel": ITEM_MODEL_DIR}
 
     if not args.check:
-        written = write_all(TEX_DIR, MODEL_DIR, STATE_DIR)
+        written = write_all(TEX_DIR, MODEL_DIR, STATE_DIR, ITEM_TEX_DIR, ITEM_MODEL_DIR)
         print("Wrote %d scaffold files" % len(written))
         return 0
 
@@ -461,7 +666,8 @@ def main():
         tmp_roots = {k: os.path.join(tmp, k) for k in roots}
         for path in tmp_roots.values():
             os.makedirs(path, exist_ok=True)
-        written = write_all(tmp_roots["tex"], tmp_roots["model"], tmp_roots["state"])
+        written = write_all(tmp_roots["tex"], tmp_roots["model"], tmp_roots["state"],
+                            tmp_roots["itex"], tmp_roots["imodel"])
         drifted = []
         for kind, filename in written:
             here = os.path.join(roots[kind], filename)

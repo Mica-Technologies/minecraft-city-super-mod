@@ -1,0 +1,25 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_building"
+    }
+  ],
+  "pattern": [
+    "L",
+    "P"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:ladder"
+    },
+    "P": {
+      "item": "csm:part_pole_section"
+    }
+  },
+  "result": {
+    "item": "csm:scaffold_ladder_frame",
+    "count": 2
+  }
+}

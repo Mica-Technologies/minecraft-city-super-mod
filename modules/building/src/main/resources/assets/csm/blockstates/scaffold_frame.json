@@ -7,7 +7,8 @@
   "multipart": [
     {
       "when": {
-        "facing": "north|south"
+        "axis": "z",
+        "ladder": "false"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_frame_near"
@@ -15,8 +16,9 @@
     },
     {
       "when": {
-        "facing": "north|south",
-        "east": "false"
+        "axis": "z",
+        "ladder": "false",
+        "east": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_frame_far"
@@ -24,8 +26,27 @@
     },
     {
       "when": {
-        "facing": "north|south",
-        "north": "false"
+        "axis": "z",
+        "ladder": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_ladder_near"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "ladder": "true",
+        "east": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_ladder_far"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "north": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_brace_north"
@@ -33,8 +54,8 @@
     },
     {
       "when": {
-        "facing": "north|south",
-        "south": "false"
+        "axis": "z",
+        "south": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_brace_south"
@@ -42,7 +63,7 @@
     },
     {
       "when": {
-        "facing": "north|south",
+        "axis": "z",
         "up": "false"
       },
       "apply": {
@@ -51,7 +72,8 @@
     },
     {
       "when": {
-        "facing": "north|south",
+        "axis": "z",
+        "casters": "false",
         "down": "false"
       },
       "apply": {
@@ -60,9 +82,10 @@
     },
     {
       "when": {
-        "facing": "north|south",
+        "axis": "z",
+        "casters": "false",
         "down": "false",
-        "east": "false"
+        "east": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_jack_far"
@@ -70,8 +93,29 @@
     },
     {
       "when": {
-        "facing": "north|south",
-        "rail_north": "true"
+        "axis": "z",
+        "casters": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_caster_near"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "casters": "true",
+        "down": "false",
+        "east": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_caster_far"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "north": "rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_north"
@@ -79,8 +123,8 @@
     },
     {
       "when": {
-        "facing": "north|south",
-        "rail_south": "true"
+        "axis": "z",
+        "south": "rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_south"
@@ -88,8 +132,8 @@
     },
     {
       "when": {
-        "facing": "north|south",
-        "rail_west": "true"
+        "axis": "z",
+        "west": "rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_west"
@@ -97,8 +141,8 @@
     },
     {
       "when": {
-        "facing": "north|south",
-        "rail_east": "true"
+        "axis": "z",
+        "east": "rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_east"
@@ -106,9 +150,9 @@
     },
     {
       "when": {
-        "facing": "north|south",
-        "rail_north": "true",
-        "east": "false"
+        "axis": "z",
+        "north": "rail",
+        "east": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_north_post"
@@ -116,9 +160,9 @@
     },
     {
       "when": {
-        "facing": "north|south",
-        "rail_south": "true",
-        "east": "false"
+        "axis": "z",
+        "south": "rail",
+        "east": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_south_post"
@@ -126,7 +170,88 @@
     },
     {
       "when": {
-        "facing": "east|west"
+        "axis": "z",
+        "netted": "true",
+        "north": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_north"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "netted": "true",
+        "north": "rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_north_upper"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "netted": "true",
+        "south": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_south"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "netted": "true",
+        "south": "rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_south_upper"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "netted": "true",
+        "west": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_west"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "netted": "true",
+        "west": "rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_west_upper"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "netted": "true",
+        "east": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_east"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "netted": "true",
+        "east": "rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_east_upper"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "ladder": "false"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_frame_near",
@@ -135,8 +260,9 @@
     },
     {
       "when": {
-        "facing": "east|west",
-        "south": "false"
+        "axis": "x",
+        "ladder": "false",
+        "south": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_frame_far",
@@ -145,8 +271,29 @@
     },
     {
       "when": {
-        "facing": "east|west",
-        "east": "false"
+        "axis": "x",
+        "ladder": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_ladder_near",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "ladder": "true",
+        "south": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_ladder_far",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "east": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_brace_north",
@@ -155,8 +302,8 @@
     },
     {
       "when": {
-        "facing": "east|west",
-        "west": "false"
+        "axis": "x",
+        "west": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_brace_south",
@@ -165,7 +312,7 @@
     },
     {
       "when": {
-        "facing": "east|west",
+        "axis": "x",
         "up": "false"
       },
       "apply": {
@@ -175,7 +322,8 @@
     },
     {
       "when": {
-        "facing": "east|west",
+        "axis": "x",
+        "casters": "false",
         "down": "false"
       },
       "apply": {
@@ -185,9 +333,10 @@
     },
     {
       "when": {
-        "facing": "east|west",
+        "axis": "x",
+        "casters": "false",
         "down": "false",
-        "south": "false"
+        "south": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_jack_far",
@@ -196,8 +345,31 @@
     },
     {
       "when": {
-        "facing": "east|west",
-        "rail_east": "true"
+        "axis": "x",
+        "casters": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_caster_near",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "casters": "true",
+        "down": "false",
+        "south": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_caster_far",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "east": "rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_north",
@@ -206,8 +378,8 @@
     },
     {
       "when": {
-        "facing": "east|west",
-        "rail_west": "true"
+        "axis": "x",
+        "west": "rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_south",
@@ -216,8 +388,8 @@
     },
     {
       "when": {
-        "facing": "east|west",
-        "rail_north": "true"
+        "axis": "x",
+        "north": "rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_west",
@@ -226,8 +398,8 @@
     },
     {
       "when": {
-        "facing": "east|west",
-        "rail_south": "true"
+        "axis": "x",
+        "south": "rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_east",
@@ -236,9 +408,9 @@
     },
     {
       "when": {
-        "facing": "east|west",
-        "rail_east": "true",
-        "south": "false"
+        "axis": "x",
+        "east": "rail",
+        "south": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_north_post",
@@ -247,12 +419,100 @@
     },
     {
       "when": {
-        "facing": "east|west",
-        "rail_west": "true",
-        "south": "false"
+        "axis": "x",
+        "west": "rail",
+        "south": "open|rail"
       },
       "apply": {
         "model": "csm:constructionsite/scaffold_frame_rail_south_post",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "netted": "true",
+        "east": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_north",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "netted": "true",
+        "east": "rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_north_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "netted": "true",
+        "west": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_south",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "netted": "true",
+        "west": "rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_south_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "netted": "true",
+        "north": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_west",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "netted": "true",
+        "north": "rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_west_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "netted": "true",
+        "south": "open|rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_east",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "netted": "true",
+        "south": "rail"
+      },
+      "apply": {
+        "model": "csm:constructionsite/scaffold_frame_net_east_upper",
         "y": 90
       }
     }

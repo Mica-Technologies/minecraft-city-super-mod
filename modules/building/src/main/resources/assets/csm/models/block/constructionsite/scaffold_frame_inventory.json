@@ -4,6 +4,8 @@
     "tube": "csm:blocks/constructionsite/scaffold_tube",
     "plank": "csm:blocks/constructionsite/scaffold_plank",
     "jack": "csm:blocks/constructionsite/scaffold_jack",
+    "net": "csm:blocks/constructionsite/scaffold_net",
+    "wheel": "csm:blocks/constructionsite/scaffold_wheel",
     "particle": "csm:blocks/constructionsite/scaffold_tube"
   },
   "elements": [

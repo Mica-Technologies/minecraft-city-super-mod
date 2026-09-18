@@ -1,3 +1,6 @@
+item.scaffold_casters.name=Ruedas de Andamio
+item.scaffold_ladder_frame.name=Marco Escalera de Andamio
+item.scaffold_netting.name=Malla de Protección de Andamio
 itemGroup.tabbuildingmaterials=CSM: Materiales de Construcción
 itemGroup.tabconstructionsite=CSM: Obra en Construcción
 itemGroup.tabinteriorfinishes=CSM: Acabados Interiores

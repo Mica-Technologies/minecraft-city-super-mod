@@ -3,6 +3,9 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockScaffoldFrame;
+import com.micatechnologies.minecraft.csm.constructionsite.ItemScaffoldCasters;
+import com.micatechnologies.minecraft.csm.constructionsite.ItemScaffoldLadderFrame;
+import com.micatechnologies.minecraft.csm.constructionsite.ItemScaffoldNetting;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -74,5 +77,8 @@ public class CsmTabConstructionSite extends CsmTab {
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(BlockScaffoldFrame.class, fmlPreInitializationEvent); // Frame Scaffold
+    initTabItem(ItemScaffoldLadderFrame.class, fmlPreInitializationEvent); // Scaffold Ladder Frame
+    initTabItem(ItemScaffoldNetting.class, fmlPreInitializationEvent); // Scaffold Debris Netting
+    initTabItem(ItemScaffoldCasters.class, fmlPreInitializationEvent); // Scaffold Casters
   }
 }
