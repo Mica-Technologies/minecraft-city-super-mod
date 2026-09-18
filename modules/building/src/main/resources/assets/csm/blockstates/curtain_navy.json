@@ -1,0 +1,322 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:interior/curtain_navy_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_rod"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_rod",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_rod",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_rod",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_closed"
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_closed",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_closed",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_closed",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_closed_top"
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_closed_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_closed_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_closed_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "left": "false",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_left"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "left": "false",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "left": "false",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "left": "false",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "left": "false",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_left_top"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "left": "false",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_left_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "left": "false",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_left_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "left": "false",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_left_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "right": "false",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_right"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "right": "false",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "right": "false",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "right": "false",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "right": "false",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_right_top"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "right": "false",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_right_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "right": "false",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_right_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "right": "false",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_navy_right_top",
+        "y": 270
+      }
+    }
+  ]
+}

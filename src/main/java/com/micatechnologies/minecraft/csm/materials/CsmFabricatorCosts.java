@@ -228,7 +228,7 @@ public final class CsmFabricatorCosts {
     // ceiling blocks moved to this tab from Building Materials and must keep the cost
     // they already had.
     if (TAB_INTERIOR_FINISHES.equals(tabId)) {
-      return interiorFinishCost();
+      return interiorFinishCost(registryName);
     }
 
     // 4. Mounting hardware.
@@ -520,7 +520,19 @@ public final class CsmFabricatorCosts {
    * they had there, despite registry ids such as {@code pcc} and {@code dct1}
    * suggesting concrete.
    */
-  private static List<FabricatorIngredient> interiorFinishCost() {
+  private static List<FabricatorIngredient> interiorFinishCost(String registryName) {
+    // Window treatments: an aluminium venetian blind is sheet metal; shades and vertical
+    // blinds are fabric; curtains are fabric and a dye.
+    if (CsmBlockDisplayNames.hasWord(registryName, "venetian")) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "shade")
+        || CsmBlockDisplayNames.hasWord(registryName, "vertical")) {
+      return cost(FabricatorIngredient.any(MC_PAPER, 2));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "curtain")) {
+      return cost(FabricatorIngredient.any(MC_PAPER, 2), FabricatorIngredient.any(MC_DYE, 1));
+    }
     return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
         FabricatorIngredient.any(MC_CLAY_BALL, 1));
   }

@@ -1,0 +1,392 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:interior/blind_venetian_white_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_headrail"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_headrail",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_headrail",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_headrail",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "state": "0|1|2",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_bottom"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "state": "0|1|2",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "state": "0|1|2",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "state": "0|1|2",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "3",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_raised"
+      }
+    },
+    {
+      "when": {
+        "state": "3",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_raised",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "3",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_raised",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "3",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_raised",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_open"
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_open_top"
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_open_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_open_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "0",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_open_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_tilted"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_tilted",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_tilted",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_tilted",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_tilted_top"
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_tilted_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_tilted_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "1",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_tilted_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "2",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_closed"
+      }
+    },
+    {
+      "when": {
+        "state": "2",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_closed",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "2",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_closed",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "2",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_closed",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "state": "2",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_closed_top"
+      }
+    },
+    {
+      "when": {
+        "state": "2",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_closed_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "state": "2",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_closed_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "state": "2",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/blind_venetian_white_closed_top",
+        "y": 270
+      }
+    }
+  ]
+}

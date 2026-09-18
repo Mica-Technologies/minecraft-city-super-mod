@@ -312,6 +312,9 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   blocks and not a state, how each material is told from its nearest neighbour, the name-driven
   Fabricator pricing, the glazing (glass that joins into one framed window, one-way glass), and
   the traps (a name decides a price, fine detail mipmaps away)
+- `assets/docs/INTERIOR_FINISHES.md` -- The Interior Finishes tab: window blinds, shades and
+  curtains (their own block hung against any window, joining into one blind, click to cycle the
+  whole blind, redstone to close it, light taken by state), and where the decor track grows next
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
   crane, site fences, earthworks, logistics and facilities: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
@@ -441,6 +444,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_stone.py` -- the three stone veneers (ashlar, fieldstone, cast stone). Fieldstone is a
   Voronoi partition measured on a torus, so its stones wrap across block seams; `--check` fails
   on drift
+- `gen_window_treatments.py` -- window blinds, shades and curtains (`BlockWindowTreatment`): the
+  parts that belong to the whole blind (headrail, bottom rail, bunched curtain) drawn only on the
+  course or end they belong to; `--check` fails on drift
 - `gen_glazing.py` -- the glazing: eight kinds of glass (clear, three tints, one-way, wired,
   bullet-resistant, frosted) as blocks and panes that join into one window with a frame only
   around its outside. One-way glass is two textures on two faces, since the back of a face is

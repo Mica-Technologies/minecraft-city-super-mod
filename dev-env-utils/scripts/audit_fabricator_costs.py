@@ -213,6 +213,12 @@ def cost_for(registry, info, ancestors):
         return ("SHEET_METAL", "FASTENER_KIT")
 
     if tab == "tabinteriorfinishes":
+        if has_word(registry, "venetian"):
+            return ("SHEET_METAL",)
+        if has_word(registry, "shade") or has_word(registry, "vertical"):
+            return ("paper x2",)
+        if has_word(registry, "curtain"):
+            return ("paper x2", "dye")
         return ("CONCRETE_MIX", "clay_ball")
 
     # Never in the framing tab: see the note in CsmFabricatorCosts. A base plate and a
