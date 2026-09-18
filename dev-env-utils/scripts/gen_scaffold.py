@@ -140,25 +140,43 @@ TEXTURES = {"scaffold_tube": tube_texture, "scaffold_plank": plank_texture,
 FACES = ("north", "south", "east", "west", "up", "down")
 
 
-def _clamp16(v):
-    return round(max(0.0, min(16.0, v)), 4)
+def _fit(a, b):
+    """One UV span, fitted into the texture without collapsing it.
+
+    A span that lies wholly in a neighbouring cell -- a guardrail, drawn at y 16..32 in the cell
+    above the deck -- is shifted by whole blocks, as if it were drawn in that cell, so it gets its
+    proper window of the texture. Only a span that genuinely straddles the texture's edge is
+    clamped. Clamping a whole-cell-away span instead collapses it onto the sprite's border row, and
+    at a distance the mipmap blends that row with the neighbouring sprites on the atlas: the first
+    guardrail's posts, rails and toeboards came out as grey and tan speckle.
+    """
+    lo, hi = min(a, b), max(a, b)
+    k = (lo // 16) * 16
+    if hi - k <= 16:
+        lo, hi = lo - k, hi - k
+    else:
+        lo, hi = max(0.0, min(16.0, lo)), max(0.0, min(16.0, hi))
+    lo, hi = round(lo, 4), round(hi, 4)
+    return (lo, hi) if a <= b else (hi, lo)
 
 
 def _position_uv(face, f, t):
-    """The UV Minecraft would derive from the element's position, clamped to the texture.
+    """The UV Minecraft would derive from the element's position, fitted into the texture.
 
-    Unclamped, a face that reaches past the cell gets UVs outside 0..16, and outside 0..16 the atlas
+    Unfitted, a face that reaches past the cell gets UVs outside 0..16, and outside 0..16 the atlas
     does not wrap: it samples whatever sprites sit next to this one. The first scaffold's braces
     did exactly that -- only the stretch of each brace that fell on the tube texture was drawn as
     steel, so the braces looked short and floating, and the rest was painted from other blocks.
     """
-    uv = {"down": (f[0], 16 - t[2], t[0], 16 - f[2]),
-          "up": (f[0], f[2], t[0], t[2]),
-          "north": (16 - t[0], 16 - t[1], 16 - f[0], 16 - f[1]),
-          "south": (f[0], 16 - t[1], t[0], 16 - f[1]),
-          "west": (f[2], 16 - t[1], t[2], 16 - f[1]),
-          "east": (16 - t[2], 16 - t[1], 16 - f[2], 16 - f[1])}[face]
-    return [_clamp16(v) for v in uv]
+    u0, v0, u1, v1 = {"down": (f[0], 16 - t[2], t[0], 16 - f[2]),
+                      "up": (f[0], f[2], t[0], t[2]),
+                      "north": (16 - t[0], 16 - t[1], 16 - f[0], 16 - f[1]),
+                      "south": (f[0], 16 - t[1], t[0], 16 - f[1]),
+                      "west": (f[2], 16 - t[1], t[2], 16 - f[1]),
+                      "east": (16 - t[2], 16 - t[1], 16 - f[2], 16 - f[1])}[face]
+    u0, u1 = _fit(u0, u1)
+    v0, v1 = _fit(v0, v1)
+    return [u0, v0, u1, v1]
 
 
 # A brace is one flat bar, so every face takes the same thin strip of the tube texture rather than
