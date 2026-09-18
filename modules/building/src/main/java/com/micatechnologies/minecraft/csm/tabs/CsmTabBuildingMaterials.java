@@ -25,6 +25,9 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickBrown;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickBuff;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickGrey;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickRed;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStuccoSmooth;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStuccoSandfloat;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStuccoKnockdown;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -150,5 +153,11 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockBrickTrim("brick_grey_soldier")); // Grey Brick (Soldier Course)
     initTabBlock(new BlockBrickTrim("brick_grey_header")); // Grey Brick (Header Course)
     initTabBlock(new BlockBrickTrim("brick_grey_weep")); // Grey Brick (Weep Holes)
+    initTabBlock(BlockSetStuccoSmooth.class,
+        fmlPreInitializationEvent); // Smooth Stucco Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetStuccoSandfloat.class,
+        fmlPreInitializationEvent); // Sand Float Stucco Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetStuccoKnockdown.class,
+        fmlPreInitializationEvent); // Knockdown Stucco Set (Block, Fence, Slab, Stairs)
   }
 }

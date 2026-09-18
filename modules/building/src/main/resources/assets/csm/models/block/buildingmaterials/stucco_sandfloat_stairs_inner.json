@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat",
+    "top": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat",
+    "side": "csm:blocks/buildingmaterials/stucco/stucco_sandfloat"
+  }
+}

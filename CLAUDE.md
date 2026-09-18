@@ -417,6 +417,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   (`BlockBrickTrim`, one class constructed by name). Drawn at 32 px, 16 x 4 units and eight
   courses a block, because at 16 px the only bond that tiles is the CMU's own; `--check` fails
   on drift
+- `gen_stucco.py` -- the three stucco finishes (smooth, sand float, knockdown), each a set on
+  `gen_cmu.py`'s blockstates with one 32 px texture on every face. The noise wraps at the tile
+  edge and its lattices (3 and 5 cells) deliberately do not divide the tile, or the mottling
+  reads as a grid; `--check` fails on drift
 - `gen_framing.py` -- every asset the framing family ships: the textures, the shared geometry, and
   each of the 32 blocks' models and blockstate, from one catalogue. `--check` fails on drift,
   `--fragments` prints the lang and tab-registration lines. It was made to reproduce the

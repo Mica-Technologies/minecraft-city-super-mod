@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "104 blocks in this tab"
+!!! info "116 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -64,6 +64,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Iridescent Metal Fence | `csm:iridescentmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Iridescent Metal Slab | `csm:iridescentmetal_slab` | 2 | 10 | pickaxe | 1 |
 | Iridescent Metal Stairs | `csm:iridescentmetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Knockdown Stucco | `csm:stucco_knockdown` | 2 | 10 | pickaxe | 1 |
+| Knockdown Stucco Fence | `csm:stucco_knockdown_fence` | 2 | 10 | pickaxe | 1 |
+| Knockdown Stucco Slab | `csm:stucco_knockdown_slab` | 2 | 10 | pickaxe | 1 |
+| Knockdown Stucco Stairs | `csm:stucco_knockdown_stairs` | 2 | 10 | pickaxe | 1 |
 | Light Blue Metal | `csm:lightbluemetal` | 2 | 10 | pickaxe | 1 |
 | Light Blue Metal Fence | `csm:lightbluemetal_fence` | 2 | 10 | pickaxe | 1 |
 | Light Blue Metal Slab | `csm:lightbluemetal_slab` | 2 | 10 | pickaxe | 1 |
@@ -99,10 +103,18 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Red Metal Fence | `csm:redmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Red Metal Slab | `csm:redmetal_slab` | 2 | 10 | pickaxe | 1 |
 | Red Metal Stairs | `csm:redmetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Sand Float Stucco | `csm:stucco_sandfloat` | 2 | 10 | pickaxe | 1 |
+| Sand Float Stucco Fence | `csm:stucco_sandfloat_fence` | 2 | 10 | pickaxe | 1 |
+| Sand Float Stucco Slab | `csm:stucco_sandfloat_slab` | 2 | 10 | pickaxe | 1 |
+| Sand Float Stucco Stairs | `csm:stucco_sandfloat_stairs` | 2 | 10 | pickaxe | 1 |
 | Silver Metal | `csm:silvermetal` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Fence | `csm:silvermetal_fence` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Slab | `csm:silvermetal_slab` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Stairs | `csm:silvermetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Smooth Stucco | `csm:stucco_smooth` | 2 | 10 | pickaxe | 1 |
+| Smooth Stucco Fence | `csm:stucco_smooth_fence` | 2 | 10 | pickaxe | 1 |
+| Smooth Stucco Slab | `csm:stucco_smooth_slab` | 2 | 10 | pickaxe | 1 |
+| Smooth Stucco Stairs | `csm:stucco_smooth_stairs` | 2 | 10 | pickaxe | 1 |
 | Split-Face Block | `csm:cmu_splitface` | 2 | 10 | pickaxe | 1 |
 | Split-Face Block Fence | `csm:cmu_splitface_fence` | 2 | 10 | pickaxe | 1 |
 | Split-Face Block Slab | `csm:cmu_splitface_slab` | 2 | 10 | pickaxe | 1 |
