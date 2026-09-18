@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "csm:constructionsite/gang_box"
+    },
+    "facing=east": {
+      "model": "csm:constructionsite/gang_box",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:constructionsite/gang_box",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:constructionsite/gang_box",
+      "y": 270
+    },
+    "inventory": {
+      "model": "csm:constructionsite/gang_box"
+    }
+  }
+}

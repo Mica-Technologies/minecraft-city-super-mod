@@ -1,0 +1,35 @@
+{
+  "textures": {
+    "wall": "csm:blocks/constructionsite/container_maroon_wall",
+    "door": "csm:blocks/constructionsite/container_maroon_door",
+    "roof": "csm:blocks/constructionsite/container_maroon_roof",
+    "frame": "csm:blocks/constructionsite/container_maroon_frame",
+    "floor": "csm:blocks/constructionsite/shell_floor",
+    "particle": "csm:blocks/constructionsite/container_maroon_wall"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0.5,
+        0
+      ],
+      "to": [
+        16,
+        0.5,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#floor",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

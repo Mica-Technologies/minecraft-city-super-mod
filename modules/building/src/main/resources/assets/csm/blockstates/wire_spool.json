@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "csm:constructionsite/wire_spool"
+    },
+    "axis=z": {
+      "model": "csm:constructionsite/wire_spool",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:constructionsite/wire_spool"
+    }
+  }
+}

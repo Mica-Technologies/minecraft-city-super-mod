@@ -1,0 +1,80 @@
+{
+  "textures": {
+    "wall": "csm:blocks/constructionsite/dumpster_blue_wall",
+    "inside": "csm:blocks/constructionsite/dumpster_blue_inside",
+    "frame": "csm:blocks/constructionsite/dumpster_blue_frame",
+    "floor": "csm:blocks/constructionsite/dumpster_floor",
+    "under": "csm:blocks/constructionsite/shell_floor",
+    "particle": "csm:blocks/constructionsite/dumpster_blue_wall"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        15,
+        -0.5
+      ],
+      "to": [
+        16,
+        16.5,
+        2.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0.0,
+            16,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0.0,
+            16,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            14.0,
+            0.0,
+            16.0,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0.0,
+            16,
+            2.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            14.0,
+            16,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

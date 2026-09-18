@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "csm:constructionsite/concrete_washout"
+    },
+    "facing=east": {
+      "model": "csm:constructionsite/concrete_washout",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:constructionsite/concrete_washout",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:constructionsite/concrete_washout",
+      "y": 270
+    },
+    "inventory": {
+      "model": "csm:constructionsite/concrete_washout"
+    }
+  }
+}

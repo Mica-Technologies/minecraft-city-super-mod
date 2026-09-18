@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "csm:constructionsite/pallet_cmu"
+    },
+    "axis=z": {
+      "model": "csm:constructionsite/pallet_cmu",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:constructionsite/pallet_cmu"
+    }
+  }
+}

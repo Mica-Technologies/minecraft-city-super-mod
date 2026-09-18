@@ -9,8 +9,11 @@ import com.micatechnologies.minecraft.csm.constructionsite.BlockFormworkWall;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockPostShore;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockRebarBundle;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockScaffoldFrame;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteAxialProp;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteFacingProp;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteFence;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteProp;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteShell;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockStockpile;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockTrenchBox;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockTrenchPlate;
@@ -119,6 +122,47 @@ public class CsmTabConstructionSite extends CsmTab {
     initTabBlock(new BlockStockpile("stockpile_gravel",
         Material.GROUND)); // Gravel Stockpile
     initTabBlock(new BlockStockpile("stockpile_sand", Material.SAND)); // Sand Stockpile
+
+    // Site logistics.
+    initTabBlock(new BlockSiteAxialProp("pallet_brick", Material.WOOD, SoundType.WOOD, "axe",
+        BlockSiteProp.box16(0.5, 0, 0.5, 15.5, 12.6, 15.5))); // Brick Pallet
+    initTabBlock(new BlockSiteAxialProp("pallet_cmu", Material.WOOD, SoundType.WOOD, "axe",
+        BlockSiteProp.box16(0.5, 0, 0.5, 15.5, 13.5, 15.5))); // Concrete Block Pallet
+    initTabBlock(new BlockSiteAxialProp("pallet_drywall", Material.WOOD, SoundType.WOOD, "axe",
+        BlockSiteProp.box16(0.5, 0, 0.5, 15.5, 10, 15.5))); // Drywall Pallet
+    initTabBlock(new BlockSiteAxialProp("pallet_concrete_bags",
+        Material.WOOD, SoundType.WOOD, "axe",
+        BlockSiteProp.box16(0.5, 0, 0.5, 15.5, 11.5, 15.5))); // Bagged Concrete Pallet
+    initTabBlock(new BlockSiteAxialProp("lumber_stack", Material.WOOD, SoundType.WOOD, "axe",
+        BlockSiteProp.box16(0, 0, 1, 16, 11.5, 15))); // Lumber Stack
+    initTabBlock(new BlockSiteAxialProp("insulation_rolls", Material.CLOTH, SoundType.CLOTH, "axe",
+        BlockSiteProp.box16(0, 0, 0, 16, 16, 16))); // Insulation Rolls
+    initTabBlock(new BlockSiteAxialProp("pipe_bundle", Material.WOOD, SoundType.WOOD, "axe",
+        BlockSiteProp.box16(0, 0, 2, 16, 9, 14))); // PVC Pipe Bundle
+    initTabBlock(new BlockSiteAxialProp("conduit_bundle", Material.IRON, SoundType.METAL, "pickaxe",
+        BlockSiteProp.box16(0, 0, 4, 16, 6, 12))); // Conduit Bundle
+    initTabBlock(new BlockSiteAxialProp("wire_spool", Material.WOOD, SoundType.WOOD, "axe",
+        BlockSiteProp.box16(1, 0, 1, 15, 15, 15))); // Wire Spool
+
+    // Site facilities.
+    initTabBlock(new BlockSiteShell("container_blue")); // Shipping Container (Blue)
+    initTabBlock(new BlockSiteShell("container_maroon")); // Shipping Container (Maroon)
+    initTabBlock(new BlockSiteShell("container_green")); // Shipping Container (Green)
+    initTabBlock(new BlockSiteShell("container_grey")); // Shipping Container (Grey)
+    initTabBlock(new BlockSiteShell("dumpster_blue")); // Roll-Off Dumpster (Blue)
+    initTabBlock(new BlockSiteShell("dumpster_maroon")); // Roll-Off Dumpster (Maroon)
+    initTabBlock(new BlockSiteShell("dumpster_green")); // Roll-Off Dumpster (Green)
+    initTabBlock(new BlockSiteShell("dumpster_grey")); // Roll-Off Dumpster (Grey)
+    initTabBlock(new BlockSiteShell("job_trailer_wall")); // Job Trailer Wall
+    initTabBlock(new BlockSiteShell("job_trailer_window")); // Job Trailer Window
+    initTabBlock(new BlockSiteShell("job_trailer_door")); // Job Trailer Door
+    initTabBlock(new BlockSiteFacingProp("portable_toilet", Material.WOOD, SoundType.WOOD, "axe",
+        BlockSiteProp.box16(1, 0, 1, 15, 31, 15))); // Portable Toilet
+    initTabBlock(new BlockSiteFacingProp("gang_box", Material.IRON, SoundType.METAL, "pickaxe",
+        BlockSiteProp.box16(0, 0, 2.5, 16, 10.5, 13.5))); // Gang Box
+    initTabBlock(new BlockSiteFacingProp("concrete_washout",
+        Material.IRON, SoundType.METAL, "pickaxe",
+        BlockSiteProp.box16(0, 0, 0, 16, 5, 16))); // Concrete Washout
 
     // The tower crane.
     initTabBlock(BlockCraneMast.class, fmlPreInitializationEvent); // Tower Crane Mast

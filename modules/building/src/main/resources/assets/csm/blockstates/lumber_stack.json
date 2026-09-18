@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "csm:constructionsite/lumber_stack"
+    },
+    "axis=z": {
+      "model": "csm:constructionsite/lumber_stack",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:constructionsite/lumber_stack"
+    }
+  }
+}

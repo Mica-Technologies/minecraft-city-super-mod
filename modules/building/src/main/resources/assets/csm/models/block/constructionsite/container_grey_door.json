@@ -1,0 +1,35 @@
+{
+  "textures": {
+    "wall": "csm:blocks/constructionsite/container_grey_wall",
+    "door": "csm:blocks/constructionsite/container_grey_door",
+    "roof": "csm:blocks/constructionsite/container_grey_roof",
+    "frame": "csm:blocks/constructionsite/container_grey_frame",
+    "floor": "csm:blocks/constructionsite/shell_floor",
+    "particle": "csm:blocks/constructionsite/container_grey_wall"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0.5
+      ],
+      "to": [
+        16,
+        16,
+        0.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#door",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 # Construction Site
 
 The tools and temporary works that stand around a building while it goes up: frame scaffolding,
-formwork, shoring and rebar, fencing, earthworks, and a tower crane. One creative tab, **Construction Site**, shipped by
+formwork, shoring and rebar, fencing, earthworks, the materials stacked around a site, its
+facilities, and a tower crane. One creative tab, **Construction Site**, shipped by
 `csm_building` alongside the materials in `WALL_MATERIALS.md` and the structure in
 `FRAMING_SYSTEM.md`.
 
@@ -13,6 +14,8 @@ formwork, shoring and rebar, fencing, earthworks, and a tower crane. One creativ
 | Tower crane | Tower Crane Mast (1x1), Tower Crane Mast (2x2), Tower Crane Head | `gen_crane.py` (masts); the head is drawn in Java |
 | Earthworks | Trench Plate, Trench Box, Soil / Gravel / Sand Stockpile | `gen_earthworks.py` |
 | Fencing | Temporary Fence (plain and with privacy screen), Silt Fence; in Building Materials, Chain-Link Fence (galvanized, black) and its Barbed Wire Top | `gen_fencing.py` |
+| Logistics | Brick, Concrete Block, Drywall and Bagged Concrete Pallets; Lumber Stack; Insulation Rolls; PVC Pipe and Conduit Bundles; Wire Spool | `gen_logistics.py` |
+| Facilities | Shipping Container and Roll-Off Dumpster (blue, maroon, green, grey); Job Trailer Wall, Window, Door; Portable Toilet; Gang Box; Concrete Washout | `gen_facilities.py` |
 
 Classes are in `modules/building/src/main/java/com/micatechnologies/minecraft/csm/constructionsite/`,
 the tab in `tabs/CsmTabConstructionSite.java`. Every generator has `--check`.
@@ -138,6 +141,63 @@ in a straight run. Fences join their own family -- both temporary fences, both c
   mound. Breaking a pile drops one item per layer, and one item costs one of the vanilla material
   (dirt, gravel, sand). The textures are deliberately not vanilla's: excavated soil is darker and
   redder than dirt, the gravel is angular crushed stone, the sand warmer.
+
+## Site logistics
+
+Nine loads that make a site look occupied rather than staged, all `BlockSiteAxialProp`: one class
+by registry name (like `BlockSiteProp`, whose ThreadLocal hand-off it repeats) on
+`AbstractBlockSiteAxial`, laid along the placer's line of sight. Pallets of brick, concrete block,
+drywall and bagged concrete, each a load on a pine pallet under two steel bands; a lumber stack on
+dunnage, end grain on its ends; insulation rolls; a PVC pipe bundle and a conduit bundle; a wire
+spool standing on its flanges.
+
+- **Round things are a square plus the same square turned 45 degrees** (the rolls, the spool's
+  flanges and drum): an eight-pointed section, which reads as round at any distance a pallet is
+  seen from, where a true circle in elements costs a box per facet.
+- **Bundles run the full length of the cell**, so two laid end to end are one long bundle.
+- Each load is priced by what it is: brick is planks + 2 clay balls, concrete block planks +
+  Concrete Mix, drywall planks + 2 paper, bagged concrete planks + 2 Concrete Mix, lumber 3 planks,
+  insulation and PVC 2 paper + a dye, conduit a Pole Section, the spool planks + a Wiring Harness.
+
+## Site facilities
+
+### Built to size: containers, dumpsters, the job trailer
+
+A shipping container is six blocks long, a forty-footer twelve, a roll-off dumpster anything from
+four to eight; a fixed multi-block prop would need its own placement and multi-block breaking and
+would still come in one size. So these are **built block by block** (`BlockSiteShell`, the user's
+choice over a one-click prefab): each block draws a wall only on a side whose neighbour is not part
+of the same object, a frame rail only along an edge where both sides are outside, a roof where
+nothing of it is above and an underside where nothing is below. Any box of blocks reads as one
+object, with no seams inside it.
+
+- **Containers** come in blue, maroon, green and grey. Each block of one joins only its own colour,
+  so two containers side by side or stacked stay two objects if they differ in colour; two of the
+  same colour touching join into one, which is the price of building to size. A container has its
+  doors on the side it faces -- toward the player who placed it, so place the whole container from
+  its door end. The facing is the only thing stored.
+- **Dumpsters** are containers with the top left open, at the user's request: the walls are drawn
+  as solid plates, painted outside and scuffed inside, with a lip along the top edge; only the walls
+  and floor collide, so a dumpster can be stood in and filled.
+- **The job trailer** is three blocks that all join one trailer: plain wall, window and door, so the
+  windows and door go where they are placed. A door block with a door block under it draws the
+  door's upper half (the light); on its own it draws the lower half (the handle).
+- Walls are zero-thickness planes half a pixel in from the cell face, so the rails stand proud of
+  them, and every face takes positional UVs, so the corrugation or siding runs unbroken across
+  every block of a wall.
+- **No texture detail that repeats.** A rust fleck drawn into a wall texture repeats on every
+  block of a twelve-block wall and reads as polka dots; the shell walls have none.
+- Priced per block, as they are built: container and dumpster 2 Sheet Metal, trailer Sheet Metal +
+  planks.
+
+### Props with a front
+
+`BlockSiteFacingProp`, one class by registry name, facing the player who places it: the portable
+toilet (two blocks tall, blue moulded walls, the door with its vent and vacancy indicator, a
+translucent white roof; its icon is scaled down like the temporary fence's), the gang box (a
+safety-yellow job box with a diamond-plate lid), and the concrete washout (a lined steel pan of
+settled slurry with its sign at the front, the legend drawn as its layout since a legend is not
+legible at sixteen pixels).
 
 ## Tower crane
 

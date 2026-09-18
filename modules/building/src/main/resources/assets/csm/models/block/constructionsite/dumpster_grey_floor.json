@@ -1,0 +1,44 @@
+{
+  "textures": {
+    "wall": "csm:blocks/constructionsite/dumpster_grey_wall",
+    "inside": "csm:blocks/constructionsite/dumpster_grey_inside",
+    "frame": "csm:blocks/constructionsite/dumpster_grey_frame",
+    "floor": "csm:blocks/constructionsite/dumpster_floor",
+    "under": "csm:blocks/constructionsite/shell_floor",
+    "particle": "csm:blocks/constructionsite/dumpster_grey_wall"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        1,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#floor",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#under",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}
