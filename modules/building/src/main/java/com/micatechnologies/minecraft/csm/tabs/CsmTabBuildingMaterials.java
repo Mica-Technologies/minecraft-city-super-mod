@@ -36,6 +36,9 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCladdingCorr
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCladdingStandingseam;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCladdingInsulated;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCladdingComposite;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStoneAshlar;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStoneFieldstone;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStoneCast;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -183,5 +186,11 @@ public class CsmTabBuildingMaterials extends CsmTab {
         fmlPreInitializationEvent); // Insulated Panel Cladding Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetCladdingComposite.class,
         fmlPreInitializationEvent); // Composite Panel Cladding Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetStoneAshlar.class,
+        fmlPreInitializationEvent); // Ashlar Stone Veneer Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetStoneFieldstone.class,
+        fmlPreInitializationEvent); // Fieldstone Veneer Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetStoneCast.class,
+        fmlPreInitializationEvent); // Cast Stone Veneer Set (Block, Fence, Slab, Stairs)
   }
 }

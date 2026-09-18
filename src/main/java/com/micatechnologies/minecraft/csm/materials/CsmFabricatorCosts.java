@@ -84,6 +84,7 @@ public final class CsmFabricatorCosts {
   private static final String MC_PLANKS = "minecraft:planks";
   private static final String MC_DYE = "minecraft:dye";
   private static final String MC_CLAY_BALL = "minecraft:clay_ball";
+  private static final String MC_COBBLESTONE = "minecraft:cobblestone";
   private static final String MC_PAPER = "minecraft:paper";
   private static final String MC_PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
 
@@ -343,6 +344,13 @@ public final class CsmFabricatorCosts {
     if (CsmBlockDisplayNames.hasWord(registryName, "cladding")) {
       return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    // Natural stone veneer is quarried stone laid in mortar. Cast stone is concrete and falls
+    // through to the masonry cost below.
+    if (CsmBlockDisplayNames.hasWord(registryName, "veneer")
+        && !CsmBlockDisplayNames.hasWord(registryName, "cast")) {
+      return cost(FabricatorIngredient.any(MC_COBBLESTONE, 1),
+          FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
     }
     // Siding is not masonry, and the fallback below would make a cedar shingle out of concrete.
     // Fiber cement is cement and cellulose fibre; vinyl is a thin coloured sheet; the rest is

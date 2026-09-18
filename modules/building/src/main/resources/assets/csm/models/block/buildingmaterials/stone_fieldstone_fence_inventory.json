@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_inventory",
+  "textures": {
+    "texture": "csm:blocks/buildingmaterials/stone/stone_fieldstone",
+    "particle": "csm:blocks/buildingmaterials/stone/stone_fieldstone"
+  }
+}
