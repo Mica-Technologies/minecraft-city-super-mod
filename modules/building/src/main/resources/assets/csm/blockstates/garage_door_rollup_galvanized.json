@@ -379,6 +379,92 @@
     {
       "when": {
         "motion": "closed",
+        "ccw": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_lip_ccw"
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "ccw": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_lip_ccw",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "ccw": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_lip_ccw",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "ccw": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_lip_ccw",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "cw": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_lip_cw"
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "cw": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_lip_cw",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "cw": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_lip_cw",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
+        "cw": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:garage/garage_door_rollup_galvanized_lip_cw",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "motion": "closed",
         "down": "false",
         "facing": "north"
       },

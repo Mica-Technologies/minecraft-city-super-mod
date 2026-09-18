@@ -36,9 +36,9 @@ public class TileEntityGarageDoorRenderer extends TileEntitySpecialRenderer<Tile
 
   /** Half a sectional panel's thickness. */
   private static final double HALF = 1 / 16.0;
-  /** The roll-up curtain's plane, z in the north-facing model. */
-  private static final double CURTAIN_Z0 = 1.5 / 16;
-  private static final double CURTAIN_Z1 = 2.0 / 16;
+  /** The roll-up curtain's plane, z in the north-facing model: just behind the wall. */
+  private static final double CURTAIN_Z0 = -1.0 / 16;
+  private static final double CURTAIN_Z1 = -0.5 / 16;
 
   private BufferBuilder buf;
   private World world;
@@ -126,7 +126,7 @@ public class TileEntityGarageDoorRenderer extends TileEntitySpecialRenderer<Tile
 
   /**
    * The curtain from its bottom edge, {@code moved} blocks up, to the top of the opening, where it
-   * goes into the wall above; its slats move with it, so the texture is laid by distance up the
+   * goes up into the hood; its slats move with it, so the texture is laid by distance up the
    * curtain rather than by height.
    */
   private void coiling(TileEntityGarageDoor te, double moved, TextureAtlasSprite curtain,
@@ -148,7 +148,7 @@ public class TileEntityGarageDoorRenderer extends TileEntitySpecialRenderer<Tile
       }
       if (length > 1e-6) {
         int lm = light(i + 0.5, moved + 0.5 / 16, CURTAIN_Z1);
-        box(bar, i, moved, 1 / 16.0, i + 1, moved + 1 / 16.0, 2.5 / 16, lm);
+        box(bar, i, moved, -1.75 / 16, i + 1, moved + 1 / 16.0, -0.25 / 16, lm);
       }
     }
   }
@@ -161,7 +161,7 @@ public class TileEntityGarageDoorRenderer extends TileEntitySpecialRenderer<Tile
    */
   private static double[] path(double s, int height) {
     double r = TileEntityGarageDoor.BEND;
-    double plane = 2 / 16.0;
+    double plane = TileEntityGarageDoor.PLANE;
     double arc = Math.PI * r / 2;
     if (s <= height) {
       return new double[]{s, plane};

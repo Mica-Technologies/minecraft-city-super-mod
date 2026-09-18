@@ -1,0 +1,40 @@
+{
+  "textures": {
+    "curtain": "csm:blocks/garage/grille_mesh",
+    "particle": "csm:blocks/garage/grille_mesh"
+  },
+  "elements": [
+    {
+      "from": [
+        -1,
+        0,
+        -1
+      ],
+      "to": [
+        0,
+        16,
+        -0.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#curtain",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#curtain",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

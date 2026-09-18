@@ -25,8 +25,15 @@ signal, and the whole door opens or closes. Only the rising edge of a signal cou
 opens the door rather than opening it and closing it again at once, and a lever works it on every
 flip. As with the blinds, what was powered is remembered only while the world is loaded.
 
-A door sits just behind the opening's inside face (z 1..3 of 16, with the inside to the north), so
-from the street it reads recessed in its opening, as a real one is.
+A door hangs just behind the wall, past the opening's inside face (z -2.5..-0.5 of 16 with the
+inside to the north, so outside its own block's cell), with its tracks on the wall beside the
+opening -- where a real one is. It was first drawn inside the opening, and the bend of the track
+over the top then ran into the wall over the opening and the tracks into the jambs. From the street
+it reads recessed by the wall's full thickness. A closed door has a one-pixel lip past each side
+(into the track) and over the top, so there is no slit where it meets the wall; the lip is not
+drawn while the door moves. Its collision and selection box is out there with it: a box outside
+its cell still collides, since entities gather boxes from the blocks around them, and is still hit
+by a ray that crosses the cell.
 
 ## Why it costs nothing at rest
 
@@ -72,20 +79,21 @@ the texture as Minecraft's does (no `flip-v`).
 
 The hardware is drawn where it is on a real door, each piece only on the blocks it belongs to:
 
-- vertical tracks at the two sides, bending over at the top into the ceiling tracks, which run half
-  a block past the open panels;
-- the torsion spring assembly on the wall above the opening: a shaft across the whole door, and at
-  each end a bearing plate, a cable drum and a spring anchored to a centre bracket;
+- vertical tracks on the wall either side of the opening, bending over at the top into the ceiling
+  tracks, which run half a block past the open panels;
+- the torsion spring assembly on the wall above the opening, standing far enough off it to clear
+  the bend: a shaft across the whole door, and at each end a bearing plate beside the opening, a
+  cable drum over the door's edge and a spring anchored to a centre bracket;
 - while closed, the lift cables down the door's back from the drums to the bottom brackets, and a
   roller bracket at each section joint.
 
 ## The roll-up door and the grille
 
-The curtain coils up into the wall over the opening, with the hood hung on the wall's inside face
-above it. In motion the curtain is drawn from its bottom bar up to the top of the opening, and its
-slats move with it: the texture is laid by distance up the curtain, not by height. The hood has end
-plates, and on its clockwise side a chain wheel with a hand chain down the wall. The grille is the
-same door with an open link curtain on the cutout layer.
+The curtain coils up into the hood hung on the wall's inside face above the opening, running in
+guides on the wall either side. In motion the curtain is drawn from its bottom bar up to the top of
+the opening, and its slats move with it: the texture is laid by distance up the curtain, not by
+height. The hood has end plates, and on its clockwise side a chain wheel with a hand chain down the
+wall. The grille is the same door with an open link curtain on the cutout layer.
 
 ## The opener and the hanger
 
@@ -98,13 +106,13 @@ button on the wall wired to the opener is a wall button.
 
 The **hanger** is perforated angle hung from the ceiling, stacked a block at a time so it reaches
 down from any ceiling height. Placed on a ceiling it goes against the edge of its cell nearest the
-click, or in the middle; placed against a wall, against that wall; stacked, it keeps the position
-of the one above. A stack's top block gets a cleat along the ceiling and its bottom block, with
-nothing below it, a foot at the height of a sectional door's ceiling track, bolted to the track's
-inner side. So to hold up the back of a track, put a hanger against the edge of the door's end
-column, in the cell where the track ends (as many blocks behind the door as the door is tall, plus
-one), and stack it up to the ceiling. Over an opener, a hanger in the middle carries the opener's
-own strap on up to the ceiling.
+click, or in the middle; placed against a wall, against that wall; stacked, it keeps the position of
+the one above. A stack's top block gets a cleat along the ceiling and its bottom block, with nothing
+below it, a foot at the height of a sectional door's ceiling track, bolted to the inner side of the
+track, which runs just outside the door's end column. So to hold up the back of a track, put a
+hanger against the edge of the door's end column, in the cell where the track ends (as many blocks
+behind the door as the door is tall, plus one), and stack it up to the ceiling. Over an opener, a
+hanger in the middle carries the opener's own strap on up to the ceiling.
 
 ## Cost
 
