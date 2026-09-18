@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "half_slab",
+    "textures": {
+      "bottom": "csm:blocks/buildingmaterials/cladding/cladding_composite_top",
+      "top": "csm:blocks/buildingmaterials/cladding/cladding_composite_top",
+      "side": "csm:blocks/buildingmaterials/cladding/cladding_composite"
+    }
+  },
+  "variants": {
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:buildingmaterials/cladding_composite_slab_top"
+      }
+    },
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

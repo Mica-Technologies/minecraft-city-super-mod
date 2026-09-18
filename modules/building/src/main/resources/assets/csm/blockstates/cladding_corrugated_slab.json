@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "half_slab",
+    "textures": {
+      "bottom": "csm:blocks/buildingmaterials/cladding/cladding_corrugated_top",
+      "top": "csm:blocks/buildingmaterials/cladding/cladding_corrugated_top",
+      "side": "csm:blocks/buildingmaterials/cladding/cladding_corrugated"
+    }
+  },
+  "variants": {
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:buildingmaterials/cladding_corrugated_slab_top"
+      }
+    },
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

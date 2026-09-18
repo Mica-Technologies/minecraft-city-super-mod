@@ -138,6 +138,8 @@ def cost_for(registry, info, ancestors):
             if has("AbstractBlockFence"):
                 return ("SHEET_METAL", "FASTENER_KIT", dye)
             return ("SHEET_METAL x2", dye)
+        if has_word(registry, "cladding"):
+            return ("SHEET_METAL x2", "FASTENER_KIT")
         if has_word(registry, "siding"):
             if has_word(registry, "cement"):
                 return ("CONCRETE_MIX", "paper")

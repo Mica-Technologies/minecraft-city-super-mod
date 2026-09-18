@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "132 blocks in this tab"
+!!! info "148 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -41,6 +41,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Cedar Shingle Siding Fence | `csm:siding_shingle_fence` | 2 | 5 | axe | 0 |
 | Cedar Shingle Siding Slab | `csm:siding_shingle_slab` | 2 | 5 | axe | 0 |
 | Cedar Shingle Siding Stairs | `csm:siding_shingle_stairs` | 2 | 5 | axe | 0 |
+| Composite Panel Cladding | `csm:cladding_composite` | 3 | 10 | pickaxe | 1 |
+| Composite Panel Cladding Fence | `csm:cladding_composite_fence` | 3 | 10 | pickaxe | 1 |
+| Composite Panel Cladding Slab | `csm:cladding_composite_slab` | 3 | 10 | pickaxe | 1 |
+| Composite Panel Cladding Stairs | `csm:cladding_composite_stairs` | 3 | 10 | pickaxe | 1 |
 | Concrete Block | `csm:cmu_standard` | 2 | 10 | pickaxe | 1 |
 | Concrete Block Fence | `csm:cmu_standard_fence` | 2 | 10 | pickaxe | 1 |
 | Concrete Block Slab | `csm:cmu_standard_slab` | 2 | 10 | pickaxe | 1 |
@@ -49,6 +53,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Copper Metal Fence | `csm:coppermetal_fence` | 2 | 10 | pickaxe | 1 |
 | Copper Metal Slab | `csm:coppermetal_slab` | 2 | 10 | pickaxe | 1 |
 | Copper Metal Stairs | `csm:coppermetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Corrugated Steel Cladding | `csm:cladding_corrugated` | 3 | 10 | pickaxe | 1 |
+| Corrugated Steel Cladding Fence | `csm:cladding_corrugated_fence` | 3 | 10 | pickaxe | 1 |
+| Corrugated Steel Cladding Slab | `csm:cladding_corrugated_slab` | 3 | 10 | pickaxe | 1 |
+| Corrugated Steel Cladding Stairs | `csm:cladding_corrugated_stairs` | 3 | 10 | pickaxe | 1 |
 | Fiber Cement Lap Siding | `csm:siding_lap` | 2 | 10 | pickaxe | 1 |
 | Fiber Cement Lap Siding Fence | `csm:siding_lap_fence` | 2 | 10 | pickaxe | 1 |
 | Fiber Cement Lap Siding Slab | `csm:siding_lap_slab` | 2 | 10 | pickaxe | 1 |
@@ -72,6 +80,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Ground-Face Block Fence | `csm:cmu_groundface_fence` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block Slab | `csm:cmu_groundface_slab` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block Stairs | `csm:cmu_groundface_stairs` | 2 | 10 | pickaxe | 1 |
+| Insulated Panel Cladding | `csm:cladding_insulated` | 3 | 10 | pickaxe | 1 |
+| Insulated Panel Cladding Fence | `csm:cladding_insulated_fence` | 3 | 10 | pickaxe | 1 |
+| Insulated Panel Cladding Slab | `csm:cladding_insulated_slab` | 3 | 10 | pickaxe | 1 |
+| Insulated Panel Cladding Stairs | `csm:cladding_insulated_stairs` | 3 | 10 | pickaxe | 1 |
 | Iridescent Metal | `csm:iridescentmetal` | 2 | 10 | pickaxe | 1 |
 | Iridescent Metal Fence | `csm:iridescentmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Iridescent Metal Slab | `csm:iridescentmetal_slab` | 2 | 10 | pickaxe | 1 |
@@ -131,6 +143,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Split-Face Block Fence | `csm:cmu_splitface_fence` | 2 | 10 | pickaxe | 1 |
 | Split-Face Block Slab | `csm:cmu_splitface_slab` | 2 | 10 | pickaxe | 1 |
 | Split-Face Block Stairs | `csm:cmu_splitface_stairs` | 2 | 10 | pickaxe | 1 |
+| Standing Seam Cladding | `csm:cladding_standingseam` | 3 | 10 | pickaxe | 1 |
+| Standing Seam Cladding Fence | `csm:cladding_standingseam_fence` | 3 | 10 | pickaxe | 1 |
+| Standing Seam Cladding Slab | `csm:cladding_standingseam_slab` | 3 | 10 | pickaxe | 1 |
+| Standing Seam Cladding Stairs | `csm:cladding_standingseam_stairs` | 3 | 10 | pickaxe | 1 |
 | Vinyl Siding | `csm:siding_vinyl` | 2 | 5 | axe | 0 |
 | Vinyl Siding Fence | `csm:siding_vinyl_fence` | 2 | 5 | axe | 0 |
 | Vinyl Siding Slab | `csm:siding_vinyl_slab` | 2 | 5 | axe | 0 |

@@ -338,6 +338,12 @@ public final class CsmFabricatorCosts {
       }
       return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2), dye);
     }
+    // Metal cladding is sheet steel or aluminium screwed to girts. Its names avoid the word
+    // "metal", which would take it into the colour-set rule above and charge it a dye.
+    if (CsmBlockDisplayNames.hasWord(registryName, "cladding")) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
     // Siding is not masonry, and the fallback below would make a cedar shingle out of concrete.
     // Fiber cement is cement and cellulose fibre; vinyl is a thin coloured sheet; the rest is
     // timber.
