@@ -1,7 +1,7 @@
 # Construction Site
 
 The tools and temporary works that stand around a building while it goes up: frame scaffolding,
-formwork, shoring and rebar, and a tower crane. One creative tab, **Construction Site**, shipped by
+formwork, shoring and rebar, fencing, earthworks, and a tower crane. One creative tab, **Construction Site**, shipped by
 `csm_building` alongside the materials in `WALL_MATERIALS.md` and the structure in
 `FRAMING_SYSTEM.md`.
 
@@ -11,6 +11,7 @@ formwork, shoring and rebar, and a tower crane. One creative tab, **Construction
 | Formwork and shoring | Wall Formwork, Column Formwork, Post Shore | `gen_formwork.py` |
 | Rebar | Rebar Mat, Rebar Dowels, Rebar Column Cage, Rebar Bundle | `gen_formwork.py` |
 | Tower crane | Tower Crane Mast (1x1), Tower Crane Mast (2x2), Tower Crane Head | `gen_crane.py` (masts); the head is drawn in Java |
+| Earthworks | Trench Plate, Trench Box, Soil / Gravel / Sand Stockpile | `gen_earthworks.py` |
 | Fencing | Temporary Fence (plain and with privacy screen), Silt Fence; in Building Materials, Chain-Link Fence (galvanized, black) and its Barbed Wire Top | `gen_fencing.py` |
 
 Classes are in `modules/building/src/main/java/com/micatechnologies/minecraft/csm/constructionsite/`,
@@ -118,6 +119,25 @@ in a straight run. Fences join their own family -- both temporary fences, both c
 - Collision is a vanilla fence's 1.5 blocks for the temporary and chain-link fences, 0.75 for the
   silt fence and 1.0 for the barbed top; all of them are steel that comes down by hand, like the
   scaffold, except the silt fence, which is wood.
+
+## Earthworks
+
+- **Trench Plate** (`BlockTrenchPlate`): the steel road plate laid over an open trench, a sixteenth
+  thick. Plates side by side draw as one: the raised edge bar, with the plate's side face under it,
+  is drawn only along a side with no plate beside it (the four sides are actual state), and the
+  plate body has only a top and an underside. Priced as 2 Sheet Metal.
+- **Trench Box** (`BlockTrenchBox`, on `AbstractBlockSiteAxial`): two steel side panels held apart
+  by an orange spreader pipe, set into a trench. It runs along the placer's line of sight, the way
+  you look down a trench; boxes end to end and stacked are one box, with the top rail and lifting
+  lugs only on the top course (`up`, actual state). Only the panels collide, so a player can walk
+  the trench between them. Priced as 2 Sheet Metal + a Pole Section.
+- **Soil, Gravel and Sand Stockpiles** (`BlockStockpile`, one class by registry name): eight layers
+  like vanilla snow, stored as metadata. Using a stockpile on a pile that is not full adds a layer
+  (and uses the item in survival); on a full one it places a new block above. A heap is shaped by
+  hand, full in the middle and fewer layers toward the edges -- chosen over a fixed one-block
+  mound. Breaking a pile drops one item per layer, and one item costs one of the vanilla material
+  (dirt, gravel, sand). The textures are deliberately not vanilla's: excavated soil is darker and
+  redder than dirt, the gravel is angular crushed stone, the sand warmer.
 
 ## Tower crane
 

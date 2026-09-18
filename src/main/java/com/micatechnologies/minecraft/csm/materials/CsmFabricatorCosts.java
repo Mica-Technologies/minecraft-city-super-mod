@@ -89,6 +89,9 @@ public final class CsmFabricatorCosts {
   private static final String MC_IRON_INGOT = "minecraft:iron_ingot";
   private static final String MC_PAPER = "minecraft:paper";
   private static final String MC_PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
+  private static final String MC_DIRT = "minecraft:dirt";
+  private static final String MC_GRAVEL = "minecraft:gravel";
+  private static final String MC_SAND = "minecraft:sand";
 
   /** Display-name nouns meaning the block is a vertical structural member. */
   private static final String[] POLE_NOUNS = {"pole", "mast", "crossarm", "standard", "post"};
@@ -405,6 +408,25 @@ public final class CsmFabricatorCosts {
     }
     if (CsmBlockDisplayNames.hasWord(registryName, "rebar")) {
       return cost(FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    // Trench plates are thick steel plate; a trench box is two plated panels and its spreader
+    // pipes.
+    if (CsmBlockDisplayNames.hasWord(registryName, "trench")) {
+      if (CsmBlockDisplayNames.hasWord(registryName, "box")) {
+        return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.POLE_SECTION, 1));
+      }
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+    }
+    // A stockpile item is one layer of the material itself.
+    if (CsmBlockDisplayNames.hasWord(registryName, "stockpile")) {
+      if (CsmBlockDisplayNames.hasWord(registryName, "gravel")) {
+        return cost(FabricatorIngredient.any(MC_GRAVEL, 1));
+      }
+      if (CsmBlockDisplayNames.hasWord(registryName, "sand")) {
+        return cost(FabricatorIngredient.any(MC_SAND, 1));
+      }
+      return cost(FabricatorIngredient.any(MC_DIRT, 1));
     }
     // A silt fence is geotextile stapled to wooden stakes.
     if (CsmBlockDisplayNames.hasWord(registryName, "silt")) {

@@ -123,7 +123,8 @@ Rules are applied in this order:
    Metal + a Fastener Kit, and chain-link fencing and its barbed-wire top an iron ingot + a
    Fastener Kit. The Construction Site tab is priced by noun: scaffold is a Pole Section
    + planks, formwork 2 planks + a Fastener Kit, a shore a Pole Section + a Fastener Kit, rebar an
-   iron ingot, a silt fence planks + paper, and the tower crane head 4 Pole Sections + a Control Board + a Wiring Harness (its
+   iron ingot, a silt fence planks + paper, a trench plate 2 Sheet Metal and a trench box 2 Sheet Metal + a
+   Pole Section, a stockpile layer one dirt, gravel or sand, and the tower crane head 4 Pole Sections + a Control Board + a Wiring Harness (its
    masts are poles by rule 1); anything else there is Sheet Metal + a Fastener Kit.
 4. **Mounting hardware** — mount, bracket, backplate, cover, visor, base, plate, arm, top — takes
    Sheet Metal + Fastener Kit rather than its subsystem's electronics.

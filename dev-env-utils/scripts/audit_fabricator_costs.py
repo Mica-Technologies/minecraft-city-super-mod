@@ -161,6 +161,16 @@ def cost_for(registry, info, ancestors):
             return ("POLE_SECTION", "FASTENER_KIT")
         if has_word(registry, "rebar"):
             return ("iron_ingot",)
+        if has_word(registry, "trench"):
+            if has_word(registry, "box"):
+                return ("SHEET_METAL x2", "POLE_SECTION")
+            return ("SHEET_METAL x2",)
+        if has_word(registry, "stockpile"):
+            if has_word(registry, "gravel"):
+                return ("gravel",)
+            if has_word(registry, "sand"):
+                return ("sand",)
+            return ("dirt",)
         if has_word(registry, "silt"):
             return ("planks", "paper")
         if has_word(registry, "crane"):

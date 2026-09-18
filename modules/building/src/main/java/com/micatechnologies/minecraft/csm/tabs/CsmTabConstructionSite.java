@@ -11,6 +11,9 @@ import com.micatechnologies.minecraft.csm.constructionsite.BlockRebarBundle;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockScaffoldFrame;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteFence;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteProp;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockStockpile;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockTrenchBox;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockTrenchPlate;
 import com.micatechnologies.minecraft.csm.constructionsite.ItemScaffoldCasters;
 import com.micatechnologies.minecraft.csm.constructionsite.ItemScaffoldLadderFrame;
 import com.micatechnologies.minecraft.csm.constructionsite.ItemScaffoldNetting;
@@ -108,6 +111,14 @@ public class CsmTabConstructionSite extends CsmTab {
     initTabBlock(new BlockSiteFence("temp_fence")); // Temporary Fence
     initTabBlock(new BlockSiteFence("temp_fence_screened")); // Temporary Fence (Privacy Screen)
     initTabBlock(new BlockSiteFence("silt_fence")); // Silt Fence
+
+    // Earthworks.
+    initTabBlock(BlockTrenchPlate.class, fmlPreInitializationEvent); // Trench Plate
+    initTabBlock(BlockTrenchBox.class, fmlPreInitializationEvent); // Trench Box
+    initTabBlock(new BlockStockpile("stockpile_soil", Material.GROUND)); // Soil Stockpile
+    initTabBlock(new BlockStockpile("stockpile_gravel",
+        Material.GROUND)); // Gravel Stockpile
+    initTabBlock(new BlockStockpile("stockpile_sand", Material.SAND)); // Sand Stockpile
 
     // The tower crane.
     initTabBlock(BlockCraneMast.class, fmlPreInitializationEvent); // Tower Crane Mast

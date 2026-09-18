@@ -1,0 +1,45 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:constructionsite/trench_box_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_body"
+      }
+    },
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_top"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:constructionsite/trench_box_top",
+        "y": 90
+      }
+    }
+  ]
+}
