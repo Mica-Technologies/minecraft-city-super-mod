@@ -1,0 +1,79 @@
+{
+  "textures": {
+    "frame": "csm:blocks/constructionsite/chainlink_post_galv",
+    "mesh": "csm:blocks/constructionsite/chainlink_mesh_galv",
+    "foot": "csm:blocks/constructionsite/fence_foot",
+    "screen": "csm:blocks/constructionsite/fence_screen",
+    "particle": "csm:blocks/constructionsite/fence_foot"
+  },
+  "elements": [
+    {
+      "from": [
+        1.5,
+        0,
+        5
+      ],
+      "to": [
+        14.5,
+        3.0,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#foot",
+          "uv": [
+            1.5,
+            13.0,
+            14.5,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#foot",
+          "uv": [
+            1.5,
+            13.0,
+            14.5,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#foot",
+          "uv": [
+            5,
+            13.0,
+            11,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#foot",
+          "uv": [
+            5,
+            13.0,
+            11,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#foot",
+          "uv": [
+            1.5,
+            5,
+            14.5,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#foot",
+          "uv": [
+            1.5,
+            5,
+            14.5,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

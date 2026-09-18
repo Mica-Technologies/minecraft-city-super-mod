@@ -40,6 +40,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStoneAshlar;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStoneFieldstone;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStoneCast;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteFence;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -192,5 +193,8 @@ public class CsmTabBuildingMaterials extends CsmTab {
         fmlPreInitializationEvent); // Fieldstone Veneer Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetStoneCast.class,
         fmlPreInitializationEvent); // Cast Stone Veneer Set (Block, Fence, Slab, Stairs)
+    initTabBlock(new BlockSiteFence("chainlink_fence")); // Chain-Link Fence
+    initTabBlock(new BlockSiteFence("chainlink_fence_black")); // Chain-Link Fence (Black)
+    initTabBlock(new BlockSiteFence("chainlink_barbed_top")); // Chain-Link Barbed Wire Top
   }
 }

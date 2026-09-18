@@ -148,6 +148,8 @@ def cost_for(registry, info, ancestors):
             if has_word(registry, "vinyl"):
                 return ("paper x2", "dye")
             return ("planks x2",)
+        if has_word(registry, "chain"):
+            return ("iron_ingot", "FASTENER_KIT")
         return ("CONCRETE_MIX", "clay_ball")
 
     if tab == "tabconstructionsite":
@@ -159,6 +161,8 @@ def cost_for(registry, info, ancestors):
             return ("POLE_SECTION", "FASTENER_KIT")
         if has_word(registry, "rebar"):
             return ("iron_ingot",)
+        if has_word(registry, "silt"):
+            return ("planks", "paper")
         if has_word(registry, "crane"):
             return ("POLE_SECTION x4", "CONTROL_BOARD", "WIRING_HARNESS")
         return ("SHEET_METAL", "FASTENER_KIT")

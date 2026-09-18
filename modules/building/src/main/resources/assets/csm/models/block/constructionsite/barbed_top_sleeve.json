@@ -1,0 +1,77 @@
+{
+  "textures": {
+    "post": "csm:blocks/constructionsite/chainlink_post_galv",
+    "barb": "csm:blocks/constructionsite/barbed_wire",
+    "particle": "csm:blocks/constructionsite/chainlink_post_galv"
+  },
+  "elements": [
+    {
+      "from": [
+        6.6,
+        0,
+        6.6
+      ],
+      "to": [
+        9.4,
+        3.0,
+        9.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            6.6,
+            13.0,
+            9.4,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            6.6,
+            13.0,
+            9.4,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            6.6,
+            13.0,
+            9.4,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            6.6,
+            13.0,
+            9.4,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            6.6,
+            6.6,
+            9.4,
+            9.4
+          ]
+        },
+        "down": {
+          "texture": "#post",
+          "uv": [
+            6.6,
+            6.6,
+            9.4,
+            9.4
+          ]
+        }
+      }
+    }
+  ]
+}

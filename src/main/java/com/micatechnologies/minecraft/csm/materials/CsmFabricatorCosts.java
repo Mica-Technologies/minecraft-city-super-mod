@@ -374,6 +374,12 @@ public final class CsmFabricatorCosts {
       }
       return cost(FabricatorIngredient.any(MC_PLANKS, 2));
     }
+    // Chain-link is galvanized or coated steel wire on steel pipe, and its barbed-wire top is the
+    // same wire; the masonry fallback below would make it out of concrete.
+    if (CsmBlockDisplayNames.hasWord(registryName, "chain")) {
+      return cost(FabricatorIngredient.any(MC_IRON_INGOT, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
     // Everything else in this tab is masonry and cast material.
     return cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
         FabricatorIngredient.any(MC_CLAY_BALL, 1));
@@ -399,6 +405,10 @@ public final class CsmFabricatorCosts {
     }
     if (CsmBlockDisplayNames.hasWord(registryName, "rebar")) {
       return cost(FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    // A silt fence is geotextile stapled to wooden stakes.
+    if (CsmBlockDisplayNames.hasWord(registryName, "silt")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 1), FabricatorIngredient.any(MC_PAPER, 1));
     }
     // A crane head is the whole slewing unit: the jib's steelwork, and the cab's controls and
     // wiring. Crane masts never reach here -- the pole rule takes anything named a mast first.

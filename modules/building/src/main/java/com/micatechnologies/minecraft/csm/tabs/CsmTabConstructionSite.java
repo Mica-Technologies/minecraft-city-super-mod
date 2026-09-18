@@ -9,6 +9,7 @@ import com.micatechnologies.minecraft.csm.constructionsite.BlockFormworkWall;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockPostShore;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockRebarBundle;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockScaffoldFrame;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteFence;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteProp;
 import com.micatechnologies.minecraft.csm.constructionsite.ItemScaffoldCasters;
 import com.micatechnologies.minecraft.csm.constructionsite.ItemScaffoldLadderFrame;
@@ -102,6 +103,11 @@ public class CsmTabConstructionSite extends CsmTab {
     initTabBlock(new BlockSiteProp("rebar_cage", Material.IRON, SoundType.METAL, "pickaxe",
         BlockSiteProp.box16(3.4, 0, 3.4, 12.6, 16, 12.6))); // Rebar Column Cage
     initTabBlock(BlockRebarBundle.class, fmlPreInitializationEvent); // Rebar Bundle
+
+    // Fencing and erosion control.
+    initTabBlock(new BlockSiteFence("temp_fence")); // Temporary Fence
+    initTabBlock(new BlockSiteFence("temp_fence_screened")); // Temporary Fence (Privacy Screen)
+    initTabBlock(new BlockSiteFence("silt_fence")); // Silt Fence
 
     // The tower crane.
     initTabBlock(BlockCraneMast.class, fmlPreInitializationEvent); // Tower Crane Mast

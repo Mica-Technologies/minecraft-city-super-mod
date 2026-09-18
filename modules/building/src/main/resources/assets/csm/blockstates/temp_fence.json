@@ -1,0 +1,85 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:constructionsite/temp_fence_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "true"
+          },
+          {
+            "west": "true"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/temp_fence_foot"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "true",
+            "east": "false",
+            "west": "false"
+          },
+          {
+            "south": "true",
+            "east": "false",
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/temp_fence_foot",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/temp_fence_half"
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/temp_fence_half",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/temp_fence_half",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:constructionsite/temp_fence_half",
+        "y": 270
+      }
+    }
+  ]
+}
