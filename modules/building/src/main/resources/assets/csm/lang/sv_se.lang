@@ -1,3 +1,17 @@
+gui.csm.crane.hook=Kroksänkning
+gui.csm.crane.jib=Bomlängd
+gui.csm.crane.livery.red=Röd
+gui.csm.crane.livery.white=Vit
+gui.csm.crane.livery.yellow=Gul
+gui.csm.crane.livery=Färg
+gui.csm.crane.luff=Bomvinkel
+gui.csm.crane.model.flat_top=Flat-top
+gui.csm.crane.model.hammerhead=Hammarhuvud
+gui.csm.crane.model.luffing=Wippbom
+gui.csm.crane.model=Modell
+gui.csm.crane.slew=Vridning
+gui.csm.crane.title=Tornkran
+gui.csm.crane.trolley=Löpkatt
 item.scaffold_casters.name=Ställningshjul
 item.scaffold_ladder_frame.name=Ställningsstegram
 item.scaffold_netting.name=Ställningsnät
