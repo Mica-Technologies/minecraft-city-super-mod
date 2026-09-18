@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/buildingmaterials/shared_models/framing/framing_hub_track_top",
+  "textures": {
+    "stud": "csm:blocks/buildingmaterials/framing/wood_stud",
+    "track": "csm:blocks/buildingmaterials/framing/wood_plate",
+    "particle": "csm:blocks/buildingmaterials/framing/wood_plate"
+  }
+}

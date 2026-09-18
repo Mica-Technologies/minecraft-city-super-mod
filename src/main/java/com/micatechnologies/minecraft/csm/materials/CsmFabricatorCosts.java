@@ -259,8 +259,13 @@ public final class CsmFabricatorCosts {
             FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
 
       case TAB_STRUCTURE_FRAMING:
-        // Framing is steel sections and fasteners. Refine per member type — stud wall,
-        // joist, deck, structural steel — as those blocks are built.
+        // Timber framing is lumber and nails; everything else here is steel sections and
+        // fasteners. Refine further per member type — joist, deck, structural steel — as those
+        // blocks are built.
+        if (CsmBlockDisplayNames.hasWord(registryName, "wood")) {
+          return cost(FabricatorIngredient.any(MC_PLANKS, 2),
+              FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+        }
         return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
 

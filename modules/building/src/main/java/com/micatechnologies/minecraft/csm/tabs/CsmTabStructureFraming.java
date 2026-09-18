@@ -8,6 +8,13 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallDo
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallNarrow;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallWindow;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelTrack;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodPlate;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWall;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWallBlocking;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWallBraced;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWallDoor;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWallNarrow;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWallWindow;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -86,5 +93,12 @@ public class CsmTabStructureFraming extends CsmTab {
     initTabBlock(BlockSteelStudWallWindow.class, fmlPreInitializationEvent); // Steel Stud Wall (Window Opening)
     initTabBlock(BlockSteelTrack.class, fmlPreInitializationEvent); // Steel Track
     initTabBlock(BlockHollowMetalDoorFrame.class, fmlPreInitializationEvent); // Hollow Metal Door Frame
+    initTabBlock(BlockWoodStudWall.class, fmlPreInitializationEvent); // Wood Stud Wall
+    initTabBlock(BlockWoodStudWallNarrow.class, fmlPreInitializationEvent); // Wood Stud Wall (Narrow)
+    initTabBlock(BlockWoodStudWallBraced.class, fmlPreInitializationEvent); // Wood Stud Wall (Braced)
+    initTabBlock(BlockWoodStudWallBlocking.class, fmlPreInitializationEvent); // Wood Stud Wall (Fire Blocking)
+    initTabBlock(BlockWoodStudWallDoor.class, fmlPreInitializationEvent); // Wood Stud Wall (Door Opening)
+    initTabBlock(BlockWoodStudWallWindow.class, fmlPreInitializationEvent); // Wood Stud Wall (Window Opening)
+    initTabBlock(BlockWoodPlate.class, fmlPreInitializationEvent); // Wood Sole Plate
   }
 }

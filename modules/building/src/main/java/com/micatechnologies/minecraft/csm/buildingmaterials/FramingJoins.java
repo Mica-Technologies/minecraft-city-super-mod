@@ -113,6 +113,6 @@ public final class FramingJoins {
       EnumFacing side) {
     Block neighbour = access.getBlockState(pos.offset(side)).getBlock();
     return neighbour instanceof ICsmFramingMember
-        && member.acceptsFraming(((ICsmFramingMember) neighbour).getFramingKind());
+        && member.joinsFraming((ICsmFramingMember) neighbour);
   }
 }

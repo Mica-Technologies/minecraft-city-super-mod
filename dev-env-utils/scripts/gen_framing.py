@@ -153,11 +153,61 @@ def insulation_mineral():
     return _fibrous(20260920, MINERAL)
 
 
+# Dimensional lumber. Softwood framing is pale and yellowish, with the grain running the length of
+# the member -- which is up a stud and along a plate, so the two are drawn on different axes rather
+# than being one texture used twice.
+WOOD_BASE = (198, 165, 112, 255)
+WOOD_GRAIN = (176, 142, 92, 255)
+WOOD_LIGHT = (214, 186, 138, 255)
+WOOD_KNOT = (146, 112, 68, 255)
+
+
+def _grain(seed, vertical):
+    """Lumber, with the grain running along the member. Deterministic, so two runs match."""
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (SIZE, SIZE), WOOD_BASE)
+    px = img.load()
+    for line in range(SIZE):
+        roll = rng.random()
+        if roll < 0.28:
+            colour = WOOD_GRAIN
+        elif roll < 0.5:
+            colour = WOOD_LIGHT
+        else:
+            continue
+        # A grain line wanders a little rather than running dead straight.
+        offset = 0
+        for along in range(SIZE):
+            if rng.random() < 0.12:
+                offset += rng.choice((-1, 1))
+            across = (line + offset) % SIZE
+            px[(across, along) if vertical else (along, across)] = colour
+    # One knot, which is what stops a flat fill reading as cardboard.
+    kx, ky = rng.randint(3, 12), rng.randint(3, 12)
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            if abs(dx) + abs(dy) < 2:
+                px[(kx + dx) % SIZE, (ky + dy) % SIZE] = WOOD_KNOT
+    return img
+
+
+def wood_stud():
+    """A stud, seen on its face: grain up the member."""
+    return _grain(20260921, vertical=True)
+
+
+def wood_plate():
+    """A plate, seen on its face: grain along the member."""
+    return _grain(20260922, vertical=False)
+
+
 TEXTURES = {
     "steel_stud.png": steel_stud,
     "steel_track.png": steel_track,
     "insulation_batt.png": insulation_batt,
     "insulation_mineral.png": insulation_mineral,
+    "wood_stud.png": wood_stud,
+    "wood_plate.png": wood_plate,
 }
 
 # --------------------------------------------------------------------------------------------
@@ -231,6 +281,22 @@ def insulation_parts(prefix, x0, x1):
     }
 
 
+# Fire blocking: a short length of the same lumber laid flat between the studs, part way up. Real
+# framing carries a row of it to stop a bay acting as a chimney.
+BLOCK_Y0, BLOCK_Y1 = 7, 9
+
+
+def blocking_parts(prefix, x0, x1):
+    """The bay of one arm, and of the centre, with a row of blocking through it."""
+    return {
+        prefix + "arm_blocking": _model([
+            _box(x0, BLOCK_Y0, 0, x1, BLOCK_Y1, STUD_Z0),
+            _box(x0, BLOCK_Y0, STUD_Z1, x1, BLOCK_Y1, ARM_END)]),
+        prefix + "hub_blocking": _model([
+            _box(x0, BLOCK_Y0, HUB0, x1, BLOCK_Y1, HUB1)]),
+    }
+
+
 def wall_parts(prefix, x0, x1, uv=None):
     """The six models a framed wall of the given thickness draws."""
     return {
@@ -253,6 +319,7 @@ def shared_models():
     models = {}
     models.update(wall_parts("framing_narrow_", NARROW_X0, NARROW_X1, NARROW_UV))
     models.update(insulation_parts("framing_", WALL_X0, WALL_X1))
+    models.update(blocking_parts("framing_", WALL_X0, WALL_X1))
     models.update(insulation_parts("framing_narrow_", NARROW_X0, NARROW_X1))
     # The bare floor runner: track with no stud gap in it, because no stud stands there yet.
     models["framing_runner_arm"] = _model([_box(WALL_X0, 0, 0, WALL_X1, TRACK, ARM_END)])
@@ -384,7 +451,7 @@ def _inventory(name, insulated=False):
 INSULATIONS = ("batt", "mineral")
 
 
-def wall_blockstate(name, extra_arms=(), insulated=False):
+def wall_blockstate(name, extra_arms=(), insulated=False, extra_hubs=()):
     """The multipart for a framed wall.
 
     Conditions are written out per connection rather than folded into an OR, because the format
@@ -405,6 +472,12 @@ def wall_blockstate(name, extra_arms=(), insulated=False):
         for when in NO_POST:
             parts.append({"when": dict(when, **{edge: "false"}),
                           "apply": {"model": MODEL_REF % ("%s_hub_%s" % (name, suffix))}})
+    # Anything that fills the centre bay follows the hub, never the post: where a post stands the
+    # centre is solid and there is no bay to fill.
+    for suffix in extra_hubs:
+        for when in NO_POST:
+            parts.append({"when": when,
+                          "apply": {"model": MODEL_REF % ("%s_%s" % (name, suffix))}})
     # Insulation fills the bays, so it follows the arms and the hub but never the post: where a
     # post stands the centre is solid and there is no bay to pack.
     if insulated:
@@ -488,7 +561,7 @@ WALL_PARTS = ("post", "arm_stud", "arm_track_bottom", "arm_track_top",
               "hub_track_bottom", "hub_track_top")
 
 
-def _wall_flavour(prefix, x0, x1, uv=None, braced=False):
+def _wall_flavour(prefix, x0, x1, uv=None, braced=False, blocking=False):
     parts = {part: prefix + part for part in WALL_PARTS}
     # Each insulation gets its own textured model, since a multipart apply can pick a model but
     # cannot rebind a texture.
@@ -497,9 +570,18 @@ def _wall_flavour(prefix, x0, x1, uv=None, braced=False):
             parts["%s_%s" % (part, material)] = prefix + part
     extra = ()
     inv_extra = ()
+    hubs = ()
+    if blocking:
+        parts["arm_blocking"] = "framing_arm_blocking"
+        parts["hub_blocking"] = "framing_hub_blocking"
+        extra += ("arm_blocking",)
+        hubs = ("hub_blocking",)
+        inv_extra += (_box(x0, BLOCK_Y0, 0, x1, BLOCK_Y1, STUD_Z0),
+                      _box(x0, BLOCK_Y0, STUD_Z1, x1, BLOCK_Y1, 16 - STUD_Z1),
+                      _box(x0, BLOCK_Y0, 16 - STUD_Z0, x1, BLOCK_Y1, 16))
     if braced:
         parts["brace_arm"] = "framing_brace_arm"
-        extra = ("brace_arm",)
+        extra += ("brace_arm",)
         inv_extra = (dict(_box(x0 + 1, 7, 0, x1 - 1, 9, 16),
                           rotation={"origin": [8, 8, 8], "axis": "x", "angle": 45,
                                     "rescale": True}),)
@@ -508,7 +590,7 @@ def _wall_flavour(prefix, x0, x1, uv=None, braced=False):
         "insulation_parts": {"%s_%s" % (part, material): material
                              for material in INSULATIONS
                              for part in ("arm_insulation", "hub_insulation")},
-        "state": lambda name: wall_blockstate(name, extra, insulated=True),
+        "state": lambda name: wall_blockstate(name, extra, insulated=True, extra_hubs=hubs),
         "inventory": lambda: wall_inventory(x0, x1, uv, inv_extra),
         "insulated_inventory": lambda: wall_inventory(x0, x1, uv,
                                                       tuple(inv_extra) + tuple(
@@ -526,6 +608,7 @@ def _opening_flavour(prefix, inventory):
 
 FLAVOURS = {
     "wall": _wall_flavour("framing_", WALL_X0, WALL_X1),
+    "blocking": _wall_flavour("framing_", WALL_X0, WALL_X1, blocking=True),
     "narrow": _wall_flavour("framing_narrow_", NARROW_X0, NARROW_X1, NARROW_UV),
     "braced": _wall_flavour("framing_", WALL_X0, WALL_X1, braced=True),
     "runner": _opening_flavour("framing_runner_", runner_inventory),
@@ -576,10 +659,14 @@ def insulated_entries():
     return out
 
 
-def _entry(name, cls, flavour, en, es, de, sv):
+def _entry(name, cls, flavour, en, es, de, sv, stud="steel_stud", track="steel_track"):
     return {"name": name, "class": cls, "flavour": flavour,
-            "stud": "steel_stud", "track": "steel_track",
+            "stud": stud, "track": track,
             "lang": {"en_us": en, "es_es": es, "de_de": de, "sv_se": sv}}
+
+
+def _wood(name, cls, flavour, en, es, de, sv):
+    return _entry(name, cls, flavour, en, es, de, sv, stud="wood_stud", track="wood_plate")
 
 
 CATALOGUE = [
@@ -605,6 +692,28 @@ CATALOGUE = [
     _entry("hollow_metal_door_frame", "BlockHollowMetalDoorFrame", "hmframe",
            "Hollow Metal Door Frame", "Marco de Puerta de Acero",
            "Stahlzarge", "St\u00e5ld\u00f6rrkarm"),
+    _wood("wood_stud_wall", "BlockWoodStudWall", "wall",
+          "Wood Stud Wall", "Muro de Montantes de Madera",
+          "St\u00e4nderwand (Holz)", "Regelv\u00e4gg av Tr\u00e4"),
+    _wood("wood_stud_wall_narrow", "BlockWoodStudWallNarrow", "narrow",
+          "Wood Stud Wall (Narrow)", "Muro de Montantes de Madera (Estrecho)",
+          "St\u00e4nderwand (Holz, Schmal)", "Regelv\u00e4gg av Tr\u00e4 (Smal)"),
+    _wood("wood_stud_wall_braced", "BlockWoodStudWallBraced", "braced",
+          "Wood Stud Wall (Braced)", "Muro de Montantes de Madera (Arriostrado)",
+          "St\u00e4nderwand (Holz, Ausgesteift)", "Regelv\u00e4gg av Tr\u00e4 (Kryssad)"),
+    _wood("wood_stud_wall_blocking", "BlockWoodStudWallBlocking", "blocking",
+          "Wood Stud Wall (Fire Blocking)", "Muro de Montantes de Madera (Cortafuego)",
+          "St\u00e4nderwand (Holz, Brandsperre)", "Regelv\u00e4gg av Tr\u00e4 (Brandstopp)"),
+    _wood("wood_stud_wall_door", "BlockWoodStudWallDoor", "door",
+          "Wood Stud Wall (Door Opening)", "Muro de Montantes de Madera (Vano de Puerta)",
+          "St\u00e4nderwand (Holz, T\u00fcr\u00f6ffnung)",
+          "Regelv\u00e4gg av Tr\u00e4 (D\u00f6rr\u00f6ppning)"),
+    _wood("wood_stud_wall_window", "BlockWoodStudWallWindow", "window",
+          "Wood Stud Wall (Window Opening)", "Muro de Montantes de Madera (Vano de Ventana)",
+          "St\u00e4nderwand (Holz, Fenster\u00f6ffnung)",
+          "Regelv\u00e4gg av Tr\u00e4 (F\u00f6nster\u00f6ppning)"),
+    _wood("wood_plate", "BlockWoodPlate", "runner",
+          "Wood Sole Plate", "Solera de Madera", "Schwelle (Holz)", "Syll av Tr\u00e4"),
 ]
 
 
