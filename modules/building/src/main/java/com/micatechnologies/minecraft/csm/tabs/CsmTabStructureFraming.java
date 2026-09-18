@@ -1,7 +1,13 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockHollowMetalDoorFrame;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWall;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallBraced;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallDoor;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallNarrow;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallWindow;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelTrack;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -74,5 +80,11 @@ public class CsmTabStructureFraming extends CsmTab {
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(BlockSteelStudWall.class, fmlPreInitializationEvent); // Steel Stud Wall
+    initTabBlock(BlockSteelStudWallNarrow.class, fmlPreInitializationEvent); // Steel Stud Wall (Narrow)
+    initTabBlock(BlockSteelStudWallBraced.class, fmlPreInitializationEvent); // Steel Stud Wall (Braced)
+    initTabBlock(BlockSteelStudWallDoor.class, fmlPreInitializationEvent); // Steel Stud Wall (Door Opening)
+    initTabBlock(BlockSteelStudWallWindow.class, fmlPreInitializationEvent); // Steel Stud Wall (Window Opening)
+    initTabBlock(BlockSteelTrack.class, fmlPreInitializationEvent); // Steel Track
+    initTabBlock(BlockHollowMetalDoorFrame.class, fmlPreInitializationEvent); // Hollow Metal Door Frame
   }
 }

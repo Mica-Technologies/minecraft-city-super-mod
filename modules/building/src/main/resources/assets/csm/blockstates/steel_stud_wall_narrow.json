@@ -1,0 +1,428 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:buildingmaterials/steel_stud_wall_narrow_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "true",
+            "east": "true"
+          },
+          {
+            "east": "true",
+            "south": "true"
+          },
+          {
+            "south": "true",
+            "west": "true"
+          },
+          {
+            "west": "true",
+            "north": "true"
+          },
+          {
+            "north": "true",
+            "east": "false",
+            "south": "false",
+            "west": "false"
+          },
+          {
+            "north": "false",
+            "east": "true",
+            "south": "false",
+            "west": "false"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "true",
+            "west": "false"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_post"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_stud",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_stud",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_stud",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_stud",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_stud",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_stud",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_stud",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_stud",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_bottom",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_bottom",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_bottom",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_bottom",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_bottom",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_bottom",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_bottom",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_bottom",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "east": "false",
+        "west": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_hub_track_bottom"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "west": "true",
+        "north": "false",
+        "south": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_hub_track_bottom"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_hub_track_bottom"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_top",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_top",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_top",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_top",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_top",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "east|west",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_top",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_top",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "facing": "north|south",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_arm_track_top",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "east": "false",
+        "west": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_hub_track_top"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "west": "true",
+        "north": "false",
+        "south": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_hub_track_top"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false",
+        "south": "false",
+        "west": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_stud_wall_narrow_hub_track_top"
+      }
+    }
+  ]
+}

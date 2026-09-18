@@ -1,0 +1,39 @@
+{
+  "textures": {
+    "particle": "#track"
+  },
+  "elements": [
+    {
+      "from": [
+        7,
+        0,
+        6
+      ],
+      "to": [
+        9,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#track"
+        },
+        "south": {
+          "texture": "#track"
+        },
+        "east": {
+          "texture": "#track"
+        },
+        "west": {
+          "texture": "#track"
+        },
+        "up": {
+          "texture": "#track"
+        },
+        "down": {
+          "texture": "#track"
+        }
+      }
+    }
+  ]
+}

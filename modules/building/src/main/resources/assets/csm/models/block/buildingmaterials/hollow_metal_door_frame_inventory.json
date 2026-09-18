@@ -1,0 +1,106 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "stud": "csm:blocks/buildingmaterials/framing/steel_stud",
+    "track": "csm:blocks/buildingmaterials/framing/steel_track",
+    "particle": "csm:blocks/buildingmaterials/framing/steel_track"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        0,
+        0
+      ],
+      "to": [
+        11,
+        16,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stud"
+        },
+        "south": {
+          "texture": "#stud"
+        },
+        "east": {
+          "texture": "#track"
+        },
+        "west": {
+          "texture": "#track"
+        },
+        "up": {
+          "texture": "#track"
+        },
+        "down": {
+          "texture": "#track"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        0,
+        13
+      ],
+      "to": [
+        11,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stud"
+        },
+        "south": {
+          "texture": "#stud"
+        },
+        "east": {
+          "texture": "#track"
+        },
+        "west": {
+          "texture": "#track"
+        },
+        "up": {
+          "texture": "#track"
+        },
+        "down": {
+          "texture": "#track"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        13,
+        3
+      ],
+      "to": [
+        11,
+        16,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#track"
+        },
+        "south": {
+          "texture": "#track"
+        },
+        "east": {
+          "texture": "#track"
+        },
+        "west": {
+          "texture": "#track"
+        },
+        "up": {
+          "texture": "#track"
+        },
+        "down": {
+          "texture": "#track"
+        }
+      }
+    }
+  ]
+}

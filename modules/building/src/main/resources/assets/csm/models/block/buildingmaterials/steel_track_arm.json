@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/buildingmaterials/shared_models/framing/framing_runner_arm",
+  "textures": {
+    "stud": "csm:blocks/buildingmaterials/framing/steel_stud",
+    "track": "csm:blocks/buildingmaterials/framing/steel_track",
+    "particle": "csm:blocks/buildingmaterials/framing/steel_track"
+  }
+}
