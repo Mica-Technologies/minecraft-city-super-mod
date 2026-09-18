@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -15,8 +16,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * <p>Everything is a bar between two points or an axis box, textured with a sprite from the block
  * atlas, so a whole crane is one texture and compiles into one display list. Every vertex carries
- * its own lightmap value: the structure takes the world's light at the head, the aviation lights
- * are full-bright.</p>
+ * the world's light at the head. The aviation lights' lenses are drawn here unlit; their flash
+ * changes every frame, so the renderer draws it outside the list.</p>
  *
  * <p>The jibs are triangular lattice girders -- two bottom chords and a top chord, braced in a
  * zigzag on all three faces -- because that is the section almost every tower crane jib actually
@@ -27,9 +28,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 @SideOnly(Side.CLIENT)
 public final class CraneGeometry {
-
-  /** Full-bright, packed as the lightmap expects: block light and sky light both 15. */
-  private static final int FULL_BRIGHT = 0xF000F0;
 
   private final BufferBuilder buf;
   private final int light;
@@ -43,8 +41,13 @@ public final class CraneGeometry {
   private final TextureAtlasSprite lamp;
   private final TextureAtlasSprite plank;
 
-  private CraneGeometry(BufferBuilder buf, CraneLivery livery, int light, int scale) {
+  /** Where each aviation light's lens is, for the renderer to light it. */
+  private final List<double[]> lamps;
+
+  private CraneGeometry(BufferBuilder buf, CraneLivery livery, int light, int scale,
+      List<double[]> lamps) {
     this.buf = buf;
+    this.lamps = lamps;
     this.light = light;
     this.s = scale;
     TextureMap atlas = Minecraft.getMinecraft().getTextureMapBlocks();
@@ -62,10 +65,18 @@ public final class CraneGeometry {
    * Builds a whole crane head into {@code buf}, which must already be begun in quads with the
    * block vertex format.
    *
+   * @param buf   the buffer
+   * @param te    the crane's head
+   * @param light the packed light at the head
+   * @param lamps receives each aviation light's lens centre, in the same frame, as
+   *              {@code {x, y, z}}: the lenses are drawn unlit here, and the renderer flashes
+   *              them every frame outside the compiled geometry
+   *
    * @since 1.0
    */
-  public static void build(BufferBuilder buf, TileEntityCraneHead te, int light) {
-    CraneGeometry g = new CraneGeometry(buf, te.getLivery(), light, te.getScale());
+  public static void build(BufferBuilder buf, TileEntityCraneHead te, int light,
+      List<double[]> lamps) {
+    CraneGeometry g = new CraneGeometry(buf, te.getLivery(), light, te.getScale(), lamps);
     g.slewingUnit();
     switch (te.getModel()) {
       case HAMMERHEAD:
@@ -234,10 +245,17 @@ public final class CraneGeometry {
     box(dark, x - 0.06 * s, hookY - 0.3 * s, -0.06 * s, x + 0.2 * s, hookY - 0.2 * s, 0.06 * s);
   }
 
-  /** An aviation obstruction light: a small red lamp drawn full-bright. */
+  /**
+   * An aviation obstruction light: a dark base and a red lens, in the world's light. The flash
+   * and its glow are not geometry -- see {@link TileEntityCraneHeadRenderer} -- so the lens is
+   * recorded for the renderer.
+   */
   private void lamp(double x, double y, double z) {
-    double r = 0.08 * s;
-    boxLit(lamp, x - r, y, z - r, x + r, y + 2 * r, z + r, FULL_BRIGHT);
+    double rb = 0.12 * s;
+    double r = 0.09 * s;
+    box(dark, x - rb, y, z - rb, x + rb, y + 0.06 * s, z + rb);
+    box(lamp, x - r, y + 0.06 * s, z - r, x + r, y + 0.26 * s, z + r);
+    lamps.add(new double[]{x, y + 0.16 * s, z});
   }
 
   /** A rope: a thin dark bar. */
@@ -294,11 +312,7 @@ public final class CraneGeometry {
 
   private void box(TextureAtlasSprite sp, double x0, double y0, double z0, double x1, double y1,
       double z1) {
-    boxLit(sp, x0, y0, z0, x1, y1, z1, light);
-  }
-
-  private void boxLit(TextureAtlasSprite sp, double x0, double y0, double z0, double x1,
-      double y1, double z1, int lm) {
+    int lm = light;
     double[][] c = {
         {x0, y0, z0}, {x1, y0, z0}, {x1, y1, z0}, {x0, y1, z0},
         {x0, y0, z1}, {x1, y0, z1}, {x1, y1, z1}, {x0, y1, z1}};
