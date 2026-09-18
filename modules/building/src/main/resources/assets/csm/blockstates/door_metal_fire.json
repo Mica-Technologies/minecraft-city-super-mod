@@ -1,0 +1,637 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:doors/door_metal_fire_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_left_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_right_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_left_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_left_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_right_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_right_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_left_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_right_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_left_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_left_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_right_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_right_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_left_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_right_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_left_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_left_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_right_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_right_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_left_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_lower_right_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_left_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_left_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_metal_fire_upper_right_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_right_open",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "csm:blocks/doors/door_front_black_icon"
+  }
+}

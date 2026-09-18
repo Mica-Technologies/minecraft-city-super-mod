@@ -15,7 +15,7 @@ while they are not moving.
 | Garage Door Hanger | `BlockGarageDoorHanger` | holds up an opener or a ceiling track |
 | Garage Door Button | `BlockGarageDoorControl("garage_door_button")` | lit wall button: start, stop, reverse |
 | Garage Door Control Station | `BlockGarageDoorControl("garage_door_station")` | OPEN / CLOSE / STOP |
-| Garage Door Keypad | `BlockGarageDoorControl("garage_door_keypad")` | PIN code, then as the button |
+| Door Keypad | `BlockGarageDoorControl("garage_door_keypad")` | PIN code, then as the button; also locks a door (DOORS.md) |
 
 Every asset comes from `dev-env-utils/scripts/gen_garage_doors.py` (`--check` fails on drift).
 

@@ -5,7 +5,9 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGlazed;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGroundface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuSplitface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuStandard;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBuildingDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
+import com.micatechnologies.minecraft.csm.buildingmaterials.ItemDoorCloser;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorControl;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorHanger;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorOpener;
@@ -232,6 +234,21 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(BlockGarageDoorHanger.class, fmlPreInitializationEvent); // Garage Door Hanger
     initTabBlock(new BlockGarageDoorControl("garage_door_button")); // Garage Door Button
     initTabBlock(new BlockGarageDoorControl("garage_door_station")); // Garage Door Control Station
-    initTabBlock(new BlockGarageDoorControl("garage_door_keypad")); // Garage Door Keypad
+    initTabBlock(new BlockGarageDoorControl("garage_door_keypad")); // Door Keypad
+
+    // Doors: two blocks tall, hinged, paired, and the add-on door closer.
+    initTabBlock(new BlockBuildingDoor("door_wood_oak")); // Interior Door (Oak)
+    initTabBlock(new BlockBuildingDoor("door_wood_oak_lite")); // Interior Door (Oak, Vision Lite)
+    initTabBlock(new BlockBuildingDoor("door_wood_white")); // Interior Door (White)
+    initTabBlock(new BlockBuildingDoor("door_wood_white_lite")); // Interior Door (White, Vision Lite)
+    initTabBlock(new BlockBuildingDoor("door_metal_grey")); // Hollow Metal Door (Grey)
+    initTabBlock(new BlockBuildingDoor("door_metal_fire")); // Fire Door (Wired Lite)
+    initTabBlock(new BlockBuildingDoor("door_metal_exit")); // Exit Door (Push Bar)
+    initTabBlock(new BlockBuildingDoor("door_storefront_bronze")); // Storefront Door (Dark Bronze)
+    initTabBlock(new BlockBuildingDoor("door_front_white")); // Front Door (White)
+    initTabBlock(new BlockBuildingDoor("door_front_red")); // Front Door (Red)
+    initTabBlock(new BlockBuildingDoor("door_front_black")); // Front Door (Black)
+    initTabBlock(new BlockBuildingDoor("door_back_halfglass")); // Back Door (Half Glass)
+    initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer
   }
 }

@@ -85,8 +85,8 @@ CONTROLS = {
                            "Garagentor-Taster", "Garageportsknapp"),
     "garage_door_station": ("Garage Door Control Station", "Botonera de Puerta de Garaje",
                             "Garagentor-Bedienstation", "Garageportens Manöverpanel"),
-    "garage_door_keypad": ("Garage Door Keypad", "Teclado de Puerta de Garaje",
-                           "Garagentor-Codeschloss", "Garageportens Kodlås"),
+    "garage_door_keypad": ("Door Keypad", "Teclado de Puerta", "Tür-Codeschloss",
+                           "Dörrkodlås"),
 }
 
 # SHARED with BlockGarageDoorOpener.MAX_LENGTH: the longest rail, in blocks of air between the
@@ -1039,18 +1039,20 @@ LANGS = gen_cmu.LANGS
 # What the controls and the keypad screen say.
 MESSAGES = {
     "gui.csm.garage.link_start": (
-        "Now sneak-click the garage door or its opener, with an empty hand",
-        "Ahora pulsa agachado la puerta de garaje o su abridor, con la mano vacía",
-        "Jetzt mit leerer Hand geduckt auf das Garagentor oder seinen Antrieb klicken",
-        "Smyg-klicka nu på garageporten eller dess öppnare, med tom hand"),
+        "Now sneak-click the door, garage door or opener, with an empty hand",
+        "Ahora pulsa agachado la puerta, la puerta de garaje o el abridor, con la mano vacía",
+        "Jetzt mit leerer Hand geduckt auf die Tür, das Garagentor oder den Antrieb klicken",
+        "Smyg-klicka nu på dörren, garageporten eller öppnaren, med tom hand"),
     "gui.csm.garage.link_done": (
-        "Linked to the garage door", "Vinculado a la puerta de garaje",
-        "Mit dem Garagentor verbunden", "Kopplad till garageporten"),
+        "Linked", "Vinculado", "Verbunden", "Kopplad"),
     "gui.csm.garage.not_linked": (
-        "Not linked: sneak-click this, then a garage door",
-        "Sin vincular: pulsa esto agachado y luego una puerta de garaje",
-        "Nicht verbunden: dies geduckt anklicken, dann ein Garagentor",
-        "Inte kopplad: smyg-klicka på denna och sedan på en garageport"),
+        "Not linked: sneak-click this, then a door",
+        "Sin vincular: pulsa esto agachado y luego una puerta",
+        "Nicht verbunden: dies geduckt anklicken, dann eine Tür",
+        "Inte kopplad: smyg-klicka på denna och sedan på en dörr"),
+    "gui.csm.door.locked": (
+        "Locked: use the keypad", "Cerrada con llave: usa el teclado",
+        "Verschlossen: das Codeschloss benutzen", "Låst: använd kodlåset"),
     "gui.csm.garage.not_owner": (
         "Only this keypad's owner can do that", "Solo el dueño de este teclado puede hacerlo",
         "Das kann nur der Besitzer dieses Codeschlosses", "Bara kodlåsets ägare kan göra det"),
