@@ -17,8 +17,8 @@ does and which the whole design is bent toward.
 | Horizontal structure | 8 | Wood joist, I-joist, open-web bar joist, joist girder, roof deck, composite deck, a 45° rafter and a ceiling joist |
 | Structural steel | 10 | Column, beam, base plate, bolted connection and X-brace, each in red oxide primer and galvanized |
 
-The three insulable steel walls and the four insulable wood walls each offer three insulation
-variants, so the tab holds **46 creative entries for 32 blocks**.
+The three insulable steel walls and the four insulable wood walls each offer an insulated variant
+beside the open one, so the tab holds **39 creative entries for 32 blocks**.
 
 Walls join each other. A run may change from a plain bay to a door opening to a braced bay, and
 from steel to wood, without ever stopping being one wall.
@@ -28,7 +28,7 @@ from steel to wood, without ever stopping being one wall.
 | Path | Role |
 |------|------|
 | `dev-env-utils/scripts/gen_framing.py` | generates **everything**: textures, shared geometry, every block's models and its blockstate. `--check` fails on drift, `--fragments` prints the lang and tab lines |
-| `modules/building/.../buildingmaterials/BlockFramingWall.java` | the wall: post-and-arm, neighbour-aware, 768 states |
+| `modules/building/.../buildingmaterials/BlockFramingWall.java` | the wall: post-and-arm, neighbour-aware, 512 states |
 | `…/FramingJoins.java` | what counts as a neighbour, and on which of the six sides |
 | `…/ICsmFramingMember.java` | the marker, and the one hook that can refuse a join |
 | `…/FramingInsulation.java`, `…/ItemBlockFramingWall.java` | the insulation state and the item that carries it |
@@ -75,7 +75,7 @@ ceiling. Drawing track at every course turns a three-block wall into three stack
 wall reads its vertical neighbours too and leaves the track out wherever the course carries on. The
 stud spans the full height of its block, so stacked studs meet end to end as one member.
 
-That is what `UP` and `DOWN` are for, and it is why the state count is 768 rather than 192.
+That is what `UP` and `DOWN` are for, and it is why the state count is 512 rather than 128.
 
 ### Connections are absolute
 
@@ -94,8 +94,13 @@ remains as the place to refuse a join if something ever needs to.
 
 ### Insulation
 
-`NONE` / `BATT` / `MINERAL`, a state rather than three blocks, so an insulated wall costs no
-registry name, blockstate or tab class of its own.
+`NONE` / `BATT`, a state rather than a second block, so an insulated wall costs no registry name,
+blockstate or tab class of its own.
+
+There is **one kind of insulation on purpose**. Mineral wool shipped as a third value and was taken
+out: a second colour of the same mat was more detail than a builder reaches for, and it cost every
+stud wall a third creative stack. Its old metadata reads back as batt, so a wall placed while it
+existed keeps its insulation. Do not add another kind back without a reason a builder would give.
 
 The reasoning behind that was **half wrong, and the fix matters**: a state is free to render and
 not free to obtain. A state no item carries and no interaction changes can only be reached with
@@ -108,7 +113,7 @@ Fabricator offers the uninsulated wall alone.
 
 ### State
 
-768 per wall block. `FACING` (4) and `INSULATION` (3) are stored — 12 of the 16 metadata values —
+512 per wall block. `FACING` (4) and `INSULATION` (2) are stored — 8 of the 16 metadata values —
 and the six connections are actual-state only and cost no metadata. `FACING` does **not** orient a
 connected wall; the connections do. It is read for the isolated block, which has nothing else to
 take an axis from, and by the asymmetric members.

@@ -52,7 +52,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * <h3>State</h3>
  *
- * <p>768 states. {@code FACING} (4) and {@link FramingInsulation} (3) are stored, which is 12 of
+ * <p>512 states. {@code FACING} (4) and {@link FramingInsulation} (2) are stored, which is 8 of
  * the 16 metadata values; the six connections — four horizontal, plus up and down — are
  * actual-state only and cost no metadata.</p>
  *
@@ -157,10 +157,10 @@ public abstract class BlockFramingWall extends AbstractBlock implements ICsmFram
    * Whether this member has stud bays that insulation can be packed into.
    *
    * <p>False by default. A rough opening has no bay between its king studs, and a floor runner has
-   * no studs at all, so neither offers the choice — and neither should show two extra stacks in
-   * the creative tab that look identical to the first.</p>
+   * no studs at all, so neither offers the choice — and neither should show an extra stack in the
+   * creative tab that looks identical to the first.</p>
    *
-   * @return {@code true} if the three {@link FramingInsulation} values are all meaningful here
+   * @return {@code true} if every {@link FramingInsulation} value is meaningful here
    *
    * @since 1.0
    */
@@ -201,8 +201,8 @@ public abstract class BlockFramingWall extends AbstractBlock implements ICsmFram
    *
    * <p>The default registers one model for metadata zero alone, which leaves every other variant
    * showing the missing-texture chequer — which is exactly what the first build of this did. Each
-   * insulation is pointed at a named variant of its own, so the three stacks in the creative tab
-   * are told apart by their icons and not only by their names.</p>
+   * insulation is pointed at a named variant of its own, so the stacks in the creative tab are
+   * told apart by their icons and not only by their names.</p>
    *
    * @since 1.0
    */

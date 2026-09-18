@@ -16,7 +16,7 @@ public class BlockWoodStudWallNarrow extends AbstractBlockWoodFraming {
   }
 
   /**
-   * Has open stud bays, so it offers the three insulation variants.
+   * Has open stud bays, so it offers an insulated variant.
    *
    * @since 1.0
    */
