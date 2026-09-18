@@ -159,6 +159,8 @@ def cost_for(registry, info, ancestors):
             return ("POLE_SECTION", "FASTENER_KIT")
         if has_word(registry, "rebar"):
             return ("iron_ingot",)
+        if has_word(registry, "crane"):
+            return ("POLE_SECTION x4", "CONTROL_BOARD", "WIRING_HARNESS")
         return ("SHEET_METAL", "FASTENER_KIT")
 
     if tab == "tabinteriorfinishes":

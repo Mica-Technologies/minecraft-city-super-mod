@@ -94,6 +94,7 @@ tile.coppermetal_fence.name=Copper Metal Fence
 tile.coppermetal_slab.name=Copper Metal Slab
 tile.coppermetal_slab_double.name=Copper Metal Double Slab
 tile.coppermetal_stairs.name=Copper Metal Stairs
+tile.crane_head.name=Tower Crane Head
 tile.crane_mast.name=Tower Crane Mast
 tile.crane_mast.red.name=Tower Crane Mast (Red)
 tile.crane_mast.white.name=Tower Crane Mast (White)

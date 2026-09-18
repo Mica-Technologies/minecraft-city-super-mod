@@ -1,9 +1,12 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
+import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
-import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldClimbHandler;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldRailCollision;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
@@ -32,6 +35,19 @@ public class CsmBuilding {
   public static final String MOD_ID = "csm_building";
   public static final String MOD_NAME = "CSM: Building Materials";
 
+  @SidedProxy(
+      clientSide = "com.micatechnologies.minecraft.csm.buildingmaterials.CsmBuildingClientProxy",
+      serverSide = "com.micatechnologies.minecraft.csm.buildingmaterials.CsmBuildingCommonProxy")
+  public static ICsmProxy proxy;
+
+  /**
+   * This module's network channel. Its packets are registered in {@link #preInit}, in a fixed
+   * order and only ever appended to, so their discriminators match on every client and server.
+   *
+   * @since 2026.9
+   */
+  public static final CsmNetwork NETWORK = CsmNetwork.create(MOD_ID);
+
   @Mod.Instance(MOD_ID)
   public static CsmBuilding instance;
 
@@ -45,12 +61,13 @@ public class CsmBuilding {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
-    // Jump-to-climb for the scaffold. Client only: the client decides its own player's movement,
-    // and the handler class does not exist on a dedicated server.
-    if (event.getSide().isClient()) {
-      ScaffoldClimbHandler.register();
-    }
     // Guardrail collision that a jump would otherwise clear. Both sides, so they agree.
     ScaffoldRailCollision.register();
+    proxy.preInit(event);
+  }
+
+  @Mod.EventHandler
+  public void init(FMLInitializationEvent event) {
+    proxy.init(event);
   }
 }

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:constructionsite/crane_head"
+    },
+    "inventory": {
+      "model": "csm:constructionsite/crane_head"
+    }
+  }
+}

@@ -61,6 +61,9 @@ LIVERIES = {
 }
 LIVERY_ORDER = ["yellow", "red", "white"]
 LANG = ("Tower Crane Mast", "Mástil de Grúa Torre", "Turmdrehkran-Mast", "Tornkranmast")
+HEAD = "crane_head"
+HEAD_LANG = ("Tower Crane Head", "Cabeza de Grúa Torre", "Turmdrehkran-Oberteil",
+             "Tornkranstopp")
 LARGE_LANG = ("Tower Crane Mast (2x2)", "Mástil de Grúa Torre (2x2)", "Turmdrehkran-Mast (2x2)",
               "Tornkranmast (2x2)")
 
@@ -277,6 +280,10 @@ def part_models():
         inv = _model(large_inventory(), liv, parent="block/block")
         inv["display"] = LARGE_DISPLAY
         out["%s_%s_inventory" % (LARGE, liv)] = inv
+    # The head block draws nothing in the world -- its renderer draws the slewing unit -- so this
+    # model is only the item icon: the slewing ring under its platform.
+    out[HEAD] = _model([box(2, 0, 2, 14, 11, 14, "#anchor"),
+                        box(0, 11, 0, 16, 16, 16, "#chord")], "yellow", parent="block/block")
     out[NAME + "_ladder"] = {"textures": {"ladder": TEX_REF % "scaffold_tube",
                                           "particle": TEX_REF % "scaffold_tube"},
                              "elements": ladder()}
@@ -345,7 +352,10 @@ def write_all(tex_dir, model_dir, state_dir):
         written.append(("model", name + ".json"))
     gen_cmu._write_json(os.path.join(state_dir, NAME + ".json"), blockstate())
     gen_cmu._write_json(os.path.join(state_dir, LARGE + ".json"), large_blockstate())
-    written += [("state", NAME + ".json"), ("state", LARGE + ".json")]
+    gen_cmu._write_json(os.path.join(state_dir, HEAD + ".json"),
+                        {"variants": {"normal": {"model": MODEL_REF % HEAD},
+                                      "inventory": {"model": MODEL_REF % HEAD}}})
+    written += [("state", NAME + ".json"), ("state", LARGE + ".json"), ("state", HEAD + ".json")]
     return written
 
 
@@ -355,6 +365,7 @@ LANGS = gen_cmu.LANGS
 def lang_entries():
     """Every mast name: the base name the guidebook and pricing look up, and one per livery."""
     out = []
+    out.append(("tile.%s.name" % HEAD, dict(zip(LANGS, HEAD_LANG))))
     for name, names in ((NAME, LANG), (LARGE, LARGE_LANG)):
         base_name = dict(zip(LANGS, names))
         out.append(("tile.%s.name" % name, base_name))
