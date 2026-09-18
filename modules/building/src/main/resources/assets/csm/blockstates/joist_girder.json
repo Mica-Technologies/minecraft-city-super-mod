@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/joist_girder"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/joist_girder",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/joist_girder"
+    }
+  }
+}

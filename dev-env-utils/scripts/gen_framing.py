@@ -191,6 +191,27 @@ def _grain(seed, vertical):
     return img
 
 
+# A poured topping, floated but not polished: grey with the fine aggregate speckle that separates
+# concrete from flat stone at this size.
+CONCRETE_BASE = (166, 166, 162, 255)
+CONCRETE_DARK = (148, 148, 145, 255)
+CONCRETE_LIGHT = (184, 184, 179, 255)
+
+
+def concrete_topping():
+    rng = random.Random(20260923)
+    img = Image.new("RGBA", (SIZE, SIZE), CONCRETE_BASE)
+    px = img.load()
+    for y in range(SIZE):
+        for x in range(SIZE):
+            roll = rng.random()
+            if roll < 0.18:
+                px[x, y] = CONCRETE_DARK
+            elif roll < 0.32:
+                px[x, y] = CONCRETE_LIGHT
+    return img
+
+
 def wood_stud():
     """A stud, seen on its face: grain up the member."""
     return _grain(20260921, vertical=True)
@@ -208,6 +229,7 @@ TEXTURES = {
     "insulation_mineral.png": insulation_mineral,
     "wood_stud.png": wood_stud,
     "wood_plate.png": wood_plate,
+    "concrete_topping.png": concrete_topping,
 }
 
 # --------------------------------------------------------------------------------------------
@@ -397,6 +419,117 @@ def inventory_model(stud_tex, track_tex):
             _box(WALL_X0, TRACK, 16 - STUD_Z1, WALL_X1, 16 - TRACK, 16 - STUD_Z0, web="#stud"),
         ],
     }
+
+
+# --------------------------------------------------------------------------------------------
+# Horizontal structure: members that SPAN rather than join
+# --------------------------------------------------------------------------------------------
+#
+# A joist is not a wall. A wall is a junction and decides itself from four neighbours; a joist runs
+# in one direction and repeats, so all it needs to know is which way it points. Everything here is
+# drawn spanning NORTH-SOUTH and the blockstate turns it a quarter for the other axis.
+#
+# Nothing here is join-aware. A row of joists tiles seamlessly because each block is the full
+# length of its own cell, and where a run stops it simply stops -- which is what a joist does where
+# it lands on a wall. Bearing seats at the ends were considered and left out; see the plan.
+
+
+def _span_faces(broad, ends):
+    """Face textures for a member spanning north-south: the broad faces are east and west."""
+    return {"east": {"texture": broad}, "west": {"texture": broad},
+            "up": {"texture": broad}, "down": {"texture": broad},
+            "north": {"texture": ends}, "south": {"texture": ends}}
+
+
+def _span(x0, y0, z0, x1, y1, z1, broad="#body", ends=None, rotation=None):
+    box = {"from": [x0, y0, z0], "to": [x1, y1, z1],
+           "faces": _span_faces(broad, ends or broad)}
+    if rotation is not None:
+        box["rotation"] = rotation
+    return box
+
+
+def _diagonals(y_mid, half, thickness=1.0):
+    """The V of web bracing between two chords, one diagonal each way.
+
+    Rotation is limited to one axis and to 45 degrees, so the web is drawn as a true 45 degree
+    zigzag rather than at whatever angle the chord spacing would imply. Over one block that reads
+    correctly and it is what a real open-web joist is close to anyway.
+    """
+    x0, x1 = 7, 9
+    return [
+        _span(x0, y_mid - thickness, 1, x1, y_mid + thickness, 9,
+              rotation={"origin": [8, y_mid, 5], "axis": "x", "angle": 45, "rescale": True}),
+        _span(x0, y_mid - thickness, 7, x1, y_mid + thickness, 15,
+              rotation={"origin": [8, y_mid, 11], "axis": "x", "angle": -45, "rescale": True}),
+    ]
+
+
+def span_models():
+    """One model per spanning member, used for both axes and for the item."""
+    models = {}
+
+    # Dimensional lumber on edge, a 2x10 joist.
+    models["span_wood_joist"] = [_span(6, 4, 0, 10, 14, 16)]
+
+    # An engineered I-joist: two flanges and a thin web.
+    models["span_wood_i_joist"] = [
+        _span(5, 4, 0, 11, 5, 16),
+        _span(7, 5, 0, 9, 13, 16),
+        _span(5, 13, 0, 11, 14, 16),
+    ]
+
+    # Open-web steel joist: two chords and a bracing web between them.
+    models["span_bar_joist"] = ([_span(6, 4, 0, 10, 6, 16), _span(6, 12, 0, 10, 14, 16)]
+                                + _diagonals(9, 3))
+
+    # A joist girder is the same idea, deeper and heavier, carrying joists rather than deck.
+    models["span_joist_girder"] = ([_span(5, 1, 0, 11, 4, 16), _span(5, 12, 0, 11, 15, 16)]
+                                   + _diagonals(8, 4, thickness=1.5))
+
+    # Corrugated B-deck. The rib pitch divides the block exactly, so a sheet tiles without the
+    # ribs bunching or splitting at the seam.
+    deck = [_span(0, 12, 0, 16, 13, 16),
+            _span(0, 13, 0, 4, 15, 16),
+            _span(8, 13, 0, 12, 15, 16)]
+    models["span_metal_roof_deck"] = deck
+    # The composite slab: concrete in the flutes and a topping over, drawn so that it never shares
+    # a plane with the deck it sits on.
+    models["span_metal_roof_deck_concrete"] = deck + [
+        _span(4, 13, 0, 8, 15, 16, broad="#topping"),
+        _span(12, 13, 0, 16, 15, 16, broad="#topping"),
+        _span(0, 15, 0, 16, 16, 16, broad="#topping"),
+    ]
+    return models
+
+
+def span_blockstate(name):
+    """Two variants: the model as drawn, and the same turned a quarter for the other axis."""
+    model = MODEL_REF % name
+    return {"variants": {
+        "axis=z": {"model": model},
+        "axis=x": {"model": model, "y": 90},
+        "inventory": {"model": model},
+    }}
+
+
+SPANS = [
+    ("wood_joist", "BlockWoodJoist", "span_wood_joist", "wood_plate", None,
+     "Wood Joist", "Vigueta de Madera", "Holzbalken", "Tr\u00e4bj\u00e4lke"),
+    ("wood_i_joist", "BlockWoodIJoist", "span_wood_i_joist", "wood_plate", None,
+     "Wood I-Joist", "Vigueta I de Madera", "Holz-I-Tr\u00e4ger", "I-balk av Tr\u00e4"),
+    ("bar_joist", "BlockBarJoist", "span_bar_joist", "steel_track", None,
+     "Open-Web Bar Joist", "Vigueta de Celos\u00eda", "Gittertr\u00e4ger",
+     "F\u00f6rvandlingsbalk"),
+    ("joist_girder", "BlockJoistGirder", "span_joist_girder", "steel_track", None,
+     "Joist Girder", "Viga de Celos\u00eda", "Gitterunterzug", "Fackverksbalk"),
+    ("metal_roof_deck", "BlockMetalRoofDeck", "span_metal_roof_deck", "steel_track", None,
+     "Metal Roof Deck", "Chapa Colaborante", "Trapezblech", "Takpl\u00e5t"),
+    ("metal_roof_deck_concrete", "BlockMetalRoofDeckConcrete", "span_metal_roof_deck_concrete",
+     "steel_track", "concrete_topping",
+     "Metal Deck with Concrete", "Chapa Colaborante con Hormig\u00f3n",
+     "Verbunddecke", "Takpl\u00e5t med Betong"),
+]
 
 
 # --------------------------------------------------------------------------------------------
@@ -770,6 +903,18 @@ def write_all(tex_dir, shared_dir, model_dir, state_dir):
         _write_json(os.path.join(state_dir, name + ".json"), flavour["state"](name))
         written.append(("state", name + ".json"))
 
+    geometry = span_models()
+    for name, _cls, shape, body, topping, _en, _es, _de, _sv in SPANS:
+        textures = {"body": TEX_REF % body, "particle": TEX_REF % body}
+        if topping:
+            textures["topping"] = TEX_REF % topping
+        _write_json(os.path.join(model_dir, name + ".json"),
+                    {"parent": "block/block", "textures": textures,
+                     "elements": geometry[shape]})
+        written.append(("model", name + ".json"))
+        _write_json(os.path.join(state_dir, name + ".json"), span_blockstate(name))
+        written.append(("state", name + ".json"))
+
     return written
 
 
@@ -779,6 +924,13 @@ def fragments():
         lines.append("## " + lang)
         for entry in CATALOGUE:
             lines.append("tile.%s.name=%s" % (entry["name"], entry["lang"][lang]))
+        lines.append("")
+    lines.append("## spanning members")
+    for lang in ("en_us", "es_es", "de_de", "sv_se"):
+        lines.append("### " + lang)
+        idx = {"en_us": 5, "es_es": 6, "de_de": 7, "sv_se": 8}[lang]
+        for span in SPANS:
+            lines.append("tile.%s.name=%s" % (span[0], span[idx]))
         lines.append("")
     lines.append("# tab registration, in CsmTabStructureFraming.initTabElements")
     lines.append("")

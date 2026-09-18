@@ -2,7 +2,7 @@
 
 Steel and wood stud walls, the structure that spans between them, and structural steel.
 
-!!! info "14 blocks in this tab"
+!!! info "20 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -12,12 +12,18 @@ Steel and wood stud walls, the structure that spans between them, and structural
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Hollow Metal Door Frame | `csm:hollow_metal_door_frame` | 1.5 | 8 | pickaxe | 1 |
+| Joist Girder | `csm:joist_girder` | 1.5 | 8 | pickaxe | 1 |
+| Metal Deck with Concrete | `csm:metal_roof_deck_concrete` | 2.0 | 10 | pickaxe | 1 |
+| Metal Roof Deck | `csm:metal_roof_deck` | 1.5 | 8 | pickaxe | 1 |
+| Open-Web Bar Joist | `csm:bar_joist` | 1.5 | 8 | pickaxe | 1 |
 | Steel Stud Wall | `csm:steel_stud_wall` | 1.5 | 8 | pickaxe | 1 |
 | Steel Stud Wall (Braced) | `csm:steel_stud_wall_braced` | 1.5 | 8 | pickaxe | 1 |
 | Steel Stud Wall (Door Opening) | `csm:steel_stud_wall_door` | 1.5 | 8 | pickaxe | 1 |
 | Steel Stud Wall (Narrow) | `csm:steel_stud_wall_narrow` | 1.5 | 8 | pickaxe | 1 |
 | Steel Stud Wall (Window Opening) | `csm:steel_stud_wall_window` | 1.5 | 8 | pickaxe | 1 |
 | Steel Track | `csm:steel_track` | 1.5 | 8 | pickaxe | 1 |
+| Wood I-Joist | `csm:wood_i_joist` | 1.0 | 5 | axe | 0 |
+| Wood Joist | `csm:wood_joist` | 1.0 | 5 | axe | 0 |
 | Wood Sole Plate | `csm:wood_plate` | 1.0 | 5 | axe | 0 |
 | Wood Stud Wall | `csm:wood_stud_wall` | 1.0 | 5 | axe | 0 |
 | Wood Stud Wall (Braced) | `csm:wood_stud_wall_braced` | 1.0 | 5 | axe | 0 |

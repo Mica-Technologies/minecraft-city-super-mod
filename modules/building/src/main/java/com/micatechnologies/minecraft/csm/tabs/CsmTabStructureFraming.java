@@ -1,13 +1,19 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBarJoist;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockHollowMetalDoorFrame;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockJoistGirder;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockMetalRoofDeck;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockMetalRoofDeckConcrete;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWall;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallBraced;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallNarrow;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelStudWallWindow;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSteelTrack;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodIJoist;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodJoist;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodPlate;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWall;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWoodStudWallBlocking;
@@ -100,5 +106,11 @@ public class CsmTabStructureFraming extends CsmTab {
     initTabBlock(BlockWoodStudWallDoor.class, fmlPreInitializationEvent); // Wood Stud Wall (Door Opening)
     initTabBlock(BlockWoodStudWallWindow.class, fmlPreInitializationEvent); // Wood Stud Wall (Window Opening)
     initTabBlock(BlockWoodPlate.class, fmlPreInitializationEvent); // Wood Sole Plate
+    initTabBlock(BlockWoodJoist.class, fmlPreInitializationEvent); // Wood Joist
+    initTabBlock(BlockWoodIJoist.class, fmlPreInitializationEvent); // Wood I-Joist
+    initTabBlock(BlockBarJoist.class, fmlPreInitializationEvent); // Open-Web Bar Joist
+    initTabBlock(BlockJoistGirder.class, fmlPreInitializationEvent); // Joist Girder
+    initTabBlock(BlockMetalRoofDeck.class, fmlPreInitializationEvent); // Metal Roof Deck
+    initTabBlock(BlockMetalRoofDeckConcrete.class, fmlPreInitializationEvent); // Metal Deck with Concrete
   }
 }
