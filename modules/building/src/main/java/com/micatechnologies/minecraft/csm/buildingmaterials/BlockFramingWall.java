@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,13 +11,22 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * A framed wall: studs in track, joining whatever framing of the same kind stands beside it.
@@ -79,6 +89,33 @@ public abstract class BlockFramingWall extends AbstractBlock implements ICsmFram
   private static final int INSULATION_MASK = 0b11;
 
   /**
+   * Reads the insulation out of a metadata value, which is also an item's damage value.
+   *
+   * @param meta the metadata
+   *
+   * @return the insulation it encodes
+   *
+   * @since 1.0
+   */
+  public static FramingInsulation insulationFromMeta(int meta) {
+    return FramingInsulation.fromBits((meta >> INSULATION_SHIFT) & INSULATION_MASK);
+  }
+
+  /**
+   * The metadata that encodes an insulation on its own, with the facing left at zero. This is what
+   * an item's damage value holds.
+   *
+   * @param insulation the insulation
+   *
+   * @return the metadata
+   *
+   * @since 1.0
+   */
+  public static int metaForInsulation(FramingInsulation insulation) {
+    return insulation.ordinal() << INSULATION_SHIFT;
+  }
+
+  /**
    * Constructs a {@link BlockFramingWall}.
    *
    * @param material         the material of the block
@@ -113,8 +150,96 @@ public abstract class BlockFramingWall extends AbstractBlock implements ICsmFram
   public IBlockState getStateFromMeta(int meta) {
     return getDefaultState()
         .withProperty(FACING, EnumFacing.byHorizontalIndex(meta & FACING_MASK))
-        .withProperty(INSULATION,
-            FramingInsulation.fromBits((meta >> INSULATION_SHIFT) & INSULATION_MASK));
+        .withProperty(INSULATION, insulationFromMeta(meta));
+  }
+
+  /**
+   * Whether this member has stud bays that insulation can be packed into.
+   *
+   * <p>False by default. A rough opening has no bay between its king studs, and a floor runner has
+   * no studs at all, so neither offers the choice — and neither should show two extra stacks in
+   * the creative tab that look identical to the first.</p>
+   *
+   * @return {@code true} if the three {@link FramingInsulation} values are all meaningful here
+   *
+   * @since 1.0
+   */
+  public boolean supportsInsulation() {
+    return false;
+  }
+
+  /**
+   * An item that carries the insulation in its metadata, so each variant can be held, named and
+   * placed. Without it the state would be reachable only through {@code /setblock}.
+   *
+   * @since 1.0
+   */
+  @Override
+  protected ItemBlock createItemBlock() {
+    return new ItemBlockFramingWall(this);
+  }
+
+  /**
+   * Shows one stack per insulation in the creative tab, for the members that have bays.
+   *
+   * @since 1.0
+   */
+  @Override
+  @SideOnly(Side.CLIENT)
+  public void getSubBlocks(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
+    if (!supportsInsulation()) {
+      super.getSubBlocks(tab, items);
+      return;
+    }
+    for (FramingInsulation insulation : FramingInsulation.values()) {
+      items.add(new ItemStack(this, 1, metaForInsulation(insulation)));
+    }
+  }
+
+  /**
+   * Registers an item model for every insulation, not just for metadata zero.
+   *
+   * <p>The default registers one model for metadata zero alone, which leaves every other variant
+   * showing the missing-texture chequer — which is exactly what the first build of this did. Each
+   * insulation is pointed at a named variant of its own, so the three stacks in the creative tab
+   * are told apart by their icons and not only by their names.</p>
+   *
+   * @since 1.0
+   */
+  @Override
+  public void registerModels() {
+    if (!supportsInsulation()) {
+      super.registerModels();
+      return;
+    }
+    Item item = Item.getItemFromBlock(this);
+    for (FramingInsulation insulation : FramingInsulation.values()) {
+      String variant = insulation == FramingInsulation.NONE
+          ? "inventory" : "inventory_" + insulation.getName();
+      Csm.proxy.setCustomModelResourceLocation(item, metaForInsulation(insulation), variant);
+    }
+  }
+
+  /**
+   * Drops the wall with the insulation it was built with, rather than an empty one.
+   *
+   * @since 1.0
+   */
+  @Override
+  public int damageDropped(IBlockState state) {
+    return metaForInsulation(state.getValue(INSULATION));
+  }
+
+  /**
+   * Middle-clicking a wall picks the variant actually there.
+   *
+   * @since 1.0
+   */
+  @Override
+  @Nonnull
+  public ItemStack getPickBlock(@Nonnull IBlockState state, @Nonnull RayTraceResult target,
+      @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
+    return new ItemStack(this, 1, damageDropped(state));
   }
 
   @Override
@@ -129,8 +254,7 @@ public abstract class BlockFramingWall extends AbstractBlock implements ICsmFram
       float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
     return getDefaultState()
         .withProperty(FACING, placer.getHorizontalFacing().getOpposite())
-        .withProperty(INSULATION,
-            FramingInsulation.fromBits((meta >> INSULATION_SHIFT) & INSULATION_MASK));
+        .withProperty(INSULATION, insulationFromMeta(meta));
   }
 
   @Override

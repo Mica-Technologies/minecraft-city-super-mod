@@ -1,0 +1,33 @@
+{
+  "textures": {
+    "particle": "#track"
+  },
+  "elements": [
+    {
+      "from": [
+        7.5,
+        0,
+        6
+      ],
+      "to": [
+        8.5,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#insulation"
+        },
+        "south": {
+          "texture": "#insulation"
+        },
+        "east": {
+          "texture": "#insulation"
+        },
+        "west": {
+          "texture": "#insulation"
+        }
+      }
+    }
+  ]
+}

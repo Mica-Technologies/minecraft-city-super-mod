@@ -1,0 +1,59 @@
+{
+  "textures": {
+    "particle": "#track"
+  },
+  "elements": [
+    {
+      "from": [
+        6.5,
+        0,
+        0
+      ],
+      "to": [
+        9.5,
+        16,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#insulation"
+        },
+        "south": {
+          "texture": "#insulation"
+        },
+        "east": {
+          "texture": "#insulation"
+        },
+        "west": {
+          "texture": "#insulation"
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        0,
+        5
+      ],
+      "to": [
+        9.5,
+        16,
+        6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#insulation"
+        },
+        "south": {
+          "texture": "#insulation"
+        },
+        "east": {
+          "texture": "#insulation"
+        },
+        "west": {
+          "texture": "#insulation"
+        }
+      }
+    }
+  ]
+}

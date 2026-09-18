@@ -118,9 +118,46 @@ def steel_track():
     return img
 
 
+# Insulation, seen edge on through an open bay: a fibrous mat, so the noise runs in horizontal
+# streaks rather than as even speckle. Kept dull -- it sits in shadow between the studs, and a
+# saturated pink reads as plastic.
+BATT = ((196, 146, 158, 255), (176, 124, 138, 255), (208, 162, 172, 255))
+MINERAL = ((150, 140, 128, 255), (130, 120, 110, 255), (166, 156, 144, 255))
+
+
+def _fibrous(seed, palette):
+    """A deterministic fibre mat. Streaks are drawn along the run, which is the way the batt is
+    seen once it is between two studs."""
+    rng = random.Random(seed)
+    base, dark, light = palette
+    img = Image.new("RGBA", (SIZE, SIZE), base)
+    px = img.load()
+    for y in range(SIZE):
+        x = 0
+        while x < SIZE:
+            run = rng.randint(1, 4)
+            roll = rng.random()
+            colour = dark if roll < 0.3 else (light if roll < 0.55 else base)
+            for i in range(run):
+                if x + i < SIZE:
+                    px[x + i, y] = colour
+            x += run
+    return img
+
+
+def insulation_batt():
+    return _fibrous(20260919, BATT)
+
+
+def insulation_mineral():
+    return _fibrous(20260920, MINERAL)
+
+
 TEXTURES = {
     "steel_stud.png": steel_stud,
     "steel_track.png": steel_track,
+    "insulation_batt.png": insulation_batt,
+    "insulation_mineral.png": insulation_mineral,
 }
 
 # --------------------------------------------------------------------------------------------
@@ -175,6 +212,25 @@ HM_JAMB_Z = 3
 HM_HEAD_Y = 13
 
 
+# Insulation sits inside the studs rather than flush with them, so the studs still read as the
+# nearest thing. Its up and down faces are omitted deliberately: it runs the full height so that a
+# stacked wall's insulation is continuous, which means it passes through the track at the top and
+# bottom course, and a face there would be coplanar with the track's own and fight it.
+INSUL_INSET = 0.5
+
+
+def insulation_parts(prefix, x0, x1):
+    """The bays of one arm, and of the centre, packed out."""
+    ix0, ix1 = x0 + INSUL_INSET, x1 - INSUL_INSET
+    return {
+        prefix + "arm_insulation": _model([
+            _box(ix0, 0, 0, ix1, 16, STUD_Z0, tex="#insulation", drop=("up", "down")),
+            _box(ix0, 0, STUD_Z1, ix1, 16, ARM_END, tex="#insulation", drop=("up", "down"))]),
+        prefix + "hub_insulation": _model([
+            _box(ix0, 0, HUB0, ix1, 16, HUB1, tex="#insulation", drop=("up", "down"))]),
+    }
+
+
 def wall_parts(prefix, x0, x1, uv=None):
     """The six models a framed wall of the given thickness draws."""
     return {
@@ -196,6 +252,8 @@ def shared_models():
     """The geometry every framing block of this shape draws, textured by its own model."""
     models = {}
     models.update(wall_parts("framing_narrow_", NARROW_X0, NARROW_X1, NARROW_UV))
+    models.update(insulation_parts("framing_", WALL_X0, WALL_X1))
+    models.update(insulation_parts("framing_narrow_", NARROW_X0, NARROW_X1))
     # The bare floor runner: track with no stud gap in it, because no stud stands there yet.
     models["framing_runner_arm"] = _model([_box(WALL_X0, 0, 0, WALL_X1, TRACK, ARM_END)])
     models["framing_runner_hub"] = _model([_box(WALL_X0, 0, HUB0, WALL_X1, TRACK, HUB1)])
@@ -312,11 +370,21 @@ def _apply(model, y=None):
     return a
 
 
-def _inventory(name):
-    return {"inventory": {"model": MODEL_REF % (name + "_inventory")}}
+def _inventory(name, insulated=False):
+    """The item models. Each insulation gets a variant of its own so the three stacks in the
+    creative tab are told apart by their icons and not only by their names."""
+    out = {"inventory": {"model": MODEL_REF % (name + "_inventory")}}
+    if insulated:
+        for material in INSULATIONS:
+            out["inventory_" + material] = {
+                "model": MODEL_REF % ("%s_inventory_%s" % (name, material))}
+    return out
 
 
-def wall_blockstate(name, extra_arms=()):
+INSULATIONS = ("batt", "mineral")
+
+
+def wall_blockstate(name, extra_arms=(), insulated=False):
     """The multipart for a framed wall.
 
     Conditions are written out per connection rather than folded into an OR, because the format
@@ -337,7 +405,18 @@ def wall_blockstate(name, extra_arms=()):
         for when in NO_POST:
             parts.append({"when": dict(when, **{edge: "false"}),
                           "apply": {"model": MODEL_REF % ("%s_hub_%s" % (name, suffix))}})
-    return {"variants": _inventory(name), "multipart": parts}
+    # Insulation fills the bays, so it follows the arms and the hub but never the post: where a
+    # post stands the centre is solid and there is no bay to pack.
+    if insulated:
+        for material in INSULATIONS:
+            for when, y in arm_conditions():
+                parts.append({"when": dict(when, insulation=material),
+                              "apply": _apply("%s_arm_insulation_%s" % (name, material), y)})
+            for when in NO_POST:
+                parts.append({"when": dict(when, insulation=material),
+                              "apply": {"model": MODEL_REF
+                                        % ("%s_hub_insulation_%s" % (name, material))}})
+    return {"variants": _inventory(name, insulated), "multipart": parts}
 
 
 def opening_blockstate(name):
@@ -368,6 +447,15 @@ def wall_inventory(x0, x1, uv=None, extra=()):
     elements.append(_box(x0, TRACK, 16 - STUD_Z1, x1, 16 - TRACK, 16 - STUD_Z0,
                          web="#stud", uv=uv))
     return elements + list(extra)
+
+
+def insulated_bay(x0, x1):
+    """The three bays of a whole block packed out, for an insulated variant's item icon."""
+    ix0, ix1 = x0 + INSUL_INSET, x1 - INSUL_INSET
+    return [_box(ix0, 0, 0, ix1, 16, STUD_Z0, tex="#insulation", drop=("up", "down")),
+            _box(ix0, 0, STUD_Z1, ix1, 16, 16 - STUD_Z1, tex="#insulation",
+                 drop=("up", "down")),
+            _box(ix0, 0, 16 - STUD_Z0, ix1, 16, 16, tex="#insulation", drop=("up", "down"))]
 
 
 def runner_inventory():
@@ -402,6 +490,11 @@ WALL_PARTS = ("post", "arm_stud", "arm_track_bottom", "arm_track_top",
 
 def _wall_flavour(prefix, x0, x1, uv=None, braced=False):
     parts = {part: prefix + part for part in WALL_PARTS}
+    # Each insulation gets its own textured model, since a multipart apply can pick a model but
+    # cannot rebind a texture.
+    for material in INSULATIONS:
+        for part in ("arm_insulation", "hub_insulation"):
+            parts["%s_%s" % (part, material)] = prefix + part
     extra = ()
     inv_extra = ()
     if braced:
@@ -412,8 +505,14 @@ def _wall_flavour(prefix, x0, x1, uv=None, braced=False):
                                     "rescale": True}),)
     return {
         "parts": parts,
-        "state": lambda name: wall_blockstate(name, extra),
+        "insulation_parts": {"%s_%s" % (part, material): material
+                             for material in INSULATIONS
+                             for part in ("arm_insulation", "hub_insulation")},
+        "state": lambda name: wall_blockstate(name, extra, insulated=True),
         "inventory": lambda: wall_inventory(x0, x1, uv, inv_extra),
+        "insulated_inventory": lambda: wall_inventory(x0, x1, uv,
+                                                      tuple(inv_extra) + tuple(
+                                                          insulated_bay(x0, x1))),
     }
 
 
@@ -445,6 +544,37 @@ FLAVOURS = {
 # --------------------------------------------------------------------------------------------
 # Catalogue
 # --------------------------------------------------------------------------------------------
+
+# What each insulation is called. Batt is glass wool and mineral is rock wool, which is what the
+# German and Swedish names say outright; English and Spanish name the product instead.
+INSULATION_LANG = {
+    "batt": {"en_us": "Batt Insulation", "es_es": "Aislamiento de Fibra",
+             "de_de": "Glaswolle", "sv_se": "Glasull"},
+    "mineral": {"en_us": "Mineral Wool", "es_es": "Lana Mineral",
+                "de_de": "Steinwolle", "sv_se": "Stenull"},
+}
+
+
+def insulated_name(base, suffix):
+    """A variant name, folded into the base name's own bracket if it already has one, so that a
+    narrow wall reads "(Narrow, Batt Insulation)" rather than "(Narrow) (Batt Insulation)"."""
+    if base.endswith(")"):
+        return base[:-1] + ", " + suffix + ")"
+    return base + " (" + suffix + ")"
+
+
+def insulated_entries():
+    """(lang key, per-language name) for every insulated variant in the catalogue."""
+    out = []
+    for entry in CATALOGUE:
+        if not FLAVOURS[entry["flavour"]].get("insulation_parts"):
+            continue
+        for material, names in sorted(INSULATION_LANG.items()):
+            key = "tile.%s.%s.name" % (entry["name"], material)
+            out.append((key, {lang: insulated_name(entry["lang"][lang], names[lang])
+                              for lang in names}))
+    return out
+
 
 def _entry(name, cls, flavour, en, es, de, sv):
     return {"name": name, "class": cls, "flavour": flavour,
@@ -508,14 +638,26 @@ def write_all(tex_dir, shared_dir, model_dir, state_dir):
         stud_tex = TEX_REF % entry["stud"]
         track_tex = TEX_REF % entry["track"]
         textures = {"stud": stud_tex, "track": track_tex, "particle": track_tex}
+        insul = flavour.get("insulation_parts", {})
         for suffix, shared in sorted(flavour["parts"].items()):
             filename = "%s_%s.json" % (name, suffix)
+            bindings = textures
+            if suffix in insul:
+                bindings = dict(textures,
+                                insulation=TEX_REF % ("insulation_" + insul[suffix]))
             _write_json(os.path.join(model_dir, filename),
-                        {"parent": SHARED_REF % shared, "textures": textures})
+                        {"parent": SHARED_REF % shared, "textures": bindings})
             written.append(("model", filename))
         _write_json(os.path.join(model_dir, name + "_inventory.json"),
                     inventory_model(stud_tex, track_tex, flavour["inventory"]()))
         written.append(("model", name + "_inventory.json"))
+        if flavour.get("insulated_inventory"):
+            for material in INSULATIONS:
+                model = inventory_model(stud_tex, track_tex, flavour["insulated_inventory"]())
+                model["textures"]["insulation"] = TEX_REF % ("insulation_" + material)
+                filename = "%s_inventory_%s.json" % (name, material)
+                _write_json(os.path.join(model_dir, filename), model)
+                written.append(("model", filename))
         _write_json(os.path.join(state_dir, name + ".json"), flavour["state"](name))
         written.append(("state", name + ".json"))
 
