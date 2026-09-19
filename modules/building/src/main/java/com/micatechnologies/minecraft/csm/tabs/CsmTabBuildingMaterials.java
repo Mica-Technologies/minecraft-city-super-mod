@@ -7,6 +7,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuSplitface
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuStandard;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBuildingDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCustomDoor;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDoorWorkshop;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.ItemDoorCloser;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorControl;
@@ -252,5 +253,6 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockBuildingDoor("door_back_halfglass")); // Back Door (Half Glass)
     initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer
     initTabBlock(BlockCustomDoor.class, fmlPreInitializationEvent); // Custom Door
+    initTabBlock(BlockDoorWorkshop.class, fmlPreInitializationEvent); // Door Workshop
   }
 }

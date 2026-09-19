@@ -77,6 +77,8 @@ public class CsmBuilding {
         Side.SERVER);
     NETWORK.registerMessage(GarageKeypadPacketHandler.class, GarageKeypadPacket.class,
         Side.SERVER);
+    NETWORK.registerMessage(DoorWorkshopPacketHandler.class, DoorWorkshopPacket.class,
+        Side.SERVER);
     proxy.preInit(event);
   }
 

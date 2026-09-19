@@ -78,6 +78,48 @@ public final class CustomDoorRenderer {
   }
 
   /**
+   * Draws a door -- both halves, from the lower block's corner, its outside to the south as the
+   * baked model has it -- part way open. The texture atlas must be bound. Used for moving doors in
+   * the world and for the Door Workshop's preview, so the two cannot disagree.
+   *
+   * @param settings the door
+   * @param hinge    its hinge side
+   * @param paired   whether it is half of a pair
+   * @param openness how far open, 0 to 1
+   *
+   * @since 1.0
+   */
+  public static void drawDoor(CustomDoorSettings settings, Hinge hinge, boolean paired,
+      double openness) {
+    for (Half half : Half.values()) {
+      GlStateManager.pushMatrix();
+      GlStateManager.translate(0, half == Half.UPPER ? 1 : 0, 0);
+      float[] d = CustomDoorGeometry.slide(settings.movement(), half, hinge, paired);
+      if (d == null) {
+        boolean left = hinge == Hinge.LEFT;
+        double px = (left ? CustomDoorGeometry.PIVOT_X : 16 - CustomDoorGeometry.PIVOT_X) / 16;
+        double pz = CustomDoorGeometry.PIVOT_Z / 16;
+        GlStateManager.translate(px, 0, pz);
+        GlStateManager.rotate((float) (90 * openness) * (left ? 1 : -1), 0F, 1F, 0F);
+        GlStateManager.translate(-px, 0, -pz);
+      } else {
+        GlStateManager.translate(d[0] / 16 * openness, d[1] / 16 * openness,
+            d[2] / 16 * openness);
+      }
+      List<BakedQuad> quads = model.quads(settings, half, EnumFacing.NORTH, hinge, false,
+          paired, null);
+      Tessellator tessellator = Tessellator.getInstance();
+      BufferBuilder buffer = tessellator.getBuffer();
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
+      for (BakedQuad quad : quads) {
+        LightUtil.renderQuadColor(buffer, quad, 0xFFFFFFFF);
+      }
+      tessellator.draw();
+      GlStateManager.popMatrix();
+    }
+  }
+
+  /**
    * The event handlers.
    *
    * @since 1.0
@@ -157,32 +199,7 @@ public final class CustomDoorRenderer {
       GlStateManager.translate(pos.getX() - cx + 0.5, pos.getY() - cy, pos.getZ() - cz + 0.5);
       GlStateManager.rotate(-(facing.getHorizontalAngle() + 180F), 0F, 1F, 0F);
       GlStateManager.translate(-0.5, 0, -0.5);
-      for (Half half : Half.values()) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(0, half == Half.UPPER ? 1 : 0, 0);
-        float[] d = CustomDoorGeometry.slide(settings.movement(), half, hinge, paired);
-        if (d == null) {
-          boolean left = hinge == Hinge.LEFT;
-          double px = (left ? CustomDoorGeometry.PIVOT_X : 16 - CustomDoorGeometry.PIVOT_X) / 16;
-          double pz = CustomDoorGeometry.PIVOT_Z / 16;
-          GlStateManager.translate(px, 0, pz);
-          GlStateManager.rotate((float) (90 * openness) * (left ? 1 : -1), 0F, 1F, 0F);
-          GlStateManager.translate(-px, 0, -pz);
-        } else {
-          GlStateManager.translate(d[0] / 16 * openness, d[1] / 16 * openness,
-              d[2] / 16 * openness);
-        }
-        List<BakedQuad> quads = model.quads(settings, half, EnumFacing.NORTH, hinge, false,
-            paired, null);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
-        for (BakedQuad quad : quads) {
-          LightUtil.renderQuadColor(buffer, quad, 0xFFFFFFFF);
-        }
-        tessellator.draw();
-        GlStateManager.popMatrix();
-      }
+      drawDoor(settings, hinge, paired, openness);
       GlStateManager.popMatrix();
     }
   }

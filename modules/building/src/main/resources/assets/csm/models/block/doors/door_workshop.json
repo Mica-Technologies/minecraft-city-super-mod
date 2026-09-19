@@ -1,0 +1,8 @@
+{
+  "parent": "block/orientable",
+  "textures": {
+    "top": "csm:blocks/doors/door_workshop_top",
+    "side": "csm:blocks/doors/door_workshop_side",
+    "front": "csm:blocks/doors/door_workshop_front"
+  }
+}

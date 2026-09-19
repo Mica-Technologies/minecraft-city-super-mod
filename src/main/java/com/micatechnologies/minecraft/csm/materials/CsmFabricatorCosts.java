@@ -347,6 +347,12 @@ public final class CsmFabricatorCosts {
     if (CsmBlockDisplayNames.hasWord(registryName, "door")
         && !CsmBlockDisplayNames.hasWord(registryName, "garage")
         && !CsmBlockDisplayNames.hasWord(registryName, "keypad")) {
+      // The Door Workshop is a bench with a vice, not a door.
+      if (CsmBlockDisplayNames.hasWord(registryName, "workshop")) {
+        return cost(FabricatorIngredient.any(MC_PLANKS, 4),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 2),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      }
       if (CsmBlockDisplayNames.hasWord(registryName, "storefront")) {
         return cost(FabricatorIngredient.any(MC_GLASS_PANE, 2),
             FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));

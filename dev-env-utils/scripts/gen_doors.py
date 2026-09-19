@@ -138,6 +138,33 @@ CUSTOM_LANG = {
                                    "Dörren öppnas bara med rödsten"),
     "gui.csm.door.locked_redstone": ("Locked by redstone", "Bloqueada por redstone",
                                      "Durch Redstone verriegelt", "Låst av rödsten"),
+    "tile.door_workshop.name": ("Door Workshop", "Taller de Puertas", "Türwerkstatt",
+                                "Dörrverkstad"),
+    "gui.csm.workshop.make": ("Make", "Hacer", "Bauen", "Gör"),
+    "gui.csm.workshop.apply": ("Set", "Fijar", "Setzen", "Ange"),
+    "gui.csm.workshop.copy": ("Copy", "Copiar", "Kopie", "Kopia"),
+    "gui.csm.workshop.save": ("Save", "Guardar", "Sichern", "Spara"),
+    "gui.csm.workshop.load": ("Load", "Cargar", "Laden", "Ladda"),
+    "gui.csm.workshop.delete": ("Del", "Borr", "Lösch", "Ta bort"),
+    "gui.csm.workshop.design_has": ("Design: %s", "Diseño: %s", "Entwurf: %s", "Design: %s"),
+    "gui.csm.workshop.sensor_on": ("Sensor: On", "Sensor: Sí", "Sensor: An", "Sensor: På"),
+    "gui.csm.workshop.sensor_off": ("Sensor: Off", "Sensor: No", "Sensor: Aus", "Sensor: Av"),
+    "gui.csm.workshop.speed": ("Opens in %s s", "Abre en %s s", "Öffnet in %s s",
+                               "Öppnas på %s s"),
+    "gui.csm.workshop.stays_open": ("Stays open", "Queda abierta", "Bleibt offen",
+                                    "Förblir öppen"),
+    "gui.csm.workshop.closes": ("Closes after %s s", "Cierra tras %s s", "Schließt nach %s s",
+                                "Stänger efter %s s"),
+    "gui.csm.workshop.slot.frame": ("Frame material", "Material del marco", "Rahmenmaterial",
+                                    "Karmens material"),
+    "gui.csm.workshop.slot.upper": ("Upper panel material", "Material del panel superior",
+                                    "Material der oberen Füllung", "Övre panelens material"),
+    "gui.csm.workshop.slot.lower": ("Lower panel material", "Material del panel inferior",
+                                    "Material der unteren Füllung", "Nedre panelens material"),
+    "gui.csm.workshop.slot.edit": ("Custom doors to re-program", "Puertas a reprogramar",
+                                   "Türen zum Umprogrammieren", "Dörrar att programmera om"),
+    "gui.csm.workshop.slot.output": ("Finished door", "Puerta terminada", "Fertige Tür",
+                                     "Färdig dörr"),
 }
 
 # --------------------------------------------------------------------------------------------
@@ -268,6 +295,101 @@ def closer_icon():
     return img
 
 
+OAK = (162, 130, 78)
+STEEL = (120, 124, 130)
+
+
+def _planks(rng, rgb=OAK):
+    """Oak boards running across, a seam every four rows."""
+    img, px = _canvas(rgb, rng, 6)
+    for y in (3, 7, 11, 15):
+        for x in range(16):
+            px[x, y] = _shift(rgb, -34)
+    return img, px
+
+
+def workshop_top():
+    """The bench top: boards, with a steel vice at the front edge."""
+    img, px = _planks(random.Random(20261911))
+    for x in range(5, 11):
+        for y in range(12, 16):
+            px[x, y] = _shift(STEEL, 14 if y == 12 else (-18 if y == 15 else 0))
+    for x in range(7, 9):
+        px[x, 11] = _shift(STEEL, -30)
+    return img
+
+
+def workshop_side():
+    """Boards over a drawer, the bench's cabinet."""
+    img, px = _planks(random.Random(20261912))
+    for x in range(16):
+        px[x, 0] = _shift(OAK, -44)
+    for x in range(2, 14):
+        for y in (8, 13):
+            px[x, y] = _shift(OAK, -40)
+    for y in range(8, 14):
+        px[2, y] = _shift(OAK, -40)
+        px[13, y] = _shift(OAK, -40)
+    px[7, 10] = px[8, 10] = _shift(BRASS, 0)
+    return img
+
+
+def workshop_front():
+    """A pegboard with a little door hung on it, a saw and a hammer: what the block is for."""
+    rng = random.Random(20261913)
+    board = (150, 118, 76)
+    img, px = _canvas(board, rng, 3)
+    for y in range(1, 16, 3):
+        for x in range(1, 16, 3):
+            px[x, y] = _shift(board, -46)
+    for x in range(16):
+        px[x, 0] = px[x, 15] = _shift(OAK, -44)
+    for y in range(16):
+        px[0, y] = px[15, y] = _shift(OAK, -44)
+    # The door: a frame and two panels, its knob.
+    for y in range(3, 14):
+        for x in range(2, 8):
+            edge_px = x in (2, 7) or y in (3, 13)
+            px[x, y] = _shift((116, 78, 46), -20 if edge_px else (8 if y < 8 else 0))
+    for x in range(3, 7):
+        px[x, 8] = _shift((116, 78, 46), -30)
+    px[6, 9] = _shift(BRASS, 10)
+    # The saw: a blade and its handle.
+    for i in range(6):
+        for j in range(2):
+            px[9 + i, 4 + j] = _shift(SILVER, 10 - j * 30)
+    px[9, 6] = px[10, 6] = px[11, 6] = _shift(SILVER, -40)
+    for x in range(13, 15):
+        for y in range(3, 7):
+            px[x, y] = _shift((120, 40, 30), 0)
+    # The hammer: a head across a handle.
+    for y in range(9, 14):
+        px[12, y] = _shift((110, 76, 44), 0)
+    for x in range(10, 15):
+        px[x, 9] = _shift(STEEL, 0)
+    return img
+
+
+def workshop_textures():
+    return {"door_workshop_top": workshop_top(), "door_workshop_side": workshop_side(),
+            "door_workshop_front": workshop_front()}
+
+
+def workshop_model():
+    return {"parent": "block/orientable",
+            "textures": {"top": TEX_REF % "door_workshop_top",
+                         "side": TEX_REF % "door_workshop_side",
+                         "front": TEX_REF % "door_workshop_front"}}
+
+
+def workshop_state():
+    variants = {"facing=%s" % side: {"model": MODEL_REF % "door_workshop",
+                                     **({"y": turn} if turn else {})}
+                for side, turn in SIDES}
+    variants["inventory"] = {"model": MODEL_REF % "door_workshop"}
+    return {"variants": variants}
+
+
 def textures():
     out = {}
     for name, (style, rgb, _, _) in DOORS.items():
@@ -279,6 +401,7 @@ def textures():
     out["door_brass"] = hardware(BRASS, random.Random(20261901))
     out["door_silver"] = hardware(SILVER, random.Random(20261902))
     out["door_black"] = hardware((34, 34, 36), random.Random(20261903))
+    out.update(workshop_textures())
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -425,6 +548,7 @@ def models():
     out["closer_right"] = _model(sc._mirror_x(closer_parts()), hw)
     out["closer_left_open"] = _model(_open(closer_parts()), hw)
     out["closer_right_open"] = _model(sc._mirror_x(_open(closer_parts())), hw)
+    out["door_workshop"] = workshop_model()
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -460,7 +584,9 @@ def state_for(name):
 
 
 def blockstates():
-    return {name: state_for(name) for name in DOORS}
+    out = {name: state_for(name) for name in DOORS}
+    out["door_workshop"] = workshop_state()
+    return out
 
 # --------------------------------------------------------------------------------------------
 # Writing
