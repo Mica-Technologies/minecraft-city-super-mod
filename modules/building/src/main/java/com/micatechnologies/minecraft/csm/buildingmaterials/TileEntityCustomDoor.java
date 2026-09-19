@@ -18,6 +18,17 @@ public class TileEntityCustomDoor extends AbstractTileEntity {
 
   private CustomDoorSettings settings = CustomDoorSettings.DEFAULT;
 
+  /** When the proximity sensor last saw someone, in world ticks. Not saved: a reload forgets. */
+  private transient long lastSeen = Long.MIN_VALUE / 2;
+
+  long getLastSeen() {
+    return lastSeen;
+  }
+
+  void setLastSeen(long lastSeen) {
+    this.lastSeen = lastSeen;
+  }
+
   public CustomDoorSettings getSettings() {
     return settings;
   }
@@ -33,6 +44,25 @@ public class TileEntityCustomDoor extends AbstractTileEntity {
     this.settings = settings;
     if (world != null) {
       markDirtySync(world, pos, true);
+      armSensor();
+    }
+  }
+
+  /** A door put down, or read back from a save, with its sensor on starts looking. */
+  @Override
+  public void onLoad() {
+    armSensor();
+  }
+
+  /**
+   * Starts a door's proximity sensor, if it has one: the block's scheduled tick looks every few
+   * ticks and schedules the next look itself (see {@link BlockCustomDoor#updateTick}). Scheduling
+   * one already pending does nothing, so this is safe to call whenever.
+   */
+  private void armSensor() {
+    if (world != null && !world.isRemote && settings.proximity()) {
+      world.scheduleUpdate(pos, world.getBlockState(pos).getBlock(),
+          BlockCustomDoor.SENSE_TICKS);
     }
   }
 
@@ -43,6 +73,9 @@ public class TileEntityCustomDoor extends AbstractTileEntity {
     settings = read;
     if (changed && world != null && world.isRemote) {
       world.markBlockRangeForRenderUpdate(pos, pos.up());
+    } else if (changed) {
+      // Settings written straight in (/blockdata) may have turned the sensor on.
+      armSensor();
     }
   }
 
