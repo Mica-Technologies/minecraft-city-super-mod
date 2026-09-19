@@ -164,7 +164,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     return registryName != null ? registryName : PENDING_REGISTRY_NAME.get();
   }
 
-  private boolean glazed() {
+  protected boolean glazed() {
     String n = getBlockRegistryName();
     return n.contains("lite") || n.contains("fire") || n.contains("storefront")
         || n.contains("glass");
@@ -221,11 +221,11 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   }
 
   /** The whole door's state, read from wherever {@code pos} is in it. */
-  private IBlockState whole(IBlockAccess world, BlockPos pos) {
+  protected IBlockState whole(IBlockAccess world, BlockPos pos) {
     return getActualState(world.getBlockState(pos), world, pos);
   }
 
-  private static BlockPos lower(IBlockState state, BlockPos pos) {
+  protected static BlockPos lower(IBlockState state, BlockPos pos) {
     return state.getValue(HALF) == Half.LOWER ? pos : pos.down();
   }
 
@@ -315,8 +315,21 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       } else {
         seen.remove(pos);
       }
-      setOpen(worldIn, pos, powered, false);
+      onPower(worldIn, pos, powered);
     }
+  }
+
+  /**
+   * The redstone signal at a door changed: it opens while powered and shuts when the signal goes.
+   *
+   * @param world    the world
+   * @param lowerPos the door's lower half
+   * @param powered  whether it is powered now
+   *
+   * @since 1.0
+   */
+  protected void onPower(World world, BlockPos lowerPos, boolean powered) {
+    setOpen(world, lowerPos, powered, false);
   }
 
   /** Breaking the upper half in creative takes the lower away first, so nothing drops. */
@@ -356,7 +369,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
 
   // --- opening and closing --------------------------------------------------------------------------
 
-  private SoundEvent sound(boolean open) {
+  protected SoundEvent sound(boolean open) {
     if (metal(getBlockRegistryName())) {
       return open ? SoundEvents.BLOCK_IRON_DOOR_OPEN : SoundEvents.BLOCK_IRON_DOOR_CLOSE;
     }
@@ -365,7 +378,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
 
   /** The other door of a pair: beside this one on its latch side, hinged the other way. */
   @Nullable
-  private BlockPos partner(World world, BlockPos lowerPos, IBlockState door) {
+  protected BlockPos partner(World world, BlockPos lowerPos, IBlockState door) {
     EnumFacing f = door.getValue(FACING);
     EnumFacing latch = door.getValue(HINGE) == Hinge.LEFT ? f.rotateY() : f.rotateYCCW();
     BlockPos p = lowerPos.offset(latch);
@@ -396,7 +409,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     }
   }
 
-  private void swing(World world, BlockPos lowerPos, boolean open, boolean byHand) {
+  protected void swing(World world, BlockPos lowerPos, boolean open, boolean byHand) {
     IBlockState lower = world.getBlockState(lowerPos);
     IBlockState upper = world.getBlockState(lowerPos.up());
     if (lower.getBlock() != this || upper.getBlock() != this) {
@@ -443,7 +456,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   /**
    * Whether a player is on the inside -- the side the door faces, where it swings to.
    */
-  private static boolean inside(EntityPlayer player, BlockPos pos, EnumFacing f) {
+  protected static boolean inside(EntityPlayer player, BlockPos pos, EnumFacing f) {
     return (player.posX - (pos.getX() + 0.5)) * f.getXOffset()
         + (player.posZ - (pos.getZ() + 0.5)) * f.getZOffset() > 0;
   }

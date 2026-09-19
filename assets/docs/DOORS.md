@@ -77,3 +77,37 @@ instead of a Fabricator cost.
   and keypad, whose names also say "door", are kept out of the door rule.
 - **1.12's long array tag cannot be read back** (no getter), so `DoorLocks` stores positions as
   pairs of ints.
+
+## Custom doors
+
+`BlockCustomDoor` (`custom_door`) is a door made of any three blocks -- a frame, an upper and a lower
+material -- with its own movement, sound, speed, auto-close, redstone mode and proximity sensor, all
+in `CustomDoorSettings`. The Door Workshop that makes them is the next step; until then the default
+custom door (oak) is in the tab and settings can be written with `/blockdata` on the lower half.
+Modelled on another mod's door factory, which the user asked for; implemented from scratch and
+built to be **free at rest**, where that one draws every custom door every frame.
+
+- **Settings** live in a data-only `TileEntityCustomDoor` on the lower half. No renderer is
+  registered for it, so it costs nothing a frame: a chunk lists only tile entities with one.
+- **Drawn baked.** `CustomDoorBakedModel` reads the settings through the block's extended state and
+  faces the leaf from `CustomDoorGeometry` (a frame of stiles and rails round a set-in panel) with
+  each material's sprite -- its model's north face, so a log shows its bark. Quads are cached per
+  combination (settings, half, facing, hinge, open, paired, render pass): a street of identical
+  doors bakes once. Each material draws in the pass its own block draws in, so glass is translucent.
+  Materials are any plain-model block with no tile entity (`CustomDoorMaterials`).
+- **Moving doors** are drawn by `CustomDoorRenderer` from `RenderWorldLastEvent`, only the doors in
+  `CustomDoorMotion` (put there by a block event the server sends when a door moves), from the same
+  cached quads under the movement's transform; the baked model draws nothing for a door while it is
+  there. Not a TESR, which would be visited for every door every frame.
+- **Movements.** Swing (as the fixed doors: the leaf on the outside face, turned about the hinge
+  pivot); Slide (toward the hinge, into the wall -- a pair parts in the middle); Slide Together (a
+  pair both to the left, the second stacked behind); Slide Up; Split (upper up, lower down). A door
+  that slides, lifts or splits stands in the **middle of the wall's thickness**, as a glass pane does
+  (the user's suggestion): it travels along the middle of the wall and ends wholly inside the block
+  it slides into. It stops half a pixel short of a whole block, so its edge shows in the jamb like a
+  pocket door's rather than lying in the jamb's plane, where the two faces would fight.
+- An open door that has slid away is walked through freely; a strip at the jamb it went into can be
+  clicked to shut it.
+- **Redstone modes:** normal, redstone only, hand only, and redstone lock (a signal shuts and locks
+  it). Auto-close is a number of ticks. The closer item does not fit a custom door.
+
