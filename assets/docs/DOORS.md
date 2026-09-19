@@ -65,7 +65,8 @@ layer; the rest are cutout.
 A storefront door is two glass panes and a Sheet Metal, a hollow metal, fire or exit door two Sheet
 Metal and a Fastener Kit, and a wood or residential door three planks. The Door Closer is an item,
 so it has a crafting recipe (`recipes/door_closer.json`, only while `csm_building` is loaded)
-instead of a Fabricator cost.
+instead of a Fabricator cost. The Door Workshop is four planks, two Fastener Kits and a Sheet Metal
+(a bench with a vice), priced before the door rule catches its name.
 
 ## Traps
 
@@ -82,8 +83,8 @@ instead of a Fabricator cost.
 
 `BlockCustomDoor` (`custom_door`) is a door made of any three blocks -- a frame, an upper and a lower
 material -- with its own movement, sound, speed, auto-close, redstone mode and proximity sensor, all
-in `CustomDoorSettings`. The Door Workshop that makes them is the next step; until then the default
-custom door (oak) is in the tab and settings can be written with `/blockdata` on the lower half.
+in `CustomDoorSettings`. They are made in the **Door Workshop** (below); the plain custom door in the
+tab (oak) is what the Fabricator makes.
 Modelled on another mod's door factory, which the user asked for; implemented from scratch and
 built to be **free at rest**, where that one draws every custom door every frame.
 
@@ -110,4 +111,33 @@ built to be **free at rest**, where that one draws every custom door every frame
   clicked to shut it.
 - **Redstone modes:** normal, redstone only, hand only, and redstone lock (a signal shuts and locks
   it). Auto-close is a number of ticks. The closer item does not fit a custom door.
+
+### The Door Workshop
+
+`BlockDoorWorkshop` (`door_workshop`, a bench block) opens `GuiDoorWorkshop` (GUI id 27, the one
+screen in the module with a server-side container). Its `TileEntityDoorWorkshop` holds five slots
+(frame, upper, lower, edit, output), the **design** on the screen, and up to twelve **saved
+designs**; it is never ticked or drawn.
+
+- **The design is a whole door**: three materials and the behaviour. A block put in a material slot
+  becomes the design's material and stays so when taken out, so an empty slot shows the block the
+  next door still needs, faded (a ghost). What Make builds is the slot's block, or the design's
+  where the slot is empty. In survival every slot must hold its block and one of each is used up; a
+  player in creative uses nothing and may make from the ghosts. Shift-click Make for a stack.
+- **Set** gives the doors in the edit slot the screen's behaviour and keeps their materials;
+  **Copy** takes the whole design from the door in the edit slot. A placed door's design comes back
+  the same way: pick block in creative, or break it (the drop keeps its settings).
+- **Saved designs** are named on the workshop and shared by whoever uses it; Save replaces a design
+  of the same name.
+- **The preview** is the door as Make would build it, turning slowly, shut a second, opening at its
+  own speed, open a second, closing -- a pair for Slide Together and Split. It is drawn with
+  `CustomDoorRenderer.drawDoor`, the same call and the same cached quads as a moving door in the
+  world, so the two cannot disagree, and only while the screen is open. It is clipped to its
+  window (scissor), so a sliding panel goes out of sight as into its pocket.
+- **Nothing is trusted from the client.** `DoorWorkshopPacket` carries only the behaviour, an action,
+  a design index and a name (cut to 24 printable characters); the handler checks reach and that the
+  player's open container is this workshop's, takes materials from the slots, and asks the player's
+  own game mode for creative.
+- **The screen is 236 high** with 18-high buttons (`ShortButton` draws the texture's bottom edge
+  rather than cutting it off), so it fits a 240-high window: a small window at GUI scale 2.
 

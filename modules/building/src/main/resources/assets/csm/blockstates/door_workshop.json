@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "csm:doors/door_workshop"
+    },
+    "facing=east": {
+      "model": "csm:doors/door_workshop",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:doors/door_workshop",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:doors/door_workshop",
+      "y": 270
+    },
+    "inventory": {
+      "model": "csm:doors/door_workshop"
+    }
+  }
+}
