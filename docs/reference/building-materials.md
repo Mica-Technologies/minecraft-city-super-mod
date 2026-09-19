@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "201 blocks in this tab"
+!!! info "202 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -77,6 +77,7 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Corrugated Steel Cladding Fence | `csm:cladding_corrugated_fence` | 3 | 10 | pickaxe | 1 |
 | Corrugated Steel Cladding Slab | `csm:cladding_corrugated_slab` | 3 | 10 | pickaxe | 1 |
 | Corrugated Steel Cladding Stairs | `csm:cladding_corrugated_stairs` | 3 | 10 | pickaxe | 1 |
+| Custom Door | `csm:custom_door` |  |  |  |  |
 | Door Keypad | `csm:garage_door_keypad` | 1 | 5 | pickaxe | 0 |
 | Exit Door (Push Bar) | `csm:door_metal_exit` |  |  |  |  |
 | Fiber Cement Lap Siding | `csm:siding_lap` | 2 | 10 | pickaxe | 1 |

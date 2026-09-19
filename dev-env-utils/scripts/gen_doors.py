@@ -92,6 +92,54 @@ DOORS = {
 
 CLOSER_NAMES = ("Door Closer", "Cierrapuertas", "Türschließer", "Dörrstängare")
 
+# The custom door (BlockCustomDoor, made in the Door Workshop): its name and the words its tooltip
+# and the workshop's screen use.
+CUSTOM_LANG = {
+    "tile.custom_door.name": ("Custom Door", "Puerta Personalizada", "Individuelle Tür",
+                              "Anpassad Dörr"),
+    "gui.csm.door.tip.frame": ("Frame: %s", "Marco: %s", "Rahmen: %s", "Karm: %s"),
+    "gui.csm.door.tip.upper": ("Upper: %s", "Superior: %s", "Oben: %s", "Övre: %s"),
+    "gui.csm.door.tip.lower": ("Lower: %s", "Inferior: %s", "Unten: %s", "Nedre: %s"),
+    "gui.csm.door.tip.movement": ("Opens: %s", "Apertura: %s", "Öffnet: %s", "Öppnas: %s"),
+    "gui.csm.door.tip.sound": ("Sound: %s", "Sonido: %s", "Klang: %s", "Ljud: %s"),
+    "gui.csm.door.tip.speed": ("Takes %s s", "Tarda %s s", "Dauert %s s", "Tar %s s"),
+    "gui.csm.door.tip.autoclose": ("Closes itself after %s s", "Se cierra sola tras %s s",
+                                   "Schließt sich nach %s s", "Stänger sig efter %s s"),
+    "gui.csm.door.tip.redstone": ("Redstone: %s", "Redstone: %s", "Redstone: %s",
+                                  "Rödsten: %s"),
+    "gui.csm.door.tip.proximity": ("Opens when someone comes near",
+                                   "Se abre al acercarse alguien",
+                                   "Öffnet, wenn sich jemand nähert",
+                                   "Öppnas när någon kommer nära"),
+    "gui.csm.door.movement.swing": ("Swing", "Batiente", "Drehflügel", "Slag"),
+    "gui.csm.door.movement.slide": ("Slide", "Corredera", "Schiebe", "Skjut"),
+    "gui.csm.door.movement.slide_together": ("Slide Together", "Corredera Conjunta",
+                                             "Gemeinsam Schieben", "Skjut Tillsammans"),
+    "gui.csm.door.movement.slide_up": ("Slide Up", "Elevable", "Hochschieben", "Skjut Upp"),
+    "gui.csm.door.movement.split": ("Split", "Partida", "Geteilt", "Delad"),
+    "gui.csm.door.sound.wood": ("Wood", "Madera", "Holz", "Trä"),
+    "gui.csm.door.sound.iron": ("Iron", "Hierro", "Eisen", "Järn"),
+    "gui.csm.door.sound.heavy": ("Heavy", "Pesado", "Schwer", "Tung"),
+    "gui.csm.door.sound.trapdoor": ("Trapdoor", "Trampilla", "Falltür", "Fallucka"),
+    "gui.csm.door.sound.gate": ("Gate", "Portón", "Tor", "Grind"),
+    "gui.csm.door.sound.pneumatic": ("Pneumatic", "Neumático", "Pneumatisch", "Pneumatisk"),
+    "gui.csm.door.sound.sliding": ("Sliding", "Deslizante", "Gleitend", "Glidande"),
+    "gui.csm.door.sound.silent": ("Silent", "Silencioso", "Lautlos", "Tyst"),
+    "gui.csm.door.redstone.normal": ("Normal", "Normal", "Normal", "Normal"),
+    "gui.csm.door.redstone.redstone_only": ("Redstone Only", "Solo Redstone", "Nur Redstone",
+                                            "Endast Rödsten"),
+    "gui.csm.door.redstone.hand_only": ("Hand Only", "Solo a Mano", "Nur von Hand",
+                                        "Endast för Hand"),
+    "gui.csm.door.redstone.redstone_lock": ("Redstone Locks", "Redstone Bloquea",
+                                            "Redstone Verriegelt", "Rödsten Låser"),
+    "gui.csm.door.redstone_only": ("This door opens by redstone only",
+                                   "Esta puerta solo se abre con redstone",
+                                   "Diese Tür öffnet nur mit Redstone",
+                                   "Dörren öppnas bara med rödsten"),
+    "gui.csm.door.locked_redstone": ("Locked by redstone", "Bloqueada por redstone",
+                                     "Durch Redstone verriegelt", "Låst av rödsten"),
+}
+
 # --------------------------------------------------------------------------------------------
 # Textures -- a lower and an upper face for each door, outside and inside
 # --------------------------------------------------------------------------------------------
@@ -448,6 +496,7 @@ def lang_entries():
     out = [("tile.%s.name" % name, dict(zip(LANGS, names)))
            for name, (_, _, _, names) in DOORS.items()]
     out.append(("item.door_closer.name", dict(zip(LANGS, CLOSER_NAMES))))
+    out += [(k, dict(zip(LANGS, v))) for k, v in CUSTOM_LANG.items()]
     return out
 
 

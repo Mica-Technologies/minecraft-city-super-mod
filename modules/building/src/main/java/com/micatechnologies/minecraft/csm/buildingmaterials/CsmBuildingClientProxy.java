@@ -21,6 +21,10 @@ public class CsmBuildingClientProxy extends CsmBuildingCommonProxy {
     // Jump-to-climb for scaffolding and crane masts. The client decides its own player's
     // movement, so this lives here and nowhere else.
     ScaffoldClimbHandler.register();
+    // The custom door's baked model and moving-door renderer. Its block was made in Core's preInit.
+    if (BlockCustomDoor.instance() != null) {
+      CustomDoorRenderer.register(BlockCustomDoor.instance());
+    }
   }
 
   @Override

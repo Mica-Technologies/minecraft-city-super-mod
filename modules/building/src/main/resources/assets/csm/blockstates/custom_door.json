@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:doors/door_wood_oak_lower_left"
+    },
+    "inventory": {
+      "model": "csm:doors/door_wood_oak_inventory"
+    }
+  }
+}

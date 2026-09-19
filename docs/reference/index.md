@@ -9,7 +9,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 
 | Tab | Blocks | What is in it |
 |---|---|---|
-| [Building Materials](building-materials.md) | 201 | Bulk material sets, with matching stairs, slabs and fences. |
+| [Building Materials](building-materials.md) | 202 | Bulk material sets, with matching stairs, slabs and fences. |
 | [Construction Site](construction-site.md) | 42 | What stands around a building while it goes up: scaffolding, formwork, earthworks, site logistics and facilities. |
 | [Furniture](furniture.md) | 62 | Interior fittings: seating, counters, appliances and fixtures. |
 | [Gaming](gaming.md) | 19 | Arcade cabinets and the playable machines that go with them. |
@@ -26,7 +26,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Traffic Accessories](traffic-accessories.md) | 355 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Unlisted](unlisted.md) | 112 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **2072** | |
+| **Total** | **2073** | |
 
 ## How to read the table
 
