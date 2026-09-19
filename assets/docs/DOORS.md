@@ -111,6 +111,19 @@ built to be **free at rest**, where that one draws every custom door every frame
   clicked to shut it.
 - **Redstone modes:** normal, redstone only, hand only, and redstone lock (a signal shuts and locks
   it). Auto-close is a number of ticks. The closer item does not fit a custom door.
+- **Proximity sensor.** A door with the sensor on looks every 5 ticks through its own scheduled
+  block tick, which re-schedules itself -- no ticking tile entity, and a door without a sensor
+  schedules nothing. It is armed when the door is placed, when its settings change (the workshop,
+  or `/blockdata`) and when its chunk loads; a pending tick is saved with the chunk anyway. It sees
+  players only (a sensor that opened for mobs would let them in), 2.5 blocks out either side of
+  the opening, two blocks high; a pair watches both its openings, or one leaf would shut the pair
+  on someone in the other. It shuts once nobody has been there for the auto-close time, or a
+  second if that is off, unless redstone is holding it open; a redstone lock stops it opening.
+- **Keypad locks** work as on the fixed doors (a custom door is a `BlockBuildingDoor`): link a
+  keypad by sneak-clicking it and then the door, and the door is locked in `DoorLocks` from the
+  outside. With a sensor, a locked door opens only for someone on the inside -- free to leave,
+  the code to come in, as an access-controlled automatic door -- but once open **anyone** in the
+  zone holds it open, so it does not shut on the person who has just keyed it open.
 
 ### The Door Workshop
 

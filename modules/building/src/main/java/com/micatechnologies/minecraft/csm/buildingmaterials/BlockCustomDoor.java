@@ -290,7 +290,8 @@ public class BlockCustomDoor extends BlockBuildingDoor {
             s.sound().pitch() * (world.rand.nextFloat() * 0.1F + 0.95F));
       }
     }
-    if (open && s.autoCloseTicks() > 0 && byHand) {
+    // A sensor door's own looks close it; see updateTick.
+    if (open && s.autoCloseTicks() > 0 && byHand && !s.proximity()) {
       world.scheduleUpdate(lowerPos, this, s.autoCloseTicks());
     }
   }
@@ -310,8 +311,16 @@ public class BlockCustomDoor extends BlockBuildingDoor {
     return true;
   }
 
+  /** How often a proximity sensor looks, in ticks. */
+  static final int SENSE_TICKS = 5;
+  /** How far a proximity sensor sees, in blocks from the middle of the door, either side. */
+  private static final double SENSE_REACH = 2.5;
+  /** How long a sensor door stays open after the last person has gone, if it has no auto-close. */
+  private static final int SENSE_HOLD_TICKS = 20;
+
   /**
-   * Auto-close: shut the door when its time is up, unless redstone is holding it open.
+   * The lower half's scheduled tick: a proximity sensor's look, or a timed door's time being up.
+   * Either way nothing closes a door that redstone is holding open.
    *
    * @since 1.0
    */
@@ -325,9 +334,77 @@ public class BlockCustomDoor extends BlockBuildingDoor {
     boolean powered = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.up());
     boolean held = powered && s.redstone() != Redstone.HAND_ONLY
         && s.redstone() != Redstone.REDSTONE_LOCK;
+    if (s.proximity()) {
+      sense(worldIn, pos, door, s, powered, held);
+      worldIn.scheduleUpdate(pos, this, SENSE_TICKS);
+      return;
+    }
     if (door.getValue(OPEN) && s.autoCloseTicks() > 0 && !held) {
       setOpen(worldIn, pos, false, false);
     }
+  }
+
+  /**
+   * One look of a proximity sensor. Someone in front of or behind the door opens it; once nobody
+   * has been there for the door's auto-close time (a second if it has none) it shuts.
+   *
+   * <p>Only players count -- a sensor that opened for mobs would let them in -- and a door locked
+   * by a keypad opens only for someone on the inside, as an access-controlled automatic door does:
+   * free to leave, the code to come in. Once open, anyone in the doorway holds it open, so a door
+   * opened by its keypad does not shut on the person who keyed it. A door locked by redstone does
+   * not open at all.</p>
+   */
+  private void sense(World world, BlockPos lowerPos, IBlockState door, CustomDoorSettings s,
+      boolean powered, boolean held) {
+    TileEntity te = world.getTileEntity(lowerPos);
+    if (!(te instanceof TileEntityCustomDoor)) {
+      return;
+    }
+    TileEntityCustomDoor data = (TileEntityCustomDoor) te;
+    long now = world.getTotalWorldTime();
+    EnumFacing f = door.getValue(FACING);
+    boolean locked = DoorLocks.get(world).isLocked(lowerPos);
+    AxisAlignedBB zone = zone(lowerPos, f);
+    BlockPos partner = partner(world, lowerPos, door);
+    if (partner != null) {
+      // A pair watches both its openings, or one leaf would shut the pair on someone in the other.
+      zone = zone.union(zone(partner, f));
+    }
+    // Anyone there keeps an open door open (it never shuts on someone); only someone allowed
+    // through opens a shut one.
+    boolean anyone = false;
+    boolean allowed = false;
+    for (EntityPlayer player : world.playerEntities) {
+      if (!player.isSpectator() && player.getEntityBoundingBox().intersects(zone)) {
+        anyone = true;
+        allowed |= !locked || inside(player, lowerPos, f);
+      }
+    }
+    boolean open = door.getValue(OPEN);
+    if (open ? anyone : allowed) {
+      data.setLastSeen(now);
+      boolean redstoneLocked = s.redstone() == Redstone.REDSTONE_LOCK && powered;
+      if (!open && !redstoneLocked) {
+        setOpen(world, lowerPos, true, false);
+      }
+      return;
+    }
+    int hold = s.autoCloseTicks() > 0 ? s.autoCloseTicks() : SENSE_HOLD_TICKS;
+    if (open && !held && now - data.getLastSeen() >= hold) {
+      setOpen(world, lowerPos, false, false);
+    }
+  }
+
+  /** What a door's sensor sees: its opening, and {@link #SENSE_REACH} out either side of it. */
+  private static AxisAlignedBB zone(BlockPos lowerPos, EnumFacing f) {
+    double cx = lowerPos.getX() + 0.5;
+    double cz = lowerPos.getZ() + 0.5;
+    double across = 0.5;
+    double out = SENSE_REACH;
+    double hx = f.getAxis() == EnumFacing.Axis.X ? out : across;
+    double hz = f.getAxis() == EnumFacing.Axis.Z ? out : across;
+    return new AxisAlignedBB(cx - hx, lowerPos.getY(), cz - hz, cx + hx, lowerPos.getY() + 2,
+        cz + hz);
   }
 
   /**
