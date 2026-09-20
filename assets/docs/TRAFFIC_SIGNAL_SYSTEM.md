@@ -318,6 +318,47 @@ independently:
 - The sensor block position is the reference point — place sensors at the "wrong way end" of the
   road so approaching entities move toward them
 
+## Power Loss, Restoration and Leaving Flash
+
+The cabinet runs on redstone. Unpowered, with Power Loss Flash off, it darkens every head it
+drives and stops (`pauseTicking`); with Power Loss Flash on it never stops, and flashes instead.
+
+**Restoration.** When the power returns the controller restarts, as a real one does
+(`onPowerRestored`): it forgets the phase it was showing, and the modes that run an intersection
+-- NORMAL, ADVANCED, REQUESTABLE -- run a **start-up flash** for `TrafficSignalStartupFlash
+.DURATION_TICKS` (five seconds) in the cabinet's configured flash, yellow-red or all-red. The
+other modes are just repainted: flashing a wrong-way or overheight warning at nobody is a false
+alarm. The deadline is saved (`tcSfu`), so a world closed mid-flash comes back flashing and leaves
+flash properly.
+
+The restart is the fix for issue #211, and the reason it is needed is a contract worth knowing:
+**every mode but flash answers "no change" until its phase really changes**, and the heads are
+written only on a change. NORMAL returns null while it holds a green, forever under recall at a
+quiet intersection; ADVANCED's ring engine compares each phase it builds with the last it
+returned (`changedOrNull`). Both still remembered the pre-outage phase, so with the power back
+they saw nothing to change and the heads, which the outage had darkened behind their backs, stayed
+dark. Anything that alters the heads other than by applying a phase has to reset the controller.
+The restore is keyed on `paused`, which is saved, and not on `powerLossOff`, which is not -- a
+world reloaded during an outage comes back with only the first. The same path heals a chunk that
+loads before the chunk holding its redstone source: it goes dark for a tick, and used to stay so.
+
+**Leaving flash** follows MUTCD Section 4D.31, for every way out of FLASH -- the start-up flash,
+the nightly flash and the power-loss flash (`TrafficSignalStartupFlash.resumesOnPrimaryGreen`,
+asked in `setOperatingMode`):
+
+| Flashing | NORMAL | ADVANCED |
+|---|---|---|
+| yellow-red | main street straight to green (circuit 1), side street's flashing red to steady red, no all-red between -- that would put a red in front of a flashing yellow with no yellow change interval | comes up on the rest phases |
+| all-red | steady all-red for the all-red time, then circuit 1's green | comes up on the rest phases |
+
+ADVANCED's rest phases are the coordinated phases, else the soft-recall ones, else each ring's
+first: the main street. `RingBarrierState.beginOnRestPhases` makes the first tick serve them
+before any ring is filled from the calls; an ordinary cold start hands the first green to
+whoever is calling on the first barrier, which with a car in the left-turn bay is the left turn.
+The waiting calls are served from there in turn. A manual mode change or a cleared fault is not
+"leaving flash" and restarts the ordinary way. None of this is a progression, so the MMU does not
+judge it: the reset clears the previous phase it would compare against.
+
 ## Timing Parameters
 
 All times in ticks (20 ticks = 1 second):

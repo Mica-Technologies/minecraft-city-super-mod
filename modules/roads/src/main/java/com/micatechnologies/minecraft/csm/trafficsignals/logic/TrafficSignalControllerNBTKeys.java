@@ -255,6 +255,15 @@ public class TrafficSignalControllerNBTKeys {
   public static final String RAMP_METER_NIGHT_MODE = "tcRmN";
 
   /**
+   * The key for the world tick the controller's start-up flash runs until. Written only while
+   * one is running.
+   *
+   * @see TrafficSignalStartupFlash
+   * @since 2026.9
+   */
+  public static final String STARTUP_FLASH_UNTIL = "tcSfu";
+
+  /**
    * The key for storing and retrieving the controller's ADVANCED-mode programmed phase plan
    * (phases, ring sequence, coordination, preemption) from NBT data. Only written when an advanced
    * plan exists, so non-advanced controllers add no overhead.
