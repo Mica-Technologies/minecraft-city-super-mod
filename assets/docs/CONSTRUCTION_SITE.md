@@ -119,6 +119,16 @@ in a straight run. Fences join their own family -- both temporary fences, both c
   boxes and a fence has dozens of barbs.
 - **The temporary fence's icon is scaled down** (`display.gui`): at 1.75 blocks, block/block's
   inventory view pushed it out of the top of the slot.
+- **The temporary fence's models turn ambient occlusion off** (`"ambientocclusion": false`).
+  A panel is 1.75 blocks tall, so every face of it runs 12 px past the top of the block it
+  belongs to, and smooth lighting has nothing up there to interpolate: it extrapolates the
+  block above's light over the part that sticks out. Under a soffit, or with anything solid
+  directly above, that painted the top of a panel black and faded down to the right colour --
+  and because which neighbours a face samples depends on which way the face points, it struck
+  the panels of a run along z and not those of a run along x, which reads as the block being
+  broken in some facings only (issue #215). Flat lighting takes one value from the fence's own
+  block and is right on every facing; the panel is a thin plate that owes nothing to contact
+  shading. The chain-link and silt fences are inside their block and keep AO.
 - Collision is a vanilla fence's 1.5 blocks for the temporary and chain-link fences, 0.75 for the
   silt fence and 1.0 for the barbed top; all of them are steel that comes down by hand, like the
   scaffold, except the silt fence, which is wood.

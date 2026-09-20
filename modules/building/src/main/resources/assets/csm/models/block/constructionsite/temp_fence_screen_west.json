@@ -1,4 +1,5 @@
 {
+  "ambientocclusion": false,
   "textures": {
     "frame": "csm:blocks/constructionsite/chainlink_post_galv",
     "mesh": "csm:blocks/constructionsite/chainlink_mesh_galv",
