@@ -55,6 +55,9 @@ import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadSectionConfig
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadSectionConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsFabricatorRules;
 import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsGuiProvider;
+import com.micatechnologies.minecraft.csm.trafficsigns.RouteMarkerConfigPacket;
+import com.micatechnologies.minecraft.csm.trafficsigns.RouteMarkerConfigPacketHandler;
+import com.micatechnologies.minecraft.csm.trafficsigns.TrafficSignsGuiProvider;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -115,6 +118,7 @@ public class CsmRoads {
 
     CsmGuiRegistry.register(new TrafficSignalsGuiProvider());
     CsmGuiRegistry.register(new TrafficAccessoriesGuiProvider());
+    CsmGuiRegistry.register(new TrafficSignsGuiProvider());
 
     // Safe here: Fabricator costs are first read at post-initialization and thereafter only
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.
@@ -216,6 +220,10 @@ public class CsmRoads {
     NETWORK.registerMessage(
         LaneControlControllerConfigPacketHandler.class,
         LaneControlControllerConfigPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        RouteMarkerConfigPacketHandler.class,
+        RouteMarkerConfigPacket.class,
         Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's

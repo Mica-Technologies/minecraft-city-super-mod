@@ -1,0 +1,559 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsigns/route_marker_sign",
+    "textures": {
+      "all": "csm:blocks/trafficsigns/route_marker_interstate",
+      "particle": "csm:blocks/trafficsigns/route_marker_interstate",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/route_marker_interstate",
+      "2": "csm:blocks/trafficsigns/route_marker_interstate_back"
+    }
+  },
+  "variants": {
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 45
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 135
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 225
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 315
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "downward": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "extension": {
+            "model": "csm:trafficsigns/sign_pole",
+            "transform": {
+              "translation": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            }
+          }
+        }
+      }
+    },
+    "shift": {
+      "none": {},
+      "setback": {
+        "model": "csm:trafficsigns/route_marker_sign_setback"
+      },
+      "backtoback": {
+        "model": "csm:trafficsigns/route_marker_sign_back_to_back"
+      }
+    },
+    "shield": {
+      "interstate": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_interstate",
+          "2": "csm:blocks/trafficsigns/route_marker_interstate_back"
+        }
+      },
+      "interstate_business": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_interstate_business",
+          "2": "csm:blocks/trafficsigns/route_marker_interstate_business_back"
+        }
+      },
+      "us_route": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_us_route",
+          "2": "csm:blocks/trafficsigns/route_marker_us_route_back"
+        }
+      },
+      "state_square": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_state_square",
+          "2": "csm:blocks/trafficsigns/route_marker_state_square_back"
+        }
+      },
+      "state_circle": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_state_circle",
+          "2": "csm:blocks/trafficsigns/route_marker_state_circle_back"
+        }
+      },
+      "county_route": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_county_route",
+          "2": "csm:blocks/trafficsigns/route_marker_county_route_back"
+        }
+      },
+      "toll": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_toll",
+          "2": "csm:blocks/trafficsigns/route_marker_toll_back"
+        }
+      },
+      "blank_custom": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_blank_custom",
+          "2": "csm:blocks/trafficsigns/route_marker_blank_custom_back"
+        }
+      },
+      "california": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_california",
+          "2": "csm:blocks/trafficsigns/route_marker_california_back"
+        }
+      },
+      "texas": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_texas",
+          "2": "csm:blocks/trafficsigns/route_marker_texas_back"
+        }
+      },
+      "florida": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_florida",
+          "2": "csm:blocks/trafficsigns/route_marker_florida_back"
+        }
+      },
+      "new_york": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_new_york",
+          "2": "csm:blocks/trafficsigns/route_marker_new_york_back"
+        }
+      },
+      "connecticut": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_connecticut",
+          "2": "csm:blocks/trafficsigns/route_marker_connecticut_back"
+        }
+      },
+      "massachusetts": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_massachusetts",
+          "2": "csm:blocks/trafficsigns/route_marker_massachusetts_back"
+        }
+      },
+      "maine": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_maine",
+          "2": "csm:blocks/trafficsigns/route_marker_maine_back"
+        }
+      },
+      "new_hampshire": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_new_hampshire",
+          "2": "csm:blocks/trafficsigns/route_marker_new_hampshire_back"
+        }
+      },
+      "rhode_island": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_rhode_island",
+          "2": "csm:blocks/trafficsigns/route_marker_rhode_island_back"
+        }
+      },
+      "vermont": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_vermont",
+          "2": "csm:blocks/trafficsigns/route_marker_vermont_back"
+        }
+      },
+      "alabama": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_alabama",
+          "2": "csm:blocks/trafficsigns/route_marker_alabama_back"
+        }
+      },
+      "alaska": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_alaska",
+          "2": "csm:blocks/trafficsigns/route_marker_alaska_back"
+        }
+      },
+      "arizona": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_arizona",
+          "2": "csm:blocks/trafficsigns/route_marker_arizona_back"
+        }
+      },
+      "arkansas": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_arkansas",
+          "2": "csm:blocks/trafficsigns/route_marker_arkansas_back"
+        }
+      },
+      "colorado": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_colorado",
+          "2": "csm:blocks/trafficsigns/route_marker_colorado_back"
+        }
+      },
+      "delaware": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_delaware",
+          "2": "csm:blocks/trafficsigns/route_marker_delaware_back"
+        }
+      },
+      "georgia": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_georgia",
+          "2": "csm:blocks/trafficsigns/route_marker_georgia_back"
+        }
+      },
+      "hawaii": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_hawaii",
+          "2": "csm:blocks/trafficsigns/route_marker_hawaii_back"
+        }
+      },
+      "idaho": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_idaho",
+          "2": "csm:blocks/trafficsigns/route_marker_idaho_back"
+        }
+      },
+      "illinois": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_illinois",
+          "2": "csm:blocks/trafficsigns/route_marker_illinois_back"
+        }
+      },
+      "indiana": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_indiana",
+          "2": "csm:blocks/trafficsigns/route_marker_indiana_back"
+        }
+      },
+      "iowa": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_iowa",
+          "2": "csm:blocks/trafficsigns/route_marker_iowa_back"
+        }
+      },
+      "kansas": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_kansas",
+          "2": "csm:blocks/trafficsigns/route_marker_kansas_back"
+        }
+      },
+      "kentucky": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_kentucky",
+          "2": "csm:blocks/trafficsigns/route_marker_kentucky_back"
+        }
+      },
+      "louisiana": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_louisiana",
+          "2": "csm:blocks/trafficsigns/route_marker_louisiana_back"
+        }
+      },
+      "maryland": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_maryland",
+          "2": "csm:blocks/trafficsigns/route_marker_maryland_back"
+        }
+      },
+      "michigan": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_michigan",
+          "2": "csm:blocks/trafficsigns/route_marker_michigan_back"
+        }
+      },
+      "minnesota": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_minnesota",
+          "2": "csm:blocks/trafficsigns/route_marker_minnesota_back"
+        }
+      },
+      "mississippi": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_mississippi",
+          "2": "csm:blocks/trafficsigns/route_marker_mississippi_back"
+        }
+      },
+      "missouri": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_missouri",
+          "2": "csm:blocks/trafficsigns/route_marker_missouri_back"
+        }
+      },
+      "montana": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_montana",
+          "2": "csm:blocks/trafficsigns/route_marker_montana_back"
+        }
+      },
+      "nebraska": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_nebraska",
+          "2": "csm:blocks/trafficsigns/route_marker_nebraska_back"
+        }
+      },
+      "nevada": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_nevada",
+          "2": "csm:blocks/trafficsigns/route_marker_nevada_back"
+        }
+      },
+      "new_jersey": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_new_jersey",
+          "2": "csm:blocks/trafficsigns/route_marker_new_jersey_back"
+        }
+      },
+      "new_mexico": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_new_mexico",
+          "2": "csm:blocks/trafficsigns/route_marker_new_mexico_back"
+        }
+      },
+      "north_carolina": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_north_carolina",
+          "2": "csm:blocks/trafficsigns/route_marker_north_carolina_back"
+        }
+      },
+      "north_dakota": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_north_dakota",
+          "2": "csm:blocks/trafficsigns/route_marker_north_dakota_back"
+        }
+      },
+      "ohio": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_ohio",
+          "2": "csm:blocks/trafficsigns/route_marker_ohio_back"
+        }
+      },
+      "oklahoma": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_oklahoma",
+          "2": "csm:blocks/trafficsigns/route_marker_oklahoma_back"
+        }
+      },
+      "oregon": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_oregon",
+          "2": "csm:blocks/trafficsigns/route_marker_oregon_back"
+        }
+      },
+      "pennsylvania": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_pennsylvania",
+          "2": "csm:blocks/trafficsigns/route_marker_pennsylvania_back"
+        }
+      },
+      "south_carolina": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_south_carolina",
+          "2": "csm:blocks/trafficsigns/route_marker_south_carolina_back"
+        }
+      },
+      "south_dakota": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_south_dakota",
+          "2": "csm:blocks/trafficsigns/route_marker_south_dakota_back"
+        }
+      },
+      "tennessee": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_tennessee",
+          "2": "csm:blocks/trafficsigns/route_marker_tennessee_back"
+        }
+      },
+      "utah": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_utah",
+          "2": "csm:blocks/trafficsigns/route_marker_utah_back"
+        }
+      },
+      "virginia": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_virginia",
+          "2": "csm:blocks/trafficsigns/route_marker_virginia_back"
+        }
+      },
+      "washington": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_washington",
+          "2": "csm:blocks/trafficsigns/route_marker_washington_back"
+        }
+      },
+      "west_virginia": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_west_virginia",
+          "2": "csm:blocks/trafficsigns/route_marker_west_virginia_back"
+        }
+      },
+      "wisconsin": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_wisconsin",
+          "2": "csm:blocks/trafficsigns/route_marker_wisconsin_back"
+        }
+      },
+      "wyoming": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_wyoming",
+          "2": "csm:blocks/trafficsigns/route_marker_wyoming_back"
+        }
+      },
+      "district_of_columbia": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_district_of_columbia",
+          "2": "csm:blocks/trafficsigns/route_marker_district_of_columbia_back"
+        }
+      },
+      "ontario": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_ontario",
+          "2": "csm:blocks/trafficsigns/route_marker_ontario_back"
+        }
+      },
+      "quebec": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_quebec",
+          "2": "csm:blocks/trafficsigns/route_marker_quebec_back"
+        }
+      },
+      "new_brunswick": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_new_brunswick",
+          "2": "csm:blocks/trafficsigns/route_marker_new_brunswick_back"
+        }
+      },
+      "nova_scotia": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_nova_scotia",
+          "2": "csm:blocks/trafficsigns/route_marker_nova_scotia_back"
+        }
+      },
+      "newfoundland": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_newfoundland",
+          "2": "csm:blocks/trafficsigns/route_marker_newfoundland_back"
+        }
+      },
+      "prince_edward_island": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_prince_edward_island",
+          "2": "csm:blocks/trafficsigns/route_marker_prince_edward_island_back"
+        }
+      },
+      "alto": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_alto",
+          "2": "csm:blocks/trafficsigns/route_marker_alto_back"
+        }
+      },
+      "alto_blue": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_alto_blue",
+          "2": "csm:blocks/trafficsigns/route_marker_alto_blue_back"
+        }
+      }
+    },
+    "normal": [
+      {}
+    ]
+  }
+}

@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockDynamicRouteMarkerSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockPoweredTrafficSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpost;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostmount;
@@ -641,6 +642,9 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signutilityworkahead"));
 
     // --- Guide and route signs: green: destinations, routes, parking ---
+    // The route marker leads the group: it is the one sign here whose face is chosen in
+    // world rather than baked, and every marker in the catalogue is behind this one block.
+    initTabBlock(BlockDynamicRouteMarkerSign.class, fmlPreInitializationEvent);
     initTabBlock(new BlockTrafficSign("1hrtruckparkingsign"));
     initTabBlock(new BlockTrafficSign("twohourpark830530"));
     initTabBlock(new BlockTrafficSign("sign24hrparking"));
@@ -655,6 +659,12 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("hwyentrance"));
     initTabBlock(new BlockTrafficSign("signhiking"));
     initTabBlock(new BlockTrafficSign("signjct"));
+    initTabBlock(new BlockTrafficSign("signroutearrowright"));
+    initTabBlock(new BlockTrafficSign("signroutearrowleft"));
+    initTabBlock(new BlockTrafficSign("signroutearrowdiagonalright"));
+    initTabBlock(new BlockTrafficSign("signroutearrowdiagonalleft"));
+    initTabBlock(new BlockTrafficSign("signroutearrowahead"));
+    initTabBlock(new BlockTrafficSign("signroutearrowleftright"));
     initTabBlock(new BlockTrafficSign("signlibrary"));
     initTabBlock(new BlockTrafficSign("signboats"));
     initTabBlock(new BlockTrafficSign("signonehrparking97"));
