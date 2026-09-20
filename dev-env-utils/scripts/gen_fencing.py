@@ -294,10 +294,12 @@ def barbed_strands():
 # Models and blockstates
 # --------------------------------------------------------------------------------------------
 
-def _model(elements, textures, particle, parent=None):
+def _model(elements, textures, particle, parent=None, ao=True):
     t = dict(textures)
     t["particle"] = textures[particle]
     m = {"textures": t, "elements": elements}
+    if not ao:
+        m = {"ambientocclusion": False, **m}
     if parent:
         m = {"parent": parent, **m}
     return m
@@ -353,14 +355,20 @@ def models():
         half = cl_mesh(True) + cl_wire()
         out[p + "inventory"] = _model(cl_post(True, True) + half + _mirror_x(half), tex, "post",
                                       parent="block/block")
-    out["temp_fence_foot"] = _model(temp_foot(), TEMP_TEXTURES, "foot")
-    out["temp_fence_half"] = _model(temp_half(False), TEMP_TEXTURES, "frame")
+    # A temporary fence panel is 1.75 blocks tall, so every one of its faces runs 12 px past the
+    # top of the block it belongs to. Smooth lighting has nothing to interpolate up there: it
+    # extrapolates the block above's light over the part that sticks out, which paints the top of
+    # a panel black whenever that block is solid or unlit -- the panel under a soffit goes dark
+    # top to bottom, and which facings it happens on depends on which neighbours the face samples.
+    # Flat lighting takes one value from the fence's own block and is right everywhere.
+    out["temp_fence_foot"] = _model(temp_foot(), TEMP_TEXTURES, "foot", ao=False)
+    out["temp_fence_half"] = _model(temp_half(False), TEMP_TEXTURES, "frame", ao=False)
     # The screen hangs on one side of the mesh. Turning the east half's screen 180 degrees for the
     # west half would move it to the other side, so each panel would have it in front of the mesh
     # on one half and behind it on the other: the west half gets its own, mirrored only in x.
     screen = [e for e in temp_half(True) if e["faces"]["north"]["texture"] == "#screen"]
-    out["temp_fence_screen_east"] = _model(screen, TEMP_TEXTURES, "frame")
-    out["temp_fence_screen_west"] = _model(_mirror_x(screen), TEMP_TEXTURES, "frame")
+    out["temp_fence_screen_east"] = _model(screen, TEMP_TEXTURES, "frame", ao=False)
+    out["temp_fence_screen_west"] = _model(_mirror_x(screen), TEMP_TEXTURES, "frame", ao=False)
     for screen, name in ((False, "temp_fence_inventory"), (True, "temp_fence_screened_inventory")):
         half = temp_half(screen)
         out[name] = _model(temp_foot() + half + _mirror_x(half), TEMP_TEXTURES, "frame",
