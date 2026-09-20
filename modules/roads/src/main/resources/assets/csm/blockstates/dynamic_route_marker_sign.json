@@ -550,6 +550,12 @@
           "1": "csm:blocks/trafficsigns/route_marker_alto_blue",
           "2": "csm:blocks/trafficsigns/route_marker_alto_blue_back"
         }
+      },
+      "bike_route": {
+        "textures": {
+          "1": "csm:blocks/trafficsigns/route_marker_bike_route",
+          "2": "csm:blocks/trafficsigns/route_marker_bike_route_back"
+        }
       }
     },
     "normal": [

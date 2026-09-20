@@ -426,6 +426,7 @@ tile.signtointerstate.name=Nach Schild (Interstate)
 tile.signbeginbikeroute.name=Beginn-Schild (Radroute)
 tile.signendbikeroute.name=Ende-Schild (Radroute)
 tile.signtobikeroute.name=Nach Schild (Radroute)
+tile.signbikeroute.name=Radroute-Schild
 tile.signbikerouteright.name=Radroutenrichtungspfeil-Schild (Rechts)
 tile.signbikerouteahead.name=Radroutenrichtungspfeil-Schild (Geradeaus)
 tile.signbikeroutediagonaltwoway.name=Radroutenrichtungspfeil-Schild (Diagonal Zweiseitig)

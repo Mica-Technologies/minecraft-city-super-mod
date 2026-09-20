@@ -426,6 +426,7 @@ tile.signtointerstate.name=To Sign (Interstate)
 tile.signbeginbikeroute.name=Begin Sign (Bike Route)
 tile.signendbikeroute.name=End Sign (Bike Route)
 tile.signtobikeroute.name=To Sign (Bike Route)
+tile.signbikeroute.name=Bike Route Sign
 tile.signbikerouteright.name=Bike Route Directional Arrow Sign (Right)
 tile.signbikerouteahead.name=Bike Route Directional Arrow Sign (Ahead)
 tile.signbikeroutediagonaltwoway.name=Bike Route Directional Arrow Sign (Diagonal Two-Way)

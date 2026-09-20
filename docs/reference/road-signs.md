@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "676 blocks in this tab"
+!!! info "677 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -90,6 +90,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Bike Route Directional Arrow Sign (Diagonal Two-Way) | `csm:signbikeroutediagonaltwoway` | 2 | 10 | pickaxe | 1 |
 | Bike Route Directional Arrow Sign (Left and Right) | `csm:signbikerouteleftright` | 2 | 10 | pickaxe | 1 |
 | Bike Route Directional Arrow Sign (Right) | `csm:signbikerouteright` | 2 | 10 | pickaxe | 1 |
+| Bike Route Sign | `csm:signbikeroute` | 2 | 10 | pickaxe | 1 |
 | Bike Signal Alto MTA Tolled Lane | `csm:tolledbikelanesign` | 2 | 10 | pickaxe | 1 |
 | Bike Signal Sign | `csm:signbikesignal` | 2 | 10 | pickaxe | 1 |
 | Bike Signal Sign (Double Sided) | `csm:signbikesignaldoublesided` | 2 | 10 | pickaxe | 1 |
