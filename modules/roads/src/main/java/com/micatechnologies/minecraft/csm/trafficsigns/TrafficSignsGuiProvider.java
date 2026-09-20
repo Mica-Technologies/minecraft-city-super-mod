@@ -8,9 +8,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * Supplies the road signs package's GUI screens. Only the dynamic route marker sign has one --
- * every other sign in the catalogue says one fixed thing -- but it has its own provider rather
- * than borrowing the traffic accessories one so the two subsystems stay separable.
+ * Supplies the road signs package's GUI screens: the dynamic route marker sign and the two
+ * street name blades. Every other sign in the catalogue says one fixed thing, but these have
+ * their own provider rather than borrowing the traffic accessories one so the two subsystems
+ * stay separable.
  *
  * @version 1.0
  * @since 2026.9.20
@@ -24,6 +25,13 @@ public class TrafficSignsGuiProvider implements ICsmGuiProvider {
     if (id == BlockDynamicRouteMarkerSign.GUI_ID
         && tileEntity instanceof TileEntityDynamicRouteMarkerSign) {
       return new DynamicRouteMarkerSignGui((TileEntityDynamicRouteMarkerSign) tileEntity);
+    }
+    if (id == BlockStreetNameBlade.GUI_ID
+        && tileEntity instanceof TileEntityStreetNameBlade) {
+      // The dynamic street sign's own editor: a blade is that sign's document, and the
+      // tile entity is that tile entity, so the screen needs nothing of its own.
+      return new com.micatechnologies.minecraft.csm.trafficaccessories.DynamicStreetSignGui(
+          (TileEntityStreetNameBlade) tileEntity);
     }
     return null;
   }

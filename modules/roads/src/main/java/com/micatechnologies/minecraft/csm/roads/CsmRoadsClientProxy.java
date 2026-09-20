@@ -15,6 +15,14 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficsigns.TileEntityDynamicRouteMarkerSign.class,
         new com.micatechnologies.minecraft.csm.trafficsigns.TileEntityDynamicRouteMarkerSignRenderer());
+    // Both street name blades are drawn by the dynamic street sign's renderer -- they are
+    // that sign's document on a post-top bracket, not a second kind of sign.
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficsigns.TileEntityStreetNameBladeClamp.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSignRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficsigns.TileEntityStreetNameBladeCross.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSignRenderer());
     // Bind the TESR to the TileEntity
     ClientRegistry.bindTileEntitySpecialRenderer(com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead.class, new com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySchoolZoneBeacon.class, new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySchoolZoneBeaconRenderer());

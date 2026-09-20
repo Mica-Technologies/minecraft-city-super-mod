@@ -139,8 +139,18 @@ public class StreetSignData extends StreetSignLegend {
     this.mountType = mount.ordinal();
   }
 
+  /**
+   * Steps to the next mount the editor offers, which is every mount except the post-top
+   * brackets. Those are set by the street name blade blocks, which stand on a sign post;
+   * this sign hangs from an arm or bolts flat and has nothing for that hardware to grip,
+   * so offering it here would draw a bracket attached to nothing.
+   */
   public void cycleMountType() {
-    this.mountType = getMountType().next().ordinal();
+    StreetSignMount next = getMountType().next();
+    while (next.isPostTop()) {
+      next = next.next();
+    }
+    this.mountType = next.ordinal();
   }
 
   public boolean hasExtrudedFrame() {

@@ -94,7 +94,15 @@ class DynamicStreetSignLayoutTest {
         assertEquals(big.signHeight, lower.signHeight, EPS, mount.name());
         assertEquals(top.signLeft, lower.signLeft, EPS);
         assertEquals(top.signRight, lower.signRight, EPS);
-        assertSame(lower, top.blades()[1]);
+        if (mount.isPostTop()) {
+          // The second blade crosses the first rather than stacking under it, so it is
+          // drawn by its own pass under a quarter turn and this one must not walk to it.
+          assertEquals(1, top.blades().length, mount.name());
+          assertTrue(top.crossed, mount.name());
+          assertTrue(lower.crossed, mount.name());
+        } else {
+          assertSame(lower, top.blades()[1]);
+        }
         assertNull(lower.lower);
       }
     }

@@ -29,7 +29,25 @@ public enum StreetSignMount {
    * Otherwise identical to {@link #HANGING}: panel centered in the block's depth, readable
    * from both sides.
    */
-  HANGING_BRACKET("Hanging (mast arm - alt)");
+  HANGING_BRACKET("Hanging (mast arm - alt)"),
+
+  /**
+   * Bolted across the top of a sign post, which is how a street name blade is carried
+   * over a STOP sign at an intersection. The blade stands above the block on its own
+   * post and reads from both sides, and a second blade crosses it at a right angle
+   * rather than stacking below it -- see {@code StreetSignData.getLowerBlade()}, which
+   * is the crossing blade under this mount.
+   *
+   * <p>The two constants are the two brackets the hardware actually comes in, and they
+   * are set by the block rather than chosen in the editor: {@code CLAMP} is the flat
+   * plate the blade is bolted into, {@code CROSS} the collar the blades pass through.
+   * Neither appears in the dynamic street sign's mount cycle -- that block hangs from an
+   * arm or bolts flat and has no post for this hardware to sit on.</p>
+   */
+  POST_TOP_CLAMP("Post top (clamp plate)"),
+
+  /** The post-top mount's other bracket; see {@link #POST_TOP_CLAMP}. */
+  POST_TOP_CROSS("Post top (cross clamp)");
 
   private final String friendlyName;
 
@@ -54,9 +72,20 @@ public enum StreetSignMount {
     return this == HANGING || this == HANGING_BRACKET;
   }
 
+  /**
+   * Whether the blade stands on top of a sign post rather than hanging from an arm or
+   * bolting flat. Ask this rather than comparing against one constant: there are two
+   * brackets and everything except which hardware is drawn is the same for both.
+   *
+   * @return {@code true} for either post-top bracket
+   */
+  public boolean isPostTop() {
+    return this == POST_TOP_CLAMP || this == POST_TOP_CROSS;
+  }
+
   /** Whether this mount leaves the panel's reverse exposed, so a back face is worth drawing. */
   public boolean canBeDoubleSided() {
-    return isHanging();
+    return isHanging() || isPostTop();
   }
 
   public StreetSignMount next() {

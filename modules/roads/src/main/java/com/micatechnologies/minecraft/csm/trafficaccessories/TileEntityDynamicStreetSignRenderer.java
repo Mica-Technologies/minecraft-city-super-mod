@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
+import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -16,6 +18,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSi
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignVerticalPos;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -24,7 +27,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumSkyBlock;
 import org.lwjgl.opengl.GL11;
@@ -102,6 +104,54 @@ public class TileEntityDynamicStreetSignRenderer
   private static final float CZ = 8.0f;
   /** How far below the block's top edge a hanging blade's top rail sits. */
   private static final float HANG_DROP = 5.5f;
+
+  /**
+   * Where the sign post's axis runs through the block, from the shared post model: the
+   * five nested bars are centred on x 8 and span z 0.5 to 3.5. A post-top blade sits on
+   * that axis, not on the block's centre, and its crossing partner turns about it.
+   */
+  private static final float POST_X = 8.0f;
+  private static final float POST_Z = 2.0f;
+
+  /**
+   * Where a post-top blade's panel is centred, in front of the post rather than on its
+   * axis. Centred on the axis the post's own bars stand in front of the legend and read
+   * as a bar painted through the street's name. The crossing blade turns about the post
+   * all the same, which puts its panel the same distance in front of the post along the
+   * way it is read -- one offset, correct for both.
+   */
+  private static final float POST_BLADE_Z = -0.3f;
+
+  /**
+   * How much of a mast-arm blade's size a post-top blade is drawn at.
+   *
+   * <p>The layout is measured for a blade hung over a road, which is most of a block tall
+   * -- on a sign post, beside a one-block STOP sign, that is enormous. A real street blade
+   * is six inches deep against a thirty-inch sign, so the assembly is scaled about the
+   * post top instead of the panel being re-measured: the panel, its border, its frame, the
+   * legend and the bracket all shrink together and keep the proportions the hanging blade
+   * was drawn with, which re-tuning a dozen constants would not have.</p>
+   */
+  private static final float POST_TOP_SCALE = 0.38f;
+
+  /** The height the post-top assembly is scaled about: the top of the block. */
+  private static final float POST_TOP_Y = 16.0f;
+
+  /** Gap between a post-top pair's two blades, and how far the upper one clears the top. */
+  private static final float CROSS_GAP = 0.75f;
+  private static final float POST_TOP_CLEAR = 0.5f;
+
+  /** Bracket plate: how far it reaches each side of the post, and how thick and tall. */
+  private static final float BRACKET_REACH = 2.6f;
+  private static final float BRACKET_THICK = 0.55f;
+  private static final float BRACKET_PAD = 0.9f;
+
+  /**
+   * Marks the display lists of a post-top pair's crossing blade, which is drawn from the
+   * same position under a quarter turn. Without it the two passes would share a cache
+   * entry and each would replay the other's geometry.
+   */
+  private static final long CROSS_BLADE_KEY = 1L << 34;
   /**
    * Clear space between the two blades of a stacked pair, outer edge to outer edge (border and
    * frame included). A real two-name assembly hangs its blades a few inches apart on one set of
@@ -288,8 +338,7 @@ public class TileEntityDynamicStreetSignRenderer
     ambientBlockLight = worldBlockLight;
     lightOn = resolveLightOn(data, te);
 
-    EnumFacing facing = te.getWorld().getBlockState(te.getPos())
-        .getValue(BlockHorizontal.FACING);
+    IBlockState blockState = te.getWorld().getBlockState(te.getPos());
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x, y, z);
@@ -299,26 +348,16 @@ public class TileEntityDynamicStreetSignRenderer
     // NORTH. Assigning 0 degrees to SOUTH therefore rendered the north/south pair backwards --
     // a sign set to face south showed its blank back to a viewer standing south of it -- while
     // east and west, being a quarter turn either side, came out right and hid the error.
-    float rotY = 0;
-    switch (facing) {
-      case NORTH:
-        rotY = 0;
-        break;
-      case WEST:
-        rotY = 90;
-        break;
-      case SOUTH:
-        rotY = 180;
-        break;
-      case EAST:
-        rotY = 270;
-        break;
-      default:
-        break;
-    }
+    float rotY = facingRotation(blockState);
     GlStateManager.rotate(rotY, 0, 1, 0);
     GlStateManager.translate(-0.5, 0.0, -0.5);
     GlStateManager.scale(0.0625, 0.0625, 0.0625);
+    if (data.getMountType().isPostTop()) {
+      // About the post top, so the blades stay bolted to it however far they shrink.
+      GlStateManager.translate(POST_X, POST_TOP_Y, POST_Z);
+      GlStateManager.scale(POST_TOP_SCALE, POST_TOP_SCALE, POST_TOP_SCALE);
+      GlStateManager.translate(-POST_X, -POST_TOP_Y, -POST_Z);
+    }
     // Un-mirror pixel space so +X below is the reader's right. See the class notes.
     GlStateManager.translate(16.0f, 0.0f, 0.0f);
     GlStateManager.scale(-1.0f, 1.0f, 1.0f);
@@ -341,6 +380,41 @@ public class TileEntityDynamicStreetSignRenderer
    * path. The caller owns the matrix: pixel space is +X reader-right and +Y up, and quads
    * land in the block's own 0..16 box.
    */
+  /**
+   * How far to turn the assembly for the block's facing.
+   *
+   * <p>Two kinds of block are drawn by this renderer and they do not carry the same facing
+   * property: the dynamic street sign has the vanilla four-way {@code BlockHorizontal.FACING},
+   * and the street name blades are road signs, which face eight ways. Reading one and
+   * assuming the other throws out of {@code getValue} -- the blades crashed the first time
+   * one was looked at. The two agree on the angles they share, so the eight-way enum's own
+   * {@link DirectionEight#getRotationDegrees()} is the answer for both.</p>
+   *
+   * @param state the block's state
+   *
+   * @return the rotation about Y, in degrees
+   */
+  private static float facingRotation(IBlockState state) {
+    if (state.getPropertyKeys().contains(AbstractBlockRotatableHZEight.FACING)) {
+      return state.getValue(AbstractBlockRotatableHZEight.FACING).getRotationDegrees();
+    }
+    if (!state.getPropertyKeys().contains(BlockHorizontal.FACING)) {
+      return 0.0f;
+    }
+    switch (state.getValue(BlockHorizontal.FACING)) {
+      case WEST:
+        return 90.0f;
+      case SOUTH:
+        return 180.0f;
+      case EAST:
+        return 270.0f;
+      default:
+        // The panel is modelled on the block's +Z side reading toward -Z, so an unrotated
+        // draw faces NORTH. Assigning 0 to SOUTH rendered the north/south pair backwards,
+        // while east and west, a quarter turn either side, came out right and hid it.
+        return 0.0f;
+    }
+  }
   public void renderForGui(StreetSignData data) {
     worldSkyLight = FULLBRIGHT;
     worldBlockLight = FULLBRIGHT;
@@ -451,9 +525,16 @@ public class TileEntityDynamicStreetSignRenderer
      */
     Layout lower;
 
-    /** The blades top to bottom: this one, then the lower one if there is one. */
+    /**
+     * Set on a post-top pair, where the second blade crosses this one at a right angle
+     * instead of hanging below it. It is drawn by a second pass under a quarter turn, so
+     * every pass that walks {@link #blades()} must see one blade, not two.
+     */
+    boolean crossed;
+
+    /** The blades this pass draws: this one, and a stacked partner if it has one. */
     Layout[] blades() {
-      return lower == null ? new Layout[]{this} : new Layout[]{this, lower};
+      return lower == null || crossed ? new Layout[]{this} : new Layout[]{this, lower};
     }
   }
 
@@ -483,6 +564,33 @@ public class TileEntityDynamicStreetSignRenderer
     float edge = top.borderInset + top.frameOverhangY;
 
     StreetSignMount mount = data.getMountType();
+    if (mount.isPostTop()) {
+      // On the post's axis, readable from both sides, with the blade in the top of the
+      // block so the post carries it the way a real bracket does. A pair does not stack:
+      // the second blade crosses the first at a right angle and sits just above it, which
+      // is why it is placed here and drawn by its own pass rather than walked with the
+      // first. The one the player letters first is the lower of the two, as it is on the
+      // street -- the crossing street's blade rides over it.
+      top.faceZ = POST_BLADE_Z - SIGN_DEPTH / 2.0f;
+      top.coreBack = 2.0f * POST_BLADE_Z - top.faceZ - Z_CORE_FRONT;
+      top.crossed = lower != null;
+      float upperTop = 16.0f - POST_TOP_CLEAR;
+      if (lower == null) {
+        top.signTop = upperTop;
+      } else {
+        lower.faceZ = top.faceZ;
+        lower.coreBack = top.coreBack;
+        lower.signTop = upperTop;
+        lower.crossed = true;
+        placeBlade(lower);
+        top.signTop = lower.signBottom - 2 * edge - CROSS_GAP;
+      }
+      placeBlade(top);
+      top.assemblyTop = upperTop + edge;
+      top.assemblyBottom = top.signBottom - edge;
+      top.lower = lower;
+      return top;
+    }
     if (mount.isHanging()) {
       // The blade drops from its hardware rather than centering on the block, so the hangers
       // have somewhere to go. Both hanging styles drop by the same amount, so switching
@@ -667,6 +775,45 @@ public class TileEntityDynamicStreetSignRenderer
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
+    // Clearing the cache is the whole position's, so it happens once here rather than in
+    // renderAssembly, which a post-top pair runs twice.
+    if (stateDirty && pos != null) {
+      cleanupDisplayList(pos);
+    }
+    renderAssembly(l, data, signColor, legendR, legendG, legendB, legendTextColor,
+        farLod, pos, combinedLight, 0L);
+    if (data.getMountType().isPostTop() && l.lower != null) {
+      // The crossing blade: the same draw, a quarter turn about the post's axis. It is a
+      // separate pass rather than more geometry in the first because a display list is
+      // compiled once and replayed, and these two differ by a matrix, not by vertices.
+      GlStateManager.pushMatrix();
+      GlStateManager.translate(POST_X, 0.0f, POST_Z);
+      GlStateManager.rotate(90.0f, 0.0f, 1.0f, 0.0f);
+      GlStateManager.translate(-POST_X, 0.0f, -POST_Z);
+      renderAssembly(l.lower, data, signColor, legendR, legendG, legendB, legendTextColor,
+          farLod, pos, combinedLight, CROSS_BLADE_KEY);
+      GlStateManager.popMatrix();
+    }
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    GlStateManager.enableLighting();
+    GL11.glEnable(GL11.GL_LIGHTING);
+    GlStateManager.enableCull();
+    GlStateManager.disableBlend();
+  }
+
+  /**
+   * One blade and its hardware, drawn where the model-view matrix currently is. Split out of
+   * {@link #renderSign} so a post-top pair's crossing blade can be the same draw under a
+   * quarter turn; {@code keyBias} keeps the two passes' display lists apart.
+   *
+   * @param l       the blade's resolved layout
+   * @param data    the sign's configuration, which both blades of a pair share
+   * @param keyBias distinguishes this pass's cached lists from the other blade's
+   */
+  private void renderAssembly(Layout l, StreetSignData data, GuideSignColor signColor,
+      float legendR, float legendG, float legendB, int legendTextColor, boolean farLod,
+      BlockPos pos, int combinedLight, long keyBias) {
     // The structural passes below compile into display lists keyed on the block light, which is
     // the only input to them that changes without the tile entity being marked dirty (they draw at
     // ambient light, so an illuminated blade does not affect them). The white pixel is bound
@@ -685,12 +832,9 @@ public class TileEntityDynamicStreetSignRenderer
     // Adding or removing the second blade reshapes every list. The dirty flag already forces a
     // rebuild on any edit; the key carries the stack as well, so a list compiled for one shape
     // can never be replayed for the other whatever path the edit took.
-    long structureKey = (combinedLight & 0xFFFFFFFFL) | (l.lower != null ? 1L << 33 : 0L);
+    long structureKey = (combinedLight & 0xFFFFFFFFL) | (l.lower != null ? 1L << 33 : 0L) | keyBias;
     // The face additionally follows the illumination, which the structure does not.
     long faceKey = structureKey | (lightOn ? 1L << 32 : 0L);
-    if (stateDirty && pos != null) {
-      cleanupDisplayList(pos);
-    }
 
     int coreList = bakeable ? CORE_LISTS.get(pos, structureKey) : CsmDisplayListCache.NO_LIST;
     if (coreList == CsmDisplayListCache.NO_LIST && bakeable) {
@@ -710,14 +854,21 @@ public class TileEntityDynamicStreetSignRenderer
     renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod,
         pos, bakeable, faceKey, false);
     if (data.isDoubleSided()) {
-      // The back face is the same draw rotated 180 degrees about the block's vertical axis.
-      // That is orientation-preserving, so combined with the outer mirror the legend reads
-      // correctly (not mirrored) to a viewer standing behind the blade. The arrow is the one
-      // thing that must NOT come along unchanged -- see renderArrow.
+      // The back face is the same draw rotated 180 degrees about the PANEL's own vertical
+      // axis. That is orientation-preserving, so combined with the outer mirror the
+      // legend reads correctly (not mirrored) to a viewer standing behind the blade. The
+      // arrow is the one thing that must NOT come along unchanged -- see renderArrow.
+      //
+      // The axis has to be the panel's, not the block's. They are the same thing for a
+      // hanging blade, which is centred in the block's depth, and that is how this was
+      // written; a post-top blade sits in front of its post, and turning it about the
+      // block's centre threw its back face most of a block clear of its front, leaving
+      // a loose white plate hanging beside the sign.
+      float panelZ = l.faceZ + SIGN_DEPTH / 2.0f;
       GlStateManager.pushMatrix();
-      GlStateManager.translate(CX, 0.0f, CZ);
+      GlStateManager.translate(CX, 0.0f, panelZ);
       GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f);
-      GlStateManager.translate(-CX, 0.0f, -CZ);
+      GlStateManager.translate(-CX, 0.0f, -panelZ);
       renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod,
           pos, bakeable, faceKey, true);
       GlStateManager.popMatrix();
@@ -740,12 +891,6 @@ public class TileEntityDynamicStreetSignRenderer
       GL11.glCallList(frameList);
     }
 
-    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    GlStateManager.enableLighting();
-    GL11.glEnable(GL11.GL_LIGHTING);
-    GlStateManager.enableCull();
-    GlStateManager.disableBlend();
   }
 
   /**
@@ -762,6 +907,10 @@ public class TileEntityDynamicStreetSignRenderer
       for (Layout blade : l.blades()) {
         renderExtrudedFrame(blade, mount);
       }
+    }
+    if (mount.isPostTop()) {
+      renderPostTopBracket(l, mount);
+      return;
     }
     if (mount.isHanging()) {
       // The hardware above grips the TOP blade only; the lower blade hangs from the top one.
@@ -786,6 +935,53 @@ public class TileEntityDynamicStreetSignRenderer
     }
   }
 
+  /**
+   * The hardware a post-top blade is carried on, drawn around the post for the one blade
+   * this pass is drawing. A crossing pair gets one of these each, from its own pass, which
+   * is why the two stack up the post rather than sharing a bracket.
+   *
+   * <p>Which bracket is the block's, not the player's: {@code POST_TOP_CLAMP} is the flat
+   * plate the blade bolts into, with a saddle wrapping the post under it, and
+   * {@code POST_TOP_CROSS} is the collar the blade passes through. They are the two the
+   * hardware actually comes in, and they read differently from a distance, which is the
+   * point of having both.</p>
+   *
+   * @param l     the blade's layout
+   * @param mount which bracket to draw
+   */
+  private void renderPostTopBracket(Layout l, StreetSignMount mount) {
+    final float top = bladeTop(l);
+    final float bottom = bladeBottom(l);
+    final float midY = (top + bottom) / 2.0f;
+    // Everything the bracket is made of lives BEHIND the panel, between its back and the
+    // post: in front it would be hardware painted across the street's name.
+    final float backZ = POST_BLADE_Z + SIGN_DEPTH / 2.0f;
+    final float postBack = POST_Z + 1.9f;
+    List<RenderHelper.Box> parts = new ArrayList<>();
+    if (mount == StreetSignMount.POST_TOP_CROSS) {
+      // A collar round the post at the blade's height, reaching forward to take the panel.
+      parts.add(new RenderHelper.Box(
+          new float[]{POST_X - BRACKET_PAD, bottom - BRACKET_PAD, backZ},
+          new float[]{POST_X + BRACKET_PAD, top + BRACKET_PAD, postBack}));
+    } else {
+      // A plate the width of the bracket across the panel's back, and the saddle that
+      // carries it round the post.
+      parts.add(new RenderHelper.Box(
+          new float[]{POST_X - BRACKET_REACH, bottom, backZ},
+          new float[]{POST_X + BRACKET_REACH, top, backZ + BRACKET_THICK}));
+      parts.add(new RenderHelper.Box(
+          new float[]{POST_X - BRACKET_PAD, midY - BRACKET_PAD, backZ + BRACKET_THICK},
+          new float[]{POST_X + BRACKET_PAD, midY + BRACKET_PAD, postBack}));
+      for (float bolt : new float[]{-BRACKET_REACH + BRACKET_PAD,
+          BRACKET_REACH - BRACKET_PAD}) {
+        parts.add(new RenderHelper.Box(
+            new float[]{POST_X + bolt - 0.22f, midY - 0.22f, backZ + BRACKET_THICK},
+            new float[]{POST_X + bolt + 0.22f, midY + 0.22f,
+                backZ + BRACKET_THICK + 0.3f}));
+      }
+    }
+    drawMetalwork(parts);
+  }
   /**
    * The short links a lower blade hangs from: at each grip point, a shoe on the lower blade's
    * top edge, a clip on the upper blade's bottom edge, and a rod across the gap between them.
