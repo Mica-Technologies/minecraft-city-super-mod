@@ -557,7 +557,9 @@ public class DynamicStreetSignGui extends GuiScreen {
           btn.displayString = "Corners: " + data.getCornerStyle().getFriendlyName();
           break;
         case BTN_MOUNT_TYPE:
-          btn.displayString = "Mount: " + data.getMountType().getFriendlyName();
+          btn.displayString = "Mount: " + data.getMountType().getFriendlyName()
+              + (tileEntity.isMountFixed() ? " (fixed)" : "");
+          btn.enabled = !tileEntity.isMountFixed();
           break;
         case BTN_DOUBLE_SIDED:
           btn.displayString = "Both Sides: "

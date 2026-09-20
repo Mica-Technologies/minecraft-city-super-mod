@@ -518,3 +518,61 @@ so the blade is craftable at the traffic accessories cost like every other block
   `dev-env-utils/scripts/gen_dynamic_street_sign_texture.py` (a green `MAIN ST` blade on two
   hangers). It never appears on the placed block; it exists so the item in the creative tab and
   in a hand looks like what it places.
+
+## The post-top blades
+
+`signpoststreetnamesignmount1` and `signpoststreetnamesignmount2` are the street name blade
+carried across the top of a sign post -- the green plate over a STOP sign at an intersection,
+with a second blade crossing it for the other street. They were two blank plates nothing could
+be written on; they are now **this sign's document on a different bracket**, and share its
+editor, its update packet and its renderer rather than reimplementing any of the three.
+
+| | |
+|---|---|
+| `BlockStreetNameBlade` | one class, two instances, in `trafficsigns/` |
+| `TileEntityStreetNameBlade` + two subclasses | `TileEntityDynamicStreetSign` with its mount held to the block's bracket |
+| `StreetSignMount.POST_TOP_CLAMP` / `POST_TOP_CROSS` | the flat clamp plate and the collar |
+| GUI id 29 | `DynamicStreetSignGui`, with the mount shown and not offered |
+
+**They are `AbstractBlockSign`s, not a second kind of dynamic sign.** That is the whole reason
+they live in `trafficsigns/`: they stack on the mod's sign posts and take the eight facings, the
+extension post onto a slab, the setback in front of a signal arm and the back-to-back pairing
+exactly as the 472 signs beside them do, with no code of their own for any of it.
+
+**Blade 2 crosses rather than stacks.** Under a post-top mount the editor's existing second
+blade turns 90 degrees and sits just above the first, which is how a post-top pair is actually
+built. Nothing new is stored for it: `lowerBlade` is the crossing blade here. It cannot be more
+geometry in the same pass -- a display list is compiled once and replayed, and the two blades
+differ by a matrix, not by vertices -- so `renderSign` draws the assembly twice, the second time
+under a quarter turn about the post's axis, with a key bit that keeps the two passes' cached
+lists apart.
+
+**The mount is the block's, not the player's.** `cycleMountType` skips both post-top brackets,
+so the mast-arm sign never offers hardware it has no post to grip, and the blade's tile entity
+coerces the document's mount on the way out so a document pasted from a hanging blade still
+comes back mounted on its post.
+
+### Three things that had to move, and why
+
+- **The assembly is scaled, not re-measured.** The layout is sized for a blade hung over a road,
+  most of a block deep; on a sign post beside a one-block STOP sign that is enormous. A real
+  blade is six inches against a thirty-inch sign, so the whole assembly is scaled to
+  `POST_TOP_SCALE` about the post top. Re-tuning the caps, pads, insets and floors would have
+  had to keep a dozen constants in proportion; one transform cannot get that wrong.
+- **The panel sits in front of the post, not on its axis.** Centred on the axis, the post's own
+  bars stand in front of the legend and read as a bar painted through the street's name. The
+  crossing blade turns about the post all the same, which puts its panel the same distance in
+  front of the post along the way *it* is read -- one offset, correct for both.
+- **The double-sided back face turns about the panel, not the block.** They are the same axis for
+  a hanging blade, which is centred in the block's depth, and that is how it was written. A
+  post-top blade is not, and turning its back face about the block's centre threw it most of a
+  block clear of its front, leaving a loose white plate hanging beside the sign.
+
+### The renderer reads two different facing properties
+
+`TileEntityDynamicStreetSignRenderer` now draws two kinds of block, and they do not carry the
+same facing: the dynamic street sign has the vanilla four-way `BlockHorizontal.FACING`, the
+blades are road signs and face eight ways. Reading one and assuming the other throws out of
+`getValue` -- it crashed the first blade ever looked at. `facingRotation` asks which the block
+has; the two agree on the angles they share.
+

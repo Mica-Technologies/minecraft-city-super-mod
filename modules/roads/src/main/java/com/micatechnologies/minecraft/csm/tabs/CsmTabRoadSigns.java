@@ -3,7 +3,9 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockDynamicRouteMarkerSign;
+import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignMount;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockPoweredTrafficSign;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockStreetNameBlade;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpost;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostmount;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockInStreetSign;
@@ -96,8 +98,13 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signpostbackhalf"));
     initTabBlock(BlockSignpostmount.class, fmlPreInitializationEvent);
     initTabBlock(new BlockTrafficSign("signpostbackoctagon"));
-    initTabBlock(new BlockTrafficSign("signpoststreetnamesignmount2"));
-    initTabBlock(new BlockTrafficSign("signpoststreetnamesignmount1"));
+    // The two street name blades. Registry names kept: they are what placed blocks in
+    // existing worlds are saved as, and the pair has always been crossed (the one named
+    // ...mount1 is the one displayed as Mount 2).
+    initTabBlock(new BlockStreetNameBlade("signpoststreetnamesignmount2",
+        StreetSignMount.POST_TOP_CLAMP));
+    initTabBlock(new BlockStreetNameBlade("signpoststreetnamesignmount1",
+        StreetSignMount.POST_TOP_CROSS));
     initTabBlock(new BlockTrafficSign("signpostbacktall"));
     initTabBlock(new BlockTrafficSign("signpostwallmountbottom1"));
     initTabBlock(new BlockTrafficSign("signpostwallmounttop1"));

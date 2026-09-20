@@ -533,6 +533,10 @@ Added: the whole **directional arrow auxiliary** family, which the mod had none 
 | `signbikeroute{right,ahead,diagonaltwoway,diagonalright,leftright,aheadorright,aheadordiagonalright}` | M7-1 to M7-7, the bicycle facility arrows |
 | `signbikeroute` | D11-1, the green panel with the bicycle over BIKE ROUTE |
 
+The two **street name blades** (`signpoststreetnamesignmount1` and `...2`) are road signs
+too, and stack on the same posts, but everything they draw belongs to the
+[dynamic street sign](DYNAMIC_STREET_SIGN_SYSTEM.md) -- see its "post-top blades" section.
+
 **The white arrows the mod already had are not these.** `signleftahead` / `signrightahead`
 are the two-headed curved through-or-turn arrows and `signaheadonly` is an up arrow with ONLY:
 lane-use signs, not route marker auxiliaries. Its other arrows are the yellow W1-6 / W1-7

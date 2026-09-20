@@ -53,6 +53,19 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
     return compound;
   }
 
+  /**
+   * Whether the editor may change this sign's mount. A blade that stands on a sign post
+   * takes its mount from the block it is, so the editor shows it and does not offer to
+   * cycle it.
+   *
+   * @return {@code true} unless the block fixes the mount
+   *
+   * @since 2026.9.20
+   */
+  public boolean isMountFixed() {
+    return false;
+  }
+
   public StreetSignData getSignData() {
     if (cachedData == null) {
       cachedData = StreetSignData.fromJson(signDataJson);

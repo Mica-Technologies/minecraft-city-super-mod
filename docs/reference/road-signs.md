@@ -537,8 +537,6 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Sign Pole Half Back | `csm:signpostbackhalf` | 2 | 10 | pickaxe | 1 |
 | Sign Pole Mount | `csm:signpostmount` | 2 | 10 | pickaxe | 1 |
 | Sign Pole Octagon Back | `csm:signpostbackoctagon` | 2 | 10 | pickaxe | 1 |
-| Sign Pole Street Name Sign Mount 1 | `csm:signpoststreetnamesignmount2` | 2 | 10 | pickaxe | 1 |
-| Sign Pole Street Name Sign Mount 2 | `csm:signpoststreetnamesignmount1` | 2 | 10 | pickaxe | 1 |
 | Sign Pole Tall Back | `csm:signpostbacktall` | 2 | 10 | pickaxe | 1 |
 | Sign Post Wall Mount (Bottom) | `csm:signpostwallmountbottom1` | 2 | 10 | pickaxe | 1 |
 | Sign Post Wall Mount (Top) | `csm:signpostwallmounttop1` | 2 | 10 | pickaxe | 1 |
@@ -606,6 +604,8 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Stop Sign | `csm:signpoststopsign` | 2 | 10 | pickaxe | 1 |
 | Stop Sign (Flashing LED) | `csm:signpoststopsignflashingled` | 2 | 10 | pickaxe | 1 |
 | Stop Sign (Flashing LED, Dense) | `csm:signpoststopsignflashingleddense` | 2 | 10 | pickaxe | 1 |
+| Street Name Blade (Clamp Plate) | `csm:signpoststreetnamesignmount2` | 2 | 10 | pickaxe | 1 |
+| Street Name Blade (Cross Clamp) | `csm:signpoststreetnamesignmount1` | 2 | 10 | pickaxe | 1 |
 | Street Sweeping Friday Sign | `csm:streetsweepfri` | 2 | 10 | pickaxe | 1 |
 | Street Sweeping Monday Sign | `csm:streetsweepmon` | 2 | 10 | pickaxe | 1 |
 | Street Sweeping Thursday Sign | `csm:streetsweepthurs` | 2 | 10 | pickaxe | 1 |
