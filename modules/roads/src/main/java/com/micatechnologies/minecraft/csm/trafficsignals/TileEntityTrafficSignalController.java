@@ -15,6 +15,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhas
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseApplicability;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhases;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhasePlan;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalStartupFlash;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhase;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedOverlap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalOverlapType;
@@ -81,6 +82,29 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * Tick rate used while retrying power-off commands (15 seconds = 300 game ticks).
    */
   private static final long POWER_OFF_RETRY_TICK_RATE = 300L;
+
+  /**
+   * The world tick the start-up flash runs until, 0 when there is none. Set when the cabinet's
+   * power returns (see {@link #onPowerRestored()}); while it is ahead of the clock the operating
+   * mode is FLASH. Saved, so a world that is closed mid-flash comes back still flashing and
+   * leaves flash the proper way, rather than reloading into a flash phase that NORMAL mode was
+   * never going to move on from.
+   *
+   * @see TrafficSignalStartupFlash
+   * @since 2026.9
+   */
+  private long startupFlashUntilTick = 0L;
+
+  /**
+   * Set as the operating mode leaves flash for NORMAL or ADVANCED, and read by the next tick:
+   * steady operation begins on the main street's green (MUTCD 4D.31) instead of wherever the
+   * mode's own cold start would have begun. Not saved: a reload in the one tick it lives for
+   * falls back to the ordinary cold start, which is safe.
+   *
+   * @see TrafficSignalStartupFlash#resumesOnPrimaryGreen
+   * @since 2026.9
+   */
+  private boolean resumeOnPrimaryGreen = false;
 
   /**
    * The list of circuits for the traffic signal controller.
@@ -576,10 +600,14 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       if (shouldPause) {
         circuits.powerOffAllSignals(getWorld());
         powerLossOff = true;
+        startupFlashUntilTick = 0L;
         invalidateTickRateCache();
-      } else if (powerLossOff) {
+      } else {
+        // Keyed on paused, which is saved, and not on powerLossOff, which is not: a world
+        // reloaded during an outage comes back paused with powerLossOff false, and its power
+        // returning has to count all the same.
         powerLossOff = false;
-        invalidateTickRateCache();
+        onPowerRestored();
       }
 
       paused = shouldPause;
@@ -593,6 +621,29 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     }
 
     return paused;
+  }
+
+  /**
+   * The cabinet's power has come back. Every head it drives is dark, and the controller still
+   * remembers the phase it was showing when the power went -- which is exactly why the heads
+   * used to stay dark: every mode but flash answers "no change" until its phase really does
+   * change, NORMAL holding a recalled green and ADVANCED's ring engine comparing against the
+   * last phase it built, so nothing was ever written to the heads again until the cycle moved
+   * on, which at a quiet intersection is never (issue #211).
+   *
+   * <p>So the controller restarts, as a real one does: it forgets the old phase, which makes
+   * the next tick paint the heads whatever the mode, and the modes that run an intersection
+   * flash first. See {@link TrafficSignalStartupFlash} for the flash and for how it ends.</p>
+   *
+   * @since 2026.9
+   */
+  private void onPowerRestored() {
+    startupFlashUntilTick =
+        TrafficSignalStartupFlash.armedUntil(mode, getWorld().getTotalWorldTime());
+    resetController(false, false);
+    // Straight into flash, rather than at the next tick of a mode that may tick once in four
+    // seconds: the reset above has already cleared the way.
+    updateOperatingMode();
   }
 
   /**
@@ -729,8 +780,19 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         if (advancedRuntime == null) {
           advancedRuntime = new RingBarrierState();
           advancedRuntimeColdStart = true;
+          if (resumeOnPrimaryGreen) {
+            // Out of flash: come up on the main street, whatever happens to be calling.
+            advancedRuntime.beginOnRestPhases();
+          }
         }
         newPhase = advancedRuntime.tick(getWorld(), plan, circuits, overlaps, tickTime);
+      } else if (resumeOnPrimaryGreen && currentPhase == null
+          && operatingMode == TrafficSignalControllerMode.NORMAL) {
+        // Out of yellow-red flash: the main street's flashing yellow goes to green and the side
+        // street's flashing red to steady red, with no all-red between (MUTCD 4D.31). No lead
+        // pedestrian interval either -- that would be the same red in front of the same yellow.
+        newPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
+            circuits, overlaps, 1, overlapPedestrianSignals, getWorld());
       } else {
         newPhase = TrafficSignalControllerTicker.tick(new ControllerTickContext(
             getWorld(), mode, operatingMode, circuits,
@@ -748,6 +810,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             leadPedestrianIntervalTime,
             allRedFlash));
       }
+      resumeOnPrimaryGreen = false;
 
       // If the phase index has changed, update the phase
       if (newPhase != null) {
@@ -982,6 +1045,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       allRedFlash = compound.getBoolean(TrafficSignalControllerNBTKeys.LEGACY_ALL_RED_FLASH);
     }
 
+    // Load the start-up flash deadline (absent: none running)
+    startupFlashUntilTick = compound.getLong(TrafficSignalControllerNBTKeys.STARTUP_FLASH_UNTIL);
+
     // Load the traffic signal controller ramp meter night mode
     if (compound.hasKey(TrafficSignalControllerNBTKeys.RAMP_METER_NIGHT_MODE)) {
       rampMeterNightMode = compound.getInteger(TrafficSignalControllerNBTKeys.RAMP_METER_NIGHT_MODE);
@@ -1186,6 +1252,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
 
     // Write the all red flash setting to NBT
     compound.setBoolean(TrafficSignalControllerNBTKeys.ALL_RED_FLASH, allRedFlash);
+
+    // Write the start-up flash deadline to NBT, only while one is running
+    if (startupFlashUntilTick != 0L) {
+      compound.setLong(TrafficSignalControllerNBTKeys.STARTUP_FLASH_UNTIL, startupFlashUntilTick);
+    }
 
     // Write the ramp meter night mode to NBT
     compound.setInteger(TrafficSignalControllerNBTKeys.RAMP_METER_NIGHT_MODE, rampMeterNightMode);
@@ -2294,6 +2365,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     if (isInFaultState()) {
       desiredOperatingMode = TrafficSignalControllerMode.FORCED_FAULT;
     }
+    // Start-up flash: the power came back a moment ago
+    else if (isInStartupFlash()) {
+      desiredOperatingMode = TrafficSignalControllerMode.FLASH;
+    }
     // If the traffic signal controller is currently in a fallback flash mode, return the flash mode
     else if (isInFallbackFlashMode()) {
       desiredOperatingMode = TrafficSignalControllerMode.FLASH;
@@ -2323,9 +2398,37 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    */
   private void setOperatingMode(TrafficSignalControllerMode newOperatingMode) {
     if (operatingMode != newOperatingMode) {
+      boolean primaryGreen = TrafficSignalStartupFlash.resumesOnPrimaryGreen(operatingMode,
+          newOperatingMode, allRedFlash);
       operatingMode = newOperatingMode;
       resetController(false, false);
+      // After the reset, which clears it: this holds for every way out of flash, the start-up
+      // flash, the nightly flash and the power-loss flash alike.
+      resumeOnPrimaryGreen = primaryGreen;
     }
+  }
+
+  /**
+   * Returns whether the start-up flash that follows the return of power is still running, and
+   * forgets it once it is not.
+   *
+   * @return true while the controller should flash because its power has just come back
+   *
+   * @see TrafficSignalStartupFlash
+   * @since 2026.9
+   */
+  public boolean isInStartupFlash() {
+    if (startupFlashUntilTick == 0L) {
+      return false;
+    }
+    // The mode is asked again, not only when the flash is armed: it can be changed by hand
+    // while the flash runs, and a controller just switched off should go off.
+    if (TrafficSignalStartupFlash.appliesTo(mode) && TrafficSignalStartupFlash.isActive(
+        startupFlashUntilTick, getWorld().getTotalWorldTime())) {
+      return true;
+    }
+    startupFlashUntilTick = 0L;
+    return false;
   }
 
   /**
@@ -2496,6 +2599,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     invalidateConfigValidation();
     lastPhaseChangeTime = -1;
     currentPhase = null;
+    resumeOnPrimaryGreen = false;
     // Clear transient tracking state on reset (mode change, device link/unlink, etc.)
     wwvdsEntityDistances.clear();
     wwvdsEntityApproachTotals.clear();

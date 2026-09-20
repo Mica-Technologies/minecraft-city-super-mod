@@ -125,6 +125,8 @@ public class RingBarrierState {
   private final RingRuntime ring1 = new RingRuntime();
   private final RingRuntime ring2 = new RingRuntime();
   private boolean initialized = false;
+  /** Whether the first tick serves the rest phases; see {@link #beginOnRestPhases()}. */
+  private boolean startOnRestPhases = false;
   private TrafficSignalPhase lastApplied = null;
 
   /**
@@ -364,6 +366,11 @@ public class RingBarrierState {
     if (!initialized) {
       currentBarrier = firstBarrier(plan);
       initialized = true;
+      if (startOnRestPhases) {
+        // Before any ring is filled from the calls: the rest phases come up green, and whoever
+        // is calling is served from there, in turn, once their minimum green is up.
+        restInGreen(plan, now);
+      }
     }
     reportCoordinationAdvisoriesOnce(plan);
 
@@ -1361,6 +1368,20 @@ public class RingBarrierState {
       }
     }
     return false;
+  }
+
+  /**
+   * Makes this engine, which must not have ticked yet, come up on its rest phases -- the
+   * coordinated phases, else the soft-recall ones, else each ring's first: the main street --
+   * rather than on whichever phase of the first barrier happens to have a call. A controller
+   * leaving flash starts here (MUTCD 4D.31: steady operation begins with the major street
+   * green), where an ordinary cold start would hand a waiting left turn the first green.
+   *
+   * @see TrafficSignalStartupFlash
+   * @since 2026.9
+   */
+  public void beginOnRestPhases() {
+    startOnRestPhases = true;
   }
 
   private int firstBarrier(TrafficSignalProgrammedPhasePlan plan) {
