@@ -40,6 +40,7 @@ import org.apache.batik.transcoder.image.ImageTranscoder;
  *   <li>Row 9, cols 2-7: DC + Canadian province markers (DC, ON, QC, NB, NS, NL)</li>
  *   <li>Row 10, col 0: Canadian province marker (PE)</li>
  *   <li>Row 10, cols 1-4: Alto route markers (2- and 3-digit variants)</li>
+ *   <li>Row 10, col 5: Bicycle route marker (MUTCD M1-8)</li>
  *   <li>Rows 11-12, cols 0-7: Street sign civic logos (StreetSignLogoType)</li>
  * </ul>
  *
@@ -189,6 +190,9 @@ public class GuideSignAtlasTool {
     drawPngShield(g, 2, 10, "shieldalto3.png");
     drawPngShield(g, 3, 10, "shieldaltoblue2.png");
     drawPngShield(g, 4, 10, "shieldaltoblue3.png");
+    // Built from the book's own M1-8 by dev-env-utils/scripts/gen_bike_route_shield.py,
+    // which also stamps this cell into the committed atlas so the two stay in step.
+    drawPngShield(g, 5, 10, "bikeroute.png");
   }
 
   private static void drawPngShield(Graphics2D g, int col, int row, String pngFile) {

@@ -432,11 +432,20 @@ a tidy simplification and would bring the blur straight back.
 ## The Dynamic Route Marker Sign
 
 `dynamic_route_marker_sign` is the route marker a route is posted under: an Interstate, US,
-county, state or provincial shield with the route number typed in rather than baked into the
-texture. All 67 markers the [dynamic guide sign](DYNAMIC_GUIDE_SIGN_SYSTEM.md) offers are
-available on it, and it is the same artwork -- the block's textures are cut from that system's
-`sign_atlas.png` by `dev-env-utils/scripts/gen_route_markers.py`, so a route drawn on a guide
-sign and the same route on a post cannot drift apart.
+county, state, provincial or bicycle route marker with the route number typed in rather than
+baked into the texture. All 68 markers the
+[dynamic guide sign](DYNAMIC_GUIDE_SIGN_SYSTEM.md) offers are available on it, and it is the
+same artwork -- the block's textures are cut from that system's `sign_atlas.png` by
+`dev-env-utils/scripts/gen_route_markers.py`, so a route drawn on a guide sign and the same
+route on a post cannot drift apart.
+
+The 68th is the **bicycle route marker** (MUTCD M1-8), which the atlas did not have. Every
+other marker came from a public-domain SVG on Commons; this one is taken from the book's own
+drawing by `gen_bike_route_shield.py`, which paints out its sample "13" with the oval's green
+-- the renderer sets the number -- squares it for the cell, stamps that cell into the
+committed atlas, and measures the four placement values the enum carries off the numerals it
+removed. It is not one of `measure_shield_legends.py`'s markers; that script covers the state,
+DC and province ones.
 
 It is an **ordinary `AbstractBlockSign`**, which is the whole point of building it this way: it
 takes the eight facings, the extension post onto a slab or through a guardrail, the setback in
@@ -458,8 +467,8 @@ any of it.
 entity, exactly as `DOWNWARD` and `SHIFT` are filled in from the neighbours. The blockstate then
 carries a `shield` variant per marker that overrides texture slots `1` and `2`, so the marker's
 face is baked into the chunk mesh like every other sign's and the renderer is left with two or
-three glyphs. Sixty-seven markers times eight facings, two extension states and three shifts is
-3,216 variants -- the cost of about sixty-seven ordinary signs, for one block that replaces all
+three glyphs. Sixty-eight markers times eight facings, two extension states and three shifts is
+3,264 variants -- the cost of about sixty-eight ordinary signs, for one block that replaces all
 of them.
 
 Two consequences worth knowing:
@@ -522,6 +531,7 @@ Added: the whole **directional arrow auxiliary** family, which the mod had none 
 | `signjctinterstate`, `signtointerstate`, `signtempplaque` | the blue JCT and TO, and TEMP |
 | `sign{begin,end,to}bikeroute` | M4-11 to M4-13, white on green |
 | `signbikeroute{right,ahead,diagonaltwoway,diagonalright,leftright,aheadorright,aheadordiagonalright}` | M7-1 to M7-7, the bicycle facility arrows |
+| `signbikeroute` | D11-1, the green panel with the bicycle over BIKE ROUTE |
 
 **The white arrows the mod already had are not these.** `signleftahead` / `signrightahead`
 are the two-headed curved through-or-turn arrows and `signaheadonly` is an up arrow with ONLY:

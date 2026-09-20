@@ -426,6 +426,7 @@ tile.signtointerstate.name=Till-Vägmärke (Interstate)
 tile.signbeginbikeroute.name=Börjar-Vägmärke (Cykelled)
 tile.signendbikeroute.name=Slut-Vägmärke (Cykelled)
 tile.signtobikeroute.name=Till-Vägmärke (Cykelled)
+tile.signbikeroute.name=Cykelled-Vägmärke
 tile.signbikerouteright.name=Cykelledspil-Vägmärke (Höger)
 tile.signbikerouteahead.name=Cykelledspil-Vägmärke (Rakt Fram)
 tile.signbikeroutediagonaltwoway.name=Cykelledspil-Vägmärke (Diagonal Dubbelriktad)

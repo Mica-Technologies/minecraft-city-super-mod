@@ -27,6 +27,14 @@ source's.
 
 `shieldalto*.png` are the Alto route markers, artwork supplied for the mod.
 
+`bikeroute.png` is the bicycle route marker (MUTCD M1-8). It is not from Commons: there is
+no blank M1-8 there worth using, and the FHWA Standard Highway Signs book -- a work of the
+United States government, in the public domain -- draws the sign itself. It is taken from
+the book's own drawing (Guide, page 3-9) by
+`dev-env-utils/scripts/gen_bike_route_shield.py`, which paints out the sample "13" with the
+oval's green because the sign renderer sets the number, exactly as the route number was
+taken out of every SVG above.
+
 ## State and DC markers
 
 | Marker | File | Source | Author | Licence | Notes |

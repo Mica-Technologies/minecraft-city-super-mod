@@ -426,6 +426,7 @@ tile.signtointerstate.name=Señal «Hacia» (Interestatal)
 tile.signbeginbikeroute.name=Señal de Inicio (Ruta Ciclista)
 tile.signendbikeroute.name=Señal de Fin (Ruta Ciclista)
 tile.signtobikeroute.name=Señal «Hacia» (Ruta Ciclista)
+tile.signbikeroute.name=Señal de Ruta Ciclista
 tile.signbikerouteright.name=Señal de Flecha Direccional de Ruta Ciclista (Derecha)
 tile.signbikerouteahead.name=Señal de Flecha Direccional de Ruta Ciclista (Recto)
 tile.signbikeroutediagonaltwoway.name=Señal de Flecha Direccional de Ruta Ciclista (Diagonal de Doble Sentido)

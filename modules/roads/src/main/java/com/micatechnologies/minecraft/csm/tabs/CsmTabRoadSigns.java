@@ -683,6 +683,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signbeginbikeroute"));
     initTabBlock(new BlockTrafficSign("signendbikeroute"));
     initTabBlock(new BlockTrafficSign("signtobikeroute"));
+    initTabBlock(new BlockTrafficSign("signbikeroute"));
     initTabBlock(new BlockTrafficSign("signbikerouteright"));
     initTabBlock(new BlockTrafficSign("signbikerouteahead"));
     initTabBlock(new BlockTrafficSign("signbikeroutediagonaltwoway"));

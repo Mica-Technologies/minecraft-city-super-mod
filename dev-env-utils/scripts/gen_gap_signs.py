@@ -646,6 +646,14 @@ CATALOGUE = [
      'Radroutenrichtungspfeil-Schild (Geradeaus oder Diagonal Rechts)',
      'Cykelledspil-Vägmärke (Rakt Fram eller Diagonal Höger)'),
      'landscape', SHS('landscape', 'Guide', 25, 2), 'signbikerouteaheadorright'),
+    # The D11-1 itself: the green panel with the bicycle over BIKE ROUTE, which a route is
+    # signed with where a marker is not used. The mod had BIKE LANE and the warning diamond
+    # but never this one.
+    ('signbikeroute', ('Bike Route Sign',
+     'Señal de Ruta Ciclista',
+     'Radroute-Schild',
+     'Cykelled-Vägmärke'),
+     'landscape', SHS('landscape', 'Guide', 85, 0), 'signtobikeroute'),
 ]
 for _mph, _after in ((10, 'signaddright'), (15, 'signadvisoryspeed10'), (20, 'signadvisoryspeed15'),
                      (25, 'signadvisoryspeed20'), (30, 'signadvisoryspeed25'), (35, 'signadvisoryspeed30'),

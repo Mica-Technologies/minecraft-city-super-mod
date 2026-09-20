@@ -89,7 +89,14 @@ public enum GuideSignShieldType implements IStringSerializable {
   // Alto route markers (provided artwork). Each has a wider 3-digit variant in the next
   // atlas cell, selected automatically when the route number is 3+ characters.
   ALTO(1, 10, "Alto", 0x101010, 0.62f, 2, 10, 1.35f),
-  ALTO_BLUE(3, 10, "Alto Blue", 0x101010, 0.62f, 4, 10, 1.35f);
+  ALTO_BLUE(3, 10, "Alto Blue", 0x101010, 0.62f, 4, 10, 1.35f),
+
+  // The bicycle route marker (MUTCD M1-8): a green oval on a white plate with the
+  // bicycle symbol above the number. Its four placement values are measured off the
+  // book's own drawing by dev-env-utils/scripts/gen_bike_route_shield.py, which also
+  // builds the atlas cell -- it is not one of measure_shield_legends.py's MARKERS,
+  // which cover the state, DC and province markers. Appended, like everything here.
+  BIKE_ROUTE(5, 10, "Bike Route", 0xFFFFFF, 0.29f, 0.27f, 0.497f, 0.693f);
 
   /**
    * Route number cap height over a generic shield, as a fraction of the shield's size (MUTCD-ish:
