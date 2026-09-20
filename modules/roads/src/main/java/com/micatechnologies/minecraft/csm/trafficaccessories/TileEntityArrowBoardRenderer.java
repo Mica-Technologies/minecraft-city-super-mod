@@ -116,9 +116,12 @@ public class TileEntityArrowBoardRenderer
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
 
     renderStructure(sky, blockLight);
-    double dx = x + 0.5 - Minecraft.getMinecraft().getRenderManager().viewerPosX;
-    double dy = y + 2.0 - Minecraft.getMinecraft().getRenderManager().viewerPosY;
-    double dz = z + 0.5 - Minecraft.getMinecraft().getRenderManager().viewerPosZ;
+    // x, y and z arrive already measured from the camera, as the dynamic signs' LOD tests read
+    // them: subtracting the viewer's world position again would measure from the world origin
+    // and switch the halos off everywhere but there.
+    double dx = x + 0.5;
+    double dy = y + 2.0;
+    double dz = z + 0.5;
     renderLamps(te, partialTicks, sky, blockLight,
         dx * dx + dy * dy + dz * dz <= GLOW_DISTANCE_SQUARED);
 
