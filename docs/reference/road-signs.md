@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "651 blocks in this tab"
+!!! info "676 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -75,6 +75,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Begin Left Lane Yield to Bikes Sign | `csm:signbeginleftlaneyieldbikes` | 2 | 10 | pickaxe | 1 |
 | Begin Parkway | `csm:beginpkwysign` | 2 | 10 | pickaxe | 1 |
 | Begin Right Lane Yield to Bikes Sign | `csm:signbeginrightlaneyieldbikes` | 2 | 10 | pickaxe | 1 |
+| Begin Sign (Bike Route) | `csm:signbeginbikeroute` | 2 | 10 | pickaxe | 1 |
 | Begin Sign (Plaque) | `csm:signbeginplaque` | 2 | 10 | pickaxe | 1 |
 | Bicycle Sign | `csm:signbicycle` | 2 | 10 | pickaxe | 1 |
 | Bike Lane Ahead Sign | `csm:signbikelaneahead` | 2 | 10 | pickaxe | 1 |
@@ -82,6 +83,13 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Bike Lane Sign | `csm:signbikelane` | 2 | 10 | pickaxe | 1 |
 | Bike Lane Sign (Large) | `csm:signbikelanelarge` | 2 | 10 | pickaxe | 1 |
 | Bike Lane Sign (Plaque) | `csm:signbikelaneplaque` | 2 | 10 | pickaxe | 1 |
+| Bike Route Directional Arrow Sign (Ahead or Diagonal Right) | `csm:signbikerouteaheadordiagonalright` | 2 | 10 | pickaxe | 1 |
+| Bike Route Directional Arrow Sign (Ahead or Right) | `csm:signbikerouteaheadorright` | 2 | 10 | pickaxe | 1 |
+| Bike Route Directional Arrow Sign (Ahead) | `csm:signbikerouteahead` | 2 | 10 | pickaxe | 1 |
+| Bike Route Directional Arrow Sign (Diagonal Right) | `csm:signbikeroutediagonalright` | 2 | 10 | pickaxe | 1 |
+| Bike Route Directional Arrow Sign (Diagonal Two-Way) | `csm:signbikeroutediagonaltwoway` | 2 | 10 | pickaxe | 1 |
+| Bike Route Directional Arrow Sign (Left and Right) | `csm:signbikerouteleftright` | 2 | 10 | pickaxe | 1 |
+| Bike Route Directional Arrow Sign (Right) | `csm:signbikerouteright` | 2 | 10 | pickaxe | 1 |
 | Bike Signal Alto MTA Tolled Lane | `csm:tolledbikelanesign` | 2 | 10 | pickaxe | 1 |
 | Bike Signal Sign | `csm:signbikesignal` | 2 | 10 | pickaxe | 1 |
 | Bike Signal Sign (Double Sided) | `csm:signbikesignaldoublesided` | 2 | 10 | pickaxe | 1 |
@@ -178,6 +186,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | End Road Work Sign | `csm:signendroadwork` | 2 | 10 | pickaxe | 1 |
 | End School Zone Sign | `csm:signendschoolzone` | 2 | 10 | pickaxe | 1 |
 | End Sign | `csm:signend` | 2 | 10 | pickaxe | 1 |
+| End Sign (Bike Route) | `csm:signendbikeroute` | 2 | 10 | pickaxe | 1 |
 | End Sign (Plaque) | `csm:signendplaque` | 2 | 10 | pickaxe | 1 |
 | Ends Sign (Plaque) | `csm:signendsplaque` | 2 | 10 | pickaxe | 1 |
 | Except Bicycle Sign | `csm:signexceptbicycle` | 2 | 10 | pickaxe | 1 |
@@ -235,6 +244,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Intersection Tracks on Left Sign | `csm:signtrainleft` | 2 | 10 | pickaxe | 1 |
 | Intersection Tracks on Right Sign | `csm:signtrainright` | 2 | 10 | pickaxe | 1 |
 | JCT Sign | `csm:signjct` | 2 | 10 | pickaxe | 1 |
+| JCT Sign (Interstate) | `csm:signjctinterstate` | 2 | 10 | pickaxe | 1 |
 | Kathie Evans For Sale Sign | `csm:kathieevanssign` | 2 | 10 | pickaxe | 1 |
 | Kayak Sign | `csm:signkayak` | 2 | 10 | pickaxe | 1 |
 | Keep Left Sign | `csm:signpostkeepleft` | 2 | 10 | pickaxe | 1 |
@@ -472,8 +482,20 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Roundabout Directional Arrow Sign | `csm:signroundaboutdirectional` | 2 | 10 | pickaxe | 1 |
 | Roundabout Sign | `csm:signroundabout` | 2 | 10 | pickaxe | 1 |
 | Roundabout Sign (Plaque) | `csm:signroundaboutplaque` | 2 | 10 | pickaxe | 1 |
+| Route Advance Turn Arrow Sign (Diagonal Left) | `csm:signrouteadvanceturndiagonalleft` | 2 | 10 | pickaxe | 1 |
+| Route Advance Turn Arrow Sign (Diagonal Right) | `csm:signrouteadvanceturndiagonalright` | 2 | 10 | pickaxe | 1 |
+| Route Advance Turn Arrow Sign (Left) | `csm:signrouteadvanceturnleft` | 2 | 10 | pickaxe | 1 |
+| Route Advance Turn Arrow Sign (Right) | `csm:signrouteadvanceturnright` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Ahead and Left) | `csm:signroutearrowaheadandleft` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Ahead and Right) | `csm:signroutearrowaheadandright` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Ahead or Diagonal Left) | `csm:signroutearrowaheadordiagonalleft` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Ahead or Diagonal Right) | `csm:signroutearrowaheadordiagonalright` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Ahead or Left) | `csm:signroutearrowaheadorleft` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Ahead or Right) | `csm:signroutearrowaheadorright` | 2 | 10 | pickaxe | 1 |
 | Route Directional Arrow Sign (Diagonal Left) | `csm:signroutearrowdiagonalleft` | 2 | 10 | pickaxe | 1 |
 | Route Directional Arrow Sign (Diagonal Right) | `csm:signroutearrowdiagonalright` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Diagonal Two-Way) | `csm:signroutearrowdiagonaltwoway` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Left and Right) | `csm:signroutearrowsplitleftright` | 2 | 10 | pickaxe | 1 |
 | Route Directional Arrow Sign (Left) | `csm:signroutearrowleft` | 2 | 10 | pickaxe | 1 |
 | Route Directional Arrow Sign (Left/Right) | `csm:signroutearrowleftright` | 2 | 10 | pickaxe | 1 |
 | Route Directional Arrow Sign (Right) | `csm:signroutearrowright` | 2 | 10 | pickaxe | 1 |
@@ -591,11 +613,14 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Street Work Ahead Sign | `csm:signstreetworkahead` | 2 | 10 | pickaxe | 1 |
 | Swimming Sign | `csm:signswimming` | 2 | 10 | pickaxe | 1 |
 | Telephone/Payphone Sign | `csm:signphone` | 2 | 10 | pickaxe | 1 |
+| Temp Sign (Plaque) | `csm:signtempplaque` | 2 | 10 | pickaxe | 1 |
 | Temporary Sign | `csm:signtemporary` | 2 | 10 | pickaxe | 1 |
 | Thickly Settled | `csm:thicklysettledsign` | 2 | 10 | pickaxe | 1 |
 | Thickly Settled Speed Limit 25 MPH | `csm:thicklysettledspeedlimit25mphsign` | 2 | 10 | pickaxe | 1 |
 | This Door To Remain Unlocked During Business Hours | `csm:doorsunlockedbiz` | 2 | 10 | pickaxe | 1 |
 | To Sign | `csm:signto` | 2 | 10 | pickaxe | 1 |
+| To Sign (Bike Route) | `csm:signtobikeroute` | 2 | 10 | pickaxe | 1 |
+| To Sign (Interstate) | `csm:signtointerstate` | 2 | 10 | pickaxe | 1 |
 | Tow-Away Zone Sign | `csm:signtowawayzone` | 2 | 10 | pickaxe | 1 |
 | Tractor Sign | `csm:signtractor` | 2 | 10 | pickaxe | 1 |
 | Traffic Control Point Sign | `csm:signtrafficctlpoint` | 2 | 10 | pickaxe | 1 |
