@@ -105,6 +105,22 @@ hundredth-of-a-unit sliver at 28.49 rather than on the plate itself, because the
 face is coplanar with the end cap of the partner's post; and it keeps no post of its own, because
 the partner's is already standing there.
 
+A third, which did ship wrong. Every hand-built plate paints its art on that sliver, in all three
+shift models, and the plate used to draw its own front face as well: bare metal a hundredth of a
+unit -- 0.000625 blocks -- behind the art. A 24-bit depth buffer behind Minecraft's 0.05 near plane
+resolves `z * z / 838861` blocks at `z` blocks away, which passes that gap at 23 blocks and is
+unreliable from half of it, so two thirds of the mod's signs flickered between their face and bare
+metal from a dozen blocks out, and looked perfect from where a model gets checked (issue #212). The
+plate's front face cannot simply be deleted: most faces have rounded corners and many do not fill
+their plate, so the metal behind the art is part of the sign. Instead the plate keeps its sides and
+back and loses its front, and a **backing** element carries that face 0.4 units further back --
+0.41 behind the art, good past 100 blocks, where a sign is a few pixels. From the front nothing
+changes, and the art does not move, so 28.49 stands. The yield-shaped models have no plate; there
+it was the end cap of the post's centre bar, which the next box of the post covers anyway, and it
+is simply gone. `SignFaceDepthTest` fails the build on two overlapping faces, looking the same way
+in different textures, less than 0.2 units apart; `dev-env-utils/scripts/fix_sign_plate_backing.py
+--apply` is the repair for a plate copied from an old revision.
+
 ### The invariant, and the check that holds it
 
 **Every `shift` entry must name a model that actually differs from the one it is shifting from,

@@ -339,7 +339,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/POWER_GRID_SYSTEM.md` -- Forge Energy integration, utility poles, electrical infrastructure
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system,
   the three shift models and where a back-to-back plate has to sit (`SignShiftModelTest` fails the
-  build on a shift entry that does not move)
+  build on a shift entry that does not move), and why the metal behind a sign's art is recessed
+  (`SignFaceDepthTest` fails the build on two faces too close to tell apart at a distance)
 - `assets/docs/DYNAMIC_GUIDE_SIGN_SYSTEM.md` -- Highway guide signs: panel/row/element data model, TESR, FHWA legend font, sign atlas
 - `assets/docs/DYNAMIC_STREET_SIGN_SYSTEM.md` -- Street name blades: fixed-slot data model, hanging vs flat mount, double-sided rendering, civic logo atlas rows
 - `assets/docs/SPAN_WIRE_SYSTEM.md` -- Wire-span signal mounting: the catenary solver, why mounts
@@ -419,6 +420,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →
   ffmpeg → OGG)
+- `fix_sign_plate_backing.py` -- recesses the bare-metal face behind a hand-built sign plate's
+  art, which z-fought with it from a dozen blocks out; rewrites a model only if it can reproduce
+  the file byte for byte first, so the diff is the geometry and nothing else. `--apply` repairs,
+  `--check` fails on a plate that still has the defect (`SignFaceDepthTest` holds the same rule)
 - `gen_led_signs.py` -- the LED-enhanced flashing STOP / WRONG WAY / DO NOT ENTER / PEDESTRIAN
   signs and the pedestrian arrow plaques: composites the border LEDs into the plain sign's face
   texture as a two-frame strip (one 100 ms blink a
