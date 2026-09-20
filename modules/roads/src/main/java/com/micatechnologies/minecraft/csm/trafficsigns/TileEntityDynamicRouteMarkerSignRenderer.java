@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
+import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.SignShift;
 import com.micatechnologies.minecraft.csm.trafficaccessories.GuideSignFontRenderer;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
@@ -47,6 +48,16 @@ public class TileEntityDynamicRouteMarkerSignRenderer
   /** One block in model units, and the scale that gets there. */
   private static final double UNITS = 16.0;
 
+  /**
+   * Minecraft's diffuse shade for a vertical block face: 0.8 looking along z, 0.6 along
+   * x. It is baked into the plate's vertex colours when the chunk is meshed, and a tile
+   * entity renderer gets none of it, so a legend drawn at full brightness sits visibly
+   * brighter than the shield under it -- worst on an east or west facing, where the plate
+   * is at 0.6 and the legend at 1.0.
+   */
+  private static final float SHADE_Z = 0.8f;
+  private static final float SHADE_X = 0.6f;
+
   @Override
   public void render(TileEntityDynamicRouteMarkerSign te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -86,6 +97,7 @@ public class TileEntityDynamicRouteMarkerSignRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
     drawRoute(route, shield, legendZ(actual.getValue(BlockDynamicRouteMarkerSign.SHIFT)),
+        plateShade(actual.getValue(BlockDynamicRouteMarkerSign.FACING)),
         sky, blockLight);
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -101,7 +113,7 @@ public class TileEntityDynamicRouteMarkerSignRenderer
    * shield drawn around a two-digit one.
    */
   private static void drawRoute(String route, GuideSignShieldType shield, double zLegend,
-      int sky, int blockLight) {
+      float shade, int sky, int blockLight) {
     float cap = (float) (UNITS * shield.getRouteTextCapFraction());
     final float maxWidth = (float) (UNITS * shield.getRouteTextMaxFraction());
     float width = GuideSignFontRenderer.getStringWidth(route, cap);
@@ -114,7 +126,27 @@ public class TileEntityDynamicRouteMarkerSignRenderer
     // out; this space runs upwards from the plate's bottom edge.
     final float centerY = (float) (UNITS * (1.0 - shield.getRouteTextCenterY()));
     GuideSignFontRenderer.drawString(route, centerX - width / 2.0f, centerY, (float) zLegend,
-        cap, shield.getRouteTextColor(), sky, blockLight);
+        cap, shaded(shield.getRouteTextColor(), shade), sky, blockLight);
+  }
+
+  /**
+   * The shade the plate's own face is drawn at, so the legend on it matches.
+   *
+   * <p>The plate paints its art on the model's north face, which the blockstate turns onto
+   * whichever side the sign reads toward. A diagonal facing leaves the quad's normal
+   * halfway between two sides, and Minecraft resolves that tie in favour of north or
+   * south, so only a due east or west sign is drawn at the darker multiplier.</p>
+   */
+  private static float plateShade(DirectionEight facing) {
+    return facing == DirectionEight.E || facing == DirectionEight.W ? SHADE_X : SHADE_Z;
+  }
+
+  /** A legend colour multiplied by the plate's shade, channel by channel. */
+  private static int shaded(int color, float shade) {
+    final int r = Math.round(((color >> 16) & 0xFF) * shade);
+    final int g = Math.round(((color >> 8) & 0xFF) * shade);
+    final int b = Math.round((color & 0xFF) * shade);
+    return (r << 16) | (g << 8) | b;
   }
 
   /** Where the legend sits in the mirrored frame, for the shift the sign is drawn in. */

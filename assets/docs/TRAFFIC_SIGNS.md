@@ -482,6 +482,16 @@ to its outline and a rectangular plate would show bare metal in the corners a sh
 empty. The three shift models follow the one convention -- as authored, `+12.5`, and `+28.5`
 with the post dropped -- so `SignShiftModelTest` holds it like any other sign's.
 
+**The legend has to be shaded by hand.** Minecraft bakes a diffuse multiplier into a block face's
+vertex colours when the chunk is meshed -- 0.8 for a face looking along z, 0.6 along x -- and a
+tile entity renderer gets none of it. A route number drawn at its own colour therefore came out
+brighter than the shield it sits on, worst on an east or west facing where the plate is at 0.6
+and the legend was at 1.0. The renderer multiplies the legend's colour by the plate's shade first.
+A diagonal facing leaves the plate's quad normal halfway between two sides and Minecraft resolves
+that tie toward north or south, so only a due east or west marker takes the darker one. Measured
+in game: white reads 200 on a south-facing marker and 150 on an east-facing one, matching the
+shield's own white in both.
+
 The renderer turns by `DirectionEight.getRotationDegrees()` (the angle the blockstate turns the
 model by) **plus a half turn**, which puts the reader in front of the plate with +X to their
 right: the un-mirrored pixel space `GuideSignFontRenderer` draws in. In that frame a marker's
@@ -494,13 +504,37 @@ which is what fits a three-digit route into a shield drawn around a two-digit on
 ### The auxiliaries
 
 A marker is posted with plaques above and below it, and those are ordinary signs, not part of
-this block: `signjct`, `signnorth`/`signsouth`/`signeast`/`signwest`, `signalt`,
-`signalternate`, `signbypass`, `signbusiness`, `signtruckhalf`, `signtemporary`, `signto`,
-`signend`, `signbeginplaque`, and the M5 advance-turn arrows `signleftahead` /
-`signrightahead`. The M6 **directional arrow auxiliaries** -- the 21 x 15 black-on-white
-plaques the book draws on its DIRECTIONAL ARROW AUXILIARY pages -- were the gap, and are now
-`signroutearrow{right,left,diagonalright,diagonalleft,ahead,leftright}`, added through
-`gen_gap_signs.py` from the drawings themselves.
+this block. The mod's coverage was audited against the M-series pages of the book's Guide
+chapter, which is the authoritative list.
+
+Already present: `signjct` (M2-1), the four cardinals (M3-1..4), `signalternate` and `signalt`
+(M4-1, M4-1a), `signbusiness` (M4-2), `signbypass` (M4-3), `signtruckhalf` (M4-4), `signto`
+(M4-5), `signend` (M4-6), `signtemporary` (M4-7) and the BEGIN/END plaques.
+
+Added: the whole **directional arrow auxiliary** family, which the mod had none of.
+
+| Signs | What |
+|---|---|
+| `signroutearrow{right,left,diagonalright,diagonalleft,ahead,leftright}` | M6-1 to M6-4 and the mirrors |
+| `signrouteadvanceturn{left,right,diagonalleft,diagonalright}` | M5-1, M5-2 and the mirrors |
+| `signroutearrow{diagonaltwoway,aheadorright,aheadorleft,aheadordiagonalright,aheadordiagonalleft}` | M6-5 to M6-7 and the mirrors |
+| `signroutearrow{aheadandright,aheadandleft,splitleftright}` | M6-8 (21 x 21) and M6-9 (21 x 13) |
+| `signjctinterstate`, `signtointerstate`, `signtempplaque` | the blue JCT and TO, and TEMP |
+| `sign{begin,end,to}bikeroute` | M4-11 to M4-13, white on green |
+| `signbikeroute{right,ahead,diagonaltwoway,diagonalright,leftright,aheadorright,aheadordiagonalright}` | M7-1 to M7-7, the bicycle facility arrows |
+
+**The white arrows the mod already had are not these.** `signleftahead` / `signrightahead`
+are the two-headed curved through-or-turn arrows and `signaheadonly` is an up arrow with ONLY:
+lane-use signs, not route marker auxiliaries. Its other arrows are the yellow W1-6 / W1-7
+warnings and the brown recreational ones. Reading the mod's catalogue by display name put the
+M5 arrows in the "already present" column once; they were not there.
+
+**Two deliberate departures.** M2-2 is absent: it is a 60 x 48 composed panel carrying real
+route shields, which is what the [dynamic guide sign](DYNAMIC_GUIDE_SIGN_SYSTEM.md) builds, so
+a fixed copy of one would be the wrong tool. And the green BEGIN / END / TO are set in the
+FHWA series rather than lifted from the book, because the book's are 24 x 6 -- four times as
+wide as they are tall -- and no plate in the mod is that shape; squeezing the drawing onto the
+2:1 plaque stretched the legend.
 
 ## LED-Enhanced Flashing Signs
 
