@@ -46,6 +46,20 @@ public final class CraneCollision {
   private static final Map<World, Set<TileEntityCraneHead>> HEADS =
       Collections.synchronizedMap(new WeakHashMap<>());
 
+  /**
+   * Collision queries are numerous (including for item entities), while a crane can reach 84
+   * blocks.  A 96-block grid keeps the candidate set local without having to re-index a head when
+   * its configured jib length changes.
+   */
+  private static final int GRID_SIZE = 96;
+
+  /** Largest possible horizontal reach, including the one-block query margin. */
+  private static final double MAX_REACH = TileEntityCraneHead.MAX_JIB * 2.0 + 6.0;
+
+  /** Heads by their anchor's grid cell, alongside HEADS which serves the mast-climb lookup. */
+  private static final Map<World, Map<Long, Set<TileEntityCraneHead>>> GRID =
+      Collections.synchronizedMap(new WeakHashMap<>());
+
   /** How far above a surface an entity's feet may be and still count as standing on it. */
   private static final double STANDING_TOLERANCE = 1.0E-3;
 
@@ -66,6 +80,10 @@ public final class CraneCollision {
 
   static void add(TileEntityCraneHead head) {
     HEADS.computeIfAbsent(head.getWorld(), w -> ConcurrentHashMap.newKeySet()).add(head);
+    GRID.computeIfAbsent(head.getWorld(), w -> new ConcurrentHashMap<>())
+        .computeIfAbsent(gridKey(head.getPos().getX(), head.getPos().getZ()),
+            k -> ConcurrentHashMap.newKeySet())
+        .add(head);
   }
 
   static void remove(TileEntityCraneHead head) {
@@ -73,11 +91,27 @@ public final class CraneCollision {
     if (heads != null) {
       heads.remove(head);
     }
+    Map<Long, Set<TileEntityCraneHead>> cells = GRID.get(head.getWorld());
+    if (cells != null) {
+      long key = gridKey(head.getPos().getX(), head.getPos().getZ());
+      Set<TileEntityCraneHead> cell = cells.get(key);
+      if (cell != null) {
+        cell.remove(head);
+        if (cell.isEmpty()) {
+          cells.remove(key, cell);
+        }
+      }
+    }
   }
 
   private static Set<TileEntityCraneHead> heads(World world) {
     Set<TileEntityCraneHead> heads = HEADS.get(world);
     return heads == null ? Collections.emptySet() : heads;
+  }
+
+  private static long gridKey(double x, double z) {
+    return ((long) MathHelper.floor(x / GRID_SIZE) << 32)
+        ^ (MathHelper.floor(z / GRID_SIZE) & 0xFFFFFFFFL);
   }
 
   /** Height of the top of the slewing deck above the head block's floor. */
@@ -135,14 +169,26 @@ public final class CraneCollision {
     if (entity == null) {
       return;
     }
-    Set<TileEntityCraneHead> heads = heads(event.getWorld());
-    if (heads.isEmpty()) {
+    Map<Long, Set<TileEntityCraneHead>> cells = GRID.get(event.getWorld());
+    if (cells == null || cells.isEmpty()) {
       return;
     }
     AxisAlignedBB box = event.getAabb();
-    for (TileEntityCraneHead head : heads) {
-      if (!head.isInvalid()) {
-        new Query(head, entity, box, event.getCollisionBoxesList()).run();
+    int minX = MathHelper.floor((box.minX - MAX_REACH) / GRID_SIZE);
+    int maxX = MathHelper.floor((box.maxX + MAX_REACH) / GRID_SIZE);
+    int minZ = MathHelper.floor((box.minZ - MAX_REACH) / GRID_SIZE);
+    int maxZ = MathHelper.floor((box.maxZ + MAX_REACH) / GRID_SIZE);
+    for (int x = minX; x <= maxX; x++) {
+      for (int z = minZ; z <= maxZ; z++) {
+        Set<TileEntityCraneHead> cell = cells.get(((long) x << 32) ^ (z & 0xFFFFFFFFL));
+        if (cell == null) {
+          continue;
+        }
+        for (TileEntityCraneHead head : cell) {
+          if (!head.isInvalid()) {
+            new Query(head, entity, box, event.getCollisionBoxesList()).run();
+          }
+        }
       }
     }
   }
