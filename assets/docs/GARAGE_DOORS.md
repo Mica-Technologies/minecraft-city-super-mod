@@ -156,6 +156,14 @@ the button a Wiring Harness.
 
 ## Traps
 
+- **World time plus a partial tick is a `float`.** `world.getTotalWorldTime() + partialTicks` is
+  `long + float`, which Java makes a `float`, and a float holds a whole tick only up to 16,777,216
+  of them: ten days of a world's life. On a server a few years old (3.8 billion ticks) the sum
+  moves 256 ticks at a time, so every client drew a moving door frozen for thirteen seconds and
+  then somewhere else, while the server -- which has no partial tick and never left `long` --
+  ran the real door correctly underneath. It cannot be seen in a dev world, which is always young.
+  Take the clock from `TileEntityGarageDoor.clock`, which casts first; the custom door's renderer
+  does too. `GarageDoorClockTest` holds it at a real server's world time (issue #214).
 - **A rule on "door" catches every door in its tab.** The Building Materials cost rules match whole
   words in the display name; the opener, the hanger and the controls are matched first because
   their names contain "door" too.

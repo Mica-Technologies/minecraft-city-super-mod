@@ -152,7 +152,8 @@ public final class CustomDoorRenderer {
         return;
       }
       float pt = event.getPartialTicks();
-      double now = world.getTotalWorldTime() + pt;
+      // Not world time + pt: that sum is a float, which cannot hold an old world's tick count.
+      double now = TileEntityGarageDoor.clock(world.getTotalWorldTime(), pt);
       double cx = view.lastTickPosX + (view.posX - view.lastTickPosX) * pt;
       double cy = view.lastTickPosY + (view.posY - view.lastTickPosY) * pt;
       double cz = view.lastTickPosZ + (view.posZ - view.lastTickPosZ) * pt;
