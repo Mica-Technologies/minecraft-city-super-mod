@@ -429,6 +429,79 @@ neighbouring atlas sprite, while an edge the art itself leaves transparent (the 
 rounded corners) stays transparent. Squishing the art to fill the square again would look like
 a tidy simplification and would bring the blur straight back.
 
+## The Dynamic Route Marker Sign
+
+`dynamic_route_marker_sign` is the route marker a route is posted under: an Interstate, US,
+county, state or provincial shield with the route number typed in rather than baked into the
+texture. All 67 markers the [dynamic guide sign](DYNAMIC_GUIDE_SIGN_SYSTEM.md) offers are
+available on it, and it is the same artwork -- the block's textures are cut from that system's
+`sign_atlas.png` by `dev-env-utils/scripts/gen_route_markers.py`, so a route drawn on a guide
+sign and the same route on a post cannot drift apart.
+
+It is an **ordinary `AbstractBlockSign`**, which is the whole point of building it this way: it
+takes the eight facings, the extension post onto a slab or through a guardrail, the setback in
+front of a signal arm or under a span wire, the back-to-back pairing that puts two faces on one
+post, and every sign pole, mount and back already in the catalogue, with no code of its own for
+any of it.
+
+| Piece | Where |
+|---|---|
+| `BlockDynamicRouteMarkerSign` | the block; GUI id 28, `SHIELD` property |
+| `TileEntityDynamicRouteMarkerSign` | two values: the marker (`sh`) and the route number (`rt`) |
+| `TileEntityDynamicRouteMarkerSignRenderer` | draws the route number, and nothing else |
+| `DynamicRouteMarkerSignGui` / `RouteMarkerConfigPacket` | the editor and its one packet |
+| `gen_route_markers.py` | 67 faces, 67 gray backs, three models, the blockstate |
+
+### The marker is a block property, not something the renderer draws
+
+`SHIELD` is a `PropertyEnum<GuideSignShieldType>` filled in by `getActualState` from the tile
+entity, exactly as `DOWNWARD` and `SHIFT` are filled in from the neighbours. The blockstate then
+carries a `shield` variant per marker that overrides texture slots `1` and `2`, so the marker's
+face is baked into the chunk mesh like every other sign's and the renderer is left with two or
+three glyphs. Sixty-seven markers times eight facings, two extension states and three shifts is
+3,216 variants -- the cost of about sixty-seven ordinary signs, for one block that replaces all
+of them.
+
+Two consequences worth knowing:
+
+- **Changing the marker has to rebuild the section.** A tile entity packet on its own does not
+  invalidate the chunk mesh, and the face is in the mesh. The tile entity's setters go through
+  the `markDirtySync` overload that notifies a block update as well, and `onDataPacket` marks
+  the range for render update on the client for the case where only the entity packet arrives.
+- **Renaming a `GuideSignShieldType` constant renames its variant.** `getName()` is the
+  constant's own name in lower case and the generator writes the blockstate's keys from the same
+  enum, so the two move together -- but a rename still needs `gen_route_markers.py` re-run and
+  the regenerated blockstate committed, and it orphans any marker saved under the old ordinal.
+
+### The plate is the yield sign's, and the legend is drawn over it
+
+The atlas cells are already cut to each marker's outline, so the model is the silhouette kind: a
+double-sided plate one block square with the face on slot `1` and a gray back on slot `2`, over
+the standard five-bar sign post. There is no metal box behind it, because a route marker is cut
+to its outline and a rectangular plate would show bare metal in the corners a shield leaves
+empty. The three shift models follow the one convention -- as authored, `+12.5`, and `+28.5`
+with the post dropped -- so `SignShiftModelTest` holds it like any other sign's.
+
+The renderer turns by `DirectionEight.getRotationDegrees()` (the angle the blockstate turns the
+model by) **plus a half turn**, which puts the reader in front of the plate with +X to their
+right: the un-mirrored pixel space `GuideSignFontRenderer` draws in. In that frame a marker's
+`routeTextCenterX`, measured from its left edge as it is read, is simply `16 * fraction`, and
+the plate's own depth mirrors with it -- a face the model puts at `z` sits at `16 - z`, which is
+where the renderer's three shift depths come from. The number is set at the cap height the
+marker asks for and shrunk if it would run outside the part of the face the marker leaves free,
+which is what fits a three-digit route into a shield drawn around a two-digit one.
+
+### The auxiliaries
+
+A marker is posted with plaques above and below it, and those are ordinary signs, not part of
+this block: `signjct`, `signnorth`/`signsouth`/`signeast`/`signwest`, `signalt`,
+`signalternate`, `signbypass`, `signbusiness`, `signtruckhalf`, `signtemporary`, `signto`,
+`signend`, `signbeginplaque`, and the M5 advance-turn arrows `signleftahead` /
+`signrightahead`. The M6 **directional arrow auxiliaries** -- the 21 x 15 black-on-white
+plaques the book draws on its DIRECTIONAL ARROW AUXILIARY pages -- were the gap, and are now
+`signroutearrow{right,left,diagonalright,diagonalleft,ahead,leftright}`, added through
+`gen_gap_signs.py` from the drawings themselves.
+
 ## LED-Enhanced Flashing Signs
 
 `signpoststopsignflashingled`, `signpoststopsignflashingleddense`, `signwrongwayflashingled`,

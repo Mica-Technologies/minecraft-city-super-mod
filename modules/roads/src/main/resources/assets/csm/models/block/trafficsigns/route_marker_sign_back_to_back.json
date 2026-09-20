@@ -1,0 +1,64 @@
+{
+  "credit": "CSM dynamic route marker sign (route number drawn by the tile entity)",
+  "textures": {
+    "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+    "2": "csm:blocks/trafficsigns/route_marker_interstate_back"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        28.49
+      ],
+      "to": [
+        16,
+        16,
+        28.5
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            15.999,
+            15.999
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            15.999,
+            0,
+            0,
+            15.999
+          ],
+          "texture": "#2"
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
+      ]
+    }
+  }
+}

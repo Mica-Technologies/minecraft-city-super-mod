@@ -12,6 +12,9 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
 
   @Override
   public void init(FMLInitializationEvent event) {
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficsigns.TileEntityDynamicRouteMarkerSign.class,
+        new com.micatechnologies.minecraft.csm.trafficsigns.TileEntityDynamicRouteMarkerSignRenderer());
     // Bind the TESR to the TileEntity
     ClientRegistry.bindTileEntitySpecialRenderer(com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead.class, new com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySchoolZoneBeacon.class, new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySchoolZoneBeaconRenderer());

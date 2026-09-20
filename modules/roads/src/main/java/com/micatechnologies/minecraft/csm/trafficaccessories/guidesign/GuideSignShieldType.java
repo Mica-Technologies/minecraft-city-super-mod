@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.guidesign;
 
-public enum GuideSignShieldType {
+import java.util.Locale;
+import net.minecraft.util.IStringSerializable;
+
+public enum GuideSignShieldType implements IStringSerializable {
   INTERSTATE(0, 0, "Interstate", 0xFFFFFF, 0.62f),
   INTERSTATE_BUSINESS(1, 0, "Interstate Business", 0xFFFFFF, 0.62f),
   US_ROUTE(2, 0, "US Route", 0x101010, 0.62f),
@@ -235,6 +238,24 @@ public enum GuideSignShieldType {
   public GuideSignShieldType prev() {
     GuideSignShieldType[] vals = values();
     return vals[(ordinal() - 1 + vals.length) % vals.length];
+  }
+
+  /**
+   * The name this marker goes by in a blockstate: the constant's own name in lower case.
+   *
+   * <p>The dynamic route marker sign carries the marker as a block property, so the shield
+   * is painted by an ordinary block model rather than by a renderer, and
+   * {@code dev-env-utils/scripts/gen_route_markers.py} writes that blockstate's variant
+   * keys from this same enum. Renaming a constant renames its variant, so the generator
+   * has to be re-run with it.
+   *
+   * @return the blockstate name for this marker
+   *
+   * @since 2026.9.20
+   */
+  @Override
+  public String getName() {
+    return name().toLowerCase(Locale.ROOT);
   }
 
   public static GuideSignShieldType fromOrdinal(int value) {

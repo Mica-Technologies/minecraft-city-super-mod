@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "644 blocks in this tab"
+!!! info "651 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -165,6 +165,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Downward Right Arrow Sign | `csm:signarrowdownright` | 2 | 10 | pickaxe | 1 |
 | DUI Driver's License Check Point Ahead | `csm:caltransduicheckpointaheadsign` | 2 | 10 | pickaxe | 1 |
 | DWP High Voltage Danger Keep Off | `csm:altodwphvdangersign` | 2 | 10 | pickaxe | 1 |
+| Dynamic Route Marker Sign | `csm:dynamic_route_marker_sign` | 2 | 10 | pickaxe | 1 |
 | East Sign | `csm:signeast` | 2 | 10 | pickaxe | 1 |
 | Eisenhower Interstate System Sign | `csm:signeisenhower` | 2 | 10 | pickaxe | 1 |
 | Emergency Parking Only Sign | `csm:signemergencyparkingonly` | 2 | 10 | pickaxe | 1 |
@@ -471,6 +472,12 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Roundabout Directional Arrow Sign | `csm:signroundaboutdirectional` | 2 | 10 | pickaxe | 1 |
 | Roundabout Sign | `csm:signroundabout` | 2 | 10 | pickaxe | 1 |
 | Roundabout Sign (Plaque) | `csm:signroundaboutplaque` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Diagonal Left) | `csm:signroutearrowdiagonalleft` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Diagonal Right) | `csm:signroutearrowdiagonalright` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Left) | `csm:signroutearrowleft` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Left/Right) | `csm:signroutearrowleftright` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Right) | `csm:signroutearrowright` | 2 | 10 | pickaxe | 1 |
+| Route Directional Arrow Sign (Straight Ahead) | `csm:signroutearrowahead` | 2 | 10 | pickaxe | 1 |
 | Runaway Truck Ramp Sign | `csm:signrunawaytruckramp` | 2 | 10 | pickaxe | 1 |
 | Rural Intersection Ahead | `csm:rualintersectionsign` | 2 | 10 | pickaxe | 1 |
 | Rural Road | `csm:ruralroadsign` | 2 | 10 | pickaxe | 1 |
