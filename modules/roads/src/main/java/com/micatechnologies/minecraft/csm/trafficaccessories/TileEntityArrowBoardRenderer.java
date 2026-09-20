@@ -7,11 +7,14 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRoadSurfaceAware;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -41,6 +44,16 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class TileEntityArrowBoardRenderer
     extends TileEntitySpecialRenderer<TileEntityArrowBoard> {
+
+  /**
+   * The mast and panel never change.  The list is keyed by the two light-map coordinates because
+   * those are baked into its vertices; there are at most 256 such lists, rather than one mesh and
+   * two draw calls for every visible board every frame.
+   */
+  private static final Map<Integer, Integer> STRUCTURE_LISTS = new HashMap<>();
+
+  /** Beyond this distance the small halos contribute little but cost two blended passes. */
+  private static final double GLOW_DISTANCE_SQUARED = 48.0 * 48.0;
 
   /** The orange every trailer and mast on one of these is built in. */
   private static final float[] COL_FRAME = {0.910f, 0.416f, 0.094f, 1.0f};
@@ -103,7 +116,11 @@ public class TileEntityArrowBoardRenderer
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
 
     renderStructure(sky, blockLight);
-    renderLamps(te, partialTicks, sky, blockLight);
+    double dx = x + 0.5 - Minecraft.getMinecraft().getRenderManager().viewerPosX;
+    double dy = y + 2.0 - Minecraft.getMinecraft().getRenderManager().viewerPosY;
+    double dz = z + 0.5 - Minecraft.getMinecraft().getRenderManager().viewerPosZ;
+    renderLamps(te, partialTicks, sky, blockLight,
+        dx * dx + dy * dy + dz * dz <= GLOW_DISTANCE_SQUARED);
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
@@ -119,30 +136,50 @@ public class TileEntityArrowBoardRenderer
    * @param blockLight the block light at the board
    */
   private void renderStructure(int sky, int blockLight) {
+    int key = (sky << 16) | blockLight;
+    Integer list = STRUCTURE_LISTS.get(key);
+    if (list == null) {
+      list = GLAllocation.generateDisplayLists(1);
+      GlStateManager.glNewList(list, GL11.GL_COMPILE);
+      buildStructure(sky, blockLight);
+      GlStateManager.glEndList();
+      STRUCTURE_LISTS.put(key, list);
+    }
+    GlStateManager.callList(list);
+  }
+
+  /** Compiles the unchanging mast, braces and panel for one light level. */
+  private static void buildStructure(int sky, int blockLight) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
-    List<RenderHelper.Box> frame = new ArrayList<>();
-    float h = ArrowBoardGeometry.MAST_HALF;
-    for (float mx : new float[]{ArrowBoardGeometry.MAST_X0, ArrowBoardGeometry.MAST_X1}) {
-      frame.add(new RenderHelper.Box(
-          new float[]{mx - h, ArrowBoardGeometry.MAST_Y0, 8f - h},
-          new float[]{mx + h, ArrowBoardGeometry.MAST_Y1, 8f + h}));
-    }
-    for (float by : new float[]{ArrowBoardGeometry.BRACE_Y0, ArrowBoardGeometry.BRACE_Y1}) {
-      frame.add(new RenderHelper.Box(
-          new float[]{ArrowBoardGeometry.MAST_X0, by - ArrowBoardGeometry.BRACE_HALF_Y,
-              8f - h * 0.7f},
-          new float[]{ArrowBoardGeometry.MAST_X1, by + ArrowBoardGeometry.BRACE_HALF_Y,
-              8f + h * 0.7f}));
-    }
+    List<RenderHelper.Box> frame = java.util.Arrays.asList(
+        new RenderHelper.Box(new float[]{ArrowBoardGeometry.MAST_X0 - ArrowBoardGeometry.MAST_HALF,
+            ArrowBoardGeometry.MAST_Y0, 8f - ArrowBoardGeometry.MAST_HALF},
+            new float[]{ArrowBoardGeometry.MAST_X0 + ArrowBoardGeometry.MAST_HALF,
+                ArrowBoardGeometry.MAST_Y1, 8f + ArrowBoardGeometry.MAST_HALF}),
+        new RenderHelper.Box(new float[]{ArrowBoardGeometry.MAST_X1 - ArrowBoardGeometry.MAST_HALF,
+            ArrowBoardGeometry.MAST_Y0, 8f - ArrowBoardGeometry.MAST_HALF},
+            new float[]{ArrowBoardGeometry.MAST_X1 + ArrowBoardGeometry.MAST_HALF,
+                ArrowBoardGeometry.MAST_Y1, 8f + ArrowBoardGeometry.MAST_HALF}),
+        new RenderHelper.Box(new float[]{ArrowBoardGeometry.MAST_X0,
+            ArrowBoardGeometry.BRACE_Y0 - ArrowBoardGeometry.BRACE_HALF_Y,
+            8f - ArrowBoardGeometry.MAST_HALF * 0.7f},
+            new float[]{ArrowBoardGeometry.MAST_X1,
+                ArrowBoardGeometry.BRACE_Y0 + ArrowBoardGeometry.BRACE_HALF_Y,
+                8f + ArrowBoardGeometry.MAST_HALF * 0.7f}),
+        new RenderHelper.Box(new float[]{ArrowBoardGeometry.MAST_X0,
+            ArrowBoardGeometry.BRACE_Y1 - ArrowBoardGeometry.BRACE_HALF_Y,
+            8f - ArrowBoardGeometry.MAST_HALF * 0.7f},
+            new float[]{ArrowBoardGeometry.MAST_X1,
+                ArrowBoardGeometry.BRACE_Y1 + ArrowBoardGeometry.BRACE_HALF_Y,
+                8f + ArrowBoardGeometry.MAST_HALF * 0.7f}));
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(frame, buf, COL_FRAME[0], COL_FRAME[1], COL_FRAME[2],
         COL_FRAME[3], 0, 0, 0, sky, blockLight);
     tess.draw();
 
-    List<RenderHelper.Box> panel = new ArrayList<>();
-    panel.add(new RenderHelper.Box(
+    List<RenderHelper.Box> panel = java.util.Collections.singletonList(new RenderHelper.Box(
         new float[]{ArrowBoardGeometry.PANEL_X0, ArrowBoardGeometry.PANEL_Y0,
             ArrowBoardGeometry.PANEL_Z0},
         new float[]{ArrowBoardGeometry.PANEL_X1, ArrowBoardGeometry.PANEL_Y1,
@@ -161,7 +198,8 @@ public class TileEntityArrowBoardRenderer
    * @param sky          the sky light at the board
    * @param blockLight   the block light at the board
    */
-  private void renderLamps(TileEntityArrowBoard te, float partialTicks, int sky, int blockLight) {
+  private void renderLamps(TileEntityArrowBoard te, float partialTicks, int sky, int blockLight,
+      boolean drawGlow) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
@@ -200,7 +238,7 @@ public class TileEntityArrowBoardRenderer
         COL_LAMP_ON[3], 0, 0, 0, LIGHTMAP_FULLBRIGHT, LIGHTMAP_FULLBRIGHT);
     tess.draw();
 
-    if (CsmConfig.isStrobeEffectEnabled()) {
+    if (drawGlow && CsmConfig.isStrobeEffectEnabled()) {
       renderGlow(bright, tess, buf);
     }
   }
