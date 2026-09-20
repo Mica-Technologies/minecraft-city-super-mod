@@ -27,7 +27,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * or closed; that state asks for no tile entity, and {@link #shouldRefresh} lets this one go with
  * it. See {@link BlockGarageDoor}.</p>
  *
- * @version 1.1
+ * @version 1.2
  * @since 2026.9
  */
 public class TileEntityGarageDoor extends AbstractTickableTileEntity {
@@ -166,7 +166,32 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
   }
 
   private double positionAt(double tick) {
-    double p = from + dir * (tick - startTick) / duration();
+    return positionAt(from, dir, startTick, duration(), tick);
+  }
+
+  /**
+   * The position a door has reached: where it was at {@code startTick}, plus how far it has gone
+   * since at {@code dir}, held inside 0..1.
+   *
+   * <p>{@code tick} is a {@code double} and has to be built as one. A world's total time plus a
+   * partial tick, written {@code long + float}, is a {@code float} in Java, and a float holds a
+   * whole tick only up to 16,777,216 of them -- ten days of a world's life. Past that the sum
+   * moves in steps: 256 ticks at a time on a server a few years old, so the door a client drew
+   * sat still for thirteen seconds and then jumped, while the server, which has no partial tick
+   * and so never left {@code long}, ran the real door correctly underneath it.</p>
+   *
+   * @param from      the position at {@code startTick}
+   * @param dir       +1 opening, -1 closing, 0 stopped
+   * @param startTick the world tick the move began on
+   * @param duration  the ticks a full move takes
+   * @param tick      the world tick to answer for, partial tick included
+   *
+   * @return the position, 0 closed to 1 open
+   *
+   * @since 1.2
+   */
+  static double positionAt(double from, int dir, long startTick, long duration, double tick) {
+    double p = from + dir * (tick - startTick) / duration;
     return Math.max(0.0, Math.min(1.0, p));
   }
 
@@ -183,7 +208,24 @@ public class TileEntityGarageDoor extends AbstractTickableTileEntity {
     if (startTick == 0L) {
       return from; // not yet synced
     }
-    return positionAt(world.getTotalWorldTime() + partialTicks);
+    return positionAt(clock(world.getTotalWorldTime(), partialTicks));
+  }
+
+  /**
+   * The moment a frame is drawn for, in ticks: the world's total time and the partial tick, as a
+   * {@code double}. Every renderer that places something by world time takes its clock from here
+   * rather than writing the sum out, because the sum written out is the bug
+   * {@link #positionAt(double, int, long, long, double)} describes.
+   *
+   * @param worldTime    the world's total time
+   * @param partialTicks the partial tick
+   *
+   * @return the two together, exact for any world a {@code long} can count
+   *
+   * @since 1.2
+   */
+  static double clock(long worldTime, float partialTicks) {
+    return (double) worldTime + partialTicks;
   }
 
   @Override
