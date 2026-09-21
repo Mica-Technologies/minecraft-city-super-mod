@@ -86,24 +86,6 @@
     },
     {
       "when": {
-        "facing": "south",
-        "down": "false"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_catwalk"
-      }
-    },
-    {
-      "when": {
-        "facing": "south",
-        "lamp": "true"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_lamp"
-      }
-    },
-    {
-      "when": {
         "facing": "west"
       },
       "apply": {
@@ -192,26 +174,6 @@
       },
       "apply": {
         "model": "csm:signage/billboard_cap_top_right",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "facing": "west",
-        "down": "false"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_catwalk",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "facing": "west",
-        "lamp": "true"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_lamp",
         "y": 90
       }
     },
@@ -310,26 +272,6 @@
     },
     {
       "when": {
-        "facing": "north",
-        "down": "false"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_catwalk",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "facing": "north",
-        "lamp": "true"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_lamp",
-        "y": 180
-      }
-    },
-    {
-      "when": {
         "facing": "east"
       },
       "apply": {
@@ -418,26 +360,6 @@
       },
       "apply": {
         "model": "csm:signage/billboard_cap_top_right",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "facing": "east",
-        "down": "false"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_catwalk",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "facing": "east",
-        "lamp": "true"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_lamp",
         "y": 270
       }
     }

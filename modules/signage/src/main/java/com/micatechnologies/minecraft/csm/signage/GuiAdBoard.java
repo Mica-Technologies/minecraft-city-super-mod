@@ -125,8 +125,8 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
         this));
     y += ROW;
     heightSlider = add(new GuiSlider(SLD_HEIGHT, left, y, COL, H,
-        I18n.format("gui.csm.adboard.height") + ": ", "", 1, kind.getMaxHeight(), h, false, true,
-        this));
+        I18n.format("gui.csm.adboard.height") + ": ", "", kind.getMinHeight(),
+        kind.getMaxHeight(), Math.max(h, kind.getMinHeight()), false, true, this));
     y += ROW;
     alignButton = add(new GuiButton(BTN_ALIGN, left, y, COL, H, ""));
     y += ROW;
@@ -309,7 +309,8 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
         : previewPool().get(rotation.select(previewPool(), te.getWorld().getTotalWorldTime(),
             interval.getValueInt(), TileEntityAdBoard.seed(controller)));
     double faceW = widthSlider.getValueInt() - 2 * kind.getFramePx() / 16.0;
-    double faceH = heightSlider.getValueInt() - 2 * kind.getFramePx() / 16.0;
+    double faceH = heightSlider.getValueInt() - kind.getServiceRows()
+        - 2 * kind.getFramePx() / 16.0;
     double aspect = faceW / faceH;
     int boxW = COL;
     int boxH = PREVIEW_H;

@@ -46,6 +46,7 @@ gui.csm.adboard.width=Ancho
 itemGroup.tabsignage=CSM: Rótulos y publicidad
 tile.ad_billboard.name=Valla Publicitaria
 tile.ad_billboard_part.name=Valla Publicitaria
+tile.ad_billboard_service.name=Valla Publicitaria
 tile.ad_digital_billboard.name=Valla Digital
 tile.ad_digital_billboard_part.name=Valla Digital
 tile.ad_poster_board.name=Cartelera de Pared

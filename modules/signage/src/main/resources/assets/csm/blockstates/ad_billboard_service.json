@@ -37,14 +37,6 @@
     },
     {
       "when": {
-        "facing": "south"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_column"
-      }
-    },
-    {
-      "when": {
         "facing": "west"
       },
       "apply": {
@@ -79,15 +71,6 @@
       },
       "apply": {
         "model": "csm:signage/billboard_lamp",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "facing": "west"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_column",
         "y": 90
       }
     },
@@ -132,15 +115,6 @@
     },
     {
       "when": {
-        "facing": "north"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_column",
-        "y": 180
-      }
-    },
-    {
-      "when": {
         "facing": "east"
       },
       "apply": {
@@ -175,15 +149,6 @@
       },
       "apply": {
         "model": "csm:signage/billboard_lamp",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "facing": "east"
-      },
-      "apply": {
-        "model": "csm:signage/billboard_column",
         "y": 270
       }
     }

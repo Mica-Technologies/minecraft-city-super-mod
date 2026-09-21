@@ -168,7 +168,7 @@ public final class AdBoards {
     EnumFacing facing = state.getValue(AbstractBlockAdBoard.FACING);
     int tag = state.getValue(AbstractBlockAdBoard.TAG);
     width = Math.max(1, Math.min(kind.getMaxWidth(), width));
-    height = Math.max(1, Math.min(kind.getMaxHeight(), height));
+    height = Math.max(kind.getMinHeight(), Math.min(kind.getMaxHeight(), height));
     int column = align.controllerColumn(width);
 
     Set<BlockPos> old = cells(controller, facing, board.getControllerColumn(), board.getWidth(),
@@ -221,14 +221,22 @@ public final class AdBoards {
       IBlockState part = AbstractBlockAdBoard.part(kind).getDefaultState()
           .withProperty(AbstractBlockAdBoard.FACING, facing)
           .withProperty(AbstractBlockAdBoard.TAG, newTag);
-      for (BlockPos p : wanted) {
-        if (p.equals(controller)) {
-          continue;
-        }
-        IBlockState s = world.getBlockState(p);
-        if (s.getBlock() != part.getBlock() || s.getValue(AbstractBlockAdBoard.TAG) != newTag
-            || s.getValue(AbstractBlockAdBoard.FACING) != facing) {
-          world.setBlockState(p, part, 3);
+      IBlockState service = kind.hasServiceRow()
+          ? AbstractBlockAdBoard.service(kind).getDefaultState()
+          .withProperty(AbstractBlockAdBoard.FACING, facing)
+          .withProperty(AbstractBlockAdBoard.TAG, newTag) : part;
+      for (int c = 0; c < width; c++) {
+        for (int row = 0; row < height; row++) {
+          BlockPos p = cell(controller, facing, column, c, row);
+          if (p.equals(controller)) {
+            continue;
+          }
+          IBlockState want = row < kind.getServiceRows() ? service : part;
+          IBlockState s = world.getBlockState(p);
+          if (s.getBlock() != want.getBlock() || s.getValue(AbstractBlockAdBoard.TAG) != newTag
+              || s.getValue(AbstractBlockAdBoard.FACING) != facing) {
+            world.setBlockState(p, want, 3);
+          }
         }
       }
       if (newTag != tag) {

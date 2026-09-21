@@ -46,6 +46,7 @@ gui.csm.adboard.width=Bredd
 itemGroup.tabsignage=CSM: Skyltar & reklam
 tile.ad_billboard.name=Reklamtavla
 tile.ad_billboard_part.name=Reklamtavla
+tile.ad_billboard_service.name=Reklamtavla
 tile.ad_digital_billboard.name=Digital Reklamtavla
 tile.ad_digital_billboard_part.name=Digital Reklamtavla
 tile.ad_poster_board.name=Affischtavla
