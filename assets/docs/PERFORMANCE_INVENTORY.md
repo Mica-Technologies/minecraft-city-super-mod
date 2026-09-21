@@ -17,8 +17,9 @@ logged in [Fix status](#fix-status), each with its own before and after.
 
 | ID | What | Commit | Before | After |
 |---|---|---|---|---|
-| C2, C3 | Display-list cache evicts only at frame start and never an entry drawn in the last frame; peak and evictions in `/csm displaylists`, a log line the first time a cache holds more than its bound | (this change) | 1,025 heads 500 ms, 1,600 heads 833 ms | 1,025 heads 3.2 ms, 1,600 heads 4.7 ms, linear |
-| - | Lane control signal draws directly when no list can be allocated, instead of calling list 0 | (this change) | would blank | draws |
+| C2, C3 | Display-list cache evicts only at frame start and never an entry drawn in the last frame; peak and evictions in `/csm displaylists`, a log line the first time a cache holds more than its bound | `a049f7873` | 1,025 heads 500 ms, 1,600 heads 833 ms | 1,025 heads 3.2 ms, 1,600 heads 4.7 ms, linear |
+| - | Lane control signal draws directly when no list can be allocated, instead of calling list 0 | `a049f7873` | would blank | draws |
+| P3 | Emergency lights: glow compiled once per block class into a list shared by every light (`CsmSharedDisplayLists`), both bulbs in one draw | (this change) | 16.6 µs a light live (46 draws before) | 1.4 µs a light; 256 placed, 155 in view: frame 3.3 to 0.9 ms. Pixels: lit area within 3 levels on every pair, one baked/live pair identical |
 
 ## Read this first
 
@@ -600,6 +601,9 @@ that was wrong.
 | Cliff | 40x40 grid at spacing 2, count swept, profiler plus frame time |
 | Busy states | one row of 4-8 copies, idle profile, `/blockdata`, profile again, median across placed copies |
 | Strobes | one panel, N strobes, `/blockdata` `{a:1b}`, 6 s warm-up and 8 s window |
+
+A fix's A/B/A runs in one session behind `/csm renderpass skip sharedBakesPerFrame` (or the
+renderer's own toggle); the scratch harness for that is `ab.py`, kept beside the others.
 
 Reproduce with the scripts in `benchmarks/block-inventory-2026-09-20/harness/`. They need a running
 dev client with a flat world loaded, MCMCP's `permissions.allowWorldEdits` on, and a registry dump

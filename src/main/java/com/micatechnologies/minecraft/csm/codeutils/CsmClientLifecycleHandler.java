@@ -41,6 +41,7 @@ public class CsmClientLifecycleHandler {
       // stale map. Safe here: addScheduledTask puts this on the client thread, which is the
       // render thread that owns the GL context.
       CsmDisplayListCache.clearAll();
+      CsmSharedDisplayLists.clearAll();
     });
   }
 }

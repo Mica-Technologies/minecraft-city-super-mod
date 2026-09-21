@@ -127,7 +127,7 @@ assets/docs/agent_progress/
 /site/
 
 # Python bytecode from the dev-env-utils scripts.
-dev-env-utils/scripts/__pycache__/
+__pycache__/
 
 # Scratch output from the dev-env-utils asset generators (--scratch / --check).
 dev-env-utils/scripts/_*_out/

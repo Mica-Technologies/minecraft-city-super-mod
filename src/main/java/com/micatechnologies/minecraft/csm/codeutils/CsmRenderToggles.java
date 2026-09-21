@@ -133,6 +133,13 @@ public final class CsmRenderToggles {
    */
   public static boolean spanWireCablePerFrame = false;
 
+  /**
+   * Draw every renderer that replays a list shared by appearance ({@link CsmSharedDisplayLists})
+   * per frame instead, the way each was drawn before it was baked. One switch for the whole family
+   * so each bake can be measured and pixel-compared inside one session; the baked path ships.
+   */
+  public static boolean sharedBakesPerFrame = false;
+
   private CsmRenderToggles() {
   }
 
@@ -166,6 +173,7 @@ public final class CsmRenderToggles {
     values.put("crosswalkCountdownPerFrame", crosswalkCountdownPerFrame);
     values.put("spanWireCable", skipSpanWireCable);
     values.put("spanWireCablePerFrame", spanWireCablePerFrame);
+    values.put("sharedBakesPerFrame", sharedBakesPerFrame);
     return values;
   }
 
@@ -224,6 +232,8 @@ public final class CsmRenderToggles {
       skipSpanWireCable = skipped;
     } else if ("spanWireCablePerFrame".equalsIgnoreCase(name)) {
       spanWireCablePerFrame = skipped;
+    } else if ("sharedBakesPerFrame".equalsIgnoreCase(name)) {
+      sharedBakesPerFrame = skipped;
     } else {
       return false;
     }
@@ -255,6 +265,7 @@ public final class CsmRenderToggles {
     crosswalkCountdownPerFrame = false;
     skipSpanWireCable = false;
     spanWireCablePerFrame = false;
+    sharedBakesPerFrame = false;
   }
 
   /**

@@ -4,6 +4,9 @@ import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractPoweredBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -25,6 +28,13 @@ import org.lwjgl.opengl.GL11;
  * <p>Unlike the strobe renderer which flashes, this produces a constant glow. Each emergency
  * light has two bulbs (left and right) that each get their own glow core, halo, and directional
  * light cone projecting forward.
+ *
+ * <p>The glow is the same for every light of a block class: the bulb positions come from the class,
+ * the colours are constant and the lightmap is fullbright. So it is compiled once per class into a
+ * list shared by every light ({@link CsmSharedDisplayLists}) and replayed under each light's own
+ * facing transform. Drawn per frame it was 46 {@code Tessellator.draw} calls a light, 20-30 us; the
+ * quads are additive with the depth mask off, so their order never mattered and one draw holds
+ * both bulbs. {@link CsmRenderToggles#sharedBakesPerFrame} draws it per frame, for comparison.
  */
 @SideOnly(Side.CLIENT)
 public class TileEntityEmergencyLightRenderer
@@ -67,6 +77,10 @@ public class TileEntityEmergencyLightRenderer
     }
   }
 
+  /** The glow geometry, one list per emergency light block class, keyed on the block id. */
+  private static final CsmSharedDisplayLists GLOW_LISTS =
+      new CsmSharedDisplayLists("emergency_light_glow");
+
   @Override
   public void render(AbstractTileEntity te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -101,9 +115,26 @@ public class TileEntityEmergencyLightRenderer
     GlStateManager.depthMask(false);
     GlStateManager.disableLighting();
 
-    // Render both bulbs
-    renderBulbGlow(lightBlock.getLeftBulbFrom(), lightBlock.getLeftBulbTo());
-    renderBulbGlow(lightBlock.getRightBulbFrom(), lightBlock.getRightBulbTo());
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawGlow(lightBlock);
+    } else {
+      long key = Block.getIdFromBlock(block);
+      int list = GLOW_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = GLOW_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawGlow(lightBlock);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawGlow(lightBlock);
+      }
+    }
 
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
@@ -123,14 +154,21 @@ public class TileEntityEmergencyLightRenderer
         .lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
   }
 
-  /**
-   * Renders the glow effect for a single bulb: front face core, side glow, halo, and
-   * a forward-projected directional light cone.
-   */
-  private void renderBulbGlow(float[] from, float[] to) {
+  /** Draws both bulbs' glow in one draw call. Geometry only: the caller owns every GL state. */
+  private static void drawGlow(IEmergencyLightBlock lightBlock) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    emitBulbGlow(buffer, lightBlock.getLeftBulbFrom(), lightBlock.getLeftBulbTo());
+    emitBulbGlow(buffer, lightBlock.getRightBulbFrom(), lightBlock.getRightBulbTo());
+    tessellator.draw();
+  }
 
+  /**
+   * Emits the glow quads for a single bulb: front face core, side glow, halo, and a
+   * forward-projected directional light cone.
+   */
+  private static void emitBulbGlow(BufferBuilder buffer, float[] from, float[] to) {
     // Convert model coordinates (0-16) to block-centered (-0.5 to 0.5)
     float minX = from[0] / 16f - 0.5f;
     float minY = from[1] / 16f - 0.5f;
@@ -143,15 +181,12 @@ public class TileEntityEmergencyLightRenderer
     float depth = maxZ - minZ;
 
     // --- Front face: bright core covering the bulb face ---
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     emit(buffer, minX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.9f);
     emit(buffer, maxX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.9f);
     emit(buffer, maxX, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.9f);
     emit(buffer, minX, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.9f);
-    tessellator.draw();
 
     // --- Side quads along the bulb depth (front edge to back edge) ---
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     // Left side
     emit(buffer, minX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
     emit(buffer, minX, minY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
@@ -172,13 +207,11 @@ public class TileEntityEmergencyLightRenderer
     emit(buffer, minX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
     emit(buffer, maxX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
     emit(buffer, maxX, minY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
-    tessellator.draw();
 
     // --- Outer side faces of the bulb (left, right, top, bottom — not back) ---
     // These make the bulb visibly lit from the side. They extend forward to quadZ so
     // they connect seamlessly with the front face, forming a continuous lit shell.
     float sideOffset = 0.01f;
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     // Left face (facing -X)
     emit(buffer, minX - sideOffset, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
     emit(buffer, minX - sideOffset, minY, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
@@ -199,7 +232,6 @@ public class TileEntityEmergencyLightRenderer
     emit(buffer, minX, minY - sideOffset, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
     emit(buffer, maxX, minY - sideOffset, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
     emit(buffer, maxX, minY - sideOffset, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
-    tessellator.draw();
 
     // --- Directional light cone projecting forward from the bulb ---
     // Emergency lights project a focused beam forward, softer and longer than a strobe
@@ -216,8 +248,6 @@ public class TileEntityEmergencyLightRenderer
       float fw = lensW * CONE_HALF_DIM_FACTOR[i + 1];
       float fh = lensH * CONE_HALF_DIM_FACTOR[i + 1];
       float segAlpha = (CONE_ALPHA[i] + CONE_ALPHA[i + 1]) * 0.5f;
-
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
       // Left wall
       emit(buffer, cenX - nw, cenY - nh, nearZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
@@ -243,16 +273,12 @@ public class TileEntityEmergencyLightRenderer
       emit(buffer, cenX + fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
       emit(buffer, cenX - fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
 
-      tessellator.draw();
-
       // Front cap
       float capAlpha = CONE_ALPHA[i + 1];
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       emit(buffer, cenX - fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, capAlpha);
       emit(buffer, cenX + fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, capAlpha);
       emit(buffer, cenX + fw, cenY + fh, farZ, COLOR_R, COLOR_G, COLOR_B, capAlpha);
       emit(buffer, cenX - fw, cenY + fh, farZ, COLOR_R, COLOR_G, COLOR_B, capAlpha);
-      tessellator.draw();
     }
   }
 
