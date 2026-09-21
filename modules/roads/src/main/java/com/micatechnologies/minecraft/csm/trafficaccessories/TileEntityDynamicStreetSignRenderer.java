@@ -315,6 +315,37 @@ public class TileEntityDynamicStreetSignRenderer
       new CsmDisplayListCache("street_sign_face");
 
   /**
+   * The legend -- name, affixes, city line, block number, emblem and arrow -- as an ordered run of
+   * one-texture lists per position (see {@link DynamicSignLegendLists} for why the run keeps the
+   * draw order). Keyed on the face key plus {@link #BACK_FACE_KEY}: the rear pass mirrors the
+   * arrow's texture coordinates, so unlike the face plate it cannot share the front's lists.
+   */
+  private static final DynamicSignLegendLists LEGEND_LISTS =
+      new DynamicSignLegendLists("street_sign_legend");
+
+  /** Marks the legend lists of a double-sided blade's rear pass. */
+  private static final long BACK_FACE_KEY = 1L << 35;
+
+  /**
+   * The blade's layout, measured once per change of its data rather than every frame -- it
+   * measures every string on the blade. Held on the tile entity, which drops it wherever its data
+   * changes; the data reference is checked as well, so a memo can never outlive the document it
+   * was measured on. Also carries each legend pass's recorded texture run, which depends on the
+   * data alone: index {@code (crossing blade ? 2 : 0) + (rear face ? 1 : 0)}.
+   */
+  static final class Memo {
+
+    final StreetSignData data;
+    final Layout layout;
+    final byte[][] legendKinds = new byte[4][];
+
+    private Memo(StreetSignData data, Layout layout) {
+      this.data = data;
+      this.layout = layout;
+    }
+  }
+
+  /**
    * Releases the compiled geometry for one blade.
    *
    * @param pos the block position
@@ -323,6 +354,7 @@ public class TileEntityDynamicStreetSignRenderer
     CORE_LISTS.invalidate(pos);
     FRAME_LISTS.invalidate(pos);
     FACE_LISTS.invalidate(pos);
+    LEGEND_LISTS.invalidate(pos);
   }
 
   private static final int FULLBRIGHT = 240;
@@ -391,7 +423,14 @@ public class TileEntityDynamicStreetSignRenderer
     }
     boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ
         || CsmRenderToggles.streetSignForceFarLod;
-    renderSign(data, farLod, te.getPos(), te.isStateDirty(), combinedLight);
+    Object cached = te.getRenderCache();
+    Memo memo = cached instanceof Memo && ((Memo) cached).data == data
+        ? (Memo) cached : null;
+    if (memo == null) {
+      memo = new Memo(data, computeLayout(data));
+      te.setRenderCache(memo);
+    }
+    renderSign(data, farLod, te.getPos(), te.isStateDirty(), combinedLight, memo);
     te.clearStateDirty();
 
     GlStateManager.popMatrix();
@@ -445,7 +484,7 @@ public class TileEntityDynamicStreetSignRenderer
     // The preview has no world to read redstone or the time of day from, so show the blade
     // energized whenever it is wired for light at all -- that is what the player is checking.
     lightOn = data.hasInternalLight() && data.getLightMode() != SignLightMode.OFF;
-    renderSign(data, false, null, true, 0);
+    renderSign(data, false, null, true, 0, new Memo(data, computeLayout(data)));
   }
 
   /**
@@ -554,9 +593,18 @@ public class TileEntityDynamicStreetSignRenderer
      */
     boolean crossed;
 
-    /** The blades this pass draws: this one, and a stacked partner if it has one. */
+    /** {@link #blades()}, built once: several passes walk it every frame. */
+    private Layout[] blades;
+
+    /**
+     * The blades this pass draws: this one, and a stacked partner if it has one. Only call it once
+     * the layout is complete ({@link #computeLayout} never does), since the answer is kept.
+     */
     Layout[] blades() {
-      return lower == null || crossed ? new Layout[]{this} : new Layout[]{this, lower};
+      if (blades == null) {
+        blades = lower == null || crossed ? new Layout[]{this} : new Layout[]{this, lower};
+      }
+      return blades;
     }
   }
 
@@ -769,7 +817,7 @@ public class TileEntityDynamicStreetSignRenderer
   // ==================================================================== drawing ========
 
   private void renderSign(StreetSignData data, boolean farLod, BlockPos pos,
-      boolean stateDirty, int combinedLight) {
+      boolean stateDirty, int combinedLight, Memo memo) {
     // An illuminated blade reads at full brightness however dark the world is -- that is the
     // point of internal illumination. Only the face and legend go fullbright; the core slab,
     // the frame, and the hangers keep the ambient light stashed above.
@@ -778,7 +826,8 @@ public class TileEntityDynamicStreetSignRenderer
       worldBlockLight = FULLBRIGHT;
     }
 
-    Layout l = computeLayout(data);
+    // Measured once per change of the blade's data, not per frame.
+    Layout l = memo.layout;
     GuideSignColor signColor = data.getSignColor();
     boolean lightFace = signColor.isLight();
     float legendR = lightFace ? 0.06f : 0.94f;
@@ -809,10 +858,11 @@ public class TileEntityDynamicStreetSignRenderer
     // display list is compiled once and replayed, and the blades differ by a matrix, not
     // by vertices -- which is also why the turn costs nothing: it is outside the list.
     drawBlade(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod, pos,
-        combinedLight, 0L, postTop ? data.getBladeTurn() : 0);
+        combinedLight, 0L, postTop ? data.getBladeTurn() : 0, memo);
     if (postTop && l.lower != null) {
       drawBlade(l.lower, data, signColor, legendR, legendG, legendB, legendTextColor,
-          farLod, pos, combinedLight, CROSS_BLADE_KEY, data.getLowerBlade().getBladeTurn());
+          farLod, pos, combinedLight, CROSS_BLADE_KEY, data.getLowerBlade().getBladeTurn(),
+          memo);
     }
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -833,7 +883,7 @@ public class TileEntityDynamicStreetSignRenderer
    */
   private void drawBlade(Layout l, StreetSignData data, GuideSignColor signColor,
       float legendR, float legendG, float legendB, int legendTextColor, boolean farLod,
-      BlockPos pos, int combinedLight, long keyBias, int turn) {
+      BlockPos pos, int combinedLight, long keyBias, int turn, Memo memo) {
     final boolean turned = turn != 0;
     if (turned) {
       GlStateManager.pushMatrix();
@@ -843,7 +893,7 @@ public class TileEntityDynamicStreetSignRenderer
       GlStateManager.translate(-POST_X, 0.0f, -POST_Z);
     }
     renderAssembly(l, data, signColor, legendR, legendG, legendB, legendTextColor,
-        farLod, pos, combinedLight, keyBias);
+        farLod, pos, combinedLight, keyBias, memo);
     if (turned) {
       GlStateManager.popMatrix();
     }
@@ -859,7 +909,7 @@ public class TileEntityDynamicStreetSignRenderer
    */
   private void renderAssembly(Layout l, StreetSignData data, GuideSignColor signColor,
       float legendR, float legendG, float legendB, int legendTextColor, boolean farLod,
-      BlockPos pos, int combinedLight, long keyBias) {
+      BlockPos pos, int combinedLight, long keyBias, Memo memo) {
     // The structural passes below compile into display lists keyed on the block light, which is
     // the only input to them that changes without the tile entity being marked dirty (they draw at
     // ambient light, so an illuminated blade does not affect them). The white pixel is bound
@@ -895,10 +945,13 @@ public class TileEntityDynamicStreetSignRenderer
       renderCore(l, data.getCornerStyle());
     } else {
       GL11.glCallList(coreList);
+      // Every list here carries vertex colour, and a replay leaves GL's current colour at the
+      // last vertex's without GlStateManager knowing; a direct draw resets it in its post-draw.
+      GlStateManager.resetColor();
     }
 
     renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod,
-        pos, bakeable, faceKey, false);
+        pos, bakeable, faceKey, false, memo);
     if (data.isDoubleSided()) {
       // The back face is the same draw rotated 180 degrees about the PANEL's own vertical
       // axis. That is orientation-preserving, so combined with the outer mirror the
@@ -921,7 +974,7 @@ public class TileEntityDynamicStreetSignRenderer
       GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f);
       GlStateManager.translate(-CX, 0.0f, -mirrorZ);
       renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod,
-          pos, bakeable, faceKey, true);
+          pos, bakeable, faceKey, true, memo);
       GlStateManager.popMatrix();
     }
     // Frame, hangers and cable share one list: they are contiguous in the draw order and all draw
@@ -940,6 +993,7 @@ public class TileEntityDynamicStreetSignRenderer
       renderStructure(l, data);
     } else {
       GL11.glCallList(frameList);
+      GlStateManager.resetColor();
     }
 
   }
@@ -1096,7 +1150,7 @@ public class TileEntityDynamicStreetSignRenderer
    */
   private void renderFace(Layout l, StreetSignData data, GuideSignColor signColor,
       float legendR, float legendG, float legendB, int legendTextColor, boolean farLod,
-      BlockPos pos, boolean bakeable, long faceKey, boolean backFace) {
+      BlockPos pos, boolean bakeable, long faceKey, boolean backFace, Memo memo) {
     CornerStyle corners = data.getCornerStyle();
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
@@ -1114,6 +1168,7 @@ public class TileEntityDynamicStreetSignRenderer
       renderFaceBackground(l, signColor, legendR, legendG, legendB, corners);
     } else {
       GL11.glCallList(faceList);
+      GlStateManager.resetColor();
     }
 
     if (farLod) {
@@ -1122,11 +1177,37 @@ public class TileEntityDynamicStreetSignRenderer
       return;
     }
 
+    // Replayed when the run compiled for this pass and light is resident; otherwise compiled (in
+    // draw order, one list per texture change) and then replayed. Live when there is no position,
+    // the per-frame toggle is on, or the driver refuses a list. Every path leaves the white pixel
+    // bound, as the legend always did.
+    if (!bakeable) {
+      LEGEND_LISTS.beginLive();
+      renderLegends(l, data, legendTextColor, backFace);
+      LEGEND_LISTS.endLive();
+      return;
+    }
+    // Bits 0-31 the combined light, 32 lit, 33 stacked, 34 crossing blade, 35 rear face.
+    long legendKey = faceKey | (backFace ? BACK_FACE_KEY : 0L);
+    int pass = ((faceKey & CROSS_BLADE_KEY) != 0 ? 2 : 0) + (backFace ? 1 : 0);
+    if (!LEGEND_LISTS.replay(pos, legendKey, memo.legendKinds[pass])) {
+      LEGEND_LISTS.beginRecording(pos, legendKey);
+      renderLegends(l, data, legendTextColor, backFace);
+      memo.legendKinds[pass] = LEGEND_LISTS.endRecording();
+      if (!LEGEND_LISTS.replay(pos, legendKey, memo.legendKinds[pass])) {
+        LEGEND_LISTS.beginLive();
+        renderLegends(l, data, legendTextColor, backFace);
+        LEGEND_LISTS.endLive();
+      }
+    }
+  }
+
+  /** Every blade's legend for this pass, drawn through {@link #LEGEND_LISTS}. */
+  private void renderLegends(Layout l, StreetSignData data, int legendTextColor,
+      boolean backFace) {
     for (Layout blade : l.blades()) {
       renderLegend(blade, data, legendTextColor, backFace);
     }
-
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   /**
@@ -1230,27 +1311,24 @@ public class TileEntityDynamicStreetSignRenderer
     // dropping them to its baseline gives the equally common flush style.
     float affixCenterY = alignToNameCap(l, data.getAffixVertical(), l.affixCap);
 
-    GlStateManager.depthMask(false);
     float pen = groupLeft;
     if (!legend.getPrefix().isEmpty()) {
-      GuideSignFontRenderer.drawString(legend.getPrefix(), pen, affixCenterY, z, l.affixCap,
+      LEGEND_LISTS.text(legend.getPrefix(), pen, affixCenterY, z, l.affixCap,
           color, worldSkyLight, worldBlockLight);
       pen += l.prefixWidth;
     }
-    GuideSignFontRenderer.drawString(legend.getStreetName(), pen, l.nameCenterY, z, l.nameCap,
+    LEGEND_LISTS.text(legend.getStreetName(), pen, l.nameCenterY, z, l.nameCap,
         color, worldSkyLight, worldBlockLight);
     pen += l.nameWidth;
     if (!legend.getSuffix().isEmpty()) {
-      GuideSignFontRenderer.drawString(legend.getSuffix(), pen + gapAffix, affixCenterY, z,
+      LEGEND_LISTS.text(legend.getSuffix(), pen + gapAffix, affixCenterY, z,
           l.affixCap, color, worldSkyLight, worldBlockLight);
     }
     if (legend.hasCityText()) {
       float cityLeft = columnLeft + (l.textColumnWidth - l.cityWidth) / 2.0f;
-      GuideSignFontRenderer.drawString(legend.getCityText(), cityLeft, l.cityCenterY, z,
+      LEGEND_LISTS.text(legend.getCityText(), cityLeft, l.cityCenterY, z,
           l.cityCap, color, worldSkyLight, worldBlockLight);
     }
-    GlStateManager.depthMask(true);
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   /**
@@ -1276,11 +1354,8 @@ public class TileEntityDynamicStreetSignRenderer
 
   private void renderBlockNumber(StreetSignLegend legend, Layout l, float x, int color) {
     float centerY = alignToNameCap(l, legend.getBlockVertical(), l.blockCap);
-    GlStateManager.depthMask(false);
-    GuideSignFontRenderer.drawString(legend.getBlockNumber(), x, centerY, l.faceZ + Z_LEGEND,
+    LEGEND_LISTS.text(legend.getBlockNumber(), x, centerY, l.faceZ + Z_LEGEND,
         l.blockCap, color, worldSkyLight, worldBlockLight);
-    GlStateManager.depthMask(true);
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   /** The emblem slot: a route shield with its number drawn over it, or a civic logo cell. */
@@ -1304,7 +1379,7 @@ public class TileEntityDynamicStreetSignRenderer
     float centerY = l.contentCenterY;
     float z = l.faceZ + Z_EMBLEM;
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
+    LEGEND_LISTS.use(DynamicSignLegendLists.ATLAS);
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -1313,7 +1388,7 @@ public class TileEntityDynamicStreetSignRenderer
     atlasVertex(buf, centerX - halfWidth, centerY + halfHeight, z, uv[0], uv[1]);
     atlasVertex(buf, centerX - halfWidth, centerY - halfHeight, z, uv[0], uv[3]);
     atlasVertex(buf, centerX + halfWidth, centerY - halfHeight, z, uv[2], uv[3]);
-    tess.draw();
+    LEGEND_LISTS.draw(tess);
 
     String route = legend.getShieldRoute();
     if (isShield && !route.isEmpty()) {
@@ -1330,13 +1405,10 @@ public class TileEntityDynamicStreetSignRenderer
       // offset is measured top-down in the atlas cell, and pixel space here runs upwards.
       float textCenterX = centerX + (shieldType.getRouteTextCenterX() - 0.5f) * l.emblemWidth;
       float textCenterY = centerY - (shieldType.getRouteTextCenterY() - 0.5f) * l.emblemSize;
-      GlStateManager.depthMask(false);
-      GuideSignFontRenderer.drawString(route, textCenterX - width / 2.0f, textCenterY,
+      LEGEND_LISTS.text(route, textCenterX - width / 2.0f, textCenterY,
           l.faceZ + Z_ROUTE_TEXT, capPx, shieldType.getRouteTextColor(),
           worldSkyLight, worldBlockLight);
-      GlStateManager.depthMask(true);
     }
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   /**
@@ -1361,7 +1433,7 @@ public class TileEntityDynamicStreetSignRenderer
     float centerY = l.contentCenterY;
     float z = l.faceZ + Z_EMBLEM;
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
+    LEGEND_LISTS.use(DynamicSignLegendLists.ATLAS);
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -1369,8 +1441,7 @@ public class TileEntityDynamicStreetSignRenderer
     atlasVertex(buf, centerX - half, centerY + half, z, uLeft, uv[1]);
     atlasVertex(buf, centerX - half, centerY - half, z, uLeft, uv[3]);
     atlasVertex(buf, centerX + half, centerY - half, z, uRight, uv[3]);
-    tess.draw();
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    LEGEND_LISTS.draw(tess);
   }
 
   /**
