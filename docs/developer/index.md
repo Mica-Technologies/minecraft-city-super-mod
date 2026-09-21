@@ -35,7 +35,7 @@ Working on the mod rather than playing with it.
 
 ## Where things live
 
-The mod is built as a mandatory **Core** jar plus nine optional module jars, from one repository.
+The mod is built as a mandatory **Core** jar plus ten optional module jars, from one repository.
 Core is the `src/main` tree; each module is `modules/<name>/src/main`. Every tree has the same
 shape, and every asset keeps its `csm:` path whichever jar ships it.
 

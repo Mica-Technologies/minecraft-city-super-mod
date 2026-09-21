@@ -77,6 +77,7 @@ public final class CsmFabricatorCosts {
   private static final String TAB_NOVELTIES = "tabnovelties";
   private static final String TAB_POWER_GRID = "tabpowergrid";
   private static final String TAB_ROAD_SIGNS = "tabroadsigns";
+  private static final String TAB_SIGNAGE = "tabsignage";
   private static final String TAB_STRUCTURE_FRAMING = "tabstructureframing";
   private static final String TAB_TECHNOLOGY = "tabtechnology";
   private static final String TAB_TRAFFIC_ACCESSORIES = "tabtrafficaccessories";
@@ -299,6 +300,12 @@ public final class CsmFabricatorCosts {
       case TAB_TRAFFIC_ACCESSORIES:
         return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+
+      // Advertising: a printed face on a sheet metal cabinet. The boards built to size are
+      // priced per block of area when they are built, not here.
+      case TAB_SIGNAGE:
+        return cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
 
       case TAB_TRAFFIC_SIGNALS:
         return equipmentCost(tabId, block, registryName);

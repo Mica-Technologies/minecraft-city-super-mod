@@ -120,6 +120,8 @@ TABS = {
                      "Utility poles, transformers and the Forge Energy that runs through them."),
     "tabroadsigns": ("road-signs", "Road Signs",
                      "The MUTCD sign set, grouped the way the manual groups it."),
+    "tabsignage": ("signage", "Signage & Advertising",
+                   "Street ad kiosks, wall poster boards and billboards built to size."),
     "tabstructureframing": ("structure-framing", "Structure & Framing",
                             "Steel and wood stud walls, the structure that spans between "
                             "them, and structural steel."),
@@ -137,7 +139,7 @@ TABS = {
 
 PAGE_ORDER = ["tabbuildingmaterials", "tabconstructionsite", "tabfurniture", "tabgaming",
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
-              "tabnovelties", "tabpowergrid", "tabroadsigns", "tabstructureframing",
+              "tabnovelties", "tabpowergrid", "tabroadsigns", "tabsignage", "tabstructureframing",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabnone"]
 
 

@@ -29,7 +29,7 @@ The project ships its own Gradle wrapper, so no separate Gradle install is neede
 
 ## Modules
 
-The mod builds as a mandatory **CSM: Core** jar plus nine optional module jars, from this one
+The mod builds as a mandatory **CSM: Core** jar plus ten optional module jars, from this one
 repository: `build/libs/minecraft-city-super-mod-core-<version>.jar` and
 `minecraft-city-super-mod-<module>-<version>.jar` (`./gradlew printModuleJarNames` lists them).
 Core is the `src/main` source set; each module is a source set of its own under `modules/<name>`,
