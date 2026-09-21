@@ -40,6 +40,9 @@ import org.lwjgl.opengl.GL11;
  * solved by {@link DoorCloserArm} between the spindle the leaf has carried round and the shoe that
  * stayed put -- the same solution the models are baked from, shut and open.</p>
  *
+ * <p>A push bar's touch bar ({@code TINT_PUSH}) swings with the leaf, and while the door is pushed
+ * open it dips toward the leaf and comes back out ({@link #press}).</p>
+ *
  * <p>Each face is shaded as the world shades a block's faces, by which way it now faces, so a leaf
  * that ends its swing facing east is as dark as the east-facing open model that takes over.</p>
  *
@@ -59,6 +62,12 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
   /** SHARED with gen_doors.TINT_*: which part of a door model a quad belongs to. */
   private static final int TINT_FIXED = 1;
   private static final int TINT_ARM = 2;
+  private static final int TINT_PUSH = 3;
+
+  /** How far a push bar's touch bar goes in when it is pushed, in pixels, of the 1.25 it stands. */
+  private static final double PRESS_PX = 1.0;
+  /** The part of an opening swing it is in for, from the start. */
+  private static final double PRESS_SPAN = 0.5;
 
   @Override
   public void render(TileEntityDoorSwing te, double x, double y, double z, float partialTicks,
@@ -115,7 +124,7 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     TextureAtlasSprite armSprite = null;
     for (BakedQuad quad : upperQuads) {
       if (quad.getTintIndex() == TINT_FIXED) {
-        put(buffer, quad, facingTurn, 0);
+        put(buffer, quad, facingTurn, 0, 0);
       } else if (quad.getTintIndex() == TINT_ARM) {
         armSprite = quad.getSprite();
       }
@@ -130,15 +139,20 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     GlStateManager.translate(px, 0, pz);
     GlStateManager.rotate(angle, 0F, 1F, 0F);
     GlStateManager.translate(-px, 0, -pz);
+    // A push bar's touch bar is on the inside face, standing out north of the leaf; pushing it
+    // moves it south, toward the leaf. Only opening: nobody pushes a door that is closing itself.
+    double press = te.isOpening() ? press(p) / 16 : 0;
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
     for (BakedQuad quad : lowerQuads) {
       if (!quad.hasTintIndex()) {
-        put(buffer, quad, facingTurn + angle, -1);
+        put(buffer, quad, facingTurn + angle, -1, 0);
+      } else if (quad.getTintIndex() == TINT_PUSH) {
+        put(buffer, quad, facingTurn + angle, -1, press);
       }
     }
     for (BakedQuad quad : upperQuads) {
       if (!quad.hasTintIndex()) {
-        put(buffer, quad, facingTurn + angle, 0);
+        put(buffer, quad, facingTurn + angle, 0, 0);
       }
     }
     tessellator.draw();
@@ -160,17 +174,29 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
   }
 
   /**
-   * One baked quad, shaded for the way it faces once turned {@code yaw} degrees, and moved down a
-   * block for the lower half.
+   * One baked quad, shaded for the way it faces once turned {@code yaw} degrees, moved down a
+   * block for the lower half ({@code dy}) and along z by {@code dz} (a pressed touch bar), in
+   * blocks.
    */
-  private static void put(BufferBuilder buffer, BakedQuad quad, float yaw, double dy) {
+  private static void put(BufferBuilder buffer, BakedQuad quad, float yaw, double dy,
+      double dz) {
     LightUtil.renderQuadColor(buffer, quad, 0xFFFFFFFF);
     Vec3i n = quad.getFace().getDirectionVec();
     float s = shade(n.getX(), n.getY(), n.getZ(), yaw);
     buffer.putColorRGB_F4(s, s, s);
-    if (dy != 0) {
-      buffer.putPosition(0, dy, 0);
+    if (dy != 0 || dz != 0) {
+      buffer.putPosition(0, dy, dz);
     }
+  }
+
+  /**
+   * How far in a push bar's touch bar is, in pixels, {@code p} of the way through an opening swing:
+   * pressed in over the first quarter, as the hand that unlatches the door pushes it, and back out
+   * over the second as the latch clears and the door swings on. At rest, and all through closing,
+   * it is out, where the models draw it.
+   */
+  static double press(double p) {
+    return p <= 0 || p >= PRESS_SPAN ? 0 : PRESS_PX * Math.sin(Math.PI * p / PRESS_SPAN);
   }
 
   /**

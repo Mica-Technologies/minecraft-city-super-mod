@@ -87,6 +87,7 @@ CLOSER_ELBOW_SIDE = -1
 # registered for the doors, so they tint nothing. SHARED with TileEntityDoorSwingRenderer.
 TINT_FIXED = 1   # fixed to the frame, so drawn where it is and not swung: the closer's shoe
 TINT_ARM = 2     # the closer's arm, which the renderer solves and draws itself at every angle
+TINT_PUSH = 3    # a push bar's touch bar, which dips toward the leaf as the door is pushed open
 
 # registry name -> (style, colour, glass layer, name in each language). Order is creative order.
 DOORS = {
@@ -499,10 +500,11 @@ def knob(z_in, z_out):
 
 
 def push_bar(z_in):
-    """An exit device across the inside face at waist height, with its end cases."""
-    return [box(2, 13, z_in - 1.25, 14, 14.25, z_in, "#hw"),
-            box(1, 12.5, z_in - 1.75, 3, 14.75, z_in, "#hw"),
-            box(12.5, 12.25, z_in - 2, 15, 15, z_in, "#hw")]
+    """An exit device across the inside face at waist height, with its end cases. The touch bar
+    is marked TINT_PUSH: the renderer dips it toward the leaf as the door is pushed open."""
+    return _tint([box(2, 13, z_in - 1.25, 14, 14.25, z_in, "#hw")], TINT_PUSH) + [
+        box(1, 12.5, z_in - 1.75, 3, 14.75, z_in, "#hw"),
+        box(12.5, 12.25, z_in - 2, 15, 15, z_in, "#hw")]
 
 
 def pull_handle(z_out):
