@@ -22,6 +22,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.RadarSpeedSignConfi
 import com.micatechnologies.minecraft.csm.trafficaccessories.RadarSpeedSignConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficaccessories.SchoolZoneBeaconConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.SchoolZoneBeaconConfigPacketHandler;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityBarricadeRenderer;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TrafficAccessoriesGuiProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacketHandler;
@@ -130,6 +131,8 @@ public class CsmRoads {
     // resolves the method as soon as it is created — would fail there. A lambda resolves the
     // call only when it runs, and the client disconnect hooks only ever run on the client.
     CsmLifecycleHooks.onClientDisconnect(() -> APSSoundPacketHandler.stopAllSounds());
+    // The barricade's sign panels hold atlas sprites; a lambda for the same reason as above.
+    CsmLifecycleHooks.onClientDisconnect(() -> TileEntityBarricadeRenderer.clearSignPanels());
     CsmLifecycleHooks.onPlayerLoggedOut(BlockOverheightDetectionSensor::clearPendingPairing);
 
     // The packet order here fixes this channel's discriminators; only append to it.
