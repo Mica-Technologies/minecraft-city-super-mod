@@ -317,6 +317,8 @@ def cost_for(registry, info, ancestors):
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtrafficaccessories":
         return ("SHEET_METAL", "FASTENER_KIT")
+    if tab == "tabsignage":
+        return ("SIGN_BLANK", "SHEET_METAL")
     if tab == "tabtrafficsignals":
         if has("AbstractBlockTrafficSignalSensor", "AbstractBlockTrafficSignalSensorHZEight"):
             return ("OPTICAL_SENSOR", "CONTROL_BOARD")

@@ -26,6 +26,7 @@ every module requires it. Beyond that, install only the subsystems you actually 
 | **CSM: Furniture & Novelties** | Indoor and outdoor furniture, arcade cabinets, decorative novelties |
 | **CSM: Building Materials** | Block, stair, slab and fence sets |
 | **CSM: Text to Speech** | The speech engine and the Redstone TTS block. **Also requires CSM: Technology** |
+| **CSM: Signage & Advertising** | Street ad kiosks, wall poster boards and billboards built to size. Road signs are in Roads & Traffic |
 
 !!! warning "All from the same release, all the same version"
 
@@ -35,7 +36,7 @@ every module requires it. Beyond that, install only the subsystems you actually 
 
 !!! tip "Want the whole mod?"
 
-    Install all ten jars. That is the same content, in the same creative tabs, in the same order,
+    Install all eleven jars. That is the same content, in the same creative tabs, in the same order,
     as the mod had when it was a single jar. Modpacks that shipped the old single jar should list
     every jar they want instead.
 

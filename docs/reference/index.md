@@ -21,6 +21,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Novelties](novelties.md) | 35 | Decorative oddities that did not belong anywhere else. |
 | [Power Grid](power-grid.md) | 46 | Utility poles, transformers and the Forge Energy that runs through them. |
 | [Road Signs](road-signs.md) | 677 | The MUTCD sign set, grouped the way the manual groups it. |
+| [Signage & Advertising](signage.md) | 0 | Street ad kiosks, wall poster boards and billboards built to size. |
 | [Structure & Framing](structure-framing.md) | 32 | Steel and wood stud walls, the structure that spans between them, and structural steel. |
 | [Technology](technology.md) | 37 | Servers, routers, screens and consumer electronics. |
 | [Traffic Accessories](traffic-accessories.md) | 355 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |

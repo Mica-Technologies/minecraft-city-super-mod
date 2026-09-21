@@ -27,6 +27,7 @@ def csmModules = [
     [name: 'furnishings', modId: 'csm_furnishings', displayName: 'CSM: Furniture & Novelties'],
     [name: 'technology', modId: 'csm_technology', displayName: 'CSM: Technology'],
     [name: 'tts', modId: 'csm_tts', displayName: 'CSM: Text to Speech', deps: ['technology'], shadow: true],
+    [name: 'signage', modId: 'csm_signage', displayName: 'CSM: Signage & Advertising'],
 ]
 
 // Core's archive base name is minecraft-city-super-mod-core (buildscript.properties), so module

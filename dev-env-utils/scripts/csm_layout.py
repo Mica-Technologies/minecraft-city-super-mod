@@ -68,6 +68,7 @@ MODULE_OF_TAB = {
     "tabtrafficsignals": "roads",
     "tabroadshidden": "roads",
     "tabtechnology": "technology",
+    "tabsignage": "signage",
     "tabmaterials": CORE,
 }
 

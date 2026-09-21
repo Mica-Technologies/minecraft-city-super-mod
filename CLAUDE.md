@@ -75,7 +75,7 @@ CSM adds nothing to world generation. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
 ### Modules
 
-The mod ships as a mandatory **CSM: Core** jar (`csm`) plus nine optional module jars, all built
+The mod ships as a mandatory **CSM: Core** jar (`csm`) plus ten optional module jars, all built
 from this repository and released together at the same version. Every module pins Core to that
 exact version, and **all content keeps the `csm:` namespace** — module ids only give Forge a
 container per jar.
@@ -92,6 +92,7 @@ container per jar.
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties` |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
+| `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -117,6 +118,7 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 ├── lifesafety/       # Largest: fire alarms, emergency lighting, exit signs
 ├── lighting/
 ├── powergrid/        # Utility poles, electrical infrastructure
+├── signage/         (modules/signage) ad kiosks, poster boards, billboards
 ├── technology/       # Modern tech: servers, routers, TVs
 ├── tts/              (modules/tts)
 ├── trafficaccessories/
@@ -299,7 +301,7 @@ Voice evac sound volume target: ~4,500 RMS.
 ## In-Depth System Documentation
 
 See `assets/docs/` for detailed technical documentation on major subsystems:
-- `assets/docs/MODULE_SYSTEM.md` -- Core plus nine optional module jars: what each owns, how
+- `assets/docs/MODULE_SYSTEM.md` -- Core plus ten optional module jars: what each owns, how
   registration still works across jars, the Core service registries, adding a module, the traps
 - `assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md` -- Every abstract class, constructors, rotation, meta encoding, registration
 - `assets/docs/FRAMING_SYSTEM.md` -- Stud walls, joists, deck and structural steel: why a wall is
