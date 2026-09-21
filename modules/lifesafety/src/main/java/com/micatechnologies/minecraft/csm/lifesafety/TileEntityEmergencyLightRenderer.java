@@ -130,6 +130,11 @@ public class TileEntityEmergencyLightRenderer
       }
       if (list != CsmDisplayListCache.NO_LIST) {
         GL11.glCallList(list);
+        // The list's vertex colours leave GL's current colour at the last vertex's, which
+        // GlStateManager does not know about (a direct draw resets its cache afterwards; a replay
+        // does not). Without this a later color(1, 1, 1, 1) can be skipped as redundant and tint
+        // whatever draws next with this glow's colour and near-zero alpha.
+        GlStateManager.resetColor();
       } else {
         // The driver refused a list name: draw directly rather than calling list 0.
         drawGlow(lightBlock);

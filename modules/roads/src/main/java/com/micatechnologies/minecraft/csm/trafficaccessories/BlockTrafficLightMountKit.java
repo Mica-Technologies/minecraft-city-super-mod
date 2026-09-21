@@ -192,6 +192,12 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
     TileEntity te = worldIn.getTileEntity(pos);
     if (te instanceof TileEntityTrafficLightMountKit) {
       ((TileEntityTrafficLightMountKit) te).invalidateCachedBB();
+      // The client never gets neighborChanged, and its renderer caches the neighbour scan, so
+      // tell it: its readNBT drops the scan, and a head placed or broken beside this block shows
+      // on the next frame rather than at the scan's once-a-second recheck.
+      if (!worldIn.isRemote) {
+        ((TileEntityTrafficLightMountKit) te).syncServerToClient(worldIn);
+      }
     }
   }
 

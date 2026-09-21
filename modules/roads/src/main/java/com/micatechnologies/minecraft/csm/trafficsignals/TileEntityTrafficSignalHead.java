@@ -2,6 +2,8 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightCover;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKit;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireHangOffset;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireManager;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
@@ -19,6 +21,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalViso
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -1443,6 +1446,18 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
     super.onDataPacket(net, pkt);
     dirty = true;
+    // A mount kit or cover beside this head caches what it read from the head (tilt, sections,
+    // layout) for its renderer; a head edit changes no block, so no neighbour hears of it.
+    if (world != null) {
+      for (EnumFacing side : EnumFacing.VALUES) {
+        TileEntity neighbour = world.getTileEntity(pos.offset(side));
+        if (neighbour instanceof TileEntityTrafficLightMountKit) {
+          ((TileEntityTrafficLightMountKit) neighbour).invalidateCachedBB();
+        } else if (neighbour instanceof TileEntityTrafficLightCover) {
+          ((TileEntityTrafficLightCover) neighbour).invalidateCachedBB();
+        }
+      }
+    }
   }
 
   @Override

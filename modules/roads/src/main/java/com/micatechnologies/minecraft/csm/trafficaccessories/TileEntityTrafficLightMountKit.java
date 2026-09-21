@@ -139,6 +139,9 @@ public class TileEntityTrafficLightMountKit extends AbstractTileEntity {
   @Override
   public void readNBT(NBTTagCompound compound) {
     super.readNBT(compound);
+    // A sync arrives when a neighbour changed (see the block's neighborChanged), so the cached
+    // neighbour scan is out of date.
+    invalidateCachedBB();
     if (compound.hasKey(NBT_KEY_COLOR_SCHEME)) {
       this.colorScheme = MountKitColorScheme.fromOrdinal(compound.getInteger(NBT_KEY_COLOR_SCHEME));
     }
