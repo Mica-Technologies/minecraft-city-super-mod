@@ -244,26 +244,27 @@ public class TileEntityFireAlarmStrobeRenderer
     float g = strobeColor[1];
     float b = strobeColor[2];
 
+    // Everything drawn in the device's frame goes out in ONE draw. Each piece used to be its own
+    // begin/draw -- about fourteen per strobe per flash frame, and a whole building's strobes
+    // flash on the same frames -- but every quad here is additive (SRC_ALPHA, ONE) with the depth
+    // mask off and the alpha test disabled, and a clamped sum is the same in any order, so
+    // splitting them bought nothing.
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+
     // Front face — main flash covering the strobe lens (fully opaque core)
     float coreA = 1.0f * intensity;
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     emitCap(buffer, unitX, unitY, cenX, cenY, halfW, halfH, quadZ, r, g, b, coreA);
-    tessellator.draw();
 
     // Side wall — makes the strobe visible from angles (along the lens depth)
     float sideA = 0.7f * intensity;
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     emitBand(buffer, unitX, unitY, cenX, cenY, halfW, halfH, quadZ, halfW, halfH,
         quadZ + depth, r, g, b, sideA);
-    tessellator.draw();
 
     // Inner glow halo — close bloom around the lens, at twice its extents
     float haloA = 0.35f * intensity * atmosphere;
     float haloSpread = HALO_SPREAD_LIT + (HALO_SPREAD_DARK - HALO_SPREAD_LIT) * darkness;
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     emitCap(buffer, unitX, unitY, cenX, cenY, halfW * haloSpread, halfH * haloSpread,
         quadZ - 0.02f, r, g, b, haloA);
-    tessellator.draw();
 
     // Projected light cone — a 3D frustum (truncated pyramid) expanding outward from the
     // lens. Rendered as multiple nested frustum segments so the cone has graduated alpha
@@ -287,16 +288,12 @@ public class TileEntityFireAlarmStrobeRenderer
       // Under the smooth shade model this turns five stacked bands into one continuous beam; flat
       // averages left a visible step at every ring, which the stretched dark-room cone made
       // obvious.
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       emitBand(buffer, unitX, unitY, cenX, cenY, nw, nh, nearZ, fw, fh, farZ,
           r, g, b, nearAlpha, farAlpha);
-      tessellator.draw();
 
       // Front cap on each segment for head-on viewing. Brightest at the axis and fading to nothing
       // at the rim, so the stack reads as a beam rather than as a pile of discs.
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       emitFadedCap(buffer, unitX, unitY, cenX, cenY, fw, fh, farZ, r, g, b, farAlpha);
-      tessellator.draw();
     }
 
     // Wash thrown back onto the surface the device is mounted on. Real appliances spill a lot of
@@ -307,14 +304,13 @@ public class TileEntityFireAlarmStrobeRenderer
       BlockPos behind = te.getPos().offset(facing.getOpposite());
       if (world.getBlockState(behind).isSideSolid(world, behind, facing)) {
         float washA = WALL_WASH_ALPHA * intensity * darkness;
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         emitSoftPool(buffer, cenX, cenY, 0.5f - SURFACE_LIFT,
             1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
             WALL_WASH_RADIUS + Math.max(halfW, halfH) * WALL_WASH_LENS_SPREAD,
             r, g, b, washA);
-        tessellator.draw();
       }
     }
+    tessellator.draw();
 
     GlStateManager.popMatrix();
 
@@ -415,6 +411,9 @@ public class TileEntityFireAlarmStrobeRenderer
       Tessellator tessellator, BufferBuilder buffer) {
     StrobeSurfaceProjection.Splash[] splashes = StrobeSurfaceProjection.get(
         world, pos, facing, new float[]{cenX, cenY, lensZ});
+    // All the pools in one draw, for the same reason as the device's pieces: additive, no depth
+    // writes, so their order never mattered.
+    boolean begun = false;
     for (StrobeSurfaceProjection.Splash splash : splashes) {
       float localDarkness = darkness(world, splash.lightPos);
       float alpha = POOL_ALPHA * intensity * splash.weight * localDarkness;
@@ -422,23 +421,35 @@ public class TileEntityFireAlarmStrobeRenderer
         continue;
       }
       double[] plane = planeAxes(splash.face);
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      if (!begun) {
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+        begun = true;
+      }
       emitSoftPool(buffer, splash.offsetX, splash.offsetY, splash.offsetZ,
           plane[0], plane[1], plane[2], plane[3], plane[4], plane[5],
           splash.radius, r, g, b, alpha);
+    }
+    if (begun) {
       tessellator.draw();
     }
   }
 
-  /** Two perpendicular in-plane axes for a face, as {ax, ay, az, bx, by, bz}. */
+  private static final double[] PLANE_Y = {1, 0, 0, 0, 0, 1};
+  private static final double[] PLANE_X = {0, 0, 1, 0, 1, 0};
+  private static final double[] PLANE_Z = {1, 0, 0, 0, 1, 0};
+
+  /**
+   * Two perpendicular in-plane axes for a face, as {ax, ay, az, bx, by, bz}. Shared constants,
+   * read only, so a flash frame allocates nothing here.
+   */
   private static double[] planeAxes(EnumFacing face) {
     switch (face.getAxis()) {
       case Y:
-        return new double[]{1, 0, 0, 0, 0, 1};
+        return PLANE_Y;
       case X:
-        return new double[]{0, 0, 1, 0, 1, 0};
+        return PLANE_X;
       default:
-        return new double[]{1, 0, 0, 0, 1, 0};
+        return PLANE_Z;
     }
   }
 
