@@ -119,4 +119,10 @@ How each system works, and how to build with it.
 
     Arcade cabinets, game tables and the decorative oddities.
 
+-   :material-billboard:{ .lg .middle } **[Advertising](advertising.md)**
+
+    ---
+
+    Poster boards, billboards up to 40 x 40 and street kiosks, with ads that rotate.
+
 </div>

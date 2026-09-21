@@ -307,10 +307,17 @@ public class TileEntityAdBoard extends AbstractTileEntity {
     return renderBox;
   }
 
+  /**
+   * The long range every CSM renderer shares, plus the board's own size. The distance is measured
+   * to the controller alone -- a board's bottom corner -- so without the size, a 40-block
+   * billboard's face vanished while most of it stood well inside the range; the benchmark scene
+   * showed five of ten billboards blank.
+   */
   @Override
   @SideOnly(Side.CLIENT)
   public double getMaxRenderDistanceSquared() {
-    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+    double reach = LONG_RANGE_RENDER_DISTANCE + width + height;
+    return reach * reach;
   }
 
   @Override
