@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
@@ -58,6 +59,15 @@ public class TileEntityCrosswalkSignalNewRenderer
      */
     private static final CsmDisplayListCache COUNTDOWN_LISTS =
             new CsmDisplayListCache("crosswalk_countdown");
+
+    /**
+     * The mounting arms and stubs (any mount but {@code BASE}). They depend on the mount, the
+     * housing, the tilt, the facing, the body colour and the light, never on the position, so
+     * every crosswalk that looks the same replays one list -- see {@link #mountKey}. Before, they
+     * were emitted and drawn immediate-mode every frame, two Tessellator draws per signal.
+     */
+    private static final CsmSharedDisplayLists MOUNT_LISTS =
+            new CsmSharedDisplayLists( "crosswalk_mount" );
 
     private static final ResourceLocation WHITE_TEXTURE =
         new ResourceLocation("csm", "textures/blocks/white1px.png");
@@ -174,10 +184,8 @@ public class TileEntityCrosswalkSignalNewRenderer
             GL11.glRotatef( baseDirection.getRotation(), 0, 1, 0 );
             GL11.glTranslated( -8, -8, -8 );
 
-            renderBoxes( bodyColor, CrosswalkSignalVertexData.getArmData(
-                    mountType, displayType, tiltOffset,
-                    bodyDirection.getRotation(), baseDirection.getRotation() ),
-                    worldSkyLight, worldBlockLight );
+            renderMountPart( false, bodyColor, mountType, displayType, bodyTilt, facing,
+                    tiltOffset, bodyDirection, baseDirection, combinedLight );
 
             GL11.glPopMatrix();
         }
@@ -196,8 +204,8 @@ public class TileEntityCrosswalkSignalNewRenderer
 
         // Render stubs in the tilted context (before display list)
         if ( mountType != CrosswalkMountType.BASE && !CsmRenderToggles.skipCrosswalkArms ) {
-            renderBoxes( bodyColor, CrosswalkSignalVertexData.getStubData(
-                    mountType, displayType ), worldSkyLight, worldBlockLight );
+            renderMountPart( true, bodyColor, mountType, displayType, bodyTilt, facing,
+                    tiltOffset, bodyDirection, baseDirection, combinedLight );
         }
 
         // Display list: body + visor only (no bracket)
@@ -239,6 +247,8 @@ public class TileEntityCrosswalkSignalNewRenderer
         // bindTexture and producing a white-tinted body at replay.
         Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
         GL11.glCallList( displayList );
+        // The body's vertex colours leave GL's colour where GlStateManager's cache cannot see it.
+        GlStateManager.resetColor();
 
         // Display face textures — compute flash state here from the once-per-frame cached
         // wall-clock flash timer rather than a JNI System.currentTimeMillis() call per signal.
@@ -416,17 +426,106 @@ public class TileEntityCrosswalkSignalNewRenderer
     }
 
     /**
-     * Renders a list of colored boxes. Used for bracket stubs and arms which are rendered
-     * in different GL matrix contexts.
+     * Draws the arms ({@code stubs == false}, in the base-facing context) or the stubs (in the
+     * tilted context) from a list shared by every crosswalk that looks the same, compiling it the
+     * first time that look is seen. The caller has already set up the matrix; a list does not
+     * capture it, so one list serves every position.
+     *
+     * <p>The white texture is bound here, outside the list, every frame -- see
+     * "Display lists: one texture, no cached state" in {@code TRAFFIC_SIGNAL_SYSTEM.md}.
+     * {@link CsmRenderToggles#sharedBakesPerFrame} draws them per frame instead, as they were
+     * drawn before they were baked.</p>
      */
-    private void renderBoxes( TrafficSignalBodyColor color, List<RenderHelper.Box> boxes,
+    private void renderMountPart( boolean stubs, TrafficSignalBodyColor color,
+            CrosswalkMountType mountType, CrosswalkDisplayType displayType,
+            TrafficSignalBodyTilt bodyTilt, EnumFacing facing, int tiltOffset,
+            DirectionSixteen bodyDirection, DirectionSixteen baseDirection, int combinedLight ) {
+        int skyLight = ( combinedLight >> 16 ) & 0xFFFF;
+        int blockLight = combinedLight & 0xFFFF;
+        Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
+        if ( CsmRenderToggles.sharedBakesPerFrame ) {
+            drawMountPart( stubs, color, mountType, displayType, tiltOffset, bodyDirection,
+                    baseDirection, skyLight, blockLight );
+            return;
+        }
+        long key = mountKey( stubs, color, mountType, displayType, bodyTilt, facing,
+                combinedLight );
+        int list = MOUNT_LISTS.get( key );
+        if ( list == CsmDisplayListCache.NO_LIST ) {
+            list = MOUNT_LISTS.allocate( key );
+            if ( list != CsmDisplayListCache.NO_LIST ) {
+                GL11.glNewList( list, GL11.GL_COMPILE );
+                drawMountPart( stubs, color, mountType, displayType, tiltOffset, bodyDirection,
+                        baseDirection, skyLight, blockLight );
+                GL11.glEndList();
+            }
+        }
+        if ( list != CsmDisplayListCache.NO_LIST ) {
+            GL11.glCallList( list );
+            // The replay leaves GL's colour at the last vertex's without GlStateManager knowing;
+            // a direct draw resets its cache afterwards, so this keeps the two paths the same.
+            GlStateManager.resetColor();
+        }
+        else {
+            // The driver refused a list name: draw directly rather than calling list 0.
+            drawMountPart( stubs, color, mountType, displayType, tiltOffset, bodyDirection,
+                    baseDirection, skyLight, blockLight );
+        }
+    }
+
+    /**
+     * Packs everything the arm or stub geometry depends on into a shared-list key. Never a
+     * position: the lightmap is baked into the vertices, so the light is part of the key instead
+     * (sky and block light are 0-15 each, so at most 256 lights per look).
+     *
+     * <pre>
+     *  bits  0-31  combinedLight, as getCombinedLight returns it
+     *  bits 32-39  body colour ordinal
+     *  bits 40-43  mount type ordinal
+     *  bits 44-47  display type ordinal (arms and stubs are sized to the housing)
+     *  bits 48-51  body tilt ordinal   (arms only: they angle to meet the tilted stubs)
+     *  bits 52-54  facing index        (arms only: the tilt is resolved against the facing)
+     *  bit  60     1 = stubs, 0 = arms
+     * </pre>
+     */
+    private static long mountKey( boolean stubs, TrafficSignalBodyColor color,
+            CrosswalkMountType mountType, CrosswalkDisplayType displayType,
+            TrafficSignalBodyTilt bodyTilt, EnumFacing facing, int combinedLight ) {
+        long key = ( combinedLight & 0xFFFFFFFFL )
+                | ( (long) ( color.ordinal() & 0xFF ) << 32 )
+                | ( (long) ( mountType.ordinal() & 0xF ) << 40 )
+                | ( (long) ( displayType.ordinal() & 0xF ) << 44 );
+        if ( stubs ) {
+            return key | ( 1L << 60 );
+        }
+        return key
+                | ( (long) ( bodyTilt.ordinal() & 0xF ) << 48 )
+                | ( (long) ( facing.getIndex() & 0x7 ) << 52 );
+    }
+
+    /** Emits and draws the arms or the stubs. Geometry only: the caller owns every GL state. */
+    private static void drawMountPart( boolean stubs, TrafficSignalBodyColor color,
+            CrosswalkMountType mountType, CrosswalkDisplayType displayType, int tiltOffset,
+            DirectionSixteen bodyDirection, DirectionSixteen baseDirection, int skyLight,
+            int blockLight ) {
+        List<RenderHelper.Box> boxes = stubs
+                ? CrosswalkSignalVertexData.getStubData( mountType, displayType )
+                : CrosswalkSignalVertexData.getArmData( mountType, displayType, tiltOffset,
+                        bodyDirection.getRotation(), baseDirection.getRotation() );
+        drawBoxes( color, boxes, skyLight, blockLight );
+    }
+
+    /**
+     * Draws a list of colored boxes against whatever texture is bound (the caller binds the white
+     * pixel). Used for bracket stubs and arms which are rendered in different GL matrix contexts.
+     */
+    private static void drawBoxes( TrafficSignalBodyColor color, List<RenderHelper.Box> boxes,
             int skyLight, int blockLight ) {
         if ( boxes.isEmpty() ) return;
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
         buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
         RenderHelper.addBoxesToBufferLit( boxes, buffer,
                 color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0,
