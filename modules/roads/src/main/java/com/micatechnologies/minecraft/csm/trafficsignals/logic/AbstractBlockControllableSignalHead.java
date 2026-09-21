@@ -535,6 +535,26 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   }
 
   /**
+   * {@link #getHeadDisplacement(IBlockAccess, BlockPos)} for a caller that already holds the
+   * head's tile entity and block state -- the renderer, every frame -- so neither is looked up
+   * again. Returns exactly what the world form returns for the same head.
+   *
+   * @param head  this block's tile entity.
+   * @param state this block's current state.
+   *
+   * @return the displacement in model units and world axes, never null.
+   */
+  public final Vec3d getHeadDisplacement(TileEntityTrafficSignalHead head, IBlockState state) {
+    final Vec3d span = head.getSpanWireOffset();
+    final int forward = head.getNudgeForward();
+    final int side = head.getNudgeSide();
+    final Vec3d nudge = forward == 0 && side == 0
+        ? Vec3d.ZERO
+        : getNudgeOffset(forward, side, state);
+    return new Vec3d(span.x + nudge.x, span.y, span.z + nudge.z);
+  }
+
+  /**
    * A head's hand-placed nudge, turned from its own forward/right terms into world axes.
    *
    * <p>Stored against the facing so that turning a head takes its nudge with it, which is what
@@ -553,7 +573,11 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     if (forward == 0 && side == 0) {
       return Vec3d.ZERO;
     }
-    final IBlockState state = world.getBlockState(pos);
+    return getNudgeOffset(forward, side, world.getBlockState(pos));
+  }
+
+  /** The facing-to-world-axes half of the nudge conversion, for a state already in hand. */
+  private static Vec3d getNudgeOffset(int forward, int side, IBlockState state) {
     if (!state.getProperties().containsKey(FACING)) {
       return Vec3d.ZERO;
     }
@@ -607,6 +631,20 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     return getSignalYOffset();
   }
 
+  /**
+   * Public read of {@link #getBaseSignalYOffset}, for the tile entity's cached render layout. The
+   * renderer used to reach it only through {@link #getSignalOffset}, which re-derived it -- and
+   * with it an add-on's neighbour scan -- every frame.
+   *
+   * @param world the block access.
+   * @param pos   this block's position.
+   *
+   * @return this signal's own vertical offset, in model units.
+   */
+  public final float getRestingSignalYOffset(IBlockAccess world, BlockPos pos) {
+    return getBaseSignalYOffset(world, pos);
+  }
+
 
   /**
    * Returns the block-space offset from this signal to the main signal that this add-on
@@ -653,11 +691,26 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     ensureTileEntity(worldIn, pos);
     // A head appearing or disappearing beside this one changes whether the mount bracket keeps
     // its end cap, and the renderer caches that answer rather than re-deriving it every frame.
+    // The client never hears neighborChanged, so the tile entity also tells it, by a sync, when
+    // the change moved anything its render layout depends on.
     net.minecraft.tileentity.TileEntity tileEntity = worldIn.getTileEntity(pos);
     if (tileEntity instanceof TileEntityTrafficSignalHead) {
-      ((TileEntityTrafficSignalHead) tileEntity).invalidateMountSuppression();
+      ((TileEntityTrafficSignalHead) tileEntity).onNeighbourChanged(worldIn, state);
     }
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+  }
+
+  /**
+   * Runs the layout sync {@link #neighborChanged} scheduled, once the block change behind it has
+   * gone to the clients. See {@link TileEntityTrafficSignalHead#onNeighbourChanged}.
+   */
+  @Override
+  public void updateTick(World worldIn, BlockPos pos, IBlockState state, java.util.Random rand) {
+    super.updateTick(worldIn, pos, state, rand);
+    net.minecraft.tileentity.TileEntity tileEntity = worldIn.getTileEntity(pos);
+    if (tileEntity instanceof TileEntityTrafficSignalHead) {
+      ((TileEntityTrafficSignalHead) tileEntity).flushLayoutSync(worldIn, state);
+    }
   }
 
   /**

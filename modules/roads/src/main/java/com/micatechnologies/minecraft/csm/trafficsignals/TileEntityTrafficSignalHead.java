@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightCover;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKit;
@@ -28,6 +29,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -226,6 +228,17 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         && now - cachedMountSuppressionTick < MOUNT_SUPPRESSION_REFRESH_TICKS) {
       return cachedMountSuppression;
     }
+    int mask = computeMountSuppression(world, horizontal, state);
+    cachedMountSuppression = mask;
+    cachedMountSuppressionTick = now;
+    return mask;
+  }
+
+  /**
+   * Derives the mount-edge suppression mask from the world, uncached. See
+   * {@link #getMountSuppression}.
+   */
+  private int computeMountSuppression(World world, boolean horizontal, IBlockState state) {
     int mask = 0;
     if (world != null) {
       BlockPos pos = getPos();
@@ -248,8 +261,6 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         }
       }
     }
-    cachedMountSuppression = mask;
-    cachedMountSuppressionTick = now;
     return mask;
   }
 
@@ -275,6 +286,291 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   }
 
   /**
+   * How far from a head the block's layout detection looks for another head, in blocks along any
+   * one axis: an add-on scans three up and down and three to either side for its main signal, and
+   * the mount suppression looks two along its axis. A head appearing, going, or flipping inside
+   * this reach can change another head's layout; outside it, nothing can.
+   */
+  private static final int LAYOUT_SCAN_REACH = 3;
+
+  /**
+   * Everything the renderer works out about this head's layout from its block and the heads
+   * around it, derived once and kept until one of its inputs changes.
+   *
+   * <p>The renderer used to ask the block for all of it every frame: whether the head is
+   * horizontal, its section positions (each of which asks again), its resting offset (which asks
+   * again) and its tilt pivot. For an add-on every one of those asks scans up to fourteen
+   * neighbouring block states for its main signal, so an add-on head paid for about five scans a
+   * frame; a plain head paid a tile entity lookup for each. None of the answers change unless one
+   * of these does:</p>
+   * <ul>
+   *   <li>this head's block or facing, or its section count -- checked on every read, since a
+   *       block change reaches the client without any tile entity event;</li>
+   *   <li>this head's own horizontal flip -- a sync, so {@link #readNBT} drops the layout;</li>
+   *   <li>a head appearing, going, or flipping within {@link #LAYOUT_SCAN_REACH} -- that head's
+   *       own {@link #onLoad}, {@link #invalidate}, {@link #onChunkUnload} or flip sync drops
+   *       the layout of every head around it ({@link #dropNearbyLayouts});</li>
+   *   <li>any other block beside it (the mount suppression looks through air) -- the client never
+   *       hears {@code neighborChanged}, so the server's copy syncs this head when such a change
+   *       moved its layout ({@link #onNeighbourChanged}), and the sync drops it here.</li>
+   * </ul>
+   *
+   * <p>The span wire offset and the hand nudge are not in it: they have their own cadence and
+   * are cheap reads of this tile entity, so the renderer still takes them live.</p>
+   */
+  public static final class RenderLayout {
+
+    /** The block this was derived for. */
+    final Block block;
+
+    /** The facing this was derived for. */
+    final EnumFacing facing;
+
+    /** The section count this was derived for. */
+    final int sectionCount;
+
+    /** Whether the head draws in horizontal orientation. */
+    public final boolean horizontal;
+
+    /** Per-section Y positions, padded to the section count. Read only. */
+    public final float[] sectionYPositions;
+
+    /** Per-section X positions, padded to the section count. Read only. */
+    public final float[] sectionXPositions;
+
+    /** Per-section sizes, padded to the section count. Read only. */
+    public final int[] sectionSizes;
+
+    /** The head's own vertical offset before any span or nudge, in model units. */
+    public final float restingSignalYOffset;
+
+    /** Block offset to the main signal an add-on tilts about. Read only. */
+    public final int[] tiltPivotOffset;
+
+    /** The mount-edge suppression mask, for {@link #horizontal}. */
+    public final int mountSuppression;
+
+    RenderLayout(Block block, EnumFacing facing, int sectionCount, boolean horizontal,
+        float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes,
+        float restingSignalYOffset, int[] tiltPivotOffset, int mountSuppression) {
+      this.block = block;
+      this.facing = facing;
+      this.sectionCount = sectionCount;
+      this.horizontal = horizontal;
+      this.sectionYPositions = sectionYPositions;
+      this.sectionXPositions = sectionXPositions;
+      this.sectionSizes = sectionSizes;
+      this.restingSignalYOffset = restingSignalYOffset;
+      this.tiltPivotOffset = tiltPivotOffset;
+      this.mountSuppression = mountSuppression;
+    }
+  }
+
+  /** The cached render layout, or null when it must be derived again. Client only in practice. */
+  private transient RenderLayout renderLayout;
+
+  /**
+   * The last layout signature this head's server copy sent its clients, or
+   * {@link #NO_LAYOUT_SIGNATURE} when none has been sent this session.
+   */
+  private transient long syncedLayoutSignature = NO_LAYOUT_SIGNATURE;
+
+  /** {@link #syncedLayoutSignature} value meaning unknown; never a real signature. */
+  private static final long NO_LAYOUT_SIGNATURE = Long.MIN_VALUE;
+
+  /**
+   * Returns this head's render layout, deriving it if it was dropped or its block, facing or
+   * section count moved since. See {@link RenderLayout}.
+   *
+   * @param state        this block's current state; its block must be a signal head
+   * @param facing       the state's facing, which the caller already holds
+   * @param sectionCount how many sections are being drawn
+   *
+   * @return the layout, never null
+   */
+  public RenderLayout getRenderLayout(IBlockState state, EnumFacing facing, int sectionCount) {
+    RenderLayout layout = renderLayout;
+    Block block = state.getBlock();
+    if (layout != null && layout.block == block && layout.facing == facing
+        && layout.sectionCount == sectionCount) {
+      return layout;
+    }
+    AbstractBlockControllableSignalHead signalBlock = (AbstractBlockControllableSignalHead) block;
+    World world = getWorld();
+    BlockPos pos = getPos();
+    boolean horizontal = signalBlock.isHorizontal(world, pos);
+    layout = new RenderLayout(block, facing, sectionCount, horizontal,
+        padSectionYPositions(signalBlock.getSectionYPositions(sectionCount, world, pos),
+            sectionCount),
+        padSectionXPositions(signalBlock.getSectionXPositions(sectionCount, world, pos),
+            sectionCount),
+        padSectionSizes(signalBlock.getSectionSizes(sectionCount), sectionCount),
+        signalBlock.getRestingSignalYOffset(world, pos),
+        signalBlock.getTiltPivotOffset(world, pos),
+        computeMountSuppression(world, horizontal, state));
+    renderLayout = layout;
+    return layout;
+  }
+
+  /**
+   * Pads section Y positions to the section count, if the tile entity has more sections than the
+   * block expects (a world migrated from the old three-section defaults), with the standard
+   * stack spacing. Returns the array itself when no padding is needed.
+   */
+  static float[] padSectionYPositions(float[] positions, int sectionCount) {
+    if (positions.length >= sectionCount) {
+      return positions;
+    }
+    float[] padded = new float[sectionCount];
+    System.arraycopy(positions, 0, padded, 0, positions.length);
+    for (int i = positions.length; i < sectionCount; i++) {
+      padded[i] = ((sectionCount - 1 - i) - (sectionCount - 1) / 2.0f) * 12.0f;
+    }
+    return padded;
+  }
+
+  /** As {@link #padSectionYPositions}, for X positions, which pad with zero. */
+  static float[] padSectionXPositions(float[] positions, int sectionCount) {
+    if (positions.length >= sectionCount) {
+      return positions;
+    }
+    float[] padded = new float[sectionCount];
+    System.arraycopy(positions, 0, padded, 0, positions.length);
+    return padded;
+  }
+
+  /** As {@link #padSectionYPositions}, for section sizes, which pad with twelve inches. */
+  static int[] padSectionSizes(int[] sizes, int sectionCount) {
+    if (sizes.length >= sectionCount) {
+      return sizes;
+    }
+    int[] padded = new int[sectionCount];
+    System.arraycopy(sizes, 0, padded, 0, sizes.length);
+    for (int i = sizes.length; i < sectionCount; i++) padded[i] = 12;
+    return padded;
+  }
+
+  /** Drops the cached render layout and mount-edge suppression; the next frame re-derives them. */
+  public void invalidateRenderLayout() {
+    renderLayout = null;
+    invalidateMountSuppression();
+  }
+
+  /**
+   * Called from the block's {@code neighborChanged}. Drops the cached answers, and on the server
+   * arranges for {@link #flushLayoutSync} to sync this head if the change moved anything its
+   * layout depends on: the client never hears {@code neighborChanged}, and its {@link #readNBT}
+   * drops the layout when the sync lands.
+   *
+   * <p>Deferred by {@link #LAYOUT_SYNC_DELAY_TICKS}, because a tile entity sync goes out at once
+   * while the block change that caused it goes out with the chunk's batched changes at the next
+   * world tick. Sent straight away, the sync would reach the client first, the client would
+   * re-derive the layout against the world as it was, and nothing would correct it.</p>
+   *
+   * @param world the world
+   * @param state this block's current state
+   */
+  public void onNeighbourChanged(World world, IBlockState state) {
+    invalidateRenderLayout();
+    if (world.isRemote || layoutSyncPending) {
+      return;
+    }
+    layoutSyncPending = true;
+    world.scheduleUpdate(pos, state.getBlock(), LAYOUT_SYNC_DELAY_TICKS);
+  }
+
+  /**
+   * Syncs this head to its clients if a neighbour change noted by {@link #onNeighbourChanged}
+   * moved its layout. Called from the block's scheduled {@code updateTick}; a no-op otherwise.
+   *
+   * <p>Only on a change. A signal controller setting a head's colour notifies that head's
+   * neighbours, and a stacked or add-on head is a neighbour, so an unconditional sync would send a
+   * packet -- and force a display list recompile -- for every such head on every phase change.</p>
+   *
+   * @param world the world
+   * @param state this block's current state
+   */
+  public void flushLayoutSync(World world, IBlockState state) {
+    if (world.isRemote || !layoutSyncPending) {
+      return;
+    }
+    layoutSyncPending = false;
+    if (!(state.getBlock() instanceof AbstractBlockControllableSignalHead)) {
+      return;
+    }
+    // Do not load a neighbouring chunk to answer this; send the sync instead.
+    long signature = world.isAreaLoaded(pos, LAYOUT_SCAN_REACH)
+        ? computeLayoutSignature(world, state)
+        : NO_LAYOUT_SIGNATURE;
+    if (signature == NO_LAYOUT_SIGNATURE || signature != syncedLayoutSignature) {
+      syncedLayoutSignature = signature;
+      syncServerToClient(world);
+    }
+  }
+
+  /**
+   * Ticks from a neighbour change to the layout sync it may cause. Two, so the sync is sent after
+   * the world tick that sends the block change, wherever in a tick the change happened (the
+   * network phase runs after the world tick; a scheduled update runs before it).
+   */
+  private static final int LAYOUT_SYNC_DELAY_TICKS = 2;
+
+  /** Whether a layout sync is scheduled on the server; see {@link #onNeighbourChanged}. */
+  private transient boolean layoutSyncPending = false;
+
+  /**
+   * Packs what the neighbours decide about this head's layout into one number: whether it is
+   * horizontal, its mount-edge suppression and its tilt pivot. The rest of the layout follows from
+   * these and the head's own block and data. Bit 0 horizontal, bits 1-2 suppression, then the
+   * pivot's x, y and z, each offset by eight, in four bits apiece (the pivot is at most
+   * {@link #LAYOUT_SCAN_REACH} from the head).
+   */
+  private long computeLayoutSignature(World world, IBlockState state) {
+    AbstractBlockControllableSignalHead signalBlock =
+        (AbstractBlockControllableSignalHead) state.getBlock();
+    boolean horizontal = signalBlock.isHorizontal(world, pos);
+    int[] pivot = signalBlock.getTiltPivotOffset(world, pos);
+    return (horizontal ? 1L : 0L)
+        | ((long) computeMountSuppression(world, horizontal, state) << 1)
+        | ((long) ((pivot[0] + 8) & 0xF) << 3)
+        | ((long) ((pivot[1] + 8) & 0xF) << 7)
+        | ((long) ((pivot[2] + 8) & 0xF) << 11);
+  }
+
+  /**
+   * Drops the render layout of every head within {@link #LAYOUT_SCAN_REACH} of this one along
+   * each axis, on the client. Called when this head appears, goes, or changes its horizontal
+   * flip -- the only things about it that another head's layout reads. Looks only at tile
+   * entities that already exist, so it never creates one or loads a chunk.
+   */
+  private void dropNearbyLayouts() {
+    World world = getWorld();
+    if (world == null || !world.isRemote) {
+      return;
+    }
+    for (EnumFacing dir : EnumFacing.VALUES) {
+      for (int distance = 1; distance <= LAYOUT_SCAN_REACH; distance++) {
+        BlockPos other = pos.offset(dir, distance);
+        if (world.isOutsideBuildHeight(other) || !world.isBlockLoaded(other)) {
+          break;
+        }
+        TileEntity tileEntity = world.getChunk(other)
+            .getTileEntity(other, Chunk.EnumCreateEntityType.CHECK);
+        if (tileEntity instanceof TileEntityTrafficSignalHead) {
+          ((TileEntityTrafficSignalHead) tileEntity).invalidateRenderLayout();
+        }
+      }
+    }
+  }
+
+  @Override
+  public void onLoad() {
+    super.onLoad();
+    // A head appearing can make an add-on near it horizontal, or pair a mount bracket end.
+    dropNearbyLayouts();
+  }
+
+  /**
    * How far, in blocks, a head can be drawn from its own block along any axis: the most a span
    * hanger may lower it plus the most a builder may nudge it.
    *
@@ -295,11 +591,30 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   @Override
   public AxisAlignedBB getRenderBoundingBox() {
+    if (CsmRenderToggles.signalLayoutPerFrame) {
+      return computeRenderBoundingBox();
+    }
+    // Asked for every frame by the frustum check, and it depends on nothing but the position: keep
+    // the one box (it is immutable) rather than allocating two per head per frame.
+    AxisAlignedBB box = cachedRenderBoundingBox;
+    if (box == null || cachedRenderBoundingBoxPos != pos) {
+      box = computeRenderBoundingBox();
+      cachedRenderBoundingBox = box;
+      cachedRenderBoundingBoxPos = pos;
+    }
+    return box;
+  }
+
+  private AxisAlignedBB computeRenderBoundingBox() {
     return new AxisAlignedBB(
         pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
         pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0)
         .grow(MAX_DISPLACEMENT_BLOCKS);
   }
+
+  /** {@link #getRenderBoundingBox()}'s cached box, and the position it was built for. */
+  private transient AxisAlignedBB cachedRenderBoundingBox;
+  private transient BlockPos cachedRenderBoundingBoxPos;
 
   /**
    * The key used to store the section info compound in NBT data. Shortened from the historical
@@ -481,6 +796,8 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   @Override
   public void readNBT(NBTTagCompound compound) {
+    boolean horizontalFlipBefore = horizontalFlip;
+
     // Get the traffic signal section infos
     readSectionInfo(compound);
 
@@ -574,6 +891,14 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
     // Mark as dirty so the renderer recompiles the display list with updated state
     dirty = true;
+
+    // The render layout reads this head's sections and flip, and a sync also arrives when the
+    // server saw a neighbour change that moved it (see onNeighbourChanged). The flip is also the
+    // one thing about this head that the heads around it read.
+    invalidateRenderLayout();
+    if (horizontalFlip != horizontalFlipBefore) {
+      dropNearbyLayouts();
+    }
   }
 
 
@@ -1480,6 +1805,8 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     if (world != null && world.isRemote) {
       TileEntityTrafficSignalHeadRenderer.cleanupDisplayList(pos);
     }
+    // A head going can change the layout of an add-on or bracket near it.
+    dropNearbyLayouts();
   }
 
   /**
@@ -1492,6 +1819,8 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     if (world != null && world.isRemote) {
       TileEntityTrafficSignalHeadRenderer.cleanupDisplayList(pos);
     }
+    // A head across a chunk border stops being seen by the ones still loaded.
+    dropNearbyLayouts();
   }
 
   /**
