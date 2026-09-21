@@ -46,6 +46,7 @@ gui.csm.adboard.width=Width
 itemGroup.tabsignage=CSM: Signage & Advertising
 tile.ad_billboard.name=Billboard
 tile.ad_billboard_part.name=Billboard
+tile.ad_billboard_service.name=Billboard
 tile.ad_digital_billboard.name=Digital Billboard
 tile.ad_digital_billboard_part.name=Digital Billboard
 tile.ad_poster_board.name=Poster Board

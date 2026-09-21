@@ -46,6 +46,7 @@ gui.csm.adboard.width=Breite
 itemGroup.tabsignage=CSM: Beschilderung & Werbung
 tile.ad_billboard.name=Plakatwand
 tile.ad_billboard_part.name=Plakatwand
+tile.ad_billboard_service.name=Plakatwand
 tile.ad_digital_billboard.name=Digitale Werbetafel
 tile.ad_digital_billboard_part.name=Digitale Werbetafel
 tile.ad_poster_board.name=Plakatrahmen

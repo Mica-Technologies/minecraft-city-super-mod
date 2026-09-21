@@ -203,26 +203,57 @@ def cabinet_models(kind):
     for name in front:
         pieces[name] = [front[name], rear[name]]
     if k.get("catwalk"):
-        # The deck starts clear of the lip, so no face of it lies in a face of the lip.
-        pieces["catwalk"] = [
-            _box((0, 0, 17), (16, 1.5, 30), "#grate"),
-            _box((0, 14.5, 28.5), (16, 15.5, 29.5), "#rail"),
-            _box((0, 8, 28.5), (16, 9, 29.5), "#rail"),
-            _box((7.5, 1.5, 28.5), (8.5, 14.5, 29.5), "#rail"),
-        ]
-        head = _box((6, 5, 20), (10, 8, 26), "#rail")
-        head["faces"]["north"] = {"texture": "#lens"}
-        head["rotation"] = {"origin": [8, 6.5, 23], "axis": "x", "angle": -22.5}
-        pieces["lamp"] = [
-            _box((7.5, 1.5, 25), (8.5, 6, 26), "#rail"),
-            head,
-        ]
+        pieces.update(service_pieces())
     out = {}
     for name, elements in pieces.items():
         for element in elements:
             _fit_uvs(element)
         out["%s_%s" % (k["prefix"], name)] = {"textures": textures, "elements": elements}
     return out
+
+
+def service_pieces():
+    """A printed billboard's service row, the bottom row of its blocks: the cabinet above stops
+    at the top of the cell, and under it hangers drop to a catwalk deck that runs back under the
+    cabinet and out past the face, with a floodlight on an arm out in front every third block.
+    Railings only at the row's two ends: a real catwalk has none along the face, which it would
+    stand in front of. The numbers under "deck" and "rail" are AbstractBlockAdBoard's collision
+    boxes."""
+    head = _box((6, 2.5, 28), (10, 5.5, 32), "#rail")
+    head["faces"]["up"] = {"texture": "#lens"}
+    head["faces"]["north"] = {"texture": "#lens"}
+    head["rotation"] = {"origin": [8, 4, 30], "axis": "x", "angle": -22.5}
+    return {
+        "service": [
+            # hangers from the cabinet's underside to the deck
+            _box((3, 3.5, 6), (4, 16, 7), "#rail"),
+            _box((12, 3.5, 6), (13, 16, 7), "#rail"),
+            _box((3, 3.5, 9), (4, 16, 10), "#rail"),
+            _box((12, 3.5, 9), (13, 16, 10), "#rail"),
+            # the deck and the two stringers under it
+            _box((0, 2, 4), (16, 3.5, 28), "#grate"),
+            _box((0, 1, 5), (16, 2, 7), "#rail"),
+            _box((0, 1, 25), (16, 2, 27), "#rail"),
+        ],
+        "rail_left": [
+            _box((0, 3.5, 5), (1, 13, 6), "#rail"),
+            _box((0, 3.5, 26), (1, 13, 27), "#rail"),
+            _box((0, 13, 4), (1, 14, 28), "#rail"),
+            _box((0, 8, 4.5), (1, 9, 27.5), "#rail"),
+        ],
+        "rail_right": [
+            _box((15, 3.5, 5), (16, 13, 6), "#rail"),
+            _box((15, 3.5, 26), (16, 13, 27), "#rail"),
+            _box((15, 13, 4), (16, 14, 28), "#rail"),
+            _box((15, 8, 4.5), (16, 9, 27.5), "#rail"),
+        ],
+        "lamp": [
+            _box((7.5, 2.5, 28), (8.5, 3.5, 30), "#rail"),
+            head,
+        ],
+        # the controller's column, joining the pole it stands on to the cabinet
+        "column": [_box((6, 0, 6), (10, 16, 10), "#rail")],
+    }
 
 
 def _span(a, b):
@@ -262,17 +293,25 @@ CONDITIONS = {
     "cap_bottom_right": {"down": "false", "right": "true"},
     "cap_top_left": {"up": "false", "left": "true"},
     "cap_top_right": {"up": "false", "right": "true"},
-    "catwalk": {"down": "false"},
+    "service": {},
+    "rail_left": {"left": "false"},
+    "rail_right": {"right": "false"},
     "lamp": {"lamp": "true"},
+    "column": {},
 }
 
+# The pieces each block of a board with a service row draws.
+CABINET_PIECES = ("back", "frame_left", "frame_right", "frame_bottom", "frame_top",
+                  "cap_bottom_left", "cap_bottom_right", "cap_top_left", "cap_top_right")
+SERVICE_PIECES = ("service", "rail_left", "rail_right", "lamp")
 
-def blockstate(kind, pieces):
+
+def blockstate(kind, pieces, only=None):
     prefix = KINDS[kind]["prefix"]
     multipart = []
     for facing, y in ROTATION.items():
         for piece, when in CONDITIONS.items():
-            if "%s_%s" % (prefix, piece) not in pieces:
+            if "%s_%s" % (prefix, piece) not in pieces or (only and piece not in only):
                 continue
             apply = {"model": "csm:signage/%s_%s" % (prefix, piece)}
             if y:
@@ -309,9 +348,20 @@ def outputs():
         kind_models = cabinet_models(kind) if k.get("cabinet") else models(kind)
         for name, model in kind_models.items():
             files[os.path.join(MODEL_DIR, name + ".json")] = _json(model)
-        state = _json(blockstate(kind, kind_models))
-        files[os.path.join(STATE_DIR, kind + ".json")] = state
-        files[os.path.join(STATE_DIR, kind + "_part.json")] = state
+        if k.get("catwalk"):
+            # The controller is always in the service row, and stands on the column.
+            files[os.path.join(STATE_DIR, kind + ".json")] = _json(
+                blockstate(kind, kind_models, SERVICE_PIECES + ("column",)))
+            files[os.path.join(STATE_DIR, kind + "_service.json")] = _json(
+                blockstate(kind, kind_models, SERVICE_PIECES))
+            files[os.path.join(STATE_DIR, kind + "_part.json")] = _json(
+                blockstate(kind, kind_models, CABINET_PIECES))
+            files[os.path.join(ITEM_MODEL_DIR, kind + "_service.json")] = _json(
+                {"parent": "item/generated", "textures": {"layer0": "csm:items/signage/" + kind}})
+        else:
+            state = _json(blockstate(kind, kind_models))
+            files[os.path.join(STATE_DIR, kind + ".json")] = state
+            files[os.path.join(STATE_DIR, kind + "_part.json")] = state
         files[os.path.join(ITEM_TEX_DIR, kind + ".png")] = _png(
             icon(k["icon_ad"], k.get("icon_frame", (200, 204, 212)), wide=k.get("cabinet", False)))
         item = _json({"parent": "item/generated",

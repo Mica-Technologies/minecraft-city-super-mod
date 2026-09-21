@@ -1,0 +1,248 @@
+{
+  "textures": {
+    "frame": "csm:blocks/signage/board_trim_steel",
+    "back": "csm:blocks/signage/board_cabinet_steel",
+    "grate": "csm:blocks/signage/board_catwalk_grate",
+    "rail": "csm:blocks/signage/board_rail_steel",
+    "lens": "csm:blocks/signage/board_lamp_lens",
+    "particle": "csm:blocks/signage/board_cabinet_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        15,
+        3.5,
+        5
+      ],
+      "to": [
+        16,
+        13,
+        6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail"
+        },
+        "south": {
+          "texture": "#rail"
+        },
+        "east": {
+          "texture": "#rail"
+        },
+        "west": {
+          "texture": "#rail"
+        },
+        "up": {
+          "texture": "#rail"
+        },
+        "down": {
+          "texture": "#rail"
+        }
+      }
+    },
+    {
+      "from": [
+        15,
+        3.5,
+        26
+      ],
+      "to": [
+        16,
+        13,
+        27
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            3,
+            16,
+            12.5
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            3,
+            16,
+            12.5
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            10,
+            3,
+            11,
+            12.5
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            10,
+            3,
+            11,
+            12.5
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            10,
+            16,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            10,
+            16,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15,
+        13,
+        4
+      ],
+      "to": [
+        16,
+        14,
+        28
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            2,
+            16,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            2,
+            16,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            4,
+            2,
+            28,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            4,
+            2,
+            28,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            4,
+            16,
+            28
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            4,
+            16,
+            28
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15,
+        8,
+        4.5
+      ],
+      "to": [
+        16,
+        9,
+        27.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            7,
+            16,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            7,
+            16,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            4.5,
+            7,
+            27.5,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            4.5,
+            7,
+            27.5,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            4.5,
+            16,
+            27.5
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            15,
+            4.5,
+            16,
+            27.5
+          ]
+        }
+      }
+    }
+  ]
+}

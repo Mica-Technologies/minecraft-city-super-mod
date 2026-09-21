@@ -41,9 +41,14 @@ public class TileEntityAdBoardRenderer extends TileEntitySpecialRenderer<TileEnt
     int column = te.getControllerColumn();
     double left = -column + frame;
     double right = te.getWidth() - column - frame;
-    double bottom = frame;
+    // Above any service row: a printed billboard's catwalk is under its face, not in front of it.
+    double bottom = kind.getServiceRows() + frame;
     double top = te.getHeight() - frame;
     double depth = kind.getFacePx() / 16.0;
+    if (top <= bottom || right <= left) {
+      // A billboard's controller on its own, before its screen has built it: all service row.
+      return;
+    }
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x + 0.5, y, z + 0.5);

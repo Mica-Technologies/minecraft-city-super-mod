@@ -61,11 +61,24 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   /** A floodlight on this block's stretch of catwalk: one every third block along the board. */
   public static final PropertyBool LAMP = PropertyBool.create("lamp");
 
-  /** The catwalk in front of a board's bottom row: its deck, and its railing to fall against. */
-  private static final AxisAlignedBB CATWALK_DECK =
-      new AxisAlignedBB(0, 0, 1, 1, 1.5 / 16.0, 30 / 16.0);
-  private static final AxisAlignedBB CATWALK_RAIL =
-      new AxisAlignedBB(0, 0, 29 / 16.0, 1, 1, 30 / 16.0);
+  /**
+   * A service row's catwalk: its deck, running under the cabinet and out past the face, and the
+   * railings at its two ends. Numbers shared with gen_ad_boards.py's service models.
+   */
+  private static final AxisAlignedBB SERVICE_DECK =
+      new AxisAlignedBB(0, 2 / 16.0, 4 / 16.0, 1, 3.5 / 16.0, 28 / 16.0);
+  private static final AxisAlignedBB SERVICE_RAIL_LEFT =
+      new AxisAlignedBB(0, 3.5 / 16.0, 4 / 16.0, 1 / 16.0, 14 / 16.0, 28 / 16.0);
+  private static final AxisAlignedBB SERVICE_RAIL_RIGHT =
+      new AxisAlignedBB(15 / 16.0, 3.5 / 16.0, 4 / 16.0, 1, 14 / 16.0, 28 / 16.0);
+  /** The controller's column, joining whatever it stands on to the cabinet above. */
+  private static final AxisAlignedBB SERVICE_COLUMN =
+      new AxisAlignedBB(6 / 16.0, 0, 6 / 16.0, 10 / 16.0, 1, 10 / 16.0);
+
+  /** What a block is in its board, from its registry name. */
+  enum Role {
+    CONTROLLER, PART, SERVICE
+  }
 
   /** Sheet metal that comes down by hand, as signs do. */
   private static final Material BOARD = new Material(MapColor.IRON);
@@ -103,9 +116,37 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
     return kind != null ? kind : AdBoardKind.of(PENDING_REGISTRY_NAME.get());
   }
 
+  /** What this block is in its board. Safe while the constructor runs, as kind() is. */
+  Role role() {
+    String name = getBlockRegistryName();
+    if (name.endsWith("_service")) {
+      return Role.SERVICE;
+    }
+    return name.endsWith("_part") ? Role.PART : Role.CONTROLLER;
+  }
+
+  /**
+   * Whether this block is in its board's service row: a service part, or the controller of a
+   * board that has one (the controller is always in the bottom row).
+   */
+  boolean inServiceRow() {
+    Role role = role();
+    return role == Role.SERVICE || (role == Role.CONTROLLER && kind().hasServiceRow());
+  }
+
+  static boolean inServiceRow(IBlockState state) {
+    return state.getBlock() instanceof AbstractBlockAdBoard
+        && ((AbstractBlockAdBoard) state.getBlock()).inServiceRow();
+  }
+
   /** The block the player places for this kind of board. */
   public static Block controller(AdBoardKind kind) {
     return CsmRegistry.getBlock(kind.getRegistryName());
+  }
+
+  /** The blocks of a board's service row, other than its controller. */
+  public static Block service(AdBoardKind kind) {
+    return CsmRegistry.getBlock(kind.getServicePartRegistryName());
   }
 
   /** The block a board of this kind is built out of. */
@@ -162,11 +203,15 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   public IBlockState getActualState(@Nonnull IBlockState state, @Nonnull IBlockAccess worldIn,
       @Nonnull BlockPos pos) {
     EnumFacing right = right(state.getValue(FACING));
-    boolean down = sameBoard(worldIn, pos.down(), state);
+    // The face's bottom edge is framed where the service row starts, not only where the board
+    // ends, so "down" means the same board and the same kind of row.
+    IBlockState below = worldIn.getBlockState(pos.down());
+    boolean down = sameBoard(worldIn, pos.down(), state)
+        && inServiceRow(below) == inServiceRow();
     // Where along the board a block is, counted in world blocks so it needs no controller: one
     // floodlight every third block of catwalk.
     int along = pos.getX() * right.getXOffset() + pos.getZ() * right.getZOffset();
-    boolean lamp = kind().hasCatwalk() && !down && Math.floorMod(along, 3) == 1;
+    boolean lamp = inServiceRow() && Math.floorMod(along, 3) == 1;
     return state.withProperty(LEFT, sameBoard(worldIn, pos.offset(right.getOpposite()), state))
         .withProperty(RIGHT, sameBoard(worldIn, pos.offset(right), state))
         .withProperty(UP, sameBoard(worldIn, pos.up(), state))
@@ -263,8 +308,8 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   }
 
   /**
-   * The board, and on the bottom row of a board with a catwalk, the catwalk in front of it: its
-   * deck to stand on and its railing. Both are outside the block's own cell, which is fine for
+   * The board; or in a service row, the catwalk deck, the railing at either end of the row, and
+   * the controller's column. The deck reaches outside the block's own cell, which is fine for
    * collision -- entities gather boxes from the blocks around them.
    */
   @Override
@@ -274,11 +319,21 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
       @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn,
       boolean isActualState) {
     EnumFacing facing = state.getValue(FACING);
-    addCollisionBoxToList(pos, entityBox, collidingBoxes,
-        getBlockBoundingBox(state, worldIn, pos));
-    if (kind().hasCatwalk() && !sameBoard(worldIn, pos.down(), state)) {
-      addCollisionBoxToList(pos, entityBox, collidingBoxes, turn(CATWALK_DECK, facing));
-      addCollisionBoxToList(pos, entityBox, collidingBoxes, turn(CATWALK_RAIL, facing));
+    if (!inServiceRow()) {
+      addCollisionBoxToList(pos, entityBox, collidingBoxes,
+          getBlockBoundingBox(state, worldIn, pos));
+      return;
+    }
+    EnumFacing right = right(facing);
+    addCollisionBoxToList(pos, entityBox, collidingBoxes, turn(SERVICE_DECK, facing));
+    if (!sameBoard(worldIn, pos.offset(right.getOpposite()), state)) {
+      addCollisionBoxToList(pos, entityBox, collidingBoxes, turn(SERVICE_RAIL_LEFT, facing));
+    }
+    if (!sameBoard(worldIn, pos.offset(right), state)) {
+      addCollisionBoxToList(pos, entityBox, collidingBoxes, turn(SERVICE_RAIL_RIGHT, facing));
+    }
+    if (role() == Role.CONTROLLER) {
+      addCollisionBoxToList(pos, entityBox, collidingBoxes, turn(SERVICE_COLUMN, facing));
     }
   }
 
@@ -292,16 +347,16 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
 
   /**
    * A cabinet board is a solid box, so the faces between its blocks are culled; a wall board is
-   * a plate.
+   * a plate, and a service row is open steelwork that must not hide what is behind it.
    */
   @Override
   public boolean getBlockIsOpaqueCube(IBlockState state) {
-    return kind().isCabinet();
+    return kind().isCabinet() && !inServiceRow();
   }
 
   @Override
   public boolean getBlockIsFullCube(IBlockState state) {
-    return kind().isCabinet();
+    return kind().isCabinet() && !inServiceRow();
   }
 
   @Override

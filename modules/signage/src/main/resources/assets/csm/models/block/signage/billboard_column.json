@@ -1,0 +1,44 @@
+{
+  "textures": {
+    "frame": "csm:blocks/signage/board_trim_steel",
+    "back": "csm:blocks/signage/board_cabinet_steel",
+    "grate": "csm:blocks/signage/board_catwalk_grate",
+    "rail": "csm:blocks/signage/board_rail_steel",
+    "lens": "csm:blocks/signage/board_lamp_lens",
+    "particle": "csm:blocks/signage/board_cabinet_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        6,
+        0,
+        6
+      ],
+      "to": [
+        10,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail"
+        },
+        "south": {
+          "texture": "#rail"
+        },
+        "east": {
+          "texture": "#rail"
+        },
+        "west": {
+          "texture": "#rail"
+        },
+        "up": {
+          "texture": "#rail"
+        },
+        "down": {
+          "texture": "#rail"
+        }
+      }
+    }
+  ]
+}

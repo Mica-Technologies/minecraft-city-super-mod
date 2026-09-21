@@ -24,13 +24,15 @@ public enum AdBoardKind {
       new int[][]{{2, 3}, {4, 2}, {6, 3}, {8, 4}, {12, 6}, {15, 8}, {24, 12}},
       1.0, 1.5, 2.5, false, false),
   /**
-   * A printed billboard, the painted bulletin of a highway: a steel cabinet with a catwalk and
-   * floodlights along the bottom of its face. The presets are the standard US sizes to the
-   * nearest block: a 12 x 25 ft poster, a 10 x 40 ft junior bulletin, the 14 x 48 ft bulletin,
-   * a 20 x 60 ft spectacular, and larger wallscapes.
+   * A printed billboard, the painted bulletin of a highway: a steel cabinet over a service row --
+   * hangers down to a catwalk under the face, floodlights on arms out in front, and railings only
+   * at the two ends, where a real catwalk has them. The service row is the board's bottom row of
+   * blocks, so the face starts a row up and nothing stands in front of it; the presets are the
+   * standard US sizes to the nearest block, a row taller for it: a 12 x 25 ft poster, a 10 x 40 ft
+   * junior bulletin, the 14 x 48 ft bulletin, a 20 x 60 ft spectacular, and larger wallscapes.
    */
   BILLBOARD("ad_billboard", 40, 40,
-      new int[][]{{8, 4}, {12, 3}, {15, 4}, {18, 6}, {24, 8}, {32, 12}, {40, 20}, {40, 40}},
+      new int[][]{{8, 5}, {12, 4}, {15, 5}, {18, 7}, {24, 9}, {32, 13}, {40, 21}, {40, 40}},
       2.0, 16.25, 16.0, true, true),
   /**
    * A digital billboard: an LED screen in a black bezel, lit by default. No catwalk; a screen is
@@ -116,9 +118,24 @@ public enum AdBoardKind {
     return cabinet;
   }
 
-  /** Whether the board has a catwalk and floodlights along the bottom of its face. */
-  public boolean hasCatwalk() {
+  /** Whether the board's bottom row is a service row: catwalk, hangers and floodlights. */
+  public boolean hasServiceRow() {
     return catwalk;
+  }
+
+  /** How many rows at the bottom of the board carry no face: the service row, if there is one. */
+  public int getServiceRows() {
+    return catwalk ? 1 : 0;
+  }
+
+  /** The shortest board: one row of face above any service row. */
+  public int getMinHeight() {
+    return getServiceRows() + 1;
+  }
+
+  /** The registry name of the blocks of a board's service row, other than its controller. */
+  public String getServicePartRegistryName() {
+    return registryName + "_service";
   }
 
   /** The kind whose controller or part has the given registry name, or {@code null}. */
@@ -126,7 +143,8 @@ public enum AdBoardKind {
   public static AdBoardKind of(String registryName) {
     for (AdBoardKind kind : values()) {
       if (kind.registryName.equals(registryName)
-          || kind.getPartRegistryName().equals(registryName)) {
+          || kind.getPartRegistryName().equals(registryName)
+          || kind.getServicePartRegistryName().equals(registryName)) {
         return kind;
       }
     }
