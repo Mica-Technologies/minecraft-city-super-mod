@@ -184,6 +184,16 @@ public class BlockBlankoutBox extends AbstractBlockControllableSignal
             net.minecraft.block.Block blockIn, BlockPos fromPos ) {
         ensureTileEntity( worldIn, pos );
         super.neighborChanged( state, worldIn, pos, blockIn, fromPos );
+        // The renderer caches whether a mount kit is behind this box, and the client never gets
+        // neighborChanged, so tell it: the sync's readNBT drops the cache. Only the cell behind
+        // is read, so no other neighbour's change costs a packet.
+        if ( !worldIn.isRemote
+                && fromPos.equals( pos.offset( state.getValue( FACING ).getOpposite() ) ) ) {
+            TileEntity te = worldIn.getTileEntity( pos );
+            if ( te instanceof TileEntityBlankoutBox ) {
+                ( (TileEntityBlankoutBox) te ).syncServerToClient( worldIn );
+            }
+        }
     }
 
     @Override
