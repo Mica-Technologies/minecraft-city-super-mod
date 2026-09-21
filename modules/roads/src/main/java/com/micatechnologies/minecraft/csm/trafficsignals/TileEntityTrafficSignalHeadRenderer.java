@@ -120,19 +120,36 @@ public class TileEntityTrafficSignalHeadRenderer extends
     EnumFacing facing = blockState.getValue(AbstractBlockControllableSignalHead.FACING);
     int signalColorState = blockState.getValue(AbstractBlockControllableSignalHead.COLOR);
 
+    // Gather tile entity information
+    TrafficSignalSectionInfo[] sectionInfos = te.getSectionInfos(signalColorState);
+    TrafficSignalBodyTilt bodyTilt = te.getBodyTilt();
+
+    // Everything about this head's layout that the block derives from the world -- horizontal
+    // detection, section positions, resting offset, tilt pivot, mount suppression -- cached on the
+    // tile entity and re-derived only when an input changes (see its RenderLayout). Asking the
+    // block per frame cost an add-on head about five neighbour scans a frame. Null on the
+    // per-frame comparison path and for a block that is not a signal head.
+    TileEntityTrafficSignalHead.RenderLayout layout =
+        !CsmRenderToggles.signalLayoutPerFrame
+            && blockState.getBlock() instanceof AbstractBlockControllableSignalHead
+            ? te.getRenderLayout(blockState, facing, sectionInfos.length)
+            : null;
+
     // Everything shifting this head off its block, world-aware for add-on detection. The height
     // goes in below in model units, after the rotations; the horizontal terms go in above them,
     // because they are world axes and rotating with the model would send them the wrong way.
     Vec3d signalOffset = Vec3d.ZERO;
-    if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
+    if (layout != null) {
+      // The same sum getSignalOffset makes, with the resting offset from the layout and the span
+      // and nudge read live from the tile entity already in hand.
+      Vec3d moved = ((AbstractBlockControllableSignalHead) blockState.getBlock())
+          .getHeadDisplacement(te, blockState);
+      signalOffset = new Vec3d(moved.x, layout.restingSignalYOffset + moved.y, moved.z);
+    } else if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
       signalOffset = ((AbstractBlockControllableSignalHead) blockState.getBlock())
           .getSignalOffset(te.getWorld(), te.getPos());
     }
     float signalYOffset = (float) signalOffset.y;
-
-    // Gather tile entity information
-    TrafficSignalSectionInfo[] sectionInfos = te.getSectionInfos(signalColorState);
-    TrafficSignalBodyTilt bodyTilt = te.getBodyTilt();
     DirectionSixteen bodyDirection =
         AbstractBlockControllableSignalHead.getTiltedFacing(bodyTilt, facing);
 
@@ -151,10 +168,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     // Get tilt pivot offset for add-on signals that need to rotate in sync with
     // their parent signal (offset is in block units from this block to the main signal)
-    int[] tiltPivotOffset = blockState.getBlock() instanceof AbstractBlockControllableSignalHead
-        ? ((AbstractBlockControllableSignalHead) blockState.getBlock())
-            .getTiltPivotOffset(te.getWorld(), te.getPos())
-        : NO_TILT_PIVOT;
+    int[] tiltPivotOffset = layout != null
+        ? layout.tiltPivotOffset
+        : blockState.getBlock() instanceof AbstractBlockControllableSignalHead
+            ? ((AbstractBlockControllableSignalHead) blockState.getBlock())
+                .getTiltPivotOffset(te.getWorld(), te.getPos())
+            : NO_TILT_PIVOT;
 
     boolean hasTiltPivot = (tiltPivotOffset[0] != 0 || tiltPivotOffset[2] != 0)
         && bodyTilt != TrafficSignalBodyTilt.NONE;
@@ -218,7 +237,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
     float[] sectionXPositions;
     int[] sectionSizes;
     boolean horizontal = false;
-    if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
+    if (layout != null) {
+      // Already padded to the section count; shared, so read only.
+      sectionYPositions = layout.sectionYPositions;
+      sectionXPositions = layout.sectionXPositions;
+      sectionSizes = layout.sectionSizes;
+      horizontal = layout.horizontal;
+    } else if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
       AbstractBlockControllableSignalHead signalBlock =
           (AbstractBlockControllableSignalHead) blockState.getBlock();
       sectionYPositions = signalBlock.getSectionYPositions(sectionCount, te.getWorld(), te.getPos());
@@ -226,27 +251,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
       sectionSizes = signalBlock.getSectionSizes(sectionCount);
       horizontal = signalBlock.isHorizontal(te.getWorld(), te.getPos());
       // Safety: if TE has more sections than the block expects (e.g., world migration from
-      // old 3-section defaults), pad the position arrays to avoid ArrayIndexOutOfBoundsException
-      if (sectionYPositions.length < sectionCount) {
-        float[] padded = new float[sectionCount];
-        System.arraycopy(sectionYPositions, 0, padded, 0, sectionYPositions.length);
-        for (int i = sectionYPositions.length; i < sectionCount; i++) {
-          padded[i] = ((sectionCount - 1 - i) - (sectionCount - 1) / 2.0f) * 12.0f;
-        }
-        sectionYPositions = padded;
-      }
-      if (sectionXPositions.length < sectionCount) {
-        float[] padded = new float[sectionCount];
-        System.arraycopy(sectionXPositions, 0, padded, 0, sectionXPositions.length);
-        sectionXPositions = padded;
-      }
-      // Safety: pad sectionSizes if needed
-      if (sectionSizes.length < sectionCount) {
-        int[] padded = new int[sectionCount];
-        System.arraycopy(sectionSizes, 0, padded, 0, sectionSizes.length);
-        for (int i = sectionSizes.length; i < sectionCount; i++) padded[i] = 12;
-        sectionSizes = padded;
-      }
+      // old 3-section defaults), pad the arrays to avoid ArrayIndexOutOfBoundsException
+      sectionYPositions =
+          TileEntityTrafficSignalHead.padSectionYPositions(sectionYPositions, sectionCount);
+      sectionXPositions =
+          TileEntityTrafficSignalHead.padSectionXPositions(sectionXPositions, sectionCount);
+      sectionSizes = TileEntityTrafficSignalHead.padSectionSizes(sectionSizes, sectionCount);
     } else {
       // Fallback: standard vertical stack, no X offset, all 12-inch
       sectionYPositions = new float[sectionCount];
@@ -474,7 +484,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     if (!CsmRenderToggles.skipSignalMount) {
       renderMount(te, blockState, sectionSizes, sectionYPositions, sectionXPositions, horizontal,
           zPushBack, mountTiltAngle, worldSkyLight, worldBlockLight,
-          bodyRearAnchorZ(sectionInfos, sectionSizes));
+          bodyRearAnchorZ(sectionInfos, sectionSizes), layout);
     }
 
     GL11.glPopMatrix();
@@ -1787,7 +1797,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
       int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
       float zPushBack, float mountTiltAngle, int skyLight, int blockLight,
-      float bodyRearAnchorZ) {
+      float bodyRearAnchorZ, TileEntityTrafficSignalHead.RenderLayout layout) {
     SignalHeadMountType mountType = te.getMountType();
     if (mountType == SignalHeadMountType.NONE) return;
 
@@ -1820,7 +1830,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Mount-edge suppression is cached on the tile entity and invalidated on neighbour change.
     // Computing it here meant up to four getTileEntity lookups per head per frame, which at a
     // hundred intersections dominated this pass -- see TileEntityTrafficSignalHead.
-    int suppression = te.getMountSuppression(horizontal, blockState);
+    // The render layout carries it when there is one, derived with the rest of the layout.
+    int suppression = layout != null
+        ? layout.mountSuppression
+        : te.getMountSuppression(horizontal, blockState);
     boolean suppressLowEnd = (suppression & TileEntityTrafficSignalHead.MOUNT_SUPPRESS_LOW) != 0;
     boolean suppressHighEnd = (suppression & TileEntityTrafficSignalHead.MOUNT_SUPPRESS_HIGH) != 0;
 

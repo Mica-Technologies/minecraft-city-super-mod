@@ -140,6 +140,14 @@ public final class CsmRenderToggles {
    */
   public static boolean sharedBakesPerFrame = false;
 
+  /**
+   * Work out each traffic signal head's layout (horizontal detection, section positions, resting
+   * offset, tilt pivot, mount-edge suppression) and its render bounding box every frame, the way
+   * it was done before they were cached on the tile entity. Kept so the two can be measured inside
+   * one session; the cached path ships.
+   */
+  public static boolean signalLayoutPerFrame = false;
+
   private CsmRenderToggles() {
   }
 
@@ -174,6 +182,7 @@ public final class CsmRenderToggles {
     values.put("spanWireCable", skipSpanWireCable);
     values.put("spanWireCablePerFrame", spanWireCablePerFrame);
     values.put("sharedBakesPerFrame", sharedBakesPerFrame);
+    values.put("signalLayoutPerFrame", signalLayoutPerFrame);
     return values;
   }
 
@@ -234,6 +243,8 @@ public final class CsmRenderToggles {
       spanWireCablePerFrame = skipped;
     } else if ("sharedBakesPerFrame".equalsIgnoreCase(name)) {
       sharedBakesPerFrame = skipped;
+    } else if ("signalLayoutPerFrame".equalsIgnoreCase(name)) {
+      signalLayoutPerFrame = skipped;
     } else {
       return false;
     }
@@ -266,6 +277,7 @@ public final class CsmRenderToggles {
     skipSpanWireCable = false;
     spanWireCablePerFrame = false;
     sharedBakesPerFrame = false;
+    signalLayoutPerFrame = false;
   }
 
   /**
