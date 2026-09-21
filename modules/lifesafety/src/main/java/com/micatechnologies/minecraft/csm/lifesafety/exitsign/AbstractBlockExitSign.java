@@ -1,8 +1,10 @@
 package com.micatechnologies.minecraft.csm.lifesafety.exitsign;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.lifesafety.IEmergencyLightBlock;
+import com.micatechnologies.minecraft.csm.lifesafety.LifeSafetyGuiProvider;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Heads;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Mount;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -178,6 +181,21 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
     if (state.getValue(POWERED) != powered) {
       world.setBlockState(pos, state.withProperty(POWERED, powered), 3);
     }
+  }
+
+  /** Right-click opens the sign's setup screen. */
+  @Override
+  public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
+      EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY,
+      float hitZ) {
+    if (hand != EnumHand.MAIN_HAND) {
+      return false;
+    }
+    if (worldIn.isRemote) {
+      playerIn.openGui(Csm.instance, LifeSafetyGuiProvider.EXIT_SIGN_GUI_ID, worldIn, pos.getX(),
+          pos.getY(), pos.getZ());
+    }
+    return true;
   }
 
   // --- light --------------------------------------------------------------------------------

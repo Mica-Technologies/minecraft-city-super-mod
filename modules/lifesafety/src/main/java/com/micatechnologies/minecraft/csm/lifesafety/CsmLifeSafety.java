@@ -88,6 +88,10 @@ public class CsmLifeSafety {
         FireAlarmPanelConfigPacketHandler.class,
         FireAlarmPanelConfigPacket.class,
         Side.SERVER);
+    NETWORK.registerMessage(
+        com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfigPacketHandler.class,
+        com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfigPacket.class,
+        Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
     // pre-initialization before it fires the sound registry event, so Core sees the complete
