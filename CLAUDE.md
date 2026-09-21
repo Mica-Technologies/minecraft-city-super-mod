@@ -452,6 +452,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   2:3, square, poster 2:1, bulletin 7:2 -- laid out per shape rather than cropped, written as
   256-colour PNGs plus the `ads/parody.json` index `AdLibrary` reads; `--sheet` makes the review
   contact sheet, `--check` fails on drift
+- `gen_ad_boards.py` -- the advertising boards' blocks: the backing and aluminium frame models,
+  the multipart blockstate shared by a board's controller and its parts (frame only on the edge
+  blocks, picked from actual state; left and right strips run the full height and top and bottom
+  caps finish a strip only where it continues, so no two pieces overlap), and the item icons.
+  The ad itself is the controller's renderer's; `--check` fails on drift
 - `gen_decorative_lighting.py` -- the decorative pendant and wall-sconce family: lathes the OBJ
   geometry for 11 models, draws the shared metal/shade/lens swatch textures, and emits all 33
   blockstates plus lang and tab-registration fragments from one catalogue, so an id cannot drift

@@ -2,8 +2,13 @@ package com.micatechnologies.minecraft.csm.signage;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -40,6 +45,11 @@ public class CsmSignage {
    */
   public static final CsmNetwork NETWORK = CsmNetwork.create(MOD_ID);
 
+  @SidedProxy(
+      clientSide = "com.micatechnologies.minecraft.csm.signage.CsmSignageClientProxy",
+      serverSide = "com.micatechnologies.minecraft.csm.signage.CsmSignageCommonProxy")
+  public static ICsmProxy proxy;
+
   @Mod.Instance(MOD_ID)
   public static CsmSignage instance;
 
@@ -53,5 +63,14 @@ public class CsmSignage {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
+    CsmGuiRegistry.register(new SignageGuiProvider());
+    // The packet order here fixes this channel's discriminators; only append to it.
+    NETWORK.registerMessage(AdBoardConfigHandler.class, AdBoardConfigPacket.class, Side.SERVER);
+    proxy.preInit(event);
+  }
+
+  @Mod.EventHandler
+  public void init(FMLInitializationEvent event) {
+    proxy.init(event);
   }
 }

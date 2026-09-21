@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "112 blocks in this tab"
+!!! info "113 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -44,6 +44,7 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Horizontal White/Black Traffic Light Border | `csm:tlhborderwhite` | 2 | 10 | pickaxe | 1 |
 | Horizontal Yellow/Black Traffic Light Border | `csm:tlhborderyellow` | 2 | 10 | pickaxe | 1 |
 | MCLAGlowAir | `csm:lightupair` | 2 | 10 | pickaxe | 1 |
+| Poster Board | `csm:ad_poster_board_part` | 1.5 | 10 | pickaxe | 0 |
 | Silver Angled Thin Traffic Pole w/ 1 Mount | `csm:trafficpolehorizontalanglemount1silver` |  | 10 | pickaxe | 1 |
 | Silver Angled Thin Traffic Pole w/ 2 Mounts | `csm:trafficpolehorizontalanglemount2silver` |  | 10 | pickaxe | 1 |
 | Silver Angled Thin Traffic Pole w/ 4 Mounts | `csm:trafficpolehorizontalanglemount3silver` |  | 10 | pickaxe | 1 |
