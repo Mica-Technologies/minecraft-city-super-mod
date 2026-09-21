@@ -540,12 +540,25 @@ extension post onto a slab, the setback in front of a signal arm and the back-to
 exactly as the 472 signs beside them do, with no code of their own for any of it.
 
 **Blade 2 crosses rather than stacks.** Under a post-top mount the editor's existing second
-blade turns 90 degrees and sits just above the first, which is how a post-top pair is actually
-built. Nothing new is stored for it: `lowerBlade` is the crossing blade here. It cannot be more
-geometry in the same pass -- a display list is compiled once and replayed, and the two blades
-differ by a matrix, not by vertices -- so `renderSign` draws the assembly twice, the second time
-under a quarter turn about the post's axis, with a key bit that keeps the two passes' cached
-lists apart.
+blade sits just above the first and turns away from it, which is how a post-top pair is
+actually built. `lowerBlade` is the crossing blade here. It cannot be more geometry in the
+same pass -- a display list is compiled once and replayed, and the two blades differ by a
+matrix, not by vertices -- so `renderSign` draws the assembly twice, with a key bit that
+keeps the two passes' cached lists apart.
+
+**Each blade points where it likes.** `StreetSignLegend.bladeTurn` is eighths of a turn from
+the block's facing, so a pair can cross at any of the eight angles rather than only at a
+right angle -- a fork or a skewed junction is signed the way it really runs. It lives on the
+legend, so each blade has its own; a newly added second blade starts at a quarter turn so it
+crosses rather than hiding above the first. The turn is applied about the POST, which is the
+one part of the assembly that must not come round with them: the post is the block's own
+model and stays where the sign pole below it is.
+
+The field is boxed and left null at zero so Gson omits it, and a document that never turned
+a blade writes back exactly the keys it was saved with -- `StreetSignDataTest` holds that
+invariant for every old document, and this is the same trick `lowerBlade` uses. The editor
+shows the control only on a post-top mount, in the shared legend rows, which is what gives
+each blade its own without a second control being written.
 
 **The mount is the block's, not the player's.** `cycleMountType` skips both post-top brackets,
 so the mast-arm sign never offers hardware it has no post to grip, and the blade's tile entity

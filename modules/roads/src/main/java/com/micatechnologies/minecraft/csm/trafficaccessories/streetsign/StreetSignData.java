@@ -292,6 +292,10 @@ public class StreetSignData extends StreetSignLegend {
     StreetSignLegend legend = new StreetSignLegend();
     legend.setStreetName("ELM");
     legend.setSuffix("ST");
+    // A quarter turn, so on a post-top mount a newly added blade crosses the first rather
+    // than hiding directly above it. It is only the starting angle; either blade can then
+    // be pointed any of the eight ways.
+    legend.setBladeTurn(2);
     return legend;
   }
 
