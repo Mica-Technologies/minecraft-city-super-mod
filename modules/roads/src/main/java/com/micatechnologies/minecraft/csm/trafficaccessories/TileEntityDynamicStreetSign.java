@@ -28,6 +28,10 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
   // renderer once it has recompiled. Light is NOT covered by this -- it changes without the tile
   // entity being touched, so the renderer keys its caches on the block light separately.
   private transient boolean stateDirty = true;
+  // What the renderer worked out from cachedData -- the blade's layout and its legend's texture
+  // runs -- so none of it is redone per frame. Cleared everywhere cachedData is; typed Object so
+  // this common class never names a client-only renderer type.
+  private transient Object renderCache = null;
 
   public TileEntityDynamicStreetSign() {
   }
@@ -38,6 +42,7 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
     signDataJson = compound.getString(NBT_KEY);
     powered = compound.getBoolean(NBT_KEY_POWERED);
     cachedData = null;
+    renderCache = null;
     stateDirty = true;
     // This is also the client's receive path for a sync, so it is where a mount change made on
     // the server has to reach the neighbouring poles.
@@ -81,6 +86,7 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
     StreetSignMount previousMount = getSignData().getMountType();
     this.signDataJson = json != null ? json : "";
     this.cachedData = null;
+    this.renderCache = null;
     this.stateDirty = true;
     if (getWorld() != null) {
       markDirtySync(getWorld(), getPos(), true);
@@ -124,6 +130,15 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
   /** Clears the dirty flag once the renderer has rebuilt from current data. */
   public void clearStateDirty() {
     stateDirty = false;
+  }
+
+  /** The renderer's per-blade cache, or null after any change to the blade's data. */
+  public Object getRenderCache() {
+    return renderCache;
+  }
+
+  public void setRenderCache(Object renderCache) {
+    this.renderCache = renderCache;
   }
 
   @Override
