@@ -121,7 +121,7 @@
     {
       "when": {
         "up": "false",
-        "corner_left": "false",
+        "left": "end|join|abut|abut_thin",
         "facing": "north"
       },
       "apply": {
@@ -131,7 +131,7 @@
     {
       "when": {
         "up": "false",
-        "corner_left": "false",
+        "left": "end|join|abut|abut_thin",
         "facing": "east"
       },
       "apply": {
@@ -142,7 +142,7 @@
     {
       "when": {
         "up": "false",
-        "corner_left": "false",
+        "left": "end|join|abut|abut_thin",
         "facing": "south"
       },
       "apply": {
@@ -153,7 +153,7 @@
     {
       "when": {
         "up": "false",
-        "corner_left": "false",
+        "left": "end|join|abut|abut_thin",
         "facing": "west"
       },
       "apply": {
@@ -164,7 +164,7 @@
     {
       "when": {
         "down": "false",
-        "corner_left": "false",
+        "left": "end|join|abut|abut_thin",
         "facing": "north"
       },
       "apply": {
@@ -174,7 +174,7 @@
     {
       "when": {
         "down": "false",
-        "corner_left": "false",
+        "left": "end|join|abut|abut_thin",
         "facing": "east"
       },
       "apply": {
@@ -185,7 +185,7 @@
     {
       "when": {
         "down": "false",
-        "corner_left": "false",
+        "left": "end|join|abut|abut_thin",
         "facing": "south"
       },
       "apply": {
@@ -196,7 +196,7 @@
     {
       "when": {
         "down": "false",
-        "corner_left": "false",
+        "left": "end|join|abut|abut_thin",
         "facing": "west"
       },
       "apply": {
@@ -206,7 +206,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "facing": "north"
       },
       "apply": {
@@ -215,7 +215,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "facing": "east"
       },
       "apply": {
@@ -225,7 +225,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "facing": "south"
       },
       "apply": {
@@ -235,7 +235,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "facing": "west"
       },
       "apply": {
@@ -245,7 +245,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "up": "true",
         "facing": "north"
       },
@@ -255,7 +255,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "up": "true",
         "facing": "east"
       },
@@ -266,7 +266,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "up": "true",
         "facing": "south"
       },
@@ -277,7 +277,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "up": "true",
         "facing": "west"
       },
@@ -288,7 +288,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "down": "true",
         "facing": "north"
       },
@@ -298,7 +298,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "down": "true",
         "facing": "east"
       },
@@ -309,7 +309,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "down": "true",
         "facing": "south"
       },
@@ -320,7 +320,7 @@
     },
     {
       "when": {
-        "left": "false",
+        "left": "end",
         "down": "true",
         "facing": "west"
       },
@@ -331,7 +331,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "facing": "north"
       },
       "apply": {
@@ -340,7 +340,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "facing": "east"
       },
       "apply": {
@@ -350,7 +350,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "facing": "south"
       },
       "apply": {
@@ -360,7 +360,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "facing": "west"
       },
       "apply": {
@@ -370,7 +370,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "up": "false",
         "facing": "north"
       },
@@ -380,7 +380,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "up": "false",
         "facing": "east"
       },
@@ -391,7 +391,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "up": "false",
         "facing": "south"
       },
@@ -402,7 +402,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "up": "false",
         "facing": "west"
       },
@@ -413,7 +413,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "down": "false",
         "facing": "north"
       },
@@ -423,7 +423,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "down": "false",
         "facing": "east"
       },
@@ -434,7 +434,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "down": "false",
         "facing": "south"
       },
@@ -445,7 +445,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "down": "false",
         "facing": "west"
       },
@@ -456,8 +456,258 @@
     },
     {
       "when": {
+        "left": "abut",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left"
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
         "up": "false",
-        "corner_right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left_top"
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left_bottom"
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_left_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left"
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left_top"
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left_bottom"
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_left_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "right": "end|join|abut|abut_thin",
         "facing": "north"
       },
       "apply": {
@@ -467,7 +717,7 @@
     {
       "when": {
         "up": "false",
-        "corner_right": "false",
+        "right": "end|join|abut|abut_thin",
         "facing": "east"
       },
       "apply": {
@@ -478,7 +728,7 @@
     {
       "when": {
         "up": "false",
-        "corner_right": "false",
+        "right": "end|join|abut|abut_thin",
         "facing": "south"
       },
       "apply": {
@@ -489,7 +739,7 @@
     {
       "when": {
         "up": "false",
-        "corner_right": "false",
+        "right": "end|join|abut|abut_thin",
         "facing": "west"
       },
       "apply": {
@@ -500,7 +750,7 @@
     {
       "when": {
         "down": "false",
-        "corner_right": "false",
+        "right": "end|join|abut|abut_thin",
         "facing": "north"
       },
       "apply": {
@@ -510,7 +760,7 @@
     {
       "when": {
         "down": "false",
-        "corner_right": "false",
+        "right": "end|join|abut|abut_thin",
         "facing": "east"
       },
       "apply": {
@@ -521,7 +771,7 @@
     {
       "when": {
         "down": "false",
-        "corner_right": "false",
+        "right": "end|join|abut|abut_thin",
         "facing": "south"
       },
       "apply": {
@@ -532,7 +782,7 @@
     {
       "when": {
         "down": "false",
-        "corner_right": "false",
+        "right": "end|join|abut|abut_thin",
         "facing": "west"
       },
       "apply": {
@@ -542,7 +792,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "facing": "north"
       },
       "apply": {
@@ -551,7 +801,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "facing": "east"
       },
       "apply": {
@@ -561,7 +811,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "facing": "south"
       },
       "apply": {
@@ -571,7 +821,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "facing": "west"
       },
       "apply": {
@@ -581,7 +831,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "up": "true",
         "facing": "north"
       },
@@ -591,7 +841,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "up": "true",
         "facing": "east"
       },
@@ -602,7 +852,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "up": "true",
         "facing": "south"
       },
@@ -613,7 +863,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "up": "true",
         "facing": "west"
       },
@@ -624,7 +874,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "down": "true",
         "facing": "north"
       },
@@ -634,7 +884,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "down": "true",
         "facing": "east"
       },
@@ -645,7 +895,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "down": "true",
         "facing": "south"
       },
@@ -656,7 +906,7 @@
     },
     {
       "when": {
-        "right": "false",
+        "right": "end",
         "down": "true",
         "facing": "west"
       },
@@ -667,7 +917,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "facing": "north"
       },
       "apply": {
@@ -676,7 +926,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "facing": "east"
       },
       "apply": {
@@ -686,7 +936,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "facing": "south"
       },
       "apply": {
@@ -696,7 +946,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "facing": "west"
       },
       "apply": {
@@ -706,7 +956,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "up": "false",
         "facing": "north"
       },
@@ -716,7 +966,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "up": "false",
         "facing": "east"
       },
@@ -727,7 +977,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "up": "false",
         "facing": "south"
       },
@@ -738,7 +988,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "up": "false",
         "facing": "west"
       },
@@ -749,7 +999,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "down": "false",
         "facing": "north"
       },
@@ -759,7 +1009,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "down": "false",
         "facing": "east"
       },
@@ -770,7 +1020,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "down": "false",
         "facing": "south"
       },
@@ -781,12 +1031,262 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "down": "false",
         "facing": "west"
       },
       "apply": {
         "model": "csm:wallfinish/wall_acoustic_blue_corner_right_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right"
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right_top"
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right_bottom"
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_right_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right"
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right_top"
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right_bottom"
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_blue_abut_thin_right_bottom",
         "y": 270
       }
     }

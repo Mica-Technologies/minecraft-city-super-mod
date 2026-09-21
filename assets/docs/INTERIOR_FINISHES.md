@@ -101,12 +101,22 @@ tile, fabric acoustic panels, beadboard and a wood slat wall. Chosen over full-b
 - **Inside corners.** A cell holds one finish, so the cell in a corner hangs on one wall and the
   run on the other wall would stop a block short of it. So when the corner cell's side is a wall
   (a solid face) and the cell beside it along that wall holds the same finish facing it, the
-  corner cell also draws that run's last stretch (`corner_left` / `corner_right`, actual state
-  like the joins, so facing is still all that is stored). The side panel is butted against the
-  face of the corner cell's own panel, not run through it, and both runs count the corner as a
-  join, so neither draws an edge trim where it turns. A different finish on the other wall keeps
-  its edge trim, as before. Outside corners need nothing: the two runs are in different cells
-  and meet only along the corner's edge, which is what the corner guard covers.
+  corner cell also draws that run's last stretch (`left` / `right` = `corner`). The side panel
+  is butted against the face of the corner cell's own panel, not run through it, and both runs
+  count the corner as a join, so neither draws an edge trim where it turns.
+- **A different finish in the corner** cannot draw the other run, since a block draws only its
+  own finish. So the other run's last cell reaches in instead (`abut`): when the cell past its
+  end holds a different wall finish hung on the wall that ends the run, and the run's own wall
+  goes on behind that cell, it carries its panel (and cap or frame) on into the corner cell,
+  against its own wall, and draws no edge trim there -- as a wainscot meets a different finish in
+  a real corner. It stops 2 px off the far wall, clear of every kind's trims (beadboard's chair
+  rail is the deepest), or 0.25 px against paint (`abut_thin`), which would otherwise leave a
+  strip of bare wall. The corner's own finish keeps its edge trim, and where it is thinner than 2
+  px there is a small step, never a shared face or a gap onto the wall.
+- `left` and `right` are one five-valued property each (`end`, `join`, `corner`, `abut`,
+  `abut_thin`), all actual state, so facing is still all that is stored: 400 states a block.
+  Outside corners need nothing: the two runs are in different cells and meet only along the
+  corner's edge, which is what the corner guard covers.
 - **No two faces share a plane** in any state, since that is z-fighting: the textures flicker
   through each other (#218: a slat wall's felt end face and its edge trim's, at every run end).
   A face some part always covers is left off -- a trimmed kind's panel has no end or top faces --
