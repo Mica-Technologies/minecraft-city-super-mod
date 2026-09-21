@@ -33,6 +33,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
   private static final String KEY_LIGHT = "li";
   private static final String KEY_POWERED = "pw";
   private static final String KEY_BACK = "bk";
+  private static final String KEY_TRANSITION = "tr";
 
   private int width = 1;
   private int height = 1;
@@ -45,6 +46,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
   private AdLight light = AdLight.UNLIT;
   private boolean powered;
   private AdBack back = AdBack.NONE;
+  private AdTransition transition = AdTransition.CUT;
 
   /** The ads the rotation draws from, rebuilt when the rotation or category changes. */
   private transient List<AdEntry> pool;
@@ -79,6 +81,14 @@ public class TileEntityAdBoard extends AbstractTileEntity {
     back = kind.isFixedSize() ? AdBack.NEXT : AdBack.NONE;
     if (kind.isFixedSize()) {
       rotation = AdRotation.ALL_SHUFFLED;
+    }
+    // A screen changes ads often and fades between them; a kiosk scrolls, as a scroller does.
+    if (kind == AdBoardKind.DIGITAL_BILLBOARD) {
+      rotation = AdRotation.ALL_SHUFFLED;
+      interval = 10;
+      transition = AdTransition.FADE;
+    } else if (kind.isFixedSize()) {
+      transition = AdTransition.SLIDE;
     }
     pool = null;
   }
@@ -154,6 +164,20 @@ public class TileEntityAdBoard extends AbstractTileEntity {
 
   public AdBack getBack() {
     return back;
+  }
+
+  public AdTransition getTransition() {
+    return transition;
+  }
+
+  /** Called on the server with a setting its packet handler has already checked. */
+  void setTransition(AdTransition transition) {
+    this.transition = transition;
+  }
+
+  /** How long each ad is up, in ticks. */
+  public long stepTicks() {
+    return AdRotation.clampInterval(interval) * 20L;
   }
 
   /** Called on the server with a setting its packet handler has already checked. */
@@ -309,6 +333,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
     light = AdLight.fromOrdinal(compound.getByte(KEY_LIGHT));
     powered = compound.getBoolean(KEY_POWERED);
     back = AdBack.fromOrdinal(compound.getByte(KEY_BACK));
+    transition = AdTransition.fromOrdinal(compound.getByte(KEY_TRANSITION));
     pool = null;
     renderBox = null;
   }
@@ -326,6 +351,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
     compound.setByte(KEY_LIGHT, (byte) light.ordinal());
     compound.setBoolean(KEY_POWERED, powered);
     compound.setByte(KEY_BACK, (byte) back.ordinal());
+    compound.setByte(KEY_TRANSITION, (byte) transition.ordinal());
     return compound;
   }
 

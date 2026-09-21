@@ -44,6 +44,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
   private static final int BTN_DONE = 12;
   private static final int BTN_CANCEL = 13;
   private static final int BTN_BACK = 14;
+  private static final int BTN_TRANSITION = 15;
 
   private static final int COL = 160;
   private static final int GAP = 10;
@@ -69,6 +70,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
   private AdFit fit;
   private AdLight light;
   private AdBack back;
+  private AdTransition transition;
 
   private GuiSlider widthSlider;
   private GuiSlider heightSlider;
@@ -78,6 +80,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
   private GuiButton fitButton;
   private GuiButton lightButton;
   private GuiButton backButton;
+  private GuiButton transitionButton;
   private GuiButton adButton;
   private GuiButton rotationButton;
   private GuiButton categoryButton;
@@ -102,6 +105,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     this.fit = te.getFit();
     this.light = te.getLight();
     this.back = te.getBack();
+    this.transition = te.getTransition();
     AdEntry current = library.resolve(te.getAdId());
     this.adIndex = Math.max(0, ads.indexOf(current));
     this.categoryIndex = Math.max(0, categories.indexOf(te.getCategory()));
@@ -136,6 +140,8 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     y += ROW;
     backButton = add(new GuiButton(BTN_BACK, left, y, COL, H, ""));
     backButton.visible = kind.isCabinet();
+    y += ROW;
+    transitionButton = add(new GuiButton(BTN_TRANSITION, left, y, COL, H, ""));
     // A kiosk has one size and grows nowhere: its screen is only what it shows.
     boolean sized = !kind.isFixedSize();
     presetButton.visible = sized;
@@ -205,6 +211,10 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
         + I18n.format("gui.csm.adboard.fit." + fit.name().toLowerCase(Locale.ROOT));
     lightButton.displayString = I18n.format("gui.csm.adboard.light") + ": "
         + I18n.format("gui.csm.adboard.light." + light.name().toLowerCase(Locale.ROOT));
+    transitionButton.displayString = I18n.format("gui.csm.adboard.transition") + ": "
+        + I18n.format("gui.csm.adboard.transition."
+        + transition.name().toLowerCase(Locale.ROOT));
+    transitionButton.enabled = rotation != AdRotation.SINGLE;
     backButton.displayString = I18n.format("gui.csm.adboard.back") + ": "
         + I18n.format("gui.csm.adboard.back." + back.name().toLowerCase(Locale.ROOT));
     rotationButton.displayString = I18n.format("gui.csm.adboard.rotation."
@@ -255,6 +265,9 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
       case BTN_BACK:
         back = back.next();
         break;
+      case BTN_TRANSITION:
+        transition = transition.next();
+        break;
       case BTN_AD_PREV:
         adIndex = (adIndex + ads.size() - 1) % ads.size();
         break;
@@ -285,7 +298,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     String category = categories.isEmpty() ? "" : categories.get(categoryIndex);
     CsmSignage.NETWORK.sendToServer(new AdBoardConfigPacket(clicked, boardWidth(),
         boardHeight(), align, ads.get(adIndex).getId(), rotation, category,
-        interval.getValueInt(), fit, light, back));
+        interval.getValueInt(), fit, light, back, transition));
   }
 
   @Override

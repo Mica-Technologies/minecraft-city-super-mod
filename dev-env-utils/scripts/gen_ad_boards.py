@@ -37,6 +37,7 @@ MODEL_DIR = os.path.join(ASSETS, "models", "block", "signage")
 ITEM_MODEL_DIR = os.path.join(ASSETS, "models", "item")
 STATE_DIR = os.path.join(ASSETS, "blockstates")
 ADS_DIR = os.path.join(ASSETS, "textures", "ads", "parody")
+LED_GRID = os.path.join(ASSETS, "textures", "ads", "led_grid.png")
 
 # kind -> the board's geometry, in pixels, and the ad its item icon shows
 KINDS = {
@@ -122,6 +123,23 @@ def lamp_lens():
             d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5 / 10.6
             v = 255 - int(60 * d)
             image.putpixel((x, y), (v, v, int(v * 0.86), 255))
+    return image
+
+
+def led_grid():
+    """One LED of a screen's grid, repeated across the face by the renderer and multiplied over
+    the ad: a lit square with softened corners and a dark line round it. Its average is about
+    four fifths, which is how much a screen seen from afar is dimmed by its grid."""
+    image = Image.new("RGBA", (8, 8))
+    for y in range(8):
+        for x in range(8):
+            if x == 7 or y == 7:
+                v = 70
+            elif (x, y) in ((0, 0), (6, 0), (0, 6), (6, 6)):
+                v = 190
+            else:
+                v = 255
+            image.putpixel((x, y), (v, v, v, 255))
     return image
 
 
@@ -386,6 +404,7 @@ def outputs():
     files[os.path.join(TEX_DIR, "board_rail_steel.png")] = _png(flat(20260926, (96, 100, 106)))
     files[os.path.join(TEX_DIR, "board_catwalk_grate.png")] = _png(grate())
     files[os.path.join(TEX_DIR, "board_lamp_lens.png")] = _png(lamp_lens())
+    files[LED_GRID] = _png(led_grid())
     files[os.path.join(TEX_DIR, "board_kiosk_bezel.png")] = _png(flat(20260927, (44, 47, 52), 2))
     files[os.path.join(TEX_DIR, "board_kiosk_body.png")] = _png(flat(20260928, (60, 64, 70)))
     for kind, k in KINDS.items():
