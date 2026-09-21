@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -29,6 +30,12 @@ public class TileEntityRailroadCrossingGate extends AbstractTickableTileEntity {
   private float angle = RAISED;
   private float prevAngle = RAISED;
   private boolean settled = false;
+
+  /** Client-side render caches; see {@link #getRenderBoundingBox()} and {@link #getLightPos()}. */
+  private AxisAlignedBB renderBox;
+  private BlockPos renderBoxFor;
+  private BlockPos lightPos;
+  private BlockPos lightPosFor;
 
   @Override
   public boolean doClientTick() {
@@ -81,16 +88,56 @@ public class TileEntityRailroadCrossingGate extends AbstractTickableTileEntity {
   }
 
   /**
+   * {@link #isArmActive()} for a caller that has already read this gate's block state, so the
+   * world is not read a second time.
+   *
+   * @param powered the {@code POWERED} value of this gate's own current block state
+   *
+   * @return whether the arm is moving or down: the lamps' condition
+   */
+  public boolean isArmActive(boolean powered) {
+    return angle < RAISED - 0.5F || powered;
+  }
+
+  /**
+   * The block above, whose light the arm is drawn with; kept so the renderer does not allocate a
+   * position every frame.
+   *
+   * @return the position above this gate
+   */
+  @SideOnly(Side.CLIENT)
+  public BlockPos getLightPos() {
+    BlockPos pos = getPos();
+    if (lightPos == null || lightPosFor != pos) {
+      lightPos = pos.up();
+      lightPosFor = pos;
+    }
+    return lightPos;
+  }
+
+  /**
    * The arm reaches well outside the block in every direction it can point, so the renderer
    * must not be culled while the cabinet is off screen.
+   *
+   * <p>The box is kept once worked out: the arm length is fixed by the block, and a different
+   * block here replaces this tile entity. The fallback used before the world is set is not
+   * kept.</p>
    */
   @Override
   @SideOnly(Side.CLIENT)
   public AxisAlignedBB getRenderBoundingBox() {
+    if (renderBox != null && renderBoxFor == getPos()) {
+      return renderBox;
+    }
     Block block = getWorld() == null ? null : getWorld().getBlockState(getPos()).getBlock();
-    double reach = block instanceof BlockRailroadCrossingGate
-        ? ((BlockRailroadCrossingGate) block).getArmLength() + 1.0 : 12.0;
-    return new AxisAlignedBB(getPos()).grow(reach, reach, reach);
+    boolean gate = block instanceof BlockRailroadCrossingGate;
+    double reach = gate ? ((BlockRailroadCrossingGate) block).getArmLength() + 1.0 : 12.0;
+    AxisAlignedBB box = new AxisAlignedBB(getPos()).grow(reach, reach, reach);
+    if (gate) {
+      renderBox = box;
+      renderBoxFor = getPos();
+    }
+    return box;
   }
 
   @Override

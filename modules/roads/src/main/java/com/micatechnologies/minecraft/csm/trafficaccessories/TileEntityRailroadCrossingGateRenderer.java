@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -26,6 +29,13 @@ import org.lwjgl.opengl.GL11;
  * at the block, so the arm is shaded like everything around it; only the lamps are drawn
  * full-bright.</p>
  *
+ * <p>Nothing in the arm depends on where the gate stands except its light, and the lamps have
+ * only three looks (dark, or lit in either half of the flash), so the whole arm is compiled
+ * into a list shared by every gate that looks the same ({@link CsmSharedDisplayLists}) and
+ * replayed under each gate's own facing and swing rotation. The light stays baked into the
+ * vertices and is part of the key, so the vertex data is exactly what was drawn per frame.
+ * {@link CsmRenderToggles#sharedBakesPerFrame} draws it per frame, for comparison.</p>
+ *
  * @author Mica Technologies
  * @since 2026.9
  */
@@ -50,6 +60,24 @@ public class TileEntityRailroadCrossingGateRenderer
   private static final float[] LAMP_LIT = {1.0F, 0.15F, 0.10F};
   private static final float[] LAMP_DARK = {0.30F, 0.05F, 0.04F};
 
+  /** The lamps' three looks: all dark, or lit with the inner pair in either flash half. */
+  private static final int LAMPS_DARK = 0;
+  private static final int LAMPS_FIRST_HALF = 1;
+  private static final int LAMPS_SECOND_HALF = 2;
+
+  /**
+   * The whole arm, one list per look. Key layout (a {@code long}):
+   * <ul>
+   *   <li>bits 0-31: the combined light at the block above, as {@code getCombinedLight} returns
+   *   it (sky light in the high half, block light in the low half; baked into the vertices)</li>
+   *   <li>bits 32-33: the lamp look ({@link #LAMPS_DARK}, {@link #LAMPS_FIRST_HALF},
+   *   {@link #LAMPS_SECOND_HALF})</li>
+   *   <li>bits 34 and up: the block id, which fixes the arm length</li>
+   * </ul>
+   */
+  private static final CsmSharedDisplayLists ARM_LISTS =
+      new CsmSharedDisplayLists("crossing_gate_arm");
+
   @Override
   public void render(TileEntityRailroadCrossingGate te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -65,13 +93,13 @@ public class TileEntityRailroadCrossingGateRenderer
     EnumFacing facing = state.getValue(AbstractBlockRailroadCrossing.FACING);
     float angle = te.getRenderAngle(partialTicks);
 
-    int light = te.getWorld().getCombinedLight(te.getPos().up(), 0);
-    int sky = (light >> 16) & 0xFFFF;
-    int blockLight = light & 0xFFFF;
+    int light = te.getWorld().getCombinedLight(te.getLightPos(), 0);
 
-    boolean lampsOn = te.isArmActive();
+    // The state read above is the gate's own, so its POWERED is what isActive would read again
+    boolean lampsOn = te.isArmActive(state.getValue(AbstractBlockRailroadCrossing.POWERED));
     long millis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
     boolean firstHalf = Math.floorMod(millis, 1000L) < 500L;
+    int lamps = !lampsOn ? LAMPS_DARK : firstHalf ? LAMPS_FIRST_HALF : LAMPS_SECOND_HALF;
 
     GlStateManager.pushMatrix();
     GlStateManager.translate((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
@@ -81,6 +109,47 @@ public class TileEntityRailroadCrossingGateRenderer
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     GlStateManager.disableLighting();
+
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawArm(length, light, lamps);
+    } else {
+      long key = ((long) Block.getIdFromBlock(block) << 34) | ((long) lamps << 32)
+          | (light & 0xFFFFFFFFL);
+      int list = ARM_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = ARM_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawArm(length, light, lamps);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawArm(length, light, lamps);
+      }
+    }
+
+    GlStateManager.enableLighting();
+    GlStateManager.popMatrix();
+  }
+
+  /**
+   * Draws the counterweight, the banded arm and the three lamps, in the arm's pivot space.
+   * Geometry only: the caller owns the texture and every GL state.
+   *
+   * @param length the arm length, in blocks
+   * @param light  the combined light the world-lit parts are drawn with
+   * @param lamps  the lamp look
+   */
+  private static void drawArm(float length, int light, int lamps) {
+    int sky = (light >> 16) & 0xFFFF;
+    int blockLight = light & 0xFFFF;
+    boolean lampsOn = lamps != LAMPS_DARK;
+    boolean firstHalf = lamps == LAMPS_FIRST_HALF;
+
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buf = tessellator.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -114,9 +183,6 @@ public class TileEntityRailroadCrossingGateRenderer
           -ARM_HALF_D, colour, ls, lb);
     }
     tessellator.draw();
-
-    GlStateManager.enableLighting();
-    GlStateManager.popMatrix();
   }
 
   private static void emitBox(BufferBuilder buf, float x1, float y1, float z1, float x2,
