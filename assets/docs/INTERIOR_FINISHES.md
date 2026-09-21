@@ -51,6 +51,10 @@ looking at the window -- so they turn with it.
 - The sheer curtain is on the translucent layer; the rest are cutout.
 - The textures are even: the lines that make slats and pleats run the whole way across, so a big
   blind shows no repeat.
+- **Anything repeated down a blind has a pitch that divides the block.** Venetian slats are 16/11 px
+  apart, eleven to a block, and vertical vanes 2 px. At a pitch that does not divide sixteen (the
+  slats were 1.5 px) the gap across every block seam differs from the rest, and a tall blind shows
+  a band at each block (issue #219).
 - Priced by what they are made of: venetian (aluminium) a Sheet Metal, shades and vertical blinds 2
   paper, curtains 2 paper and a dye.
 
