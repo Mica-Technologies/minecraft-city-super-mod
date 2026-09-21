@@ -500,7 +500,10 @@ public class DynamicStreetSignGui extends GuiScreen {
         btn.displayString = "Second Blade: " + (on ? "ON" : "OFF");
       }
     }
-    drawScrolledCenteredString(TextFormatting.GRAY + "Hangs below the first blade, sharing",
+    boolean postTop = data.getMountType().isPostTop();
+    drawScrolledCenteredString(TextFormatting.GRAY + (postTop
+            ? "Crosses the first blade on the post, sharing"
+            : "Hangs below the first blade, sharing"),
         centerX, labelYBladeHint, 0xAAAAAA);
     drawScrolledCenteredString(TextFormatting.GRAY + "its size, style and text size",
         centerX, labelYBladeHint + PREVIEW_LINE_HEIGHT, 0xAAAAAA);
@@ -513,6 +516,9 @@ public class DynamicStreetSignGui extends GuiScreen {
     StreetSignLegend legend = activeLegend();
     for (GuiButton btn : buttonList) {
       switch (btn.id) {
+        case BTN_BLADE_TURN:
+          btn.displayString = "Points: " + legend.getBladeTurnName();
+          break;
         case BTN_BLOCK_POSITION:
           btn.displayString = "Block: " + legend.getBlockPosition().getFriendlyName();
           break;
@@ -567,9 +573,6 @@ public class DynamicStreetSignGui extends GuiScreen {
   private void drawStyleTabLabels(int left, int y, int centerX) {
     for (GuiButton btn : buttonList) {
       switch (btn.id) {
-        case BTN_BLADE_TURN:
-          btn.displayString = "Points: " + activeLegend().getBladeTurnName();
-          break;
         case BTN_SIGN_COLOR:
           btn.displayString = data.getSignColor().getFriendlyName();
           break;
