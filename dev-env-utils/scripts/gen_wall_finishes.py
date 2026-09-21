@@ -14,7 +14,9 @@ blockstate to the way it faces.
 Finishes of one kind on the same wall join into one surface, and trim is drawn only where it
 belongs: a tile's bullnose cap and a beadboard's chair rail along the top course of the run
 (up = false), an edge trim or an acoustic panel's frame at the run's ends (left / right = false,
-seen from the room, facing the wall). Paint needs none.
+seen from the room, facing the wall). Paint needs none. In an inside corner the corner cell also
+draws the other wall's run on its side (corner_left / corner_right), so a run can turn the corner;
+no two faces in any state share a plane (see the note above _but).
 
 Corner guards (BlockCornerGuard, by name) are an angle on the outside corner of a wall: one flange
 on the wall face the guard hangs on, the other round the corner on the wall's end face -- which is
@@ -243,41 +245,142 @@ mirror_x = sc._mirror_x
 DEPTH = {"paint": 0.25, "subway": 1.0, "square": 1.0, "acoustic": 1.5, "beadboard": 1.0,
          "slatwall": 0.5}
 
+# A trimmed kind's trim, in px: (edge width, edge depth, cap height, cap depth). The cap is the top
+# course's trim -- a bullnose cap on tile, a chair rail on beadboard, a top rail on a slat wall --
+# and the edge the trim at an end of the run.
+TRIM = {"subway": (0.75, 1.75, 1.0, 1.75), "square": (0.75, 1.75, 1.0, 1.75),
+        "beadboard": (0.75, 1.75, 1.5, 2.0), "slatwall": (1.0, 1.75, 1.0, 1.75)}
+TRIM_TEX = {"subway": "#cap", "square": "#cap", "beadboard": "#cap", "slatwall": "#slat"}
 
-def _panel(kind):
-    d = DEPTH[kind]
-    el = box(0, 0, 0, 16, 16, d, "#face", faces=("south", "north", "up", "down", "east", "west"))
+# An acoustic panel's frame: its width, and the lip it stands on the fabric's face (z from, to).
+FRAME_W = 0.5
+FRAME_Z = (1.5, 1.6)
+
+# Where a slat wall's slats stand along the run (x), and how far proud of the felt (z).
+SLATS = (1, 5, 9, 13)
+SLAT_Z = (0.5, 1.5)
+
+ALL_FACES = ("north", "south", "east", "west", "up", "down")
+
+# No two faces, in any state, may lie in one plane facing the same way over the same area: the
+# depth test cannot choose between them and the two textures flicker through each other (#218 --
+# at the end of every slat wall run the felt's end face and the edge trim's were one plane). So a
+# face some part always covers is left off, and a part that would overlap another only in some
+# states is cut, and each piece drawn only in the states it shows in:
+#
+# - On a trimmed kind the panel has no end or top faces: at an end of the run the edge trim covers
+#   them, at a join the next panel does, and on top the cap or the course above.
+# - The strip of panel an edge trim stands over is its own part, drawn only where the run goes on
+#   (left / right = true); under the trim, its bottom face and the trim's were one plane.
+# - The top course's trim runs the full width and owns the corner, so an edge trim stops under it
+#   and its top piece is drawn only where the run goes on up. An acoustic panel's frame is split
+#   the same way round its four corners.
+# - The cap has no back face: the panel's and the edge trims' already cover the wall behind it,
+#   and hung on glass the two were seen overlapping from the far side.
+#
+# An inside corner: the cell in the corner hangs on one wall, and when the run on the other wall
+# reaches it (corner_left / corner_right), it draws that run's last stretch on its own side too,
+# butted against the face of its own panel rather than through it, so the two runs meet without a
+# face in common. Both runs count the corner as a join (left / right = true), so neither draws an
+# edge trim there.
+
+
+def _but(*faces):
+    return tuple(f for f in ALL_FACES if f not in faces)
+
+
+def _mirror(elements):
+    """The right-hand twin of a left-hand part. An element that leaves off one of its end faces
+    leaves off the other end once it is mirrored, so the two swap names, and take their UVs again
+    from where they now lie."""
+    out = mirror_x(elements)
+    for e in out:
+        f = e["faces"]
+        if ("east" in f) != ("west" in f):
+            e["faces"] = {{"east": "west", "west": "east"}.get(k, k): v for k, v in f.items()}
+            sc._reuv(e)
+    return out
+
+
+def _against(el):
+    """The face against the wall, culled when the wall is solid."""
     el["faces"]["north"]["cullface"] = "north"
+    return el
+
+
+def _item(kind):
+    """The whole panel with no trim: the inventory's model, and paint's and an acoustic panel's
+    panel in the world, whose ends show."""
+    d = DEPTH[kind]
+    el = _against(box(0, 0, 0, 16, 16, d, "#face",
+                      faces=("south", "north", "up", "down", "east", "west")))
     if kind != "slatwall":
         return [el]
     # A slat wall: slats standing proud of the felt.
-    return [el] + [box(x, 0, 0.5, x + 2, 16, 1.5, "#slat") for x in (1, 5, 9, 13)]
+    return [el] + [box(x, 0, SLAT_Z[0], x + 2, 16, SLAT_Z[1], "#slat") for x in SLATS]
 
 
-def _cap(kind):
-    """The top course's trim: a bullnose cap on tile, a chair rail on beadboard, a top rail on a
-    slat wall, a frame on an acoustic panel."""
-    if kind in ("subway", "square"):
-        return [box(0, 15, 0, 16, 16, 1.75, "#cap")]
-    if kind == "beadboard":
-        return [box(0, 14.5, 0, 16, 16, 2, "#cap")]
-    if kind == "slatwall":
-        return [box(0, 15, 0, 16, 16, 1.75, "#slat")]
-    return [box(0, 15.5, 1.5, 16, 16, 1.6, "#frame")]
+def _slats(kind, faces):
+    if kind != "slatwall":
+        return []
+    return [box(x, 0, SLAT_Z[0], x + 2, 16, SLAT_Z[1], "#slat", faces=faces) for x in SLATS]
 
 
-def _edge(kind):
-    """The left end's trim (x = 0); the right end's is its mirror."""
-    if kind in ("subway", "square", "beadboard"):
-        return [box(0, 0, 0, 0.75, 16, 1.75, "#cap")]
-    if kind == "slatwall":
-        return [box(0, 0, 0, 1, 16, 1.75, "#slat")]
-    return [box(0, 0, 1.5, 0.5, 16, 1.6, "#frame")]
+def _side_slats(kind, y0, y1, faces):
+    """The slats of the run on the left wall, drawn in a corner cell: a slat at x along that run
+    lies at z = 16 - x here. The one nearest the corner starts in front of this cell's own slats,
+    which it would otherwise pass through."""
+    if kind != "slatwall":
+        return []
+    return [box(SLAT_Z[0], y0, max(14 - x, SLAT_Z[1]), SLAT_Z[1], y1, 16 - x, "#slat", faces=faces)
+            for x in SLATS]
 
 
-def _bottom(kind):
-    """An acoustic panel's frame along the bottom of its run; nothing else has one."""
-    return [box(0, 0, 1.5, 16, 0.5, 1.6, "#frame")]
+def _trimmed(kind):
+    """A trimmed kind's parts, by model suffix; each left part's right twin is its mirror."""
+    w, ed, h, cd = TRIM[kind]
+    d = DEPTH[kind]
+    tex = TRIM_TEX[kind]
+    return {
+        "_body": [_against(box(w, 0, 0, 16 - w, 16, d, "#face", faces=("south", "north", "down")))]
+        + _slats(kind, _but("up")),
+        "_top": [box(0, 16 - h, 0, 16, 16, cd, tex, faces=_but("north"))],
+        "_join_left": [_against(box(0, 0, 0, w, 16, d, "#face",
+                                    faces=("south", "north", "down")))],
+        "_left": [_against(box(0, 0, 0, w, 16 - h, ed, tex, faces=_but("up")))],
+        "_left_upper": [_against(box(0, 16 - h, 0, w, 16, ed, tex, faces=_but("down")))],
+        "_corner_left": [box(0, 0, d, d, 16 - h, 16, "#face", faces=("east", "down"))]
+        + _side_slats(kind, 0, 16 - h, _but("up")),
+        "_corner_left_upper": [box(0, 16 - h, d, d, 16, 16, "#face", faces=("east", "up"))]
+        + _side_slats(kind, 16 - h, 16, _but("down")),
+        "_corner_left_top": [box(0, 16 - h, cd, cd, 16, 16, tex,
+                                 faces=("east", "up", "down", "south"))],
+    }
+
+
+def _acoustic():
+    """An acoustic panel's frame, round the outside of the whole panel, by model suffix."""
+    d = DEPTH["acoustic"]
+    fw = FRAME_W
+    z0, z1 = FRAME_Z
+    lip = _but("north")
+    return {
+        "_top": [box(d, 16 - fw, z0, 16 - d, 16, z1, "#frame", faces=lip)],
+        "_bottom": [box(d, 0, z0, 16 - d, fw, z1, "#frame", faces=lip)],
+        "_top_left": [box(0, 16 - fw, z0, d, 16, z1, "#frame", faces=lip)],
+        "_bottom_left": [box(0, 0, z0, d, fw, z1, "#frame", faces=lip)],
+        "_left": [box(0, fw, z0, fw, 16 - fw, z1, "#frame", faces=lip)],
+        "_left_upper": [box(0, 16 - fw, z0, fw, 16, z1, "#frame", faces=lip)],
+        "_left_lower": [box(0, 0, z0, fw, fw, z1, "#frame", faces=lip)],
+        "_corner_left": [box(0, 0, d, d, 16, 16, "#face", faces=("east", "up", "down"))],
+        "_corner_left_top": [box(d, 16 - fw, z1, z1, 16, 16, "#frame", faces=_but("west"))],
+        "_corner_left_bottom": [box(d, 0, z1, z1, fw, 16, "#frame", faces=_but("west"))],
+    }
+
+
+def _paint():
+    d = DEPTH["paint"]
+    return {"_corner_left": [box(0, 0, d, d, 16, 16, "#face", faces=("east", "up", "down"))]}
 
 
 def _model(elements, textures):
@@ -305,18 +408,30 @@ def guard_model(rgb_name):
                   {"guard": TEX_REF % rgb_name})
 
 
+def finish_parts(kind):
+    """Every part of a finish but the whole panel, by model suffix, the right-hand ones mirrored
+    from the left."""
+    if kind == "paint":
+        parts = _paint()
+    elif kind == "acoustic":
+        parts = _acoustic()
+    else:
+        parts = _trimmed(kind)
+    out = {}
+    for suffix, elements in parts.items():
+        out[suffix] = elements
+        if "left" in suffix:
+            out[suffix.replace("left", "right")] = _mirror(elements)
+    return out
+
+
 def models():
     out = {}
     for name, (kind, _, _) in FINISHES.items():
         t = _tex(name, kind)
-        out[name] = _model(_panel(kind), t)
-        if kind == "paint":
-            continue
-        out[name + "_top"] = _model(_cap(kind), t)
-        out[name + "_left"] = _model(_edge(kind), t)
-        out[name + "_right"] = _model(mirror_x(_edge(kind)), t)
-        if kind == "acoustic":
-            out[name + "_bottom"] = _model(_bottom(kind), t)
+        out[name] = _model(_item(kind), t)
+        for suffix, elements in finish_parts(kind).items():
+            out[name + suffix] = _model(elements, t)
     for name in GUARDS:
         left = guard_model(name)
         out[name + "_left"] = left
@@ -344,13 +459,37 @@ def _parts(conds):
 
 
 def finish_state(name):
+    """Which parts each state draws. Left and right are joined (true) where the run goes on, to the
+    next cell or round an inside corner; corner_left / corner_right where this cell is the corner
+    and draws the other wall's run on that side."""
     kind = FINISHES[name][0]
-    conds = [({}, name)]
-    if kind != "paint":
-        conds += [({"up": "false"}, name + "_top"), ({"left": "false"}, name + "_left"),
-                  ({"right": "false"}, name + "_right")]
-        if kind == "acoustic":
-            conds.append(({"down": "false"}, name + "_bottom"))
+    if kind == "paint":
+        conds = [({}, name)]
+        for s in ("left", "right"):
+            conds.append(({"corner_" + s: "true"}, "%s_corner_%s" % (name, s)))
+    elif kind == "acoustic":
+        conds = [({}, name), ({"up": "false"}, name + "_top"),
+                 ({"down": "false"}, name + "_bottom")]
+        for s in ("left", "right"):
+            c = "corner_" + s
+            conds += [({"up": "false", c: "false"}, "%s_top_%s" % (name, s)),
+                      ({"down": "false", c: "false"}, "%s_bottom_%s" % (name, s)),
+                      ({s: "false"}, "%s_%s" % (name, s)),
+                      ({s: "false", "up": "true"}, "%s_%s_upper" % (name, s)),
+                      ({s: "false", "down": "true"}, "%s_%s_lower" % (name, s)),
+                      ({c: "true"}, "%s_corner_%s" % (name, s)),
+                      ({c: "true", "up": "false"}, "%s_corner_%s_top" % (name, s)),
+                      ({c: "true", "down": "false"}, "%s_corner_%s_bottom" % (name, s))]
+    else:
+        conds = [({}, name + "_body"), ({"up": "false"}, name + "_top")]
+        for s in ("left", "right"):
+            c = "corner_" + s
+            conds += [({s: "true"}, "%s_join_%s" % (name, s)),
+                      ({s: "false"}, "%s_%s" % (name, s)),
+                      ({s: "false", "up": "true"}, "%s_%s_upper" % (name, s)),
+                      ({c: "true"}, "%s_corner_%s" % (name, s)),
+                      ({c: "true", "up": "true"}, "%s_corner_%s_upper" % (name, s)),
+                      ({c: "true", "up": "false"}, "%s_corner_%s_top" % (name, s))]
     return {"variants": {"inventory": {"model": MODEL_REF % name}}, "multipart": _parts(conds)}
 
 

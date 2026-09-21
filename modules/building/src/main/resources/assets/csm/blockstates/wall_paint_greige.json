@@ -39,6 +39,84 @@
         "model": "csm:wallfinish/wall_paint_greige",
         "y": 270
       }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_greige_corner_left"
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_greige_corner_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_greige_corner_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_greige_corner_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_greige_corner_right"
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_greige_corner_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_greige_corner_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_greige_corner_right",
+        "y": 270
+      }
     }
   ]
 }

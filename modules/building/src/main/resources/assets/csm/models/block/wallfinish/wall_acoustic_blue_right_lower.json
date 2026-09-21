@@ -1,0 +1,68 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_acoustic_blue",
+    "frame": "csm:blocks/wallfinish/wall_acoustic_blue_frame",
+    "particle": "csm:blocks/wallfinish/wall_acoustic_blue"
+  },
+  "elements": [
+    {
+      "from": [
+        15.5,
+        0,
+        1.5
+      ],
+      "to": [
+        16,
+        0.5,
+        1.6
+      ],
+      "faces": {
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            15.5,
+            15.5,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            14.4,
+            15.5,
+            14.5,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            15.5,
+            1.6,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            15.5,
+            1.5,
+            16.0,
+            1.6
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            15.5,
+            14.4,
+            16.0,
+            14.5
+          ]
+        }
+      }
+    }
+  ]
+}

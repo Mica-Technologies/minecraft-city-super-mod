@@ -98,6 +98,21 @@ tile, fabric acoustic panels, beadboard and a wood slat wall. Chosen over full-b
   run of tile under paint is a wainscot), an edge trim at the run's ends, and an acoustic panel's
   frame round the outside of the whole panel. Paint has no trim. Left and right are as seen from
   the room, facing the wall, as the blinds' are.
+- **Inside corners.** A cell holds one finish, so the cell in a corner hangs on one wall and the
+  run on the other wall would stop a block short of it. So when the corner cell's side is a wall
+  (a solid face) and the cell beside it along that wall holds the same finish facing it, the
+  corner cell also draws that run's last stretch (`corner_left` / `corner_right`, actual state
+  like the joins, so facing is still all that is stored). The side panel is butted against the
+  face of the corner cell's own panel, not run through it, and both runs count the corner as a
+  join, so neither draws an edge trim where it turns. A different finish on the other wall keeps
+  its edge trim, as before. Outside corners need nothing: the two runs are in different cells
+  and meet only along the corner's edge, which is what the corner guard covers.
+- **No two faces share a plane** in any state, since that is z-fighting: the textures flicker
+  through each other (#218: a slat wall's felt end face and its edge trim's, at every run end).
+  A face some part always covers is left off -- a trimmed kind's panel has no end or top faces --
+  and a part that would overlap another only in some states is cut, each piece drawn only in the
+  states it shows in: the strip of panel under an edge trim is drawn only where the run joins,
+  and the edge trim stops under the top course's trim, which owns the corner.
 - **Corner guards** (`BlockCornerGuard`, stainless or white vinyl) sit on the wall face beside an
   outside corner: the half of the face that was clicked picks the edge, one flange lies on the
   face and the other wraps round onto the wall's end face, outside the guard's own cell. A guard
