@@ -243,15 +243,18 @@ def door_faces(name):
                     rail = (top and y < 3) or (not top and y > 11)
                     img_px[x, y] = _shift(rgb, rng.uniform(-3, 3)) if stile or rail else GLASS
     elif style == "front":
-        # Six panels: two short over four tall, the lock rail between them in the lower half.
+        # Six panels, as a real six-panel door has them: two short at the top, two tall in the
+        # middle and two tall at the bottom, with the lock rail between the middle and bottom
+        # pairs. The halves are separate textures, so every panel stays whole inside one of them
+        # and the lock rail falls on the seam (the upper half's last row and the lower half's
+        # first). A panel drawn across the seam reads as two, its outline closed at the edge of
+        # each half (issue #221).
         _panel(up, rgb, 2, 1, 7, 5)
         _panel(up, rgb, 9, 1, 14, 5)
-        _panel(up, rgb, 2, 7, 7, 15)
-        _panel(up, rgb, 9, 7, 14, 15)
-        _panel(lp, rgb, 2, 0, 7, 4)
-        _panel(lp, rgb, 9, 0, 14, 4)
-        _panel(lp, rgb, 2, 8, 7, 14)
-        _panel(lp, rgb, 9, 8, 14, 14)
+        _panel(up, rgb, 2, 7, 7, 14)
+        _panel(up, rgb, 9, 7, 14, 14)
+        _panel(lp, rgb, 2, 1, 7, 12)
+        _panel(lp, rgb, 9, 1, 14, 12)
     elif style == "halfglass":
         for gx in range(3):
             for gy in range(3):
