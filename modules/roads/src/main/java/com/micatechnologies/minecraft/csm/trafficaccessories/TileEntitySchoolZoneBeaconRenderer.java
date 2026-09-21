@@ -1,7 +1,10 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper.Box;
@@ -44,6 +47,14 @@ import org.lwjgl.opengl.GL11;
  * {@link TrafficSignalFlashPattern#B} — the wig-wag pair the signal system already uses, so a
  * school zone beacon blinks at the same rate as everything else in the mod rather than to its
  * own private timer.</p>
+ *
+ * <p>Only the bulbs change from frame to frame. Everything drawn in the white swatch -- the panel,
+ * the plaque, the bracketry and the beacon housings -- is compiled once per appearance into a list
+ * shared by every beacon that looks the same ({@link CsmSharedDisplayLists}), and the legend into a
+ * second list keyed on the posted speed, since it is the only other texture. Both are replayed
+ * under each beacon's own facing and scale. The housings' vertices carry the block's light, so the
+ * light is part of the body key. {@link CsmRenderToggles#sharedBakesPerFrame} draws both per frame,
+ * for comparison.</p>
  *
  * @author Mica Technologies
  * @since 2026.9
@@ -133,6 +144,17 @@ public class TileEntitySchoolZoneBeaconRenderer
   private static final ResourceLocation WHITE_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/white1px.png");
 
+  /**
+   * The white-swatch geometry: panel, plaque, bracketry and beacon housings. Key, see
+   * {@link #bodyKey}.
+   */
+  private static final CsmSharedDisplayLists BODY_LISTS =
+      new CsmSharedDisplayLists("school_beacon_body");
+
+  /** The legend, in the font atlas, keyed on the posted speed limit. */
+  private static final CsmSharedDisplayLists LEGEND_LISTS =
+      new CsmSharedDisplayLists("school_beacon_legend");
+
   @Override
   public void render(TileEntitySchoolZoneBeacon te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -169,10 +191,35 @@ public class TileEntitySchoolZoneBeaconRenderer
     int sky = (combined >> 16) & 0xFFFF;
     int block = combined & 0xFFFF;
 
-    renderPanel(te, sky, block);
+    // The housings are drawn ahead of the legend now rather than after it. Every face here is
+    // opaque and none of the housings overlaps the panel face the legend sits on, so the order
+    // changes no pixel; the bulbs still follow their housings.
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawBody(te, sky, block);
+    } else {
+      long key = bodyKey(te, combined);
+      int list = BODY_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = BODY_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawBody(te, sky, block);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+        // A direct draw resets the colour cache after its colour array; a replay does not.
+        GlStateManager.resetColor();
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawBody(te, sky, block);
+      }
+    }
+
     renderPanelText(te);
 
-    renderBeacons(te, sky, block);
+    renderBulbs(te);
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
@@ -218,10 +265,44 @@ public class TileEntitySchoolZoneBeaconRenderer
     }
   }
 
-  private void renderPanel(TileEntitySchoolZoneBeacon te, int sky, int block) {
+  /**
+   * Packs everything the white-swatch geometry depends on. Scale and facing are not in it: both
+   * are the matrix the list is replayed under.
+   *
+   * <pre>
+   *  bits  0-31  combined light, as getCombinedLight returns it (sky in the high half)
+   *  bits 32-39  banner colour ordinal
+   *  bits 40-47  housing colour ordinal
+   *  bits 48-53  visor type ordinal
+   *  bits 54-55  arrangement
+   *  bit  56     beacon size
+   * </pre>
+   */
+  private static long bodyKey(TileEntitySchoolZoneBeacon te, int combined) {
+    return (combined & 0xFFFFFFFFL)
+        | ((long) (te.getBannerColor().ordinal() & 0xFF) << 32)
+        | ((long) (te.getHousingColor().ordinal() & 0xFF) << 40)
+        | ((long) (te.getVisorType().ordinal() & 0x3F) << 48)
+        | ((long) (te.getArrangement() & 0x3) << 54)
+        | ((long) (te.getBeaconSize() & 0x1) << 56);
+  }
+
+  /**
+   * Draws everything in the white swatch in one draw: the panel, then the bracketry and housings
+   * in the order they were drawn one by one. Geometry only: the caller binds the texture and owns
+   * every GL state.
+   */
+  private static void drawBody(TileEntitySchoolZoneBeacon te, int sky, int block) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    addPanel(buf, te, sky, block);
+    addBeaconHousings(buf, te, sky, block);
+    tess.draw();
+  }
 
+  private static void addPanel(BufferBuilder buf, TileEntitySchoolZoneBeacon te, int sky,
+      int block) {
     float halfW = PANEL_W / 2.0f;
     float halfH = PANEL_H / 2.0f;
     float backZ = CZ + PANEL_D / 2.0f;
@@ -232,10 +313,8 @@ public class TileEntitySchoolZoneBeaconRenderer
         CX - halfW - PANEL_BORDER, CY - halfH - PANEL_BORDER,
         CX + halfW + PANEL_BORDER, CY + halfH + PANEL_BORDER,
         frontZ, backZ, PANEL_RADIUS, ROUND_STEPS, true, true);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(border, buf,
         COL_BORDER[0], COL_BORDER[1], COL_BORDER[2], COL_BORDER[3], 0, 0, 0, sky, block);
-    tess.draw();
 
     // Two faces, not one: the gap between them is left unpainted so the black border box
     // behind shows through as the divider between the plaque and the sign under it.
@@ -247,19 +326,15 @@ public class TileEntitySchoolZoneBeaconRenderer
     List<RenderHelper.Box> body = new ArrayList<>();
     RenderHelper.addRoundedRect(body, CX - halfW, CY - halfH, CX + halfW, bodyTop,
         frontZ - 0.1f, frontZ + 0.2f, faceRadius, ROUND_STEPS, true, false);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(body, buf,
         COL_PANEL[0], COL_PANEL[1], COL_PANEL[2], COL_PANEL[3], 0, 0, 0, sky, block);
-    tess.draw();
 
     MutcdSignFaceColor plaque = te.getBannerColor();
     List<RenderHelper.Box> banner = new ArrayList<>();
     RenderHelper.addRoundedRect(banner, CX - halfW, bannerBottom, CX + halfW, top,
         frontZ - 0.1f, frontZ + 0.2f, faceRadius, ROUND_STEPS, false, true);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(banner, buf,
         plaque.getRed(), plaque.getGreen(), plaque.getBlue(), 1.0f, 0, 0, 0, sky, block);
-    tess.draw();
   }
 
   /**
@@ -276,41 +351,121 @@ public class TileEntitySchoolZoneBeaconRenderer
     GlStateManager.rotate(180, 0, 1, 0);
     GlStateManager.depthMask(false);
 
-    drawCentred(fr, "SCHOOL", 0, LINE_SCHOOL, TEXT_SCALE_LABEL);
-    drawCentred(fr, "SPEED", 0, LINE_SPEED, TEXT_SCALE_LABEL);
-    drawCentred(fr, "LIMIT", 0, LINE_LIMIT, TEXT_SCALE_LABEL);
-    drawCentred(fr, String.valueOf(te.getSpeedLimit()), 0, LINE_NUMBER, TEXT_SCALE_SPEED);
-    drawCentred(fr, "WHEN", 0, LINE_WHEN, TEXT_SCALE_PLAQUE);
-    drawCentred(fr, "FLASHING", 0, LINE_FLASHING, TEXT_SCALE_PLAQUE);
+    // What drawString set per line, set once: the atlas, texturing and the legend colour.
+    fr.bindAtlas();
+    GlStateManager.enableTexture2D();
+    GlStateManager.color(((TEXT_BLACK >> 16) & 0xFF) / 255.0f,
+        ((TEXT_BLACK >> 8) & 0xFF) / 255.0f, (TEXT_BLACK & 0xFF) / 255.0f, 1.0f);
 
+    int speedLimit = te.getSpeedLimit();
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawLegend(fr, speedLimit);
+    } else {
+      int list = LEGEND_LISTS.get(speedLimit);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = LEGEND_LISTS.allocate(speedLimit);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawLegend(fr, speedLimit);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawLegend(fr, speedLimit);
+      }
+    }
+
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.depthMask(true);
     GlStateManager.popMatrix();
   }
 
   /**
-   * Draws one line centred on the panel's own axis. The Y scale is negative because the font
-   * renderer draws downward and this matrix has already been flipped to face the viewer.
+   * Draws the six legend lines. Geometry and matrix only: the caller binds the atlas and sets
+   * the colour, so this can be compiled into a list.
    */
-  private void drawCentred(CsmFontRenderer fr, String text, float centreX, float centreY,
+  private static void drawLegend(CsmFontRenderer fr, int speedLimit) {
+    drawCentred(fr, "SCHOOL", 0, LINE_SCHOOL, TEXT_SCALE_LABEL);
+    drawCentred(fr, "SPEED", 0, LINE_SPEED, TEXT_SCALE_LABEL);
+    drawCentred(fr, "LIMIT", 0, LINE_LIMIT, TEXT_SCALE_LABEL);
+    drawCentred(fr, String.valueOf(speedLimit), 0, LINE_NUMBER, TEXT_SCALE_SPEED);
+    drawCentred(fr, "WHEN", 0, LINE_WHEN, TEXT_SCALE_PLAQUE);
+    drawCentred(fr, "FLASHING", 0, LINE_FLASHING, TEXT_SCALE_PLAQUE);
+  }
+
+  /**
+   * Draws one line centred on the panel's own axis. The Y scale is negative because the font
+   * renderer draws downward and this matrix has already been flipped to face the viewer. The
+   * matrix calls are not cached by {@code GlStateManager}, so they compile into a list.
+   */
+  private static void drawCentred(CsmFontRenderer fr, String text, float centreX, float centreY,
       float scale) {
     GlStateManager.pushMatrix();
     GlStateManager.translate(centreX, centreY, 0);
     GlStateManager.scale(scale, -scale, scale);
     int width = fr.getStringWidth(text);
-    fr.drawString(text, -width / 2, -fr.FONT_HEIGHT / 2, TEXT_BLACK);
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+    fr.addString(buf, text, -width / 2, -fr.FONT_HEIGHT / 2);
+    tess.draw();
     GlStateManager.popMatrix();
   }
 
   /**
-   * Draws the beacons for the configured arrangement. A pair runs in opposite phases so the
-   * assembly alternates rather than blinking in unison; a lone beacon simply flashes.
+   * Draws the bulbs, the only part that changes from frame to frame. A pair runs in opposite
+   * phases so the assembly alternates rather than blinking in unison; a lone beacon simply
+   * flashes. Fullbright, one draw for both.
    */
-  private void renderBeacons(TileEntitySchoolZoneBeacon te, int sky, int block) {
+  private void renderBulbs(TileEntitySchoolZoneBeacon te) {
     boolean flashing = te.isFlashingNow();
     long millis = CsmRenderUtils.gameMillis(te.getWorld());
     boolean phaseA = flashing && TrafficSignalFlashPattern.OFF.isFlashLit(millis);
     boolean phaseB = flashing && TrafficSignalFlashPattern.B.isFlashLit(millis);
 
+    float size = sectionSize(te);
+    float borderTop = CY + PANEL_H / 2.0f + PANEL_BORDER;
+    float borderBottom = CY - PANEL_H / 2.0f - PANEL_BORDER;
+    float aboveY = borderTop + BEACON_GAP + size / 2.0f;
+    TrafficSignalBulbStyle bulbStyle = te.getBulbStyle();
+
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    Minecraft.getMinecraft().getTextureManager().bindTexture(SIGNAL_ATLAS);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    switch (te.getArrangement()) {
+      case TileEntitySchoolZoneBeacon.BEACONS_ABOVE_AND_BELOW: {
+        float belowY = borderBottom - BEACON_GAP - size / 2.0f;
+        addBeaconBulb(buf, CX - VISOR_CENTER_X, aboveY - VISOR_CENTER_Y, size, phaseA, bulbStyle);
+        addBeaconBulb(buf, CX - VISOR_CENTER_X, belowY - VISOR_CENTER_Y, size, phaseB, bulbStyle);
+        break;
+      }
+      case TileEntitySchoolZoneBeacon.BEACONS_TWO_ABOVE: {
+        float offset = (size + BEACON_PAIR_GAP) / 2.0f;
+        addBeaconBulb(buf, CX - offset - VISOR_CENTER_X, aboveY - VISOR_CENTER_Y, size, phaseA,
+            bulbStyle);
+        addBeaconBulb(buf, CX + offset - VISOR_CENTER_X, aboveY - VISOR_CENTER_Y, size, phaseB,
+            bulbStyle);
+        break;
+      }
+      case TileEntitySchoolZoneBeacon.BEACONS_ABOVE:
+      default:
+        addBeaconBulb(buf, CX - VISOR_CENTER_X, aboveY - VISOR_CENTER_Y, size, phaseA, bulbStyle);
+        break;
+    }
+    tess.draw();
+  }
+
+  /**
+   * Adds the bracketry and housings for the configured arrangement, in the order they were once
+   * drawn one by one: the supports, then each housing.
+   */
+  private static void addBeaconHousings(BufferBuilder buf, TileEntitySchoolZoneBeacon te,
+      int sky, int block) {
     Style style = new Style(te);
     float size = sectionSize(te);
     float borderTop = CY + PANEL_H / 2.0f + PANEL_BORDER;
@@ -320,12 +475,12 @@ public class TileEntitySchoolZoneBeaconRenderer
     switch (te.getArrangement()) {
       case TileEntitySchoolZoneBeacon.BEACONS_ABOVE_AND_BELOW: {
         float belowY = borderBottom - BEACON_GAP - size / 2.0f;
-        renderSupport(CX - BRACKET_HALF_W, borderTop,
+        addSupport(buf, CX - BRACKET_HALF_W, borderTop,
             CX + BRACKET_HALF_W, aboveY - size / 2.0f, style.housing, sky, block);
-        renderSupport(CX - BRACKET_HALF_W, belowY + size / 2.0f,
+        addSupport(buf, CX - BRACKET_HALF_W, belowY + size / 2.0f,
             CX + BRACKET_HALF_W, borderBottom, style.housing, sky, block);
-        renderBeacon(CX, aboveY, size, phaseA, style, sky, block);
-        renderBeacon(CX, belowY, size, phaseB, style, sky, block);
+        addHousing(buf, CX, aboveY, size, style, sky, block);
+        addHousing(buf, CX, belowY, size, style, sky, block);
         break;
       }
       case TileEntitySchoolZoneBeacon.BEACONS_TWO_ABOVE: {
@@ -335,20 +490,20 @@ public class TileEntitySchoolZoneBeaconRenderer
         float offset = (size + BEACON_PAIR_GAP) / 2.0f;
         float headBottom = aboveY - size / 2.0f;
         float crossbarBottom = headBottom - CROSSBAR_H;
-        renderSupport(CX - BRACKET_HALF_W, borderTop,
+        addSupport(buf, CX - BRACKET_HALF_W, borderTop,
             CX + BRACKET_HALF_W, crossbarBottom, style.housing, sky, block);
-        renderSupport(CX - offset - size / 2.0f - CROSSBAR_OVERHANG, crossbarBottom,
+        addSupport(buf, CX - offset - size / 2.0f - CROSSBAR_OVERHANG, crossbarBottom,
             CX + offset + size / 2.0f + CROSSBAR_OVERHANG, headBottom, style.housing, sky,
             block);
-        renderBeacon(CX - offset, aboveY, size, phaseA, style, sky, block);
-        renderBeacon(CX + offset, aboveY, size, phaseB, style, sky, block);
+        addHousing(buf, CX - offset, aboveY, size, style, sky, block);
+        addHousing(buf, CX + offset, aboveY, size, style, sky, block);
         break;
       }
       case TileEntitySchoolZoneBeacon.BEACONS_ABOVE:
       default:
-        renderSupport(CX - BRACKET_HALF_W, borderTop,
+        addSupport(buf, CX - BRACKET_HALF_W, borderTop,
             CX + BRACKET_HALF_W, aboveY - size / 2.0f, style.housing, sky, block);
-        renderBeacon(CX, aboveY, size, phaseA, style, sky, block);
+        addHousing(buf, CX, aboveY, size, style, sky, block);
         break;
     }
   }
@@ -362,14 +517,12 @@ public class TileEntitySchoolZoneBeaconRenderer
     final float[] visor;
     final List<Box> visorData12;
     final List<Box> visorData8;
-    final TrafficSignalBulbStyle bulb;
 
     Style(TileEntitySchoolZoneBeacon te) {
       this.housing = housingColor(te.getHousingColor());
       this.visor = visorColor(this.housing);
       this.visorData12 = TrafficSignalVertexData.resolveVisorData(te.getVisorType(), 12);
       this.visorData8 = TrafficSignalVertexData.resolveVisorData(te.getVisorType(), 8);
-      this.bulb = te.getBulbStyle();
     }
   }
 
@@ -389,46 +542,35 @@ public class TileEntitySchoolZoneBeaconRenderer
   }
 
   /** A piece of the bracketry between the sign and a beacon, so neither one floats. */
-  private void renderSupport(float x1, float lowY, float x2, float highY, float[] housing,
-      int sky, int block) {
+  private static void addSupport(BufferBuilder buf, float x1, float lowY, float x2, float highY,
+      float[] housing, int sky, int block) {
     if (highY <= lowY) {
       return;
     }
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-
     List<RenderHelper.Box> bracket = new ArrayList<>();
     bracket.add(new RenderHelper.Box(
         new float[]{x1, lowY, BRACKET_Z1},
         new float[]{x2, highY, BRACKET_Z2}));
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(bracket, buf,
         housing[0], housing[1], housing[2], housing[3], 0, 0, 0, sky, block);
-    tess.draw();
   }
 
   /**
-   * Draws one beacon: a traffic signal section's body, door and circle visor in the housing
-   * colour, then its bulb off the signal atlas.
+   * Adds one beacon's housing: a traffic signal section's body, door and circle visor in the
+   * housing colour. Its bulb is drawn live, off the signal atlas, by {@link #renderBulbs}.
    *
-   * <p>The white swatch is bound here rather than once for the whole render because
-   * {@code CsmFontRenderer.drawString} leaves the font atlas bound behind it, and untextured
-   * geometry drawn after the legend would otherwise sample the font sheet — which is exactly
-   * what made the first beacons invisible.</p>
+   * <p>All of this is in the white swatch, which the caller binds. It must be bound after the
+   * legend is drawn, never before it, because {@code CsmFontRenderer} leaves its atlas bound
+   * behind it and untextured geometry would sample the font sheet -- which is exactly what made
+   * the first beacons invisible. The body, which holds these, is drawn ahead of the legend.</p>
    */
-  private void renderBeacon(float centreX, float centreY, float size, boolean lit, Style style,
-      int sky, int block) {
+  private static void addHousing(BufferBuilder buf, float centreX, float centreY, float size,
+      Style style, int sky, int block) {
     boolean twelveInch = size >= SECTION_12_INCH;
     float xOffset = centreX - VISOR_CENTER_X;
     float yOffset = centreY - VISOR_CENTER_Y;
 
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(twelveInch
             ? TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA
             : TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA, buf,
@@ -445,13 +587,6 @@ public class TileEntitySchoolZoneBeaconRenderer
         0.0f, 0.0f, 0.0f, 1.0f,
         xOffset, yOffset, 0.0f, VISOR_PIVOT_Z, VISOR_TILT_DEGREES,
         VISOR_CENTER_X, VISOR_CENTER_Y, 0.0f, sky, block);
-    tess.draw();
-
-    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-    Minecraft.getMinecraft().getTextureManager().bindTexture(SIGNAL_ATLAS);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    addBeaconBulb(buf, xOffset, yOffset, size, lit, style.bulb);
-    tess.draw();
   }
 
   /**
