@@ -129,7 +129,8 @@ public class TileEntityAdBoardRenderer extends TileEntitySpecialRenderer<TileEnt
    */
   private static void side(TileEntityAdBoard te, Face face, double z, boolean back, long time,
       float partialTicks, float bright) {
-    AdEntry now = back ? te.showingBack(time) : te.showing(time);
+    // A server ad not yet downloaded is drawn as the house ad, and asked for.
+    AdEntry now = ServerAdImages.shown(back ? te.showingBack(time) : te.showing(time));
     AdTransition transition = te.getTransition();
     double p = 1.0;
     AdEntry was = null;
@@ -137,7 +138,7 @@ public class TileEntityAdBoardRenderer extends TileEntitySpecialRenderer<TileEnt
       long step = te.stepTicks();
       p = AdTransition.progress(Math.floorMod(time, step) + partialTicks);
       if (p < 1.0) {
-        was = back ? te.showingBack(time - step) : te.showing(time - step);
+        was = ServerAdImages.shown(back ? te.showingBack(time - step) : te.showing(time - step));
         if (was == now) {
           was = null;
         }

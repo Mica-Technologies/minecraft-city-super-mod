@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.signage;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
@@ -16,6 +17,8 @@ public class CsmSignageClientProxy extends CsmSignageCommonProxy {
   @Override
   public void preInit(FMLPreInitializationEvent event) {
     AdBoardPreview.register();
+    // A lambda, not a method reference: see CsmTechnology on why that matters on a server.
+    CsmLifecycleHooks.onClientDisconnect(() -> ServerAdImages.clear());
   }
 
   @Override

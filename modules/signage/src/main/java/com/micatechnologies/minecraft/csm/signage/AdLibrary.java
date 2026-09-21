@@ -45,6 +45,12 @@ public final class AdLibrary {
 
   private final Map<String, AdEntry> ads;
 
+  /** The ads the server supplies, set as a server starts or a client joins one. */
+  private volatile List<AdEntry> serverAds = Collections.emptyList();
+
+  /** Counts changes to the server's ads, so a board knows to rebuild the ads it draws from. */
+  private volatile int generation;
+
   private AdLibrary(Map<String, AdEntry> ads) {
     this.ads = Collections.unmodifiableMap(ads);
   }
@@ -119,27 +125,57 @@ public final class AdLibrary {
     return Integer.parseInt(hex.substring(1), 16);
   }
 
-  /** Every ad, in index order, the house ad included. */
+  /**
+   * Replaces the server's ads: on the server as it starts, and on a client from the catalogue it
+   * is sent on joining (in single player the two are the same list). Empty clears them.
+   */
+  public void setServerAds(List<AdEntry> entries) {
+    serverAds = Collections.unmodifiableList(new ArrayList<>(entries));
+    generation++;
+  }
+
+  /** Changes each time the server's ads do. */
+  public int generation() {
+    return generation;
+  }
+
+  /** The ads the server supplies. */
+  public List<AdEntry> serverAds() {
+    return serverAds;
+  }
+
+  /** Every ad, in index order and the server's last, the house ad included. */
   public List<AdEntry> all() {
-    return new ArrayList<>(ads.values());
+    List<AdEntry> out = new ArrayList<>(ads.values());
+    out.addAll(serverAds);
+    return out;
   }
 
   /** The ad with the given id, or {@code null}. */
   @Nullable
   public AdEntry find(String id) {
-    return ads.get(id);
+    AdEntry entry = ads.get(id);
+    if (entry != null) {
+      return entry;
+    }
+    for (AdEntry server : serverAds) {
+      if (server.getId().equals(id)) {
+        return server;
+      }
+    }
+    return null;
   }
 
   /** The ad with the given id, or the house ad if there is none. */
   public AdEntry resolve(String id) {
-    AdEntry entry = ads.get(id);
+    AdEntry entry = find(id);
     return entry != null ? entry : ads.get(HOUSE_AD);
   }
 
   /** Every ad a playlist of "all" or "random" draws from: all but the house ad. */
   public List<AdEntry> rotation() {
     List<AdEntry> out = new ArrayList<>();
-    for (AdEntry entry : ads.values()) {
+    for (AdEntry entry : all()) {
       if (!HOUSE_CATEGORY.equals(entry.getCategory())) {
         out.add(entry);
       }
@@ -161,7 +197,7 @@ public final class AdLibrary {
   /** The ads in one category, in index order. */
   public List<AdEntry> inCategory(String category) {
     List<AdEntry> out = new ArrayList<>();
-    for (AdEntry entry : ads.values()) {
+    for (AdEntry entry : all()) {
       if (entry.getCategory().equals(category)) {
         out.add(entry);
       }

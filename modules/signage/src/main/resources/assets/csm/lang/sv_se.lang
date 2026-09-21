@@ -21,6 +21,7 @@ gui.csm.adboard.category.health=Hälsa
 gui.csm.adboard.category.home=Hem
 gui.csm.adboard.category.insurance=Försäkring
 gui.csm.adboard.category.legal=Juridik
+gui.csm.adboard.category.server=Server
 gui.csm.adboard.category.services=Tjänster
 gui.csm.adboard.category.tech=Teknik
 gui.csm.adboard.category.travel=Resor
