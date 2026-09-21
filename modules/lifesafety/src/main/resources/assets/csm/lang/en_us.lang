@@ -5,6 +5,7 @@ csm.exitsign.arrow.none=None
 csm.exitsign.arrow.right=Right
 csm.exitsign.colours=%s on %s
 csm.exitsign.configure=Right-click a placed sign to change it
+csm.exitsign.gui.hint=Left-click: next   Right-click: previous
 csm.exitsign.heads=Emergency Heads
 csm.exitsign.heads.none=None
 csm.exitsign.heads.round=Round Lamps

@@ -63,4 +63,19 @@ class TileEntityExitSignNbtTest {
     assertNotEquals(SAMPLE.pack(), SAMPLE.withHeads(Heads.NONE).pack());
     assertNotEquals(SAMPLE.pack(), SAMPLE.withLegend(Legend.EXIT).pack());
   }
+
+  @Test
+  void unpackReversesPack() {
+    assertEquals(SAMPLE, ExitSignConfig.unpack(SAMPLE.pack()));
+    assertEquals(TileEntityExitSign.UNSET, ExitSignConfig.unpack(TileEntityExitSign.UNSET.pack()));
+  }
+
+  @Test
+  void unpackRejectsWhatPackNeverProduces() {
+    assertNull(ExitSignConfig.unpack(7));             // arrow ordinal 7
+    assertNull(ExitSignConfig.unpack(3 << 3));        // letters ordinal 3
+    assertNull(ExitSignConfig.unpack(7 << 15));       // legend ordinal 7
+    assertNull(ExitSignConfig.unpack(1 << 18));       // bits above the six options
+    assertNull(ExitSignConfig.unpack(-1));
+  }
 }

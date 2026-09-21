@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.lifesafety.exitsign;
 import java.util.Locale;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IStringSerializable;
 
@@ -195,6 +196,30 @@ public final class ExitSignConfig {
   public int pack() {
     return arrow.ordinal() | letters.ordinal() << 3 | housing.ordinal() << 6
         | mount.ordinal() << 9 | heads.ordinal() << 12 | legend.ordinal() << 15;
+  }
+
+  /**
+   * The config {@link #pack} produced, or null if any option's ordinal is out of range -- the
+   * way a packet from a modified client is rejected rather than guessed at.
+   */
+  @Nullable
+  public static ExitSignConfig unpack(int packed) {
+    Arrow arrow = at(Arrow.values(), packed & 7);
+    Letters letters = at(Letters.values(), packed >> 3 & 7);
+    Housing housing = at(Housing.values(), packed >> 6 & 7);
+    Mount mount = at(Mount.values(), packed >> 9 & 7);
+    Heads heads = at(Heads.values(), packed >> 12 & 7);
+    Legend legend = at(Legend.values(), packed >> 15 & 7);
+    if (arrow == null || letters == null || housing == null || mount == null || heads == null
+        || legend == null || packed >>> 18 != 0) {
+      return null;
+    }
+    return new ExitSignConfig(arrow, letters, housing, mount, heads, legend);
+  }
+
+  @Nullable
+  private static <E> E at(E[] values, int ordinal) {
+    return ordinal < values.length ? values[ordinal] : null;
   }
 
   private static <E extends Enum<E>> E byOrdinal(E[] values, NBTTagCompound compound, String key,
