@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.lifesafety.exitsign;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.lifesafety.IEmergencyLightBlock;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Heads;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Mount;
 import java.util.ArrayList;
@@ -49,13 +50,17 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * unpowered is the battery taking over, which lights the emergency heads. The legend is lit
  * either way, as on a real sign.
  *
+ * <p>On battery, emergency heads glow and throw a light cone forward, drawn by the emergency
+ * lights' renderer from the bulbs {@link #getBulbs} places; the tile entity asks to be rendered only
+ * then, so a sign without heads, or on mains power, costs nothing per frame.
+ *
  * <p>The item carries the setup too (under {@link #ITEM_TAG}), so a sign that is broken,
  * pick-blocked or placed from a creative preset keeps it.
  *
  * @since 2026.9
  */
 public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider, IEmergencyLightBlock {
 
   /** Mains power: true is normal operation, false is running on battery. */
   public static final PropertyBool POWERED = PropertyBool.create("powered");
@@ -192,6 +197,64 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
       return HEADS_LIGHT;
     }
     return getSpec().getLightValue();
+  }
+
+  // --- emergency heads' glow -----------------------------------------------------------------
+
+  /** Lit on battery, and only with heads fitted. */
+  @Override
+  public boolean isEmergencyLightActive(IBlockAccess world, BlockPos pos, IBlockState state) {
+    return getSpec().isMainsPowered() && !state.getValue(POWERED)
+        && getConfig(world, pos).getHeads() != Heads.NONE;
+  }
+
+  @Override
+  public EnumFacing getEmergencyLightFacing(IBlockState state) {
+    return state.getValue(FACING);
+  }
+
+  /** The heads sit right beside the face; the emergency lights' wide cone would wash it out. */
+  @Override
+  public boolean hasNarrowCone() {
+    return true;
+  }
+
+  /** The bulbs depend on the heads and the mount, so each pair is its own glow list. */
+  @Override
+  public int getGlowVariant(IBlockAccess world, BlockPos pos, IBlockState state) {
+    ExitSignConfig config = getConfig(world, pos);
+    return config.getHeads().ordinal() + Heads.values().length * config.getMount().ordinal();
+  }
+
+  /**
+   * Each head's lens, as gen_exit_signs.py's {@code head_elements} places it: on an arm off each
+   * end, centred on the face (or above each top corner if {@link #hasHeadsOnTop}), its lens a
+   * little in front of the body. The glow's square core is kept inside a round lamp's lens disc.
+   * An end mount has no head on its wall side.
+   */
+  @Override
+  public float[][] getBulbs(IBlockAccess world, BlockPos pos, IBlockState state) {
+    ExitSignConfig config = getConfig(world, pos);
+    if (config.getHeads() == Heads.NONE) {
+      return new float[0][];
+    }
+    boolean square = config.getHeads() == Heads.SQUARE;
+    float front = config.getMount() == Mount.WALL ? 14 : 7;
+    float lens = front - (square ? 0.75f : 0.5f);
+    float r = square ? 1.5f : 1.1f;
+    float bottom = (float) getFaceBottom();
+    float top = bottom + (float) FACE_HEIGHT;
+    boolean onTop = hasHeadsOnTop();
+    float cx = onTop ? 14 : 18.25f;
+    float cy = onTop ? top + 2 : bottom + (float) FACE_HEIGHT / 2;
+    List<float[]> bulbs = new ArrayList<>();
+    if (onTop || config.getMount() != Mount.END_LEFT) {
+      bulbs.add(new float[]{cx - r, cy - r, lens, cx + r, cy + r, front});
+    }
+    if (onTop || config.getMount() != Mount.END_RIGHT) {
+      bulbs.add(new float[]{16 - cx - r, cy - r, lens, 16 - cx + r, cy + r, front});
+    }
+    return bulbs.toArray(new float[0][]);
   }
 
   // --- the item keeps the setup ---------------------------------------------------------------
