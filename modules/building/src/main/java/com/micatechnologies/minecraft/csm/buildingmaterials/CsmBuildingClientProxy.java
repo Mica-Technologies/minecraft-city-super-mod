@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldClimbHandler;
 import com.micatechnologies.minecraft.csm.constructionsite.TileEntityCraneHead;
 import com.micatechnologies.minecraft.csm.constructionsite.TileEntityCraneHeadRenderer;
@@ -21,6 +22,9 @@ public class CsmBuildingClientProxy extends CsmBuildingCommonProxy {
     // Jump-to-climb for scaffolding and crane masts. The client decides its own player's
     // movement, so this lives here and nowhere else.
     ScaffoldClimbHandler.register();
+    // The crane head renderer's lists are not in a CsmDisplayListCache, so release them on
+    // disconnect here.
+    CsmLifecycleHooks.onClientDisconnect(TileEntityCraneHeadRenderer::releaseAll);
     // The custom door's baked model and moving-door renderer. Its block was made in Core's preInit.
     if (BlockCustomDoor.instance() != null) {
       CustomDoorRenderer.register(BlockCustomDoor.instance());

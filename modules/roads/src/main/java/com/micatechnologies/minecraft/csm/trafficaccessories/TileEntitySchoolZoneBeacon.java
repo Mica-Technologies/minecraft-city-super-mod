@@ -438,4 +438,13 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
         pos.getX() - 2, pos.getY() - 4, pos.getZ() - 2,
         pos.getX() + 3, pos.getY() + 8, pos.getZ() + 3);
   }
+
+  /**
+   * No baked model reads this tile entity -- only its special renderer, which reads it every
+   * frame -- so a sync never needs the chunk section rebuilt.
+   */
+  @Override
+  protected long getBakedModelKey() {
+    return 0L;
+  }
 }

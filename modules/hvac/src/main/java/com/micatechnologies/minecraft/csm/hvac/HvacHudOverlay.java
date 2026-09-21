@@ -49,6 +49,9 @@ public class HvacHudOverlay {
   /** Detection range in blocks for nearby HVAC equipment. */
   private static final int HVAC_DETECTION_RANGE = 24;
 
+  /** Receives the proximity answer from the combined temperature query, reused every check. */
+  private final boolean[] nearHvacScratch = new boolean[1];
+
   private static final long RECHECK_INTERVAL_MS = 500L;
   private static final int ALTITUDE_THRESHOLD = 64;
   private static final float THRESHOLD_COLD = 60.0f;
@@ -142,8 +145,11 @@ public class HvacHudOverlay {
     if (recheckDue) {
       lastCheckTime = now;
       BlockPos playerPos = new BlockPos(playerBlockX, playerBlockY, playerBlockZ);
-      cachedNearHvac = HvacTemperatureManager.isNearAnyHvac(world, playerPos, HVAC_DETECTION_RANGE);
-      float rawTemp = HvacTemperatureManager.getTemperatureAt(world, playerPos);
+      // One walk over the nearby chunks' tile entities answers both questions; see
+      // HvacTemperatureManager.getTemperatureAt(World, BlockPos, int, boolean[]).
+      float rawTemp = HvacTemperatureManager.getTemperatureAt(world, playerPos,
+          HVAC_DETECTION_RANGE, nearHvacScratch);
+      cachedNearHvac = nearHvacScratch[0];
       float baseline = HvacTemperatureManager.getBaselineAt(world, playerPos);
       cachedTemperature = smoother.update(rawTemp, baseline);
     }
