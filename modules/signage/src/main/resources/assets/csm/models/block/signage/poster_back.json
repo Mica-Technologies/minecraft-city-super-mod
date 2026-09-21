@@ -1,0 +1,41 @@
+{
+  "textures": {
+    "frame": "csm:blocks/signage/board_frame_aluminium",
+    "back": "csm:blocks/signage/board_back",
+    "particle": "csm:blocks/signage/board_frame_aluminium"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        1.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#back"
+        },
+        "south": {
+          "texture": "#back"
+        },
+        "east": {
+          "texture": "#back"
+        },
+        "west": {
+          "texture": "#back"
+        },
+        "up": {
+          "texture": "#back"
+        },
+        "down": {
+          "texture": "#back"
+        }
+      }
+    }
+  ]
+}

@@ -147,6 +147,17 @@ public final class AdLibrary {
     return out;
   }
 
+  /** Every category an ad in rotation has, in the order they first appear. */
+  public List<String> categories() {
+    List<String> out = new ArrayList<>();
+    for (AdEntry entry : rotation()) {
+      if (!out.contains(entry.getCategory())) {
+        out.add(entry.getCategory());
+      }
+    }
+    return out;
+  }
+
   /** The ads in one category, in index order. */
   public List<AdEntry> inCategory(String category) {
     List<AdEntry> out = new ArrayList<>();

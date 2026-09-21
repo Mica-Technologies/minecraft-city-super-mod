@@ -1,9 +1,10 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
+import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import javax.annotation.Nonnull;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
+import com.micatechnologies.minecraft.csm.signage.AdBoardKind;
+import com.micatechnologies.minecraft.csm.signage.BlockAdBoard;
+import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -27,17 +28,15 @@ public class CsmTabSignage extends CsmTab {
   }
 
   /**
-   * Gets the icon of the tab. The tab has no block of its own yet, so it borrows the vanilla
-   * painting until the first ad board exists.
+   * Gets the block to use as the icon of the tab.
    *
-   * @return the item stack to display as the tab icon
+   * @return the block to use as the icon of the tab
    *
    * @since 1.0
    */
-  @Nonnull
   @Override
-  public ItemStack getTabIconStack() {
-    return new ItemStack(Items.PAINTING);
+  public Block getTabIcon() {
+    return CsmRegistry.getBlock(AdBoardKind.WALL_POSTER.getRegistryName());
   }
 
   /**
@@ -73,5 +72,6 @@ public class CsmTabSignage extends CsmTab {
    */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
+    initTabBlock(new BlockAdBoard("ad_poster_board")); // Poster Board
   }
 }

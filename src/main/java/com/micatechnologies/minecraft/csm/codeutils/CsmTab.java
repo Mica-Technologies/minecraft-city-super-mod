@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
  * <pre>
  *   Order -10 = CsmTabRoadsHidden       (hidden: retired road/signal blocks)
  *   Order  -9 = CsmTabLightingHidden    (hidden: light-up air)
+ *   Order  -8 = CsmTabSignageHidden     (hidden: advertising board parts)
  *   Order  1 = CsmTabBuildingMaterials
  *   Order  2 = CsmTabHvac
  *   Order  3 = CsmTabLifeSafety
