@@ -1,0 +1,206 @@
+{
+  "source": "vintage",
+  "shapes": {
+    "portrait": [
+      384,
+      576
+    ],
+    "square": [
+      384,
+      384
+    ],
+    "poster": [
+      768,
+      384
+    ],
+    "bulletin": [
+      756,
+      216
+    ]
+  },
+  "ads": [
+    {
+      "id": "port_orchard_route",
+      "brand": "Port Orchard Route Steamers (1908)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#443312"
+    },
+    {
+      "id": "mobile_ohio_dining_cars",
+      "brand": "Mobile & Ohio Dining Cars (1902)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#2a230e"
+    },
+    {
+      "id": "chicago_dog_show",
+      "brand": "Chicago Kennel Club Dog Show (1902)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#2e2017"
+    },
+    {
+      "id": "spaulding_printers",
+      "brand": "Geo. Spaulding & Co. Printers (1902)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#0f1212"
+    },
+    {
+      "id": "fritchle_electric",
+      "brand": "Fritchle Electric (1908)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#3a3220"
+    },
+    {
+      "id": "pierce_arrow",
+      "brand": "The Pierce-Arrow (1909)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#363021"
+    },
+    {
+      "id": "monarch_typewriter",
+      "brand": "Monarch Visible Typewriter (1910)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#2d2b1c"
+    },
+    {
+      "id": "parker_band_organs",
+      "brand": "Parker's Band Organs (1900)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#312a21"
+    },
+    {
+      "id": "us_printing_labels",
+      "brand": "United States Printing Co. (1907)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#303428"
+    },
+    {
+      "id": "soapine",
+      "brand": "Soapine (1900)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#2a251d"
+    },
+    {
+      "id": "queen_city_ink_parlour",
+      "brand": "Queen City Printing Ink (1905)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#342e31"
+    },
+    {
+      "id": "queen_city_ink_bonnet",
+      "brand": "Queen City Printing Ink (1905)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#454234"
+    },
+    {
+      "id": "chesapeake_york_river",
+      "brand": "Chesapeake & York River Lines (1905)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#353535"
+    },
+    {
+      "id": "mccray_refrigerators",
+      "brand": "McCray Refrigerators (1903)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#323230"
+    },
+    {
+      "id": "hart_kraft",
+      "brand": "Hart-Kraft Power Wagons (1908)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#493a3c"
+    },
+    {
+      "id": "st_louis_car",
+      "brand": "St. Louis Car Co. (1905)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#343328"
+    },
+    {
+      "id": "meadows_speedway",
+      "brand": "Meadows Speedway Race Meet (1909)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster"
+      ],
+      "background": "#403b34"
+    },
+    {
+      "id": "seeing_seattle_car",
+      "brand": "Seeing Seattle Car (1905)",
+      "category": "vintage",
+      "shapes": [
+        "portrait",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#34302a"
+    }
+  ]
+}
