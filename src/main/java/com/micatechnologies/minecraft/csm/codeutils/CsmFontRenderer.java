@@ -217,7 +217,7 @@ public final class CsmFontRenderer {
   public void drawString(String text, int x, int y, int color) {
     if (text == null || text.isEmpty()) return;
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
+    bindAtlas();
     GlStateManager.enableTexture2D();
 
     float r = ((color >> 16) & 0xFF) / 255.0f;
@@ -228,6 +228,30 @@ public final class CsmFontRenderer {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+    addString(buf, text, x, y);
+    tess.draw();
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+  }
+
+  /**
+   * Binds this font's atlas. For a caller that compiles {@link #addString} output into a display
+   * list, which must bind the atlas outside the list, every frame.
+   */
+  public void bindAtlas() {
+    Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
+  }
+
+  /**
+   * Adds the quads {@link #drawString} draws for {@code text}, and nothing else: no texture bind,
+   * no colour, no draw. The caller binds the atlas ({@link #bindAtlas()}) and sets the colour.
+   *
+   * @param buf  the buffer, begun as {@code GL_QUADS} in {@code POSITION_TEX}
+   * @param text the text to add
+   * @param x    left edge
+   * @param y    top edge
+   */
+  public void addString(BufferBuilder buf, String text, int x, int y) {
+    if (text == null || text.isEmpty()) return;
 
     float curX = x;
     for (int i = 0; i < text.length(); i++) {
@@ -258,8 +282,5 @@ public final class CsmFontRenderer {
 
       curX += dw;
     }
-
-    tess.draw();
-    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
   }
 }
