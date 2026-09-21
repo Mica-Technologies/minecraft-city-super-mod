@@ -254,4 +254,13 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
   public double getMaxRenderDistanceSquared() {
     return LONG_RANGE_RENDER_DISTANCE_SQUARED;
   }
+
+  /**
+   * No baked model reads this tile entity -- only its special renderer, which reads it every
+   * frame -- so a sync never needs the chunk section rebuilt.
+   */
+  @Override
+  protected long getBakedModelKey() {
+    return 0L;
+  }
 }

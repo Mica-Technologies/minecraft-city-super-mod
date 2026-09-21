@@ -84,6 +84,7 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
 
     @Override
     public void readNBT( NBTTagCompound compound ) {
+        long appearanceBefore = appearanceKey();
         bodyColor = TrafficSignalBodyColor.fromNBT(
             readInt( compound, NBT_BODY_COLOR, LEGACY_NBT_BODY_COLOR ) );
         visorColor = TrafficSignalBodyColor.fromNBT(
@@ -120,7 +121,27 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
         compound.removeTag( LEGACY_NBT_VERIFYING );
         compound.removeTag( LEGACY_NBT_VERIFY_TICKS );
 
-        dirty = true;
+        // The dirty flag discards all three of the renderer's caches for this position. The
+        // countdown and the face are already keyed on the value and aspect they show, so the flag
+        // is needed only when the housing, visor or bulb type changed -- not for the countdown
+        // packet that arrives once a second through every clearance.
+        if ( appearanceKey() != appearanceBefore ) {
+            dirty = true;
+        }
+    }
+
+    /** Packs every field the compiled geometry depends on beyond what the render keys hold. */
+    private long appearanceKey() {
+        return ordinalOf( bodyColor )
+            | ( ordinalOf( visorColor ) << 8 )
+            | ( ordinalOf( visorType ) << 16 )
+            | ( ordinalOf( mountType ) << 24 )
+            | ( ordinalOf( bodyTilt ) << 32 )
+            | ( ordinalOf( bulbType ) << 40 );
+    }
+
+    private static long ordinalOf( Enum<?> value ) {
+        return value == null ? 0xFFL : value.ordinal() & 0xFFL;
     }
 
     private static int readInt( NBTTagCompound compound, String key, String legacyKey ) {
@@ -176,8 +197,8 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
 
     @Override
     public void onDataPacket( NetworkManager networkManager, SPacketUpdateTileEntity pkt ) {
+        // readNBT sets the dirty flag when, and only when, the compiled geometry changed.
         super.onDataPacket( networkManager, pkt );
-        dirty = true;
     }
 
     // endregion
@@ -556,4 +577,13 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
       TileEntityCrosswalkSignalNewRenderer.cleanupDisplayList(pos);
     }
   }
+
+    /**
+     * No baked model reads this tile entity -- only its special renderer, which reads it every
+     * frame -- so a sync never needs the chunk section rebuilt.
+     */
+    @Override
+    protected long getBakedModelKey() {
+        return 0L;
+    }
 }
