@@ -559,15 +559,21 @@ comes back mounted on its post.
   blade is six inches against a thirty-inch sign, so the whole assembly is scaled to
   `POST_TOP_SCALE` about the post top. Re-tuning the caps, pads, insets and floors would have
   had to keep a dozen constants in proportion; one transform cannot get that wrong.
-- **The panel sits clear in front of the post, not on its axis.** Centred on the axis, the
-  post's own bars stand in front of the legend and read as a bar painted through the street's
-  name. The crossing blade turns about the post all the same, which puts its panel the same
-  distance in front of the post along the way *it* is read -- one offset, and each blade ends
-  up on its own side. The offset is written in the units it ENDS UP in and divided by the
-  scale, because the assembly is shrunk about the post top afterwards; set in plain model
-  units it was shrunk with everything else and put both panels back inside the post. Clearing
-  the post by a hair is not enough either -- at a sixth of a model unit, a hundredth of a
-  block, the post and the panel still read as one thing.
+- **The panel clears the post, and its two faces straddle it.** Centred on the post's axis,
+  the post's own bars stand in front of the legend and read as a bar painted through the
+  street's name, so the panel is offset clear of it. The offset is written in the units it
+  ENDS UP in and divided by the scale, because the assembly is shrunk about the post top
+  afterwards; set in plain model units it was shrunk with everything else and put the panel
+  back inside the post.
+
+  The reverse face then has to go on the **other** side of the post, which is what the half
+  turn's axis decides. A hanging blade is centred in the block's depth, so its panel, the
+  block's centre and the arm it hangs from are all the same plane and the question never
+  came up; turning a post-top blade about its own panel leaves both faces on one side with
+  the post behind the pair, which is not how a sign sits on a pole here. It turns about the
+  POST, which puts one face each side of it -- the geometry `SignShift.BACKTOBACK` gives a
+  pair of road signs sharing one post, which is what these are. The post between the faces
+  is then what tells them apart, so the offset only has to clear it, not stand off from it.
 - **The double-sided back face turns about the panel, not the block.** They are the same axis for
   a hanging blade, which is centred in the block's depth, and that is how it was written. A
   post-top blade is not, and turning its back face about the block's centre threw it most of a
