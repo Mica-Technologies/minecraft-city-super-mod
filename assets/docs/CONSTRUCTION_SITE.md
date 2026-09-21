@@ -294,7 +294,9 @@ fade, dark for the rest of the two-second cycle. Every light on one crane flashe
 crane takes its own phase from its position, so a skyline of cranes shares the rate but not the
 step (real lights only have to share the rate). The lens housing is geometry in the display list;
 the flash cannot be, since it changes every frame, so `CraneGeometry` records each lens centre and
-the renderer draws, outside the list, the lens again full-bright and two camera-facing halos from
+the renderer draws, outside the list, the lens again full-bright -- a box, so turned to the slew
+like the list it covers, or it stands out of the lens at the corners on a diagonal jib -- and two
+camera-facing halos from
 `crane_glow.png` (drawn by `gen_crane.py`: a hot core on a long soft tail that reaches zero before
 the quad's edge), added onto what is behind them with depth writes off. The halos grow a little
 with distance -- a lens the size of a block is under a pixel from across a city, and a real light

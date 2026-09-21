@@ -196,7 +196,7 @@ public class TileEntityCraneHeadRenderer extends TileEntitySpecialRenderer<TileE
       double pz = cz + lamp[0] * sin + lamp[2] * cos;
       double dist = Math.sqrt(px * px + py * py + pz * pz);
       double far = Math.min(dist, 256.0);
-      lens(buf, px, py, pz, 0.095 * s, 0.105 * s, intensity);
+      lens(buf, px, py, pz, 0.095 * s, 0.105 * s, cos, sin, intensity);
       halo(buf, px, py, pz, dist, 0.75 * s + far * 0.012, inner);
       halo(buf, px, py, pz, dist, 2.4 * s + far * 0.035, outer);
     }
@@ -213,22 +213,32 @@ public class TileEntityCraneHeadRenderer extends TileEntitySpecialRenderer<TileE
 
   /**
    * The lens, lit: a box a hair bigger than the one in the list, sampling the glow texture's
-   * opaque centre, so no second texture is bound.
+   * opaque centre, so no second texture is bound. The list's lens is square to the jib, so this
+   * one is turned to the slew with it ({@code cos} and {@code sin} of the slew, as the lens
+   * centres are); left square to the world, it stood out of the lens at the corners whenever
+   * the jib was not on an axis.
    */
   private static void lens(BufferBuilder buf, double x, double y, double z, double r, double h,
-      float a) {
-    double x0 = x - r;
-    double x1 = x + r;
+      double cos, double sin, float a) {
+    // The box's corners in the jib's frame, (-r, -r), (r, -r), (-r, r), (r, r), turned.
+    double rc = r * cos;
+    double rs = r * sin;
+    double x00 = x - rc + rs;
+    double z00 = z - rs - rc;
+    double x10 = x + rc + rs;
+    double z10 = z + rs - rc;
+    double x01 = x - rc - rs;
+    double z01 = z - rs + rc;
+    double x11 = x + rc - rs;
+    double z11 = z + rs + rc;
     double y0 = y - h;
     double y1 = y + h;
-    double z0 = z - r;
-    double z1 = z + r;
     double[][] faces = {
-        {x0, y0, z0, x1, y0, z0, x1, y1, z0, x0, y1, z0},
-        {x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1},
-        {x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0},
-        {x1, y0, z0, x1, y0, z1, x1, y1, z1, x1, y1, z0},
-        {x0, y1, z0, x1, y1, z0, x1, y1, z1, x0, y1, z1}};
+        {x00, y0, z00, x10, y0, z10, x10, y1, z10, x00, y1, z00},
+        {x01, y0, z01, x11, y0, z11, x11, y1, z11, x01, y1, z01},
+        {x00, y0, z00, x01, y0, z01, x01, y1, z01, x00, y1, z00},
+        {x10, y0, z10, x11, y0, z11, x11, y1, z11, x10, y1, z10},
+        {x00, y1, z00, x10, y1, z10, x11, y1, z11, x01, y1, z01}};
     for (double[] f : faces) {
       for (int i = 0; i < 12; i += 3) {
         buf.pos(f[i], f[i + 1], f[i + 2]).color(RED, 0.18F, 0.1F, a).tex(0.5, 0.5)
