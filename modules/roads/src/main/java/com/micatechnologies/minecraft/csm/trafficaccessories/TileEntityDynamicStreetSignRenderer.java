@@ -129,13 +129,12 @@ public class TileEntityDynamicStreetSignRenderer
    * ends up -- after {@link #POST_TOP_SCALE}.
    *
    * <p>The post's bars run from z 0.5 to 3.5 about an axis at z 2, and the panel is
-   * {@code SIGN_DEPTH * POST_TOP_SCALE} thick, so anything under about 2.3 leaves the
-   * post standing through the blade. Clearing it by a hair is not enough either: at 1.95
-   * the gap came to a sixth of a model unit, a hundredth of a block, and the post and the
-   * panel still read as one thing with the post's bars drawn across the street's name.
-   * This leaves the blade a visible step clear of the post on its own side.</p>
+   * {@code SIGN_DEPTH * POST_TOP_SCALE} thick, so this is the least that keeps the post
+   * from standing through the blade. It does not need to be more: the blade's two faces
+   * straddle the post (see the mirror in {@code renderSign}), so the post between them is
+   * what tells one from the other, exactly as it is on a back-to-back pair of signs.</p>
    */
-  private static final float POST_BLADE_CLEARANCE = 3.1f;
+  private static final float POST_BLADE_CLEARANCE = 1.95f;
 
   /**
    * Where a post-top blade's panel is centred, in front of the post rather than on its
@@ -878,16 +877,21 @@ public class TileEntityDynamicStreetSignRenderer
       // legend reads correctly (not mirrored) to a viewer standing behind the blade. The
       // arrow is the one thing that must NOT come along unchanged -- see renderArrow.
       //
-      // The axis has to be the panel's, not the block's. They are the same thing for a
-      // hanging blade, which is centred in the block's depth, and that is how this was
-      // written; a post-top blade sits in front of its post, and turning it about the
-      // block's centre threw its back face most of a block clear of its front, leaving
-      // a loose white plate hanging beside the sign.
-      float panelZ = l.faceZ + SIGN_DEPTH / 2.0f;
+      // What the half turn is about decides where the reverse face lands, and the answer
+      // is the thing the sign is mounted ON.
+      //
+      // A hanging blade is centred in the block's depth, so its panel, the block's centre
+      // and the arm it hangs from are all the same plane and the distinction never came
+      // up. A post-top blade stands to one side of its post. Turning it about its own
+      // panel leaves both faces on that same side, with the post behind the pair -- which
+      // is not how a sign sits on a pole here. Turning it about the POST puts one face on
+      // each side of it, with the post between them: the geometry SignShift.BACKTOBACK
+      // gives a pair of road signs sharing one post, which is what these are.
+      float mirrorZ = data.getMountType().isPostTop() ? POST_Z : CZ;
       GlStateManager.pushMatrix();
-      GlStateManager.translate(CX, 0.0f, panelZ);
+      GlStateManager.translate(CX, 0.0f, mirrorZ);
       GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f);
-      GlStateManager.translate(-CX, 0.0f, -panelZ);
+      GlStateManager.translate(-CX, 0.0f, -mirrorZ);
       renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod,
           pos, bakeable, faceKey, true);
       GlStateManager.popMatrix();
