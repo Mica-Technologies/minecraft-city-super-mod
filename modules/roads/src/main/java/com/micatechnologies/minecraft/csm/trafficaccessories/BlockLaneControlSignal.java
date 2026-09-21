@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.Csm;
+import com.micatechnologies.minecraft.csm.codeutils.CsmDeferredSync;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
@@ -178,7 +179,8 @@ public class BlockLaneControlSignal extends AbstractBlockRotatableNSEW
                 && fromPos.equals(pos.offset(state.getValue(FACING).getOpposite()))) {
             TileEntity te = worldIn.getTileEntity(pos);
             if (te instanceof TileEntityLaneControlSignal) {
-                ((TileEntityLaneControlSignal) te).syncServerToClient(worldIn);
+                // At the end of the tick, behind the block change that caused this.
+                CsmDeferredSync.syncAfterBlockChanges((TileEntityLaneControlSignal) te);
             }
         }
     }

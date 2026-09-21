@@ -200,7 +200,14 @@ public class TileEntityBlankoutBoxRenderer
         // WHITE_TEXTURE is already current at GL_COMPILE, leaving the list with no recorded
         // bind and producing white-tinted bodies at replay regardless of shaders.
         Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
-        GL11.glCallList( displayList );
+        if ( displayList != CsmDisplayListCache.NO_LIST ) {
+            GL11.glCallList( displayList );
+        }
+        else {
+            // The driver refused a list name: draw directly rather than calling list 0, which
+            // draws nothing and would leave the box without a body.
+            renderStaticParts( bodyColor, visorColor, visorType, worldSkyLight, worldBlockLight );
+        }
         // The body's vertex colours leave GL's colour where GlStateManager's cache cannot see it.
         GlStateManager.resetColor();
 

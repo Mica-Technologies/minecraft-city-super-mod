@@ -246,7 +246,15 @@ public class TileEntityCrosswalkSignalNewRenderer
         // is already current at GL_COMPILE time, leaving the display list with no recorded
         // bindTexture and producing a white-tinted body at replay.
         Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
-        GL11.glCallList( displayList );
+        if ( displayList != CsmDisplayListCache.NO_LIST ) {
+            GL11.glCallList( displayList );
+        }
+        else {
+            // The driver refused a list name: draw directly rather than calling list 0, which
+            // draws nothing and would leave the signal without a body.
+            renderStaticParts( bodyColor, visorColor, visorType, displayType,
+                    worldSkyLight, worldBlockLight );
+        }
         // The body's vertex colours leave GL's colour where GlStateManager's cache cannot see it.
         GlStateManager.resetColor();
 
