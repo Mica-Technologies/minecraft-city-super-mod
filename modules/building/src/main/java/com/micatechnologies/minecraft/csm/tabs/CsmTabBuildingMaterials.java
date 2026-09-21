@@ -10,6 +10,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCustomDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDoorWorkshop;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.ItemDoorCloser;
+import com.micatechnologies.minecraft.csm.buildingmaterials.ItemDoorSwingTool;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorControl;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorHanger;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorOpener;
@@ -252,6 +253,7 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockBuildingDoor("door_front_black")); // Front Door (Black)
     initTabBlock(new BlockBuildingDoor("door_back_halfglass")); // Back Door (Half Glass)
     initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer
+    initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent); // Door Swing Tool
     initTabBlock(BlockCustomDoor.class, fmlPreInitializationEvent); // Custom Door
     initTabBlock(BlockDoorWorkshop.class, fmlPreInitializationEvent); // Door Workshop
   }

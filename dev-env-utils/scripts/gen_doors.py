@@ -26,6 +26,13 @@ as its own model rather than a blockstate rotation (which turns about the block'
 put the hinge in the wrong corner), and BlockBuildingDoor's renderer swings the closed model about
 the same pivot, so the swing ends exactly on the open model. SHARED: PIVOT.
 
+Any placed door may be REVERSED from its kind's default -- an interior door made to swing out, an
+exit door made to swing in -- by sneaking as it is placed or with the Door Swing Tool. A reversed
+door is the depth mirror of its kind's own models, shut and open, hardware and all, so a push bar
+stays on the face that is pushed; the blockstate picks those (_out for a kind that swings in, _in
+for one that swings out) when the door's `reversed` state is true, and the closer that goes with
+the way it now swings.
+
 A fitted door closer sits on the PUSH side of the leaf -- the side the door swings away from -- as a
 parallel-arm closer: its body on the leaf, a shoe on the wall above the opening, and a two-link arm
 between them whose elbow is solved from the links' lengths at every angle (closer_joints). Only the
@@ -129,6 +136,29 @@ DOORS = {
 }
 
 CLOSER_NAMES = ("Door Closer", "Cierrapuertas", "Türschließer", "Dörrstängare")
+SWING_TOOL_NAMES = ("Door Swing Tool", "Herramienta de Sentido de Puerta", "Türanschlagwerkzeug",
+                    "Dörrvändningsverktyg")
+
+# What the Door Swing Tool says: its tooltip, and the status line after a click.
+SWING_LANG = {
+    "gui.csm.door.swing_tool.tip": ("Right-click a shut door to make it swing the other way",
+                                    "Clic derecho en una puerta cerrada para invertir su apertura",
+                                    "Rechtsklick auf eine geschlossene Tür kehrt ihren Anschlag um",
+                                    "Högerklicka på en stängd dörr för att vända dess öppning"),
+    "gui.csm.door.swing_out": ("This door now swings out", "Esta puerta ahora abre hacia fuera",
+                               "Diese Tür öffnet jetzt nach außen",
+                               "Dörren öppnas nu utåt"),
+    "gui.csm.door.swing_in": ("This door now swings in", "Esta puerta ahora abre hacia dentro",
+                              "Diese Tür öffnet jetzt nach innen", "Dörren öppnas nu inåt"),
+    "gui.csm.door.swing_busy": ("Shut the door and let it stop first",
+                                "Cierra la puerta y espera a que se detenga",
+                                "Erst die Tür schließen und stehen lassen",
+                                "Stäng dörren och låt den stanna först"),
+    "gui.csm.door.swing_fixed": ("This door's movement is set in the Door Workshop",
+                                 "El movimiento de esta puerta se ajusta en el Taller de Puertas",
+                                 "Die Bewegung dieser Tür wird in der Türwerkstatt eingestellt",
+                                 "Dörrens rörelse ställs in i Dörrverkstaden"),
+}
 
 # The custom door (BlockCustomDoor, made in the Door Workshop): its name and the words its tooltip
 # and the workshop's screen use.
@@ -333,6 +363,30 @@ def closer_icon():
         px[9 + i // 2, 7 - i] = _shift(SILVER, -10)
     for x in range(8, 15):
         px[x, 2] = _shift(SILVER, 0)
+    return img
+
+
+def swing_tool_icon():
+    """The Door Swing Tool item: a door as a plan shows one -- the wall either side, the leaf
+    standing open from its hinge and the arc it swings through -- with an arrowhead at both ends
+    of the arc, since the tool turns the swing round."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = img.load()
+    wall = (128, 132, 138)
+    leaf_rgb = (184, 142, 96)
+    for x in list(range(0, 3)) + list(range(13, 16)):
+        for y in (13, 14):
+            px[x, y] = _shift(wall, 10 if y == 13 else -14)
+    for y in range(4, 15):
+        px[3, y] = _shift(leaf_rgb, 12)
+        px[4, y] = _shift(leaf_rgb, -18)
+    for step in range(200):
+        a = math.radians(78 * step / 199)
+        x, y = round(4 + 8 * math.cos(a)), round(13 - 8 * math.sin(a))
+        px[x, y] = _shift(SILVER, 20)
+    # The arrowheads: pointing down the wall at one end of the arc, back at the leaf at the other.
+    for x, y in ((11, 12), (13, 12), (10, 11), (14, 11), (7, 4), (8, 4), (7, 7)):
+        px[x, y] = _shift(SILVER, 0)
     return img
 
 
@@ -673,6 +727,11 @@ def _open_out(elements):
     return sc._mirror_z(_open(sc._mirror_z(elements)))
 
 
+def reversed_suffix(name):
+    """What a reversed door's models are named for: the way it then swings."""
+    return "_in" if name in OUTSWING else "_out"
+
+
 def _model(elements, textures):
     t = dict(textures)
     t["particle"] = next(iter(textures.values()))
@@ -705,6 +764,16 @@ def models():
             out["%s_%s_right" % (name, half)] = _model(right, tex)
             out["%s_%s_left_open" % (name, half)] = _model(turn(left), tex)
             out["%s_%s_right_open" % (name, half)] = _model(sc._mirror_x(turn(left)), tex)
+            # Reversed: the depth mirror of every one of those, so the leaf hangs on the other face
+            # of the cell and opens the other way, and the hardware goes with it (a push bar stays
+            # on the face that is pushed).
+            rev = reversed_suffix(name)
+            for hinge, shut in (("left", left), ("right", right)):
+                opened = turn(left) if hinge == "left" else sc._mirror_x(turn(left))
+                out["%s_%s_%s%s" % (name, half, hinge, rev)] = _model(
+                    _rounded(sc._mirror_z(shut)), tex)
+                out["%s_%s_%s%s_open" % (name, half, hinge, rev)] = _model(
+                    _rounded(sc._mirror_z(opened)), tex)
         out[name + "_inventory"] = {
             "parent": "item/generated",
             "textures": {"layer0": TEX_REF % (name + "_icon")}}
@@ -728,27 +797,34 @@ SIDES = (("north", 0), ("east", 90), ("south", 180), ("west", 270))
 
 
 def state_for(name):
-    closer = "closer_out_%s%s" if name in OUTSWING else "closer_%s%s"
+    """The door's multipart blockstate: a leaf for each facing, half, hinge, open and reversed, and
+    the closer on the push side of the way the door then swings. Nothing draws while it swings."""
     parts = []
     for side, rot in SIDES:
         for half in ("lower", "upper"):
             for hinge in ("left", "right"):
                 for open_ in (False, True):
-                    model = "%s_%s_%s%s" % (name, half, hinge, "_open" if open_ else "")
-                    when = {"facing": side, "half": half, "hinge": hinge,
-                            "open": str(open_).lower(), "swing": "false"}
-                    apply = {"model": MODEL_REF % model}
-                    if rot:
-                        apply["y"] = rot
-                    parts.append({"when": when, "apply": apply})
-                    if half == "upper":
-                        c = dict(when)
-                        c["closer"] = "true"
-                        ca = {"model": MODEL_REF % (closer % (hinge, "_open" if open_
-                                                              else ""))}
+                    for reversed_ in (False, True):
+                        rev = reversed_suffix(name) if reversed_ else ""
+                        model = "%s_%s_%s%s%s" % (name, half, hinge, rev,
+                                                  "_open" if open_ else "")
+                        when = {"facing": side, "half": half, "hinge": hinge,
+                                "open": str(open_).lower(), "reversed": str(reversed_).lower(),
+                                "swing": "false"}
+                        apply = {"model": MODEL_REF % model}
                         if rot:
-                            ca["y"] = rot
-                        parts.append({"when": c, "apply": ca})
+                            apply["y"] = rot
+                        parts.append({"when": when, "apply": apply})
+                        if half == "upper":
+                            outward = (name in OUTSWING) != reversed_
+                            closer = "closer_out_%s%s" if outward else "closer_%s%s"
+                            c = dict(when)
+                            c["closer"] = "true"
+                            ca = {"model": MODEL_REF % (closer % (hinge, "_open" if open_
+                                                                  else ""))}
+                            if rot:
+                                ca["y"] = rot
+                            parts.append({"when": c, "apply": ca})
     return {"variants": {"inventory": {"model": MODEL_REF % (name + "_inventory")}},
             "multipart": parts}
 
@@ -772,6 +848,8 @@ def write_all(tex_dir, model_dir, state_dir, item_tex_dir, item_model_dir):
         written.append(("tex", name + ".png"))
     closer_icon().save(os.path.join(item_tex_dir, "door_closer.png"))
     written.append(("itemtex", "door_closer.png"))
+    swing_tool_icon().save(os.path.join(item_tex_dir, "door_swing_tool.png"))
+    written.append(("itemtex", "door_swing_tool.png"))
     for name, body in sorted(models().items()):
         gen_cmu._write_json(os.path.join(model_dir, name + ".json"), body)
         written.append(("model", name + ".json"))
@@ -779,6 +857,10 @@ def write_all(tex_dir, model_dir, state_dir, item_tex_dir, item_model_dir):
                         {"parent": "item/generated",
                          "textures": {"layer0": "csm:items/door_closer"}})
     written.append(("itemmodel", "door_closer.json"))
+    gen_cmu._write_json(os.path.join(item_model_dir, "door_swing_tool.json"),
+                        {"parent": "item/generated",
+                         "textures": {"layer0": "csm:items/door_swing_tool"}})
+    written.append(("itemmodel", "door_swing_tool.json"))
     for name, body in sorted(blockstates().items()):
         gen_cmu._write_json(os.path.join(state_dir, name + ".json"), body)
         written.append(("state", name + ".json"))
@@ -792,6 +874,8 @@ def lang_entries():
     out = [("tile.%s.name" % name, dict(zip(LANGS, names)))
            for name, (_, _, _, names) in DOORS.items()]
     out.append(("item.door_closer.name", dict(zip(LANGS, CLOSER_NAMES))))
+    out.append(("item.door_swing_tool.name", dict(zip(LANGS, SWING_TOOL_NAMES))))
+    out += [(k, dict(zip(LANGS, v))) for k, v in SWING_LANG.items()]
     out += [(k, dict(zip(LANGS, v))) for k, v in CUSTOM_LANG.items()]
     return out
 
@@ -800,6 +884,8 @@ def tab_lines():
     lines = ['    initTabBlock(new BlockBuildingDoor("%s")); // %s' % (n, v[3][0])
              for n, v in DOORS.items()]
     lines.append("    initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer")
+    lines.append("    initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent);"
+                 " // Door Swing Tool")
     return lines
 
 

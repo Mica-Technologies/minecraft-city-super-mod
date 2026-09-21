@@ -1,8 +1,8 @@
 # Doors
 
 Doors in the **Building Materials** tab of `csm_building`, beside the garage doors: twelve doors in
-one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer** add-on item, and
-the **Door Keypad** from the garage doors, which locks a door as well. Every asset comes from
+one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer** add-on item, the
+**Door Swing Tool**, and the **Door Keypad** from the garage doors, which locks a door as well. Every asset comes from
 `dev-env-utils/scripts/gen_doors.py` (`--check` fails on drift).
 
 | Door | Registry name |
@@ -19,10 +19,15 @@ the **Door Keypad** from the garage doors, which locks a door as well. Every ass
 
 - **Placing.** From outside, looking in: the door's facing is the way the player looked, the leaf
   hangs on the outside face of its cell and swings inward, as a vanilla door's does -- except the
-  **Exit Door, the Storefront Door and the Fire Door, which swing out** (below). The hinge is
-  on the side of the opening clicked, unless there is a door beside it hinged on its far side, in
-  which case the new one hinges the other way and the two are a **pair**, which opens and closes
-  together.
+  **Exit Door, the Storefront Door and the Fire Door, which swing out** (below). **Sneak while
+  placing** to hang it the other way: an interior door that swings out, an exit door that swings
+  in. The hinge is on the side of the opening clicked, unless there is a door beside it hinged on
+  its far side, in which case the new one hinges the other way and the two are a **pair**, which
+  opens and closes together -- and swings the way its partner does, sneaking or not.
+- **Door Swing Tool** (item, crafted from an iron ingot and a Fastener Kit): right-click a door,
+  either half, to make it swing the other way, and its pair with it, so a pair always swings the
+  same way. It refuses (a status line says so) while the door or its pair is open or still moving,
+  and on a custom door, whose movement is set in the Door Workshop.
 - **Redstone** holds a door (and its pair) open while it is powered.
 - **Door Closer** (item, crafted from two iron ingots, a Sheet Metal and a Fastener Kit): right-click
   a door to fit one. The door then shuts itself three seconds after a player (or a keypad) opens
@@ -41,21 +46,43 @@ the **Door Keypad** from the garage doors, which locks a door as well. Every ass
 ## How it works
 
 **Two halves, eight bits.** As a vanilla door, the lower half stores its facing and whether it is
-open, the upper half the hinge, whether a closer is fitted, and whether it is swinging; each half
-reads the rest from the other as actual state. That is every bit either half has, which is why a
-lock is not state: locks live in the world's saved data (`DoorLocks`, keyed by the lower half,
-server side only).
+open, the upper half the hinge, whether a closer is fitted, and whether the door is **reversed**
+(below); each half reads the rest from the other as actual state (`DoorSwingDirection` holds the
+upper half's layout: 8 upper, 1 right hinge, 2 closer, 4 reversed). That is every bit either half
+has, which is why a lock is not state: locks live in the world's saved data (`DoorLocks`, keyed by
+the lower half, server side only).
 
 **Free at rest.** Open or shut, a door is baked models and nothing else. While it swings -- eight
-ticks -- its upper half has a `TileEntityDoorSwing`, which holds only the direction and the tick it
-started and never ticks: a scheduled block tick ends the swing, and the tile entity goes with the
-state that asked for it. The models draw nothing while a door swings, and the renderer draws both
-halves' own closed models turned about the hinge, so handles, bars and a fitted closer's body swing
-with the leaf; a closer's shoe stays put and its arm is solved for the angle (below). With
-`animateDoors` off it draws them where they are going at once. Every face it draws is shaded as the
-world shades a block face, by the way it faces at that moment, so the last frame of a swing is as
-light or dark as the baked model that replaces it (the renderer used to draw the leaf unshaded, a
-visible step at both ends of every swing).
+ticks -- its upper half has a `TileEntityDoorSwing` **on each client that can see it, and nowhere
+else**, which holds only the direction and the tick it started. Whether a door is swinging is
+whether that tile entity is there: `swing` is actual state, never stored, read off it in
+`getActualState` (through the chunk cache's look-only `getTileEntity` while a chunk is built), and
+the models draw nothing while it is true.
+
+- **Starting.** Opening or shutting sets the lower half's `open` at once, as ever, and sends a
+  block event; each client that gets it makes the tile entity itself (`eventReceived`) and has both
+  halves rebuilt on the main thread (`notifyBlockUpdate` with flag 8), so the baked model and the
+  renderer hand over in the same frame.
+- **Ending.** The tile entity ticks -- on the client, for the eight ticks it exists -- and takes
+  itself away once the swing is over, as a moving piston's does, then has the halves rebuilt again.
+  Nothing has to tell it the swing is over, so a client that walks out of range mid-swing cannot be
+  left holding one; a client that loads the chunk mid-swing sees the door where it is going, without
+  the animation. Nothing is saved or sent.
+- **The server makes none.** It knows a door is moving by the end-of-swing tick it schedules on the
+  upper half (`isUpdateScheduled`), which is what the Door Swing Tool asks. That tick does nothing
+  else now.
+- **Why the upper half says it has a tile entity in every state.** A chunk refuses a tile entity
+  whose block says it has none (`Chunk.addTileEntity`), and nothing in the stored state says the
+  door is swinging any more. So `hasTileEntity` is true for every upper half, and
+  `createNewTileEntity` makes none: a lookup at a door at rest asks for one and gets null, and the
+  door stays free.
+
+The renderer draws both halves' own closed models turned about the hinge, so handles, bars and a
+fitted closer's body swing with the leaf; a closer's shoe stays put and its arm is solved for the
+angle (below). With `animateDoors` off it draws them where they are going at once. Every face it
+draws is shaded as the world shades a block face, by the way it faces at that moment, so the last
+frame of a swing is as light or dark as the baked model that replaces it (the renderer used to draw
+the leaf unshaded, a visible step at both ends of every swing).
 
 **The open model is the closed one turned about the hinge**, a quarter turn about the pivot
 (0.875, 15.125) px for a left hinge, which carries the leaf from the outside face to lie along the
@@ -64,13 +91,38 @@ its own model, since a blockstate rotation turns about the block's centre and wo
 in the wrong corner; the renderer turns about the same pivot, so the swing ends on exactly the
 model that replaces it. The right-hinged models are the left's mirror.
 
-**Which way a door swings is a kind of door, not state.** The exit, storefront and fire doors
-(`OUTSWING`, in `gen_doors.py` and `BlockBuildingDoor`, SHARED) swing **out**, toward the outside,
-as real ones do: an exit door opens in the direction of escape, which is what lets a push bar work
-at all -- on a door that swings toward you it is a pull handle nobody can pull. Every other door
-swings in. No bit is left to make it a choice per door, and a door kind has one right answer.
+**Which way a door swings: its kind's default, or reversed.** The exit, storefront and fire doors
+(`OUTSWING`, in `gen_doors.py` and `DoorSwingDirection`, SHARED) swing **out** by default, toward
+the outside, as real ones do: an exit door opens in the direction of escape, which is what lets a
+push bar work at all -- on a door that swings toward you it is a pull handle nobody can pull. Every
+other door swings in by default. Any placed door may be **reversed** from that (the upper half's
+bit 4, the `reversed` state, which the lower half reads from it as it reads the hinge): the way a
+door actually swings is its kind's default, the other way if it is reversed
+(`BlockBuildingDoor.outward`, `outswing != reversed`). Everything that depends on the direction
+reads that, never the kind: the models (through `reversed` in the blockstate), the collision box,
+the renderer's pivot and turn, the closer's side and the push bar's press.
 
-An outswing door is the **depth mirror** of an inswing one: its leaf hangs on the *inside* face of
+A reversed door's models are the **depth mirror of its kind's own**, shut and open, hardware and
+all (`_out` for a kind that swings in, `_in` for one that swings out). So a push bar stays on the
+face that is pushed: a reversed exit door swings in, and has its bar on the outside. The facing
+still decides the inside, so a keypad lock still lets people out freely from the side the door
+faces, whichever way it swings.
+
+**Choosing.** Sneaking while placing hangs a door reversed; the Door Swing Tool flips a hung one
+and its pair (`flipSwing`), only while both are shut and still, since flipping one open or
+mid-swing would jump its leaf across the cell. A door placed as a pair takes its partner's
+direction whatever the player does, so a pair can never swing two ways. A custom door is never
+reversed (`reversible()`): its movement belongs to its settings, and its swing always goes in.
+
+**Worlds saved before a door could be reversed.** Bit 4 used to mean "swinging", so it is read as
+"reversed" now. A door at rest had it clear, so every existing door is unchanged. A door saved in
+the eight ticks of a swing had it set -- and also had the swing's tile entity saved with the chunk,
+which the server otherwise never has. That is how it is told apart: a `TileEntityDoorSwing` on the
+server is put right on its first tick, or by the end-of-swing tick the save brought back, whichever
+comes first (`TileEntityDoorSwing.putRightLegacySwing`): bit 4 is cleared, so the door is not
+turned round, and the tile entity goes.
+
+A door that swings out is the **depth mirror** of one that swings in: its leaf hangs on the *inside* face of
 the cell (z 0..1.75 drawn north-inside) and turns outward about (0.875, 0.875), so the open leaf
 lies along the hinge jamb inside its own cell exactly where an inswing door's does, and the open
 collision box is the same. Only the shut box moves, to the inside face. The one thing that has to
@@ -90,7 +142,7 @@ bakes, from the same constants (`CLOSER_*`, SHARED): shut, the arm lies folded a
 its elbow toward the latch, as a parallel arm does; open, it reaches from the body, now in the
 opening, out through the top of the opening to the shoe.
 
-- **It is on the push side, for every door.** The leaf opens *within the wall's thickness* and ends
+- **It is on the push side, for every door, whichever way it swings.** The leaf opens *within the wall's thickness* and ends
   lying along the jamb, so the face the door swings toward -- where a regular-arm closer would go --
   finishes against the jamb block, and an arm from a body there cannot reach the frame without
   passing through the open leaf. The push face turns into the opening instead, and a parallel-arm
@@ -111,7 +163,8 @@ opening, out through the top of the opening to the shoe.
   generator and the Java agree again.
 
 **A push bar presses.** On the exit and storefront doors the touch bar (`TINT_PUSH`) dips a pixel
-toward the leaf over the first quarter of an opening swing and comes back out over the second, as
+toward the leaf over the first quarter of an opening swing and comes back out over the second --
+north in model space on a door that swings out, south on one reversed to swing in -- as
 it does under the hand that unlatches a real one. Closing, it stays out: a door shutting on its
 closer latches without the bar moving. This is the renderer's alone -- at rest the models draw the
 bar out, as they always did, so a door with no swing in progress costs nothing more.
@@ -122,16 +175,20 @@ layer; the rest are cutout.
 ## Cost
 
 A storefront door is two glass panes and a Sheet Metal, a hollow metal, fire or exit door two Sheet
-Metal and a Fastener Kit, and a wood or residential door three planks. The Door Closer is an item,
-so it has a crafting recipe (`recipes/door_closer.json`, only while `csm_building` is loaded)
-instead of a Fabricator cost. The Door Workshop is four planks, two Fastener Kits and a Sheet Metal
+Metal and a Fastener Kit, and a wood or residential door three planks. The Door Closer and the
+Door Swing Tool are items, so they have crafting recipes (`recipes/door_closer.json`,
+`recipes/door_swing_tool.json`, only while `csm_building` is loaded) instead of a Fabricator cost. The Door Workshop is four planks, two Fastener Kits and a Sheet Metal
 (a bench with a vice), priced before the door rule catches its name.
 
 ## Traps
 
 - **An item that acts on a block uses `onItemUseFirst`.** A right-click is offered to the block
-  before the held item's `onItemUse`, and the door took it and opened; the closer item fits itself
-  in `onItemUseFirst`, which comes first.
+  before the held item's `onItemUse`, and the door took it and opened; the closer item and the
+  swing tool act in `onItemUseFirst`, which comes first.
+- **`hasTileEntity` is asked with the stored state only**, and a chunk drops a tile entity its
+  block says it has none of. A tile entity whose presence is itself the state (the swing) needs the
+  block to say "yes" for every state and make none itself; making it is then someone else's job
+  (here the block event), and so is taking it away (here its own tick).
 - **"Hollow Metal Door" is a coloured metal set** to a cost rule on the word "metal", which comes
   first in the Building Materials rules. Doors are priced before it, and the garage door fittings
   and keypad, whose names also say "door", are kept out of the door rule.

@@ -1,0 +1,25 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_building"
+    }
+  ],
+  "pattern": [
+    " I",
+    "F "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "F": {
+      "item": "csm:part_fastener_kit"
+    }
+  },
+  "result": {
+    "item": "csm:door_swing_tool",
+    "count": 1
+  }
+}

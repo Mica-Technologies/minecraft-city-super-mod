@@ -2,7 +2,6 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -50,16 +49,19 @@ import net.minecraft.world.World;
  * <p>Two blocks, a lower and an upper half, as a vanilla door is, and the state is split between
  * them the same way: the lower half stores the facing (the way to the inside: the way the player
  * faced when placing it, from outside) and whether it is open; the upper half stores the hinge
- * side, whether a {@link ItemDoorCloser door closer} is fitted, and whether it is swinging. Each
- * half reads the rest from the other as actual state. Most doors hang as a vanilla door does, the
- * leaf along the outside face of the cell, and swing inward; the exit, storefront and fire doors
- * swing outward, as real ones do, with the leaf along the inside face ({@link #outswing()}).</p>
+ * side, whether a {@link ItemDoorCloser door closer} is fitted, and whether the door is
+ * {@link #REVERSED reversed} ({@link DoorSwingDirection}). Each half reads the rest from the other
+ * as actual state. Most kinds hang as a vanilla door does, the leaf along the outside face of the
+ * cell, and swing inward; the exit, storefront and fire doors swing outward, as real ones do, with
+ * the leaf along the inside face ({@link #outswing()}); any placed door may be reversed from its
+ * kind's default ({@link #outward}), by sneaking as it is placed or with the
+ * {@link ItemDoorSwingTool door swing tool}.</p>
  *
  * <ul>
  *   <li><b>At rest</b> a door is baked models: no tile entity. Only while it swings does its
- *   upper half have one, {@link TileEntityDoorSwing}, whose renderer turns the closed model about
- *   the hinge; a scheduled tick ends the swing, so nothing ticks. Whether the swing is drawn or the
- *   door snaps is each client's own choice ({@code animateDoors}).</li>
+ *   upper half have one, {@link TileEntityDoorSwing}, on the clients only, whose renderer turns
+ *   the closed model about the hinge and which takes itself away when the swing is over. Whether
+ *   the swing is drawn or the door snaps is each client's own choice ({@code animateDoors}).</li>
  *   <li><b>Pairs.</b> A door placed beside one hinged on its far side hinges the other way, and a
  *   pair opens and closes together.</li>
  *   <li><b>Redstone</b> holds a door open while it is powered.</li>
@@ -112,19 +114,24 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   public static final PropertyBool OPEN = PropertyBool.create("open");
   public static final PropertyEnum<Hinge> HINGE = PropertyEnum.create("hinge", Hinge.class);
   public static final PropertyBool CLOSER = PropertyBool.create("closer");
+  /**
+   * Whether the door is swinging. Actual state only, never stored: it is whether the upper half
+   * has a {@link TileEntityDoorSwing}, and the models draw nothing while it is true.
+   */
   public static final PropertyBool SWING = PropertyBool.create("swing");
+  /**
+   * Whether the door swings the other way from its kind's default: out for most doors, in for the
+   * exit, storefront and fire doors. Stored in the upper half, in the bit that used to say it was
+   * swinging.
+   */
+  public static final PropertyBool REVERSED = PropertyBool.create("reversed");
 
   /** How long a swing takes, in ticks. SHARED with {@link TileEntityDoorSwingRenderer}. */
   static final int SWING_TICKS = 8;
   /** How long a door closer holds the door open, in ticks. */
   private static final int CLOSER_TICKS = 60;
-
-  /**
-   * SHARED with gen_doors.OUTSWING: the doors that swing out, toward the outside -- an exit door
-   * opens the way people escape, which is what lets its push bar work at all.
-   */
-  private static final Set<String> OUTSWING = Collections.unmodifiableSet(new HashSet<>(
-      Arrays.asList("door_metal_fire", "door_metal_exit", "door_storefront_bronze")));
+  /** The block event that tells every client a door has started to swing (param 1 opening). */
+  private static final int EVENT_SWING = 2;
 
   /** SHARED with gen_doors: the leaf's thickness, and so its plane, in blocks. */
   private static final double LEAF = 1.75 / 16;
@@ -140,6 +147,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
 
   private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
   private static final ThreadLocal<Hinge> PENDING_HINGE = new ThreadLocal<>();
+  private static final ThreadLocal<Boolean> PENDING_REVERSED = new ThreadLocal<>();
 
   private final String registryName;
 
@@ -156,7 +164,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     this.registryName = registryName;
     setDefaultState(blockState.getBaseState().withProperty(HALF, Half.LOWER)
         .withProperty(FACING, EnumFacing.NORTH).withProperty(OPEN, false)
-        .withProperty(HINGE, Hinge.LEFT).withProperty(CLOSER, false).withProperty(SWING, false));
+        .withProperty(HINGE, Hinge.LEFT).withProperty(CLOSER, false).withProperty(SWING, false)
+        .withProperty(REVERSED, false));
     PENDING_REGISTRY_NAME.remove();
   }
 
@@ -175,19 +184,44 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   }
 
   /**
-   * Whether this door swings out, toward the outside, rather than in. Its leaf then hangs along the
-   * inside face of the cell -- the depth mirror of an inswing door -- and turns outward about a
-   * pivot there, so the open leaf lies along the jamb inside its own cell as an inswing door's does.
-   * Nothing else changes: the facing is still the way to the inside, and the inside is still the
-   * side a keypad lock lets out freely. A kind of door, not state: every bit either half has is
-   * used.
+   * Whether this kind of door swings out, toward the outside, unless a placed one is
+   * {@link #REVERSED reversed}. Which way a particular door swings is {@link #outward}.
    *
-   * @return whether the door swings out
+   * @return whether the kind swings out by default
    *
    * @since 1.0
    */
   public boolean outswing() {
-    return OUTSWING.contains(getBlockRegistryName());
+    return DoorSwingDirection.outswingKind(getBlockRegistryName());
+  }
+
+  /**
+   * Whether this placed door swings out, toward the outside, rather than in: its kind's default,
+   * the other way if it is reversed. A door that swings out hangs along the inside face of the
+   * cell -- the depth mirror of one that swings in -- and turns outward about a pivot there, so the
+   * open leaf lies along the jamb inside its own cell either way. Nothing else changes: the facing
+   * is still the way to the inside, and the inside is still the side a keypad lock lets out freely.
+   *
+   * @param door the whole door's state ({@link #whole}), which carries the upper half's bit
+   *
+   * @return whether the door swings out
+   *
+   * @since 1.1
+   */
+  public boolean outward(IBlockState door) {
+    return DoorSwingDirection.outward(outswing(), door.getValue(REVERSED));
+  }
+
+  /**
+   * Whether a door of this kind can be made to swing the other way. A custom door's movement is
+   * set in the Door Workshop instead.
+   *
+   * @return whether the direction can be reversed
+   *
+   * @since 1.1
+   */
+  protected boolean reversible() {
+    return true;
   }
 
   protected boolean glazed() {
@@ -201,16 +235,24 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, HALF, FACING, OPEN, HINGE, CLOSER, SWING);
+    return new BlockStateContainer(this, HALF, FACING, OPEN, HINGE, CLOSER, SWING, REVERSED);
   }
 
+  /**
+   * The upper half's bit 4 is {@link #REVERSED}; it said "swinging" before any door could be
+   * reversed, and {@link TileEntityDoorSwing#update} puts right the rare door saved mid-swing by
+   * that version. {@link #SWING} is never stored.
+   *
+   * @since 1.0
+   */
   @Override
   @Nonnull
   public IBlockState getStateFromMeta(int meta) {
-    if ((meta & 8) != 0) {
+    if (DoorSwingDirection.isUpper(meta)) {
       return getDefaultState().withProperty(HALF, Half.UPPER)
-          .withProperty(HINGE, (meta & 1) != 0 ? Hinge.RIGHT : Hinge.LEFT)
-          .withProperty(CLOSER, (meta & 2) != 0).withProperty(SWING, (meta & 4) != 0);
+          .withProperty(HINGE, DoorSwingDirection.hingeRight(meta) ? Hinge.RIGHT : Hinge.LEFT)
+          .withProperty(CLOSER, DoorSwingDirection.closer(meta))
+          .withProperty(REVERSED, DoorSwingDirection.reversed(meta));
     }
     return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta & 3))
         .withProperty(OPEN, (meta & 4) != 0);
@@ -219,8 +261,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @Override
   public int getMetaFromState(IBlockState state) {
     if (state.getValue(HALF) == Half.UPPER) {
-      return 8 | (state.getValue(HINGE) == Hinge.RIGHT ? 1 : 0)
-          | (state.getValue(CLOSER) ? 2 : 0) | (state.getValue(SWING) ? 4 : 0);
+      return DoorSwingDirection.upperMeta(state.getValue(HINGE) == Hinge.RIGHT,
+          state.getValue(CLOSER), state.getValue(REVERSED));
     }
     return state.getValue(FACING).getHorizontalIndex() | (state.getValue(OPEN) ? 4 : 0);
   }
@@ -230,11 +272,14 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @Nonnull
   public IBlockState getActualState(@Nonnull IBlockState state, @Nonnull IBlockAccess worldIn,
       @Nonnull BlockPos pos) {
+    BlockPos upperPos = pos;
     if (state.getValue(HALF) == Half.LOWER) {
-      IBlockState up = worldIn.getBlockState(pos.up());
+      upperPos = pos.up();
+      IBlockState up = worldIn.getBlockState(upperPos);
       if (up.getBlock() == this && up.getValue(HALF) == Half.UPPER) {
         state = state.withProperty(HINGE, up.getValue(HINGE))
-            .withProperty(CLOSER, up.getValue(CLOSER)).withProperty(SWING, up.getValue(SWING));
+            .withProperty(CLOSER, up.getValue(CLOSER))
+            .withProperty(REVERSED, up.getValue(REVERSED));
       }
     } else {
       IBlockState down = worldIn.getBlockState(pos.down());
@@ -243,7 +288,10 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
             .withProperty(OPEN, down.getValue(OPEN));
       }
     }
-    return state;
+    // A chunk being built reads through a ChunkCache, whose getTileEntity only looks; a world's
+    // would try to make one, which for a door is a no-op (createNewTileEntity makes none).
+    return state.withProperty(SWING,
+        worldIn.getTileEntity(upperPos) instanceof TileEntityDoorSwing);
   }
 
   /** The whole door's state, read from wherever {@code pos} is in it. */
@@ -265,9 +313,11 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
 
   /**
    * The lower half, facing the way the player looks -- a door is hung from outside, looking in.
-   * The hinge is decided here and handed to {@link #onBlockPlacedBy}, which puts up the upper half
-   * that stores it: opposite a door beside it hinged on its far side, so the two make a pair, or
-   * else on the side of the opening the player clicked.
+   * The hinge and the swing are decided here and handed to {@link #onBlockPlacedBy}, which puts up
+   * the upper half that stores them. The hinge goes opposite a door beside it hinged on its far
+   * side, so the two make a pair, or else on the side of the opening the player clicked. The door
+   * swings its kind's way, or the other way if the player is sneaking -- unless it makes a pair,
+   * when it swings the way its partner does, since a pair opens together.
    *
    * @since 1.0
    */
@@ -280,18 +330,22 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     IBlockState onLeft = worldIn.getBlockState(pos.offset(left));
     IBlockState onRight = worldIn.getBlockState(pos.offset(left.getOpposite()));
     Hinge hinge;
+    boolean reversed = reversible() && placer.isSneaking();
     if (onLeft.getBlock() == this && whole(worldIn, pos.offset(left)).getValue(HINGE) == Hinge.LEFT
         && whole(worldIn, pos.offset(left)).getValue(FACING) == f) {
       hinge = Hinge.RIGHT;
+      reversed = whole(worldIn, pos.offset(left)).getValue(REVERSED);
     } else if (onRight.getBlock() == this
         && whole(worldIn, pos.offset(left.getOpposite())).getValue(HINGE) == Hinge.RIGHT
         && whole(worldIn, pos.offset(left.getOpposite())).getValue(FACING) == f) {
       hinge = Hinge.LEFT;
+      reversed = whole(worldIn, pos.offset(left.getOpposite())).getValue(REVERSED);
     } else {
       double along = (hitX - 0.5) * left.getXOffset() + (hitZ - 0.5) * left.getZOffset();
       hinge = along > 0 ? Hinge.LEFT : Hinge.RIGHT;
     }
     PENDING_HINGE.set(hinge);
+    PENDING_REVERSED.set(reversed);
     return getDefaultState().withProperty(FACING, f);
   }
 
@@ -299,9 +353,12 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state,
       EntityLivingBase placer, ItemStack stack) {
     Hinge hinge = PENDING_HINGE.get();
+    Boolean reversed = PENDING_REVERSED.get();
     PENDING_HINGE.remove();
+    PENDING_REVERSED.remove();
     worldIn.setBlockState(pos.up(), getDefaultState().withProperty(HALF, Half.UPPER)
-        .withProperty(HINGE, hinge == null ? Hinge.LEFT : hinge), 2);
+        .withProperty(HINGE, hinge == null ? Hinge.LEFT : hinge)
+        .withProperty(REVERSED, reversed != null && reversed), 2);
   }
 
   /**
@@ -443,19 +500,46 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     }
     if (lower.getValue(OPEN) != open) {
       world.setBlockState(lowerPos, lower.withProperty(OPEN, open), 10);
-      world.setBlockState(lowerPos.up(), upper.withProperty(SWING, true), 3);
-      TileEntity te = world.getTileEntity(lowerPos.up());
-      if (te instanceof TileEntityDoorSwing) {
-        ((TileEntityDoorSwing) te).begin(open, world.getTotalWorldTime());
-      }
+      // Every client near enough to see it makes the swing's tile entity itself (eventReceived);
+      // the server keeps only a pending tick on the upper half, so it knows the door is moving.
+      world.addBlockEvent(lowerPos.up(), this, EVENT_SWING, open ? 1 : 0);
       world.scheduleUpdate(lowerPos.up(), this, SWING_TICKS);
       world.playSound(null, lowerPos, sound(open), SoundCategory.BLOCKS, 1.0F,
           world.rand.nextFloat() * 0.1F + 0.9F);
-      world.markBlockRangeForRenderUpdate(lowerPos, lowerPos.up());
     }
     if (open && byHand && upper.getValue(CLOSER)) {
       world.scheduleUpdate(lowerPos, this, CLOSER_TICKS);
     }
+  }
+
+  /**
+   * A door has started to swing. On a client, the upper half gets a {@link TileEntityDoorSwing}
+   * for the length of the swing, which draws it and then takes itself away; the server makes none.
+   *
+   * @since 1.1
+   */
+  @Override
+  @SuppressWarnings("deprecation")
+  public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id,
+      int param) {
+    if (id != EVENT_SWING) {
+      return false;
+    }
+    if (worldIn.isRemote && state.getBlock() == this && state.getValue(HALF) == Half.UPPER) {
+      TileEntityDoorSwing te = new TileEntityDoorSwing();
+      te.begin(param == 1, worldIn.getTotalWorldTime());
+      worldIn.setTileEntity(pos, te);
+      TileEntityDoorSwing.redraw(worldIn, pos);
+    }
+    return true;
+  }
+
+  /**
+   * Whether the door at {@code lowerPos} is still swinging, as the server sees it: its upper half's
+   * end-of-swing tick has not come yet.
+   */
+  protected boolean swinging(World world, BlockPos lowerPos) {
+    return world.isUpdateScheduled(lowerPos.up(), this);
   }
 
   /**
@@ -467,9 +551,9 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @Override
   public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
     if (state.getValue(HALF) == Half.UPPER) {
-      if (state.getValue(SWING)) {
-        worldIn.setBlockState(pos, state.withProperty(SWING, false), 3);
-      }
+      // Nothing to do: the pending tick was only there to say the door is moving. A world saved
+      // mid-swing by a version where this tick ended the swing brings the tick back with it.
+      TileEntityDoorSwing.putRightLegacySwing(worldIn, pos);
       return;
     }
     IBlockState door = whole(worldIn, pos);
@@ -548,6 +632,57 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     return true;
   }
 
+  /** The outcome of {@link #flipSwing}. */
+  enum FlipResult {
+    /** Flipped; the door (and its pair) now swings out. */
+    OUT,
+    /** Flipped; the door (and its pair) now swings in. */
+    IN,
+    /** Not flipped: the door or its pair is open or still swinging. */
+    BUSY,
+    /** Not flipped: this door's movement is not a swing that can be reversed. */
+    FIXED
+  }
+
+  /**
+   * Makes a door swing the other way, and its pair with it, so a pair always swings the same way.
+   * Only a shut door that is not moving: flipping one mid-swing or open would jump its leaf across
+   * the cell.
+   *
+   * @param world the world
+   * @param pos   either half of the door
+   *
+   * @return what happened
+   *
+   * @since 1.1
+   */
+  FlipResult flipSwing(World world, BlockPos pos) {
+    if (!reversible()) {
+      return FlipResult.FIXED;
+    }
+    BlockPos lowerPos = lower(world.getBlockState(pos), pos);
+    IBlockState door = whole(world, lowerPos);
+    BlockPos p = partner(world, lowerPos, door);
+    if (door.getValue(OPEN) || swinging(world, lowerPos)
+        || p != null && (whole(world, p).getValue(OPEN) || swinging(world, p))) {
+      return FlipResult.BUSY;
+    }
+    boolean reversed = !door.getValue(REVERSED);
+    setReversed(world, lowerPos, reversed);
+    if (p != null) {
+      setReversed(world, p, reversed);
+    }
+    return DoorSwingDirection.outward(outswing(), reversed) ? FlipResult.OUT : FlipResult.IN;
+  }
+
+  private void setReversed(World world, BlockPos lowerPos, boolean reversed) {
+    IBlockState upper = world.getBlockState(lowerPos.up());
+    if (upper.getBlock() == this && upper.getValue(HALF) == Half.UPPER) {
+      // A client redraws the blocks round a change, so the lower half's models follow.
+      world.setBlockState(lowerPos.up(), upper.withProperty(REVERSED, reversed), 3);
+    }
+  }
+
   /**
    * A command from a linked control: a keypad's right code opens the door (lock or no lock), a
    * button toggles it, a station opens or closes it.
@@ -574,15 +709,23 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
 
   // --- the swing's tile entity ----------------------------------------------------------------------
 
+  /**
+   * The upper half may hold a {@link TileEntityDoorSwing}, and must say so for every state: a chunk
+   * refuses a tile entity whose block says it has none, and nothing in the stored state says the
+   * door is swinging. But it never makes one itself ({@link #createNewTileEntity} makes none), so
+   * a door at rest has none: only {@link #eventReceived} puts one there, on a client, for a swing.
+   *
+   * @since 1.0
+   */
   @Override
   public boolean hasTileEntity(IBlockState state) {
-    return state.getValue(HALF) == Half.UPPER && state.getValue(SWING);
+    return state.getValue(HALF) == Half.UPPER;
   }
 
   @Nullable
   @Override
   public TileEntity createNewTileEntity(@Nonnull World worldIn, int meta) {
-    return (meta & 8) != 0 && (meta & 4) != 0 ? new TileEntityDoorSwing() : null;
+    return null;
   }
 
   @Override
@@ -615,7 +758,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @Override
   @Nonnull
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return leafBox(getActualState(state, source, pos), outswing());
+    IBlockState door = getActualState(state, source, pos);
+    return leafBox(door, outward(door));
   }
 
   @Override

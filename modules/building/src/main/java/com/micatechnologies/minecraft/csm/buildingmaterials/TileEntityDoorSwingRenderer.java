@@ -85,8 +85,8 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     double eased = 1 - (1 - p) * (1 - p);
     double openness = te.isOpening() ? eased : 1 - eased;
     double turn = 90.0 * openness;
-    // An outswing door turns the other way, about the depth mirror of the pivot.
-    boolean out = block.outswing();
+    // A door that swings out turns the other way, about the depth mirror of the pivot.
+    boolean out = block.outward(door);
     float angle = (float) turn * (left ? 1 : -1) * (out ? -1 : 1);
     double pz = out ? 1 - PIVOT_Z : PIVOT_Z;
     float facingTurn = -(facing.getHorizontalAngle() + 180F);
@@ -95,7 +95,8 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     IBlockState closed = block.getDefaultState().withProperty(BlockBuildingDoor.OPEN, false)
         .withProperty(BlockBuildingDoor.SWING, false)
         .withProperty(BlockBuildingDoor.HINGE, door.getValue(BlockBuildingDoor.HINGE))
-        .withProperty(BlockBuildingDoor.CLOSER, door.getValue(BlockBuildingDoor.CLOSER));
+        .withProperty(BlockBuildingDoor.CLOSER, door.getValue(BlockBuildingDoor.CLOSER))
+        .withProperty(BlockBuildingDoor.REVERSED, door.getValue(BlockBuildingDoor.REVERSED));
     IBlockState lowerState = closed.withProperty(BlockBuildingDoor.HALF,
         BlockBuildingDoor.Half.LOWER);
     IBlockState upperState = closed.withProperty(BlockBuildingDoor.HALF,
@@ -139,9 +140,10 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     GlStateManager.translate(px, 0, pz);
     GlStateManager.rotate(angle, 0F, 1F, 0F);
     GlStateManager.translate(-px, 0, -pz);
-    // A push bar's touch bar is on the inside face, standing out north of the leaf; pushing it
-    // moves it south, toward the leaf. Only opening: nobody pushes a door that is closing itself.
-    double press = te.isOpening() ? press(p) / 16 : 0;
+    // A push bar's touch bar is on the push face: standing out north of the leaf on a door that
+    // swings out, south on one reversed to swing in. Pushing it moves it toward the leaf. Only
+    // opening: nobody pushes a door that is closing itself.
+    double press = te.isOpening() ? press(p) / 16 * (out ? 1 : -1) : 0;
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
     for (BakedQuad quad : lowerQuads) {
       if (!quad.hasTintIndex()) {
