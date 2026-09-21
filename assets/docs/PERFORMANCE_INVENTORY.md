@@ -10,12 +10,20 @@ Recorded 2026-09-20 and 2026-09-21 on `dev/bug-fixes`: the first pass at `144152
 follows and the earlier signal/sign work; this document does not repeat those rules. Raw data and
 the harness are in [`benchmarks/block-inventory-2026-09-20/`](benchmarks/block-inventory-2026-09-20/).
 
-**Nothing in the mod was changed to produce this.** It is measurement and reading only.
+**Nothing in the mod was changed to produce the measurements.** The fixes that followed are
+logged in [Fix status](#fix-status), each with its own before and after.
+
+## Fix status
+
+| ID | What | Commit | Before | After |
+|---|---|---|---|---|
+| C2, C3 | Display-list cache evicts only at frame start and never an entry drawn in the last frame; peak and evictions in `/csm displaylists`, a log line the first time a cache holds more than its bound | (this change) | 1,025 heads 500 ms, 1,600 heads 833 ms | 1,025 heads 3.2 ms, 1,600 heads 4.7 ms, linear |
+| - | Lane control signal draws directly when no list can be allocated, instead of calling list 0 | (this change) | would blank | draws |
 
 ## Read this first
 
-- **One finding is a cliff, not a cost.** `CsmDisplayListCache` holds 1,024 positions per cache. At
-  1,000 visible signal heads a frame is 3.3 ms; at 1,030 it is **526 ms** (under 2 fps). It is
+- **One finding was a cliff, not a cost (now fixed).** `CsmDisplayListCache` held 1,024 positions
+  per cache. At 1,024 visible signal heads a frame was 3.4 ms; at 1,025 it was **500 ms**. It is
   per renderer cache, it is one constant, and it recovers the moment the count drops. See
   [The 1,024-position cliff](#the-1024-position-cliff-measured). Nothing else in this document is
   as large or as cheap to fix.
@@ -67,12 +75,15 @@ Signal heads, 40x40 grid, camera 34 blocks back, all in view, baseline frame 0.7
 | 1,600 | 482.97 | 833 ms |
 | 500 (after 1,050) | 2.17 | 1.95 ms (recovers at once) |
 
-**Where exactly the edge is, is not settled.** By the code, 1,025 positions in one cache already
-thrash: each frame's first access evicts the entry the frame needs next. That 1,025 measured clean
-most likely means one or two of the placed heads were not heads by the time they drew (the
-cliff script counts what it placed, not what a census found, and the inventory saw copies change on
-placement, see [Placement noise](#placement-noise)). Read the table as "the cliff is at or just above
-1,024", not "1,025 is safe"; re-measure with a census before quoting the edge.
+**The edge is exactly 1,025.** Re-measured on 2026-09-21 with the MCMCP that reports per-block
+`framesDrawn` and with a census at each step: 1,024 heads (census 1,024, all drawn every frame)
+3.38 ms, 1,025 (census 1,025) 500 ms, back to 1,024 3.39 ms. The 1,025 row in the table above,
+from the first session, read clean for a reason not found; the code and the re-measure agree it
+should not.
+
+**After the fix** (frame-aware eviction, C2): 1,000 / 1,024 / 1,025 / 1,030 / 1,100 / 1,300 / 1,600
+heads cost 3.15 / 3.14 / 3.17 / 3.24 / 3.37 / 3.81 / 4.68 ms, linear, and turning away from 1,600
+heads trims the cache back to 1,024 positions (576 evicted); turning back recompiles only those 576.
 
 - **It is per renderer cache, not per block type.** 520 hawk heads plus 520 vertical heads is 1,040
   heads that share one renderer and one cache: 500 ms. 800 heads plus 800 new-style crosswalks (two

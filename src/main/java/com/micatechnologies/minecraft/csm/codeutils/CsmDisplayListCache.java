@@ -32,8 +32,9 @@ import org.lwjgl.opengl.GL11;
  *       releases its handle immediately.</li>
  *   <li><b>Capacity bound.</b> The map evicts in least-recently-rendered order once it exceeds
  *       {@link #getMaxEntries()}, deleting the evicted handle. This is the backstop for any
- *       release path that is missed; it is sized well above the number of blocks that can
- *       plausibly be visible at once, so it should never evict something still on screen.</li>
+ *       release path that is missed. Eviction happens only in {@link #onFrameStart()}, and
+ *       never to an entry drawn in the frame before: when more positions than the bound are on
+ *       screen the cache holds them all, and trims back once they stop being drawn.</li>
  *   <li><b>Session boundary.</b> {@link #clearAll()} releases every cache on client disconnect.</li>
  * </ol>
  *
@@ -57,13 +58,32 @@ public final class CsmDisplayListCache {
   public static final int NO_LIST = 0;
 
   /**
-   * Default capacity. Chosen to sit comfortably above the number of custom-rendered blocks that
-   * can be on screen at once — even a dense downtown intersection cluster at the 128-block render
-   * distance these tile entities request is a few hundred — so the bound acts as a leak backstop
-   * and not as a working-set limit. Evicting something still visible would cause it to recompile
-   * every frame, which is worse than the leak it guards against.
+   * Default capacity: the size the cache is trimmed back to once positions stop being drawn. It is
+   * a leak backstop, not a working-set limit, and it is soft. It used to be hard, and a hard bound
+   * is a cliff rather than a slope: with one more position on screen than the bound, each frame's
+   * first miss evicts the entry the frame needs next, so every entry recompiles every frame.
+   * Measured on signal heads, 1,024 in view drew a 3.4 ms frame and 1,025 a 500 ms one. See
+   * {@link #isLive(CachedList, long)} and {@code assets/docs/PERFORMANCE_INVENTORY.md}.
    */
   private static final int DEFAULT_MAX_ENTRIES = 1024;
+
+  /**
+   * The render frame counter, advanced once per frame by {@link #onFrameStart()}. Read and written
+   * only on the render thread.
+   */
+  private static long frame;
+
+  /**
+   * Most positions a cache has held at once since the last disconnect. Diagnostics only: a peak
+   * above the bound is the sign that more positions than that were on screen together.
+   */
+  private int peakEntries;
+
+  /** Entries this cache has evicted as stale since the last disconnect. Diagnostics only. */
+  private long evictions;
+
+  /** Whether this cache has already logged growing past its bound, so it says so only once. */
+  private boolean reportedOverflow;
 
   /**
    * Every cache created, so {@link #clearAll()} can release all of them on disconnect without
@@ -113,6 +133,9 @@ public final class CsmDisplayListCache {
     /** The owning cache's live-list counter, decremented as this entry's lists are deleted. */
     private final AtomicInteger liveLists;
 
+    /** The {@link #frame} this position was last looked up or compiled in. */
+    private long lastFrame;
+
     private CachedList(AtomicInteger liveLists) {
       this.liveLists = liveLists;
     }
@@ -160,18 +183,11 @@ public final class CsmDisplayListCache {
   public CsmDisplayListCache(String name, int maxEntries) {
     this.name = name;
     this.maxEntries = Math.max(1, maxEntries);
-    this.entries = new LinkedHashMap<BlockPos, CachedList>(16, 0.75f, true) {
-      @Override
-      protected boolean removeEldestEntry(Map.Entry<BlockPos, CachedList> eldest) {
-        if (size() <= CsmDisplayListCache.this.maxEntries) {
-          return false;
-        }
-        // Release the GL handle before dropping the entry -- otherwise the eviction that is
-        // supposed to bound this cache would itself leak the thing being bounded.
-        eldest.getValue().releaseAll();
-        return true;
-      }
-    };
+    // Access-ordered, so the eldest entry is the least recently drawn. Nothing is evicted on
+    // insert: an insert happens mid-frame, when an entry not yet drawn this frame cannot be told
+    // from one that will not be drawn at all, and evicting the wrong one makes the frame recompile
+    // it. trim() does the evicting, at the start of the next frame.
+    this.entries = new LinkedHashMap<>(16, 0.75f, true);
     ALL_CACHES.add(this);
   }
 
@@ -192,6 +208,7 @@ public final class CsmDisplayListCache {
     if (entry == null) {
       return NO_LIST;
     }
+    entry.lastFrame = frame;
     Integer listId = entry.byState.get(stateKey);
     return listId == null ? NO_LIST : listId;
   }
@@ -219,6 +236,7 @@ public final class CsmDisplayListCache {
       entry = new CachedList(liveLists);
       entries.put(pos.toImmutable(), entry);
     }
+    entry.lastFrame = frame;
     Integer existing = entry.byState.get(stateKey);
     if (existing != null) {
       return existing;
@@ -255,6 +273,70 @@ public final class CsmDisplayListCache {
       iterator.next().releaseAll();
     }
     entries.clear();
+    peakEntries = 0;
+    evictions = 0;
+    reportedOverflow = false;
+  }
+
+  /**
+   * Whether an entry was drawn in the given frame or the one before it. The frame before counts
+   * too so that a block skipped for a single frame (a frustum edge, a pass that returned early)
+   * is not evicted and recompiled for it.
+   */
+  private static boolean isLive(CachedList entry, long currentFrame) {
+    return entry.lastFrame >= currentFrame - 1;
+  }
+
+  /** Says in the log, the first time only, that this cache is holding more than its bound. */
+  private void noteOverflow() {
+    if (!reportedOverflow) {
+      reportedOverflow = true;
+      org.apache.logging.log4j.LogManager.getLogger(CsmDisplayListCache.class).info(
+          "Display list cache '{}' has more than its {} positions on screen at once; holding"
+              + " them all rather than recompiling every frame (/csm displaylists shows the peak)",
+          name, maxEntries);
+    }
+  }
+
+  /**
+   * Evicts stale entries until this cache is back within its bound, stopping at the first live
+   * one: the map is in access order, so everything after it is live too.
+   */
+  private void trim() {
+    int size = entries.size();
+    if (size > peakEntries) {
+      peakEntries = size;
+    }
+    int over = size - maxEntries;
+    if (over <= 0) {
+      return;
+    }
+    for (Iterator<CachedList> iterator = entries.values().iterator();
+        over > 0 && iterator.hasNext(); over--) {
+      CachedList entry = iterator.next();
+      // Called after the frame counter advanced, so the frame just drawn is frame - 1.
+      if (isLive(entry, frame - 1)) {
+        // Everything after it is live too: more positions than the bound are on screen. Holding
+        // them is the point; evicting one would recompile it next frame, every frame.
+        noteOverflow();
+        return;
+      }
+      entry.releaseAll();
+      iterator.remove();
+      evictions++;
+    }
+  }
+
+  /**
+   * Advances the frame counter and trims every cache that grew past its bound while more positions
+   * than that were on screen. Called once per render frame, before any tile entity renders, from
+   * {@link CsmRenderUtils.FrameClock}.
+   */
+  public static void onFrameStart() {
+    frame++;
+    for (int i = 0; i < ALL_CACHES.size(); i++) {
+      ALL_CACHES.get(i).trim();
+    }
   }
 
   /**
@@ -300,8 +382,9 @@ public final class CsmDisplayListCache {
     for (CsmDisplayListCache cache : new ArrayList<>(ALL_CACHES)) {
       int lists = cache.compiledListCount();
       totalLists += lists;
-      out.add(String.format("%-24s %4d/%d positions, %5d compiled lists",
-          cache.name, cache.entries.size(), cache.maxEntries, lists));
+      out.add(String.format("%-24s %4d/%d positions (peak %d), %5d compiled lists, %d evicted",
+          cache.name, cache.entries.size(), cache.maxEntries, cache.peakEntries, lists,
+          cache.evictions));
     }
     out.add(String.format("%-24s %5d compiled lists across %d caches",
         "TOTAL", totalLists, ALL_CACHES.size()));

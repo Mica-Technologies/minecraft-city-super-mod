@@ -64,7 +64,8 @@ public final class CsmRenderUtils {
   }
 
   /**
-   * Forge event handler that refreshes the cached wall clock once per render frame. Registered on
+   * Forge event handler that refreshes the cached wall clock once per render frame, and advances
+   * the display list caches' frame counter. Registered on
    * the client event bus from {@code CsmClientProxy#preInit}. Sampling at
    * {@link TickEvent.Phase#START} guarantees the value is fresh before any TESR draws this frame.
    */
@@ -74,6 +75,7 @@ public final class CsmRenderUtils {
     public void onRenderTick(TickEvent.RenderTickEvent event) {
       if (event.phase == TickEvent.Phase.START) {
         frameWallMillis = System.currentTimeMillis();
+        CsmDisplayListCache.onFrameStart();
       }
     }
   }

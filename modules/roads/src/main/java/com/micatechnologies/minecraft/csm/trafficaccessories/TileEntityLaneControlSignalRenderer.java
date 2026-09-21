@@ -162,7 +162,13 @@ public class TileEntityLaneControlSignalRenderer
         // already current at GL_COMPILE, so the display list ends up without a recorded bind
         // and renders white-tinted at replay (independent of shaders).
         Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-        GL11.glCallList(displayList);
+        if (displayList != CsmDisplayListCache.NO_LIST) {
+            GL11.glCallList(displayList);
+        } else {
+            // The driver refused a list name; draw directly this frame rather than calling list 0,
+            // which draws nothing and would blank the signal.
+            renderStaticParts(bodyColor, visorColor, visorType, worldSkyLight, worldBlockLight);
+        }
 
         renderDisplayFace(signalType);
 
