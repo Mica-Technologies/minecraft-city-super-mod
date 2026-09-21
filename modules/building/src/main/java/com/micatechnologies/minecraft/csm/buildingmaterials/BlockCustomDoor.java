@@ -124,7 +124,7 @@ public class BlockCustomDoor extends BlockBuildingDoor {
   @Nonnull
   protected BlockStateContainer createBlockState() {
     return new ExtendedBlockState(this,
-        new IProperty[]{HALF, FACING, OPEN, HINGE, CLOSER, SWING},
+        new IProperty[]{HALF, FACING, OPEN, HINGE, CLOSER, SWING, REVERSED},
         new IUnlistedProperty[]{SETTINGS, PAIRED, HIDDEN});
   }
 
@@ -258,6 +258,15 @@ public class BlockCustomDoor extends BlockBuildingDoor {
   public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target,
       @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
     return stack(settings(world, pos));
+  }
+
+  /**
+   * A custom door's movement is one of its settings, and its swing always goes in: the door swing
+   * tool and sneak-placing leave it alone.
+   */
+  @Override
+  protected boolean reversible() {
+    return false;
   }
 
   /** A custom door's auto-close is one of its settings; it takes no closer. */

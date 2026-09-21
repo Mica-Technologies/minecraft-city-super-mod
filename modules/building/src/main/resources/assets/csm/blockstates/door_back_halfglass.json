@@ -11,6 +11,7 @@
         "half": "lower",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -22,7 +23,21 @@
         "facing": "north",
         "half": "lower",
         "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_left_out"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -33,8 +48,22 @@
       "when": {
         "facing": "north",
         "half": "lower",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_left_out_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -46,7 +75,21 @@
         "facing": "north",
         "half": "lower",
         "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_right_out"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -56,9 +99,23 @@
     {
       "when": {
         "facing": "north",
+        "half": "lower",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_right_out_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
         "half": "upper",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -71,6 +128,7 @@
         "half": "upper",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -83,7 +141,35 @@
         "facing": "north",
         "half": "upper",
         "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_left_out"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -96,6 +182,7 @@
         "half": "upper",
         "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -107,8 +194,36 @@
       "when": {
         "facing": "north",
         "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_left_out_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_left_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -121,6 +236,7 @@
         "half": "upper",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -133,7 +249,35 @@
         "facing": "north",
         "half": "upper",
         "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_right_out"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -146,6 +290,7 @@
         "half": "upper",
         "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -155,10 +300,38 @@
     },
     {
       "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_right_out_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_right_open"
+      }
+    },
+    {
+      "when": {
         "facing": "east",
         "half": "lower",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -171,7 +344,22 @@
         "facing": "east",
         "half": "lower",
         "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_left_out",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -183,8 +371,23 @@
       "when": {
         "facing": "east",
         "half": "lower",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_left_out_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -197,7 +400,22 @@
         "facing": "east",
         "half": "lower",
         "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_right_out",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -208,9 +426,24 @@
     {
       "when": {
         "facing": "east",
+        "half": "lower",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_right_out_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
         "half": "upper",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -224,6 +457,7 @@
         "half": "upper",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -237,7 +471,37 @@
         "facing": "east",
         "half": "upper",
         "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_left_out",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -251,6 +515,7 @@
         "half": "upper",
         "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -263,8 +528,38 @@
       "when": {
         "facing": "east",
         "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_left_out_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_left_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -278,6 +573,7 @@
         "half": "upper",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -291,7 +587,37 @@
         "facing": "east",
         "half": "upper",
         "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_right_out",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -305,6 +631,7 @@
         "half": "upper",
         "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -315,10 +642,40 @@
     },
     {
       "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_right_out_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_right_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
         "facing": "south",
         "half": "lower",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -331,7 +688,22 @@
         "facing": "south",
         "half": "lower",
         "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_left_out",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -343,8 +715,23 @@
       "when": {
         "facing": "south",
         "half": "lower",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_left_out_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -357,7 +744,22 @@
         "facing": "south",
         "half": "lower",
         "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_right_out",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -368,9 +770,24 @@
     {
       "when": {
         "facing": "south",
+        "half": "lower",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_right_out_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
         "half": "upper",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -384,6 +801,7 @@
         "half": "upper",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -397,7 +815,37 @@
         "facing": "south",
         "half": "upper",
         "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_left_out",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -411,6 +859,7 @@
         "half": "upper",
         "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -423,8 +872,38 @@
       "when": {
         "facing": "south",
         "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_left_out_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_left_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -438,6 +917,7 @@
         "half": "upper",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -451,7 +931,37 @@
         "facing": "south",
         "half": "upper",
         "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_right_out",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -465,6 +975,7 @@
         "half": "upper",
         "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -475,10 +986,40 @@
     },
     {
       "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_right_out_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_right_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
         "facing": "west",
         "half": "lower",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -491,7 +1032,22 @@
         "facing": "west",
         "half": "lower",
         "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_left_out",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -503,8 +1059,23 @@
       "when": {
         "facing": "west",
         "half": "lower",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_left_out_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -517,7 +1088,22 @@
         "facing": "west",
         "half": "lower",
         "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_right_out",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -528,9 +1114,24 @@
     {
       "when": {
         "facing": "west",
+        "half": "lower",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_lower_right_out_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
         "half": "upper",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -544,6 +1145,7 @@
         "half": "upper",
         "hinge": "left",
         "open": "false",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -557,7 +1159,37 @@
         "facing": "west",
         "half": "upper",
         "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_left_out",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -571,6 +1203,7 @@
         "half": "upper",
         "hinge": "left",
         "open": "true",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -583,8 +1216,38 @@
       "when": {
         "facing": "west",
         "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_left_out_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_left_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -598,6 +1261,7 @@
         "half": "upper",
         "hinge": "right",
         "open": "false",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
@@ -611,7 +1275,37 @@
         "facing": "west",
         "half": "upper",
         "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_right_out",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "open": "false",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false"
       },
       "apply": {
@@ -625,11 +1319,41 @@
         "half": "upper",
         "hinge": "right",
         "open": "true",
+        "reversed": "false",
         "swing": "false",
         "closer": "true"
       },
       "apply": {
         "model": "csm:doors/closer_right_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/door_back_halfglass_upper_right_out_open",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "open": "true",
+        "reversed": "true",
+        "swing": "false",
+        "closer": "true"
+      },
+      "apply": {
+        "model": "csm:doors/closer_out_right_open",
         "y": 270
       }
     }
