@@ -19,6 +19,10 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
   private boolean powered = false;
   private transient GuideSignData cachedData = null;
   private transient boolean stateDirty = true;
+  // What the renderer worked out from cachedData -- the sign's layout and its legend's texture
+  // run -- so none of it is redone per frame. Cleared everywhere cachedData is; typed Object so
+  // this common class never names a client-only renderer type.
+  private transient Object renderCache = null;
 
   public TileEntityDynamicGuideSign() {
   }
@@ -28,6 +32,7 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
     signDataJson = compound.getString(NBT_KEY);
     powered = compound.getBoolean(NBT_KEY_POWERED);
     cachedData = null;
+    renderCache = null;
     stateDirty = true;
   }
 
@@ -51,6 +56,7 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
     }
     this.signDataJson = data.toJson();
     this.cachedData = null;
+    this.renderCache = null;
     this.stateDirty = true;
     if (getWorld() != null) {
       markDirtySync(getWorld(), getPos(), true);
@@ -60,6 +66,7 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
   public void setSignDataJson(String json) {
     this.signDataJson = json != null ? json : "";
     this.cachedData = null;
+    this.renderCache = null;
     this.stateDirty = true;
     if (getWorld() != null) {
       markDirtySync(getWorld(), getPos(), true);
@@ -95,6 +102,15 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
 
   public void clearStateDirty() {
     stateDirty = false;
+  }
+
+  /** The renderer's per-sign cache, or null after any change to the sign's data. */
+  public Object getRenderCache() {
+    return renderCache;
+  }
+
+  public void setRenderCache(Object renderCache) {
+    this.renderCache = renderCache;
   }
 
   @Override
