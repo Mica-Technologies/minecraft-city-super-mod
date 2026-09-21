@@ -2,6 +2,9 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRoadSurfaceAware;
@@ -24,6 +27,8 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -38,6 +43,16 @@ import org.lwjgl.opengl.GL11;
  *
  * <p>Rendering the sign's baked model outright would have been simpler still, and is wrong: sign
  * models carry their own mounting post, which would arrive bolted through the barricade.</p>
+ *
+ * <p>Nothing here changes from frame to frame except whether a light is lit. The sign's straps
+ * and its faces, and the light bodies with their lenses, are compiled once per look into lists
+ * shared by every barricade that looks the same ({@link CsmSharedDisplayLists}): the straps and
+ * the faces are two lists because they are two textures, keyed on the barricade block, the sign
+ * block and the combined light; the lights are one, keyed on the barricade block, which ends carry
+ * a light, whether they are lit and the combined light. The light stays in the vertices exactly as
+ * before (at most 256 lights per look). The glow round a lit lens stays live: it fades over 70 ms,
+ * so its brightness is not one of a few states. {@link CsmRenderToggles#sharedBakesPerFrame} draws
+ * everything per frame, for comparison.</p>
  *
  * @version 1.0
  * @since 2026.9
@@ -105,10 +120,30 @@ public class TileEntityBarricadeRenderer
    * The panel each sign block draws, worked out once and kept.
    *
    * <p>Reading it means walking a baked model's quads, which is far too much to do per frame per
-   * barricade. Sign models do not change after the resource pack is loaded, so one lookup each
-   * is enough.</p>
+   * barricade. Sign models do not change while a resource pack is loaded, so one lookup each is
+   * enough; but a panel holds its sprite, which a reload replaces, so {@link #clearSignPanels()}
+   * empties this on every texture stitch and on disconnect.</p>
    */
   private static final Map<Block, SignPanel> SIGN_PANELS = new HashMap<>();
+
+  /** The two glow layers round a lit lens: how far each reaches, in lens radii, and its alpha. */
+  private static final float[][] HALO_LAYERS = {{0.7f, 0.34f}, {1.5f, 0.13f}};
+
+  /** A mounted sign's straps, in the white swatch. Key, see {@link #signKey}. */
+  private static final CsmSharedDisplayLists SIGN_HARDWARE_LISTS =
+      new CsmSharedDisplayLists("barricade_sign_straps");
+
+  /**
+   * A mounted sign's two faces, on the block atlas. Key, see {@link #signKey}. The sprite's UVs
+   * are compiled in, so these (and the straps, sized from the same panel) are released with
+   * {@link #SIGN_PANELS} on every texture stitch.
+   */
+  private static final CsmSharedDisplayLists SIGN_FACE_LISTS =
+      new CsmSharedDisplayLists("barricade_sign_face");
+
+  /** The warning light bodies and lenses, in the white swatch. Key, see {@link #lampKey}. */
+  private static final CsmSharedDisplayLists LAMP_LISTS =
+      new CsmSharedDisplayLists("barricade_lamps");
 
   @Override
   public void render(TileEntityBarricade te, double x, double y, double z,
@@ -116,14 +151,16 @@ public class TileEntityBarricadeRenderer
     if (te == null || te.getWorld() == null) {
       return;
     }
-    IBlockState state = te.getWorld().getBlockState(te.getPos());
-    Block block = state.getBlock();
-    if (!(block instanceof AbstractBlockWorkZoneBarricade)) {
-      return;
-    }
+    // A bare barricade, which is most of them, draws nothing here: find that out from the tile
+    // entity's own fields before reading the world at all.
     BarricadeFlashers flashers = te.getFlashers();
     Block sign = te.getSignBlock();
     if (flashers == BarricadeFlashers.NONE && sign == null) {
+      return;
+    }
+    IBlockState state = te.getWorld().getBlockState(te.getPos());
+    Block block = state.getBlock();
+    if (!(block instanceof AbstractBlockWorkZoneBarricade)) {
       return;
     }
 
@@ -136,8 +173,6 @@ public class TileEntityBarricadeRenderer
     float topY = barricade.getTopY();
 
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
-    int sky = (combinedLight >> 16) & 0xFFFF;
-    int blockLight = combinedLight & 0xFFFF;
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x + 0.5, y + settle, z + 0.5);
@@ -150,11 +185,11 @@ public class TileEntityBarricadeRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
     if (sign != null) {
-      renderSign(barricade, sign, topY, sky, blockLight);
+      renderSign(barricade, block, sign, topY, combinedLight);
     }
     if (flashers != BarricadeFlashers.NONE) {
       Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-      renderLamps(te, barricade, flashers, topY, partialTicks, sky, blockLight);
+      renderLamps(te, barricade, block, flashers, topY, partialTicks, combinedLight);
     }
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -165,60 +200,161 @@ public class TileEntityBarricadeRenderer
   }
 
   /**
-   * Draws a mounted sign, scaled to fit the barricade but keeping its own proportions.
+   * Draws a mounted sign, scaled to fit the barricade but keeping its own proportions: the straps
+   * from one shared list in the white swatch, then both faces from another on the block atlas.
    *
-   * @param barricade  the barricade block, which knows its own proportions
-   * @param sign       the sign block
-   * @param topY       the height of the barricade's uprights
-   * @param sky        the sky light
-   * @param blockLight the block light
+   * @param barricade     the barricade block, which knows its own proportions
+   * @param block         the same block, for the key
+   * @param sign          the sign block
+   * @param topY          the height of the barricade's uprights
+   * @param combinedLight the combined light
    */
-  private void renderSign(AbstractBlockWorkZoneBarricade barricade, Block sign, float topY,
-      int sky, int blockLight) {
+  private void renderSign(AbstractBlockWorkZoneBarricade barricade, Block block, Block sign,
+      float topY, int combinedLight) {
     SignPanel panel = panelFor(sign);
     if (panel == null) {
       return;
     }
+    long key = signKey(block, sign, combinedLight);
 
-    // Fit inside the mount box without distorting the sign: whichever axis runs out first sets
-    // the scale. Stretching to fill would misdraw every sign that is not the box's shape, which
-    // is most of them.
-    float maxWidth = (barricade.getRightUprightX() - barricade.getLeftUprightX())
-        * SIGN_MAX_WIDTH_FRACTION;
-    float maxHeight = topY * SIGN_MAX_HEIGHT_FRACTION;
-    float scale = Math.min(maxWidth / panel.width, maxHeight / panel.height);
-    float halfW = panel.width * scale * 0.5f;
-    float halfH = panel.height * scale * 0.5f;
-    float cx = 0.5f * (barricade.getLeftUprightX() + barricade.getRightUprightX());
-    float cy = topY * SIGN_CENTRE_FRACTION;
-    float railCz = barricade.getRailCentreZ();
-    float faceZ = railCz - barricade.getRailHalfZ() - SIGN_STANDOFF;
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawSignHardware(barricade, panel, topY, combinedLight);
+    } else {
+      int list = SIGN_HARDWARE_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = SIGN_HARDWARE_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawSignHardware(barricade, panel, topY, combinedLight);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+        // A direct draw resets the colour cache after its colour array; a replay does not.
+        GlStateManager.resetColor();
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawSignHardware(barricade, panel, topY, combinedLight);
+      }
+    }
+
+    // The face itself, both sides, off the block atlas.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawSignFace(barricade, panel, topY, combinedLight);
+    } else {
+      int list = SIGN_FACE_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = SIGN_FACE_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawSignFace(barricade, panel, topY, combinedLight);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+        GlStateManager.resetColor();
+      } else {
+        drawSignFace(barricade, panel, topY, combinedLight);
+      }
+    }
+  }
+
+  /**
+   * Packs everything a mounted sign's straps and faces depend on. Facing and the road settle are
+   * not in it: both are the matrix the lists are replayed under. The panel is not either: it is
+   * a function of the sign block until the next texture stitch, which releases both lists.
+   *
+   * <pre>
+   *  bits  0-31  combined light, as getCombinedLight returns it (sky in the high half)
+   *  bits 32-47  barricade block id (uprights, rail and height)
+   *  bits 48-63  sign block id
+   * </pre>
+   */
+  private static long signKey(Block barricade, Block sign, int combinedLight) {
+    return (combinedLight & 0xFFFFFFFFL)
+        | ((long) (Block.getIdFromBlock(barricade) & 0xFFFF) << 32)
+        | ((long) (Block.getIdFromBlock(sign) & 0xFFFF) << 48);
+  }
+
+  /**
+   * Where a mounted sign sits and how big it is drawn, worked out the same way for the straps and
+   * for the faces.
+   */
+  private static final class SignLayout {
+
+    private final float halfW;
+    private final float halfH;
+    private final float cx;
+    private final float cy;
+    private final float railCz;
+    private final float faceZ;
+
+    private SignLayout(AbstractBlockWorkZoneBarricade barricade, SignPanel panel, float topY) {
+      // Fit inside the mount box without distorting the sign: whichever axis runs out first sets
+      // the scale. Stretching to fill would misdraw every sign that is not the box's shape, which
+      // is most of them.
+      float maxWidth = (barricade.getRightUprightX() - barricade.getLeftUprightX())
+          * SIGN_MAX_WIDTH_FRACTION;
+      float maxHeight = topY * SIGN_MAX_HEIGHT_FRACTION;
+      float scale = Math.min(maxWidth / panel.width, maxHeight / panel.height);
+      halfW = panel.width * scale * 0.5f;
+      halfH = panel.height * scale * 0.5f;
+      cx = 0.5f * (barricade.getLeftUprightX() + barricade.getRightUprightX());
+      cy = topY * SIGN_CENTRE_FRACTION;
+      railCz = barricade.getRailCentreZ();
+      faceZ = railCz - barricade.getRailHalfZ() - SIGN_STANDOFF;
+    }
+  }
+
+  /**
+   * Draws the straps bolting a sign to the rails. Geometry only: the caller binds the white
+   * swatch and owns every GL state.
+   */
+  private static void drawSignHardware(AbstractBlockWorkZoneBarricade barricade, SignPanel panel,
+      float topY, int combinedLight) {
+    SignLayout at = new SignLayout(barricade, panel, topY);
+    int sky = (combinedLight >> 16) & 0xFFFF;
+    int blockLight = combinedLight & 0xFFFF;
 
     // The straps bolting it to the rails, spanning the sign's own height. They start BEHIND the
     // sign's rear face rather than at its front one: a strap that reaches the front runs straight
     // down the middle of the legend.
     List<RenderHelper.Box> hardware = new ArrayList<>();
-    for (float sx : new float[]{cx - halfW * 0.6f, cx + halfW * 0.6f}) {
+    for (float sx : new float[]{at.cx - at.halfW * 0.6f, at.cx + at.halfW * 0.6f}) {
       hardware.add(new RenderHelper.Box(
-          new float[]{sx - 0.3f, cy - halfH, faceZ + SIGN_THICKNESS},
-          new float[]{sx + 0.3f, cy + halfH, railCz + barricade.getRailHalfZ()}));
+          new float[]{sx - 0.3f, at.cy - at.halfH, at.faceZ + SIGN_THICKNESS},
+          new float[]{sx + 0.3f, at.cy + at.halfH, at.railCz + barricade.getRailHalfZ()}));
     }
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(hardware, buf, COL_HARDWARE[0], COL_HARDWARE[1],
         COL_HARDWARE[2], COL_HARDWARE[3], 0, 0, 0, sky, blockLight);
     tess.draw();
+  }
 
-    // The face itself, both sides, off the block atlas.
-    Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+  /**
+   * Draws a sign's front and rear faces. Geometry only: the caller binds the block atlas and owns
+   * every GL state.
+   */
+  private static void drawSignFace(AbstractBlockWorkZoneBarricade barricade, SignPanel panel,
+      float topY, int combinedLight) {
+    SignLayout at = new SignLayout(barricade, panel, topY);
+    int sky = (combinedLight >> 16) & 0xFFFF;
+    int blockLight = combinedLight & 0xFFFF;
+
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
     TextureAtlasSprite sprite = panel.sprite;
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    quad(buf, cx - halfW, cx + halfW, cy - halfH, cy + halfH, faceZ, sprite, false, sky,
-        blockLight);
-    quad(buf, cx - halfW, cx + halfW, cy - halfH, cy + halfH, faceZ + SIGN_THICKNESS, sprite, true,
-        sky, blockLight);
+    quad(buf, at.cx - at.halfW, at.cx + at.halfW, at.cy - at.halfH, at.cy + at.halfH, at.faceZ,
+        sprite, false, sky, blockLight);
+    quad(buf, at.cx - at.halfW, at.cx + at.halfW, at.cy - at.halfH, at.cy + at.halfH,
+        at.faceZ + SIGN_THICKNESS, sprite, true, sky, blockLight);
     tess.draw();
   }
 
@@ -280,66 +416,63 @@ public class TileEntityBarricadeRenderer
   }
 
   /**
-   * Draws the warning lights, and their glow when lit.
+   * Draws the warning lights, and their glow when lit. The bodies and lenses come from one shared
+   * list per look; the glow is drawn live.
    *
-   * @param te           the barricade's tile entity
-   * @param barricade    the barricade block, which knows where its uprights are
-   * @param flashers     which ends carry a light
-   * @param topY         the height of the barricade's uprights
-   * @param partialTicks the partial tick
-   * @param sky          the sky light
-   * @param blockLight   the block light
+   * @param te            the barricade's tile entity
+   * @param barricade     the barricade block, which knows where its uprights are
+   * @param block         the same block, for the key
+   * @param flashers      which ends carry a light
+   * @param topY          the height of the barricade's uprights
+   * @param partialTicks  the partial tick
+   * @param combinedLight the combined light
    */
   private void renderLamps(TileEntityBarricade te, AbstractBlockWorkZoneBarricade barricade,
-      BarricadeFlashers flashers, float topY, float partialTicks, int sky, int blockLight) {
-    List<Float> centres = new ArrayList<>();
-    if (flashers.hasLeft()) {
-      centres.add(barricade.getLeftUprightX());
-    }
-    if (flashers.hasRight()) {
-      centres.add(barricade.getRightUprightX());
-    }
-
-    float railCz = barricade.getRailCentreZ();
-    List<RenderHelper.Box> bodies = new ArrayList<>();
-    List<RenderHelper.Box> lenses = new ArrayList<>();
-    for (float cx : centres) {
-      bodies.add(new RenderHelper.Box(
-          new float[]{cx - LAMP_HALF, topY, railCz - LAMP_HALF},
-          new float[]{cx + LAMP_HALF, topY + LAMP_HEIGHT, railCz + LAMP_HALF}));
-      lenses.add(new RenderHelper.Box(
-          new float[]{cx - LENS_RADIUS, topY + LAMP_HEIGHT, railCz - LENS_RADIUS * 0.55f},
-          new float[]{cx + LENS_RADIUS, topY + LAMP_HEIGHT + LENS_RADIUS * 1.6f,
-              railCz + LENS_RADIUS * 0.55f}));
-    }
-    if (bodies.isEmpty()) {
+      Block block, BarricadeFlashers flashers, float topY, float partialTicks,
+      int combinedLight) {
+    if (!flashers.hasLeft() && !flashers.hasRight()) {
       return;
     }
-
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(bodies, buf, COL_LAMP_BODY[0], COL_LAMP_BODY[1],
-        COL_LAMP_BODY[2], COL_LAMP_BODY[3], 0, 0, 0, sky, blockLight);
-    tess.draw();
 
     long millis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks) + te.getStrobeOffset();
     float intensity = pulse(millis);
     boolean lit = intensity > 0f && CsmConfig.isStrobeEffectEnabled();
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(lenses, buf, COL_LENS[0], COL_LENS[1], COL_LENS[2],
-        COL_LENS[3], 0, 0, 0, lit ? LIGHTMAP_FULLBRIGHT : sky,
-        lit ? LIGHTMAP_FULLBRIGHT : blockLight);
-    tess.draw();
+    // The white swatch is bound by the caller.
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawLamps(barricade, flashers, topY, lit, combinedLight);
+    } else {
+      long key = lampKey(block, flashers, lit, combinedLight);
+      int list = LAMP_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = LAMP_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawLamps(barricade, flashers, topY, lit, combinedLight);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+        // A direct draw resets the colour cache after its colour array; a replay does not.
+        GlStateManager.resetColor();
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawLamps(barricade, flashers, topY, lit, combinedLight);
+      }
+    }
 
     if (!lit) {
       return;
     }
+    List<RenderHelper.Box> lenses = new ArrayList<>(2);
+    addLenses(lenses, barricade, flashers, topY);
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
     GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
     GlStateManager.depthMask(false);
-    for (float[] layer : new float[][]{{0.7f, 0.34f}, {1.5f, 0.13f}}) {
-      List<RenderHelper.Box> halo = new ArrayList<>();
+    for (float[] layer : HALO_LAYERS) {
+      List<RenderHelper.Box> halo = new ArrayList<>(lenses.size());
       for (RenderHelper.Box box : lenses) {
         float pad = LENS_RADIUS * layer[0];
         halo.add(new RenderHelper.Box(
@@ -354,6 +487,83 @@ public class TileEntityBarricadeRenderer
     GlStateManager.depthMask(true);
     GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
         GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+  }
+
+  /**
+   * Packs everything the light bodies and lenses depend on. Facing and the road settle are the
+   * matrix the list is replayed under.
+   *
+   * <pre>
+   *  bits  0-31  combined light, as getCombinedLight returns it (sky in the high half)
+   *  bits 32-47  barricade block id (uprights, rail and height)
+   *  bits 48-49  flashers ordinal
+   *  bit  50     lit (the lenses fullbright rather than world lit)
+   * </pre>
+   */
+  private static long lampKey(Block barricade, BarricadeFlashers flashers, boolean lit,
+      int combinedLight) {
+    return (combinedLight & 0xFFFFFFFFL)
+        | ((long) (Block.getIdFromBlock(barricade) & 0xFFFF) << 32)
+        | ((long) (flashers.ordinal() & 0x3) << 48)
+        | ((lit ? 1L : 0L) << 50);
+  }
+
+  /**
+   * Draws the light bodies, then their lenses, in one draw: both opaque and in one texture, in
+   * the order they were once drawn in two. Geometry only: the caller binds the white swatch and
+   * owns every GL state.
+   */
+  private static void drawLamps(AbstractBlockWorkZoneBarricade barricade,
+      BarricadeFlashers flashers, float topY, boolean lit, int combinedLight) {
+    int sky = (combinedLight >> 16) & 0xFFFF;
+    int blockLight = combinedLight & 0xFFFF;
+    float railCz = barricade.getRailCentreZ();
+    List<RenderHelper.Box> bodies = new ArrayList<>(2);
+    if (flashers.hasLeft()) {
+      addBody(bodies, barricade.getLeftUprightX(), topY, railCz);
+    }
+    if (flashers.hasRight()) {
+      addBody(bodies, barricade.getRightUprightX(), topY, railCz);
+    }
+    List<RenderHelper.Box> lenses = new ArrayList<>(2);
+    addLenses(lenses, barricade, flashers, topY);
+
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(bodies, buf, COL_LAMP_BODY[0], COL_LAMP_BODY[1],
+        COL_LAMP_BODY[2], COL_LAMP_BODY[3], 0, 0, 0, sky, blockLight);
+    RenderHelper.addBoxesToBufferLit(lenses, buf, COL_LENS[0], COL_LENS[1], COL_LENS[2],
+        COL_LENS[3], 0, 0, 0, lit ? LIGHTMAP_FULLBRIGHT : sky,
+        lit ? LIGHTMAP_FULLBRIGHT : blockLight);
+    tess.draw();
+  }
+
+  /** Adds the body of the light on the upright at {@code cx}. */
+  private static void addBody(List<RenderHelper.Box> out, float cx, float topY, float railCz) {
+    out.add(new RenderHelper.Box(
+        new float[]{cx - LAMP_HALF, topY, railCz - LAMP_HALF},
+        new float[]{cx + LAMP_HALF, topY + LAMP_HEIGHT, railCz + LAMP_HALF}));
+  }
+
+  /** Adds the lens of each light the barricade carries, left first. */
+  private static void addLenses(List<RenderHelper.Box> out,
+      AbstractBlockWorkZoneBarricade barricade, BarricadeFlashers flashers, float topY) {
+    float railCz = barricade.getRailCentreZ();
+    if (flashers.hasLeft()) {
+      addLens(out, barricade.getLeftUprightX(), topY, railCz);
+    }
+    if (flashers.hasRight()) {
+      addLens(out, barricade.getRightUprightX(), topY, railCz);
+    }
+  }
+
+  /** Adds the lens above the light on the upright at {@code cx}. */
+  private static void addLens(List<RenderHelper.Box> out, float cx, float topY, float railCz) {
+    out.add(new RenderHelper.Box(
+        new float[]{cx - LENS_RADIUS, topY + LAMP_HEIGHT, railCz - LENS_RADIUS * 0.55f},
+        new float[]{cx + LENS_RADIUS, topY + LAMP_HEIGHT + LENS_RADIUS * 1.6f,
+            railCz + LENS_RADIUS * 0.55f}));
   }
 
   /**
@@ -486,6 +696,35 @@ public class TileEntityBarricadeRenderer
       minZ = Math.min(minZ, vz);
     }
     return new float[]{minX, maxX, minY, maxY, minZ};
+  }
+
+  /**
+   * Forgets every sign panel read so far, and the sign lists compiled from them. Run on every
+   * texture stitch, where a resource reload replaces the sprites a panel holds (and may replace
+   * the model its size was read from), and on disconnect; on the client thread, which owns the GL
+   * context, in both cases.
+   */
+  public static void clearSignPanels() {
+    SIGN_PANELS.clear();
+    SIGN_HARDWARE_LISTS.clear();
+    SIGN_FACE_LISTS.clear();
+  }
+
+  /**
+   * Clears the sign panels whenever a texture atlas is stitched: F3+T, a resource pack change, or
+   * anything else that reloads resources. Registered from the Roads client proxy.
+   */
+  public static final class Events {
+
+    /**
+     * Clears the sign panels once an atlas has been stitched.
+     *
+     * @param event the stitch event
+     */
+    @SubscribeEvent
+    public void onTextureStitch(TextureStitchEvent.Post event) {
+      clearSignPanels();
+    }
   }
 
   /**

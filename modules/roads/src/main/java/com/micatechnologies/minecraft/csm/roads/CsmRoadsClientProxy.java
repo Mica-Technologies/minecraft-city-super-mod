@@ -100,6 +100,9 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityBarricade.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityBarricadeRenderer());
+    // The sign panels it reads hold atlas sprites, which a resource reload replaces.
+    net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityBarricadeRenderer.Events());
 
     // The arrow board draws its own mast, panel and animated lamp grid.
     ClientRegistry.bindTileEntitySpecialRenderer(

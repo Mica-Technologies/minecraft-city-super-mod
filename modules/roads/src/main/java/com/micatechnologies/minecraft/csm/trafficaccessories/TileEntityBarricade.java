@@ -35,6 +35,19 @@ public class TileEntityBarricade extends AbstractTileEntity {
   private ResourceLocation sign;
 
   /**
+   * The block {@link #sign} names, once {@link #signBlockResolved} says it has been looked up.
+   *
+   * <p>The renderer asks for it every frame, and a registry lookup by name is a hash of the name
+   * each time. The registry does not change once the game has loaded, so the answer only changes
+   * when {@link #sign} does, which is where both fields are reset.</p>
+   */
+  @Nullable
+  private Block signBlock;
+
+  /** Whether {@link #signBlock} holds the lookup for the current {@link #sign}. */
+  private boolean signBlockResolved;
+
+  /**
    * Where in its own flash cycle this barricade starts, in milliseconds.
    *
    * <p>Deliberately not persisted, and deliberately random: the lights along a real closure are
@@ -85,6 +98,7 @@ public class TileEntityBarricade extends AbstractTileEntity {
    */
   public void setSign(@Nullable ResourceLocation sign) {
     this.sign = sign;
+    this.signBlockResolved = false;
   }
 
   /**
@@ -96,13 +110,21 @@ public class TileEntityBarricade extends AbstractTileEntity {
    */
   @Nullable
   public Block getSignBlock() {
-    if (sign == null) {
-      return null;
+    if (signBlockResolved) {
+      return signBlock;
     }
-    Block block = Block.REGISTRY.getObject(sign);
-    // The registry answers with air rather than null for a name it does not know, which is what
-    // a sign removed from the mod since this barricade was placed would look like.
-    return block == null || block == net.minecraft.init.Blocks.AIR ? null : block;
+    Block block = null;
+    if (sign != null) {
+      block = Block.REGISTRY.getObject(sign);
+      // The registry answers with air rather than null for a name it does not know, which is
+      // what a sign removed from the mod since this barricade was placed would look like.
+      if (block == net.minecraft.init.Blocks.AIR) {
+        block = null;
+      }
+    }
+    signBlock = block;
+    signBlockResolved = true;
+    return block;
   }
 
   /**
@@ -121,6 +143,7 @@ public class TileEntityBarricade extends AbstractTileEntity {
     flashers = BarricadeFlashers.fromOrdinal(compound.getInteger(NBT_FLASHERS));
     String raw = compound.getString(NBT_SIGN);
     sign = raw == null || raw.isEmpty() ? null : new ResourceLocation(raw);
+    signBlockResolved = false;
   }
 
   @Override
