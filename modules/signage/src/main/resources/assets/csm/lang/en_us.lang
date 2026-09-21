@@ -24,6 +24,7 @@ gui.csm.adboard.category.legal=Legal
 gui.csm.adboard.category.services=Services
 gui.csm.adboard.category.tech=Technology
 gui.csm.adboard.category.travel=Travel
+gui.csm.adboard.category.vintage=Vintage
 gui.csm.adboard.category=Category
 gui.csm.adboard.fit.contain=Whole ad
 gui.csm.adboard.fit.cover=Fill (crop)

@@ -134,6 +134,7 @@ dev-env-utils/scripts/_*_out/
 # FHWA Standard Highway Signs drawings, fetched on demand by shs_signs.py (8 MB a chapter).
 dev-env-utils/scripts/_shs_cache/
 dev-env-utils/scripts/_font_cache/
+dev-env-utils/scripts/_vintage_cache/
 
 # Playwright MCP server session logs.
 .playwright-mcp/
