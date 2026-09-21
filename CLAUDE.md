@@ -446,6 +446,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_pv_lens_atlas.py` -- the programmable-visibility lens atlas (`lights/atlas_pv.png`) from the
   light atlas: an edge-preserving smoothing that removes the LED dot texture but keeps legends and
   the lens rim crisp and never pushes colour past the disc's alpha; `--check` fails on drift
+- `gen_ads.py` -- the parody advertisements the Signage & Advertising boards show: invented
+  brands only, each drawn as SVG (illustrations in `ad_art.py`, text measured with the same OFL
+  fonts resvg renders it with, fetched into the gitignored `_font_cache/`) in four shapes -- portrait
+  2:3, square, poster 2:1, bulletin 7:2 -- laid out per shape rather than cropped, written as
+  256-colour PNGs plus the `ads/parody.json` index `AdLibrary` reads; `--sheet` makes the review
+  contact sheet, `--check` fails on drift
 - `gen_decorative_lighting.py` -- the decorative pendant and wall-sconce family: lathes the OBJ
   geometry for 11 models, draws the shared metal/shade/lens swatch textures, and emits all 33
   blockstates plus lang and tab-registration fragments from one catalogue, so an id cannot drift
