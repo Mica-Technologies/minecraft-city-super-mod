@@ -1,0 +1,58 @@
+{
+  "textures": {
+    "sheet": "csm:blocks/lifesafety/exit_signs/white",
+    "particle": "csm:blocks/lifesafety/exit_signs/white"
+  },
+  "elements": [
+    {
+      "from": [
+        1.5,
+        4.5,
+        7
+      ],
+      "to": [
+        14.5,
+        15,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.5,
+            5.25,
+            13,
+            10.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            12,
+            10.5,
+            16,
+            14.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            12,
+            10.5,
+            16,
+            14.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            6.5,
+            5.25,
+            13,
+            10.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ]
+}

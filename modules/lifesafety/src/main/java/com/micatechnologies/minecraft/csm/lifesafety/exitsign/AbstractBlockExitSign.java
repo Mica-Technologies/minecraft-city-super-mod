@@ -66,11 +66,6 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
   /** The light an emergency head throws while the sign is on battery. */
   private static final int HEADS_LIGHT = 15;
 
-  private static final AxisAlignedBB WALL_BOX =
-      new AxisAlignedBB(0.0, 0.25, 0.8125, 1.0, 0.9375, 1.0);
-  private static final AxisAlignedBB HUNG_BOX =
-      new AxisAlignedBB(0.0, 0.25, 0.40625, 1.0, 1.0, 0.59375);
-
   protected AbstractBlockExitSign() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, false);
     IBlockState base = this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH);
@@ -288,13 +283,66 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
 
   // --- shape --------------------------------------------------------------------------------
 
+  /** The face's bottom edge in model pixels; the face is 10.5 px tall. */
+  protected double getFaceBottom() {
+    return 4.5;
+  }
+
+  /** Whether emergency heads sit above the top corners (true) or off the ends (false). */
+  protected boolean hasHeadsOnTop() {
+    return false;
+  }
+
   /**
-   * Drawn facing north, as every rotatable block's box is; the base class turns it to the facing.
-   * A wall-mounted sign sits against the block's south face; a hung one down its middle.
+   * The fixture's outline, as the generator draws it (gen_exit_signs.py): facing north, as every
+   * rotatable block's box is, and turned to the facing by the base class. A wall-mounted sign
+   * sits against the block's south face, a hung one down its middle with its canopy up to the
+   * ceiling; emergency heads widen it past the block's ends or raise it above the top corners.
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return getConfig(source, pos).getMount() == Mount.WALL ? WALL_BOX : HUNG_BOX;
+    ExitSignConfig config = getConfig(source, pos);
+    double bottom = getFaceBottom();
+    double top = bottom + FACE_HEIGHT;
+    boolean wall = config.getMount() == Mount.WALL;
+    double minX = 0;
+    double maxX = 16;
+    if (config.getHeads() != Heads.NONE) {
+      if (hasHeadsOnTop()) {
+        top += HEAD_SIZE;
+      } else {
+        minX -= HEAD_SIZE;
+        maxX += HEAD_SIZE;
+      }
+    }
+    if (config.getMount() == Mount.CEILING) {
+      top = 16;
+    }
+    return new AxisAlignedBB(minX / 16, bottom / 16, (wall ? 13.25 : 6.25) / 16, maxX / 16,
+        top / 16, (wall ? 16 : 9.75) / 16);
+  }
+
+  /** The face's height in model pixels. */
+  private static final double FACE_HEIGHT = 10.5;
+
+  /** How far a lamp head and its arm stand off the sign, in model pixels. */
+  private static final double HEAD_SIZE = 4;
+
+  /**
+   * The item model a stack with {@code config} shows: one per legend, letter colour, housing and
+   * heads, written by gen_exit_signs.py under {@code models/item/}.
+   */
+  public String getItemModelName(ExitSignConfig config) {
+    ExitSignConfig c = getSpec().clamp(config);
+    return getBlockRegistryName() + "_" + c.getLegend().getName() + "_"
+        + c.getLetters().getName() + "_" + c.getHousing().getName() + "_"
+        + c.getHeads().getName();
+  }
+
+  /** Points the item at the icon for its stack's setup, so every preset looks like itself. */
+  @Override
+  public void registerModels() {
+    ExitSignItemModels.register(this);
   }
 
   @Override

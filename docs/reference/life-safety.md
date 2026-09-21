@@ -2,7 +2,7 @@
 
 Fire alarm horns, strobes, pull stations, panels and exit signage.
 
-!!! info "155 blocks in this tab"
+!!! info "158 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -47,6 +47,7 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 | Exit Sign (Green Man, Right Arrow) | `csm:greenmanexitsignrightarrow` |  |  |  |  |
 | Exit Sign (Green Man, Up Left Arrow) | `csm:greenmanexitsignupleftarrow` |  |  |  |  |
 | Exit Sign (Green Man, Up Right Arrow) | `csm:greenmanexitsignuprightarrow` |  |  |  |  |
+| Exit Sign / Emergency Light Combo | `csm:exit_sign_combo_compact` | 2 | 10 | pickaxe | 1 |
 | FCI Pull Station | `csm:firealarmfcipull` | 2 | 10 | pickaxe | 1 |
 | Fire Alarm Beacon (Blue Lens) | `csm:firealarmbeaconblue` | 2 | 10 | pickaxe | 1 |
 | Fire Alarm Beacon (Clear Lens) | `csm:firealarmbeaconclear` | 2 | 10 | pickaxe | 1 |
@@ -140,6 +141,8 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 | System Sensor SpectrAlert Advance White/Ceiling (Horn Strobe) | `csm:firealarmsystemsensoradvanceceilinghornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Classic Red (Horn Strobe) | `csm:firealarmsystemsensorclassichornstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Classic White (Horn Strobe) | `csm:firealarmsystemsensorclassichornstrobewhite` | 2 | 10 | pickaxe | 1 |
+| Traditional Exit Sign | `csm:exit_sign_traditional_flat` | 2 | 10 | pickaxe | 1 |
+| Traditional Exit Sign (Rounded) | `csm:exit_sign_traditional_rounded` | 2 | 10 | pickaxe | 1 |
 | Wheelock 7002T Red (Horn Strobe) | `csm:firealarmwheelock7002tred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS Red (Horn Strobe) | `csm:firealarmwheelockasred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS White (Horn Strobe) | `csm:firealarmwheelockaswhite` | 2 | 10 | pickaxe | 1 |
