@@ -81,6 +81,7 @@ public class DynamicStreetSignGui extends GuiScreen {
   private static final int BTN_TEMPLATE = 43;
   private static final int BTN_COPY = 44;
   private static final int BTN_PASTE = 45;
+  private static final int BTN_BLADE_TURN = 46;
 
   private static final int FIELD_WIDTH = 240;
   private static final int BTN_HEIGHT = 18;
@@ -114,6 +115,7 @@ public class DynamicStreetSignGui extends GuiScreen {
   private int labelYBlockRow;
   private int labelYShieldRow;
   private int labelYBladeHint;
+  private int labelYBladeTurn;
 
   private GuiTextField prefixField;
   private GuiTextField nameField;
@@ -246,6 +248,18 @@ public class DynamicStreetSignGui extends GuiScreen {
     cityField = makeField(4, left, y, FIELD_WIDTH, StreetSignData.MAX_CITY_LENGTH,
         legend.getCityText());
     y += BTN_HEIGHT + 14;
+
+    // Which way this blade points. Only a post-top blade has a post to turn about, so the
+    // row is absent on the mounts where it would mean nothing. It sits in the shared rows
+    // rather than on one tab, which is what gives each blade its own.
+    if (data.getMountType().isPostTop()) {
+      labelYBladeTurn = y;
+      y += 10;
+      addContentBtn(new GuiButton(BTN_BLADE_TURN, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+      y += BTN_HEIGHT + 12;
+    } else {
+      labelYBladeTurn = -1;
+    }
 
     if (sharedStyle) {
       labelYTextScale = y;
@@ -531,6 +545,9 @@ public class DynamicStreetSignGui extends GuiScreen {
     drawScrolledString("Street Name", left + 38, labelYAffixRow, 0xAAAAAA);
     drawScrolledString("Suffix", left + FIELD_WIDTH - 44, labelYAffixRow, 0xAAAAAA);
     drawScrolledString("City / district line (optional)", left, labelYCityRow - 10, 0xAAAAAA);
+    if (labelYBladeTurn >= 0) {
+      drawScrolledString("Which way this blade points", left, labelYBladeTurn, 0xAAAAAA);
+    }
     if (currentTab == TAB_TEXT) {
       drawScrolledCenteredString(String.format("Text Size: %.2fx", data.getTextScale()),
           centerX, labelYTextScale + 5, 0xFFFFFF);
@@ -550,6 +567,9 @@ public class DynamicStreetSignGui extends GuiScreen {
   private void drawStyleTabLabels(int left, int y, int centerX) {
     for (GuiButton btn : buttonList) {
       switch (btn.id) {
+        case BTN_BLADE_TURN:
+          btn.displayString = "Points: " + activeLegend().getBladeTurnName();
+          break;
         case BTN_SIGN_COLOR:
           btn.displayString = data.getSignColor().getFriendlyName();
           break;
@@ -916,6 +936,9 @@ public class DynamicStreetSignGui extends GuiScreen {
         break;
 
       // --- Style tab ---
+      case BTN_BLADE_TURN:
+        activeLegend().cycleBladeTurn(isShiftKeyDown() ? -1 : 1);
+        break;
       case BTN_SIGN_COLOR:
         data.cycleSignColor();
         break;

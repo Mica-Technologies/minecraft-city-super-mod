@@ -128,13 +128,17 @@ public class TileEntityDynamicStreetSignRenderer
    * How far in front of the post's axis a blade's panel is centred, measured where it
    * ends up -- after {@link #POST_TOP_SCALE}.
    *
-   * <p>The post's bars run from z 0.5 to 3.5 about an axis at z 2, and the panel is
-   * {@code SIGN_DEPTH * POST_TOP_SCALE} thick, so this is the least that keeps the post
-   * from standing through the blade. It does not need to be more: the blade's two faces
-   * straddle the post (see the mirror in {@code renderSign}), so the post between them is
-   * what tells one from the other, exactly as it is on a back-to-back pair of signs.</p>
+   * <p>The post's widest bar runs from z 0.5 to 3.5 about an axis at z 2, so its face is
+   * 1.5 out; the panel is {@code SIGN_DEPTH * POST_TOP_SCALE} thick, so a centre 1.785
+   * out puts the panel's back exactly on the post's face. This is a hair less than that,
+   * which tucks the back edge just inside the post: touching rather than standing off,
+   * and no two surfaces left coplanar to flicker against each other.</p>
+   *
+   * <p>It does not need to be more than enough to clear the post. The blade's two faces
+   * straddle it (see the mirror in {@code renderSign}), so the post between them is what
+   * tells one from the other, exactly as on a back-to-back pair of signs.</p>
    */
-  private static final float POST_BLADE_CLEARANCE = 1.95f;
+  private static final float POST_BLADE_CLEARANCE = 1.76f;
 
   /**
    * Where a post-top blade's panel is centred, in front of the post rather than on its
@@ -798,19 +802,17 @@ public class TileEntityDynamicStreetSignRenderer
     if (stateDirty && pos != null) {
       cleanupDisplayList(pos);
     }
-    renderAssembly(l, data, signColor, legendR, legendG, legendB, legendTextColor,
-        farLod, pos, combinedLight, 0L);
-    if (data.getMountType().isPostTop() && l.lower != null) {
-      // The crossing blade: the same draw, a quarter turn about the post's axis. It is a
-      // separate pass rather than more geometry in the first because a display list is
-      // compiled once and replayed, and these two differ by a matrix, not by vertices.
-      GlStateManager.pushMatrix();
-      GlStateManager.translate(POST_X, 0.0f, POST_Z);
-      GlStateManager.rotate(90.0f, 0.0f, 1.0f, 0.0f);
-      GlStateManager.translate(-POST_X, 0.0f, -POST_Z);
-      renderAssembly(l.lower, data, signColor, legendR, legendG, legendB, legendTextColor,
-          farLod, pos, combinedLight, CROSS_BLADE_KEY);
-      GlStateManager.popMatrix();
+    final boolean postTop = data.getMountType().isPostTop();
+    // Each blade of a post-top pair points where its own legend says, in eighths of a
+    // turn from the block's facing, so a pair can cross at any of the eight angles. The
+    // second blade is a separate pass rather than more geometry in the first because a
+    // display list is compiled once and replayed, and the blades differ by a matrix, not
+    // by vertices -- which is also why the turn costs nothing: it is outside the list.
+    drawBlade(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod, pos,
+        combinedLight, 0L, postTop ? data.getBladeTurn() : 0);
+    if (postTop && l.lower != null) {
+      drawBlade(l.lower, data, signColor, legendR, legendG, legendB, legendTextColor,
+          farLod, pos, combinedLight, CROSS_BLADE_KEY, data.getLowerBlade().getBladeTurn());
     }
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -820,6 +822,32 @@ public class TileEntityDynamicStreetSignRenderer
     GlStateManager.disableBlend();
   }
 
+  /**
+   * One blade, turned to the angle its legend asks for and then drawn.
+   *
+   * <p>The turn is about the POST, not the block's centre: that is what the blades are bolted
+   * to, and it is the one thing on the assembly that must NOT come round with them -- the
+   * post is the block's own model and stays where the sign pole below it is.</p>
+   *
+   * @param turn eighths of a turn from the block's facing; 0 draws where the block faces
+   */
+  private void drawBlade(Layout l, StreetSignData data, GuideSignColor signColor,
+      float legendR, float legendG, float legendB, int legendTextColor, boolean farLod,
+      BlockPos pos, int combinedLight, long keyBias, int turn) {
+    final boolean turned = turn != 0;
+    if (turned) {
+      GlStateManager.pushMatrix();
+      GlStateManager.translate(POST_X, 0.0f, POST_Z);
+      GlStateManager.rotate(turn * (float) StreetSignLegend.DEGREES_PER_TURN,
+          0.0f, 1.0f, 0.0f);
+      GlStateManager.translate(-POST_X, 0.0f, -POST_Z);
+    }
+    renderAssembly(l, data, signColor, legendR, legendG, legendB, legendTextColor,
+        farLod, pos, combinedLight, keyBias);
+    if (turned) {
+      GlStateManager.popMatrix();
+    }
+  }
   /**
    * One blade and its hardware, drawn where the model-view matrix currently is. Split out of
    * {@link #renderSign} so a post-top pair's crossing blade can be the same draw under a
@@ -978,30 +1006,38 @@ public class TileEntityDynamicStreetSignRenderer
     final float midY = (top + bottom) / 2.0f;
     // Everything the bracket is made of lives BEHIND the panel, between its back and the
     // post: in front it would be hardware painted across the street's name.
-    final float backZ = POST_BLADE_Z + SIGN_DEPTH / 2.0f;
-    final float postBack = POST_Z + 1.9f;
+    //
+    // And it is symmetric about the post, because the blade is. The two faces straddle the
+    // post, so hardware that only reached the near one left the far face standing off the
+    // post with nothing filling the step -- a hair of daylight on exactly the sides with no
+    // bracket behind them. Mirroring the far edge about the post makes it reach both faces
+    // whatever POST_BLADE_CLEARANCE is set to.
+    final float nearZ = POST_BLADE_Z + SIGN_DEPTH / 2.0f;
+    final float farZ = 2.0f * POST_Z - nearZ;
     List<RenderHelper.Box> parts = new ArrayList<>();
     if (mount == StreetSignMount.POST_TOP_CROSS) {
-      // A collar round the post at the blade's height, reaching forward to take the panel.
+      // A collar round the post at the blade's height, reaching out to take both faces.
       parts.add(new RenderHelper.Box(
-          new float[]{POST_X - BRACKET_PAD, bottom - BRACKET_PAD, backZ},
-          new float[]{POST_X + BRACKET_PAD, top + BRACKET_PAD, postBack}));
+          new float[]{POST_X - BRACKET_PAD, bottom - BRACKET_PAD, nearZ},
+          new float[]{POST_X + BRACKET_PAD, top + BRACKET_PAD, farZ}));
     } else {
-      // A plate the width of the bracket across the panel's back, and the saddle that
-      // carries it round the post.
-      parts.add(new RenderHelper.Box(
-          new float[]{POST_X - BRACKET_REACH, bottom, backZ},
-          new float[]{POST_X + BRACKET_REACH, top, backZ + BRACKET_THICK}));
-      parts.add(new RenderHelper.Box(
-          new float[]{POST_X - BRACKET_PAD, midY - BRACKET_PAD, backZ + BRACKET_THICK},
-          new float[]{POST_X + BRACKET_PAD, midY + BRACKET_PAD, postBack}));
-      for (float bolt : new float[]{-BRACKET_REACH + BRACKET_PAD,
-          BRACKET_REACH - BRACKET_PAD}) {
+      // A plate the width of the bracket across each face's back, and the saddle between
+      // them that carries the pair round the post.
+      for (float[] plate : new float[][]{{nearZ, nearZ + BRACKET_THICK},
+          {farZ - BRACKET_THICK, farZ}}) {
         parts.add(new RenderHelper.Box(
-            new float[]{POST_X + bolt - 0.22f, midY - 0.22f, backZ + BRACKET_THICK},
-            new float[]{POST_X + bolt + 0.22f, midY + 0.22f,
-                backZ + BRACKET_THICK + 0.3f}));
+            new float[]{POST_X - BRACKET_REACH, bottom, plate[0]},
+            new float[]{POST_X + BRACKET_REACH, top, plate[1]}));
+        for (float bolt : new float[]{-BRACKET_REACH + BRACKET_PAD,
+            BRACKET_REACH - BRACKET_PAD}) {
+          parts.add(new RenderHelper.Box(
+              new float[]{POST_X + bolt - 0.22f, midY - 0.22f, plate[0]},
+              new float[]{POST_X + bolt + 0.22f, midY + 0.22f, plate[1]}));
+        }
       }
+      parts.add(new RenderHelper.Box(
+          new float[]{POST_X - BRACKET_PAD, midY - BRACKET_PAD, nearZ + BRACKET_THICK},
+          new float[]{POST_X + BRACKET_PAD, midY + BRACKET_PAD, farZ - BRACKET_THICK}));
     }
     drawMetalwork(parts);
   }

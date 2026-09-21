@@ -30,6 +30,30 @@ public class StreetSignLegend {
 
   // --- Legend ------------------------------------------------------------------------
   /** Cardinal prefix drawn small and raised ahead of the name, e.g. "W". */
+  /** How many steps there are round the compass, and how many degrees each one is. */
+  public static final int TURNS = 8;
+  public static final int DEGREES_PER_TURN = 360 / TURNS;
+
+  /**
+   * Which way this blade points, in eighths of a turn from the way the block faces: 0 is
+   * along the block's facing, 2 a quarter turn, and the odd values the diagonals.
+   *
+   * <p>Only a post-top blade uses it. A hanging or flat blade is one panel on one piece of
+   * hardware and has nothing to turn about; a post-top pair is two blades bolted round a
+   * post, and which way each of them points is the whole point of the mount. Each blade
+   * carries its own, so a pair can cross at any of the eight angles rather than only at a
+   * right angle -- a fork or a skewed junction is signed the way it really runs.</p>
+   *
+   * <p>The post does not turn with them: it is the block's own model, and it is what the
+   * blades are anchored to.</p>
+   *
+   * <p>Boxed and left null for a blade pointing straight ahead, so that Gson omits it and
+   * a document that never turned a blade -- every hanging blade there has ever been --
+   * writes back exactly the keys it was saved with. {@code StreetSignDataTest} holds that
+   * invariant, and it is the same trick {@code lowerBlade} uses for the second blade.</p>
+   */
+  private Integer bladeTurn;
+
   private String prefix = "";
   private String streetName = "MAIN";
   /** Street type drawn small and raised after the name, e.g. "ST", "BLVD". */
@@ -57,6 +81,26 @@ public class StreetSignLegend {
   }
 
   // ----------------------------------------------------------------------- legend ----
+
+  /** How many eighths of a turn from the block's facing this blade points, 0 to 7. */
+  public int getBladeTurn() {
+    return bladeTurn == null ? 0 : ((bladeTurn % TURNS) + TURNS) % TURNS;
+  }
+
+  public void setBladeTurn(int turn) {
+    int wrapped = ((turn % TURNS) + TURNS) % TURNS;
+    this.bladeTurn = wrapped == 0 ? null : wrapped;
+  }
+
+  /** Steps the blade round one eighth of a turn, wrapping. */
+  public void cycleBladeTurn(int by) {
+    setBladeTurn(getBladeTurn() + by);
+  }
+
+  /** This blade's angle as the editor shows it. */
+  public String getBladeTurnName() {
+    return getBladeTurn() == 0 ? "Ahead" : (getBladeTurn() * DEGREES_PER_TURN) + "\u00b0";
+  }
 
   public String getPrefix() {
     return prefix == null ? "" : prefix;
