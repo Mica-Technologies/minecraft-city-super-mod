@@ -1,8 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractPoweredBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
@@ -29,9 +27,10 @@ import org.lwjgl.opengl.GL11;
  * light has two bulbs (left and right) that each get their own glow core, halo, and directional
  * light cone projecting forward.
  *
- * <p>The glow is the same for every light of a block class: the bulb positions come from the class,
- * the colours are constant and the lightmap is fullbright. So it is compiled once per class into a
- * list shared by every light ({@link CsmSharedDisplayLists}) and replayed under each light's own
+ * <p>The glow is the same for every light of a block class and bulb layout: the bulb positions come
+ * from the block ({@link IEmergencyLightBlock#getBulbs}, one layout per
+ * {@link IEmergencyLightBlock#getGlowVariant variant}), the colours are constant and the lightmap is
+ * fullbright. So it is compiled once per class and variant into a list shared by every light ({@link CsmSharedDisplayLists}) and replayed under each light's own
  * facing transform. Drawn per frame it was 46 {@code Tessellator.draw} calls a light, 20-30 us; the
  * quads are additive with the depth mask off, so their order never mattered and one draw holds
  * both bulbs. {@link CsmRenderToggles#sharedBakesPerFrame} draws it per frame, for comparison.
@@ -63,16 +62,24 @@ public class TileEntityEmergencyLightRenderer
   private static final float[] CONE_Z_OFFSET;
   private static final float[] CONE_HALF_DIM_FACTOR;
   private static final float[] CONE_ALPHA;
+  // The narrow cone (IEmergencyLightBlock#hasNarrowCone): a head beside something it must not
+  // wash out, such as an exit sign's face, spreads to less than half the width.
+  private static final float NARROW_START_PAD = 0.05f;
+  private static final float NARROW_END_PAD = 1.0f;
+  private static final float[] NARROW_HALF_DIM_FACTOR;
 
   static {
     CONE_Z_OFFSET = new float[CONE_SEGMENTS + 1];
     CONE_HALF_DIM_FACTOR = new float[CONE_SEGMENTS + 1];
+    NARROW_HALF_DIM_FACTOR = new float[CONE_SEGMENTS + 1];
     CONE_ALPHA = new float[CONE_SEGMENTS + 1];
     for (int i = 0; i <= CONE_SEGMENTS; i++) {
       float t = (float) i / CONE_SEGMENTS;
       CONE_Z_OFFSET[i] = -0.03f - t * CONE_MAX_PROJECTION_DIST;
       float pad = CONE_START_PAD + t * (CONE_END_PAD - CONE_START_PAD);
       CONE_HALF_DIM_FACTOR[i] = 0.5f + pad;
+      NARROW_HALF_DIM_FACTOR[i] = 0.5f + NARROW_START_PAD
+          + t * (NARROW_END_PAD - NARROW_START_PAD);
       CONE_ALPHA[i] = CONE_START_ALPHA + t * (CONE_END_ALPHA - CONE_START_ALPHA);
     }
   }
@@ -90,15 +97,13 @@ public class TileEntityEmergencyLightRenderer
     IBlockState state = te.getWorld().getBlockState(te.getPos());
     Block block = state.getBlock();
     if (!(block instanceof IEmergencyLightBlock)) return;
+    IEmergencyLightBlock lightBlock = (IEmergencyLightBlock) block;
 
     // Emergency lights are active when NOT powered (backup mode)
-    if (!state.getPropertyKeys().contains(AbstractPoweredBlockRotatableNSEWUD.POWERED)) return;
-    if (state.getValue(AbstractPoweredBlockRotatableNSEWUD.POWERED)) return;
-
-    if (!state.getPropertyKeys().contains(AbstractBlockRotatableNSEWUD.FACING)) return;
-    EnumFacing facing = state.getValue(AbstractBlockRotatableNSEWUD.FACING);
-
-    IEmergencyLightBlock lightBlock = (IEmergencyLightBlock) block;
+    if (!lightBlock.isEmergencyLightActive(te.getWorld(), te.getPos(), state)) return;
+    EnumFacing facing = lightBlock.getEmergencyLightFacing(state);
+    float[][] bulbs = lightBlock.getBulbs(te.getWorld(), te.getPos(), state);
+    if (bulbs.length == 0) return;
 
     GlStateManager.pushMatrix();
     GlStateManager.translate((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
@@ -116,15 +121,17 @@ public class TileEntityEmergencyLightRenderer
     GlStateManager.disableLighting();
 
     if (CsmRenderToggles.sharedBakesPerFrame) {
-      drawGlow(lightBlock);
+      drawGlow(bulbs, lightBlock.hasNarrowCone());
     } else {
-      long key = Block.getIdFromBlock(block);
+      // one list per block class and bulb layout
+      long key = ((long) Block.getIdFromBlock(block) << 8)
+          | (lightBlock.getGlowVariant(te.getWorld(), te.getPos(), state) & 0xFF);
       int list = GLOW_LISTS.get(key);
       if (list == CsmDisplayListCache.NO_LIST) {
         list = GLOW_LISTS.allocate(key);
         if (list != CsmDisplayListCache.NO_LIST) {
           GL11.glNewList(list, GL11.GL_COMPILE);
-          drawGlow(lightBlock);
+          drawGlow(bulbs, lightBlock.hasNarrowCone());
           GL11.glEndList();
         }
       }
@@ -137,7 +144,7 @@ public class TileEntityEmergencyLightRenderer
         GlStateManager.resetColor();
       } else {
         // The driver refused a list name: draw directly rather than calling list 0.
-        drawGlow(lightBlock);
+        drawGlow(bulbs, lightBlock.hasNarrowCone());
       }
     }
 
@@ -159,13 +166,16 @@ public class TileEntityEmergencyLightRenderer
         .lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
   }
 
-  /** Draws both bulbs' glow in one draw call. Geometry only: the caller owns every GL state. */
-  private static void drawGlow(IEmergencyLightBlock lightBlock) {
+  /** Draws every bulb's glow in one draw call. Geometry only: the caller owns every GL state. */
+  private static void drawGlow(float[][] bulbs, boolean narrow) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    emitBulbGlow(buffer, lightBlock.getLeftBulbFrom(), lightBlock.getLeftBulbTo());
-    emitBulbGlow(buffer, lightBlock.getRightBulbFrom(), lightBlock.getRightBulbTo());
+    for (float[] bulb : bulbs) {
+      emitBulbGlow(buffer, new float[]{bulb[0], bulb[1], bulb[2]},
+          new float[]{bulb[3], bulb[4], bulb[5]},
+          narrow ? NARROW_HALF_DIM_FACTOR : CONE_HALF_DIM_FACTOR);
+    }
     tessellator.draw();
   }
 
@@ -173,7 +183,8 @@ public class TileEntityEmergencyLightRenderer
    * Emits the glow quads for a single bulb: front face core, side glow, halo, and a
    * forward-projected directional light cone.
    */
-  private static void emitBulbGlow(BufferBuilder buffer, float[] from, float[] to) {
+  private static void emitBulbGlow(BufferBuilder buffer, float[] from, float[] to,
+      float[] coneHalfDim) {
     // Convert model coordinates (0-16) to block-centered (-0.5 to 0.5)
     float minX = from[0] / 16f - 0.5f;
     float minY = from[1] / 16f - 0.5f;
@@ -248,10 +259,10 @@ public class TileEntityEmergencyLightRenderer
     for (int i = 0; i < CONE_SEGMENTS; i++) {
       float nearZ = quadZ + CONE_Z_OFFSET[i];
       float farZ = quadZ + CONE_Z_OFFSET[i + 1];
-      float nw = lensW * CONE_HALF_DIM_FACTOR[i];
-      float nh = lensH * CONE_HALF_DIM_FACTOR[i];
-      float fw = lensW * CONE_HALF_DIM_FACTOR[i + 1];
-      float fh = lensH * CONE_HALF_DIM_FACTOR[i + 1];
+      float nw = lensW * coneHalfDim[i];
+      float nh = lensH * coneHalfDim[i];
+      float fw = lensW * coneHalfDim[i + 1];
+      float fh = lensH * coneHalfDim[i + 1];
       float segAlpha = (CONE_ALPHA[i] + CONE_ALPHA[i + 1]) * 0.5f;
 
       // Left wall

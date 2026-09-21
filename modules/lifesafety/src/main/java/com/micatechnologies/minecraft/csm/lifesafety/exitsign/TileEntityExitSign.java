@@ -11,6 +11,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * Holds an exit sign's setup ({@link ExitSignConfig}). The block reads it in
@@ -57,6 +58,28 @@ public class TileEntityExitSign extends AbstractTileEntity {
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     return config.write(compound);
+  }
+
+  /**
+   * Rendered only while its emergency heads glow: heads fitted and the sign on battery (no
+   * mains-power bit in its metadata). Every other exit sign is baked into the chunk and never
+   * reaches the renderer.
+   */
+  @Override
+  public boolean shouldRenderInPass(int pass) {
+    if (pass != 0 || !(getBlockType() instanceof AbstractBlockExitSign)) {
+      return false;
+    }
+    AbstractBlockExitSign sign = (AbstractBlockExitSign) getBlockType();
+    return sign.getSpec().isMainsPowered() && (getBlockMetadata() & 4) == 0
+        && sign.getSpec().clamp(config).getHeads() != Heads.NONE;
+  }
+
+  /** Covers the heads' forward light cone, as the emergency lights' box does. */
+  @Override
+  public AxisAlignedBB getRenderBoundingBox() {
+    return new AxisAlignedBB(pos.getX() - 2.0, pos.getY() - 2.0, pos.getZ() - 2.0,
+        pos.getX() + 3.0, pos.getY() + 3.0, pos.getZ() + 3.0);
   }
 
   /** A client learns of a new setup here; its emergency heads may have changed its light. */

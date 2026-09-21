@@ -24,5 +24,9 @@ public class CsmLifeSafetyClientProxy extends CsmLifeSafetyCommonProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityEmergencyLight.class,
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityEmergencyLightRenderer());
+    // Exit signs with emergency heads glow like the emergency lights on battery
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.lifesafety.exitsign.TileEntityExitSign.class,
+        new com.micatechnologies.minecraft.csm.lifesafety.TileEntityEmergencyLightRenderer());
   }
 }
