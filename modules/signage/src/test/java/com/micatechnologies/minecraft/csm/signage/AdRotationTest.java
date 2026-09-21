@@ -76,6 +76,16 @@ class AdRotationTest {
   }
 
   @Test
+  void aTransitionEasesFromZeroToOneAndThenStays() {
+    assertEquals(0.0, AdTransition.progress(0), 1e-9);
+    assertEquals(0.5, AdTransition.progress(AdTransition.TICKS / 2.0), 1e-9);
+    assertEquals(1.0, AdTransition.progress(AdTransition.TICKS), 1e-9);
+    assertEquals(1.0, AdTransition.progress(5000), 1e-9);
+    assertTrue(AdTransition.progress(2) < AdTransition.progress(3));
+    assertEquals(AdTransition.CUT, AdTransition.fromOrdinal(7));
+  }
+
+  @Test
   void lightFollowsItsSetting() {
     assertFalse(AdLight.UNLIT.isLit(0.2F, true));
     assertTrue(AdLight.LIT.isLit(1F, false));

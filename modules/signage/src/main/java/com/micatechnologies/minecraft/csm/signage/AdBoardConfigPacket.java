@@ -24,13 +24,14 @@ public class AdBoardConfigPacket implements IMessage {
   int fit;
   int light;
   int back;
+  int transition;
 
   public AdBoardConfigPacket() {
   }
 
   public AdBoardConfigPacket(BlockPos clicked, int width, int height, AdBoardAlign align,
       String adId, AdRotation rotation, String category, int interval, AdFit fit,
-      AdLight light, AdBack back) {
+      AdLight light, AdBack back, AdTransition transition) {
     this.clicked = clicked;
     this.width = width;
     this.height = height;
@@ -42,6 +43,7 @@ public class AdBoardConfigPacket implements IMessage {
     this.fit = fit.ordinal();
     this.light = light.ordinal();
     this.back = back.ordinal();
+    this.transition = transition.ordinal();
   }
 
   @Override
@@ -57,6 +59,7 @@ public class AdBoardConfigPacket implements IMessage {
     fit = buf.readUnsignedByte();
     light = buf.readUnsignedByte();
     back = buf.readUnsignedByte();
+    transition = buf.readUnsignedByte();
   }
 
   @Override
@@ -72,6 +75,7 @@ public class AdBoardConfigPacket implements IMessage {
     buf.writeByte(fit);
     buf.writeByte(light);
     buf.writeByte(back);
+    buf.writeByte(transition);
   }
 
   private static void writeString(ByteBuf buf, String s) {

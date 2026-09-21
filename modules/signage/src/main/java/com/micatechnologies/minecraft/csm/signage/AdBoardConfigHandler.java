@@ -53,6 +53,7 @@ public class AdBoardConfigHandler implements IMessageHandler<AdBoardConfigPacket
     boolean cabinet = state.getBlock() instanceof AbstractBlockAdBoard
         && ((AbstractBlockAdBoard) state.getBlock()).kind().isCabinet();
     board.setBack(cabinet ? AdBack.fromOrdinal(message.back) : AdBack.NONE);
+    board.setTransition(AdTransition.fromOrdinal(message.transition));
 
     ITextComponent problem = AdBoards.resize(world, controller, player, message.width,
         message.height, AdBoardAlign.fromOrdinal(message.align));
