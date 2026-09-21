@@ -142,6 +142,12 @@ Each rule below exists because breaking it once produced a confident wrong answe
 - **Cache through `CsmDisplayListCache`,** and release a position from the tile entity's
   `invalidate()` and `onChunkUnload()`. `CsmClientLifecycleHandler` clears every cache on
   disconnect.
+- **Geometry that does not depend on the position goes in `CsmSharedDisplayLists`**, keyed on
+  the appearance fields packed into a `long`: one list per look, replayed under every copy's own
+  transform. A list shared between positions must not bake a position's light into its vertices,
+  so the geometry is fullbright or the lightmap is set as GL state before the call. The emergency
+  light went from 16.6 to 1.4 microseconds a light this way, with no position cache involved.
+  `/csm renderpass skip sharedBakesPerFrame` draws every such renderer per frame, for an A/B.
 - **The cache bound is soft, and must stay soft.** `CsmDisplayListCache` trims back to 1,024
   positions per cache, but only at the start of a frame and never an entry drawn in the frame
   before. It used to evict on insert above the bound, which is a cliff rather than a limit: with

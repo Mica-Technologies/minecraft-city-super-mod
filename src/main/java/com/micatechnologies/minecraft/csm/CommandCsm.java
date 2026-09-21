@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm;
 
 import com.google.common.collect.Lists;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,6 +115,9 @@ public class CommandCsm extends CommandBase {
    */
   private static void handleDisplayLists(ICommandSender sender) {
     for (String line : CsmDisplayListCache.describeAll()) {
+      sendSuccess(sender, line);
+    }
+    for (String line : CsmSharedDisplayLists.describeAll()) {
       sendSuccess(sender, line);
     }
     Runtime runtime = Runtime.getRuntime();
