@@ -46,6 +46,92 @@
     },
     {
       "when": {
+        "up": "false",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_grey_rod_end_left"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_grey_rod_end_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_grey_rod_end_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_grey_rod_end_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_grey_rod_end_right"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_grey_rod_end_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_grey_rod_end_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:interior/curtain_grey_rod_end_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
         "state": "0",
         "up": "true",
         "facing": "north"

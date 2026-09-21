@@ -27,7 +27,8 @@ whole blind rather than to one block is drawn only where it belongs: the headrai
 rod along the top course (`up` = false), a bottom rail along the bottom (`down` = false), a
 raised venetian's slat stack on the top course, a half-lowered roller shade's bar on the bottom
 course, a drawn vertical blind's vanes and an open curtain's bunched fabric at the ends of the run
-(`left` / `right` = false). Left and right are in the blind's own frame -- as seen from inside,
+(`left` / `right` = false), and a curtain rod's wall brackets and finials at the two ends of its
+top course. Left and right are in the blind's own frame -- as seen from inside,
 looking at the window -- so they turn with it.
 
 | Kind | States (`state`, stored) | Light taken |
