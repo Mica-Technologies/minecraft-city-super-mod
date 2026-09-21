@@ -2,6 +2,9 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
@@ -38,8 +41,13 @@ import org.lwjgl.opengl.GL11;
  * the signal applies for visual alignment. This keeps the cover clamped to the signal housing
  * at every tilt/angle setting.
  *
- * <p>Rendered fresh each frame (no display list caching) since the geometry is trivial
- * (5 boxes) and this ensures immediate response to adjacent signal changes.
+ * <p>The scan and the tilt it reads are kept on the tile entity
+ * ({@link TileEntityTrafficLightCover#getRenderScan()}) rather than redone every frame: they
+ * are dropped on a neighbour change and otherwise refreshed once a second. The shell's boxes
+ * depend only on the envelope, the colour scheme and the light, so they are compiled into a list
+ * shared by every cover that looks the same ({@link CsmSharedDisplayLists}); the tilt and facing
+ * stay transforms applied around it. {@link CsmRenderToggles#sharedBakesPerFrame} draws them per
+ * frame, for comparison.
  */
 public class TileEntityTrafficLightCoverRenderer
     extends TileEntitySpecialRenderer<TileEntityTrafficLightCover> {
@@ -51,6 +59,21 @@ public class TileEntityTrafficLightCoverRenderer
   private static final ResourceLocation WHITE_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/white1px.png");
 
+  /** Ids for the shell envelopes, which are too many floats to pack into a list key. */
+  private static final RenderAppearanceIds APPEARANCES = new RenderAppearanceIds();
+
+  /**
+   * The shell's boxes, one list per look. Key layout (a {@code long}):
+   * <ul>
+   *   <li>bits 0-31: the combined light at the block, as {@code getCombinedLight} returns it
+   *   (baked into the vertices)</li>
+   *   <li>bits 32-39: the colour scheme ordinal</li>
+   *   <li>bits 40 and up: the envelope's id from {@link #APPEARANCES}</li>
+   * </ul>
+   */
+  private static final CsmSharedDisplayLists SHELL_LISTS =
+      new CsmSharedDisplayLists("signal_cover_shell");
+
   @Override
   public void render(TileEntityTrafficLightCover te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -59,34 +82,12 @@ public class TileEntityTrafficLightCoverRenderer
     if (!(blockState.getBlock() instanceof BlockTrafficLightCover)) return;
 
     EnumFacing facing = blockState.getValue(AbstractBlockRotatableNSEWUD.FACING);
-    BlockTrafficLightCover.CoverSignalScan scan =
-        BlockTrafficLightCover.scanForSignal(te.getWorld(), te.getPos(), facing);
-
-    // --- Tilt sync with the adjacent signal head ---
-    float tiltAngle = 0f;
-    float pivotX = 8f;
-    float pivotZ = 8f;
-    int tiltShift = 0;
-    if (scan.signalPos != null) {
-      TrafficSignalBodyTilt tilt = readBodyTilt(te.getWorld(), scan.signalPos);
-      IBlockState signalState = te.getWorld().getBlockState(scan.signalPos);
-      EnumFacing signalFacing = readSignalFacing(signalState);
-      if (tilt != null && tilt != TrafficSignalBodyTilt.NONE && signalFacing != null) {
-        // Only sync tilt when the cover's render frame matches the signal's local frame;
-        // otherwise the rotation/shift would be applied in mirrored coordinates.
-        if (signalFacing == scan.renderFacing) {
-          DirectionSixteen bodyDirection =
-              AbstractBlockControllableSignalHead.getTiltedFacing(tilt, signalFacing);
-          if (bodyDirection != null) {
-            tiltAngle = bodyDirection.getRotation() - getBaseFacingAngle(signalFacing);
-            // Signal center expressed in the cover's (world-aligned) model space
-            pivotX = 8f + (scan.signalPos.getX() - te.getPos().getX()) * 16f;
-            pivotZ = 8f + (scan.signalPos.getZ() - te.getPos().getZ()) * 16f;
-            tiltShift = getTiltShift(tilt);
-          }
-        }
-      }
-    }
+    CoverLayout layout = layoutFor(te, facing);
+    BlockTrafficLightCover.CoverSignalScan scan = layout.scan;
+    float tiltAngle = layout.tiltAngle;
+    float pivotX = layout.pivotX;
+    float pivotZ = layout.pivotZ;
+    int tiltShift = layout.tiltShift;
 
     GlStateManager.disableLighting();
     GlStateManager.disableCull();
@@ -94,8 +95,7 @@ public class TileEntityTrafficLightCoverRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
-    int worldSkyLight = (combinedLight >> 16) & 0xFFFF;
-    int worldBlockLight = combinedLight & 0xFFFF;
+    MountKitColorScheme scheme = te.getColorScheme();
 
     GL11.glPushMatrix();
     GL11.glTranslated(x, y, z);
@@ -126,7 +126,28 @@ public class TileEntityTrafficLightCoverRenderer
       GL11.glTranslated(tiltShift, 0, 0);
     }
 
-    renderCover(te, scan, worldSkyLight, worldBlockLight);
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawCover(scan, scheme, combinedLight);
+    } else {
+      long key = ((long) layout.appearance << 40) | ((long) (scheme.ordinal() & 0xFF) << 32)
+          | (combinedLight & 0xFFFFFFFFL);
+      int list = SHELL_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = SHELL_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawCover(scan, scheme, combinedLight);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawCover(scan, scheme, combinedLight);
+      }
+    }
 
     GL11.glPopMatrix();
 
@@ -138,14 +159,65 @@ public class TileEntityTrafficLightCoverRenderer
   }
 
   /**
+   * The cover's scan and tilt: the tile entity's cached copy if it is still good and was made
+   * for this facing, otherwise a fresh scan, which is then cached.
+   */
+  private static CoverLayout layoutFor(TileEntityTrafficLightCover te, EnumFacing facing) {
+    Object cached = te.getRenderScan();
+    if (cached instanceof CoverLayout && ((CoverLayout) cached).facing == facing) {
+      return (CoverLayout) cached;
+    }
+
+    BlockTrafficLightCover.CoverSignalScan scan =
+        BlockTrafficLightCover.scanForSignal(te.getWorld(), te.getPos(), facing);
+
+    // --- Tilt sync with the adjacent signal head ---
+    float tiltAngle = 0f;
+    float pivotX = 8f;
+    float pivotZ = 8f;
+    int tiltShift = 0;
+    if (scan.signalPos != null) {
+      TrafficSignalBodyTilt tilt = readBodyTilt(te.getWorld(), scan.signalPos);
+      IBlockState signalState = te.getWorld().getBlockState(scan.signalPos);
+      EnumFacing signalFacing = readSignalFacing(signalState);
+      if (tilt != null && tilt != TrafficSignalBodyTilt.NONE && signalFacing != null) {
+        // Only sync tilt when the cover's render frame matches the signal's local frame;
+        // otherwise the rotation/shift would be applied in mirrored coordinates.
+        if (signalFacing == scan.renderFacing) {
+          DirectionSixteen bodyDirection =
+              AbstractBlockControllableSignalHead.getTiltedFacing(tilt, signalFacing);
+          if (bodyDirection != null) {
+            tiltAngle = bodyDirection.getRotation() - getBaseFacingAngle(signalFacing);
+            // Signal center expressed in the cover's (world-aligned) model space
+            pivotX = 8f + (scan.signalPos.getX() - te.getPos().getX()) * 16f;
+            pivotZ = 8f + (scan.signalPos.getZ() - te.getPos().getZ()) * 16f;
+            tiltShift = getTiltShift(tilt);
+          }
+        }
+      }
+    }
+
+    int appearance = APPEARANCES.idOf(
+        Float.floatToIntBits(scan.minX), Float.floatToIntBits(scan.maxX),
+        Float.floatToIntBits(scan.minY), Float.floatToIntBits(scan.maxY));
+    CoverLayout layout =
+        new CoverLayout(facing, scan, tiltAngle, pivotX, pivotZ, tiltShift, appearance);
+    te.setRenderScan(layout);
+    return layout;
+  }
+
+  /**
    * Renders the cover shell: a face plate at the front plus four wrap panels (top, bottom,
    * left, right) extending back over the signal body. Panel layout matches the legacy static
    * cover models — side panels run the full shell height and the top/bottom panels sit
    * between them — so no coplanar faces z-fight against the signal housing.
+   *
+   * <p>Geometry only: the caller binds the texture and owns every GL state.</p>
    */
-  private void renderCover(TileEntityTrafficLightCover te,
-      BlockTrafficLightCover.CoverSignalScan scan, int skyLight, int blockLight) {
-    MountKitColorScheme scheme = te.getColorScheme();
+  private static void drawCover(BlockTrafficLightCover.CoverSignalScan scan,
+      MountKitColorScheme scheme, int combinedLight) {
+    int skyLight = (combinedLight >> 16) & 0xFFFF;
+    int blockLight = combinedLight & 0xFFFF;
 
     List<RenderHelper.Box> panelBoxes = new ArrayList<>();
     List<RenderHelper.Box> plateBoxes = new ArrayList<>();
@@ -183,7 +255,6 @@ public class TileEntityTrafficLightCoverRenderer
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     RenderHelper.addBoxesToBufferLit(panelBoxes, buffer,
@@ -264,6 +335,32 @@ public class TileEntityTrafficLightCoverRenderer
       case NORTH: return 0.0f;
       case EAST:  return 270.0f;
       default:    return 0.0f;
+    }
+  }
+
+  /**
+   * A cached scan: the facing it was made for, the envelope, the tilt transform read from the
+   * head, and the envelope's appearance id.
+   */
+  private static final class CoverLayout {
+
+    final EnumFacing facing;
+    final BlockTrafficLightCover.CoverSignalScan scan;
+    final float tiltAngle;
+    final float pivotX;
+    final float pivotZ;
+    final int tiltShift;
+    final int appearance;
+
+    CoverLayout(EnumFacing facing, BlockTrafficLightCover.CoverSignalScan scan, float tiltAngle,
+        float pivotX, float pivotZ, int tiltShift, int appearance) {
+      this.facing = facing;
+      this.scan = scan;
+      this.tiltAngle = tiltAngle;
+      this.pivotX = pivotX;
+      this.pivotZ = pivotZ;
+      this.tiltShift = tiltShift;
+      this.appearance = appearance;
     }
   }
 }

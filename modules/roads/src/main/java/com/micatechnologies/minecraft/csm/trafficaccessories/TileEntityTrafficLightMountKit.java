@@ -43,6 +43,49 @@ public class TileEntityTrafficLightMountKit extends AbstractTileEntity {
   public void invalidateCachedBB() {
     this.cachedBoundingBox = null;
     this.boomCheckedAt = Long.MIN_VALUE;
+    this.renderScan = null;
+  }
+
+  /** How long the renderer's neighbour scan is trusted for, in ticks; as for the boom. */
+  private static final long RENDER_SCAN_RECHECK_TICKS = 20L;
+
+  private long renderScanAt = Long.MIN_VALUE;
+
+  /** The renderer's last neighbour scan, opaque here; {@code null} when it must be redone. */
+  @Nullable
+  private Object renderScan;
+
+  /**
+   * The renderer's cached scan of the signal heads around this bracket, or {@code null} if it
+   * must scan again.
+   *
+   * <p>The renderer asked for it every frame, and answering means reading up to seven cells of
+   * signal heads and their tile entities. It is dropped by {@link #invalidateCachedBB()} and
+   * expires after {@link #RENDER_SCAN_RECHECK_TICKS} like the boom: a head's own settings (its
+   * section count and sizes) change without a neighbour update, and so does a head placed two or
+   * three cells along the column. Neighbour updates are only delivered to the server's copy of the
+   * world, so on the client the expiry is what picks up any change.</p>
+   *
+   * @return the cached scan, or {@code null}
+   */
+  @Nullable
+  public Object getRenderScan() {
+    long now = getWorld() != null ? getWorld().getTotalWorldTime() : 0L;
+    if (renderScan == null || renderScanAt == Long.MIN_VALUE
+        || now - renderScanAt >= RENDER_SCAN_RECHECK_TICKS) {
+      return null;
+    }
+    return renderScan;
+  }
+
+  /**
+   * Stores the renderer's neighbour scan until it expires or is invalidated.
+   *
+   * @param scan the scan
+   */
+  public void setRenderScan(Object scan) {
+    renderScan = scan;
+    renderScanAt = getWorld() != null ? getWorld().getTotalWorldTime() : 0L;
   }
 
   /** How long a boom lookup is trusted for, in ticks. */

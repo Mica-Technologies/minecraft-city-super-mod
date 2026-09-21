@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
@@ -36,8 +39,13 @@ import org.lwjgl.opengl.GL11;
  *
  * <p>Color is aluminum alloy gray matching real-world Pelco Astro-brac cast aluminum finish.
  *
- * <p>Rendered fresh each frame (no display list caching) since the geometry is trivial
- * (3 boxes) and this ensures immediate response to adjacent signal changes.
+ * <p>The scan of the heads around the bracket is kept on the tile entity
+ * ({@link TileEntityTrafficLightMountKit#getRenderScan()}) rather than redone every frame: it
+ * is dropped on a neighbour change and otherwise refreshed once a second. The bracket's boxes
+ * depend only on that scan, the colour scheme and the light, so they are compiled into a list
+ * shared by every bracket that looks the same ({@link CsmSharedDisplayLists}) and replayed under
+ * each bracket's own facing rotation. {@link CsmRenderToggles#sharedBakesPerFrame} draws them
+ * per frame, for comparison.
  */
 public class TileEntityTrafficLightMountKitRenderer
     extends TileEntitySpecialRenderer<TileEntityTrafficLightMountKit> {
@@ -107,6 +115,28 @@ public class TileEntityTrafficLightMountKitRenderer
   private static final ResourceLocation WHITE_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/white1px.png");
 
+  /** The bracket drawn when no head is beside it: a 3-section 12-inch vertical signal. */
+  private static final SignalInfo DEFAULT_SIGNAL_INFO = computeEnvelope(3,
+      new int[]{12, 12, 12},
+      new float[]{12.0f, 0.0f, -12.0f},
+      new float[]{0, 0, 0},
+      0.0f, false);
+
+  /** Ids for the bracket shapes, which are too many floats to pack into a list key. */
+  private static final RenderAppearanceIds APPEARANCES = new RenderAppearanceIds();
+
+  /**
+   * The bracket's boxes, one list per look. Key layout (a {@code long}):
+   * <ul>
+   *   <li>bits 0-31: the combined light at the block, as {@code getCombinedLight} returns it
+   *   (baked into the vertices)</li>
+   *   <li>bits 32-39: the colour scheme ordinal</li>
+   *   <li>bits 40 and up: the shape's id from {@link #APPEARANCES}</li>
+   * </ul>
+   */
+  private static final CsmSharedDisplayLists BRACKET_LISTS =
+      new CsmSharedDisplayLists("mount_kit_bracket");
+
   @Override
   public void render(TileEntityTrafficLightMountKit te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -115,6 +145,7 @@ public class TileEntityTrafficLightMountKitRenderer
     if (!(blockState.getBlock() instanceof BlockTrafficLightMountKit)) return;
 
     EnumFacing facing = blockState.getValue(AbstractBlockRotatableNSEWUD.FACING);
+    BracketLayout layout = layoutFor(te, facing);
 
     GlStateManager.disableLighting();
     GlStateManager.disableCull();
@@ -122,8 +153,7 @@ public class TileEntityTrafficLightMountKitRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
-    int worldSkyLight = (combinedLight >> 16) & 0xFFFF;
-    int worldBlockLight = combinedLight & 0xFFFF;
+    MountKitColorScheme scheme = te.getColorScheme();
 
     GL11.glPushMatrix();
     GL11.glTranslated(x, y, z);
@@ -134,7 +164,28 @@ public class TileEntityTrafficLightMountKitRenderer
     GL11.glRotatef(rotationAngle, 0, 1, 0);
     GL11.glTranslated(-8, -8, -8);
 
-    renderBracket(te, facing, worldSkyLight, worldBlockLight);
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawBracket(layout.info, scheme, combinedLight);
+    } else {
+      long key = ((long) layout.appearance << 40) | ((long) (scheme.ordinal() & 0xFF) << 32)
+          | (combinedLight & 0xFFFFFFFFL);
+      int list = BRACKET_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = BRACKET_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawBracket(layout.info, scheme, combinedLight);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawBracket(layout.info, scheme, combinedLight);
+      }
+    }
 
     GL11.glPopMatrix();
 
@@ -154,11 +205,12 @@ public class TileEntityTrafficLightMountKitRenderer
    *   <li>Spine tube connecting the pivot joints at the back</li>
    *   <li>Mounting collar at the top/right end of the spine</li>
    * </ul>
+   *
+   * <p>Geometry only: the caller binds the texture and owns every GL state.</p>
    */
-  private void renderBracket(TileEntityTrafficLightMountKit te, EnumFacing facing,
-      int skyLight, int blockLight) {
-    SignalInfo info = detectSignals(te, facing);
-    MountKitColorScheme scheme = te.getColorScheme();
+  private void drawBracket(SignalInfo info, MountKitColorScheme scheme, int combinedLight) {
+    int skyLight = (combinedLight >> 16) & 0xFFFF;
+    int blockLight = combinedLight & 0xFFFF;
 
     List<RenderHelper.Box> aluBoxes = new ArrayList<>();
     List<RenderHelper.Box> aluDarkBoxes = new ArrayList<>();
@@ -174,7 +226,6 @@ public class TileEntityTrafficLightMountKitRenderer
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     RenderHelper.addBoxesToBufferLit(aluBoxes, buffer,
@@ -453,6 +504,21 @@ public class TileEntityTrafficLightMountKitRenderer
   }
 
   /**
+   * The bracket's shape: the tile entity's cached scan if it is still good and was made for this
+   * facing, otherwise a fresh scan, which is then cached.
+   */
+  private BracketLayout layoutFor(TileEntityTrafficLightMountKit te, EnumFacing facing) {
+    Object cached = te.getRenderScan();
+    if (cached instanceof BracketLayout && ((BracketLayout) cached).facing == facing) {
+      return (BracketLayout) cached;
+    }
+    SignalInfo info = detectSignals(te, facing);
+    BracketLayout layout = new BracketLayout(facing, info, APPEARANCES.idOf(info.bits()));
+    te.setRenderScan(layout);
+    return layout;
+  }
+
+  /**
    * Detects adjacent signal heads and merges their bounding envelopes. First finds the
    * primary signal in front of or behind the mount (along the facing axis), then scans
    * vertically (up/down) from that column for add-on signals which are typically placed
@@ -471,7 +537,7 @@ public class TileEntityTrafficLightMountKitRenderer
     }
 
     if (signalColumn == null) {
-      return withBoom(te, facing, getDefaultSignalInfo());
+      return withBoom(te, facing, DEFAULT_SIGNAL_INFO);
     }
 
     // Scan the signal column vertically: start at the found position, then scan
@@ -500,7 +566,7 @@ public class TileEntityTrafficLightMountKitRenderer
       }
     }
 
-    return withBoom(te, facing, merged != null ? merged : getDefaultSignalInfo());
+    return withBoom(te, facing, merged != null ? merged : DEFAULT_SIGNAL_INFO);
   }
 
   /**
@@ -511,11 +577,16 @@ public class TileEntityTrafficLightMountKitRenderer
    * so a bracket left at its normal depth reaches straight past it and clamps thin air. Cached
    * on the tile entity, because finding it means walking back up to eight cells to the trailer
    * that owns it and this runs every frame.</p>
+   *
+   * <p>{@link #DEFAULT_SIGNAL_INFO} is shared, so it is copied before the boom is written in.</p>
    */
   private SignalInfo withBoom(TileEntityTrafficLightMountKit te, EnumFacing facing,
       SignalInfo info) {
     SignalTrailerBoom boom = te.getBoom(facing);
     if (boom != null) {
+      if (info == DEFAULT_SIGNAL_INFO) {
+        info = info.copy();
+      }
       info.boom = boom;
       info.backZ = CENTER_Z - boom.halfWidth + SADDLE_BITE;
     }
@@ -591,7 +662,7 @@ public class TileEntityTrafficLightMountKitRenderer
    * Computes the min/max X and Y envelope across all signal sections, using the same
    * coordinate system as the signal head renderer.
    */
-  private SignalInfo computeEnvelope(int sectionCount, int[] sectionSizes,
+  private static SignalInfo computeEnvelope(int sectionCount, int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions,
       float signalYOffset, boolean horizontal) {
     float minX = Float.MAX_VALUE, maxX = -Float.MAX_VALUE;
@@ -629,14 +700,6 @@ public class TileEntityTrafficLightMountKitRenderer
     return info;
   }
 
-  private SignalInfo getDefaultSignalInfo() {
-    return computeEnvelope(3,
-        new int[]{12, 12, 12},
-        new float[]{12.0f, 0.0f, -12.0f},
-        new float[]{0, 0, 0},
-        0.0f, false);
-  }
-
   private static float getRotationAngle(EnumFacing facing) {
     switch (facing) {
       case NORTH: return 0f;
@@ -662,6 +725,44 @@ public class TileEntityTrafficLightMountKitRenderer
 
     float spineFrontZ() {
       return backZ - SPINE_DEPTH;
+    }
+
+    SignalInfo copy() {
+      SignalInfo copy = new SignalInfo();
+      copy.minX = minX;
+      copy.maxX = maxX;
+      copy.minY = minY;
+      copy.maxY = maxY;
+      copy.horizontal = horizontal;
+      copy.boom = boom;
+      copy.backZ = backZ;
+      return copy;
+    }
+
+    /** Every value the bracket's boxes are built from, as exact bits, for an appearance id. */
+    int[] bits() {
+      long settle = boom == null ? 0L : Double.doubleToLongBits(boom.settleY);
+      return new int[]{
+          Float.floatToIntBits(minX), Float.floatToIntBits(maxX),
+          Float.floatToIntBits(minY), Float.floatToIntBits(maxY),
+          horizontal ? 1 : 0, Float.floatToIntBits(backZ),
+          boom == null ? 0 : 1, (int) settle, (int) (settle >>> 32),
+          boom == null ? 0 : Float.floatToIntBits(boom.thickness),
+          boom == null ? 0 : Float.floatToIntBits(boom.halfWidth)};
+    }
+  }
+
+  /** A cached scan: the facing it was made for, its result and that result's appearance id. */
+  private static final class BracketLayout {
+
+    final EnumFacing facing;
+    final SignalInfo info;
+    final int appearance;
+
+    BracketLayout(EnumFacing facing, SignalInfo info, int appearance) {
+      this.facing = facing;
+      this.info = info;
+      this.appearance = appearance;
     }
   }
 }
