@@ -101,8 +101,34 @@ public enum ArrowBoardPattern implements IStringSerializable {
    * @since 1.0
    */
   public int[][] getLitLamps(long millis) {
+    return stages[getStageIndex(millis)];
+  }
+
+  /**
+   * Gets which stage is showing at the given moment: the index {@link #getLitLamps(long)} reads.
+   * A renderer that caches each stage's geometry keys on this.
+   *
+   * @param millis the board's own clock, in milliseconds
+   *
+   * @return the stage index
+   *
+   * @since 1.0
+   */
+  public int getStageIndex(long millis) {
     long scaled = CsmConfig.scaleArrowBoardStage(stageMillis);
-    int stage = (int) (Math.floorDiv(millis, scaled) % stages.length);
+    return (int) (Math.floorDiv(millis, scaled) % stages.length);
+  }
+
+  /**
+   * Gets the lamps lit in one stage.
+   *
+   * @param stage the stage index, from {@link #getStageIndex(long)}
+   *
+   * @return the lit lamps, each {column, row}
+   *
+   * @since 1.0
+   */
+  public int[][] getStageLamps(int stage) {
     return stages[stage];
   }
 
