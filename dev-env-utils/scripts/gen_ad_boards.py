@@ -49,6 +49,13 @@ KINDS = {
     "ad_digital_billboard": dict(prefix="digital", frame=2.0, cabinet=True, catwalk=False,
                                  frame_tex="board_bezel_black", back_tex="board_cabinet_steel",
                                  icon_ad="couch_potato_plus_bulletin", icon_frame=(22, 22, 26)),
+    # post_half: half the post's width, the AdBoardKind post numbers in AbstractBlockAdBoard.post
+    "ad_kiosk": dict(prefix="kiosk", frame=2.0, cabinet=True, post_half=3,
+                     frame_tex="board_kiosk_bezel", back_tex="board_kiosk_body",
+                     icon_ad="cube_burger_portrait", icon_frame=(52, 55, 60)),
+    "ad_kiosk_large": dict(prefix="kiosklarge", frame=3.0, cabinet=True, post_half=4,
+                           frame_tex="board_kiosk_bezel", back_tex="board_kiosk_body",
+                           icon_ad="tundra_creamery_portrait", icon_frame=(52, 55, 60)),
 }
 
 # How far a cabinet board's frame stands proud of its box, front and back.
@@ -115,6 +122,22 @@ def lamp_lens():
             d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5 / 10.6
             v = 255 - int(60 * d)
             image.putpixel((x, y), (v, v, int(v * 0.86), 255))
+    return image
+
+
+def icon_kiosk(ad_name, body):
+    """A kiosk's item icon: a portrait ad in a dark cabinet on a post."""
+    image = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
+    for x in range(8, 24):
+        for y in range(1, 26):
+            image.putpixel((x, y), body + (255,))
+    for x in range(14, 18):
+        for y in range(26, 31):
+            image.putpixel((x, y), body + (255,))
+    for x in range(11, 21):
+        image.putpixel((x, 31), body + (255,))
+    ad = Image.open(os.path.join(ADS_DIR, ad_name + ".png")).convert("RGBA")
+    image.paste(ad.resize((14, 23), Image.LANCZOS), (9, 2))
     return image
 
 
@@ -204,6 +227,8 @@ def cabinet_models(kind):
         pieces[name] = [front[name], rear[name]]
     if k.get("catwalk"):
         pieces.update(service_pieces())
+    if k.get("post_half"):
+        pieces.update(post_pieces(k["post_half"]))
     out = {}
     for name, elements in pieces.items():
         for element in elements:
@@ -256,10 +281,25 @@ def service_pieces():
     }
 
 
+def post_pieces(half):
+    """A kiosk's post, in its service rows: centred on the block's right-hand edge, which is the
+    middle of the kiosk, so the block beside it (which is empty) holds nothing; and on the
+    controller, a base plate to stand on. The cabinet above covers the post's top."""
+    return {
+        "post": [_box((16 - half, 0, 8 - half), (16 + half, 16, 8 + half), "#back")],
+        "base": [_box((16 - half - 3, 0, 8 - half - 3), (16 + half + 3, 1, 8 + half + 3),
+                      "#back")],
+    }
+
+
 def _span(a, b):
     """A face's extent along one axis as UVs: shifted by whole blocks into 0..16, never clamped,
     so the texture's grain carries on across the block edge."""
     shift = 16 * ((min(a, b)) // 16)
+    if max(a, b) - shift > 16:
+        # A span across a block edge cannot be shifted inside the sprite: start it at 0, and
+        # squeeze one longer than a block into the sprite rather than read past its edge.
+        return 0, min(16, abs(b - a))
     return a - shift, b - shift
 
 
@@ -298,6 +338,8 @@ CONDITIONS = {
     "rail_right": {"right": "false"},
     "lamp": {"lamp": "true"},
     "column": {},
+    "post": {},
+    "base": {},
 }
 
 # The pieces each block of a board with a service row draws.
@@ -344,11 +386,23 @@ def outputs():
     files[os.path.join(TEX_DIR, "board_rail_steel.png")] = _png(flat(20260926, (96, 100, 106)))
     files[os.path.join(TEX_DIR, "board_catwalk_grate.png")] = _png(grate())
     files[os.path.join(TEX_DIR, "board_lamp_lens.png")] = _png(lamp_lens())
+    files[os.path.join(TEX_DIR, "board_kiosk_bezel.png")] = _png(flat(20260927, (44, 47, 52), 2))
+    files[os.path.join(TEX_DIR, "board_kiosk_body.png")] = _png(flat(20260928, (60, 64, 70)))
     for kind, k in KINDS.items():
         kind_models = cabinet_models(kind) if k.get("cabinet") else models(kind)
         for name, model in kind_models.items():
             files[os.path.join(MODEL_DIR, name + ".json")] = _json(model)
-        if k.get("catwalk"):
+        if k.get("post_half"):
+            # The controller is the bottom of the post, on its base plate.
+            files[os.path.join(STATE_DIR, kind + ".json")] = _json(
+                blockstate(kind, kind_models, ("post", "base")))
+            files[os.path.join(STATE_DIR, kind + "_service.json")] = _json(
+                blockstate(kind, kind_models, ("post",)))
+            files[os.path.join(STATE_DIR, kind + "_part.json")] = _json(
+                blockstate(kind, kind_models, CABINET_PIECES))
+            files[os.path.join(ITEM_MODEL_DIR, kind + "_service.json")] = _json(
+                {"parent": "item/generated", "textures": {"layer0": "csm:items/signage/" + kind}})
+        elif k.get("catwalk"):
             # The controller is always in the service row, and stands on the column.
             files[os.path.join(STATE_DIR, kind + ".json")] = _json(
                 blockstate(kind, kind_models, SERVICE_PIECES + ("column",)))
@@ -362,8 +416,12 @@ def outputs():
             state = _json(blockstate(kind, kind_models))
             files[os.path.join(STATE_DIR, kind + ".json")] = state
             files[os.path.join(STATE_DIR, kind + "_part.json")] = state
-        files[os.path.join(ITEM_TEX_DIR, kind + ".png")] = _png(
-            icon(k["icon_ad"], k.get("icon_frame", (200, 204, 212)), wide=k.get("cabinet", False)))
+        if k.get("post_half"):
+            files[os.path.join(ITEM_TEX_DIR, kind + ".png")] = _png(
+                icon_kiosk(k["icon_ad"], k["icon_frame"]))
+        else:
+            files[os.path.join(ITEM_TEX_DIR, kind + ".png")] = _png(icon(
+                k["icon_ad"], k.get("icon_frame", (200, 204, 212)), wide=k.get("cabinet", False)))
         item = _json({"parent": "item/generated",
                       "textures": {"layer0": "csm:items/signage/" + kind}})
         files[os.path.join(ITEM_MODEL_DIR, kind + ".json")] = item

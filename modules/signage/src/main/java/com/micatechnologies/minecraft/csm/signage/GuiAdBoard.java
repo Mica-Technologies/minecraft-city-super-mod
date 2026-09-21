@@ -121,8 +121,8 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     int w = te.getWidth() == 1 && te.getHeight() == 1 ? defaultSize()[0] : te.getWidth();
     int h = te.getWidth() == 1 && te.getHeight() == 1 ? defaultSize()[1] : te.getHeight();
     widthSlider = add(new GuiSlider(SLD_WIDTH, left, y, COL, H,
-        I18n.format("gui.csm.adboard.width") + ": ", "", 1, kind.getMaxWidth(), w, false, true,
-        this));
+        I18n.format("gui.csm.adboard.width") + ": ", "", kind.getMinWidth(), kind.getMaxWidth(),
+        Math.max(w, kind.getMinWidth()), false, true, this));
     y += ROW;
     heightSlider = add(new GuiSlider(SLD_HEIGHT, left, y, COL, H,
         I18n.format("gui.csm.adboard.height") + ": ", "", kind.getMinHeight(),
@@ -136,6 +136,12 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     y += ROW;
     backButton = add(new GuiButton(BTN_BACK, left, y, COL, H, ""));
     backButton.visible = kind.isCabinet();
+    // A kiosk has one size and grows nowhere: its screen is only what it shows.
+    boolean sized = !kind.isFixedSize();
+    presetButton.visible = sized;
+    widthSlider.visible = sized;
+    heightSlider.visible = sized;
+    alignButton.visible = sized;
 
     // Right column: the ads.
     previewX = right;
@@ -157,6 +163,18 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     add(new GuiButton(BTN_DONE, width / 2 - 102, y, 100, H, I18n.format("gui.done")));
     add(new GuiButton(BTN_CANCEL, width / 2 + 2, y, 100, H, I18n.format("gui.cancel")));
     refresh();
+  }
+
+  /**
+   * The width asked for: the slider's, or a fixed-size board's one width. A slider whose minimum
+   * is its maximum reads back nonsense, so a fixed board never asks it.
+   */
+  private int boardWidth() {
+    return kind.isFixedSize() ? kind.getMaxWidth() : widthSlider.getValueInt();
+  }
+
+  private int boardHeight() {
+    return kind.isFixedSize() ? kind.getMaxHeight() : heightSlider.getValueInt();
   }
 
   private <T extends GuiButton> T add(T button) {
@@ -201,8 +219,8 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
         + (categories.isEmpty() ? "-" : I18n.format(
             "gui.csm.adboard.category." + categories.get(categoryIndex)));
     interval.enabled = !single;
-    AdBoardPreview.show(controller, facing, align.controllerColumn(widthSlider.getValueInt()),
-        widthSlider.getValueInt(), heightSlider.getValueInt());
+    AdBoardPreview.show(controller, facing, align.controllerColumn(boardWidth()),
+        boardWidth(), boardHeight());
   }
 
   private String fitText(String text, int pixels) {
@@ -265,8 +283,8 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
 
   private void send() {
     String category = categories.isEmpty() ? "" : categories.get(categoryIndex);
-    CsmSignage.NETWORK.sendToServer(new AdBoardConfigPacket(clicked, widthSlider.getValueInt(),
-        heightSlider.getValueInt(), align, ads.get(adIndex).getId(), rotation, category,
+    CsmSignage.NETWORK.sendToServer(new AdBoardConfigPacket(clicked, boardWidth(),
+        boardHeight(), align, ads.get(adIndex).getId(), rotation, category,
         interval.getValueInt(), fit, light, back));
   }
 
@@ -308,8 +326,8 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     AdEntry ad = rotation == AdRotation.SINGLE ? ads.get(adIndex)
         : previewPool().get(rotation.select(previewPool(), te.getWorld().getTotalWorldTime(),
             interval.getValueInt(), TileEntityAdBoard.seed(controller)));
-    double faceW = widthSlider.getValueInt() - 2 * kind.getFramePx() / 16.0;
-    double faceH = heightSlider.getValueInt() - kind.getServiceRows()
+    double faceW = boardWidth() - 2 * kind.getFramePx() / 16.0;
+    double faceH = boardHeight() - kind.getServiceRows()
         - 2 * kind.getFramePx() / 16.0;
     double aspect = faceW / faceH;
     int boxW = COL;

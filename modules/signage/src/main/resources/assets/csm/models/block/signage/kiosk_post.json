@@ -1,0 +1,80 @@
+{
+  "textures": {
+    "frame": "csm:blocks/signage/board_kiosk_bezel",
+    "back": "csm:blocks/signage/board_kiosk_body",
+    "grate": "csm:blocks/signage/board_catwalk_grate",
+    "rail": "csm:blocks/signage/board_rail_steel",
+    "lens": "csm:blocks/signage/board_lamp_lens",
+    "particle": "csm:blocks/signage/board_kiosk_body"
+  },
+  "elements": [
+    {
+      "from": [
+        13,
+        0,
+        5
+      ],
+      "to": [
+        19,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#back",
+          "uv": [
+            0,
+            0,
+            6,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#back",
+          "uv": [
+            0,
+            0,
+            6,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#back",
+          "uv": [
+            5,
+            0,
+            11,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#back",
+          "uv": [
+            5,
+            0,
+            11,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#back",
+          "uv": [
+            0,
+            5,
+            6,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#back",
+          "uv": [
+            0,
+            5,
+            6,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

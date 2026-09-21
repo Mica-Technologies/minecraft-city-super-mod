@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "116 blocks in this tab"
+!!! info "120 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,8 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Ad Kiosk | `csm:ad_kiosk_part` | 1.5 | 10 | pickaxe | 0 |
+| Ad Kiosk | `csm:ad_kiosk_service` | 1.5 | 10 | pickaxe | 0 |
 | Billboard | `csm:ad_billboard_part` | 1.5 | 10 | pickaxe | 0 |
 | Billboard | `csm:ad_billboard_service` | 1.5 | 10 | pickaxe | 0 |
 | Black Angled Thin Traffic Pole w/ 1 Mount | `csm:trafficpolehorizontalanglemount1black` |  | 10 | pickaxe | 1 |
@@ -46,6 +48,8 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Horizontal Traffic Signal Cover | `csm:tlhcover` |  | 10 | pickaxe | 1 |
 | Horizontal White/Black Traffic Light Border | `csm:tlhborderwhite` | 2 | 10 | pickaxe | 1 |
 | Horizontal Yellow/Black Traffic Light Border | `csm:tlhborderyellow` | 2 | 10 | pickaxe | 1 |
+| Large Ad Kiosk | `csm:ad_kiosk_large_part` | 1.5 | 10 | pickaxe | 0 |
+| Large Ad Kiosk | `csm:ad_kiosk_large_service` | 1.5 | 10 | pickaxe | 0 |
 | MCLAGlowAir | `csm:lightupair` | 2 | 10 | pickaxe | 1 |
 | Poster Board | `csm:ad_poster_board_part` | 1.5 | 10 | pickaxe | 0 |
 | Silver Angled Thin Traffic Pole w/ 1 Mount | `csm:trafficpolehorizontalanglemount1silver` |  | 10 | pickaxe | 1 |

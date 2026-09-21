@@ -75,6 +75,11 @@ public class TileEntityAdBoard extends AbstractTileEntity {
     // Paper is lit by the day; a screen, and a printed billboard's floodlights, by themselves.
     light = kind == AdBoardKind.WALL_POSTER ? AdLight.UNLIT
         : kind == AdBoardKind.BILLBOARD ? AdLight.NIGHT : AdLight.LIT;
+    // A kiosk shows an ad each way along the pavement, and scrolls through them.
+    back = kind.isFixedSize() ? AdBack.NEXT : AdBack.NONE;
+    if (kind.isFixedSize()) {
+      rotation = AdRotation.ALL_SHUFFLED;
+    }
     pool = null;
   }
 
@@ -156,12 +161,20 @@ public class TileEntityAdBoard extends AbstractTileEntity {
     this.back = back;
   }
 
-  /** The ad on the back at {@code worldTime}: the front's, or the one the front shows next. */
+  /**
+   * The ad on the back at {@code worldTime}: the front's, or the one the front shows next -- for a
+   * board showing a single ad, the ad after it in the library, so the two sides still differ.
+   */
   public AdEntry showingBack(long worldTime) {
-    if (back == AdBack.NEXT) {
-      return showing(worldTime + AdRotation.clampInterval(interval) * 20L);
+    if (back != AdBack.NEXT) {
+      return showing(worldTime);
     }
-    return showing(worldTime);
+    if (rotation == AdRotation.SINGLE) {
+      List<AdEntry> ads = AdLibrary.get().rotation();
+      int at = ads.indexOf(AdLibrary.get().resolve(adId));
+      return ads.isEmpty() ? showing(worldTime) : ads.get((at + 1) % ads.size());
+    }
+    return showing(worldTime + AdRotation.clampInterval(interval) * 20L);
   }
 
   /** Called on the server with a configuration its packet handler has already checked. */

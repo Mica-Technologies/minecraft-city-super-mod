@@ -211,7 +211,8 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
     // Where along the board a block is, counted in world blocks so it needs no controller: one
     // floodlight every third block of catwalk.
     int along = pos.getX() * right.getXOffset() + pos.getZ() * right.getZOffset();
-    boolean lamp = inServiceRow() && Math.floorMod(along, 3) == 1;
+    boolean lamp = inServiceRow() && kind().getService() == AdBoardKind.Service.CATWALK
+        && Math.floorMod(along, 3) == 1;
     return state.withProperty(LEFT, sameBoard(worldIn, pos.offset(right.getOpposite()), state))
         .withProperty(RIGHT, sameBoard(worldIn, pos.offset(right), state))
         .withProperty(UP, sameBoard(worldIn, pos.up(), state))
@@ -303,8 +304,24 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   @Override
   @Nonnull
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    if (inServiceRow() && kind().getService() == AdBoardKind.Service.POST) {
+      // The half of the post in this block's own cell: a click box must stay inside the cell.
+      AxisAlignedBB post = post(kind());
+      return turn(new AxisAlignedBB(post.minX, 0, post.minZ, 1, 1, post.maxZ),
+          state.getValue(FACING));
+    }
     return turn(new AxisAlignedBB(0, 0, 0, 1, 1, kind().getDepthPx() / 16.0),
         state.getValue(FACING));
+  }
+
+  /**
+   * A kiosk's post, drawn with the face to the south: centred on the block's right-hand edge,
+   * which is the middle of the kiosk, so half of it stands in the empty cell beside. Numbers
+   * shared with gen_ad_boards.py's post models.
+   */
+  static AxisAlignedBB post(AdBoardKind kind) {
+    double half = (kind == AdBoardKind.KIOSK_LARGE ? 4 : 3) / 16.0;
+    return new AxisAlignedBB(1 - half, 0, 0.5 - half, 1 + half, 1, 0.5 + half);
   }
 
   /**
@@ -322,6 +339,10 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
     if (!inServiceRow()) {
       addCollisionBoxToList(pos, entityBox, collidingBoxes,
           getBlockBoundingBox(state, worldIn, pos));
+      return;
+    }
+    if (kind().getService() == AdBoardKind.Service.POST) {
+      addCollisionBoxToList(pos, entityBox, collidingBoxes, turn(post(kind()), facing));
       return;
     }
     EnumFacing right = right(facing);
