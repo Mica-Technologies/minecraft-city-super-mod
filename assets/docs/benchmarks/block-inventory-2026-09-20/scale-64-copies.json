@@ -1,0 +1,369 @@
+{
+ "baselines": [
+  {
+   "fps": 1150.3,
+   "frame_mean": 0.87,
+   "frame_med": 0.82,
+   "frame_p95": 1.16,
+   "work_mean": 0.67,
+   "work_med": 0.63,
+   "low1": 535.7
+  },
+  {
+   "fps": 1173.2,
+   "frame_mean": 0.85,
+   "frame_med": 0.79,
+   "frame_p95": 1.15,
+   "work_mean": 0.65,
+   "work_med": 0.62,
+   "low1": 447.8
+  },
+  {
+   "fps": 1172.0,
+   "frame_mean": 0.85,
+   "frame_med": 0.8,
+   "frame_p95": 1.14,
+   "work_mean": 0.65,
+   "work_med": 0.62,
+   "low1": 565.4
+  },
+  {
+   "fps": 1183.2,
+   "frame_mean": 0.85,
+   "frame_med": 0.79,
+   "frame_p95": 1.13,
+   "work_mean": 0.65,
+   "work_med": 0.61,
+   "low1": 495.3
+  },
+  {
+   "fps": 1178.6,
+   "frame_mean": 0.85,
+   "frame_med": 0.8,
+   "frame_p95": 1.13,
+   "work_mean": 0.65,
+   "work_med": 0.62,
+   "low1": 564.1
+  },
+  {
+   "fps": 1179.6,
+   "frame_mean": 0.85,
+   "frame_med": 0.79,
+   "frame_p95": 1.13,
+   "work_mean": 0.65,
+   "work_med": 0.61,
+   "low1": 461.1
+  },
+  {
+   "fps": 1176.2,
+   "frame_mean": 0.85,
+   "frame_med": 0.8,
+   "frame_p95": 1.13,
+   "work_mean": 0.65,
+   "work_med": 0.62,
+   "low1": 482.4
+  }
+ ],
+ "blocks": {
+  "csm:portable_speed_limit_sign": {
+   "fps": 87.4,
+   "frame_mean": 11.44,
+   "frame_med": 11.33,
+   "frame_p95": 12.71,
+   "work_mean": 11.08,
+   "work_med": 10.99,
+   "low1": 72.2,
+   "census": 64
+  },
+  "csm:portable_message_sign": {
+   "fps": 93.0,
+   "frame_mean": 10.75,
+   "frame_med": 10.64,
+   "frame_p95": 11.93,
+   "work_mean": 10.41,
+   "work_med": 10.3,
+   "low1": 64.5,
+   "census": 64
+  },
+  "csm:school_zone_beacon": {
+   "fps": 145.4,
+   "frame_mean": 6.88,
+   "frame_med": 6.76,
+   "frame_p95": 8.1,
+   "work_mean": 6.57,
+   "work_med": 6.47,
+   "low1": 104.9,
+   "census": 64
+  },
+  "csm:elightblack": {
+   "fps": 529.8,
+   "frame_mean": 1.89,
+   "frame_med": 1.79,
+   "frame_p95": 2.45,
+   "work_mean": 1.67,
+   "work_med": 1.59,
+   "low1": 249.7,
+   "census": 64
+  },
+  "csm:radar_speed_sign": {
+   "fps": 428.8,
+   "frame_mean": 2.33,
+   "frame_med": 2.23,
+   "frame_p95": 2.87,
+   "work_mean": 2.1,
+   "work_med": 2.02,
+   "low1": 205.8,
+   "census": 64
+  },
+  "csm:railroad_crossing_gate_3": {
+   "fps": 403.2,
+   "frame_mean": 2.48,
+   "frame_med": 2.38,
+   "frame_p95": 3.13,
+   "work_mean": 2.25,
+   "work_med": 2.16,
+   "low1": 228.0,
+   "census": 64
+  },
+  "csm:arrow_board": {
+   "fps": 339.9,
+   "frame_mean": 2.94,
+   "frame_med": 2.82,
+   "frame_p95": 3.6,
+   "work_mean": 2.71,
+   "work_med": 2.61,
+   "low1": 146.9,
+   "census": 64
+  },
+  "csm:trafficlightmountkit": {
+   "fps": 591.2,
+   "frame_mean": 1.69,
+   "frame_med": 1.6,
+   "frame_p95": 2.17,
+   "work_mean": 1.48,
+   "work_med": 1.4,
+   "low1": 260.7,
+   "census": 64
+  },
+  "csm:overhead_speed_limit_sign": {
+   "fps": 583.7,
+   "frame_mean": 1.71,
+   "frame_med": 1.62,
+   "frame_p95": 2.2,
+   "work_mean": 1.5,
+   "work_med": 1.42,
+   "low1": 256.1,
+   "census": 64
+  },
+  "csm:polemount_speed_limit_sign": {
+   "fps": 667.5,
+   "frame_mean": 1.5,
+   "frame_med": 1.42,
+   "frame_p95": 1.98,
+   "work_mean": 1.29,
+   "work_med": 1.22,
+   "low1": 369.3,
+   "census": 64
+  },
+  "csm:dynamic_street_sign": {
+   "fps": 750.1,
+   "frame_mean": 1.33,
+   "frame_med": 1.26,
+   "frame_p95": 1.76,
+   "work_mean": 1.12,
+   "work_med": 1.06,
+   "low1": 384.0,
+   "census": 64
+  },
+  "csm:hvac_thermostat": {
+   "fps": 844.0,
+   "frame_mean": 1.18,
+   "frame_med": 1.11,
+   "frame_p95": 1.59,
+   "work_mean": 0.98,
+   "work_med": 0.92,
+   "low1": 430.7,
+   "census": 64
+  },
+  "csm:overhead_message_sign": {
+   "fps": 854.3,
+   "frame_mean": 1.17,
+   "frame_med": 1.1,
+   "frame_p95": 1.57,
+   "work_mean": 0.97,
+   "work_med": 0.91,
+   "low1": 428.2,
+   "census": 64
+  },
+  "csm:controllabletattletalebeacon": {
+   "fps": 830.3,
+   "frame_mean": 1.2,
+   "frame_med": 1.13,
+   "frame_p95": 1.63,
+   "work_mean": 1.0,
+   "work_med": 0.94,
+   "low1": 421.1,
+   "census": 64
+  },
+  "csm:controllableverticalupleftaddonsignal": {
+   "fps": 832.2,
+   "frame_mean": 1.2,
+   "frame_med": 1.13,
+   "frame_p95": 1.6,
+   "work_mean": 0.99,
+   "work_med": 0.94,
+   "low1": 404.8,
+   "census": 64
+  },
+  "csm:dynamic_guide_sign": {
+   "fps": 1121.3,
+   "frame_mean": 0.89,
+   "frame_med": 0.84,
+   "frame_p95": 1.2,
+   "work_mean": 0.69,
+   "work_med": 0.65,
+   "low1": 510.3,
+   "census": 64
+  },
+  "csm:tlvcover": {
+   "fps": 1126.1,
+   "frame_mean": 0.89,
+   "frame_med": 0.84,
+   "frame_p95": 1.2,
+   "work_mean": 0.69,
+   "work_med": 0.65,
+   "low1": 495.4,
+   "census": 64
+  },
+  "csm:crane_head": {
+   "fps": 1111.5,
+   "frame_mean": 0.9,
+   "frame_med": 0.84,
+   "frame_p95": 1.23,
+   "work_mean": 0.7,
+   "work_med": 0.66,
+   "low1": 457.8,
+   "census": 64
+  },
+  "csm:blankout_box": {
+   "fps": 838.2,
+   "frame_mean": 1.19,
+   "frame_med": 1.13,
+   "frame_p95": 1.57,
+   "work_mean": 0.99,
+   "work_med": 0.94,
+   "low1": 366.6,
+   "census": 64
+  },
+  "csm:controllablecrosswalksingle": {
+   "fps": 824.4,
+   "frame_mean": 1.21,
+   "frame_med": 1.14,
+   "frame_p95": 1.6,
+   "work_mean": 1.01,
+   "work_med": 0.94,
+   "low1": 302.7,
+   "census": 64
+  },
+  "csm:lane_control_signal": {
+   "fps": 1128.6,
+   "frame_mean": 0.89,
+   "frame_med": 0.83,
+   "frame_p95": 1.18,
+   "work_mean": 0.69,
+   "work_med": 0.65,
+   "low1": 484.1,
+   "census": 64
+  },
+  "csm:tlhawkborderblackyellow": {
+   "fps": 1140.1,
+   "frame_mean": 0.88,
+   "frame_med": 0.83,
+   "frame_p95": 1.15,
+   "work_mean": 0.68,
+   "work_med": 0.65,
+   "low1": 549.6,
+   "census": 64
+  },
+  "csm:traffic_drum": {
+   "fps": 1115.9,
+   "frame_mean": 0.9,
+   "frame_med": 0.84,
+   "frame_p95": 1.21,
+   "work_mean": 0.7,
+   "work_med": 0.65,
+   "low1": 544.1,
+   "census": 64
+  },
+  "csm:firealarmsystemsensorlseriesceilingspeakerstrobered": {
+   "fps": 1148.7,
+   "frame_mean": 0.87,
+   "frame_med": 0.82,
+   "frame_p95": 1.16,
+   "work_mean": 0.67,
+   "work_med": 0.64,
+   "low1": 540.2,
+   "census": 64
+  },
+  "csm:barricade_type_3_right": {
+   "fps": 1136.5,
+   "frame_mean": 0.88,
+   "frame_med": 0.83,
+   "frame_p95": 1.17,
+   "work_mean": 0.68,
+   "work_med": 0.65,
+   "low1": 534.3,
+   "census": 64
+  },
+  "csm:tlitehorzwiremount": {
+   "fps": 1130.0,
+   "frame_mean": 0.88,
+   "frame_med": 0.83,
+   "frame_p95": 1.21,
+   "work_mean": 0.69,
+   "work_med": 0.65,
+   "low1": 501.7,
+   "census": 64
+  },
+  "csm:spanwireclustermount": {
+   "fps": 1127.3,
+   "frame_mean": 0.89,
+   "frame_med": 0.84,
+   "frame_p95": 1.19,
+   "work_mean": 0.69,
+   "work_med": 0.65,
+   "low1": 515.2,
+   "census": 64
+  },
+  "csm:controllablecrosswalk": {
+   "fps": 832.2,
+   "frame_mean": 1.2,
+   "frame_med": 1.13,
+   "frame_p95": 1.6,
+   "work_mean": 1.0,
+   "work_med": 0.94,
+   "low1": 392.7,
+   "census": 61
+  },
+  "csm:spanwireanchor": {
+   "fps": 1121.4,
+   "frame_mean": 0.89,
+   "frame_med": 0.83,
+   "frame_p95": 1.2,
+   "work_mean": 0.69,
+   "work_med": 0.65,
+   "low1": 465.5,
+   "census": 64
+  },
+  "csm:controllablehawksignal": {
+   "fps": 838.6,
+   "frame_mean": 1.19,
+   "frame_med": 1.12,
+   "frame_p95": 1.59,
+   "work_mean": 0.99,
+   "work_med": 0.93,
+   "low1": 367.9,
+   "census": 64
+  }
+ }
+}

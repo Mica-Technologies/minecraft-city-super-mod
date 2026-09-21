@@ -1,0 +1,53 @@
+Raw console results, 2026-09-21, HEAD 7e56919ba (session build 2026.09.20-15-g7e56919), flat world,
+854x480, render distance 12, uncapped, time 6000 unless noted. Ryzen 7 7800X3D, AMD Radeon Graphics.
+
+== CsmDisplayListCache cliff: heads in view (cliff.py; base frame 0.70 ms) ==
+hawk signal head, 40x40 grid spacing 2, camera 34 blocks back at height 22 pitch 20
+placed=800   rendered=800   profiler 2.12 us each   frame 2.888 ms
+placed=1000  rendered=1000  profiler 2.13 us each   frame 3.263 ms
+placed=1020  rendered=1020  profiler 2.14 us each   frame 3.232 ms
+placed=1024  rendered=1024  profiler 2.11 us each   frame 3.312 ms
+placed=1025  rendered=1025  profiler 2.13 us each   frame 3.348 ms
+placed=1030  rendered=1030  profiler 476.67 us each frame 526.316 ms
+placed=1050  rendered=1050  profiler 504.42 us each frame 526.316 ms
+placed=1100  rendered=1100  profiler 515.25 us each frame 555.556 ms
+placed=1300  rendered=1300  profiler 500.39 us each frame 625.000 ms
+placed=1600  rendered=1600  profiler 482.97 us each frame 833.333 ms
+placed=500 (after 1050)   rendered=500   2.17 us each   frame 1.950 ms   (recovers)
+
+Mixed types, same 40x40 grid:
+520 hawk + 520 vertical-ahead heads (same renderer, 1040 total)   frame 500.00 ms   (they share one cache)
+800 heads + 800 crosswalk-new (two renderers, 1600 total)          frame 5.34 ms
+800 heads + 800 backplates (two renderers, 1600 total)             frame 4.75 ms
+
+Other renderers, same cache class:
+tlhawkborderblackyellow (backplate) 1000: 2.21 us/block frame 2.897 ms;  1050: 69.37 us/block frame 73.529 ms
+controllablecrosswalksingle          1000: 3.34 us/block frame 4.029 ms;  1050: 33.00 us/block frame 35.336 ms
+
+== Fire alarm strobes (strobe.py), one panel, aSi:1b, wall-clock flash 75 ms + 75 ms fade per 1000 ms ==
+firealarmsystemsensorlserieshornstrobered N=30  dist 16 night: off 1.1 us/frame, on 37.0 (+35.9 = 1.2 us/strobe avg, ~8.0 per flash frame); frame p99 1.18 -> 1.34 ms
+same, noon:                                                     off 1.1, on 37.9 (+36.8 = ~8.2 per flash frame); frame p99 1.14 -> 1.32
+N=120 dist 22 night:                                            off 3.5, on 87.3 (+83.8 = 0.70 avg, ~4.7 per flash frame); frame mean 0.796 -> 0.889 ms, p99 1.17 -> 2.23 ms
+firealarmest2028atstrobered N=30 (strobe-only channel): OFF read 36.7 because a previous run's positions were still active in the client registry
+Single strobe at 8 blocks: off 0.3, on 2.5-2.7 us/frame (~17 us per flash frame)
+INVALID first attempts (kept for the record): one panel per strobe -> only one strobe active (shared channel), reported 0.67 us per strobe.
+
+== TE data sync flood (sync.py, blockdata a thermostat as fast as the API allows, ~27/s), thermostat inside the section ==
+empty section               quiet mean 0.682 ms  flood 0.706 ms
+16^3 of oak stairs (4096)   quiet mean 0.646 ms  flood 0.651 ms   (terrain_setup update +0.03 ms)
+8 tomato crates  (21k tris)  quiet 0.664 / p99 1.01 / max 2.54    flood(221 syncs) 0.716 / 1.22 / 3.29
+64 tomato crates (167k tris) quiet 0.684 / p99 1.04 / max 2.68    flood(116 syncs) 2.174 / 2.17 / 444.57
+512 tomato crates (1.34M)    quiet 0.681 / p99 1.03 / max 11.14   flood(112 syncs) 2.343 / 3.40 / 468.81
+216 tomato crates: client died with OutOfMemoryError: Direct buffer memory in the chunk rebuild worker
+  (evidence/oom-direct-buffer-216-crates.txt), after the 512, 64 and 8 crate floods in the same JVM.
+
+== Day vs night, profiler us each, 16 copies (night.py) ==
+controllablehawksignal 2.67 / 2.60; tlhawkborderblackyellow (backplate) 2.32 / 2.39; dynamic_street_sign 9.79 / 10.06;
+controllableverticalupleftaddonsignal 5.03 / 4.94; controllablecrosswalksingle 3.27 / 3.33.
+
+== Frame-level scale at HEAD (curve.py, us per block above baseline) ==
+arrow_board          64: 35.29   256: 33.64      (was 30.2 at 14415298d)
+dynamic_street_sign  64:  7.60   256:  7.70      (was 7.8)
+
+== Thermostat per-instance bimodality (8 copies, spacing 6, camera 12-60 blocks) ==
+six instances 8.0-9.0 us (one 15), two instances 0.0-0.2 us, at any facing/distance; cause not found.

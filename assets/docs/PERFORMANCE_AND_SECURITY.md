@@ -7,6 +7,10 @@ and the conventions every network packet follows.
 Most of this was learned by measuring something, finding the assumption behind it was wrong, and
 measuring again. The traps are written down so they are not rediscovered.
 
+The cost of every custom-rendered block, measured one by one, and the ranked list of what to fix
+is in [`PERFORMANCE_INVENTORY.md`](PERFORMANCE_INVENTORY.md). This document holds the rules and the
+method; that one holds the numbers.
+
 ## Where the time goes
 
 **Client frame time is the whole story. CSM's server tick cost is negligible.**
@@ -35,9 +39,17 @@ On the client, CSM was 81% of a 4.65 ms frame at the dense, front-facing benchma
 Since that table was taken, the signal bulbs (-7% frame time), the crosswalk countdown and face
 (224 to 245 fps) and the dynamic signs' structural geometry (-16.5%, 243 to 291 fps) have all been
 baked into display lists. What remains is the signal head bodies and the sign legends, both of
-which are already baked or already cheap. There is no obvious next target of that size: further
-gains would need a different technique, such as instancing or a vertex buffer batched across tile
-entities, rather than more display lists.
+which are already baked or already cheap. Within the signal family there is no obvious next target
+of that size: further gains would need a different technique, such as instancing or a vertex buffer
+batched across tile entities, rather than more display lists.
+
+**Outside the signal family there are larger per-block targets.** The per-block inventory
+(2026-09-20/21) found the two portable signs at 135-165 microseconds each, the school zone beacon at
+80-136, a filled guide sign at 20-60, the arrow board at 34, the radar sign at 22-37 and the
+emergency lights at 20-30, against 2.2-2.9 for a plain signal head, none of them baked. And it found
+a cliff rather than a cost: past 1,024 visible signal heads the display-list cache thrashes and a
+frame goes from 3.3 ms to over 500 ms (see "Rules for render code"). Numbers, method and the ranked
+fix list are in `PERFORMANCE_INVENTORY.md`.
 
 ### Memory
 
@@ -51,6 +63,16 @@ model registry is the target and the caches are noise.** Do not add memory-press
 render caches: it would give back under a megabyte at a real frame-rate cost, and compiled display
 lists live in driver memory the JVM cannot see anyway. Re-check the floor with
 `dev-env-utils/gradle/lowmem.gradle` whenever a large batch of blocks or models lands.
+
+This is about the *bound being too low*, not too high: see the cliff below, where a cache that is
+too small is catastrophic and one that is too large costs driver memory nobody has measured yet.
+
+**Dense baked sections have their own memory failure.** A section holding a lot of heavy geometry
+is rebuilt whenever anything in it changes, and the rebuild grows direct buffers. In a test, a
+section of 216 tomato crates (about 565,000 triangles) with a tile entity syncing in it ended in
+`OutOfMemoryError: Direct buffer memory` in the chunk rebuild worker, which took the client down
+(`benchmarks/block-inventory-2026-09-20/evidence/`). At 64 crates (167,000 triangles) the same sync
+rate produced a 445 ms hitch instead. Ordinary sections are unaffected.
 
 ## Measuring without fooling yourself
 
@@ -86,6 +108,24 @@ Each rule below exists because breaking it once produced a confident wrong answe
   live, baked, live: animation shows up in both gaps, a bake fault only in the cross-path one.
   Always run a positive control too -- skip the pass and confirm the crop's pixels move -- and take
   six frames per path, not one. A single before/after pair has passed a real one-frame stale draw.
+- **Warm the profiler for at least 6 seconds.** `client_profile_rendering` reads cold: with a 3 s
+  warm-up the emergency light read 43 microseconds against 20 at frame level and radar 43 against
+  22. Cheap, hot renderers (signal heads) did not move. Confirm anything mid-cost at frame level
+  with 256 copies, not 64: a small group carries a fixed 15-30 microsecond overhead (one head
+  cost 16, four 43, 256 cost 747), which reads as a per-block "plateau" of about 5 microseconds on
+  cheap blocks. Use `1000 / fps` or `meanMs` for small A/B deltas.
+- **A near-zero reading is not "cheap" until you have seen it draw.** A block reporting `rendered =
+  8` at 0.05 microseconds may be early-outing, hidden behind a nearer row, or a tile entity that
+  `/setblock` replaced. Read the per-position `costliest` list and take a screenshot. Clear the
+  test area first: a forgotten grid of heavy models from an earlier check contaminated several
+  runs. Use `/blockdata` for tile-entity state; a string with a backslash-n escape is rejected by
+  SNBT, a literal line feed is not.
+- **Sweep across the limit you suspect.** The 1,024-position cache limit never showed in the 1,200
+  head benchmark because no camera position had more than 1,024 heads in view. Counting
+  1,000 / 1,024 / 1,025 / 1,030 and reading frame time found it in one run.
+- **The camera does not go where `/tp` says.** Pitch from `/tp` is ignored and a creative player
+  falls to the ground, so set `client_view` `pauseOnLostFocus=false` and `grabInputFocus=true`,
+  sleep after the teleport, then `client_look`.
 - **One dev client at a time.** Stopping a backgrounded `./gradlew runClient` kills the Gradle
   wrapper, not the forked client JVM, which keeps running the old build. `Address already in use:
   bind` from MCMCP in a client log means a previous client is still alive. Confirm a single
@@ -100,8 +140,17 @@ Each rule below exists because breaking it once produced a confident wrong answe
   caching anything. A violation corrupts *other* blocks later in the frame, never shows up in a
   build or a unit test, and has been rediscovered three times.
 - **Cache through `CsmDisplayListCache`,** and release a position from the tile entity's
-  `invalidate()` and `onChunkUnload()`. The access-ordered LRU bound of 1,024 positions is the
-  backstop, not the fix. `CsmClientLifecycleHandler` clears every cache on disconnect.
+  `invalidate()` and `onChunkUnload()`. `CsmClientLifecycleHandler` clears every cache on
+  disconnect.
+- **The cache bound is a cliff, not a soft limit.** `CsmDisplayListCache` evicts in
+  least-recently-rendered order above 1,024 positions per cache, and it was written as a leak
+  backstop sized "well above" what is visible. When more positions than that are drawn in one frame
+  every access evicts the entry the next frame needs first, so every entry recompiles every frame:
+  1,000 visible signal heads cost 3.3 ms and 1,030 cost 526 ms. It is per renderer cache (all head
+  models share one; backplates and crosswalks have their own), it recovers the moment the count
+  drops, and it is measured, not argued. Treat the bound as something a real scene can exceed:
+  raise it, or make eviction refuse anything rendered this frame or last, before relying on it.
+  Ranked options are in `PERFORMANCE_INVENTORY.md` (Tier 0).
 - **Anything that can change without the tile entity being marked dirty belongs in the cache
   key.** A sign's night lighting resolves against the sky each frame, so its lists key on
   `combinedLight` plus a lit bit.
@@ -143,6 +192,15 @@ a single quad, both visual trade-offs to cost against measured numbers before pr
   `&&` it back in, or spectators start placing calls at intersections.
 - **`markDirtySync` schedules a block update only for blocks implementing
   `ICsmScheduledTickConsumer`** -- the three that override `updateTick`.
+- **Every tile entity data packet rebuilds the client's chunk section.**
+  `AbstractTileEntity.onDataPacket` calls `world.notifyBlockUpdate`, because `getActualState` may
+  read tile entity data. For a block whose model never reads it (thermostats, crosswalks, heads,
+  the radar and school beacons) that rebuild is waste. Measured at 27 syncs a second: no effect in
+  an empty section or one of 4,096 stairs, but a 445 ms hitch when the section holds 167,000
+  triangles of furnishings. A tile entity that syncs on a cadence (crosswalk countdown once a
+  second, thermostat ramp every few seconds, radar reading up to five a second) is the case to
+  watch. New crosswalks also set `dirty` in `readNBT`, discarding all three of their caches on
+  every countdown packet.
 - **A static cache needs a lifecycle hook.** `CsmClientLifecycleHandler` stops sounds, strobes and
   display lists on disconnect -- without it a fire alarm's strobes could render in the next world
   at the same coordinates. `CsmCommonLifecycleHandler` clears the sign setback cache on world
