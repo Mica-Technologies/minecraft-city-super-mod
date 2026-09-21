@@ -25,10 +25,17 @@ to lie along the jamb (x 0..1.75), its latch edge to the far side of the cell. I
 as its own model rather than a blockstate rotation (which turns about the block's centre and would
 put the hinge in the wrong corner), and BlockBuildingDoor's renderer swings the closed model about
 the same pivot, so the swing ends exactly on the open model. SHARED: PIVOT.
+
+A fitted door closer sits on the PUSH side of the leaf -- the side the door swings away from -- as a
+parallel-arm closer: its body on the leaf, a shoe on the wall above the opening, and a two-link arm
+between them whose elbow is solved from the links' lengths at every angle (closer_joints). Only the
+body swings with the leaf; the renderer draws the arm from the same solution, so the swing starts on
+the shut model and ends on the open one. SHARED: CLOSER_*.
 """
 
 import argparse
 import json
+import math
 import os
 import random
 import sys
@@ -59,6 +66,27 @@ PIVOT = (0.875, 15.125)
 # a door that swings toward you is a pull handle nobody can pull -- and a storefront's or a fire
 # door's does the same. The rest swing in, as a vanilla door does.
 OUTSWING = ("door_metal_fire", "door_metal_exit", "door_storefront_bronze")
+
+# SHARED with DoorCloserArm: the closer's arm, in px, for a left-hinged inswing door with the inside
+# to the north (every other door is a mirror of it). The spindle rides on the closer's body on the
+# leaf's push face; the shoe is fixed on the wall above the opening; the main arm (spindle to
+# elbow) and the forearm (elbow to shoe) are rigid, so the elbow is wherever the two lengths meet,
+# on the side CLOSER_ELBOW_SIDE picks -- toward the latch while the door is shut, as a parallel arm
+# folds. The lengths and the shoe were chosen so that both baked poses (shut, and a quarter turn
+# open) put each link on a multiple of 22.5 degrees, the only angles a model element can be turned
+# to: shut, the main arm runs along the door toward the latch and the forearm folds back to the
+# shoe at 157.5; open, they are at 45 and 90, the forearm straight out through the top of the
+# opening. No other choice kept the arm clear of the leaf and the jambs through the whole swing.
+CLOSER_SPINDLE = (6.0, 17.0)
+CLOSER_SHOE = (6.5317, 18.995)
+CLOSER_MAIN = 5.3482
+CLOSER_FORE = 5.2133
+CLOSER_ELBOW_SIDE = -1
+
+# Tint indices mark which part of a door model is which for the swing renderer; no colour handler is
+# registered for the doors, so they tint nothing. SHARED with TileEntityDoorSwingRenderer.
+TINT_FIXED = 1   # fixed to the frame, so drawn where it is and not swung: the closer's shoe
+TINT_ARM = 2     # the closer's arm, which the renderer solves and draws itself at every angle
 
 # registry name -> (style, colour, glass layer, name in each language). Order is creative order.
 DOORS = {
@@ -503,15 +531,112 @@ def hardware_for(style, upper, z_in=Z0, z_out=Z1):
     return lever(z_in, z_out)
 
 
-def closer_parts(body_z=Z0):
-    """A surface-mounted closer on the inside face near the top of the leaf, by the hinge, with
-    its arm up to a shoe on the underside of the header."""
-    return [box(1, 11.5, body_z - 2.25, 7, 14, body_z, "#hw"),
-            box(7, 12, body_z - 2, 7.5, 13.5, body_z - 0.25, "#hw"),
-            box(5.5, 14, body_z - 1.5, 6.5, 15.25, body_z - 0.5, "#hw"),
-            box(5.5, 14.75, body_z - 7, 6.5, 15.25, body_z - 1, "#hw"),
-            box(5.5, 14.75, body_z - 7.5, 12, 15.25, body_z - 6.5, "#hw"),
-            box(11, 15.25, body_z - 8.5, 13.5, 16, body_z - 5.5, "#hw")]
+# --- the door closer: a body on the leaf, a shoe on the wall, and the arm between them ---
+#
+# Drawn for a left-hinged inswing door; the rest are its mirrors. It sits on the PUSH side of the
+# leaf, the side the door swings away from -- here the outside face, z = 16 -- because the other
+# face turns to the jamb as the door opens: the leaf opens within the wall's thickness, so an arm
+# from a closer on the pull face would have to pass through the open leaf to reach the frame. On
+# the push face the body turns into the opening with the leaf and the arm reaches it there.
+
+
+def closer_body():
+    """The closer's body, on the push face near the top of the leaf by the hinge, and the spindle
+    post the arm turns on. These ride on the leaf."""
+    sx, sz = CLOSER_SPINDLE
+    return [box(1, 11.5, Z1, 7, 14, Z1 + 2.25, "#hw"),
+            box(7, 12, Z1 + 0.25, 7.5, 13.5, Z1 + 2, "#hw"),
+            box(sx - 0.6, 14, sz - 0.6, sx + 0.6, 15.25, sz + 0.6, "#hw")]
+
+
+def closer_shoe():
+    """The shoe the forearm turns in, on a plate on the wall face above the opening: fixed to the
+    frame, so it is marked TINT_FIXED and the renderer never swings it."""
+    px, pz = CLOSER_SHOE
+    return _tint([box(px - 1.5, 16, Z1, px + 1.5, 17.5, Z1 + 0.5, "#hw"),
+                  box(px - 1, 15.25, Z1 + 0.25, px + 1, 16.25, pz + 1, "#hw")], TINT_FIXED)
+
+
+def closer_joints(turn):
+    """(spindle, elbow) with the door turned `turn` degrees open (0 shut, 90 open), in px.
+
+    The spindle turns with the leaf about PIVOT; the elbow is where a circle of CLOSER_MAIN about
+    it meets one of CLOSER_FORE about the shoe, on the CLOSER_ELBOW_SIDE of the line between them.
+    SHARED with DoorCloserArm.solve, which the renderer draws every frame of a swing from."""
+    a = math.radians(turn)
+    hx, hz = PIVOT
+    x, z = CLOSER_SPINDLE[0] - hx, CLOSER_SPINDLE[1] - hz
+    sx, sz = hx + x * math.cos(a) + z * math.sin(a), hz - x * math.sin(a) + z * math.cos(a)
+    px, pz = CLOSER_SHOE
+    dx, dz = px - sx, pz - sz
+    d = math.hypot(dx, dz)
+    along = (CLOSER_MAIN ** 2 - CLOSER_FORE ** 2 + d * d) / (2 * d)
+    h = math.sqrt(CLOSER_MAIN ** 2 - along ** 2)
+    mx, mz = sx + along * dx / d, sz + along * dz / d
+    side = CLOSER_ELBOW_SIDE
+    return (sx, sz), (mx - side * h * dz / d, mz + side * h * dx / d)
+
+
+def _link(a, b, y0, y1, half):
+    """A straight link from a to b (x, z) at y0..y1, `half` either side of the line: an element
+    along one axis, turned about a to the link's angle. Only multiples of 22.5 degrees can be
+    drawn that way, which is what the arm's lengths were chosen for."""
+    ax, az = a
+    phi = math.degrees(math.atan2(b[1] - az, b[0] - ax))
+    snap = round(phi / 22.5) * 22.5
+    assert abs(phi - snap) < 0.05, "a closer link at %.3f degrees cannot be drawn" % phi
+    phi = (snap + 180) % 360 - 180
+    length = math.hypot(b[0] - ax, b[1] - az)
+    r = lambda v: round(v, 4)
+    # An element turned by `angle` about +y carries +x to (cos, -sin): pick the axis the link
+    # runs nearest to, and the turn left over is within the 45 degrees an element allows.
+    if -45 <= phi <= 45:
+        el = box(r(ax), y0, r(az - half), r(ax + length), y1, r(az + half), "#hw")
+        angle = -phi
+    elif 45 < phi < 135:
+        el = box(r(ax - half), y0, r(az), r(ax + half), y1, r(az + length), "#hw")
+        angle = 90 - phi
+    elif -135 < phi < -45:
+        el = box(r(ax - half), y0, r(az - length), r(ax + half), y1, r(az), "#hw")
+        angle = -90 - phi
+    else:
+        el = box(r(ax - length), y0, r(az - half), r(ax), y1, r(az + half), "#hw")
+        angle = (180 - phi + 180) % 360 - 180
+    if angle:
+        el["rotation"] = {"origin": [r(ax), y0, r(az)], "axis": "y", "angle": angle}
+    return el
+
+
+# SHARED with DoorCloserArm: the links' heights and half widths, and the elbow pin's, in px.
+MAIN_Y, FORE_Y, PIN_Y = (14.5, 15.0), (15.0, 15.5), (14.375, 15.625)
+LINK_HALF, PIN_HALF = 0.5, 0.625
+
+
+def closer_arm(turn):
+    """The arm at `turn` degrees open: the main arm from the spindle to the elbow, the forearm from
+    the elbow to the shoe, and the elbow's pin. The renderer draws its own at every angle between
+    (TINT_ARM), so these are only ever seen shut and open."""
+    s, e = closer_joints(turn)
+    pin = box(round(e[0] - PIN_HALF, 4), PIN_Y[0], round(e[1] - PIN_HALF, 4),
+              round(e[0] + PIN_HALF, 4), PIN_Y[1], round(e[1] + PIN_HALF, 4), "#hw")
+    return _tint([_link(s, e, MAIN_Y[0], MAIN_Y[1], LINK_HALF),
+                  _link(e, CLOSER_SHOE, FORE_Y[0], FORE_Y[1], LINK_HALF), pin], TINT_ARM)
+
+
+def _rounded(elements):
+    """The arm's odd lengths leave float noise (7.968299999999999) after a mirror: round it off."""
+    for e in elements:
+        for key in ("from", "to"):
+            e[key] = [round(v, 4) for v in e[key]]
+        if "rotation" in e:
+            e["rotation"]["origin"] = [round(v, 4) for v in e["rotation"]["origin"]]
+    return elements
+
+
+def closer_models():
+    """(left shut, left open) of the closer for a left-hinged inswing door."""
+    return (closer_body() + closer_shoe() + closer_arm(0),
+            _open(closer_body()) + closer_shoe() + closer_arm(90))
 
 # --- the open pose: the closed model turned a quarter about the hinge pivot ---
 
@@ -582,15 +707,14 @@ def models():
             "parent": "item/generated",
             "textures": {"layer0": TEX_REF % (name + "_icon")}}
     hw = {"hw": TEX_REF % "door_silver"}
-    out["closer_left"] = _model(closer_parts(), hw)
-    out["closer_right"] = _model(sc._mirror_x(closer_parts()), hw)
-    out["closer_left_open"] = _model(_open(closer_parts()), hw)
-    out["closer_right_open"] = _model(sc._mirror_x(_open(closer_parts())), hw)
-    out_ = closer_parts(0.0)
-    out["closer_out_left"] = _model(out_, hw)
-    out["closer_out_right"] = _model(sc._mirror_x(out_), hw)
-    out["closer_out_left_open"] = _model(_open_out(out_), hw)
-    out["closer_out_right_open"] = _model(sc._mirror_x(_open_out(out_)), hw)
+    # An outswing door's closer is the depth mirror of an inswing door's, as its leaf is: still on
+    # the push face, which is now the inside, with the shoe on the room side of the wall above.
+    shut, open_ = closer_models()
+    for prefix, flip in (("closer", lambda els: els), ("closer_out", sc._mirror_z)):
+        out[prefix + "_left"] = _model(_rounded(flip(shut)), hw)
+        out[prefix + "_right"] = _model(_rounded(sc._mirror_x(flip(shut))), hw)
+        out[prefix + "_left_open"] = _model(_rounded(flip(open_)), hw)
+        out[prefix + "_right_open"] = _model(_rounded(sc._mirror_x(flip(open_))), hw)
     out["door_workshop"] = workshop_model()
     return out
 

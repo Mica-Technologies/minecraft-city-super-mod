@@ -26,8 +26,10 @@ the **Door Keypad** from the garage doors, which locks a door as well. Every ass
 - **Redstone** holds a door (and its pair) open while it is powered.
 - **Door Closer** (item, crafted from two iron ingots, a Sheet Metal and a Fastener Kit): right-click
   a door to fit one. The door then shuts itself three seconds after a player (or a keypad) opens
-  it, unless redstone is holding it open, and wears a surface-mounted closer on its inside face with
-  its arm up to the header. Sneak-click the door with an empty hand to take it off again. It is an
+  it, unless redstone is holding it open, and wears a parallel-arm closer on its **push side** --
+  the side it swings away from: the outside of a door that swings in, the inside of one that swings
+  out -- with a shoe on the wall above the opening and an arm that folds and unfolds between them
+  as the door moves. Sneak-click the door with an empty hand to take it off again. It is an
   add-on rather than a property of some doors because a real closer is -- any door may have one, and
   none does to begin with (the user asked for it to be optional, 2026-09-18).
 - **Door Keypad**: linked to a door (sneak-click the keypad, then the door, both with an empty
@@ -48,8 +50,12 @@ server side only).
 ticks -- its upper half has a `TileEntityDoorSwing`, which holds only the direction and the tick it
 started and never ticks: a scheduled block tick ends the swing, and the tile entity goes with the
 state that asked for it. The models draw nothing while a door swings, and the renderer draws both
-halves' own closed models turned about the hinge, so handles, bars and a fitted closer swing with
-the leaf. With `animateDoors` off it draws them where they are going at once.
+halves' own closed models turned about the hinge, so handles, bars and a fitted closer's body swing
+with the leaf; a closer's shoe stays put and its arm is solved for the angle (below). With
+`animateDoors` off it draws them where they are going at once. Every face it draws is shaded as the
+world shades a block face, by the way it faces at that moment, so the last frame of a swing is as
+light or dark as the baked model that replaces it (the renderer used to draw the leaf unshaded, a
+visible step at both ends of every swing).
 
 **The open model is the closed one turned about the hinge**, a quarter turn about the pivot
 (0.875, 15.125) px for a left hinge, which carries the leaf from the outside face to lie along the
@@ -74,6 +80,36 @@ hung flush with the wall; open, it is inside the cell. The facing, the placing r
 redstone and keypad locks are untouched: the inside is still the side the door faces, and still
 the side a locked door lets people out from, which for an exit door is the side with the push bar.
 
+**The closer's arm articulates.** A real closer is three parts: a body on the leaf, a shoe fixed to
+the frame, and an arm of two rigid links between them -- the main arm from the body's spindle to an
+elbow, the forearm from the elbow to the shoe. The leaf carries the spindle round the hinge; the
+shoe does not move; so the elbow can only be where a circle of the main arm's length about the
+spindle meets one of the forearm's length about the shoe, on the side the arm folds to.
+`DoorCloserArm.solve` works that out for any angle and `gen_doors.closer_joints` for the two it
+bakes, from the same constants (`CLOSER_*`, SHARED): shut, the arm lies folded along the door with
+its elbow toward the latch, as a parallel arm does; open, it reaches from the body, now in the
+opening, out through the top of the opening to the shoe.
+
+- **It is on the push side, for every door.** The leaf opens *within the wall's thickness* and ends
+  lying along the jamb, so the face the door swings toward -- where a regular-arm closer would go --
+  finishes against the jamb block, and an arm from a body there cannot reach the frame without
+  passing through the open leaf. The push face turns into the opening instead, and a parallel-arm
+  closer, the common mount on real commercial doors, is what goes there. So an inswing door's
+  closer is on its outside (it used to be on the inside, with an arm that swung off with the leaf),
+  and an outswing door's -- the exit door's, beside the push bar -- is on its inside. The body and
+  shoe stand proud of the wall by a few pixels, as on a real door hung flush with the wall.
+- **The models mark which part is which by tint index** (no colour handler is registered for the
+  doors, so it tints nothing): the shoe `TINT_FIXED`, which the renderer draws unswung, and the arm
+  `TINT_ARM`, which it leaves out and draws itself as bars between the solved points. The body is
+  unmarked and swings with the leaf.
+- **Both baked poses put each link on a multiple of 22.5 degrees**, the only angles a model element
+  can be turned to. That is what fixed the link lengths and the shoe (5.3482 and 5.2133 px, shoe at
+  (6.5317, 18.995)): shut the links are at 0 and 157.5, open at 45 and 90. Of the arrangements that
+  land on those angles, this is the one that keeps the arm clear of the leaf and the jambs for the
+  whole swing and does not pull straight or fold flat. `DoorCloserArmTest` holds the baked models
+  to the solver and the arm clear all the way round: change a constant and it fails until the
+  generator and the Java agree again.
+
 Glazed doors (the lites, the fire door, storefront, half-glass back door) are on the translucent
 layer; the rest are cutout.
 
@@ -93,6 +129,11 @@ instead of a Fabricator cost. The Door Workshop is four planks, two Fastener Kit
 - **"Hollow Metal Door" is a coloured metal set** to a cost rule on the word "metal", which comes
   first in the Building Materials rules. Doors are priced before it, and the garage door fittings
   and keypad, whose names also say "door", are kept out of the door rule.
+- **`renderModelBrightnessColor` throws away a baked model's face shading.** It overwrites every
+  vertex colour with the brightness it is given, so a model drawn that way in a renderer is lit
+  evenly on every face. The swing renderer writes each quad itself and shades it by where it faces.
+- **A closer on the pull face cannot work here** (see the closer's arm): the open leaf lies along
+  the jamb inside the wall, and the pull face ends against the jamb block.
 - **1.12's long array tag cannot be read back** (no getter), so `DoorLocks` stores positions as
   pairs of ints.
 
