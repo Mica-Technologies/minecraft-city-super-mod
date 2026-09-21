@@ -1,5 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.codeutils.RoadSurfaceHeight;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
@@ -23,6 +26,18 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+/**
+ * Renders the portable variable speed limit sign: trailer, wheels, outriggers, mast, sign panel
+ * with its LED screen, the optional flasher sections and the legend and speed text.
+ *
+ * <p>Everything but the text and the flasher lenses is the same for every sign that shares a
+ * trailer colour, a flasher setting and a world light level, so it is compiled into a list shared
+ * by all of them ({@link CsmSharedDisplayLists}, keyed by {@link #structureKey}) and replayed under
+ * each sign's own facing and angle transform. The vertices keep the world lightmap they always had,
+ * which is why the light is part of the key. The flasher lenses (their phase follows the clock) and
+ * the text (the speed follows the tile entity) are drawn live every frame.
+ * {@link CsmRenderToggles#sharedBakesPerFrame} draws the structure per frame, for comparison.</p>
+ */
 public class TileEntityPortableSpeedLimitRenderer
     extends TileEntitySpecialRenderer<TileEntityVariableSpeedLimit> {
 
@@ -119,6 +134,33 @@ public class TileEntityPortableSpeedLimitRenderer
   private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
   private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
+  // Flasher placement: the signal sections sit at the top corners of the sign frame
+  private static final float FLASHER_SIGN_LEFT_EDGE = CX - SIGN_WIDTH / 2 - SIGN_FRAME;
+  private static final float FLASHER_SIGN_RIGHT_EDGE = CX + SIGN_WIDTH / 2 + SIGN_FRAME;
+  private static final float FLASHER_Y = SIGN_TOP + SIGN_FRAME - 6.0f;
+  private static final float FLASHER_Z_OFF = (CZ - SIGN_DEPTH / 2) - 11.0f;
+  private static final float FLASHER_LEFT_X_OFF = (FLASHER_SIGN_LEFT_EDGE - 4.0f) - VISOR_CENTER_X;
+  private static final float FLASHER_LEFT_Y_OFF = FLASHER_Y - VISOR_CENTER_Y;
+  private static final float FLASHER_RIGHT_X_OFF =
+      (FLASHER_SIGN_RIGHT_EDGE + 4.0f) - VISOR_CENTER_X;
+  private static final float FLASHER_RIGHT_Y_OFF = FLASHER_Y - VISOR_CENTER_Y;
+
+  // Constant geometry, built once rather than per frame
+  private static final List<RenderHelper.Box> TRAILER_BOXES = trailerBoxes();
+  private static final List<RenderHelper.Box> WHEEL_BOXES = wheelBoxes();
+  private static final List<RenderHelper.Box> AXLE_BOXES = axleBoxes();
+  private static final List<RenderHelper.Box> OUTRIGGER_LEG_BOXES = outriggerBoxes(false);
+  private static final List<RenderHelper.Box> OUTRIGGER_FOOT_BOXES = outriggerBoxes(true);
+  private static final List<RenderHelper.Box> MAST_BOXES = mastBoxes();
+  private static final List<RenderHelper.Box> SIGN_BORDER_BOXES = signBorderBoxes();
+  private static final List<RenderHelper.Box> SIGN_BG_BOXES = signBackgroundBoxes();
+  private static final List<RenderHelper.Box> SIGN_SCREEN_BOXES = signScreenBoxes();
+  private static final List<RenderHelper.Box> FLASHER_ARM_BOXES = flasherArmBoxes();
+
+  /** The constant structure, one list per look; see {@link #structureKey}. */
+  private static final CsmSharedDisplayLists STRUCTURE_LISTS =
+      new CsmSharedDisplayLists("portable_speed_limit_sign");
+
   @Override
   public void render(TileEntityVariableSpeedLimit te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -131,7 +173,6 @@ public class TileEntityPortableSpeedLimitRenderer
 
     int colorIdx = te.getTrailerColor();
     if (colorIdx < 0 || colorIdx >= TRAILER_COLORS.length) colorIdx = 0;
-    float[] trailerCol = TRAILER_COLORS[colorIdx];
 
     int angleIdx = te.getSignAngle();
     if (angleIdx < 0 || angleIdx >= ANGLE_ROTATIONS.length) angleIdx = 0;
@@ -176,14 +217,16 @@ public class TileEntityPortableSpeedLimitRenderer
     int sky = (combinedLight >> 16) & 0xFFFF;
     int block = combinedLight & 0xFFFF;
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    int mode = te.getFlasherMode();
+    boolean flashers = mode != TileEntityVariableSpeedLimit.FLASHER_NONE;
 
-    renderTrailer(trailerCol, sky, block);
-    renderWheels(sky, block);
-    renderOutriggers(trailerCol, sky, block);
-    renderMast(sky, block);
-    renderSignPanel(sky, block);
-    renderFlashers(te, sky, block);
+    // Bound outside the list, every frame: a bind inside a list may never be recorded.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    renderStructure(colorIdx, flashers, sky, block);
+
+    if (flashers) {
+      renderFlasherBulbs(te, mode);
+    }
 
     renderSpeedText(te);
     renderLabelText();
@@ -196,28 +239,115 @@ public class TileEntityPortableSpeedLimitRenderer
     GlStateManager.popMatrix();
   }
 
-  private void renderTrailer(float[] col, int sky, int block) {
+  /**
+   * Packs everything the structure's vertices depend on. Bits 0-15: the sky lightmap coordinate;
+   * bits 16-31: the block lightmap coordinate; bits 32-34: the trailer colour index (0-4); bit 35:
+   * the flasher housings and arms are drawn (flasher mode is not NONE). Never a position.
+   */
+  private static long structureKey(int colorIdx, boolean flashers, int sky, int block) {
+    return (sky & 0xFFFFL)
+        | ((long) (block & 0xFFFF) << 16)
+        | ((long) (colorIdx & 0x7) << 32)
+        | (flashers ? 1L << 35 : 0L);
+  }
+
+  /** Draws the constant structure from its shared list, compiling it on first use. */
+  private static void renderStructure(int colorIdx, boolean flashers, int sky, int block) {
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawStructure(colorIdx, flashers, sky, block);
+      return;
+    }
+    long key = structureKey(colorIdx, flashers, sky, block);
+    int list = STRUCTURE_LISTS.get(key);
+    if (list == CsmDisplayListCache.NO_LIST) {
+      list = STRUCTURE_LISTS.allocate(key);
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(list, GL11.GL_COMPILE);
+        drawStructure(colorIdx, flashers, sky, block);
+        GL11.glEndList();
+      }
+    }
+    if (list != CsmDisplayListCache.NO_LIST) {
+      GL11.glCallList(list);
+      // The draw's own post-draw colour reset ran at compile time, not now: redo it so the
+      // colour cache does not skip the next GlStateManager.color call.
+      GlStateManager.resetColor();
+    } else {
+      // The driver refused a list name: draw directly rather than calling list 0.
+      drawStructure(colorIdx, flashers, sky, block);
+    }
+  }
+
+  /**
+   * Draws the trailer, wheels, outriggers, mast, sign panel with its fullbright screen and, when
+   * fitted, the flasher housings and their arms, in one draw and in the order they were always
+   * drawn. The screen stays ahead of the housings, so the last vertex (whose lightmap the text
+   * inherits when no flasher lens is drawn after it) is still the fullbright screen's. Geometry
+   * only: the caller binds the white texture and owns every GL state.
+   */
+  private static void drawStructure(int colorIdx, boolean flashers, int sky, int block) {
+    float[] col = TRAILER_COLORS[colorIdx];
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
-    List<RenderHelper.Box> boxes = new ArrayList<>();
-
-    boxes.add(new RenderHelper.Box(
-        new float[]{CX - TRAILER_WIDTH / 2, TRAILER_BOTTOM, CZ - TRAILER_LENGTH / 2 + 4},
-        new float[]{CX + TRAILER_WIDTH / 2, TRAILER_TOP, CZ + TRAILER_LENGTH / 2 + 4}));
-
-    boxes.add(new RenderHelper.Box(
-        new float[]{CX - 1.0f, TRAILER_BOTTOM + 1, CZ + TRAILER_LENGTH / 2 + 4},
-        new float[]{CX + 1.0f, TRAILER_BOTTOM + 2.5f, CZ + TRAILER_LENGTH / 2 + 10}));
-
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(boxes, buf, col[0], col[1], col[2], col[3], 0, 0, 0,
+
+    // Trailer body and tongue
+    RenderHelper.addBoxesToBufferLit(TRAILER_BOXES, buf, col[0], col[1], col[2], col[3], 0, 0, 0,
         sky, block);
+
+    // Wheels and axle
+    RenderHelper.addBoxesToBufferLit(WHEEL_BOXES, buf,
+        COL_RUBBER[0], COL_RUBBER[1], COL_RUBBER[2], COL_RUBBER[3], 0, 0, 0, sky, block);
+    RenderHelper.addBoxesToBufferLit(AXLE_BOXES, buf,
+        COL_DARK_GRAY[0], COL_DARK_GRAY[1], COL_DARK_GRAY[2], COL_DARK_GRAY[3], 0, 0, 0,
+        sky, block);
+
+    // Outriggers: legs and arms in the trailer colour, silver feet
+    RenderHelper.addBoxesToBufferLit(OUTRIGGER_LEG_BOXES, buf, col[0], col[1], col[2], col[3],
+        0, 0, 0, sky, block);
+    RenderHelper.addBoxesToBufferLit(OUTRIGGER_FOOT_BOXES, buf,
+        COL_SILVER[0], COL_SILVER[1], COL_SILVER[2], COL_SILVER[3], 0, 0, 0, sky, block);
+
+    // Mast
+    RenderHelper.addBoxesToBufferLit(MAST_BOXES, buf,
+        COL_DARK_GRAY[0], COL_DARK_GRAY[1], COL_DARK_GRAY[2], COL_DARK_GRAY[3], 0, 0, 0,
+        sky, block);
+
+    // Sign border, gray background, and the white LED screen at fullbright per-vertex
+    RenderHelper.addBoxesToBufferLit(SIGN_BORDER_BOXES, buf,
+        COL_SIGN_BORDER[0], COL_SIGN_BORDER[1], COL_SIGN_BORDER[2], COL_SIGN_BORDER[3],
+        0, 0, 0, sky, block);
+    RenderHelper.addBoxesToBufferLit(SIGN_BG_BOXES, buf,
+        COL_SIGN_BG[0], COL_SIGN_BG[1], COL_SIGN_BG[2], COL_SIGN_BG[3], 0, 0, 0,
+        sky, block);
+    RenderHelper.addBoxesToBufferLit(SIGN_SCREEN_BOXES, buf,
+        COL_SCREEN_WHITE[0], COL_SCREEN_WHITE[1], COL_SCREEN_WHITE[2], COL_SCREEN_WHITE[3],
+        0, 0, 0, LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
+
+    if (flashers) {
+      // Signal housings, then the mounting arms connecting them to the sign frame
+      addFlasherHousing(buf, FLASHER_LEFT_X_OFF, FLASHER_LEFT_Y_OFF, FLASHER_Z_OFF, sky, block);
+      addFlasherHousing(buf, FLASHER_RIGHT_X_OFF, FLASHER_RIGHT_Y_OFF, FLASHER_Z_OFF, sky,
+          block);
+      RenderHelper.addBoxesToBufferLit(FLASHER_ARM_BOXES, buf,
+          COL_FRAME[0], COL_FRAME[1], COL_FRAME[2], COL_FRAME[3], 0, 0, 0, sky, block);
+    }
+
     tess.draw();
   }
 
-  private void renderWheels(int sky, int block) {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
+  private static List<RenderHelper.Box> trailerBoxes() {
+    List<RenderHelper.Box> boxes = new ArrayList<>();
+    boxes.add(new RenderHelper.Box(
+        new float[]{CX - TRAILER_WIDTH / 2, TRAILER_BOTTOM, CZ - TRAILER_LENGTH / 2 + 4},
+        new float[]{CX + TRAILER_WIDTH / 2, TRAILER_TOP, CZ + TRAILER_LENGTH / 2 + 4}));
+    boxes.add(new RenderHelper.Box(
+        new float[]{CX - 1.0f, TRAILER_BOTTOM + 1, CZ + TRAILER_LENGTH / 2 + 4},
+        new float[]{CX + 1.0f, TRAILER_BOTTOM + 2.5f, CZ + TRAILER_LENGTH / 2 + 10}));
+    return boxes;
+  }
+
+  private static List<RenderHelper.Box> wheelBoxes() {
     List<RenderHelper.Box> boxes = new ArrayList<>();
 
     float wheelY = TRAILER_GROUND_CLEARANCE - WHEEL_DIAMETER / 2 + 1;
@@ -227,16 +357,16 @@ public class TileEntityPortableSpeedLimitRenderer
         new float[]{CX - TRAILER_WIDTH / 2 - WHEEL_WIDTH, wheelY, wheelZ - WHEEL_DIAMETER / 2},
         new float[]{CX - TRAILER_WIDTH / 2, wheelY + WHEEL_DIAMETER,
             wheelZ + WHEEL_DIAMETER / 2}));
-
     boxes.add(new RenderHelper.Box(
         new float[]{CX + TRAILER_WIDTH / 2, wheelY, wheelZ - WHEEL_DIAMETER / 2},
         new float[]{CX + TRAILER_WIDTH / 2 + WHEEL_WIDTH, wheelY + WHEEL_DIAMETER,
             wheelZ + WHEEL_DIAMETER / 2}));
+    return boxes;
+  }
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(boxes, buf,
-        COL_RUBBER[0], COL_RUBBER[1], COL_RUBBER[2], COL_RUBBER[3], 0, 0, 0, sky, block);
-    tess.draw();
+  private static List<RenderHelper.Box> axleBoxes() {
+    float wheelY = TRAILER_GROUND_CLEARANCE - WHEEL_DIAMETER / 2 + 1;
+    float wheelZ = CZ + 4;
 
     List<RenderHelper.Box> axle = new ArrayList<>();
     axle.add(new RenderHelper.Box(
@@ -244,16 +374,11 @@ public class TileEntityPortableSpeedLimitRenderer
             wheelZ - 0.5f},
         new float[]{CX + TRAILER_WIDTH / 2 + WHEEL_WIDTH, wheelY + WHEEL_DIAMETER / 2 + 0.5f,
             wheelZ + 0.5f}));
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(axle, buf,
-        COL_DARK_GRAY[0], COL_DARK_GRAY[1], COL_DARK_GRAY[2], COL_DARK_GRAY[3], 0, 0, 0,
-        sky, block);
-    tess.draw();
+    return axle;
   }
 
-  private void renderOutriggers(float[] col, int sky, int block) {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
+  /** The outrigger legs with their arms (interleaved, as drawn), or the foot pads. */
+  private static List<RenderHelper.Box> outriggerBoxes(boolean feetOnly) {
     List<RenderHelper.Box> legs = new ArrayList<>();
     List<RenderHelper.Box> feet = new ArrayList<>();
 
@@ -285,37 +410,18 @@ public class TileEntityPortableSpeedLimitRenderer
               p[1] + OUTRIGGER_LEG_SIZE / 2}));
     }
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(legs, buf, col[0], col[1], col[2], col[3], 0, 0, 0,
-        sky, block);
-    tess.draw();
-
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(feet, buf,
-        COL_SILVER[0], COL_SILVER[1], COL_SILVER[2], COL_SILVER[3], 0, 0, 0, sky, block);
-    tess.draw();
+    return feetOnly ? feet : legs;
   }
 
-  private void renderMast(int sky, int block) {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
+  private static List<RenderHelper.Box> mastBoxes() {
     List<RenderHelper.Box> boxes = new ArrayList<>();
-
     boxes.add(new RenderHelper.Box(
         new float[]{CX - MAST_SIZE / 2, MAST_BOTTOM, CZ - MAST_SIZE / 2},
         new float[]{CX + MAST_SIZE / 2, MAST_TOP, CZ + MAST_SIZE / 2}));
-
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(boxes, buf,
-        COL_DARK_GRAY[0], COL_DARK_GRAY[1], COL_DARK_GRAY[2], COL_DARK_GRAY[3], 0, 0, 0,
-        sky, block);
-    tess.draw();
+    return boxes;
   }
 
-  private void renderSignPanel(int sky, int block) {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-
+  private static List<RenderHelper.Box> signBorderBoxes() {
     // Outer frame/border
     List<RenderHelper.Box> border = new ArrayList<>();
     border.add(new RenderHelper.Box(
@@ -323,26 +429,20 @@ public class TileEntityPortableSpeedLimitRenderer
             CZ - SIGN_DEPTH / 2},
         new float[]{CX + SIGN_WIDTH / 2 + SIGN_FRAME, SIGN_TOP + SIGN_FRAME,
             CZ + SIGN_DEPTH / 2}));
+    return border;
+  }
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(border, buf,
-        COL_SIGN_BORDER[0], COL_SIGN_BORDER[1], COL_SIGN_BORDER[2], COL_SIGN_BORDER[3],
-        0, 0, 0, sky, block);
-    tess.draw();
-
+  private static List<RenderHelper.Box> signBackgroundBoxes() {
     // Subtle gray sign background (full sign face — "SPEED LIMIT" area + behind screen)
     List<RenderHelper.Box> bgFace = new ArrayList<>();
     bgFace.add(new RenderHelper.Box(
         new float[]{CX - SIGN_WIDTH / 2, SIGN_BOTTOM, CZ - SIGN_DEPTH / 2 - 0.05f},
         new float[]{CX + SIGN_WIDTH / 2, SIGN_TOP, CZ - SIGN_DEPTH / 2 + 0.3f}));
+    return bgFace;
+  }
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(bgFace, buf,
-        COL_SIGN_BG[0], COL_SIGN_BG[1], COL_SIGN_BG[2], COL_SIGN_BG[3], 0, 0, 0,
-        sky, block);
-    tess.draw();
-
-    // Bright white LED screen (inset from sign edges) — rendered at fullbright per-vertex
+  private static List<RenderHelper.Box> signScreenBoxes() {
+    // Bright white LED screen (inset from sign edges)
     float screenInset = 2.25f;
     List<RenderHelper.Box> screenFace = new ArrayList<>();
     screenFace.add(new RenderHelper.Box(
@@ -350,20 +450,27 @@ public class TileEntityPortableSpeedLimitRenderer
             CZ - SIGN_DEPTH / 2 - 0.1f},
         new float[]{CX + SIGN_WIDTH / 2 - screenInset, SIGN_DIVIDER_Y - 1.0f,
             CZ - SIGN_DEPTH / 2 + 0.25f}));
-
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(screenFace, buf,
-        COL_SCREEN_WHITE[0], COL_SCREEN_WHITE[1], COL_SCREEN_WHITE[2], COL_SCREEN_WHITE[3],
-        0, 0, 0, LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
-    tess.draw();
+    return screenFace;
   }
 
-  private void renderFlashers(TileEntityVariableSpeedLimit te, int sky, int block) {
-    int mode = te.getFlasherMode();
-    if (mode == TileEntityVariableSpeedLimit.FLASHER_NONE) {
-      return;
-    }
+  private static List<RenderHelper.Box> flasherArmBoxes() {
+    float armZ1 = CZ - SIGN_DEPTH / 2;
+    float armZ2 = armZ1 + 2.0f;
+    List<RenderHelper.Box> arms = new ArrayList<>();
+    arms.add(new RenderHelper.Box(
+        new float[]{FLASHER_SIGN_LEFT_EDGE - 4.0f, FLASHER_Y - 0.5f, armZ1},
+        new float[]{FLASHER_SIGN_LEFT_EDGE, FLASHER_Y + 0.5f, armZ2}));
+    arms.add(new RenderHelper.Box(
+        new float[]{FLASHER_SIGN_RIGHT_EDGE, FLASHER_Y - 0.5f, armZ1},
+        new float[]{FLASHER_SIGN_RIGHT_EDGE + 4.0f, FLASHER_Y + 0.5f, armZ2}));
+    return arms;
+  }
 
+  /**
+   * Draws the two flasher lenses, live every frame: their phase follows the clock. The housings
+   * and arms behind them are part of the structure list.
+   */
+  private void renderFlasherBulbs(TileEntityVariableSpeedLimit te, int mode) {
     boolean bulbLit = false;
     if (mode == TileEntityVariableSpeedLimit.FLASHER_ON) {
       // Read the once-per-frame cached wall clock rather than calling currentTimeMillis()
@@ -371,41 +478,8 @@ public class TileEntityPortableSpeedLimitRenderer
       bulbLit = (CsmRenderUtils.gameMillis(te.getWorld()) / 500) % 2 == 0;
     }
 
-    float signLeftEdge = CX - SIGN_WIDTH / 2 - SIGN_FRAME;
-    float signRightEdge = CX + SIGN_WIDTH / 2 + SIGN_FRAME;
-    float flasherY = SIGN_TOP + SIGN_FRAME - 6.0f;
-
-    float zOff = (CZ - SIGN_DEPTH / 2) - 11.0f;
-
-    float leftXOff = (signLeftEdge - 4.0f) - VISOR_CENTER_X;
-    float leftYOff = flasherY - VISOR_CENTER_Y;
-
-    float rightXOff = (signRightEdge + 4.0f) - VISOR_CENTER_X;
-    float rightYOff = flasherY - VISOR_CENTER_Y;
-
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
-
-    // Housing + mounting arms — white1px bound, BLOCK format with world lightmap
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-
-    addFlasherHousing(buf, leftXOff, leftYOff, zOff, sky, block);
-    addFlasherHousing(buf, rightXOff, rightYOff, zOff, sky, block);
-
-    float armZ1 = CZ - SIGN_DEPTH / 2;
-    float armZ2 = armZ1 + 2.0f;
-    List<RenderHelper.Box> arms = new ArrayList<>();
-    arms.add(new RenderHelper.Box(
-        new float[]{signLeftEdge - 4.0f, flasherY - 0.5f, armZ1},
-        new float[]{signLeftEdge, flasherY + 0.5f, armZ2}));
-    arms.add(new RenderHelper.Box(
-        new float[]{signRightEdge, flasherY - 0.5f, armZ1},
-        new float[]{signRightEdge + 4.0f, flasherY + 0.5f, armZ2}));
-    RenderHelper.addBoxesToBufferLit(arms, buf,
-        COL_FRAME[0], COL_FRAME[1], COL_FRAME[2], COL_FRAME[3], 0, 0, 0, sky, block);
-
-    tess.draw();
 
     // Bulb faces — atlas texture with fullbright per-vertex lightmap
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -413,13 +487,13 @@ public class TileEntityPortableSpeedLimitRenderer
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-    addFlasherBulb(buf, leftXOff, leftYOff, zOff, bulbLit);
-    addFlasherBulb(buf, rightXOff, rightYOff, zOff, bulbLit);
+    addFlasherBulb(buf, FLASHER_LEFT_X_OFF, FLASHER_LEFT_Y_OFF, FLASHER_Z_OFF, bulbLit);
+    addFlasherBulb(buf, FLASHER_RIGHT_X_OFF, FLASHER_RIGHT_Y_OFF, FLASHER_Z_OFF, bulbLit);
 
     tess.draw();
   }
 
-  private void addFlasherHousing(BufferBuilder buf, float xOff, float yOff, float zOff,
+  private static void addFlasherHousing(BufferBuilder buf, float xOff, float yOff, float zOff,
       int sky, int block) {
     RenderHelper.addBoxesToBufferLit(
         TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA, buf,
