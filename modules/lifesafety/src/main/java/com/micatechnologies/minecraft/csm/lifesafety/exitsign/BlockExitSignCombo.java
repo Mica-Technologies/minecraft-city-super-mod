@@ -26,6 +26,17 @@ public class BlockExitSignCombo extends AbstractBlockExitSign {
     return SPEC;
   }
 
+  /** Lower than a plain sign, to leave room for the heads above it. */
+  @Override
+  protected double getFaceBottom() {
+    return 2;
+  }
+
+  @Override
+  protected boolean hasHeadsOnTop() {
+    return true;
+  }
+
   @Override
   public String getBlockRegistryName() {
     return "exit_sign_combo_compact";

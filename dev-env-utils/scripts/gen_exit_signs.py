@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Face artwork for the traditional and specialty exit signs.
+"""Every asset the configurable exit signs ship: face artwork, lamp-head lenses, models,
+multipart blockstates and item icons, from one catalogue (STYLES) that repeats what each block's
+ExitSignSpec offers. ExitSignBlockstateTest fails the build if the two disagree.
 
 One texture sheet per housing finish (white, black, brushed aluminium). Each sheet holds every
 piece a sign's face is built from, and the models pick pieces with UVs:
@@ -32,6 +34,7 @@ model pixel wide.
 
 import argparse
 import filecmp
+import json
 import os
 import shutil
 import sys
@@ -90,7 +93,8 @@ LEGENDS = {
 LEGEND_ORDER = ["exit", "salida"]
 
 ARROW_KINDS = ["red", "green", "unlit"]
-CORNER_RADIUS = 14
+# 1.5 model px: the rounded housing's corner, which its model steps to follow
+CORNER_RADIUS = 24
 
 
 def _layout():
@@ -358,6 +362,406 @@ def sheets(masks=None):
 
 
 # --------------------------------------------------------------------------------------------
+# Emergency head lenses
+# --------------------------------------------------------------------------------------------
+
+HEADS_SHEET = 128
+# name -> (x0, y0, x1, y1) on the heads sheet; a lens face is 3 x 3 model px
+HEAD_REGIONS = {
+    "square_unlit": (0, 0, 64, 64),
+    "square_lit": (64, 0, 128, 64),
+    "round_unlit": (0, 64, 64, 128),
+    "round_lit": (64, 64, 128, 128),
+}
+
+
+def head_uv(region):
+    x0, y0, x1, y1 = HEAD_REGIONS[region]
+    k = 16.0 / HEADS_SHEET
+    return [x0 * k, y0 * k, x1 * k, y1 * k]
+
+
+def _disc(size, r, cx, cy):
+    yy, xx = np.mgrid[0:size * SS, 0:size * SS]
+    inside = ((xx + 0.5) / SS - cx) ** 2 + ((yy + 0.5) / SS - cy) ** 2 <= r * r
+    img = Image.fromarray(np.uint8(inside * 255))
+    return np.asarray(img.resize((size, size), Image.BOX), dtype=np.float64) / 255.0
+
+
+def head_sheets():
+    """The lamp heads' lenses, dark and lit: a square LED head is a clear prismatic cover over a
+    grid of twelve LEDs; a round lamp a clear dome over a ribbed reflector and one LED. The lit
+    ones and nothing else go in the ``_e`` companion."""
+    n = 64
+    rgb = np.zeros((HEADS_SHEET, HEADS_SHEET, 3))
+    alpha = np.zeros((HEADS_SHEET, HEADS_SHEET))
+    emissive = np.zeros((HEADS_SHEET, HEADS_SHEET, 4))
+    yy, xx = np.mgrid[0:n, 0:n]
+    for lit in (False, True):
+        # square: 4 x 3 LEDs on a prismatic cover
+        x0, y0, _, _ = HEAD_REGIONS["square_lit" if lit else "square_unlit"]
+        prism = ((xx // 4 + yy // 4) % 2) * 6.0
+        cell = np.full((n, n, 3), 205.0 if not lit else 238.0) + prism[:, :, None]
+        leds = np.zeros((n, n))
+        for i in range(4):
+            for j in range(3):
+                leds = np.maximum(leds, _disc(n, 4.2, 11 + i * 14, 16 + j * 16))
+        led_colour = np.array([255.0, 255.0, 246.0]) if lit else np.array([150.0, 150.0, 150.0])
+        cell = cell * (1 - leds[:, :, None]) + led_colour * leds[:, :, None]
+        frame = (xx < 3) | (yy < 3) | (xx >= n - 3) | (yy >= n - 3)
+        cell[frame] = 170.0 if not lit else 215.0
+        rgb[y0:y0 + n, x0:x0 + n] = cell
+        alpha[y0:y0 + n, x0:x0 + n] = 1.0
+        if lit:
+            emissive[y0:y0 + n, x0:x0 + n, :3] = cell
+            emissive[y0:y0 + n, x0:x0 + n, 3] = np.maximum(leds, 0.35) * 255 * ~frame
+        # round: a dome over a ribbed reflector with one LED in the middle
+        x0, y0, _, _ = HEAD_REGIONS["round_lit" if lit else "round_unlit"]
+        c = n / 2.0
+        r = np.sqrt((xx + 0.5 - c) ** 2 + (yy + 0.5 - c) ** 2)
+        base = 200.0 if not lit else 236.0
+        ribs = np.cos(r * 1.1) * 12.0
+        cell = np.full((n, n, 3), base) + ribs[:, :, None]
+        cell += (-(xx + yy - n) / n * 14.0)[:, :, None]  # the dome's highlight, upper left
+        led = _disc(n, 6.0, c, c)
+        led_colour = np.array([255.0, 255.0, 246.0]) if lit else np.array([140.0, 140.0, 140.0])
+        cell = cell * (1 - led[:, :, None]) + led_colour * led[:, :, None]
+        rim = (r > c - 3.5) & (r <= c)
+        cell[rim] = 165.0 if not lit else 212.0
+        disc = _disc(n, c - 0.5, c, c)
+        rgb[y0:y0 + n, x0:x0 + n] = cell
+        alpha[y0:y0 + n, x0:x0 + n] = disc
+        if lit:
+            emissive[y0:y0 + n, x0:x0 + n, :3] = cell
+            emissive[y0:y0 + n, x0:x0 + n, 3] = disc * np.maximum(led, 0.35) * 255
+    img = np.dstack([np.clip(rgb, 0, 255), alpha * 255])
+    return {
+        "heads.png": Image.fromarray(np.uint8(np.round(img)), "RGBA"),
+        "heads_e.png": Image.fromarray(np.uint8(np.round(np.clip(emissive, 0, 255))), "RGBA"),
+    }
+
+
+# --------------------------------------------------------------------------------------------
+# Models and blockstates
+# --------------------------------------------------------------------------------------------
+#
+# Every model is drawn facing north, the face at the low-z side, and the blockstate turns it to
+# the sign's facing. A wall-mounted sign sits against the block's south face; a hung one (ceiling
+# or end mount) down the middle of the block, with the legend on both faces. The face is 16 px
+# wide and 10.5 tall, and is built from the sheet's cells: an arrow cell each end and the legend
+# between. The east cell is the viewer's left from the front, so it holds the left arrow, and
+# from the back it is the viewer's right: an arrow keeps pointing the same way in the world,
+# which is what a real double-faced sign's knockout does.
+#
+# The blockstate is vanilla multipart: each part is applied when its option values match, so
+# one model file covers every state that shows it. Multipart cannot retexture, so a part is
+# written once per housing finish.
+
+MODEL_DIR = os.path.join(MODULE, "models", "block", "lifesafety", "exit_signs")
+ITEM_DIR = os.path.join(MODULE, "models", "item")
+STATE_DIR = os.path.join(MODULE, "blockstates")
+MODEL_REF = "csm:lifesafety/exit_signs/%s"
+
+FACE_PX = FACE_H / TEXELS_PER_PX  # 10.5
+DEPTH = {"wall": (14.0, 16.0), "hung": (7.0, 9.0)}
+FACING_Y = {"north": 0, "east": 90, "south": 180, "west": 270}
+ARROWS = ["none", "left", "right", "both"]
+MOUNTS = ["wall", "ceiling", "end_left", "end_right"]
+# Which arrow values light each end cell. "left" is the viewer's left from the front: east.
+LIT_ON = {"east": ("left", "both"), "west": ("right", "both")}
+
+# What each block offers, in the order its ExitSignSpec lists them (the first value is the
+# default). An option with one value has no property, so it never appears in a condition.
+# ExitSignBlockstateTest fails the build if this and the Java specs disagree.
+#   y0           the face's bottom edge, px
+#   rounded      rounded housing corners: alpha on the face, a stepped end on the model
+#   heads_at     "ends": lamp heads on arms off each end; "top": above the top corners
+STYLES = [
+    dict(name="flat", block="exit_sign_traditional_flat", rounded=False, y0=4.5,
+         heads_at="ends", finishes=["white", "black"], heads=["none", "square", "round"],
+         mounts=MOUNTS, letters=["red", "green"], legends=["exit", "salida"]),
+    dict(name="rounded", block="exit_sign_traditional_rounded", rounded=True, y0=4.5,
+         heads_at="ends", finishes=["white", "black"], heads=["none", "square", "round"],
+         mounts=MOUNTS, letters=["red", "green"], legends=["exit", "salida"]),
+    dict(name="combo", block="exit_sign_combo_compact", rounded=False, y0=2.0,
+         heads_at="top", finishes=["white", "black"], heads=["square", "round"],
+         mounts=MOUNTS, letters=["red", "green"], legends=["exit", "salida"]),
+]
+SIX = ("north", "south", "east", "west", "up", "down")
+
+
+def _n(v):
+    """A coordinate or UV, rounded so the JSON is stable and readable."""
+    v = round(v, 4)
+    return int(v) if v == int(v) else v
+
+
+def _uv_texels(x0, y0, x1, y1, sheet=SHEET):
+    k = 16.0 / sheet
+    return [_n(x0 * k), _n(y0 * k), _n(x1 * k), _n(y1 * k)]
+
+
+HOUSING_UV = uv("housing")
+
+
+def _face(uv_box, texture="#sheet", cull=None):
+    face = {"uv": [_n(u) for u in uv_box], "texture": texture}
+    if cull:
+        face["cullface"] = cull
+    return face
+
+
+def _box(frm, to, faces):
+    return {"from": [_n(v) for v in frm], "to": [_n(v) for v in to], "faces": faces}
+
+
+def _housing_faces(names, cull=None):
+    cull = cull or {}
+    return {n: _face(HOUSING_UV, cull=cull.get(n)) for n in names}
+
+
+def _back(mc, faces, back_uv):
+    """The face's back: the legend or cell again on a hung sign, bare housing culled against
+    the wall on a wall-mounted one."""
+    if mc == "hung":
+        faces["south"] = _face(back_uv)
+    else:
+        faces["south"] = _face(HOUSING_UV, cull="south")
+    return faces
+
+
+def legend_elements(style, legend, letters, mc):
+    cw = LEGENDS[legend]["arrow"]["cell"] / TEXELS_PER_PX
+    y0, top = style["y0"], style["y0"] + FACE_PX
+    z0, z1 = DEPTH[mc]
+    x0, v0, x1, v1 = REGIONS["legend_%s_%s" % (legend, letters)]
+    legend_uv = _uv_texels(x0, v0, x1, v1)
+    faces = {"north": _face(legend_uv)}
+    faces.update(_housing_faces(("up", "down")))
+    _back(mc, faces, legend_uv)
+    return [_box((cw, y0, z0), (16 - cw, top, z1), faces)]
+
+
+def cell_elements(style, legend, kind, side, mc):
+    """One end cell of the face, lit ``kind`` ('red', 'green') or 'unlit'. A rounded housing's
+    cell is two boxes, the outermost half pixel stepped in a quarter pixel top and bottom, so
+    the body follows the corner the face's alpha cuts."""
+    cw = LEGENDS[legend]["arrow"]["cell"] / TEXELS_PER_PX
+    y0, top = style["y0"], style["y0"] + FACE_PX
+    z0, z1 = DEPTH[mc]
+    region = "arrow_%s_%s%s" % (legend, kind, "_rounded" if style["rounded"] else "")
+    rx, ry, _, _ = REGIONS[region]
+    pieces = [(0.0, 0.5, 0.25), (0.5, cw, 0.0)] if style["rounded"] else [(0.0, cw, 0.0)]
+    out = []
+    for a, b, inset in pieces:  # a, b: distance from the cell's outer edge, px
+        yb, yt = y0 + inset, top - inset
+        vt, vb = ry + (top - yt) * TEXELS_PER_PX, ry + (top - yb) * TEXELS_PER_PX
+
+        def cell_uv(d_left, d_right):
+            # the texture columns at the viewer's left and right edges of the face
+            return _uv_texels(rx + d_left * TEXELS_PER_PX, vt, rx + d_right * TEXELS_PER_PX, vb)
+
+        if side == "east":
+            x0, x1 = 16 - b, 16 - a
+            north, south = cell_uv(a, b), cell_uv(b, a)
+        else:
+            x0, x1 = a, b
+            north, south = cell_uv(b, a), cell_uv(a, b)
+        faces = {"north": _face(north)}
+        faces.update(_housing_faces(("up", "down", side)))
+        _back(mc, faces, south)
+        out.append(_box((x0, yb, z0), (x1, yt, z1), faces))
+    return out
+
+
+def _mirror_x(elements):
+    """The same elements reflected across x = 8: the west twin of an east part."""
+    out = []
+    for e in elements:
+        faces = {}
+        for name, face in e["faces"].items():
+            flipped = {"east": "west", "west": "east"}.get(name, name)
+            face = dict(face)
+            if face.get("cullface") in ("east", "west"):
+                face["cullface"] = flipped
+            faces[flipped] = face
+        out.append(_box((16 - e["to"][0], e["from"][1], e["from"][2]),
+                        (16 - e["from"][0], e["to"][1], e["to"][2]), faces))
+    return out
+
+
+def hardware_elements(style, mount):
+    """The colour-matched mount: a canopy on the ceiling (with a stem down to a combo unit,
+    whose heads leave no room for the canopy on the body), or a plate on the wall at one end."""
+    y0, top = style["y0"], style["y0"] + FACE_PX
+    if mount == "ceiling":
+        out = []
+        if top < 15:
+            out.append(_box((7.25, top, 7.25), (8.75, 15, 8.75),
+                            _housing_faces(("north", "south", "east", "west"))))
+            out.append(_box((5, 15, 6.5), (11, 16, 9.5), _housing_faces(SIX, cull={"up": "up"})))
+        else:
+            out.append(_box((4, top, 6.5), (12, 16, 9.5), _housing_faces(SIX, cull={"up": "up"})))
+        return out
+    mid = y0 + FACE_PX / 2
+    plate = [_box((15.75, mid - 3.25, 5.5), (16, mid + 3.25, 10.5),
+                  _housing_faces(SIX, cull={"east": "east"}))]
+    # end_left: the wall is on the viewer's left from the front, which is east
+    return plate if mount == "end_left" else _mirror_x(plate)
+
+
+def head_elements(style, head, mc, lit):
+    """One lamp head, on the east side (``_mirror_x`` gives the west one). An end head sits on
+    a short arm off the sign's end; a top head (combo) on a short arm above its top corner."""
+    y0, top = style["y0"], style["y0"] + FACE_PX
+    z0, z1 = DEPTH[mc]
+    lens_uv = head_uv("%s_%s" % (head, "lit" if lit else "unlit"))
+    back_cull = {"south": "south"} if mc == "wall" else {}
+    if style["heads_at"] == "ends":
+        c = y0 + FACE_PX / 2
+        arm = _box((16, c - 0.5, z0 + 0.5), (16.5, c + 0.5, z1 - 0.5),
+                   _housing_faces(("north", "south", "up", "down")))
+        cx, cy = 18.25, c
+    else:
+        arm = _box((13.5, top, z0 + 0.5), (14.5, top + 0.25, z1 - 0.5),
+                   _housing_faces(("north", "south", "east", "west")))
+        cx, cy = 14.0, top + 0.25 + 1.75
+    out = [arm]
+    if head == "square":
+        out.append(_box((cx - 1.75, cy - 1.75, z0 - 0.5), (cx + 1.75, cy + 1.75, z1),
+                        _housing_faces(SIX, cull=back_cull)))
+        lens = {"north": _face(lens_uv, texture="#lens")}
+        lens.update(_housing_faces(("east", "west", "up", "down")))
+        out.append(_box((cx - 1.5, cy - 1.5, z0 - 0.75), (cx + 1.5, cy + 1.5, z0 - 0.5), lens))
+    else:
+        # a round lamp: two crossed boxes for the barrel, and the lens a disc cut by alpha
+        out.append(_box((cx - 1.5, cy - 1.0, z0 - 0.25), (cx + 1.5, cy + 1.0, z1 - 0.25),
+                        _housing_faces(SIX)))
+        out.append(_box((cx - 1.0, cy - 1.5, z0 - 0.25), (cx + 1.0, cy + 1.5, z1 - 0.25),
+                        _housing_faces(SIX)))
+        out.append(_box((cx - 1.5, cy - 1.5, z0 - 0.5), (cx + 1.5, cy + 1.5, z0 - 0.25),
+                        {"north": _face(lens_uv, texture="#lens")}))
+    return out
+
+
+def _model(elements, finish, lens=False):
+    textures = {"sheet": TEX_REF % finish, "particle": TEX_REF % finish}
+    if lens:
+        textures["lens"] = TEX_REF % "heads"
+    return {"textures": textures, "elements": elements}
+
+
+def part_models(style):
+    """{model name: model} for every part of ``style``, one per finish."""
+    out = {}
+    for finish in style["finishes"]:
+        p = "%s_%s_" % (style["name"], finish)
+        for mc in DEPTH:
+            for legend in style["legends"]:
+                for letters in style["letters"]:
+                    out[p + "legend_%s_%s_%s" % (legend, letters, mc)] = _model(
+                        legend_elements(style, legend, letters, mc), finish)
+                for kind in style["letters"] + ["unlit"]:
+                    for side in ("east", "west"):
+                        out[p + "cell_%s_%s_%s_%s" % (legend, kind, side, mc)] = _model(
+                            cell_elements(style, legend, kind, side, mc), finish)
+            for head in style["heads"]:
+                if head == "none":
+                    continue
+                for lit in (False, True):
+                    east = head_elements(style, head, mc, lit)
+                    state = "lit" if lit else "dark"
+                    out[p + "head_%s_%s_east_%s" % (head, state, mc)] = _model(
+                        east, finish, lens=True)
+                    out[p + "head_%s_%s_west_%s" % (head, state, mc)] = _model(
+                        _mirror_x(east), finish, lens=True)
+        for mount in style["mounts"]:
+            if mount != "wall":
+                out[p + "mount_%s" % mount] = _model(hardware_elements(style, mount), finish)
+    return out
+
+
+def _when(style, **conditions):
+    """A multipart condition, leaving out every option the block has only one value of."""
+    offered = {"legend": style["legends"], "letters": style["letters"],
+               "housing": style["finishes"], "mount": style["mounts"], "heads": style["heads"],
+               "arrow": ARROWS}
+    out = {}
+    for key, values in conditions.items():
+        values = [values] if isinstance(values, str) else list(values)
+        if key in offered:
+            if len(offered[key]) < 2:
+                continue
+            values = [v for v in values if v in offered[key]]
+            assert values, (style["name"], key)
+        out[key] = "|".join(values)
+    return out
+
+
+def blockstate(style):
+    parts = []
+
+    def add(model, **when):
+        for facing, y in FACING_Y.items():
+            apply = {"model": MODEL_REF % model}
+            if y:
+                apply["y"] = y
+            parts.append({"when": _when(style, facing=facing, **when), "apply": apply})
+
+    hung = [m for m in style["mounts"] if m != "wall"]
+    for finish in style["finishes"]:
+        p = "%s_%s_" % (style["name"], finish)
+        for mc, mounts in (("wall", ["wall"]), ("hung", hung)):
+            for legend in style["legends"]:
+                for letters in style["letters"]:
+                    add(p + "legend_%s_%s_%s" % (legend, letters, mc), housing=finish,
+                        mount=mounts, legend=legend, letters=letters)
+                for side in ("east", "west"):
+                    lit = list(LIT_ON[side])
+                    dark = [a for a in ARROWS if a not in lit]
+                    for letters in style["letters"]:
+                        add(p + "cell_%s_%s_%s_%s" % (legend, letters, side, mc),
+                            housing=finish, mount=mounts, legend=legend, letters=letters,
+                            arrow=lit)
+                    add(p + "cell_%s_unlit_%s_%s" % (legend, side, mc), housing=finish,
+                        mount=mounts, legend=legend, arrow=dark)
+            for head in style["heads"]:
+                if head == "none":
+                    continue
+                for side in ("east", "west"):
+                    # an end head on the wall side of an end mount would be inside the wall
+                    blocked = {"east": "end_left", "west": "end_right"}[side]
+                    ok = [m for m in mounts if style["heads_at"] != "ends" or m != blocked]
+                    for lit, powered in ((True, "false"), (False, "true")):
+                        add(p + "head_%s_%s_%s_%s" % (head, "lit" if lit else "dark", side, mc),
+                            housing=finish, mount=ok, heads=head, powered=powered)
+        for mount in hung:
+            add(p + "mount_%s" % mount, housing=finish, mount=mount)
+    return {"multipart": parts}
+
+
+def item_models(style):
+    """One icon per legend, letter colour, finish and heads, named as ExitSignItemModels asks
+    for them. The icon is the hung sign with both arrows and the heads dark, so it sits in the
+    middle of the slot the way a block's does."""
+    out = {}
+    for legend in style["legends"]:
+        for letters in style["letters"]:
+            for finish in style["finishes"]:
+                for head in style["heads"]:
+                    elements = legend_elements(style, legend, letters, "hung")
+                    elements += cell_elements(style, legend, "unlit", "east", "hung")
+                    elements += cell_elements(style, legend, "unlit", "west", "hung")
+                    if head != "none":
+                        heads = head_elements(style, head, "hung", False)
+                        elements += heads + _mirror_x(heads)
+                    model = _model(elements, finish, lens=head != "none")
+                    model = dict({"parent": "block/block"}, **model)
+                    out["%s_%s_%s_%s_%s" % (style["block"], legend, letters, finish, head)] = model
+    return out
+
+
+# --------------------------------------------------------------------------------------------
 # Review sheet
 # --------------------------------------------------------------------------------------------
 
@@ -412,12 +816,35 @@ def contact_sheet(path):
 # Writing
 # --------------------------------------------------------------------------------------------
 
-def write_all(tex_dir):
-    os.makedirs(tex_dir, exist_ok=True)
+def _write_json(path, obj):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as fh:
+        json.dump(obj, fh, indent=2)
+        fh.write("\n")
+
+
+ROOTS = {"tex": TEX_DIR, "model": MODEL_DIR, "item": ITEM_DIR, "state": STATE_DIR}
+
+
+def write_all(roots):
+    """Writes every generated file under ``roots`` ({kind: directory}) and returns (kind,
+    file name) for each."""
     written = []
-    for name, img in sorted(sheets().items()):
-        img.save(os.path.join(tex_dir, name), optimize=False)
-        written.append(name)
+    os.makedirs(roots["tex"], exist_ok=True)
+    images = dict(sheets())
+    images.update(head_sheets())
+    for name, img in sorted(images.items()):
+        img.save(os.path.join(roots["tex"], name), optimize=False)
+        written.append(("tex", name))
+    for style in STYLES:
+        for name, model in sorted(part_models(style).items()):
+            _write_json(os.path.join(roots["model"], name + ".json"), model)
+            written.append(("model", name + ".json"))
+        for name, model in sorted(item_models(style).items()):
+            _write_json(os.path.join(roots["item"], name + ".json"), model)
+            written.append(("item", name + ".json"))
+        _write_json(os.path.join(roots["state"], style["block"] + ".json"), blockstate(style))
+        written.append(("state", style["block"] + ".json"))
     return written
 
 
@@ -435,24 +862,25 @@ def main():
         return 0
 
     if not args.check:
-        written = write_all(TEX_DIR)
-        print("Wrote %d exit sign textures" % len(written))
+        written = write_all(ROOTS)
+        print("Wrote %d exit sign files" % len(written))
         return 0
 
     tmp = tempfile.mkdtemp(prefix="csm_exit_signs_")
     try:
+        tmp_roots = {kind: os.path.join(tmp, kind) for kind in ROOTS}
         drifted = []
-        for name in write_all(tmp):
-            here = os.path.join(TEX_DIR, name)
-            if not os.path.exists(here) or not filecmp.cmp(here, os.path.join(tmp, name),
-                                                           shallow=False):
+        for kind, name in write_all(tmp_roots):
+            here = os.path.join(ROOTS[kind], name)
+            there = os.path.join(tmp_roots[kind], name)
+            if not os.path.exists(here) or not filecmp.cmp(here, there, shallow=False):
                 drifted.append(os.path.relpath(here, REPO))
         if drifted:
             print("DRIFT: %d file(s) differ from the generator:" % len(drifted))
             for path in drifted:
                 print("  " + path)
             return 1
-        print("exit sign textures are up to date")
+        print("exit sign files are up to date")
         return 0
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
