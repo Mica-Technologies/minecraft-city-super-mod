@@ -75,7 +75,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_left"
+        "model": "csm:doors/closer_out_left"
       }
     },
     {
@@ -100,7 +100,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_left_open"
+        "model": "csm:doors/closer_out_left_open"
       }
     },
     {
@@ -125,7 +125,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_right"
+        "model": "csm:doors/closer_out_right"
       }
     },
     {
@@ -150,7 +150,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_right_open"
+        "model": "csm:doors/closer_out_right_open"
       }
     },
     {
@@ -228,7 +228,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_left",
+        "model": "csm:doors/closer_out_left",
         "y": 90
       }
     },
@@ -255,7 +255,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_left_open",
+        "model": "csm:doors/closer_out_left_open",
         "y": 90
       }
     },
@@ -282,7 +282,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_right",
+        "model": "csm:doors/closer_out_right",
         "y": 90
       }
     },
@@ -309,7 +309,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_right_open",
+        "model": "csm:doors/closer_out_right_open",
         "y": 90
       }
     },
@@ -388,7 +388,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_left",
+        "model": "csm:doors/closer_out_left",
         "y": 180
       }
     },
@@ -415,7 +415,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_left_open",
+        "model": "csm:doors/closer_out_left_open",
         "y": 180
       }
     },
@@ -442,7 +442,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_right",
+        "model": "csm:doors/closer_out_right",
         "y": 180
       }
     },
@@ -469,7 +469,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_right_open",
+        "model": "csm:doors/closer_out_right_open",
         "y": 180
       }
     },
@@ -548,7 +548,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_left",
+        "model": "csm:doors/closer_out_left",
         "y": 270
       }
     },
@@ -575,7 +575,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_left_open",
+        "model": "csm:doors/closer_out_left_open",
         "y": 270
       }
     },
@@ -602,7 +602,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_right",
+        "model": "csm:doors/closer_out_right",
         "y": 270
       }
     },
@@ -629,7 +629,7 @@
         "closer": "true"
       },
       "apply": {
-        "model": "csm:doors/closer_right_open",
+        "model": "csm:doors/closer_out_right_open",
         "y": 270
       }
     }

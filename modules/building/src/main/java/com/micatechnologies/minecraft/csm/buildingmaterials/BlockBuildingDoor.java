@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -50,8 +51,9 @@ import net.minecraft.world.World;
  * them the same way: the lower half stores the facing (the way to the inside: the way the player
  * faced when placing it, from outside) and whether it is open; the upper half stores the hinge
  * side, whether a {@link ItemDoorCloser door closer} is fitted, and whether it is swinging. Each
- * half reads the rest from the other as actual state. The leaf lies along the outside face of its
- * cell and swings inward.</p>
+ * half reads the rest from the other as actual state. Most doors hang as a vanilla door does, the
+ * leaf along the outside face of the cell, and swing inward; the exit, storefront and fire doors
+ * swing outward, as real ones do, with the leaf along the inside face ({@link #outswing()}).</p>
  *
  * <ul>
  *   <li><b>At rest</b> a door is baked models: no tile entity. Only while it swings does its
@@ -117,9 +119,17 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   /** How long a door closer holds the door open, in ticks. */
   private static final int CLOSER_TICKS = 60;
 
+  /**
+   * SHARED with gen_doors.OUTSWING: the doors that swing out, toward the outside -- an exit door
+   * opens the way people escape, which is what lets its push bar work at all.
+   */
+  private static final Set<String> OUTSWING = Collections.unmodifiableSet(new HashSet<>(
+      Arrays.asList("door_metal_fire", "door_metal_exit", "door_storefront_bronze")));
+
   /** SHARED with gen_doors: the leaf's thickness, and so its plane, in blocks. */
   private static final double LEAF = 1.75 / 16;
   private static final AxisAlignedBB CLOSED_NORTH = new AxisAlignedBB(0, 0, 1 - LEAF, 1, 1, 1);
+  private static final AxisAlignedBB CLOSED_OUT_NORTH = new AxisAlignedBB(0, 0, 0, 1, 1, LEAF);
   private static final AxisAlignedBB OPEN_LEFT_NORTH = new AxisAlignedBB(0, 0, 0, LEAF, 1, 1);
   private static final AxisAlignedBB OPEN_RIGHT_NORTH =
       new AxisAlignedBB(1 - LEAF, 0, 0, 1, 1, 1);
@@ -162,6 +172,22 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @Override
   public String getBlockRegistryName() {
     return registryName != null ? registryName : PENDING_REGISTRY_NAME.get();
+  }
+
+  /**
+   * Whether this door swings out, toward the outside, rather than in. Its leaf then hangs along the
+   * inside face of the cell -- the depth mirror of an inswing door -- and turns outward about a
+   * pivot there, so the open leaf lies along the jamb inside its own cell as an inswing door's does.
+   * Nothing else changes: the facing is still the way to the inside, and the inside is still the
+   * side a keypad lock lets out freely. A kind of door, not state: every bit either half has is
+   * used.
+   *
+   * @return whether the door swings out
+   *
+   * @since 1.0
+   */
+  public boolean outswing() {
+    return OUTSWING.contains(getBlockRegistryName());
   }
 
   protected boolean glazed() {
@@ -454,7 +480,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   }
 
   /**
-   * Whether a player is on the inside -- the side the door faces, where it swings to.
+   * Whether a player is on the inside -- the side the door faces, where an inswing door swings to
+   * and an outswing door swings from.
    */
   protected static boolean inside(EntityPlayer player, BlockPos pos, EnumFacing f) {
     return (player.posX - (pos.getX() + 0.5)) * f.getXOffset()
@@ -570,8 +597,17 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
 
   // --- shape ------------------------------------------------------------------------------------
 
+  /** The leaf's box for a door that swings in (a custom door always does). */
   static AxisAlignedBB leafBox(IBlockState door) {
-    AxisAlignedBB north = !door.getValue(OPEN) ? CLOSED_NORTH
+    return leafBox(door, false);
+  }
+
+  /**
+   * The leaf's box: shut, along the outside face of the cell, or the inside face for a door that
+   * swings out; open, along the hinge jamb either way.
+   */
+  static AxisAlignedBB leafBox(IBlockState door, boolean outswing) {
+    AxisAlignedBB north = !door.getValue(OPEN) ? (outswing ? CLOSED_OUT_NORTH : CLOSED_NORTH)
         : door.getValue(HINGE) == Hinge.LEFT ? OPEN_LEFT_NORTH : OPEN_RIGHT_NORTH;
     return BlockGarageDoor.turn(north, door.getValue(FACING));
   }
@@ -579,7 +615,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @Override
   @Nonnull
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return leafBox(getActualState(state, source, pos));
+    return leafBox(getActualState(state, source, pos), outswing());
   }
 
   @Override

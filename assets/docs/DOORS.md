@@ -18,7 +18,8 @@ the **Door Keypad** from the garage doors, which locks a door as well. Every ass
 ## Using them
 
 - **Placing.** From outside, looking in: the door's facing is the way the player looked, the leaf
-  hangs on the outside face of its cell and swings inward, as a vanilla door's does. The hinge is
+  hangs on the outside face of its cell and swings inward, as a vanilla door's does -- except the
+  **Exit Door, the Storefront Door and the Fire Door, which swing out** (below). The hinge is
   on the side of the opening clicked, unless there is a door beside it hinged on its far side, in
   which case the new one hinges the other way and the two are a **pair**, which opens and closes
   together.
@@ -56,6 +57,22 @@ jamb with its outside face to the room and its latch edge inward. The generator 
 its own model, since a blockstate rotation turns about the block's centre and would put the hinge
 in the wrong corner; the renderer turns about the same pivot, so the swing ends on exactly the
 model that replaces it. The right-hinged models are the left's mirror.
+
+**Which way a door swings is a kind of door, not state.** The exit, storefront and fire doors
+(`OUTSWING`, in `gen_doors.py` and `BlockBuildingDoor`, SHARED) swing **out**, toward the outside,
+as real ones do: an exit door opens in the direction of escape, which is what lets a push bar work
+at all -- on a door that swings toward you it is a pull handle nobody can pull. Every other door
+swings in. No bit is left to make it a choice per door, and a door kind has one right answer.
+
+An outswing door is the **depth mirror** of an inswing one: its leaf hangs on the *inside* face of
+the cell (z 0..1.75 drawn north-inside) and turns outward about (0.875, 0.875), so the open leaf
+lies along the hinge jamb inside its own cell exactly where an inswing door's does, and the open
+collision box is the same. Only the shut box moves, to the inside face. The one thing that has to
+leave the cell is the hardware on the inside face -- the push bar, the inside lever -- which stands
+proud of the wall into the room by its own depth while the door is shut, as it does on a real door
+hung flush with the wall; open, it is inside the cell. The facing, the placing rule, pairs,
+redstone and keypad locks are untouched: the inside is still the side the door faces, and still
+the side a locked door lets people out from, which for an exit door is the side with the push bar.
 
 Glazed doors (the lites, the fire door, storefront, half-glass back door) are on the translucent
 layer; the rest are cutout.
