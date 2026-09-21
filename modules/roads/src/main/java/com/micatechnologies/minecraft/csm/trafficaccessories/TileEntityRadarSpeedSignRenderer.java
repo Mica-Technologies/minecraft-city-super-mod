@@ -1,11 +1,15 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.codeutils.RoadSurfaceHeight;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashPattern;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.client.Minecraft;
@@ -32,6 +36,12 @@ import org.lwjgl.opengl.GL11;
  * font atlas and never restores what was there, so untextured geometry drawn after any text
  * samples the font sheet at its centre — padding, hence invisible. That cost a full debugging
  * round on the school zone beacon; nothing here trusts inherited texture state.</p>
+ *
+ * <p>The blanks, faces and LED window are compiled once per look into a list shared by every
+ * board that looks the same ({@link CsmSharedDisplayLists}) and replayed under each board's own
+ * transform. Their vertices carry the block's light, so the light is part of the key. All text
+ * is still drawn directly: the reading changes, and the legend and header were left as they were.
+ * {@link CsmRenderToggles#sharedBakesPerFrame} draws the panel per frame, for comparison.</p>
  *
  * @author Mica Technologies
  * @since 2026.9
@@ -92,6 +102,33 @@ public class TileEntityRadarSpeedSignRenderer
       new ResourceLocation("csm", "textures/blocks/white1px.png");
   private static final int LIGHTMAP_FULLBRIGHT = 240;
 
+  // The panel's shapes, each built once. They were rebuilt every frame -- about 35 boxes and 70
+  // float arrays -- for geometry that depends on nothing but these constants.
+  private static final float PANEL_FRONT_Z = CZ - PANEL_D / 2.0f;
+  private static final float PANEL_BACK_Z = CZ + PANEL_D / 2.0f;
+  private static final float FACE_RADIUS = PANEL_RADIUS - PANEL_BORDER;
+  private static final List<RenderHelper.Box> BORDER_MAIN = roundedRect(
+      CX - PANEL_W / 2.0f - PANEL_BORDER, panelBottom() - PANEL_BORDER,
+      CX + PANEL_W / 2.0f + PANEL_BORDER, panelTop() + PANEL_BORDER,
+      PANEL_FRONT_Z, PANEL_BACK_Z, PANEL_RADIUS);
+  private static final List<RenderHelper.Box> BORDER_HEADER = roundedRect(
+      CX - PANEL_W / 2.0f - PANEL_BORDER, headerBottom() - PANEL_BORDER,
+      CX + PANEL_W / 2.0f + PANEL_BORDER, headerBottom() + HEADER_H + PANEL_BORDER,
+      PANEL_FRONT_Z, PANEL_BACK_Z, PANEL_RADIUS);
+  private static final List<RenderHelper.Box> FACE = roundedRect(
+      CX - PANEL_W / 2.0f, panelBottom(), CX + PANEL_W / 2.0f, panelTop(),
+      PANEL_FRONT_Z - 0.1f, PANEL_FRONT_Z + 0.2f, FACE_RADIUS);
+  private static final List<RenderHelper.Box> HEADER_FACE = roundedRect(
+      CX - PANEL_W / 2.0f, headerBottom(), CX + PANEL_W / 2.0f, headerBottom() + HEADER_H,
+      PANEL_FRONT_Z - 0.1f, PANEL_FRONT_Z + 0.2f, FACE_RADIUS);
+  private static final List<RenderHelper.Box> WINDOW = roundedRect(
+      CX - WINDOW_W / 2.0f, windowBottom(), CX + WINDOW_W / 2.0f, windowBottom() + WINDOW_H,
+      PANEL_FRONT_Z - 0.25f, PANEL_FRONT_Z - 0.05f, 0.8f);
+
+  /** The panel, faces and window, one list per look. Key, see {@link #panelKey}. */
+  private static final CsmSharedDisplayLists PANEL_LISTS =
+      new CsmSharedDisplayLists("radar_sign_panel");
+
   @Override
   public void render(TileEntityRadarSpeedSign te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -134,7 +171,29 @@ public class TileEntityRadarSpeedSignRenderer
     int sky = (combined >> 16) & 0xFFFF;
     int block = combined & 0xFFFF;
 
-    renderPanel(te, sky, block);
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawPanel(te, sky, block);
+    } else {
+      long key = panelKey(te, combined);
+      int list = PANEL_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = PANEL_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawPanel(te, sky, block);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+        // A direct draw resets the colour cache after its colour array; a replay does not.
+        GlStateManager.resetColor();
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawPanel(te, sky, block);
+      }
+    }
     renderLegend(te);
     if (te.isShowHeader()) {
       renderHeaderText(te);
@@ -175,67 +234,63 @@ public class TileEntityRadarSpeedSignRenderer
     return panelTop() + PANEL_BORDER + HEADER_GAP + PANEL_BORDER;
   }
 
-  private void renderPanel(TileEntityRadarSpeedSign te, int sky, int block) {
+  /**
+   * Packs everything the panel geometry depends on. Scale, facing and the road settle are not in
+   * it: all three are the matrix the list is replayed under.
+   *
+   * <pre>
+   *  bits  0-31  combined light, as getCombinedLight returns it (sky in the high half)
+   *  bits 32-39  face colour ordinal
+   *  bit  40     header fitted
+   * </pre>
+   */
+  private static long panelKey(TileEntityRadarSpeedSign te, int combined) {
+    return (combined & 0xFFFFFFFFL)
+        | ((long) (te.getFaceColor().ordinal() & 0xFF) << 32)
+        | (te.isShowHeader() ? 1L << 40 : 0L);
+  }
+
+  /**
+   * Draws the blanks, faces and LED window in one draw, in the order they were once drawn one
+   * by one. Geometry only: the caller binds the white swatch and owns every GL state.
+   */
+  private static void drawPanel(TileEntityRadarSpeedSign te, int sky, int block) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
-
-    float halfW = PANEL_W / 2.0f;
-    float backZ = CZ + PANEL_D / 2.0f;
-    float frontZ = CZ - PANEL_D / 2.0f;
-    float faceRadius = PANEL_RADIUS - PANEL_BORDER;
-
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    boolean header = te.isShowHeader();
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     // Border blanks first, then the coloured faces in front of them, so the border reads as the
     // painted edge stripe every sign blank carries rather than as a separate object.
-    List<RenderHelper.Box> border = new ArrayList<>();
-    RenderHelper.addRoundedRect(border,
-        CX - halfW - PANEL_BORDER, panelBottom() - PANEL_BORDER,
-        CX + halfW + PANEL_BORDER, panelTop() + PANEL_BORDER,
-        frontZ, backZ, PANEL_RADIUS, ROUND_STEPS, true, true);
-    if (te.isShowHeader()) {
-      RenderHelper.addRoundedRect(border,
-          CX - halfW - PANEL_BORDER, headerBottom() - PANEL_BORDER,
-          CX + halfW + PANEL_BORDER, headerBottom() + HEADER_H + PANEL_BORDER,
-          frontZ, backZ, PANEL_RADIUS, ROUND_STEPS, true, true);
-    }
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(border, buf,
+    RenderHelper.addBoxesToBufferLit(BORDER_MAIN, buf,
         COL_BORDER[0], COL_BORDER[1], COL_BORDER[2], COL_BORDER[3], 0, 0, 0, sky, block);
-    tess.draw();
+    if (header) {
+      RenderHelper.addBoxesToBufferLit(BORDER_HEADER, buf,
+          COL_BORDER[0], COL_BORDER[1], COL_BORDER[2], COL_BORDER[3], 0, 0, 0, sky, block);
+    }
 
     MutcdSignFaceColor colour = te.getFaceColor();
-    List<RenderHelper.Box> face = new ArrayList<>();
-    RenderHelper.addRoundedRect(face,
-        CX - halfW, panelBottom(), CX + halfW, panelTop(),
-        frontZ - 0.1f, frontZ + 0.2f, faceRadius, ROUND_STEPS, true, true);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(face, buf,
+    RenderHelper.addBoxesToBufferLit(FACE, buf,
         colour.getRed(), colour.getGreen(), colour.getBlue(), 1.0f, 0, 0, 0, sky, block);
-    tess.draw();
 
-    if (te.isShowHeader()) {
+    if (header) {
       // The header is a regulatory sign, so it stays white whatever colour the board is.
-      List<RenderHelper.Box> header = new ArrayList<>();
-      RenderHelper.addRoundedRect(header,
-          CX - halfW, headerBottom(), CX + halfW, headerBottom() + HEADER_H,
-          frontZ - 0.1f, frontZ + 0.2f, faceRadius, ROUND_STEPS, true, true);
-      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-      RenderHelper.addBoxesToBufferLit(header, buf,
+      RenderHelper.addBoxesToBufferLit(HEADER_FACE, buf,
           COL_HEADER[0], COL_HEADER[1], COL_HEADER[2], COL_HEADER[3], 0, 0, 0, sky, block);
-      tess.draw();
     }
 
     // The LED window: a dark recess sitting proud of the face so its edge catches as a lip.
-    List<RenderHelper.Box> window = new ArrayList<>();
-    RenderHelper.addRoundedRect(window,
-        CX - WINDOW_W / 2.0f, windowBottom(),
-        CX + WINDOW_W / 2.0f, windowBottom() + WINDOW_H,
-        frontZ - 0.25f, frontZ - 0.05f, 0.8f, ROUND_STEPS, true, true);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(window, buf,
+    RenderHelper.addBoxesToBufferLit(WINDOW, buf,
         COL_WINDOW[0], COL_WINDOW[1], COL_WINDOW[2], COL_WINDOW[3], 0, 0, 0, sky, block);
     tess.draw();
+  }
+
+  /** One rounded rectangle's boxes, built once: none of the panel's shapes ever change. */
+  private static List<RenderHelper.Box> roundedRect(float x1, float y1, float x2, float y2,
+      float z1, float z2, float radius) {
+    List<RenderHelper.Box> boxes = new ArrayList<>();
+    RenderHelper.addRoundedRect(boxes, x1, y1, x2, y2, z1, z2, radius, ROUND_STEPS, true, true);
+    return Collections.unmodifiableList(boxes);
   }
 
   private static float windowBottom() {
