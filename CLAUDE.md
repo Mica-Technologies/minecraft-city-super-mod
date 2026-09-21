@@ -323,8 +323,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   ceiling runs and the renderer, the hardware, and the opener and the stackable hanger
 - `assets/docs/DOORS.md` -- Twelve two-block doors, pairs, redstone, the Door Closer add-on and
   keypad locks: the state split between the halves, why the open model is written out rather than
-  rotated, the swing drawn from the resting models by a tile entity that never ticks, and why
-  locks are world saved data
+  rotated, the swing drawn from the resting models by a client-only tile entity that removes
+  itself, which way each door swings and how it is flipped, and why locks are world saved data
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
   crane, site fences, earthworks, logistics and facilities: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
