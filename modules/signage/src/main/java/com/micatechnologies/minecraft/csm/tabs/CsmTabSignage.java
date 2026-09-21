@@ -73,5 +73,7 @@ public class CsmTabSignage extends CsmTab {
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(new BlockAdBoard("ad_poster_board")); // Poster Board
+    initTabBlock(new BlockAdBoard("ad_billboard")); // Billboard
+    initTabBlock(new BlockAdBoard("ad_digital_billboard")); // Digital Billboard
   }
 }

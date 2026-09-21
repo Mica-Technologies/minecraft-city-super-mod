@@ -1,0 +1,157 @@
+{
+  "textures": {
+    "frame": "csm:blocks/signage/board_trim_steel",
+    "back": "csm:blocks/signage/board_cabinet_steel",
+    "grate": "csm:blocks/signage/board_catwalk_grate",
+    "rail": "csm:blocks/signage/board_rail_steel",
+    "lens": "csm:blocks/signage/board_lamp_lens",
+    "particle": "csm:blocks/signage/board_cabinet_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        7.5,
+        1.5,
+        25
+      ],
+      "to": [
+        8.5,
+        6,
+        26
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            7.5,
+            10,
+            8.5,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            7.5,
+            10,
+            8.5,
+            14.5
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            9,
+            10,
+            10,
+            14.5
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            9,
+            10,
+            10,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            7.5,
+            9,
+            8.5,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            7.5,
+            9,
+            8.5,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        5,
+        20
+      ],
+      "to": [
+        10,
+        8,
+        26
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lens",
+          "uv": [
+            6,
+            8,
+            10,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            6,
+            8,
+            10,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            4,
+            8,
+            10,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            4,
+            8,
+            10,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            6,
+            4,
+            10,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            6,
+            4,
+            10,
+            10
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          6.5,
+          23
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    }
+  ]
+}

@@ -520,6 +520,32 @@ def megaphone(p):
         p["accent"], p["accent"], p["accent"])
 
 
+def donkey(p):
+    return """
+<ellipse cx="50" cy="94" rx="30" ry="4" fill="#000" opacity="0.15"/>
+<path d="M30 96 Q28 70 46 62 L66 60 Q76 70 74 96 Z" fill="#8d8174"/>
+<path d="M40 30 L30 4 Q42 6 48 26 Z" fill="#8d8174"/>
+<path d="M40 28 L33 10 Q41 12 45 26 Z" fill="#e6b8b0"/>
+<path d="M56 26 L62 2 Q72 8 64 30 Z" fill="#8d8174"/>
+<path d="M58 26 L63 9 Q68 14 62 28 Z" fill="#e6b8b0"/>
+<path d="M36 34 Q40 22 56 24 Q70 26 70 42 L74 62 Q76 78 60 80 Q46 82 42 70 L36 50 Z"
+      fill="#a3978a"/>
+<path d="M46 66 Q48 82 60 82 Q76 80 74 64 Q70 58 60 58 Q48 58 46 66 Z" fill="#d9d0c5"/>
+<ellipse cx="54" cy="70" rx="2.2" ry="3" fill="#3a302a"/>
+<ellipse cx="66" cy="69" rx="2.2" ry="3" fill="#3a302a"/>
+<path d="M54 77 Q60 80 66 77" stroke="#3a302a" stroke-width="1.8" fill="none"
+      stroke-linecap="round"/>
+<circle cx="47" cy="42" r="4.5" fill="#ffffff"/><circle cx="48" cy="43" r="2.4" fill="#1d1d1d"/>
+<circle cx="63" cy="41" r="4.5" fill="#ffffff"/><circle cx="62" cy="42" r="2.4" fill="#1d1d1d"/>
+<path d="M42 34 Q46 31 51 34 M58 33 Q63 30 68 33" stroke="#5a4f45" stroke-width="2"
+      fill="none" stroke-linecap="round"/>
+<path d="M44 24 Q50 14 56 24 Q52 20 48 26 Z" fill="#4a4038"/>
+<g transform="translate(76 18) rotate(12)">
+  <circle r="11" fill="#ffffff" stroke="%s" stroke-width="3"/>
+  <path d="M-6 -6 L6 6 M6 -6 L-6 6" stroke="%s" stroke-width="3.5" stroke-linecap="round"/>
+</g>""" % (p["accent"], p["accent"])
+
+
 # --------------------------------------------------------------------------------------------
 # Catalogue
 # --------------------------------------------------------------------------------------------
@@ -798,6 +824,15 @@ CATALOGUE = [
          palette=dict(bg="#2e5e2e", bg2="#244d24", fg="#ffffff", accent="#ffd54f",
                       brand="#ffffff", ink="#dbeadb", band="#ffd54f", band_ink="#2e5e2e",
                       deco="#ffffff")),
+    dict(id="vote_mcconkey", brand="McConkey for Mayor", brand_font="archivo",
+         headline="Don't be a *Donkey.*|Vote for McConkey.", head_font="archivo",
+         headline_short="Don't be a *Donkey.* Vote McConkey.",
+         sub="Common sense. Uncommon name.", cta="Vote Tuesday",
+         fine="Paid for by Friends of McConkey. The donkey has not endorsed this message.",
+         art="donkey", art_side="left", deco="stripes", category="civic",
+         palette=dict(bg="#f7f4ee", bg2="#ece6da", fg="#1d2b53", accent="#c8102e",
+                      brand="#1d2b53", ink="#3a4566", band="#1d2b53", band_ink="#ffffff",
+                      deco="#c8102e", fine="#4a5372")),
     # The house ad: what a board shows for an ad id it does not know (a removed server image,
     # a renamed ad). Category "house" keeps it out of "all" and "random" playlists.
     dict(id="your_ad_here", brand="Your Ad Here", brand_font="archivo",

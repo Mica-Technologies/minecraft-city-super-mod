@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.signage;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -48,6 +49,10 @@ public class AdBoardConfigHandler implements IMessageHandler<AdBoardConfigPacket
     }
     board.setAds(adId, rotation, category, message.interval, AdFit.fromOrdinal(message.fit),
         AdLight.fromOrdinal(message.light));
+    IBlockState state = world.getBlockState(controller);
+    boolean cabinet = state.getBlock() instanceof AbstractBlockAdBoard
+        && ((AbstractBlockAdBoard) state.getBlock()).kind().isCabinet();
+    board.setBack(cabinet ? AdBack.fromOrdinal(message.back) : AdBack.NONE);
 
     ITextComponent problem = AdBoards.resize(world, controller, player, message.width,
         message.height, AdBoardAlign.fromOrdinal(message.align));

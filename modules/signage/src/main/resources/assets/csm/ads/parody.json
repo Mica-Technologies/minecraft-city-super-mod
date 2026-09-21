@@ -404,6 +404,18 @@
       "background": "#2e5e2e"
     },
     {
+      "id": "vote_mcconkey",
+      "brand": "McConkey for Mayor",
+      "category": "civic",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#f7f4ee"
+    },
+    {
       "id": "your_ad_here",
       "brand": "Your Ad Here",
       "category": "house",

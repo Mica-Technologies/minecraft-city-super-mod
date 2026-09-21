@@ -1,0 +1,148 @@
+{
+  "textures": {
+    "frame": "csm:blocks/signage/board_bezel_black",
+    "back": "csm:blocks/signage/board_cabinet_steel",
+    "grate": "csm:blocks/signage/board_catwalk_grate",
+    "rail": "csm:blocks/signage/board_rail_steel",
+    "lens": "csm:blocks/signage/board_lamp_lens",
+    "particle": "csm:blocks/signage/board_cabinet_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        14.0,
+        14.0,
+        16
+      ],
+      "to": [
+        16,
+        16,
+        17.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            14.0,
+            0,
+            16.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            14.0,
+            0,
+            16.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            1.0,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            1.0,
+            2.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            14.0,
+            0,
+            16.0,
+            1.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            14.0,
+            0,
+            16.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.0,
+        14.0,
+        -1.0
+      ],
+      "to": [
+        16,
+        16,
+        0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            14.0,
+            0,
+            16.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            14.0,
+            0,
+            16.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            15.0,
+            0,
+            16.0,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            15.0,
+            0,
+            16.0,
+            2.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            14.0,
+            15.0,
+            16.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            14.0,
+            15.0,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}
