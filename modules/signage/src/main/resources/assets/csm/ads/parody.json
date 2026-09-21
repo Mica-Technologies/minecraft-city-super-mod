@@ -1,0 +1,419 @@
+{
+  "source": "parody",
+  "shapes": {
+    "portrait": [
+      512,
+      768
+    ],
+    "square": [
+      512,
+      512
+    ],
+    "poster": [
+      1024,
+      512
+    ],
+    "bulletin": [
+      1008,
+      288
+    ]
+  },
+  "ads": [
+    {
+      "id": "cube_burger",
+      "brand": "Cube Burger",
+      "category": "food",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#d7261e"
+    },
+    {
+      "id": "boomguard_insurance",
+      "brand": "BoomGuard Insurance",
+      "category": "insurance",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#0f2a4a"
+    },
+    {
+      "id": "oof_ouch_law",
+      "brand": "Oof & Ouch, Attorneys",
+      "category": "legal",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#101010"
+    },
+    {
+      "id": "gridlock_energy",
+      "brand": "GRIDLOCK",
+      "category": "drink",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#16161d"
+    },
+    {
+      "id": "green_wave_signals",
+      "brand": "Green Wave Partners",
+      "category": "services",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#0b3d2e"
+    },
+    {
+      "id": "obsidian_mattress",
+      "brand": "Uncle Obsidian's Mattresses",
+      "category": "home",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#2b1a47"
+    },
+    {
+      "id": "cone_zone",
+      "brand": "Cone Zone Supply",
+      "category": "services",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#ffffff"
+    },
+    {
+      "id": "bright_smile_dental",
+      "brand": "Bright Smile Dental",
+      "category": "health",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#e6f6ff"
+    },
+    {
+      "id": "redstone_realty",
+      "brand": "Redstone Realty",
+      "category": "home",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#fbf3e4"
+    },
+    {
+      "id": "couch_potato_plus",
+      "brand": "Couch Potato+",
+      "category": "entertainment",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#24103f"
+    },
+    {
+      "id": "cubeline_brick",
+      "brand": "Cubeline Brick 12",
+      "category": "tech",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#f5f5f7"
+    },
+    {
+      "id": "nether_nights_sauce",
+      "brand": "Nether Nights Hot Sauce",
+      "category": "food",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#1a0603"
+    },
+    {
+      "id": "honest_hals_minecarts",
+      "brand": "Honest Hal's Used Minecarts",
+      "category": "auto",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#ffd23f"
+    },
+    {
+      "id": "psa_look_both_ways",
+      "brand": "Department of Streets",
+      "category": "civic",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#004d40"
+    },
+    {
+      "id": "vote_blockley",
+      "brand": "Pat Blockley for Mayor",
+      "category": "civic",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#1d3557"
+    },
+    {
+      "id": "cloud_nine_air",
+      "brand": "Cloud Nine Airlines",
+      "category": "travel",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#4fb3ff"
+    },
+    {
+      "id": "holey_moly_donuts",
+      "brand": "Holey Moly Donuts",
+      "category": "food",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#ffe3ef"
+    },
+    {
+      "id": "tundra_creamery",
+      "brand": "Tundra Creamery",
+      "category": "food",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#b8f2e6"
+    },
+    {
+      "id": "quick_drip_oil",
+      "brand": "Quick Drip Oil Change",
+      "category": "auto",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#ffcc00"
+    },
+    {
+      "id": "ironside_fitness",
+      "brand": "Ironside Fitness",
+      "category": "health",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#121212"
+    },
+    {
+      "id": "bytesize_internet",
+      "brand": "ByteSize Internet",
+      "category": "tech",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#062b35"
+    },
+    {
+      "id": "paws_and_claws",
+      "brand": "Paws & Claws Grooming",
+      "category": "services",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#fff1dc"
+    },
+    {
+      "id": "sunny_side_solar",
+      "brand": "Sunny Side Solar",
+      "category": "home",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#0d2b6b"
+    },
+    {
+      "id": "casa_cuadrada",
+      "brand": "Casa Cuadrada",
+      "category": "food",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#00a6a6"
+    },
+    {
+      "id": "deep_blue_aquarium",
+      "brand": "Deep Blue Aquarium",
+      "category": "entertainment",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#03254c"
+    },
+    {
+      "id": "moonrise_coffee",
+      "brand": "Moonrise Coffee",
+      "category": "drink",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#3b2416"
+    },
+    {
+      "id": "mile_high_pizza",
+      "brand": "Mile High Pizza",
+      "category": "food",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#1f7a3a"
+    },
+    {
+      "id": "spin_cycle_laundromat",
+      "brand": "Spin Cycle Laundromat",
+      "category": "services",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#e3f2ff"
+    },
+    {
+      "id": "stackwell_savings",
+      "brand": "Stackwell Savings & Loan",
+      "category": "finance",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#0f3b2e"
+    },
+    {
+      "id": "rocket_movers",
+      "brand": "Rocket Movers",
+      "category": "services",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#ff6b1a"
+    },
+    {
+      "id": "citywide_transit",
+      "brand": "Citywide Transit",
+      "category": "civic",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#f4f4f4"
+    },
+    {
+      "id": "psa_pigeons",
+      "brand": "Department of Parks",
+      "category": "civic",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#2e5e2e"
+    },
+    {
+      "id": "your_ad_here",
+      "brand": "Your Ad Here",
+      "category": "house",
+      "shapes": [
+        "portrait",
+        "square",
+        "poster",
+        "bulletin"
+      ],
+      "background": "#222222"
+    }
+  ]
+}
