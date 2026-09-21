@@ -111,6 +111,9 @@ public class TileEntityCraneHeadRenderer extends TileEntitySpecialRenderer<TileE
     GlStateManager.translate(cx, y, cz);
     GlStateManager.rotate(-te.getSlew(), 0F, 1F, 0F);
     GlStateManager.callList(entry.list);
+    // The list's vertex colours leave GL's current colour at its last vertex without
+    // GlStateManager knowing, so a later color(1, 1, 1, 1) could be skipped as redundant.
+    GlStateManager.resetColor();
     GlStateManager.enableLighting();
     GlStateManager.popMatrix();
 
@@ -290,6 +293,20 @@ public class TileEntityCraneHeadRenderer extends TileEntitySpecialRenderer<TileE
     if (entry != null) {
       GLAllocation.deleteDisplayLists(entry.list);
     }
+  }
+
+  /**
+   * Frees every head's display list. Registered as a client disconnect hook: a head releases its
+   * own list when it is broken or its chunk unloads, but leaving a world does neither, and the
+   * lists hold driver memory.
+   *
+   * @since 1.0
+   */
+  public static void releaseAll() {
+    for (Entry entry : LISTS.values()) {
+      GLAllocation.deleteDisplayLists(entry.list);
+    }
+    LISTS.clear();
   }
 
   @Override

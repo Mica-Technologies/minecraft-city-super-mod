@@ -114,5 +114,8 @@ public class TileEntityTattleTaleBeacon extends TileEntity {
         player.sendStatusMessage(new TextComponentString("Linked to LEFT signals"), (true));
       }
     }
+    // Only the server reads the mode (the controller asks which phase this beacon mirrors), but
+    // without this the chunk is not marked for saving and the new mode can be lost on reload.
+    markDirty();
   }
 }

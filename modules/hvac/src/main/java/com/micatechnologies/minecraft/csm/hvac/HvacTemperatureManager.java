@@ -174,6 +174,27 @@ public class HvacTemperatureManager {
    * @return the raw temperature in degrees Fahrenheit (baseline + capped HVAC offset)
    */
   public static float getTemperatureAt(World world, BlockPos pos) {
+    return getTemperatureAt(world, pos, -1, null);
+  }
+
+  /**
+   * As {@link #getTemperatureAt(World, BlockPos)}, and also reports in {@code nearAnyHvacOut[0]}
+   * whether any {@link IHvacUnit} (active or not) lies within {@code nearRadius} blocks -- the
+   * answer {@link #isNearAnyHvac} gives -- from the same walk over the chunks' tile entities.
+   *
+   * <p>The HUD asks both questions for the player every half second. Asked separately they walked
+   * the tile-entity maps of 9 chunks and then of 49 (the 9 are inside the 49 for any radius under
+   * 32 blocks), and CSM chunks are tile-entity dense. The answers are identical either way.</p>
+   *
+   * @param world          the world instance
+   * @param pos            the position to sample
+   * @param nearRadius     the radius for the proximity answer, under 32 blocks; negative to skip it
+   * @param nearAnyHvacOut receives the proximity answer at index 0; may be null when skipped
+   *
+   * @return the temperature in degrees Fahrenheit
+   */
+  public static float getTemperatureAt(World world, BlockPos pos, int nearRadius,
+      boolean[] nearAnyHvacOut) {
     if (DEBUG_LOGGING) {
       long now = System.currentTimeMillis();
       debugThisPass = (now - lastDebugLogMs >= DEBUG_LOG_INTERVAL_MS);
@@ -183,7 +204,7 @@ public class HvacTemperatureManager {
     }
 
     float baseline = getCachedBaseline(world, pos);
-    float currentOffset = calculateHvacOffset(world, pos);
+    float currentOffset = calculateHvacOffset(world, pos, nearRadius, nearAnyHvacOut);
 
     if (debugThisPass) {
       LOGGER.info(String.format("[HVAC-DEBUG] pos=%s baseline=%.1f rawOffset=%.1f final=%.1f",
@@ -228,7 +249,7 @@ public class HvacTemperatureManager {
     // around corners and through doorways — starting from devicePos, so a single query reads
     // the air the device is actually exposed to. The legacy forward-sampling walk through
     // roomDirection is no longer needed now that propagation follows real air paths.
-    float bestOffset = calculateHvacOffset(world, devicePos);
+    float bestOffset = calculateHvacOffset(world, devicePos, -1, null);
 
     if (debugThisPass) {
       LOGGER.info(String.format(
@@ -392,7 +413,8 @@ public class HvacTemperatureManager {
    *
    * @return the air-path-weighted HVAC temperature offset in degrees Fahrenheit
    */
-  private static float calculateHvacOffset(World world, BlockPos pos) {
+  private static float calculateHvacOffset(World world, BlockPos pos, int nearRadius,
+      boolean[] nearAnyHvacOut) {
     // Gather active HVAC sources in the surrounding chunks, culled by straight-line distance.
     // (Air-path distance is always >= straight-line distance, so anything outside the largest
     // falloff radius in a straight line can never be in range by air either.)
@@ -400,6 +422,10 @@ public class HvacTemperatureManager {
     int centerCZ = pos.getZ() >> 4;
     double maxDistForCull = Math.max(UNIT_MAX_EFFECT_DISTANCE, VENT_MAX_EFFECT_DISTANCE);
     double maxCullDistSq = maxDistForCull * maxDistForCull;
+
+    boolean wantNear = nearRadius >= 0 && nearAnyHvacOut != null;
+    double nearRadiusSq = (double) nearRadius * nearRadius;
+    boolean nearAny = false;
 
     List<TileEntity> sources = new ArrayList<>();
     for (int cx = centerCX - CHUNK_SCAN_RADIUS; cx <= centerCX + CHUNK_SCAN_RADIUS; cx++) {
@@ -409,14 +435,22 @@ public class HvacTemperatureManager {
         }
         Chunk chunk = world.getChunk(cx, cz);
         for (TileEntity te : chunk.getTileEntityMap().values()) {
-          if (!(te instanceof IHvacUnit) || !((IHvacUnit) te).isHvacActive()) {
+          if (!(te instanceof IHvacUnit)) {
             continue;
           }
-          if (te.getPos().distanceSq(pos) <= maxCullDistSq) {
+          double distSq = te.getPos().distanceSq(pos);
+          // isNearAnyHvac's test: any unit, active or not, within the radius.
+          if (wantNear && distSq <= nearRadiusSq) {
+            nearAny = true;
+          }
+          if (((IHvacUnit) te).isHvacActive() && distSq <= maxCullDistSq) {
             sources.add(te);
           }
         }
       }
+    }
+    if (wantNear) {
+      nearAnyHvacOut[0] = nearAny;
     }
     if (sources.isEmpty()) {
       return 0.0f;

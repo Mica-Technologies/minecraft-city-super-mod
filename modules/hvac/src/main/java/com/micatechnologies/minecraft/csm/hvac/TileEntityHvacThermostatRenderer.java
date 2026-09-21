@@ -2,6 +2,9 @@ package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
+import java.util.Map;
+import java.util.WeakHashMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -51,18 +54,36 @@ public class TileEntityHvacThermostatRenderer
   private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
   private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
-  // Cached display strings — only recomputed when inputs change
-  private long lastWorldTime = -1;
-  private String cachedTimeStr = "";
-  private int lastRoundedRoom = Integer.MIN_VALUE;
-  private int lastCallingMode = -1;
-  private boolean lastCalling = false;
-  private String cachedRoomTempStr = "";
-  private int lastTargetLow = -1;
-  private int lastTargetHigh = -1;
-  private String cachedSetpointLine = "";
-  private int lastOutsideTemp = Integer.MIN_VALUE;
-  private String cachedOutsideLine = "";
+  /**
+   * One thermostat's display strings, their widths and its outside temperature, each rebuilt only
+   * when its inputs change.
+   *
+   * <p>These used to be single fields on the renderer, which Minecraft creates once for every
+   * thermostat, so with two thermostats in view each overwrote the other's strings every frame
+   * and every frame reformatted all four. Keyed weakly on the tile entity, so an entry goes when
+   * its thermostat does.</p>
+   */
+  private static final class DisplayCache {
+    private long lastMinuteOfDay = -1;
+    private String timeStr = "";
+    private int timeWidth;
+    private int lastRoundedRoom = Integer.MIN_VALUE;
+    private int lastCallingMode = -1;
+    private boolean lastCalling = false;
+    private String roomTempStr = "";
+    private int roomTempWidth;
+    private int lastTargetLow = -1;
+    private int lastTargetHigh = -1;
+    private String setpointLine = "";
+    private int setpointWidth;
+    /** Zero, not Long.MIN_VALUE: the elapsed-time test would overflow and never read. */
+    private long lastBiomeReadMillis = 0L;
+    private int lastOutsideTemp = Integer.MIN_VALUE;
+    private String outsideLine = "";
+    private int outsideWidth;
+  }
+
+  private final Map<TileEntity, DisplayCache> displayCaches = new WeakHashMap<>();
 
   @Override
   public void render(TileEntity tileEntity, double x, double y, double z,
@@ -96,23 +117,48 @@ public class TileEntityHvacThermostatRenderer
     int callingMode = te.getCallingMode();
     int roundedRoom = Math.round(roomTemp);
 
-    // Cache time string — only reformat when the in-game minute changes
+    DisplayCache cache = displayCaches.get(tileEntity);
+    if (cache == null) {
+      cache = new DisplayCache();
+      displayCaches.put(tileEntity, cache);
+    }
+    FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+
+    // The world clock moves every tick but the display shows minutes (1,000 ticks an hour), so key
+    // on the minute; comparing raw ticks reformatted the string twenty times a second.
     long worldTime = world.getWorldTime() % 24000;
-    if (worldTime != lastWorldTime) {
-      lastWorldTime = worldTime;
+    long minuteOfDay = worldTime * 60 / 1000;
+    if (minuteOfDay != cache.lastMinuteOfDay) {
+      cache.lastMinuteOfDay = minuteOfDay;
       int hours = (int) ((worldTime / 1000 + 6) % 24);
       int minutes = (int) ((worldTime % 1000) * 60 / 1000);
       boolean pm = hours >= 12;
       int displayHour = hours % 12;
       if (displayHour == 0) displayHour = 12;
-      cachedTimeStr = String.format("%d:%02d %s", displayHour, minutes, pm ? "PM" : "AM");
+      cache.timeStr = String.format("%d:%02d %s", displayHour, minutes, pm ? "PM" : "AM");
+      cache.timeWidth = fr.getStringWidth(cache.timeStr);
+    }
+
+    // The outside temperature is the biome's, which changes only if the biome is edited: read it
+    // once a second (wall clock, so it still updates with the day cycle frozen), not every frame.
+    long nowMillis = CsmRenderUtils.gameMillis(world);
+    if (nowMillis - cache.lastBiomeReadMillis >= 1000L) {
+      cache.lastBiomeReadMillis = nowMillis;
+      float biomeTemp = world.getBiome(tileEntity.getPos()).getTemperature(tileEntity.getPos());
+      int roundedOutside = Math.round(biomeTemp * 90.0f - 4.0f);
+      if (roundedOutside != cache.lastOutsideTemp) {
+        cache.lastOutsideTemp = roundedOutside;
+        cache.outsideLine = "Out: " + roundedOutside + "\u00B0F";
+        cache.outsideWidth = fr.getStringWidth(cache.outsideLine);
+      }
     }
 
     // Cache room temperature string — only rebuild when rounded temp or mode changes
-    if (roundedRoom != lastRoundedRoom || callingMode != lastCallingMode || calling != lastCalling) {
-      lastRoundedRoom = roundedRoom;
-      lastCallingMode = callingMode;
-      lastCalling = calling;
+    if (roundedRoom != cache.lastRoundedRoom || callingMode != cache.lastCallingMode
+        || calling != cache.lastCalling) {
+      cache.lastRoundedRoom = roundedRoom;
+      cache.lastCallingMode = callingMode;
+      cache.lastCalling = calling;
       String statusSymbol = "";
       if (calling) {
         if (callingMode == 1) {
@@ -121,25 +167,17 @@ public class TileEntityHvacThermostatRenderer
           statusSymbol = "\u25BC ";
         }
       }
-      cachedRoomTempStr = statusSymbol + roundedRoom + "\u00B0F";
+      cache.roomTempStr = statusSymbol + roundedRoom + "\u00B0F";
+      cache.roomTempWidth = fr.getStringWidth(cache.roomTempStr);
     }
 
     // Cache setpoint string — only rebuild when setpoints change
-    if (targetLow != lastTargetLow || targetHigh != lastTargetHigh) {
-      lastTargetLow = targetLow;
-      lastTargetHigh = targetHigh;
-      cachedSetpointLine = "Set: " + targetLow + "-" + targetHigh + "\u00B0F";
+    if (targetLow != cache.lastTargetLow || targetHigh != cache.lastTargetHigh) {
+      cache.lastTargetLow = targetLow;
+      cache.lastTargetHigh = targetHigh;
+      cache.setpointLine = "Set: " + targetLow + "-" + targetHigh + "\u00B0F";
+      cache.setpointWidth = fr.getStringWidth(cache.setpointLine);
     }
-
-    // Cache outside temp string — biome temp is constant, only compute once
-    float biomeTemp = world.getBiome(tileEntity.getPos()).getTemperature(tileEntity.getPos());
-    int roundedOutside = Math.round(biomeTemp * 90.0f - 4.0f);
-    if (roundedOutside != lastOutsideTemp) {
-      lastOutsideTemp = roundedOutside;
-      cachedOutsideLine = "Out: " + roundedOutside + "\u00B0F";
-    }
-
-    FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
@@ -197,17 +235,17 @@ public class TileEntityHvacThermostatRenderer
     GlStateManager.disableBlend();
 
     // Draw time (top center)
-    fr.drawString(cachedTimeStr, -fr.getStringWidth(cachedTimeStr) / 2, -25, COLOR_LCD_SEC);
+    fr.drawString(cache.timeStr, -cache.timeWidth / 2, -25, COLOR_LCD_SEC);
 
     // Draw room temperature (larger, center)
     GlStateManager.pushMatrix();
     GlStateManager.scale(1.5f, 1.5f, 1.0f);
-    fr.drawString(cachedRoomTempStr, -fr.getStringWidth(cachedRoomTempStr) / 2, -7, COLOR_LCD);
+    fr.drawString(cache.roomTempStr, -cache.roomTempWidth / 2, -7, COLOR_LCD);
     GlStateManager.popMatrix();
 
     // Draw setpoint and outside temp (strings pre-built, no per-frame concatenation)
-    fr.drawString(cachedSetpointLine, -fr.getStringWidth(cachedSetpointLine) / 2, 10, COLOR_LCD_SEC);
-    fr.drawString(cachedOutsideLine, -fr.getStringWidth(cachedOutsideLine) / 2, 20, COLOR_LCD_SEC);
+    fr.drawString(cache.setpointLine, -cache.setpointWidth / 2, 10, COLOR_LCD_SEC);
+    fr.drawString(cache.outsideLine, -cache.outsideWidth / 2, 20, COLOR_LCD_SEC);
 
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
