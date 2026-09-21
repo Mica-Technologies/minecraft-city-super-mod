@@ -6,9 +6,11 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxVisorT
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightMountKit;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 
 public class TileEntityBlankoutBox extends AbstractTileEntity {
@@ -36,6 +38,9 @@ public class TileEntityBlankoutBox extends AbstractTileEntity {
 
     @Override
     public void readNBT( NBTTagCompound compound ) {
+        // A sync also arrives when the block behind changed (see the block's neighborChanged), so
+        // the renderer's cached look behind is out of date.
+        invalidateBehindCache();
         long appearanceBefore = appearanceKey();
         bodyColor = TrafficSignalBodyColor.fromNBT( readInt( compound, NBT_BODY_COLOR ) );
         visorColor = TrafficSignalBodyColor.fromNBT( readInt( compound, NBT_VISOR_COLOR ) );
@@ -205,6 +210,53 @@ public class TileEntityBlankoutBox extends AbstractTileEntity {
 
     // endregion
 
+    // region Mount Kit Behind
+
+    /** How long {@link #isBehindMountKit} trusts its last look, in ticks. */
+    private static final long BEHIND_RECHECK_TICKS = 20L;
+
+    private long behindCheckedAt = Long.MIN_VALUE;
+
+    /** The facing {@link #behindMountKit} was read for; the cell behind moves with it. */
+    private EnumFacing behindCheckedFacing;
+
+    private boolean behindMountKit;
+
+    /**
+     * Whether a traffic light mount kit is directly behind this box, which the renderer asks every
+     * frame for a {@code BASE} mount (the body is pushed back onto the kit).
+     *
+     * <p>Cached, because the render rules forbid reading the world per frame. The client never
+     * hears {@code neighborChanged}, so the server's copy syncs this tile entity when the cell
+     * behind changes and {@link #readNBT} drops the cache; the expiry after
+     * {@link #BEHIND_RECHECK_TICKS} is the backstop for what no sync covers -- the cell behind
+     * sitting in a chunk the client had not loaded yet when this box was first drawn, or the sync
+     * overtaking the block change it announces.</p>
+     *
+     * @param facing the way this box faces
+     *
+     * @return {@code true} if the cell behind holds a mount kit
+     */
+    public boolean isBehindMountKit( EnumFacing facing ) {
+        long now = world != null ? world.getTotalWorldTime() : 0L;
+        if ( behindCheckedAt == Long.MIN_VALUE || facing != behindCheckedFacing
+                || now < behindCheckedAt || now - behindCheckedAt >= BEHIND_RECHECK_TICKS ) {
+            behindMountKit = world != null
+                    && world.getBlockState( pos.offset( facing.getOpposite() ) ).getBlock()
+                    instanceof BlockTrafficLightMountKit;
+            behindCheckedFacing = facing;
+            behindCheckedAt = now;
+        }
+        return behindMountKit;
+    }
+
+    /** Makes the next {@link #isBehindMountKit} look at the world again. */
+    public void invalidateBehindCache() {
+        behindCheckedAt = Long.MIN_VALUE;
+    }
+
+    // endregion
+
     // region Dirty Flag
 
     public boolean isStateDirty() {
@@ -248,7 +300,8 @@ public class TileEntityBlankoutBox extends AbstractTileEntity {
 
     /**
      * No baked model reads this tile entity -- only its special renderer, which reads it every
-     * frame -- so a sync never needs the chunk section rebuilt.
+     * frame -- so a sync never needs the chunk section rebuilt. That includes the sync the block
+     * sends when the cell behind changes: the mount kit look it refreshes is the renderer's alone.
      */
     @Override
     protected long getBakedModelKey() {
