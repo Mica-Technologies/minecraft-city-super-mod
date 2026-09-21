@@ -34,7 +34,7 @@ public final class GuideSignFontRenderer {
 
   private static final Logger LOGGER = LogManager.getLogger(GuideSignFontRenderer.class);
 
-  private static final ResourceLocation FONT_TEXTURE =
+  static final ResourceLocation FONT_TEXTURE =
       new ResourceLocation("csm", "textures/fonts/guide_sign_font.png");
   private static final String METRICS_PATH = "/assets/csm/fonts/guide_sign_font.json";
   private static final char FALLBACK_CHAR = '?';
@@ -120,16 +120,40 @@ public final class GuideSignFontRenderer {
     if (text == null || text.isEmpty() || !ensureLoaded()) {
       return;
     }
-    float s = capHeightPx / metrics.capHeight;
-    float r = ((color >> 16) & 0xFF) / 255.0f;
-    float g = ((color >> 8) & 0xFF) / 255.0f;
-    float b = (color & 0xFF) / 255.0f;
-
     Minecraft.getMinecraft().getTextureManager().bindTexture(FONT_TEXTURE);
 
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    addString(buf, text, leftX, centerY, z, capHeightPx, color, sky, block);
+    tess.draw();
+  }
+
+  /**
+   * Whether the font's metrics loaded, i.e. whether {@link #drawString} would draw anything at
+   * all.
+   */
+  static boolean isAvailable() {
+    return ensureLoaded();
+  }
+
+  /**
+   * Adds the quads {@link #drawString} draws for {@code text}, and nothing else: no texture bind
+   * and no draw, so the output can be compiled into a display list whose font atlas
+   * ({@link #FONT_TEXTURE}) the caller binds outside it. The colour and light go into the
+   * vertices exactly as {@code drawString} writes them.
+   *
+   * @param buf the buffer, begun as {@code GL_QUADS} in {@code DefaultVertexFormats.BLOCK}
+   */
+  static void addString(BufferBuilder buf, String text, float leftX, float centerY, float z,
+      float capHeightPx, int color, int sky, int block) {
+    if (text == null || text.isEmpty() || !ensureLoaded()) {
+      return;
+    }
+    float s = capHeightPx / metrics.capHeight;
+    float r = ((color >> 16) & 0xFF) / 255.0f;
+    float g = ((color >> 8) & 0xFF) / 255.0f;
+    float b = (color & 0xFF) / 255.0f;
 
     // Cap spans [baselineY, baselineY + capHeightPx]; center it on centerY.
     float baselineY = centerY - capHeightPx / 2.0f;
@@ -157,7 +181,5 @@ public final class GuideSignFontRenderer {
 
       penX += gl.advance * s;
     }
-
-    tess.draw();
   }
 }

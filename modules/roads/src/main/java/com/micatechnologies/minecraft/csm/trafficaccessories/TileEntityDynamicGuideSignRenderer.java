@@ -156,12 +156,58 @@ public class TileEntityDynamicGuideSignRenderer
    * the illumination state as well as the block light, because a lit sign draws its face
    * fullbright and that can follow the sky without the tile entity being marked dirty.
    *
-   * <p>The legend is deliberately left drawing per frame. Skipping it outright costs 0.4% of the
-   * frame at the dense verification pose against 7.6% for the whole renderer, so there is nothing
-   * there worth the interleaved texture binds it would need.</p>
+   * <p>The legend was first left drawing per frame, on a measurement that put it at 0.4% of the
+   * frame at the dense verification pose. A filled sign measured alone later cost ten times an
+   * empty one, most of it the legend, so it now has lists of its own ({@link #LEGEND_LISTS}).</p>
    */
   private static final CsmDisplayListCache BACKGROUND_LISTS =
       new CsmDisplayListCache("guide_sign_background");
+
+  /**
+   * The legend -- exit tab, yellow patches, text, shields, arrows, the APL band and the panel
+   * dividers -- as an ordered run of one-texture lists per position (see
+   * {@link DynamicSignLegendLists} for why the run keeps the draw order). Keyed like the
+   * background: the legend draws at the face light, fullbright when lit, and the exit tab's back
+   * at the ambient light. Near detail only; the far LOD never draws it.
+   */
+  private static final DynamicSignLegendLists LEGEND_LISTS =
+      new DynamicSignLegendLists("guide_sign_legend");
+
+  /**
+   * Posts and luminaires, drawn after the legend as before, against the white pixel. Keyed on
+   * the background key plus the two measurement toggles that leave either part out, so a list
+   * compiled without posts is never replayed once they are drawn again.
+   */
+  private static final CsmDisplayListCache HARDWARE_LISTS =
+      new CsmDisplayListCache("guide_sign_hardware");
+
+  /**
+   * The sign's layout, worked out once per change of its data rather than every frame: the
+   * auto-fit scale and the sizes that follow from it measure every string on the sign, several
+   * times over. Held on the tile entity, which drops it wherever its data changes; the data
+   * reference is checked as well, so a memo can never outlive the document it was measured on.
+   * Also carries the legend's recorded texture run, which depends on the data alone.
+   */
+  static final class Memo {
+
+    final GuideSignData data;
+    final float contentScale;
+    final float totalSignWidth;
+    final float contentWidth;
+    final float naturalHeight;
+    final float totalSignHeight;
+    byte[] legendKinds;
+
+    private Memo(GuideSignData data, float contentScale, float totalSignWidth,
+        float contentWidth, float naturalHeight, float totalSignHeight) {
+      this.data = data;
+      this.contentScale = contentScale;
+      this.totalSignWidth = totalSignWidth;
+      this.contentWidth = contentWidth;
+      this.naturalHeight = naturalHeight;
+      this.totalSignHeight = totalSignHeight;
+    }
+  }
 
   private static final int FULLBRIGHT = 240;
 
@@ -259,7 +305,14 @@ public class TileEntityDynamicGuideSignRenderer
     }
     boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ
         || CsmRenderToggles.guideSignForceFarLod;
-    renderSign(data, farLod, te.getPos(), te.isStateDirty(), combinedLight);
+    Object cached = te.getRenderCache();
+    Memo memo = cached instanceof Memo && ((Memo) cached).data == data
+        ? (Memo) cached : null;
+    if (memo == null) {
+      memo = computeMemo(data);
+      te.setRenderCache(memo);
+    }
+    renderSign(data, farLod, te.getPos(), te.isStateDirty(), combinedLight, memo);
     te.clearStateDirty();
 
     GlStateManager.popMatrix();
@@ -280,7 +333,22 @@ public class TileEntityDynamicGuideSignRenderer
     // energized whenever the sign is wired for light at all. That is what the player is
     // trying to see when they pick a lighting type.
     lightOn = data.hasLighting();
-    renderSign(data, false, null, true, 0);
+    renderSign(data, false, null, true, 0, computeMemo(data));
+  }
+
+  /** Measures a sign: exactly the layout renderSign used to work out at the top of every frame. */
+  private Memo computeMemo(GuideSignData data) {
+    contentScale = computeContentScale(data);
+    List<GuideSignPanel> panels = data.getPanels();
+    int borderWidth = data.getBorderWidth();
+    // Width first: the APL band scales with lane pitch, so height depends on width.
+    float totalSignWidth = computeTotalSignWidth(panels, data);
+    float borderInsetForContent = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
+    float contentWidth = totalSignWidth - 2 * (PANEL_PADDING_SIDE + borderInsetForContent);
+    float naturalHeight = computeNaturalSignHeight(panels, data, contentWidth);
+    float totalSignHeight = Math.max(Math.max(16.0f, data.getMinHeight()), naturalHeight);
+    return new Memo(data, contentScale, totalSignWidth, contentWidth, naturalHeight,
+        totalSignHeight);
   }
 
   /**
@@ -360,8 +428,8 @@ public class TileEntityDynamicGuideSignRenderer
   }
 
   private void renderSign(GuideSignData data, boolean farLod, BlockPos pos,
-      boolean stateDirty, int combinedLight) {
-    contentScale = computeContentScale(data);
+      boolean stateDirty, int combinedLight, Memo memo) {
+    contentScale = memo.contentScale;
     // A lit sign reads at full brightness however dark the world is -- that is the whole
     // point of sign lighting, and it matches how a real lit guide sign looks at night.
     // Only the face and legend go fullbright; renderPost and renderSignLighting draw their
@@ -373,7 +441,6 @@ public class TileEntityDynamicGuideSignRenderer
     GuideSignColor signColor = data.getSignColor();
     int borderWidth = data.getBorderWidth();
     CornerStyle cornerStyle = data.getCornerStyle();
-    List<GuideSignPanel> panels = data.getPanels();
 
     // Legend (border, dividers, default text) contrasts with the sign background:
     // white on green/blue/brown/black/purple, near-black on white/yellow.
@@ -383,12 +450,11 @@ public class TileEntityDynamicGuideSignRenderer
     float legendB = lightSign ? 0.06f : 0.90f;
     int legendTextColor = lightSign ? LEGEND_DARK : LEGEND_WHITE;
 
-    // Width first: the APL band scales with lane pitch, so height depends on width.
-    float totalSignWidth = computeTotalSignWidth(panels, data);
-    float borderInsetForContent = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
-    float contentWidth = totalSignWidth - 2 * (PANEL_PADDING_SIDE + borderInsetForContent);
-    float naturalHeight = computeNaturalSignHeight(panels, data, contentWidth);
-    float totalSignHeight = Math.max(Math.max(16.0f, data.getMinHeight()), naturalHeight);
+    // Measured once per change of the sign's data (computeMemo), not per frame.
+    float totalSignWidth = memo.totalSignWidth;
+    float contentWidth = memo.contentWidth;
+    float naturalHeight = memo.naturalHeight;
+    float totalSignHeight = memo.totalSignHeight;
     // Extra height from the min-height floor centers the content vertically.
     float heightSurplus = totalSignHeight - naturalHeight;
 
@@ -412,6 +478,9 @@ public class TileEntityDynamicGuideSignRenderer
     // at replay time glCallList moves the real binding without GlStateManager noticing, leaving
     // its shadow state stale for everything drawn afterwards. See
     // TileEntityTrafficSignalHeadRenderer for the full account.
+    //
+    // The per-frame toggle covers every list this renderer keeps -- background, legend and
+    // hardware -- so one switch compares the whole bake against the immediate path.
     boolean bakeable = pos != null && !CsmRenderToggles.guideSignBackgroundPerFrame;
     long backgroundKey = (combinedLight & 0xFFFFFFFFL) | (lightOn ? 1L << 32 : 0L);
     if (stateDirty && pos != null) {
@@ -434,28 +503,109 @@ public class TileEntityDynamicGuideSignRenderer
           faceZ, signColor, borderWidth, cornerStyle, legendR, legendG, legendB);
     } else {
       GL11.glCallList(backgroundList);
+      // The list's vertices carry colour; a replay leaves GL's current colour at the last one
+      // without GlStateManager knowing, where a direct draw would have reset it.
+      GlStateManager.resetColor();
     }
 
     // Far LOD (64-128 blocks): just the body silhouette and posts. Legend detail is
     // unreadable at that distance and the font/atlas passes are the expensive part.
-    if (farLod) {
-      if (!CsmRenderToggles.skipGuideSignPost) {
-        renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
+    if (!farLod) {
+      // Replayed when the run compiled for this sign and light is resident; otherwise compiled
+      // (in draw order, one list per texture change) and then replayed. Live when there is no
+      // position, the per-frame toggle is on, or the driver refuses a list.
+      if (!bakeable) {
+        LEGEND_LISTS.beginLive();
+        renderLegend(data, signLeft, signTop, signBottom, totalSignWidth, contentWidth,
+            heightSurplus, faceZ, legendTextColor, legendR, legendG, legendB);
+        LEGEND_LISTS.endLive();
+      } else if (!LEGEND_LISTS.replay(pos, backgroundKey, memo.legendKinds)) {
+        LEGEND_LISTS.beginRecording(pos, backgroundKey);
+        renderLegend(data, signLeft, signTop, signBottom, totalSignWidth, contentWidth,
+            heightSurplus, faceZ, legendTextColor, legendR, legendG, legendB);
+        memo.legendKinds = LEGEND_LISTS.endRecording();
+        if (!LEGEND_LISTS.replay(pos, backgroundKey, memo.legendKinds)) {
+          LEGEND_LISTS.beginLive();
+          renderLegend(data, signLeft, signTop, signBottom, totalSignWidth, contentWidth,
+              heightSurplus, faceZ, legendTextColor, legendR, legendG, legendB);
+          LEGEND_LISTS.endLive();
+        }
       }
-      if (!CsmRenderToggles.skipGuideSignLighting) {
-        renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
-            borderWidth);
-      }
-      GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-      GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-      GlStateManager.enableLighting();
-      GL11.glEnable(GL11.GL_LIGHTING);
-      GlStateManager.enableCull();
-      GlStateManager.disableBlend();
-      return;
     }
 
-    float borderInset = borderInsetForContent;
+    renderHardware(data, signLeft, signBottom, signTop, totalSignWidth, faceZ, borderWidth,
+        pos, bakeable, backgroundKey);
+
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    GlStateManager.enableLighting();
+    GL11.glEnable(GL11.GL_LIGHTING);
+    GlStateManager.enableCull();
+    GlStateManager.disableBlend();
+  }
+
+  /**
+   * Posts and luminaires, after the legend as they always drew: from a per-position list when
+   * {@code bakeable}, otherwise immediate. Honours the two measurement toggles that skip them.
+   */
+  private void renderHardware(GuideSignData data, float signLeft, float signBottom,
+      float signTop, float totalSignWidth, float faceZ, int borderWidth, BlockPos pos,
+      boolean bakeable, long backgroundKey) {
+    boolean skipPost = CsmRenderToggles.skipGuideSignPost;
+    boolean skipLighting = CsmRenderToggles.skipGuideSignLighting;
+    if (skipPost && skipLighting) {
+      return;
+    }
+    // Bits 0-31 the combined light, 32 lit, 33 and 34 the skip toggles.
+    long hardwareKey = backgroundKey | (skipPost ? 1L << 33 : 0L) | (skipLighting ? 1L << 34 : 0L);
+    // Bound outside the list, every frame (the legend pass leaves it bound; this is a no-op then).
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    int hardwareList = bakeable
+        ? HARDWARE_LISTS.get(pos, hardwareKey)
+        : CsmDisplayListCache.NO_LIST;
+    if (hardwareList == CsmDisplayListCache.NO_LIST && bakeable) {
+      hardwareList = HARDWARE_LISTS.allocate(pos, hardwareKey);
+      if (hardwareList != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(hardwareList, GL11.GL_COMPILE);
+        renderHardwareGeometry(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
+            borderWidth, skipPost, skipLighting);
+        GL11.glEndList();
+      }
+    }
+    if (hardwareList == CsmDisplayListCache.NO_LIST) {
+      renderHardwareGeometry(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
+          borderWidth, skipPost, skipLighting);
+    } else {
+      GL11.glCallList(hardwareList);
+      GlStateManager.resetColor();
+    }
+  }
+
+  private void renderHardwareGeometry(GuideSignData data, float signLeft, float signBottom,
+      float signTop, float totalSignWidth, float faceZ, int borderWidth, boolean skipPost,
+      boolean skipLighting) {
+    if (!skipPost) {
+      renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
+    }
+    if (!skipLighting) {
+      renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
+          borderWidth);
+    }
+  }
+
+  /**
+   * Everything drawn over the sign's face, in its original order: exit tab, then each panel's
+   * rows (yellow patches, text, shields, arrows, dividers), APL band and divider. Every draw
+   * declares its texture through {@link #LEGEND_LISTS} and draws through it, so the same code runs
+   * live or compiles.
+   */
+  private void renderLegend(GuideSignData data, float signLeft, float signTop,
+      float signBottom, float totalSignWidth, float contentWidth, float heightSurplus,
+      float faceZ, int legendTextColor, float legendR, float legendG, float legendB) {
+    int borderWidth = data.getBorderWidth();
+    CornerStyle cornerStyle = data.getCornerStyle();
+    List<GuideSignPanel> panels = data.getPanels();
+    float borderInset = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
     float contentLeft = signLeft + PANEL_PADDING_SIDE + borderInset;
     float contentRight = signLeft + totalSignWidth - PANEL_PADDING_SIDE - borderInset;
 
@@ -527,21 +677,6 @@ public class TileEntityDynamicGuideSignRenderer
             faceZ, borderWidth, legendR, legendG, legendB);
       }
     }
-
-    if (!CsmRenderToggles.skipGuideSignPost) {
-      renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
-    }
-    if (!CsmRenderToggles.skipGuideSignLighting) {
-      renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
-          borderWidth);
-    }
-
-    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    GlStateManager.enableLighting();
-    GL11.glEnable(GL11.GL_LIGHTING);
-    GlStateManager.enableCull();
-    GlStateManager.disableBlend();
   }
 
   private void renderSignBackground(float left, float bottom, float width, float height,
@@ -678,6 +813,8 @@ public class TileEntityDynamicGuideSignRenderer
     float tabFaceZ = faceZ - 0.2f;
     float tabFrontZ = faceZ + SIGN_DEPTH - 0.2f;
 
+    LEGEND_LISTS.use(DynamicSignLegendLists.WHITE);
+
     if (borderWidth > 0) {
       List<RenderHelper.Box> tabBorder = new ArrayList<>();
       addRectBoxes(tabBorder, tabX - bw, tabBottom - bw, tabX + tabWidth + bw, tabTop + bw,
@@ -685,7 +822,7 @@ public class TileEntityDynamicGuideSignRenderer
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(tabBorder, buf, legendR, legendG, legendB, 1.0f,
           0, 0, 0, worldSkyLight, worldBlockLight);
-      tess.draw();
+      LEGEND_LISTS.draw(tess);
     }
 
     GuideSignColor tabColor = tab.getGuideSignColor();
@@ -696,7 +833,7 @@ public class TileEntityDynamicGuideSignRenderer
     RenderHelper.addBoxesToBufferLit(tabBg, buf,
         tabColor.getRed(), tabColor.getGreen(), tabColor.getBlue(), 1.0f, 0, 0, 0,
         worldSkyLight, worldBlockLight);
-    tess.draw();
+    LEGEND_LISTS.draw(tess);
 
     // Aluminum back for the tab, matching the sign body's unpainted reverse -- and, like
     // it, drawn oversize and sleeving the tab's painted plates so a lit tab shows its
@@ -709,7 +846,7 @@ public class TileEntityDynamicGuideSignRenderer
     // Ambient, like the sign body's back slab: the tab is lit on its face only.
     RenderHelper.addBoxesToBufferLit(tabBack, buf, 0.55f, 0.56f, 0.58f, 1.0f, 0, 0, 0,
         ambientSkyLight, ambientBlockLight);
-    tess.draw();
+    LEGEND_LISTS.draw(tess);
 
     if (tollSegW > 0) {
       // Thin purple plate over the left end of the tab face, with white TOLL text.
@@ -722,26 +859,19 @@ public class TileEntityDynamicGuideSignRenderer
       RenderHelper.addBoxesToBufferLit(tollSeg, buf,
           purple.getRed(), purple.getGreen(), purple.getBlue(), 1.0f, 0, 0, 0,
           worldSkyLight, worldBlockLight);
-      tess.draw();
+      LEGEND_LISTS.draw(tess);
 
-      GlStateManager.depthMask(false);
-      GuideSignFontRenderer.drawString("TOLL",
+      LEGEND_LISTS.text("TOLL",
           tabX + tollSegW / 2.0f - tollTextW / 2.0f, tabBottom + tabHeight / 2.0f,
           tabFaceZ - 0.1f, tollCap, LEGEND_WHITE,
           worldSkyLight, worldBlockLight);
-      GlStateManager.depthMask(true);
     }
 
     float textCenterX = tabX + tollSegW + (tabWidth - tollSegW) / 2.0f;
     float textCenterY = tabBottom + tabHeight / 2.0f;
     int tabTextColor = tabColor.isLight() ? LEGEND_DARK : LEGEND_WHITE;
-    GlStateManager.depthMask(false);
-    GuideSignFontRenderer.drawString(tabText, textCenterX - tabTextW / 2.0f, textCenterY,
+    LEGEND_LISTS.text(tabText, textCenterX - tabTextW / 2.0f, textCenterY,
         tabFaceZ - 0.1f, tabCap, tabTextColor, worldSkyLight, worldBlockLight);
-    GlStateManager.depthMask(true);
-
-    // Restore the white-pixel binding for subsequent untextured geometry passes.
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   private void renderRow(GuideSignRow row, float startX, float topY, float rowHeight,
@@ -796,10 +926,11 @@ public class TileEntityDynamicGuideSignRenderer
         new float[]{signLeft + borderInset, patchBottom, faceZ - 0.15f},
         new float[]{signLeft + signWidth - borderInset, topY + pad, faceZ - 0.05f}));
     GuideSignColor y = GuideSignColor.YELLOW;
+    LEGEND_LISTS.use(DynamicSignLegendLists.WHITE);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(band, buf, y.getRed(), y.getGreen(), y.getBlue(), 1.0f,
         0, 0, 0, worldSkyLight, worldBlockLight);
-    tess.draw();
+    LEGEND_LISTS.draw(tess);
   }
 
   /**
@@ -841,10 +972,11 @@ public class TileEntityDynamicGuideSignRenderer
           new float[]{patchLeft, patchBottom, faceZ - 0.15f},
           new float[]{patchRight, topY, faceZ - 0.05f}));
       GuideSignColor yellow = GuideSignColor.YELLOW;
+      LEGEND_LISTS.use(DynamicSignLegendLists.WHITE);
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(patch, buf, yellow.getRed(), yellow.getGreen(),
           yellow.getBlue(), 1.0f, 0, 0, 0, worldSkyLight, worldBlockLight);
-      tess.draw();
+      LEGEND_LISTS.draw(tess);
     }
 
     // Through lanes and exit lanes can use different arrow glyphs (both default UP).
@@ -860,7 +992,7 @@ public class TileEntityDynamicGuideSignRenderer
     float throughCenterY = topY - bandHeight / 2.0f;
     float qZ = faceZ - 0.3f;
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
+    LEGEND_LISTS.use(DynamicSignLegendLists.ATLAS);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     for (int lane = 0; lane < lanes; lane++) {
       float centerX = contentLeft + (lane + 0.5f) * pitch;
@@ -875,7 +1007,7 @@ public class TileEntityDynamicGuideSignRenderer
       atlasVertex(buf, centerX - halfW, centerY - halfH, qZ, uv[0], uv[3], tint);
       atlasVertex(buf, centerX + halfW, centerY - halfH, qZ, uv[2], uv[3], tint);
     }
-    tess.draw();
+    LEGEND_LISTS.draw(tess);
 
     float patchWidth = patchRight - patchLeft;
     if (exitLanes > 0 && patchWidth >= APL_EXIT_TEXT_MIN_WIDTH) {
@@ -887,16 +1019,11 @@ public class TileEntityDynamicGuideSignRenderer
         capPx *= avail / w;
         w = avail;
       }
-      GlStateManager.depthMask(false);
       // Centered in the reserved bottom strip, clear of the arrow tails above it.
-      GuideSignFontRenderer.drawString(APL_EXIT_TEXT,
+      LEGEND_LISTS.text(APL_EXIT_TEXT,
           patchLeft + patchWidth / 2.0f - w / 2.0f, bandBottom + APL_TEXT_ZONE * s / 2.0f,
           faceZ - 0.4f, capPx, LEGEND_DARK, worldSkyLight, worldBlockLight);
-      GlStateManager.depthMask(true);
     }
-
-    // Restore white-pixel binding for subsequent untextured geometry passes.
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   private void renderTextElement(GuideSignElement elem,
@@ -909,13 +1036,8 @@ public class TileEntityDynamicGuideSignRenderer
     float capPx = TEXT_CAP_HEIGHT * elem.getTextScale() * contentScale;
     float centerY = topY - rowHeight / 2.0f;
 
-    GlStateManager.depthMask(false);
-    GuideSignFontRenderer.drawString(text, x, centerY, faceZ - 0.2f, capPx, color,
+    LEGEND_LISTS.text(text, x, centerY, faceZ - 0.2f, capPx, color,
         worldSkyLight, worldBlockLight);
-    GlStateManager.depthMask(true);
-
-    // Restore white-pixel binding for subsequent untextured geometry passes.
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   private void renderDividerElement(float x, float topY, float rowHeight, float faceZ,
@@ -926,10 +1048,11 @@ public class TileEntityDynamicGuideSignRenderer
     bar.add(new RenderHelper.Box(
         new float[]{x, topY - rowHeight, faceZ - 0.2f},
         new float[]{x + DIVIDER_ELEMENT_WIDTH * contentScale, topY, faceZ - 0.1f}));
+    LEGEND_LISTS.use(DynamicSignLegendLists.WHITE);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(bar, buf, legendR, legendG, legendB, 1.0f, 0, 0, 0,
         worldSkyLight, worldBlockLight);
-    tess.draw();
+    LEGEND_LISTS.draw(tess);
   }
 
   private void renderShieldElement(GuideSignElement elem,
@@ -975,14 +1098,14 @@ public class TileEntityDynamicGuideSignRenderer
       List<RenderHelper.Box> back = new ArrayList<>();
       addRectBoxes(back, shieldCenterX - mx, shieldCenterY - my, shieldCenterX + mx,
           shieldCenterY + my, faceZ - 0.25f, faceZ - 0.2f, CornerStyle.ROUND);
-      Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+      LEGEND_LISTS.use(DynamicSignLegendLists.WHITE);
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(back, buf, 0.95f, 0.95f, 0.93f, 1.0f, 0, 0, 0,
           worldSkyLight, worldBlockLight);
-      tess.draw();
+      LEGEND_LISTS.draw(tess);
     }
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
+    LEGEND_LISTS.use(DynamicSignLegendLists.ATLAS);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     float qLeft = shieldCenterX - halfW;
@@ -997,7 +1120,7 @@ public class TileEntityDynamicGuideSignRenderer
     atlasVertex(buf, qLeft, qBottom, qZ, uv[0], uv[3]);
     atlasVertex(buf, qRight, qBottom, qZ, uv[2], uv[3]);
 
-    tess.draw();
+    LEGEND_LISTS.draw(tess);
 
     String routeNum = elem.getRouteNumber();
     if (routeNum != null && !routeNum.isEmpty()) {
@@ -1014,11 +1137,9 @@ public class TileEntityDynamicGuideSignRenderer
       // offset is measured top-down in the atlas cell, and pixel space here runs upwards.
       float textCenterX = shieldCenterX + (shieldType.getRouteTextCenterX() - 0.5f) * shieldW;
       float textCenterY = shieldCenterY - (shieldType.getRouteTextCenterY() - 0.5f) * sSize;
-      GlStateManager.depthMask(false);
-      GuideSignFontRenderer.drawString(routeNum, textCenterX - w / 2.0f, textCenterY,
+      LEGEND_LISTS.text(routeNum, textCenterX - w / 2.0f, textCenterY,
           faceZ - 0.4f, capPx, shieldType.getRouteTextColor(),
           worldSkyLight, worldBlockLight);
-      GlStateManager.depthMask(true);
     }
 
     if (!bannerText.isEmpty()) {
@@ -1038,14 +1159,9 @@ public class TileEntityDynamicGuideSignRenderer
         bannerLeftX = shieldCenterX + halfW + ELEMENT_SPACING;
         bannerY = shieldCenterY;
       }
-      GlStateManager.depthMask(false);
-      GuideSignFontRenderer.drawString(bannerText, bannerLeftX, bannerY,
+      LEGEND_LISTS.text(bannerText, bannerLeftX, bannerY,
           faceZ - 0.4f, capPx, legendTextColor, worldSkyLight, worldBlockLight);
-      GlStateManager.depthMask(true);
     }
-
-    // Restore white-pixel binding for subsequent untextured geometry passes.
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   private void renderArrowElement(GuideSignElement elem, float x, float topY,
@@ -1058,7 +1174,7 @@ public class TileEntityDynamicGuideSignRenderer
     float centerY = topY - rowHeight / 2.0f;
     float halfSize = aSize / 2.0f;
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
+    LEGEND_LISTS.use(DynamicSignLegendLists.ATLAS);
 
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
@@ -1072,9 +1188,7 @@ public class TileEntityDynamicGuideSignRenderer
     atlasVertex(buf, centerX - halfSize, centerY - halfSize, qZ, uv[0], uv[3], tint);
     atlasVertex(buf, centerX + halfSize, centerY - halfSize, qZ, uv[2], uv[3], tint);
 
-    tess.draw();
-    // Restore white-pixel binding for subsequent untextured geometry passes.
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    LEGEND_LISTS.draw(tess);
   }
 
   private void atlasVertex(BufferBuilder buf, float x, float y, float z, float u, float v) {
@@ -1098,10 +1212,11 @@ public class TileEntityDynamicGuideSignRenderer
     divider.add(new RenderHelper.Box(
         new float[]{signLeft + inset, y - half, faceZ - 0.25f},
         new float[]{signLeft + signWidth - inset, y + half, faceZ - 0.05f}));
+    LEGEND_LISTS.use(DynamicSignLegendLists.WHITE);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(divider, buf, legendR, legendG, legendB, 1.0f, 0, 0, 0,
         worldSkyLight, worldBlockLight);
-    tess.draw();
+    LEGEND_LISTS.draw(tess);
   }
 
   private void renderPost(PostType postType, float signLeft, float signBottom,
@@ -1504,5 +1619,7 @@ public class TileEntityDynamicGuideSignRenderer
    */
   public static void cleanupDisplayList(BlockPos pos) {
     BACKGROUND_LISTS.invalidate(pos);
+    LEGEND_LISTS.invalidate(pos);
+    HARDWARE_LISTS.invalidate(pos);
   }
 }
