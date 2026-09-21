@@ -1,0 +1,51 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_tile_subway_green",
+    "cap": "csm:blocks/wallfinish/wall_tile_subway_green_cap",
+    "particle": "csm:blocks/wallfinish/wall_tile_subway_green"
+  },
+  "elements": [
+    {
+      "from": [
+        15.25,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        1.0
+      ],
+      "faces": {
+        "south": {
+          "texture": "#face",
+          "uv": [
+            15.25,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            0.75,
+            16
+          ],
+          "cullface": "north"
+        },
+        "down": {
+          "texture": "#face",
+          "uv": [
+            15.25,
+            15.0,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

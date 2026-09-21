@@ -31,6 +31,13 @@ import net.minecraft.world.World;
  * as seen from the room, facing the wall). The models come from
  * {@code dev-env-utils/scripts/gen_wall_finishes.py}.</p>
  *
+ * <p>An inside corner. The cell in the corner hangs on one wall; when the run of the same finish
+ * on the other wall reaches it, that is, the side of the corner cell is a wall and the cell next to
+ * it along that wall holds the same finish facing it, the corner cell draws that run's last stretch
+ * on its side as well ({@link #CORNER_LEFT} / {@link #CORNER_RIGHT}). Both runs count the corner
+ * as a join, so neither draws an edge trim where it turns. All of this is actual state: the
+ * facing is still the only thing stored.</p>
+ *
  * @version 1.0
  * @since 2026.9
  */
@@ -41,6 +48,10 @@ public class BlockWallFinish extends AbstractBlock {
   public static final PropertyBool RIGHT = PropertyBool.create("right");
   public static final PropertyBool UP = PropertyBool.create("up");
   public static final PropertyBool DOWN = PropertyBool.create("down");
+  /** This cell is an inside corner and draws the run on the wall to its left as well. */
+  public static final PropertyBool CORNER_LEFT = PropertyBool.create("corner_left");
+  /** This cell is an inside corner and draws the run on the wall to its right as well. */
+  public static final PropertyBool CORNER_RIGHT = PropertyBool.create("corner_right");
 
   private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
 
@@ -102,7 +113,8 @@ public class BlockWallFinish extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LEFT, RIGHT, UP, DOWN);
+    return new BlockStateContainer(this, FACING, LEFT, RIGHT, UP, DOWN, CORNER_LEFT,
+        CORNER_RIGHT);
   }
 
   @Override
@@ -136,16 +148,49 @@ public class BlockWallFinish extends AbstractBlock {
     return other.getBlock() == this && other.getValue(FACING) == facing;
   }
 
+  /** Whether the face of the block beside {@code pos} on {@code side} is a wall to hang on. */
+  private static boolean wall(IBlockAccess world, BlockPos pos, EnumFacing side) {
+    BlockPos at = pos.offset(side);
+    return world.getBlockState(at).getBlockFaceShape(world, at, side.getOpposite())
+        == BlockFaceShape.SOLID;
+  }
+
+  /**
+   * Whether this finish, at {@code pos} on the wall {@code facing}, is in an inside corner with a
+   * wall on {@code side}, and the same finish's run on that wall reaches it: the cell in front of
+   * this one along that wall holds the same finish, facing that wall.
+   */
+  private boolean corner(IBlockAccess world, BlockPos pos, EnumFacing facing, EnumFacing side) {
+    return wall(world, pos, side) && same(world, pos.offset(facing.getOpposite()), side);
+  }
+
+  /**
+   * Whether the run this finish is in goes on past its {@code side}: the next cell holds the same
+   * finish on the same wall, or is the inside corner at the end of the run: its finish hangs on
+   * the wall that ends this run, and this wall reaches its cell, so it draws this run's last
+   * stretch (the corner cell's own {@code corner} test, seen from here).
+   */
+  private boolean joins(IBlockAccess world, BlockPos pos, EnumFacing facing, EnumFacing side) {
+    BlockPos next = pos.offset(side);
+    return same(world, next, facing) || (same(world, next, side) && wall(world, next, facing));
+  }
+
   @Override
   @SuppressWarnings("deprecation")
   @Nonnull
   public IBlockState getActualState(@Nonnull IBlockState state, @Nonnull IBlockAccess worldIn,
       @Nonnull BlockPos pos) {
     EnumFacing f = state.getValue(FACING);
-    return state.withProperty(LEFT, same(worldIn, pos.offset(f.rotateYCCW()), f))
-        .withProperty(RIGHT, same(worldIn, pos.offset(f.rotateY()), f))
+    EnumFacing left = f.rotateYCCW();
+    EnumFacing right = f.rotateY();
+    boolean cornerLeft = corner(worldIn, pos, f, left);
+    boolean cornerRight = corner(worldIn, pos, f, right);
+    return state.withProperty(LEFT, cornerLeft || joins(worldIn, pos, f, left))
+        .withProperty(RIGHT, cornerRight || joins(worldIn, pos, f, right))
         .withProperty(UP, same(worldIn, pos.up(), f))
-        .withProperty(DOWN, same(worldIn, pos.down(), f));
+        .withProperty(DOWN, same(worldIn, pos.down(), f))
+        .withProperty(CORNER_LEFT, cornerLeft)
+        .withProperty(CORNER_RIGHT, cornerRight);
   }
 
   // --- shape ------------------------------------------------------------------------------------

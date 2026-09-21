@@ -1,0 +1,68 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_acoustic_charcoal",
+    "frame": "csm:blocks/wallfinish/wall_acoustic_charcoal_frame",
+    "particle": "csm:blocks/wallfinish/wall_acoustic_charcoal"
+  },
+  "elements": [
+    {
+      "from": [
+        1.5,
+        0,
+        1.6
+      ],
+      "to": [
+        1.6,
+        0.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            14.4,
+            15.5,
+            14.5,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            15.5,
+            1.6,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            15.5,
+            14.4,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            1.6,
+            1.6,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            0,
+            1.6,
+            14.4
+          ]
+        }
+      }
+    }
+  ]
+}

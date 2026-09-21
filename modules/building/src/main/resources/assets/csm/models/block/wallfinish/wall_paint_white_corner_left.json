@@ -1,0 +1,49 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_paint_white",
+    "particle": "csm:blocks/wallfinish/wall_paint_white"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0.25
+      ],
+      "to": [
+        0.25,
+        16,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            15.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0.25,
+            0.25,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            0.25,
+            15.75
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -81,6 +81,131 @@
     },
     {
       "when": {
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "corner_left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_top_left"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "corner_left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_top_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "corner_left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_top_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "corner_left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_top_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "corner_left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom_left"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "corner_left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "corner_left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "corner_left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
         "left": "false",
         "facing": "north"
       },
@@ -115,6 +240,303 @@
       },
       "apply": {
         "model": "csm:wallfinish/wall_acoustic_charcoal_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_left_upper"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_left_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_left_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_left_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "down": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_left_lower"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "down": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_left_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "down": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_left_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "down": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_left_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left"
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left_top"
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left_bottom"
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "corner_left": "true",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_left_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "corner_right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_top_right"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "corner_right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_top_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "corner_right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_top_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "corner_right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_top_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "corner_right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom_right"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "corner_right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "corner_right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "corner_right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom_right",
         "y": 270
       }
     },
@@ -159,40 +581,212 @@
     },
     {
       "when": {
-        "down": "false",
+        "right": "false",
+        "up": "true",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom"
+        "model": "csm:wallfinish/wall_acoustic_charcoal_right_upper"
       }
     },
     {
       "when": {
-        "down": "false",
+        "right": "false",
+        "up": "true",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom",
+        "model": "csm:wallfinish/wall_acoustic_charcoal_right_upper",
         "y": 90
       }
     },
     {
       "when": {
-        "down": "false",
+        "right": "false",
+        "up": "true",
         "facing": "south"
       },
       "apply": {
-        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom",
+        "model": "csm:wallfinish/wall_acoustic_charcoal_right_upper",
         "y": 180
       }
     },
     {
       "when": {
+        "right": "false",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_right_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_right_lower"
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_right_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_right_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_right_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right"
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right_top"
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right_bottom"
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "corner_right": "true",
         "down": "false",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:wallfinish/wall_acoustic_charcoal_bottom",
+        "model": "csm:wallfinish/wall_acoustic_charcoal_corner_right_bottom",
         "y": 270
       }
     }

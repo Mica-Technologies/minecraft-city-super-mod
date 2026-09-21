@@ -1,0 +1,277 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_slatwall_felt",
+    "slat": "csm:blocks/wallfinish/wall_slatwall_oak",
+    "particle": "csm:blocks/wallfinish/wall_slatwall_felt"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0.5
+      ],
+      "to": [
+        0.5,
+        15.0,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#face",
+          "uv": [
+            0,
+            1.0,
+            15.5,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            0.5,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        0,
+        13
+      ],
+      "to": [
+        1.5,
+        15.0,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#slat",
+          "uv": [
+            14.5,
+            1.0,
+            15.5,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#slat",
+          "uv": [
+            0.5,
+            1.0,
+            1.5,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#slat",
+          "uv": [
+            1,
+            1.0,
+            3,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#slat",
+          "uv": [
+            13,
+            1.0,
+            15,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#slat",
+          "uv": [
+            0.5,
+            1,
+            1.5,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        0,
+        9
+      ],
+      "to": [
+        1.5,
+        15.0,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#slat",
+          "uv": [
+            14.5,
+            1.0,
+            15.5,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#slat",
+          "uv": [
+            0.5,
+            1.0,
+            1.5,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#slat",
+          "uv": [
+            5,
+            1.0,
+            7,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#slat",
+          "uv": [
+            9,
+            1.0,
+            11,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#slat",
+          "uv": [
+            0.5,
+            5,
+            1.5,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        0,
+        5
+      ],
+      "to": [
+        1.5,
+        15.0,
+        7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#slat",
+          "uv": [
+            14.5,
+            1.0,
+            15.5,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#slat",
+          "uv": [
+            0.5,
+            1.0,
+            1.5,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#slat",
+          "uv": [
+            9,
+            1.0,
+            11,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#slat",
+          "uv": [
+            5,
+            1.0,
+            7,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#slat",
+          "uv": [
+            0.5,
+            9,
+            1.5,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        0,
+        1.5
+      ],
+      "to": [
+        1.5,
+        15.0,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#slat",
+          "uv": [
+            14.5,
+            1.0,
+            15.5,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#slat",
+          "uv": [
+            0.5,
+            1.0,
+            1.5,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#slat",
+          "uv": [
+            13,
+            1.0,
+            14.5,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#slat",
+          "uv": [
+            1.5,
+            1.0,
+            3.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#slat",
+          "uv": [
+            0.5,
+            13,
+            1.5,
+            14.5
+          ]
+        }
+      }
+    }
+  ]
+}
