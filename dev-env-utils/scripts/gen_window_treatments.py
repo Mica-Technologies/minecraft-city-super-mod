@@ -180,12 +180,22 @@ def v_bottom():
     return [box(0, 0, 0.5, 16, 0.6, 2.1, "#rail")]
 
 
+# Eleven slats to a block, so the pitch divides the block exactly and the gap across a seam is the
+# same as every other gap. At the 1.5 px it was, the last slat in a block sat at 14.4 and the next
+# block's first at 16.9: a 2.5 px gap at every block, which a tall blind shows as a band of wider
+# gaps at each seam (issue #219).
+V_SLATS_PER_BLOCK = 11
+V_SLAT_PITCH = 16.0 / V_SLATS_PER_BLOCK
+
+
 def v_slat_ys(top):
     ys = []
+    k = 0
     y = 0.9
     while y + 0.2 <= (V_TOP - 0.1 if top else 16):
         ys.append(round(y, 2))
-        y += 1.5
+        k += 1
+        y = 0.9 + k * V_SLAT_PITCH
     return ys
 
 
