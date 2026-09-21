@@ -167,13 +167,13 @@ public final class AdBoards {
     AdBoardKind kind = ((BlockAdBoard) state.getBlock()).kind();
     EnumFacing facing = state.getValue(AbstractBlockAdBoard.FACING);
     int tag = state.getValue(AbstractBlockAdBoard.TAG);
-    width = Math.max(1, Math.min(kind.getMaxWidth(), width));
+    width = Math.max(kind.getMinWidth(), Math.min(kind.getMaxWidth(), width));
     height = Math.max(kind.getMinHeight(), Math.min(kind.getMaxHeight(), height));
     int column = align.controllerColumn(width);
 
-    Set<BlockPos> old = cells(controller, facing, board.getControllerColumn(), board.getWidth(),
-        board.getHeight());
-    Set<BlockPos> wanted = cells(controller, facing, column, width, height);
+    Set<BlockPos> old = cells(kind, controller, facing, board.getControllerColumn(),
+        board.getWidth(), board.getHeight());
+    Set<BlockPos> wanted = cells(kind, controller, facing, column, width, height);
 
     // 1. Everything the new board needs must be free, or this board already.
     for (BlockPos p : wanted) {
@@ -204,7 +204,8 @@ public final class AdBoards {
     // 3. The blocks it costs, or gives back.
     int change = wanted.size() - old.size();
     Item item = Item.getItemFromBlock(AbstractBlockAdBoard.controller(kind));
-    boolean pays = player != null && !player.capabilities.isCreativeMode;
+    // A fixed-size board is one item, bought whole; only boards built to size pay by the block.
+    boolean pays = player != null && !player.capabilities.isCreativeMode && !kind.isFixedSize();
     if (pays && change > 0 && count(player, item) < change) {
       return new TextComponentTranslation("chat.csm.adboard.items", change,
           new ItemStack(item).getDisplayName());
@@ -228,7 +229,7 @@ public final class AdBoards {
       for (int c = 0; c < width; c++) {
         for (int row = 0; row < height; row++) {
           BlockPos p = cell(controller, facing, column, c, row);
-          if (p.equals(controller)) {
+          if (p.equals(controller) || !kind.hasCell(c, row, column)) {
             continue;
           }
           IBlockState want = row < kind.getServiceRows() ? service : part;
@@ -259,13 +260,15 @@ public final class AdBoards {
     return null;
   }
 
-  /** Every block of a board, as positions. */
-  static Set<BlockPos> cells(BlockPos controller, EnumFacing facing, int controllerColumn,
-      int width, int height) {
+  /** Every block of a board, as positions: every cell but the empty ones beside a kiosk post. */
+  static Set<BlockPos> cells(AdBoardKind kind, BlockPos controller, EnumFacing facing,
+      int controllerColumn, int width, int height) {
     Set<BlockPos> out = new HashSet<>();
     for (int column = 0; column < width; column++) {
       for (int row = 0; row < height; row++) {
-        out.add(cell(controller, facing, controllerColumn, column, row));
+        if (kind.hasCell(column, row, controllerColumn)) {
+          out.add(cell(controller, facing, controllerColumn, column, row));
+        }
       }
     }
     return out;
@@ -314,11 +317,12 @@ public final class AdBoards {
     AdBoardKind kind = ((AbstractBlockAdBoard) state.getBlock()).kind();
     EnumFacing facing = state.getValue(AbstractBlockAdBoard.FACING);
     int tag = state.getValue(AbstractBlockAdBoard.TAG);
-    int blocks = board.getWidth() * board.getHeight();
+    Set<BlockPos> all = cells(kind, controller, facing, board.getControllerColumn(),
+        board.getWidth(), board.getHeight());
+    int blocks = kind.isFixedSize() ? 1 : all.size();
     BUSY.set(true);
     try {
-      for (BlockPos p : cells(controller, facing, board.getControllerColumn(), board.getWidth(),
-          board.getHeight())) {
+      for (BlockPos p : all) {
         if (!p.equals(pos) && world.isBlockLoaded(p)
             && AbstractBlockAdBoard.sameBoard(world.getBlockState(p), kind, facing, tag)) {
           world.setBlockState(p, Blocks.AIR.getDefaultState(), 3);

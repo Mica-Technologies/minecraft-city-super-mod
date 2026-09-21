@@ -301,9 +301,15 @@ public final class CsmFabricatorCosts {
         return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
 
-      // Advertising: a printed face on a sheet metal cabinet. The boards built to size are
-      // priced per block of area when they are built, not here.
+      // Advertising: a printed face on a sheet metal cabinet. The boards built to size cost one
+      // of these for every block of them, taken when they are built. A kiosk is bought whole:
+      // a backlit cabinet on a post.
       case TAB_SIGNAGE:
+        if (CsmBlockDisplayNames.hasWord(registryName, "kiosk")) {
+          return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+              FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+              FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+        }
         return cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
             FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
 

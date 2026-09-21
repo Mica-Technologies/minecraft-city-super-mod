@@ -1,0 +1,367 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_back"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_bottom"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_top"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "down": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_bottom_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "down": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_bottom_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "up": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_top_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "up": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_top_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_back",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "down": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_bottom_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "down": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_bottom_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "up": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_top_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "up": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_top_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_back",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "down": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_bottom_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "down": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_bottom_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "up": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_top_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "up": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_top_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_back",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_frame_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "down": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_bottom_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "down": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_bottom_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "up": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_top_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "up": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:signage/kiosk_cap_top_right",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 /**
@@ -46,6 +47,16 @@ public class BlockAdBoard extends AbstractBlockAdBoard implements ICsmTileEntity
     TileEntity te = worldIn.getTileEntity(pos);
     if (te instanceof TileEntityAdBoard) {
       ((TileEntityAdBoard) te).initialise(kind(), pos);
+    }
+    if (!worldIn.isRemote && kind().isFixedSize()) {
+      // A kiosk has one size: build it now, or say what is in the way. Left alone, its screen's
+      // Done tries again once the space is clear.
+      ITextComponent problem = AdBoards.resize(worldIn, pos,
+          placer instanceof EntityPlayer ? (EntityPlayer) placer : null, kind().getMaxWidth(),
+          kind().getMaxHeight(), AdBoardAlign.CENTRE);
+      if (problem != null && placer instanceof EntityPlayer) {
+        ((EntityPlayer) placer).sendStatusMessage(problem, false);
+      }
     }
     if (worldIn.isRemote && placer instanceof EntityPlayer) {
       SignageGuiProvider.open((EntityPlayer) placer, worldIn, pos);

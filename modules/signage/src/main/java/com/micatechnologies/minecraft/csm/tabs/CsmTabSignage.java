@@ -75,5 +75,7 @@ public class CsmTabSignage extends CsmTab {
     initTabBlock(new BlockAdBoard("ad_poster_board")); // Poster Board
     initTabBlock(new BlockAdBoard("ad_billboard")); // Billboard
     initTabBlock(new BlockAdBoard("ad_digital_billboard")); // Digital Billboard
+    initTabBlock(new BlockAdBoard("ad_kiosk")); // Ad Kiosk
+    initTabBlock(new BlockAdBoard("ad_kiosk_large")); // Large Ad Kiosk
   }
 }
