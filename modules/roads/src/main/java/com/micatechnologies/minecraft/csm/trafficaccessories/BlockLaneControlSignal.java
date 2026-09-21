@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraftforge.fml.relauncher.Side;
@@ -164,6 +165,22 @@ public class BlockLaneControlSignal extends AbstractBlockRotatableNSEW
                 com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole
                 || adjState.getBlock() instanceof
                 com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPoleDiagonal;
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn,
+            BlockPos fromPos) {
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+        // The renderer caches whether a mount kit is behind this signal, and the client never gets
+        // neighborChanged, so tell it: the sync's readNBT drops the cache. Only the cell behind
+        // is read, so no other neighbour's change costs a packet.
+        if (!worldIn.isRemote
+                && fromPos.equals(pos.offset(state.getValue(FACING).getOpposite()))) {
+            TileEntity te = worldIn.getTileEntity(pos);
+            if (te instanceof TileEntityLaneControlSignal) {
+                ((TileEntityLaneControlSignal) te).syncServerToClient(worldIn);
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)
