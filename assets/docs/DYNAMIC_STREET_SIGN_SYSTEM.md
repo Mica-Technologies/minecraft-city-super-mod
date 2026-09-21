@@ -559,10 +559,15 @@ comes back mounted on its post.
   blade is six inches against a thirty-inch sign, so the whole assembly is scaled to
   `POST_TOP_SCALE` about the post top. Re-tuning the caps, pads, insets and floors would have
   had to keep a dozen constants in proportion; one transform cannot get that wrong.
-- **The panel sits in front of the post, not on its axis.** Centred on the axis, the post's own
-  bars stand in front of the legend and read as a bar painted through the street's name. The
-  crossing blade turns about the post all the same, which puts its panel the same distance in
-  front of the post along the way *it* is read -- one offset, correct for both.
+- **The panel sits clear in front of the post, not on its axis.** Centred on the axis, the
+  post's own bars stand in front of the legend and read as a bar painted through the street's
+  name. The crossing blade turns about the post all the same, which puts its panel the same
+  distance in front of the post along the way *it* is read -- one offset, and each blade ends
+  up on its own side. The offset is written in the units it ENDS UP in and divided by the
+  scale, because the assembly is shrunk about the post top afterwards; set in plain model
+  units it was shrunk with everything else and put both panels back inside the post. Clearing
+  the post by a hair is not enough either -- at a sixth of a model unit, a hundredth of a
+  block, the post and the panel still read as one thing.
 - **The double-sided back face turns about the panel, not the block.** They are the same axis for
   a hanging blade, which is centred in the block's depth, and that is how it was written. A
   post-top blade is not, and turning its back face about the block's centre threw it most of a
