@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
@@ -32,6 +34,28 @@ public class TileEntityLaneControlSignalRenderer
      */
     private static final CsmDisplayListCache DISPLAY_LISTS =
             new CsmDisplayListCache("lane_control_signal");
+
+    /**
+     * The mounting arms and stubs (any mount but {@code BASE}). They depend on the mount, the
+     * tilt, the facing, the body colour and the light, never on the position, so every signal
+     * that looks the same replays one list -- see {@link #mountKey}. Before, they were emitted
+     * and drawn immediate-mode every frame, two Tessellator draws per signal.
+     */
+    private static final CsmSharedDisplayLists MOUNT_LISTS =
+            new CsmSharedDisplayLists("lane_control_mount");
+
+    /**
+     * The aspect's atlas UVs by {@link LaneControlSignalType} ordinal, resolved once rather than
+     * allocated by {@link LaneControlSignalTextureMap#getAtlasUV} every frame. Read only; never
+     * handed out.
+     */
+    private static final float[][] FACE_UVS = new float[LaneControlSignalType.values().length][];
+
+    static {
+        for (LaneControlSignalType type : LaneControlSignalType.values()) {
+            FACE_UVS[type.ordinal()] = LaneControlSignalTextureMap.getAtlasUV(type);
+        }
+    }
 
     private static final float VISOR_TINT_SCALE = 1.04f;
     private static final float VISOR_TINT_BASE = 0.01f;
@@ -105,10 +129,8 @@ public class TileEntityLaneControlSignalRenderer
             GL11.glRotatef(baseDirection.getRotation(), 0, 1, 0);
             GL11.glTranslated(-8, -8, -8);
 
-            renderBoxes(bodyColor, BlankoutBoxVertexData.getArmData(
-                    mountType, tiltOffset,
-                    bodyDirection.getRotation(), baseDirection.getRotation()),
-                    worldSkyLight, worldBlockLight);
+            renderMountPart(false, bodyColor, mountType, bodyTilt, facing, tiltOffset,
+                    bodyDirection, baseDirection, combinedLight);
 
             GL11.glPopMatrix();
         }
@@ -120,17 +142,15 @@ public class TileEntityLaneControlSignalRenderer
             GL11.glTranslated(tiltOffset, 0, 0);
         }
 
-        if (mountType == CrosswalkMountType.BASE) {
-            BlockPos behind = te.getPos().offset(facing.getOpposite());
-            if (te.getWorld().getBlockState(behind).getBlock()
-                    instanceof BlockTrafficLightMountKit) {
-                GL11.glTranslated(0, 0, 8);
-            }
+        // Push the body back onto a mount kit behind it. The tile entity caches what is behind it
+        // rather than this reading the world per frame.
+        if (mountType == CrosswalkMountType.BASE && te.isBehindMountKit(facing)) {
+            GL11.glTranslated(0, 0, 8);
         }
 
         if (mountType != CrosswalkMountType.BASE) {
-            renderBoxes(bodyColor, BlankoutBoxVertexData.getStubData(mountType),
-                    worldSkyLight, worldBlockLight);
+            renderMountPart(true, bodyColor, mountType, bodyTilt, facing, tiltOffset,
+                    bodyDirection, baseDirection, combinedLight);
         }
 
         BlockPos pos = te.getPos();
@@ -164,6 +184,9 @@ public class TileEntityLaneControlSignalRenderer
         Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
         if (displayList != CsmDisplayListCache.NO_LIST) {
             GL11.glCallList(displayList);
+            // The body's vertex colours leave GL's colour where GlStateManager's cache cannot see
+            // it; a direct draw resets the cache afterwards, so this keeps the two paths the same.
+            GlStateManager.resetColor();
         } else {
             // The driver refused a list name; draw directly this frame rather than calling list 0,
             // which draws nothing and would blank the signal.
@@ -216,14 +239,99 @@ public class TileEntityLaneControlSignalRenderer
         tessellator.draw();
     }
 
-    private void renderBoxes(TrafficSignalBodyColor color, List<RenderHelper.Box> boxes,
+    /**
+     * Draws the arms ({@code stubs == false}, in the base-facing context) or the stubs (in the
+     * tilted context) from a list shared by every lane control signal that looks the same,
+     * compiling it the first time that look is seen. The caller has already set up the matrix; a
+     * list does not capture it, so one list serves every position.
+     *
+     * <p>The white texture is bound here, outside the list, every frame -- see
+     * "Display lists: one texture, no cached state" in {@code TRAFFIC_SIGNAL_SYSTEM.md}.
+     * {@link CsmRenderToggles#sharedBakesPerFrame} draws them per frame instead, as they were
+     * drawn before they were baked.</p>
+     */
+    private void renderMountPart(boolean stubs, TrafficSignalBodyColor color,
+            CrosswalkMountType mountType, TrafficSignalBodyTilt bodyTilt, EnumFacing facing,
+            int tiltOffset, DirectionSixteen bodyDirection, DirectionSixteen baseDirection,
+            int combinedLight) {
+        int skyLight = (combinedLight >> 16) & 0xFFFF;
+        int blockLight = combinedLight & 0xFFFF;
+        Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+        if (CsmRenderToggles.sharedBakesPerFrame) {
+            drawMountPart(stubs, color, mountType, tiltOffset, bodyDirection, baseDirection,
+                    skyLight, blockLight);
+            return;
+        }
+        long key = mountKey(stubs, color, mountType, bodyTilt, facing, combinedLight);
+        int list = MOUNT_LISTS.get(key);
+        if (list == CsmDisplayListCache.NO_LIST) {
+            list = MOUNT_LISTS.allocate(key);
+            if (list != CsmDisplayListCache.NO_LIST) {
+                GL11.glNewList(list, GL11.GL_COMPILE);
+                drawMountPart(stubs, color, mountType, tiltOffset, bodyDirection, baseDirection,
+                        skyLight, blockLight);
+                GL11.glEndList();
+            }
+        }
+        if (list != CsmDisplayListCache.NO_LIST) {
+            GL11.glCallList(list);
+            // The replay leaves GL's colour at the last vertex's without GlStateManager knowing;
+            // a direct draw resets its cache afterwards, so this keeps the two paths the same.
+            GlStateManager.resetColor();
+        } else {
+            // The driver refused a list name: draw directly rather than calling list 0.
+            drawMountPart(stubs, color, mountType, tiltOffset, bodyDirection, baseDirection,
+                    skyLight, blockLight);
+        }
+    }
+
+    /**
+     * Packs everything the arm or stub geometry depends on into a shared-list key. Never a
+     * position: the lightmap is baked into the vertices, so the light is part of the key instead
+     * (sky and block light are 0-15 each, so at most 256 lights per look).
+     *
+     * <pre>
+     *  bits  0-31  combinedLight, as getCombinedLight returns it
+     *  bits 32-39  body colour ordinal
+     *  bits 40-43  mount type ordinal
+     *  bits 48-51  body tilt ordinal   (arms only: they angle to meet the tilted stubs)
+     *  bits 52-54  facing index        (arms only: the tilt is resolved against the facing)
+     *  bit  60     1 = stubs, 0 = arms
+     * </pre>
+     */
+    private static long mountKey(boolean stubs, TrafficSignalBodyColor color,
+            CrosswalkMountType mountType, TrafficSignalBodyTilt bodyTilt, EnumFacing facing,
+            int combinedLight) {
+        long key = (combinedLight & 0xFFFFFFFFL)
+                | ((long) (color.ordinal() & 0xFF) << 32)
+                | ((long) (mountType.ordinal() & 0xF) << 40);
+        if (stubs) {
+            return key | (1L << 60);
+        }
+        return key
+                | ((long) (bodyTilt.ordinal() & 0xF) << 48)
+                | ((long) (facing.getIndex() & 0x7) << 52);
+    }
+
+    /** Emits and draws the arms or the stubs. Geometry only: the caller owns every GL state. */
+    private static void drawMountPart(boolean stubs, TrafficSignalBodyColor color,
+            CrosswalkMountType mountType, int tiltOffset, DirectionSixteen bodyDirection,
+            DirectionSixteen baseDirection, int skyLight, int blockLight) {
+        List<RenderHelper.Box> boxes = stubs
+                ? BlankoutBoxVertexData.getStubData(mountType)
+                : BlankoutBoxVertexData.getArmData(mountType, tiltOffset,
+                        bodyDirection.getRotation(), baseDirection.getRotation());
+        drawBoxes(color, boxes, skyLight, blockLight);
+    }
+
+    /** Draws a list of colored boxes against whatever texture is bound (the caller binds it). */
+    private static void drawBoxes(TrafficSignalBodyColor color, List<RenderHelper.Box> boxes,
             int skyLight, int blockLight) {
         if (boxes.isEmpty()) return;
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         RenderHelper.addBoxesToBufferLit(boxes, buffer,
                 color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0,
@@ -244,7 +352,7 @@ public class TileEntityLaneControlSignalRenderer
     }
 
     private void renderDisplayFace(LaneControlSignalType signalType) {
-        float[] uv = LaneControlSignalTextureMap.getAtlasUV(signalType);
+        float[] uv = FACE_UVS[signalType.ordinal()];
         float u1 = uv[0], v1 = uv[1], u2 = uv[2], v2 = uv[3];
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(
