@@ -1,0 +1,339 @@
+{
+ "guide_sign_busy": {
+  "block": "csm:dynamic_guide_sign",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 1.4,
+  "busy_rendered": 8,
+  "busy_us_each": 11.05,
+  "busy_us_worst": 27.0
+ },
+ "street_sign_busy": {
+  "block": "csm:dynamic_street_sign",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 9.14,
+  "busy_rendered": 8,
+  "busy_us_each": 32.11,
+  "busy_us_worst": 42.8
+ },
+ "portable_message_busy": {
+  "block": "csm:portable_message_sign",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 123.04,
+  "busy_rendered": 8,
+  "busy_us_each": 126.58,
+  "busy_us_worst": 151.0
+ },
+ "overhead_message_busy": {
+  "block": "csm:overhead_message_sign",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 6.76,
+  "busy_rendered": 8,
+  "busy_us_each": 10.66,
+  "busy_us_worst": 15.9
+ },
+ "portable_speed_busy": {
+  "block": "csm:portable_speed_limit_sign",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 123.83,
+  "busy_rendered": 8,
+  "busy_us_each": 122.64,
+  "busy_us_worst": 149.6
+ },
+ "arrow_board_pattern0": {
+  "block": "csm:arrow_board",
+  "cmd_failures": 8,
+  "idle_rendered": 8,
+  "idle_us_each": 25.59,
+  "busy_rendered": 8,
+  "busy_us_each": 25.23,
+  "busy_us_worst": 33.8,
+  "last_fail": "{'command': 'blockdata -68 4 -406 {pattern:0}', 'ranAs': 'server console', 'result': 0, 'succeeded': False, 'output': ['The data tag did not change: {x:-68,pattern:0,y:4,z:-406,id:\"csm:tileentityworkzonearrowboard\"}']}"
+ },
+ "arrow_board_pattern1": {
+  "block": "csm:arrow_board",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 25.43,
+  "busy_rendered": 8,
+  "busy_us_each": 25.35,
+  "busy_us_worst": 34.0
+ },
+ "arrow_board_pattern2": {
+  "block": "csm:arrow_board",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 25.5,
+  "busy_rendered": 8,
+  "busy_us_each": 25.62,
+  "busy_us_worst": 34.3
+ },
+ "arrow_board_pattern3": {
+  "block": "csm:arrow_board",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 25.38,
+  "busy_rendered": 8,
+  "busy_us_each": 25.44,
+  "busy_us_worst": 33.6
+ },
+ "arrow_board_pattern4": {
+  "block": "csm:arrow_board",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 25.36,
+  "busy_rendered": 8,
+  "busy_us_each": 25.4,
+  "busy_us_worst": 34.0
+ },
+ "arrow_board_pattern5": {
+  "block": "csm:arrow_board",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 25.12,
+  "busy_rendered": 8,
+  "busy_us_each": 25.31,
+  "busy_us_worst": 33.8
+ },
+ "arrow_board_pattern6": {
+  "block": "csm:arrow_board",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 25.6,
+  "busy_rendered": 8,
+  "busy_us_each": 25.07,
+  "busy_us_worst": 33.4
+ },
+ "school_beacon_2above_flashing": {
+  "block": "csm:school_zone_beacon",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 100.33,
+  "busy_rendered": 8,
+  "busy_us_each": 134.97,
+  "busy_us_worst": 164.0
+ },
+ "school_beacon_1above1below_flashing": {
+  "block": "csm:school_zone_beacon",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 82.38,
+  "busy_rendered": 8,
+  "busy_us_each": 135.1,
+  "busy_us_worst": 161.8
+ },
+ "rr_gate3_powered": {
+  "block": "csm:railroad_crossing_gate_3",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 34.67,
+  "busy_rendered": 8,
+  "busy_us_each": 35.05,
+  "busy_us_worst": 43.3
+ },
+ "rr_gate1_powered": {
+  "block": "csm:railroad_crossing_gate_1",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 19.4,
+  "busy_rendered": 8,
+  "busy_us_each": 19.59,
+  "busy_us_worst": 25.5
+ },
+ "tattle_red": {
+  "block": "csm:controllabletattletalebeacon",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 6.46,
+  "busy_rendered": 8,
+  "busy_us_each": 6.34,
+  "busy_us_worst": 9.9
+ },
+ "polemount_speed_busy": {
+  "block": "csm:polemount_speed_limit_sign",
+  "cmd_failures": 8,
+  "idle_rendered": 8,
+  "idle_us_each": 0.05,
+  "busy_rendered": 8,
+  "busy_us_each": 0.05,
+  "busy_us_worst": 0.1,
+  "last_fail": "{'command': 'blockdata -80 4 -410 {speedVal:35,hColor:0}', 'ranAs': 'server console', 'result': 0, 'succeeded': False, 'output': ['The data tag did not change: {speedVal:35,fScr:0b,color:0,hColor:0,x:-80,flashMode:2,y:4,angle:0,z:-410,id:\"csm:tileentitypolemountspeedlimit\"}']}"
+ },
+ "radar_sign_configured": {
+  "block": "csm:radar_speed_sign",
+  "cmd_failures": 0,
+  "idle_rendered": 16,
+  "idle_us_each": 7.61,
+  "busy_rendered": 16,
+  "busy_us_each": 7.47,
+  "busy_us_worst": 27.2
+ },
+ "lane_control_redx": {
+  "block": "csm:lane_control_signal",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 0.05,
+  "busy_rendered": 8,
+  "busy_us_each": 0.05,
+  "busy_us_worst": 0.1
+ },
+ "lane_control_greenarrow": {
+  "block": "csm:lane_control_signal",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 0.05,
+  "busy_rendered": 8,
+  "busy_us_each": 0.05,
+  "busy_us_worst": 0.1
+ },
+ "rr_flasher_powered": {
+  "block": "csm:railroad_crossing_flasher",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 0.05,
+  "busy_rendered": 8,
+  "busy_us_each": 0.05,
+  "busy_us_worst": 0.1
+ },
+ "barricade1_flashers_sign": {
+  "block": "csm:barricade_type_1_left",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 0.05,
+  "busy_rendered": 8,
+  "busy_us_each": 0.06,
+  "busy_us_worst": 0.1
+ },
+ "preempt_beacon_powered": {
+  "block": "csm:tlpreemptbeacon",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 0.05,
+  "busy_rendered": 8,
+  "busy_us_each": 0.05,
+  "busy_us_worst": 0.1
+ },
+ "snow_beacon_powered": {
+  "block": "csm:tlsnowbeacon",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 0.06,
+  "busy_rendered": 0,
+  "busy_us_each": null,
+  "busy_us_worst": null
+ },
+ "blankout_lit_train": {
+  "block": "csm:blankout_box",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 5.75,
+  "busy_rendered": 8,
+  "busy_us_each": 0.11,
+  "busy_us_worst": 0.5
+ },
+ "crosswalk_countdown": {
+  "block": "csm:controllablecrosswalksingle",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 5.25,
+  "busy_rendered": 8,
+  "busy_us_each": 0.14,
+  "busy_us_worst": 0.5
+ },
+ "thermostat_calling": {
+  "block": "csm:hvac_thermostat",
+  "cmd_failures": 0,
+  "idle_rendered": 8,
+  "idle_us_each": 0.06,
+  "busy_rendered": 8,
+  "busy_us_each": 0.05,
+  "busy_us_worst": 0.1
+ },
+ "overhead_speed_busy": {
+  "block": "csm:overhead_speed_limit_sign",
+  "cmd_failures": 0,
+  "idle_rendered": 12,
+  "idle_us_each": 3.26,
+  "busy_rendered": 12,
+  "busy_us_each": 3.28,
+  "busy_us_worst": 16.1,
+  "pos_costs": [
+   [
+    "csm:overhead_speed_limit_sign",
+    -92,
+    -390,
+    16.1
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -84,
+    -390,
+    11.5
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -76,
+    -390,
+    11.2
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -90,
+    -410,
+    0.2
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -110,
+    -420,
+    0.1
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -80,
+    -420,
+    0.1
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -110,
+    -410,
+    0.0
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -80,
+    -410,
+    0.0
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -90,
+    -420,
+    0.0
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -100,
+    -390,
+    0.0
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -100,
+    -410,
+    0.0
+   ],
+   [
+    "csm:overhead_speed_limit_sign",
+    -100,
+    -420,
+    0.0
+   ]
+  ]
+ }
+}
