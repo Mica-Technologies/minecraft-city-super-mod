@@ -269,6 +269,34 @@ def c_rod():
     return [box(0, C_TOP, 1.8, 16, C_TOP + 0.6, 2.4, "#rod")]
 
 
+def c_rod_end(left):
+    """What holds the rod up at one end of the run (issue #222): a bracket screwed to the wall with
+    its arm under the rod, and a finial capping the rod's end.
+
+    The finial reaches a little past the cell, as a real one stands past the window, so the rod's
+    end face lies inside it instead of in the same plane as the finial's. Drawn for the left end
+    (x = 0, seen from inside with the window to the north); the right end is its mirror.
+    """
+    parts = [
+        # Wall plate, standing off the window's face by a hair.
+        (1.2, C_TOP - 1.0, 0.1, 2.0, C_TOP + 0.2, 0.4),
+        # Arm, from the plate out under the rod. Its top stops a hair under the rod line, where the
+        # curtain's pleats also end, so the two tops are not one plane.
+        (1.35, C_TOP - 0.5, 0.4, 1.85, C_TOP - 0.02, 2.2),
+        # Finial, enclosing the rod's end.
+        (-0.6, C_TOP - 0.3, 1.5, 0.4, C_TOP + 0.9, 2.7),
+    ]
+    els = []
+    for i, (x0, y0, z0, x1, y1, z1) in enumerate(parts):
+        if not left:
+            x0, x1 = 16 - x1, 16 - x0
+        # The finial pokes past the cell, where UVs taken from its position would run off the
+        # rod's sprite into its neighbour's, so it samples a fixed patch instead.
+        uv = (7, 7, 8, 8) if i == 2 else None
+        els.append(box(x0, y0, z0, x1, y1, z1, "#rod", uv=uv))
+    return els
+
+
 def c_closed(top):
     """Pleats: panels two pixels wide, alternately forward and back."""
     h = C_TOP if top else 16
@@ -356,12 +384,14 @@ def _part_models(kind, textures, p):
         lone = vt_headrail() + vt_closed(True)
     else:
         add("rod", c_rod())
+        add("rod_end_left", c_rod_end(True))
+        add("rod_end_right", c_rod_end(False))
         for top in (False, True):
             s = "_top" if top else ""
             add("closed" + s, c_closed(top))
             add("left" + s, c_bunched(top, True))
             add("right" + s, c_bunched(top, False))
-        lone = c_rod() + c_closed(True)
+        lone = c_rod() + c_rod_end(True) + c_rod_end(False) + c_closed(True)
     m[p + "_inventory"] = _model(lone, textures, particle, parent="block/block")
     return m
 
@@ -422,7 +452,9 @@ def state_for(name):
         conds += [({"state": "2", "left": "false", "up": "true"}, "drawn"),
                   ({"state": "2", "left": "false", "up": "false"}, "drawn_top")]
     else:
-        conds = [({"up": "false"}, "rod")]
+        conds = [({"up": "false"}, "rod"),
+                 ({"up": "false", "left": "false"}, "rod_end_left"),
+                 ({"up": "false", "right": "false"}, "rod_end_right")]
         conds += _course("0", "closed")
         conds += [({"state": "1", "left": "false", "up": "true"}, "left"),
                   ({"state": "1", "left": "false", "up": "false"}, "left_top"),
