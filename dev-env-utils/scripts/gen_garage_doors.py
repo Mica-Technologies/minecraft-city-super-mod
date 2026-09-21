@@ -733,13 +733,19 @@ def _cross(a, b):
 
 
 class Obj:
-    """Quads in 0..1 block space, written as an OBJ with its materials in a shared MTL."""
+    """Quads in 0..1 block space, written as an OBJ with its materials in a shared MTL.
+
+    Every face carries a normal ({@code vn}). Forge works one out when a face has none, but
+    OptiFine does not, and drew these faces with garbage colour -- the open door's panels and the
+    tracks came out teal (issue #217). Every other OBJ in the mod has normals.
+    """
 
     def __init__(self, mtl):
         self.mtl = mtl
         self.v = []
         self.vt = []
-        self.faces = []  # (material, [(vi, ti)])
+        self.vn = []
+        self.faces = []  # (material, [(vi, ti, ni)])
 
     def quad(self, material, pts, uvs, outward):
         """One quad, wound so its front faces {outward}."""
@@ -748,12 +754,17 @@ class Obj:
         if sum(n[i] * outward[i] for i in range(3)) < 0:
             pts = [pts[0], pts[3], pts[2], pts[1]]
             uvs = [uvs[0], uvs[3], uvs[2], uvs[1]]
+        # The face's unit normal, from its winding after the flip above, so it points {outward}.
+        a, b, c = pts[0], pts[1], pts[2]
+        n = _cross(tuple(b[i] - a[i] for i in range(3)), tuple(c[i] - a[i] for i in range(3)))
+        length = sum(x * x for x in n) ** 0.5
+        self.vn.append(tuple(x / length for x in n))
         idx = []
         for p, t in zip(pts, uvs):
             assert all(-1e-9 <= c <= 1 + 1e-9 for c in t), t
             self.v.append(p)
             self.vt.append(t)
-            idx.append((len(self.v), len(self.vt)))
+            idx.append((len(self.v), len(self.vt), len(self.vn)))
         self.faces.append((material, idx))
 
     def text(self, name):
@@ -761,12 +772,13 @@ class Obj:
                  "mtllib %s.mtl" % self.mtl, "o %s" % name]
         lines += ["v %.5f %.5f %.5f" % p for p in self.v]
         lines += ["vt %.5f %.5f" % t for t in self.vt]
+        lines += ["vn %.5f %.5f %.5f" % n for n in self.vn]
         current = None
         for material, idx in self.faces:
             if material != current:
                 lines.append("usemtl " + material)
                 current = material
-            lines.append("f " + " ".join("%d/%d" % i for i in idx))
+            lines.append("f " + " ".join("%d/%d/%d" % i for i in idx))
         return "\n".join(lines) + "\n"
 
 
