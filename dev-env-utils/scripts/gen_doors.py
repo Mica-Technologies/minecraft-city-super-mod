@@ -12,13 +12,16 @@ six-panel front door in three colours, a half-glass back door). And the Door Clo
 item that fits a real-looking closer to any of them and makes it close itself.
 
 Each door is two blocks, a lower and an upper half, drawn here with the INSIDE to the north and
-the outside to the south. As a vanilla door's, the leaf lies along the outside face of its cell
-(z 14.25..16) and swings inward within the cell. Its hinge is on the left (x = 0, seen from outside)
-or the right, and the right is the mirror of the left.
+the outside to the south. Most doors hang as a vanilla door does: the leaf lies along the outside
+face of its cell (z 14.25..16) and swings inward within the cell. The exit, storefront and fire
+doors swing OUT, as real ones do -- toward the way out, away from the push bar -- and hang in the
+depth mirror of that: along the inside face (z 0..1.75), turning outward within the cell, so an open
+door of either kind lies along the jamb inside its own cell (OUTSWING). Its hinge is on the left
+(x = 0, seen from outside) or the right, and the right is the mirror of the left.
 
 The open door is the closed one turned a quarter about a pivot on the hinge edge -- (0.875,
-15.125) for a left hinge -- which carries the leaf from the outside face to lie along the jamb
-(x 0..1.75), its outside face now toward the room and its latch edge to the north. It is written out
+15.125) for a left-hinged inswing door, (0.875, 0.875) for an outswing one -- which carries the leaf
+to lie along the jamb (x 0..1.75), its latch edge to the far side of the cell. It is written out
 as its own model rather than a blockstate rotation (which turns about the block's centre and would
 put the hinge in the wrong corner), and BlockBuildingDoor's renderer swings the closed model about
 the same pivot, so the swing ends exactly on the open model. SHARED: PIVOT.
@@ -47,9 +50,15 @@ TEX_REF = "csm:blocks/doors/%s"
 MODEL_REF = "csm:doors/%s"
 
 # SHARED with BlockBuildingDoor: the leaf's thickness and the pivot a left-hinged leaf turns
-# about, in px, with the inside to the north.
+# about, in px, with the inside to the north. An outswing door's pivot is the depth mirror.
 LEAF = 1.75
 PIVOT = (0.875, 15.125)
+
+# SHARED with BlockBuildingDoor.OUTSWING: the doors that swing out, toward the outside. A real exit
+# door opens in the direction of escape, which is what lets a push bar work at all -- a push bar on
+# a door that swings toward you is a pull handle nobody can pull -- and a storefront's or a fire
+# door's does the same. The rest swing in, as a vanilla door does.
+OUTSWING = ("door_metal_fire", "door_metal_exit", "door_storefront_bronze")
 
 # registry name -> (style, colour, glass layer, name in each language). Order is creative order.
 DOORS = {
@@ -415,23 +424,36 @@ box = sc._box
 Z0, Z1 = 16 - LEAF, 16.0
 
 
-def leaf(upper):
+def planes(name):
+    """(inside face, outside face) of a door's leaf: on the outside face of the cell for a door that
+    swings in, on the inside face for one that swings out."""
+    return (0.0, LEAF) if name in OUTSWING else (Z0, Z1)
+
+
+def _tint(elements, index):
+    for e in elements:
+        for spec in e["faces"].values():
+            spec["tintindex"] = index
+    return elements
+
+
+def leaf(upper, z0=Z0, z1=Z1):
     """The door leaf's half: outside face south, inside face north."""
-    el = box(0, 0, Z0, 16, 16, Z1, "#edge")
+    el = box(0, 0, z0, 16, 16, z1, "#edge")
     el["faces"]["south"]["texture"] = "#face"
     el["faces"]["north"]["texture"] = "#face"
     return [el]
 
 
-def storefront_leaf(upper):
+def storefront_leaf(upper, z0=Z0, z1=Z1):
     """A storefront leaf: the frame solid, the glass a thin pane in the middle of it."""
-    rails = [box(0, 0, Z0, 3, 16, Z1, "#face"), box(13, 0, Z0, 16, 16, Z1, "#face")]
+    rails = [box(0, 0, z0, 3, 16, z1, "#face"), box(13, 0, z0, 16, 16, z1, "#face")]
     if upper:
-        rails.append(box(3, 13, Z0, 13, 16, Z1, "#face"))
+        rails.append(box(3, 13, z0, 13, 16, z1, "#face"))
     else:
-        rails.append(box(3, 0, Z0, 13, 4, Z1, "#face"))
+        rails.append(box(3, 0, z0, 13, 4, z1, "#face"))
     y0, y1 = (0, 13) if upper else (4, 16)
-    pane = box(3, y0, 14.75, 13, y1, 15.5, "#face", faces=("north", "south"))
+    pane = box(3, y0, z0 + 0.5, 13, y1, z0 + 1.25, "#face", faces=("north", "south"))
     return rails + [pane]
 
 
@@ -467,22 +489,23 @@ def pull_handle_top(z_out):
             box(12, 5.25, z_out, 13, 6, z_out + 1.5, "#hw")]
 
 
-def hardware_for(style, upper):
+def hardware_for(style, upper, z_in=Z0, z_out=Z1):
+    """The hardware on a leaf whose inside face is at z_in and outside face at z_out: the push bar
+    goes on the inside, the side a person leaving pushes from."""
     if upper:
-        return pull_handle_top(Z1) if style == "storefront" else []
+        return pull_handle_top(z_out) if style == "storefront" else []
     if style == "exit":
-        return push_bar(Z0)
+        return push_bar(z_in)
     if style == "storefront":
-        return push_bar(Z0) + pull_handle(Z1)
+        return push_bar(z_in) + pull_handle(z_out)
     if style in ("front", "halfglass"):
-        return knob(Z0, Z1)
-    return lever(Z0, Z1)
+        return knob(z_in, z_out)
+    return lever(z_in, z_out)
 
 
-def closer_parts():
+def closer_parts(body_z=Z0):
     """A surface-mounted closer on the inside face near the top of the leaf, by the hinge, with
     its arm up to a shoe on the underside of the header."""
-    body_z = Z0
     return [box(1, 11.5, body_z - 2.25, 7, 14, body_z, "#hw"),
             box(7, 12, body_z - 2, 7.5, 13.5, body_z - 0.25, "#hw"),
             box(5.5, 14, body_z - 1.5, 6.5, 15.25, body_z - 0.5, "#hw"),
@@ -514,6 +537,15 @@ def _open(elements):
     return out
 
 
+def _open_out(elements):
+    """Turn a left-hinged outswing door's closed model to its open pose: the depth mirror of
+    _open, a quarter turn clockwise (seen from above) about (0.875, 0.875), which carries the leaf
+    from the inside face to lie along the jamb with its latch edge to the south: (x, z) ->
+    (1.75 - z, x). Every door texture draws the same on its two broad faces and its two edges, so
+    mirroring the faces' positions without swapping their names is safe here."""
+    return sc._mirror_z(_open(sc._mirror_z(elements)))
+
+
 def _model(elements, textures):
     t = dict(textures)
     t["particle"] = next(iter(textures.values()))
@@ -531,18 +563,21 @@ def _hw_tex(style):
 def models():
     out = {}
     for name, (style, _, _, _) in DOORS.items():
+        z_in, z_out = planes(name)
+        turn = _open_out if name in OUTSWING else _open
         for half in ("lower", "upper"):
             upper = half == "upper"
-            els = (storefront_leaf(upper) if style == "storefront" else leaf(upper))
-            els = els + hardware_for(style, upper)
+            els = (storefront_leaf(upper, z_in, z_out) if style == "storefront"
+                   else leaf(upper, z_in, z_out))
+            els = els + hardware_for(style, upper, z_in, z_out)
             tex = {"face": TEX_REF % (name + "_" + half), "edge": TEX_REF % (name + "_edge"),
                    "hw": _hw_tex(style)}
             left = els
             right = sc._mirror_x(els)
             out["%s_%s_left" % (name, half)] = _model(left, tex)
             out["%s_%s_right" % (name, half)] = _model(right, tex)
-            out["%s_%s_left_open" % (name, half)] = _model(_open(left), tex)
-            out["%s_%s_right_open" % (name, half)] = _model(sc._mirror_x(_open(left)), tex)
+            out["%s_%s_left_open" % (name, half)] = _model(turn(left), tex)
+            out["%s_%s_right_open" % (name, half)] = _model(sc._mirror_x(turn(left)), tex)
         out[name + "_inventory"] = {
             "parent": "item/generated",
             "textures": {"layer0": TEX_REF % (name + "_icon")}}
@@ -551,6 +586,11 @@ def models():
     out["closer_right"] = _model(sc._mirror_x(closer_parts()), hw)
     out["closer_left_open"] = _model(_open(closer_parts()), hw)
     out["closer_right_open"] = _model(sc._mirror_x(_open(closer_parts())), hw)
+    out_ = closer_parts(0.0)
+    out["closer_out_left"] = _model(out_, hw)
+    out["closer_out_right"] = _model(sc._mirror_x(out_), hw)
+    out["closer_out_left_open"] = _model(_open_out(out_), hw)
+    out["closer_out_right_open"] = _model(sc._mirror_x(_open_out(out_)), hw)
     out["door_workshop"] = workshop_model()
     return out
 
@@ -562,6 +602,7 @@ SIDES = (("north", 0), ("east", 90), ("south", 180), ("west", 270))
 
 
 def state_for(name):
+    closer = "closer_out_%s%s" if name in OUTSWING else "closer_%s%s"
     parts = []
     for side, rot in SIDES:
         for half in ("lower", "upper"):
@@ -577,8 +618,8 @@ def state_for(name):
                     if half == "upper":
                         c = dict(when)
                         c["closer"] = "true"
-                        ca = {"model": MODEL_REF % ("closer_%s%s" % (hinge, "_open" if open_
-                                                                     else ""))}
+                        ca = {"model": MODEL_REF % (closer % (hinge, "_open" if open_
+                                                              else ""))}
                         if rot:
                             ca["y"] = rot
                         parts.append({"when": c, "apply": ca})

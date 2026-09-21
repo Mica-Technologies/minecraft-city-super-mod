@@ -30,7 +30,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileEntityDoorSwing> {
 
-  /** SHARED with gen_doors.PIVOT: where a left-hinged leaf turns, with the inside to the north. */
+  /**
+   * SHARED with gen_doors.PIVOT: where a left-hinged inswing leaf turns, with the inside to the
+   * north. An outswing leaf turns about the depth mirror of it, the other way.
+   */
   private static final double PIVOT_X = 0.875 / 16;
   private static final double PIVOT_Z = 15.125 / 16;
 
@@ -49,7 +52,10 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     double p = CsmConfig.isDoorAnimationEnabled() ? te.progress(partialTicks) : 1.0;
     double eased = 1 - (1 - p) * (1 - p);
     double openness = te.isOpening() ? eased : 1 - eased;
-    float angle = (float) (90.0 * openness) * (left ? 1 : -1);
+    // An outswing door turns the other way, about the depth mirror of the pivot.
+    boolean out = block.outswing();
+    float angle = (float) (90.0 * openness) * (left ? 1 : -1) * (out ? -1 : 1);
+    double pz = out ? 1 - PIVOT_Z : PIVOT_Z;
 
     // The closed models, facing north, so the facing and the hinge turn are both applied here.
     IBlockState closed = block.getDefaultState().withProperty(BlockBuildingDoor.OPEN, false)
@@ -71,9 +77,9 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     GlStateManager.rotate(-(facing.getHorizontalAngle() + 180F), 0F, 1F, 0F);
     GlStateManager.translate(-0.5, 0, -0.5);
     double px = left ? PIVOT_X : 1 - PIVOT_X;
-    GlStateManager.translate(px, 0, PIVOT_Z);
+    GlStateManager.translate(px, 0, pz);
     GlStateManager.rotate(angle, 0F, 1F, 0F);
-    GlStateManager.translate(-px, 0, -PIVOT_Z);
+    GlStateManager.translate(-px, 0, -pz);
     for (BlockBuildingDoor.Half half : BlockBuildingDoor.Half.values()) {
       IBlockState s = closed.withProperty(BlockBuildingDoor.HALF, half);
       IBakedModel model = dispatcher.getModelForState(s);
