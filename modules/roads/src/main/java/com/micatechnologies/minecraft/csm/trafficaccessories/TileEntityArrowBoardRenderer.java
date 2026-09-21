@@ -2,24 +2,23 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRoadSurfaceAware;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -38,6 +37,13 @@ import org.lwjgl.opengl.GL11;
  * entity's own render bounding box rather than against the chunk section its block sits in, so a
  * board four blocks tall no longer vanishes when the section holding its base leaves view.</p>
  *
+ * <p>Animated as it is, a board only ever shows one of a few dozen pictures: each pattern is a
+ * short fixed sequence of stages, and the timer only picks which stage is showing. So each
+ * stage is compiled once into a list shared by every board showing it ({@link
+ * CsmSharedDisplayLists}), and the timer, the per-board offset and the configured speed still
+ * choose the stage every frame exactly as before. {@link CsmRenderToggles#sharedBakesPerFrame}
+ * draws it per frame, for comparison.</p>
+ *
  * @version 1.0
  * @since 2026.9
  */
@@ -46,11 +52,25 @@ public class TileEntityArrowBoardRenderer
     extends TileEntitySpecialRenderer<TileEntityArrowBoard> {
 
   /**
-   * The mast and panel never change.  The list is keyed by the two light-map coordinates because
-   * those are baked into its vertices; there are at most 256 such lists, rather than one mesh and
-   * two draw calls for every visible board every frame.
+   * The mast, the panel and the lamp grid for one stage of one pattern at one light level. The
+   * light is baked into the unlit parts' vertices, so it is part of the key; the lit lamps are
+   * fullbright. Key layout (a {@code long}):
+   * <ul>
+   *   <li>bits 0-31: the combined light at the board, as {@code getCombinedLight} returns it</li>
+   *   <li>bits 32-47: the stage index</li>
+   *   <li>bits 48-55: the pattern ordinal</li>
+   * </ul>
    */
-  private static final Map<Integer, Integer> STRUCTURE_LISTS = new HashMap<>();
+  private static final CsmSharedDisplayLists BODY_LISTS =
+      new CsmSharedDisplayLists("arrow_board_body");
+
+  /**
+   * The halo around one stage's lit lamps. Fullbright, so keyed only on the stage: bits 0-15 the
+   * stage index, bits 16-23 the pattern ordinal. The additive blend and the depth mask it needs
+   * are set around the call, never inside the list.
+   */
+  private static final CsmSharedDisplayLists GLOW_LISTS =
+      new CsmSharedDisplayLists("arrow_board_glow");
 
   /** Beyond this distance the small halos contribute little but cost two blended passes. */
   private static final double GLOW_DISTANCE_SQUARED = 48.0 * 48.0;
@@ -77,6 +97,15 @@ public class TileEntityArrowBoardRenderer
   /** Fullbright sky light, for the lit lamps. */
   private static final int LIGHTMAP_FULLBRIGHT = 240;
 
+  /** The halo layers, each {how far it grows as a fraction of the lamp radius, its alpha}. */
+  private static final float[][] HALO_LAYERS = {{0.6f, 0.34f}, {1.3f, 0.13f}};
+
+  /** Every lamp position's box, by [column][row]. Constant, so built once. */
+  private static final RenderHelper.Box[][] LAMP_BOXES = buildLampBoxes();
+
+  /** Every lamp position's halo box, by [layer][column][row]. Constant, so built once. */
+  private static final RenderHelper.Box[][][] HALO_BOXES = buildHaloBoxes();
+
   @Override
   public void render(TileEntityArrowBoard te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -99,8 +128,12 @@ public class TileEntityArrowBoardRenderer
         te.getPos());
 
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
-    int sky = (combinedLight >> 16) & 0xFFFF;
-    int blockLight = combinedLight & 0xFFFF;
+
+    // The board's own clock. The per-board offset is what stops a row of them stepping in
+    // unison, which a row of real boards does not do.
+    ArrowBoardPattern pattern = te.getPattern();
+    long millis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks) + te.getSequenceOffset();
+    int stage = pattern.getStageIndex(millis);
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x + 0.5, y + settle, z + 0.5);
@@ -115,15 +148,17 @@ public class TileEntityArrowBoardRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
 
-    renderStructure(sky, blockLight);
+    renderBody(pattern, stage, combinedLight);
     // x, y and z arrive already measured from the camera, as the dynamic signs' LOD tests read
     // them: subtracting the viewer's world position again would measure from the world origin
     // and switch the halos off everywhere but there.
     double dx = x + 0.5;
     double dy = y + 2.0;
     double dz = z + 0.5;
-    renderLamps(te, partialTicks, sky, blockLight,
-        dx * dx + dy * dy + dz * dz <= GLOW_DISTANCE_SQUARED);
+    if (dx * dx + dy * dy + dz * dz <= GLOW_DISTANCE_SQUARED
+        && CsmConfig.isStrobeEffectEnabled() && hasLitLamp(pattern.getStageLamps(stage))) {
+      renderGlow(pattern, stage);
+    }
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
@@ -133,25 +168,98 @@ public class TileEntityArrowBoardRenderer
   }
 
   /**
-   * The mast, its braces and the panel casing. None of this changes, so it is one buffer.
+   * Draws the mast, panel and lamp grid for one stage, from its shared list.
    *
-   * @param sky        the sky light at the board
-   * @param blockLight the block light at the board
+   * @param pattern       the pattern
+   * @param stage         the stage showing
+   * @param combinedLight the combined light at the board
    */
-  private void renderStructure(int sky, int blockLight) {
-    int key = (sky << 16) | blockLight;
-    Integer list = STRUCTURE_LISTS.get(key);
-    if (list == null) {
-      list = GLAllocation.generateDisplayLists(1);
-      GlStateManager.glNewList(list, GL11.GL_COMPILE);
-      buildStructure(sky, blockLight);
-      GlStateManager.glEndList();
-      STRUCTURE_LISTS.put(key, list);
+  private static void renderBody(ArrowBoardPattern pattern, int stage, int combinedLight) {
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawBody(pattern, stage, combinedLight);
+      return;
     }
-    GlStateManager.callList(list);
+    long key = ((long) (pattern.ordinal() & 0xFF) << 48) | ((long) (stage & 0xFFFF) << 32)
+        | (combinedLight & 0xFFFFFFFFL);
+    int list = BODY_LISTS.get(key);
+    if (list == CsmDisplayListCache.NO_LIST) {
+      list = BODY_LISTS.allocate(key);
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(list, GL11.GL_COMPILE);
+        drawBody(pattern, stage, combinedLight);
+        GL11.glEndList();
+      }
+    }
+    if (list != CsmDisplayListCache.NO_LIST) {
+      GL11.glCallList(list);
+    } else {
+      // The driver refused a list name: draw directly rather than calling list 0.
+      drawBody(pattern, stage, combinedLight);
+    }
   }
 
-  /** Compiles the unchanging mast, braces and panel for one light level. */
+  /**
+   * Draws the halo around one stage's lit lamps, additively so it reads as light rather than as
+   * a bigger lamp. The blend, depth mask, cull and lighting it needs are set here, around the
+   * list, never inside it.
+   *
+   * @param pattern the pattern
+   * @param stage   the stage showing
+   */
+  private static void renderGlow(ArrowBoardPattern pattern, int stage) {
+    GlStateManager.disableCull();
+    GlStateManager.enableBlend();
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+    GlStateManager.depthMask(false);
+    GlStateManager.disableLighting();
+
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      drawGlow(pattern, stage);
+    } else {
+      long key = ((long) (pattern.ordinal() & 0xFF) << 16) | (stage & 0xFFFF);
+      int list = GLOW_LISTS.get(key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = GLOW_LISTS.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawGlow(pattern, stage);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        drawGlow(pattern, stage);
+      }
+    }
+
+    GlStateManager.depthMask(true);
+    GlStateManager.enableLighting();
+    GlStateManager.enableCull();
+    // Put the ordinary alpha blend back before disabling blend, so the next renderer that turns
+    // blending on without setting its own function does not inherit this additive one.
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    GlStateManager.disableBlend();
+  }
+
+  /**
+   * The mast, its braces, the panel casing and the lamp grid for one stage. Geometry only: the
+   * caller owns the texture and every GL state.
+   *
+   * @param pattern       the pattern
+   * @param stage         the stage showing
+   * @param combinedLight the combined light at the board
+   */
+  private static void drawBody(ArrowBoardPattern pattern, int stage, int combinedLight) {
+    int sky = (combinedLight >> 16) & 0xFFFF;
+    int blockLight = combinedLight & 0xFFFF;
+    buildStructure(sky, blockLight);
+    drawLamps(litGrid(pattern.getStageLamps(stage)), sky, blockLight);
+  }
+
+  /** Draws the unchanging mast, braces and panel for one light level. */
   private static void buildStructure(int sky, int blockLight) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
@@ -194,37 +302,60 @@ public class TileEntityArrowBoardRenderer
   }
 
   /**
-   * The lamp grid: every position drawn dark, then the lit ones drawn over them and given a glow.
+   * Marks which grid positions a stage lights, ignoring any outside the grid.
    *
-   * @param te           the board
-   * @param partialTicks the partial tick
-   * @param sky          the sky light at the board
-   * @param blockLight   the block light at the board
+   * @param lit the stage's lit lamps, each {column, row}
+   *
+   * @return lit flags by [column][row]
    */
-  private void renderLamps(TileEntityArrowBoard te, float partialTicks, int sky, int blockLight,
-      boolean drawGlow) {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-
-    // The board's own clock. The per-board offset is what stops a row of them stepping in
-    // unison, which a row of real boards does not do.
-    long millis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks) + te.getSequenceOffset();
-    int[][] lit = te.getPattern().getLitLamps(millis);
-
+  private static boolean[][] litGrid(int[][] lit) {
     boolean[][] isLit =
         new boolean[ArrowBoardGeometry.GRID_COLS][ArrowBoardGeometry.GRID_ROWS];
     for (int[] lamp : lit) {
-      if (lamp[0] >= 0 && lamp[0] < ArrowBoardGeometry.GRID_COLS
-          && lamp[1] >= 0 && lamp[1] < ArrowBoardGeometry.GRID_ROWS) {
+      if (inGrid(lamp)) {
         isLit[lamp[0]][lamp[1]] = true;
       }
     }
+    return isLit;
+  }
+
+  /**
+   * Whether a stage lights any lamp on the grid, which is what decides whether it has a halo.
+   *
+   * @param lit the stage's lit lamps, each {column, row}
+   *
+   * @return true if at least one is on the grid
+   */
+  private static boolean hasLitLamp(int[][] lit) {
+    for (int[] lamp : lit) {
+      if (inGrid(lamp)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean inGrid(int[] lamp) {
+    return lamp[0] >= 0 && lamp[0] < ArrowBoardGeometry.GRID_COLS
+        && lamp[1] >= 0 && lamp[1] < ArrowBoardGeometry.GRID_ROWS;
+  }
+
+  /**
+   * The lamp grid: every position drawn dark, then the lit ones drawn over them.
+   *
+   * @param isLit      lit flags by [column][row]
+   * @param sky        the sky light at the board
+   * @param blockLight the block light at the board
+   */
+  private static void drawLamps(boolean[][] isLit, int sky, int blockLight) {
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
 
     List<RenderHelper.Box> dark = new ArrayList<>();
     List<RenderHelper.Box> bright = new ArrayList<>();
     for (int c = 0; c < ArrowBoardGeometry.GRID_COLS; c++) {
       for (int r = 0; r < ArrowBoardGeometry.GRID_ROWS; r++) {
-        (isLit[c][r] ? bright : dark).add(lampBox(c, r));
+        (isLit[c][r] ? bright : dark).add(LAMP_BOXES[c][r]);
       }
     }
 
@@ -240,46 +371,61 @@ public class TileEntityArrowBoardRenderer
     RenderHelper.addBoxesToBufferLit(bright, buf, COL_LAMP_ON[0], COL_LAMP_ON[1], COL_LAMP_ON[2],
         COL_LAMP_ON[3], 0, 0, 0, LIGHTMAP_FULLBRIGHT, LIGHTMAP_FULLBRIGHT);
     tess.draw();
-
-    if (drawGlow && CsmConfig.isStrobeEffectEnabled()) {
-      renderGlow(bright, tess, buf);
-    }
   }
 
   /**
-   * The halo around the lit lamps, drawn additively so it reads as light rather than as a bigger
-   * lamp.
+   * The halo quads around one stage's lit lamps, one draw per layer. Geometry only: the caller
+   * owns the blend and every other GL state.
    *
-   * @param bright the lit lamp boxes
-   * @param tess   the tessellator
-   * @param buf    its buffer
+   * @param pattern the pattern
+   * @param stage   the stage showing
    */
-  private void renderGlow(List<RenderHelper.Box> bright, Tessellator tess, BufferBuilder buf) {
-    GlStateManager.disableCull();
-    GlStateManager.enableBlend();
-    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-    GlStateManager.depthMask(false);
-    GlStateManager.disableLighting();
+  private static void drawGlow(ArrowBoardPattern pattern, int stage) {
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    boolean[][] isLit = litGrid(pattern.getStageLamps(stage));
 
-    for (float[] layer : new float[][]{{0.6f, 0.34f}, {1.3f, 0.13f}}) {
+    for (int layer = 0; layer < HALO_LAYERS.length; layer++) {
       List<RenderHelper.Box> halo = new ArrayList<>();
-      for (RenderHelper.Box box : bright) {
-        halo.add(grow(box, ArrowBoardGeometry.LAMP_RADIUS * layer[0]));
+      for (int c = 0; c < ArrowBoardGeometry.GRID_COLS; c++) {
+        for (int r = 0; r < ArrowBoardGeometry.GRID_ROWS; r++) {
+          if (isLit[c][r]) {
+            halo.add(HALO_BOXES[layer][c][r]);
+          }
+        }
       }
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(halo, buf, COL_LAMP_ON[0], COL_LAMP_ON[1], COL_LAMP_ON[2],
-          layer[1], 0, 0, 0, LIGHTMAP_FULLBRIGHT, LIGHTMAP_FULLBRIGHT);
+          HALO_LAYERS[layer][1], 0, 0, 0, LIGHTMAP_FULLBRIGHT, LIGHTMAP_FULLBRIGHT);
       tess.draw();
     }
+  }
 
-    GlStateManager.depthMask(true);
-    GlStateManager.enableLighting();
-    GlStateManager.enableCull();
-    // Put the ordinary alpha blend back before disabling blend, so the next renderer that turns
-    // blending on without setting its own function does not inherit this additive one.
-    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-    GlStateManager.disableBlend();
+  /** Builds {@link #LAMP_BOXES}. */
+  private static RenderHelper.Box[][] buildLampBoxes() {
+    RenderHelper.Box[][] boxes =
+        new RenderHelper.Box[ArrowBoardGeometry.GRID_COLS][ArrowBoardGeometry.GRID_ROWS];
+    for (int c = 0; c < ArrowBoardGeometry.GRID_COLS; c++) {
+      for (int r = 0; r < ArrowBoardGeometry.GRID_ROWS; r++) {
+        boxes[c][r] = lampBox(c, r);
+      }
+    }
+    return boxes;
+  }
+
+  /** Builds {@link #HALO_BOXES} from {@link #LAMP_BOXES}, which must already be built. */
+  private static RenderHelper.Box[][][] buildHaloBoxes() {
+    RenderHelper.Box[][][] boxes = new RenderHelper.Box[HALO_LAYERS.length]
+        [ArrowBoardGeometry.GRID_COLS][ArrowBoardGeometry.GRID_ROWS];
+    for (int layer = 0; layer < HALO_LAYERS.length; layer++) {
+      for (int c = 0; c < ArrowBoardGeometry.GRID_COLS; c++) {
+        for (int r = 0; r < ArrowBoardGeometry.GRID_ROWS; r++) {
+          boxes[layer][c][r] = grow(LAMP_BOXES[c][r],
+              ArrowBoardGeometry.LAMP_RADIUS * HALO_LAYERS[layer][0]);
+        }
+      }
+    }
+    return boxes;
   }
 
   /**
