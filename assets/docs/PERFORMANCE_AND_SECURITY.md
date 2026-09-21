@@ -47,8 +47,8 @@ batched across tile entities, rather than more display lists.
 (2026-09-20/21) found the two portable signs at 135-165 microseconds each, the school zone beacon at
 80-136, a filled guide sign at 20-60, the arrow board at 34, the radar sign at 22-37 and the
 emergency lights at 20-30, against 2.2-2.9 for a plain signal head, none of them baked. And it found
-a cliff rather than a cost: past 1,024 visible signal heads the display-list cache thrashes and a
-frame goes from 3.3 ms to over 500 ms (see "Rules for render code"). Numbers, method and the ranked
+a cliff rather than a cost: past 1,024 visible signal heads the display-list cache thrashed and a
+frame went from 3.4 ms to 500 ms. That is fixed (see "Rules for render code"). Numbers, method and the ranked
 fix list are in `PERFORMANCE_INVENTORY.md`.
 
 ### Memory
@@ -142,15 +142,16 @@ Each rule below exists because breaking it once produced a confident wrong answe
 - **Cache through `CsmDisplayListCache`,** and release a position from the tile entity's
   `invalidate()` and `onChunkUnload()`. `CsmClientLifecycleHandler` clears every cache on
   disconnect.
-- **The cache bound is a cliff, not a soft limit.** `CsmDisplayListCache` evicts in
-  least-recently-rendered order above 1,024 positions per cache, and it was written as a leak
-  backstop sized "well above" what is visible. When more positions than that are drawn in one frame
-  every access evicts the entry the next frame needs first, so every entry recompiles every frame:
-  1,000 visible signal heads cost 3.3 ms and 1,030 cost 526 ms. It is per renderer cache (all head
-  models share one; backplates and crosswalks have their own), it recovers the moment the count
-  drops, and it is measured, not argued. Treat the bound as something a real scene can exceed:
-  raise it, or make eviction refuse anything rendered this frame or last, before relying on it.
-  Ranked options are in `PERFORMANCE_INVENTORY.md` (Tier 0).
+- **The cache bound is soft, and must stay soft.** `CsmDisplayListCache` trims back to 1,024
+  positions per cache, but only at the start of a frame and never an entry drawn in the frame
+  before. It used to evict on insert above the bound, which is a cliff rather than a limit: with
+  one more position on screen than the bound every access evicted the entry the frame needed
+  next, so every entry recompiled every frame. 1,024 visible signal heads cost 3.4 ms and 1,025
+  cost 500 ms; with the soft bound 1,600 cost 4.7 ms. Evicting on insert is also wrong mid-frame
+  for a smaller reason: an entry not yet drawn this frame cannot be told from one that will not
+  be drawn, so turning back toward a large scene recompiled all of it at once. `/csm displaylists`
+  shows each cache's peak and evictions, and the log says once when a cache holds more than its
+  bound. A cache of your own that is not a `CsmDisplayListCache` needs the same care.
 - **Anything that can change without the tile entity being marked dirty belongs in the cache
   key.** A sign's night lighting resolves against the sky each frame, so its lists key on
   `combinedLight` plus a lit bit.
