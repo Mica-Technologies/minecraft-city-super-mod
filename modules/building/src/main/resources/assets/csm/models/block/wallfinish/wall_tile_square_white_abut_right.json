@@ -1,0 +1,60 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_tile_square_white",
+    "cap": "csm:blocks/wallfinish/wall_tile_square_white_cap",
+    "particle": "csm:blocks/wallfinish/wall_tile_square_white"
+  },
+  "elements": [
+    {
+      "from": [
+        16,
+        0,
+        0
+      ],
+      "to": [
+        30.0,
+        15.0,
+        1.0
+      ],
+      "faces": {
+        "south": {
+          "texture": "#face",
+          "uv": [
+            0,
+            1.0,
+            14.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#face",
+          "uv": [
+            2.0,
+            1.0,
+            16.0,
+            16.0
+          ],
+          "cullface": "north"
+        },
+        "down": {
+          "texture": "#face",
+          "uv": [
+            0,
+            15.0,
+            14.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#face",
+          "uv": [
+            15.0,
+            1.0,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

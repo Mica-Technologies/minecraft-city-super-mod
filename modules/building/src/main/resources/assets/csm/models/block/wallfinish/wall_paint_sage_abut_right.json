@@ -1,0 +1,68 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_paint_sage",
+    "particle": "csm:blocks/wallfinish/wall_paint_sage"
+  },
+  "elements": [
+    {
+      "from": [
+        16,
+        0,
+        0
+      ],
+      "to": [
+        30.0,
+        16,
+        0.25
+      ],
+      "faces": {
+        "south": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            14.0,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#face",
+          "uv": [
+            2.0,
+            0,
+            16.0,
+            16
+          ],
+          "cullface": "north"
+        },
+        "up": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            14.0,
+            0.25
+          ]
+        },
+        "down": {
+          "texture": "#face",
+          "uv": [
+            0,
+            15.75,
+            14.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#face",
+          "uv": [
+            15.75,
+            0,
+            16.0,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

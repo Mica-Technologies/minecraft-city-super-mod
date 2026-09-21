@@ -1,0 +1,68 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_paint_greige",
+    "particle": "csm:blocks/wallfinish/wall_paint_greige"
+  },
+  "elements": [
+    {
+      "from": [
+        16,
+        0,
+        0
+      ],
+      "to": [
+        31.75,
+        16,
+        0.25
+      ],
+      "faces": {
+        "south": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            15.75,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0.25,
+            0,
+            16.0,
+            16
+          ],
+          "cullface": "north"
+        },
+        "up": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            15.75,
+            0.25
+          ]
+        },
+        "down": {
+          "texture": "#face",
+          "uv": [
+            0,
+            15.75,
+            15.75,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#face",
+          "uv": [
+            15.75,
+            0,
+            16.0,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

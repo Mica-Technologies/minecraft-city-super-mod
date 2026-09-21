@@ -42,7 +42,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "facing": "north"
       },
       "apply": {
@@ -51,7 +51,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "facing": "east"
       },
       "apply": {
@@ -61,7 +61,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "facing": "south"
       },
       "apply": {
@@ -71,7 +71,7 @@
     },
     {
       "when": {
-        "corner_left": "true",
+        "left": "corner",
         "facing": "west"
       },
       "apply": {
@@ -81,7 +81,85 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "left": "abut",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_left"
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_thin_left"
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_thin_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_thin_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_thin_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "corner",
         "facing": "north"
       },
       "apply": {
@@ -90,7 +168,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "facing": "east"
       },
       "apply": {
@@ -100,7 +178,7 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "facing": "south"
       },
       "apply": {
@@ -110,11 +188,89 @@
     },
     {
       "when": {
-        "corner_right": "true",
+        "right": "corner",
         "facing": "west"
       },
       "apply": {
         "model": "csm:wallfinish/wall_paint_sage_corner_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_right"
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_thin_right"
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_thin_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_thin_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_paint_sage_abut_thin_right",
         "y": 270
       }
     }

@@ -8,12 +8,14 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -34,9 +36,13 @@ import net.minecraft.world.World;
  * <p>An inside corner. The cell in the corner hangs on one wall; when the run of the same finish
  * on the other wall reaches it, that is, the side of the corner cell is a wall and the cell next to
  * it along that wall holds the same finish facing it, the corner cell draws that run's last stretch
- * on its side as well ({@link #CORNER_LEFT} / {@link #CORNER_RIGHT}). Both runs count the corner
- * as a join, so neither draws an edge trim where it turns. All of this is actual state: the
- * facing is still the only thing stored.</p>
+ * on its side as well ({@link End#CORNER}). Both runs count the corner as a join, so neither
+ * draws an edge trim where it turns. A block draws only its own finish, so where the corner cell
+ * holds a different one, it is the other run's last cell that reaches into the corner instead: it
+ * carries its panel on into the corner cell, against its own wall, up to the face of the other
+ * finish ({@link End#ABUT}, or {@link End#ABUT_THIN} against paint, which stands off the wall
+ * less), and draws no edge trim there; the corner's own finish keeps its trim. All of this is
+ * actual state: the facing is still the only thing stored.</p>
  *
  * @version 1.0
  * @since 2026.9
@@ -44,14 +50,43 @@ import net.minecraft.world.World;
 public class BlockWallFinish extends AbstractBlock {
 
   public static final PropertyDirection FACING = BlockHorizontal.FACING;
-  public static final PropertyBool LEFT = PropertyBool.create("left");
-  public static final PropertyBool RIGHT = PropertyBool.create("right");
+  /** How the run ends, or goes on, past the left of this cell (seen from the room). */
+  public static final PropertyEnum<End> LEFT = PropertyEnum.create("left", End.class);
+  /** How the run ends, or goes on, past the right of this cell (seen from the room). */
+  public static final PropertyEnum<End> RIGHT = PropertyEnum.create("right", End.class);
   public static final PropertyBool UP = PropertyBool.create("up");
   public static final PropertyBool DOWN = PropertyBool.create("down");
-  /** This cell is an inside corner and draws the run on the wall to its left as well. */
-  public static final PropertyBool CORNER_LEFT = PropertyBool.create("corner_left");
-  /** This cell is an inside corner and draws the run on the wall to its right as well. */
-  public static final PropertyBool CORNER_RIGHT = PropertyBool.create("corner_right");
+
+  /**
+   * What lies past one side of a finish: the end of the run, where the edge trim is drawn, or one
+   * of the ways the run goes on.
+   *
+   * @since 2026.9
+   */
+  public enum End implements IStringSerializable {
+    /** The run ends here; an edge trim is drawn. */
+    END("end"),
+    /** The next cell holds the same finish on the same wall, or is the corner that draws it. */
+    JOIN("join"),
+    /** This cell is an inside corner and draws the same finish's run on the wall on this side. */
+    CORNER("corner"),
+    /** The next cell is an inside corner holding a different finish; the panel reaches in to it. */
+    ABUT("abut"),
+    /** As {@link #ABUT}, against paint, which stands off its wall less. */
+    ABUT_THIN("abut_thin");
+
+    private final String name;
+
+    End(String name) {
+      this.name = name;
+    }
+
+    @Override
+    @Nonnull
+    public String getName() {
+      return name;
+    }
+  }
 
   private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
 
@@ -113,8 +148,7 @@ public class BlockWallFinish extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LEFT, RIGHT, UP, DOWN, CORNER_LEFT,
-        CORNER_RIGHT);
+    return new BlockStateContainer(this, FACING, LEFT, RIGHT, UP, DOWN);
   }
 
   @Override
@@ -175,22 +209,47 @@ public class BlockWallFinish extends AbstractBlock {
     return same(world, next, facing) || (same(world, next, side) && wall(world, next, facing));
   }
 
+  /**
+   * The different finish in the next cell past {@code side} when that cell is an inside corner:
+   * one hung on the wall that ends this run, with this run's wall going on behind it; otherwise
+   * null.
+   */
+  @Nullable
+  private BlockWallFinish abuts(IBlockAccess world, BlockPos pos, EnumFacing facing,
+      EnumFacing side) {
+    BlockPos next = pos.offset(side);
+    IBlockState other = world.getBlockState(next);
+    if (other.getBlock() instanceof BlockWallFinish && other.getBlock() != this
+        && other.getValue(FACING) == side && wall(world, next, facing)) {
+      return (BlockWallFinish) other.getBlock();
+    }
+    return null;
+  }
+
+  private End end(IBlockAccess world, BlockPos pos, EnumFacing facing, EnumFacing side) {
+    if (corner(world, pos, facing, side)) {
+      return End.CORNER;
+    }
+    if (joins(world, pos, facing, side)) {
+      return End.JOIN;
+    }
+    BlockWallFinish other = abuts(world, pos, facing, side);
+    if (other != null) {
+      return other.registryName.contains("paint") ? End.ABUT_THIN : End.ABUT;
+    }
+    return End.END;
+  }
+
   @Override
   @SuppressWarnings("deprecation")
   @Nonnull
   public IBlockState getActualState(@Nonnull IBlockState state, @Nonnull IBlockAccess worldIn,
       @Nonnull BlockPos pos) {
     EnumFacing f = state.getValue(FACING);
-    EnumFacing left = f.rotateYCCW();
-    EnumFacing right = f.rotateY();
-    boolean cornerLeft = corner(worldIn, pos, f, left);
-    boolean cornerRight = corner(worldIn, pos, f, right);
-    return state.withProperty(LEFT, cornerLeft || joins(worldIn, pos, f, left))
-        .withProperty(RIGHT, cornerRight || joins(worldIn, pos, f, right))
+    return state.withProperty(LEFT, end(worldIn, pos, f, f.rotateYCCW()))
+        .withProperty(RIGHT, end(worldIn, pos, f, f.rotateY()))
         .withProperty(UP, same(worldIn, pos.up(), f))
-        .withProperty(DOWN, same(worldIn, pos.down(), f))
-        .withProperty(CORNER_LEFT, cornerLeft)
-        .withProperty(CORNER_RIGHT, cornerRight);
+        .withProperty(DOWN, same(worldIn, pos.down(), f));
   }
 
   // --- shape ------------------------------------------------------------------------------------
