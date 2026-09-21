@@ -21,6 +21,7 @@ gui.csm.adboard.category.health=Health
 gui.csm.adboard.category.home=Home
 gui.csm.adboard.category.insurance=Insurance
 gui.csm.adboard.category.legal=Legal
+gui.csm.adboard.category.server=Server
 gui.csm.adboard.category.services=Services
 gui.csm.adboard.category.tech=Technology
 gui.csm.adboard.category.travel=Travel

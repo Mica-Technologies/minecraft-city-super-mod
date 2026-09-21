@@ -336,9 +336,9 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
 
   /** The ad in the preview box, fitted to the requested board as the board would fit it. */
   private void drawPreview() {
-    AdEntry ad = rotation == AdRotation.SINGLE ? ads.get(adIndex)
+    AdEntry ad = ServerAdImages.shown(rotation == AdRotation.SINGLE ? ads.get(adIndex)
         : previewPool().get(rotation.select(previewPool(), te.getWorld().getTotalWorldTime(),
-            interval.getValueInt(), TileEntityAdBoard.seed(controller)));
+            interval.getValueInt(), TileEntityAdBoard.seed(controller))));
     double faceW = boardWidth() - 2 * kind.getFramePx() / 16.0;
     double faceH = boardHeight() - kind.getServiceRows()
         - 2 * kind.getFramePx() / 16.0;

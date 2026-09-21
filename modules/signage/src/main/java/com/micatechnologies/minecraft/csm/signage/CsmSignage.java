@@ -2,12 +2,17 @@ package com.micatechnologies.minecraft.csm.signage;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import java.io.File;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
@@ -55,6 +60,8 @@ public class CsmSignage {
 
   private static Logger logger;
 
+  private static File configDirectory;
+
   public static Logger getLogger() {
     return logger;
   }
@@ -63,10 +70,32 @@ public class CsmSignage {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
+    configDirectory = event.getModConfigurationDirectory();
+    SignageConfig.load(configDirectory);
     CsmGuiRegistry.register(new SignageGuiProvider());
     // The packet order here fixes this channel's discriminators; only append to it.
     NETWORK.registerMessage(AdBoardConfigHandler.class, AdBoardConfigPacket.class, Side.SERVER);
+    NETWORK.registerMessage(ServerAdPackets.CatalogueHandler.class,
+        ServerAdPackets.Catalogue.class, Side.CLIENT);
+    NETWORK.registerMessage(ServerAdPackets.RequestHandler.class, ServerAdPackets.Request.class,
+        Side.SERVER);
+    NETWORK.registerMessage(ServerAdPackets.ChunkHandler.class, ServerAdPackets.Chunk.class,
+        Side.CLIENT);
+    MinecraftForge.EVENT_BUS.register(new ServerAdSync.Events());
+    CsmLifecycleHooks.onPlayerLoggedOut(ServerAdSync::forget);
     proxy.preInit(event);
+  }
+
+  /** Reads the server's own ads, from {@code config/csm/ads/}, as it starts. */
+  @Mod.EventHandler
+  public void serverStarting(FMLServerStartingEvent event) {
+    ServerAds.load(new File(new File(configDirectory, "csm"), "ads"),
+        SignageConfig.isServerAdsAllowed());
+  }
+
+  @Mod.EventHandler
+  public void serverStopped(FMLServerStoppedEvent event) {
+    ServerAds.clear();
   }
 
   @Mod.EventHandler

@@ -50,6 +50,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
 
   /** The ads the rotation draws from, rebuilt when the rotation or category changes. */
   private transient List<AdEntry> pool;
+  private transient int poolGeneration;
   private transient AxisAlignedBB renderBox;
 
   /** The last shuffle worked out, for the round it is good for. */
@@ -224,8 +225,9 @@ public class TileEntityAdBoard extends AbstractTileEntity {
 
   /** The ads this board's rotation draws from; the house ad if there are none. */
   List<AdEntry> pool() {
-    if (pool == null) {
-      AdLibrary library = AdLibrary.get();
+    AdLibrary library = AdLibrary.get();
+    if (pool == null || poolGeneration != library.generation()) {
+      poolGeneration = library.generation();
       List<AdEntry> ads;
       if (rotation == AdRotation.SINGLE) {
         ads = Collections.singletonList(library.resolve(adId));
