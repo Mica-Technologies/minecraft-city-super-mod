@@ -114,15 +114,6 @@ public class TileEntityDynamicStreetSignRenderer
   private static final float POST_Z = 2.0f;
 
   /**
-   * Where a post-top blade's panel is centred, in front of the post rather than on its
-   * axis. Centred on the axis the post's own bars stand in front of the legend and read
-   * as a bar painted through the street's name. The crossing blade turns about the post
-   * all the same, which puts its panel the same distance in front of the post along the
-   * way it is read -- one offset, correct for both.
-   */
-  private static final float POST_BLADE_Z = -0.3f;
-
-  /**
    * How much of a mast-arm blade's size a post-top blade is drawn at.
    *
    * <p>The layout is measured for a blade hung over a road, which is most of a block tall
@@ -133,6 +124,34 @@ public class TileEntityDynamicStreetSignRenderer
    * was drawn with, which re-tuning a dozen constants would not have.</p>
    */
   private static final float POST_TOP_SCALE = 0.38f;
+  /**
+   * How far in front of the post's axis a blade's panel is centred, measured where it
+   * ends up -- after {@link #POST_TOP_SCALE}.
+   *
+   * <p>The post's bars run from z 0.5 to 3.5 about an axis at z 2, and the panel is
+   * {@code SIGN_DEPTH * POST_TOP_SCALE} thick, so anything under about 2.3 leaves the
+   * post standing through the blade. Clearing it by a hair is not enough either: at 1.95
+   * the gap came to a sixth of a model unit, a hundredth of a block, and the post and the
+   * panel still read as one thing with the post's bars drawn across the street's name.
+   * This leaves the blade a visible step clear of the post on its own side.</p>
+   */
+  private static final float POST_BLADE_CLEARANCE = 3.1f;
+
+  /**
+   * Where a post-top blade's panel is centred, in front of the post rather than on its
+   * axis. Centred on the axis the post's own bars stand in front of the legend and read
+   * as a bar painted through the street's name; the crossing blade turns about the post
+   * all the same, which puts its panel the same distance in front of the post along the
+   * way <em>it</em> is read, so each ends up on its own side of the post -- one offset,
+   * correct for both.
+   *
+   * <p>Divided by the scale, because the whole assembly is shrunk about the post top
+   * afterwards and a clearance written in these units would be shrunk with it. Set in
+   * plain model units first, it looked right in the layout and put both panels back
+   * inside the post in the world, where the post cut through each blade in turn.</p>
+   */
+  private static final float POST_BLADE_Z = POST_Z - POST_BLADE_CLEARANCE / POST_TOP_SCALE;
+
 
   /** The height the post-top assembly is scaled about: the top of the block. */
   private static final float POST_TOP_Y = 16.0f;
