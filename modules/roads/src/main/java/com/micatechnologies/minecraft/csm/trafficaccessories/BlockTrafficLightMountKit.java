@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDeferredSync;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
@@ -194,9 +195,10 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
       ((TileEntityTrafficLightMountKit) te).invalidateCachedBB();
       // The client never gets neighborChanged, and its renderer caches the neighbour scan, so
       // tell it: its readNBT drops the scan, and a head placed or broken beside this block shows
-      // on the next frame rather than at the scan's once-a-second recheck.
+      // on the next frame rather than at the scan's once-a-second recheck. Sent at the end of the
+      // tick, so it arrives after the neighbour's block change rather than before it.
       if (!worldIn.isRemote) {
-        ((TileEntityTrafficLightMountKit) te).syncServerToClient(worldIn);
+        CsmDeferredSync.syncAfterBlockChanges((TileEntityTrafficLightMountKit) te);
       }
     }
   }

@@ -34,8 +34,41 @@ logged in [Fix status](#fix-status), each with its own before and after.
 | X1 | Radar speed sign and school zone beacon join the sync opt-out (the radar syncs up to five times a second with a vehicle in its zone) | `c48fd5a78` | section rebuild per sync | none |
 | - | Tattle-tale beacon marks its tile entity dirty when its mode is cycled, so the mode is saved | `c48fd5a78` | could be lost on reload | saved |
 | - | Crane head: lists released on disconnect (they are not in a `CsmDisplayListCache`), `resetColor()` after its vertex-coloured list | `c48fd5a78` | leaked into the next world | released |
-| X4 | Fire alarm strobes: everything in the device's frame (core, side, halo, cone, wall wash) in one draw and the surface pools in another, instead of about fourteen; the pool plane axes are constants | (this change) | 30 strobes +35.9 µs a frame, 120 +83.8 µs and p99 1.17 to 2.23 ms | 30 +26.0 µs, 120 +41.8 µs and p99 1.40 to 1.91 ms (cross-session). Additive with no depth writes, so the order of the quads never mattered |
+| X4 | Fire alarm strobes: everything in the device's frame (core, side, halo, cone, wall wash) in one draw and the surface pools in another, instead of about fourteen; the pool plane axes are constants | `abc01281b` | 30 strobes +35.9 µs a frame, 120 +83.8 µs and p99 1.17 to 2.23 ms | 30 +26.0 µs, 120 +41.8 µs and p99 1.40 to 1.91 ms (cross-session). Additive with no depth writes, so the order of the quads never mattered |
+| S5 | New crosswalk: arms and stubs (mount not base) in a shared list keyed on light, colour, mount, display type, and tilt and facing for the arms | `f9ce7cdff` | 15.9 µs (rear mount) | 3.7 µs. Pixels identical |
+| S5 | Blankout box: the same for its arms; the block behind a base mount cached on the tile entity instead of read every frame, invalidated from the server | `9496008eb` | 15.6 µs (rear mount) | 3.3 µs. Pixels identical |
+| S5 | Lane control signal: the same, plus static face UVs and one render box per position | `aa230abf9` | 15.7-16.0 µs (rear mount) | 3.3 µs. Pixels identical |
+| S2 | Overhead speed limit sign: housing, face and legend (via `CsmFontRenderer.addString`) in shared lists | `d2141072b` | 8.2 µs | 4.1 µs. Pixels identical |
+| S2 | Pole-mount speed limit sign: the same; one light read a frame instead of three | `94cc00070` | 7.1 µs | 4.1 µs. Pixels identical |
+| - | Overhead message sign: frame, housing and face in a shared list, the page text in one draw | `ab7a6883b` | 7.3 µs (3 pages) | 4.9 µs. Pages animate, so compared by same-path spread only |
+| - | Overhead message sign render box covers the 9.25-block sign in every facing (it culled early turned east or west) | `9b1fa6e3f` | culled early | stays in view |
+| S6 | Barricade: bare barricade leaves before any world read; sign lookup cached; straps, sign face and lamps in shared lists, the glow live; sign sprites cleared on texture stitch and disconnect | `4c87fb62f` | 8.2 µs (flashers and sign) | 3.0 µs. Flashers animate, same-path spread only; sign correct after a resource reload |
+| S4 | Signal heads: layout (horizontal, section positions, offsets, tilt pivot, mount suppression) snapshotted on the tile entity; heads within 3 blocks drop theirs when a head comes, goes or flips, the server syncs a head whose layout a neighbour moved; render box kept. Toggle `signalLayoutPerFrame` | `169630550` | plain 2.0, add-on 4.7 µs | plain 2.0, add-on 2.1 µs. Pixels identical |
+| P4 | Guide sign: layout memoised on the tile entity; legend, exit tab, shields, arrows, posts and luminaires in per-position lists split at each texture change so draw order is unchanged | `e7f611eb6` | 26.9 µs (filled, 16 signs) | 2.7 µs. Pixels identical |
+| S1 | Street sign: the same for the blade legend; `blades()` built once | `66a5edad4` | 63.6 µs (both blades, lit) | 8.5 µs. Pixels identical by day and night |
+| - | Syncs sent from `neighborChanged` go out at the end of the server tick (`CsmDeferredSync`), behind the block change that caused them; blankout and crosswalk bodies draw directly if no list can be allocated | (this change) | a sync could beat its block change and leave a stale cache | kit and cover right within 250 ms, zero changed pixels |
 | P3 | Emergency lights: glow compiled once per block class into a list shared by every light (`CsmSharedDisplayLists`), both bulbs in one draw | `7d5af67c4` | 16.6 µs a light live (46 draws before) | 1.4 µs a light; 256 placed, 155 in view: frame 3.3 to 0.9 ms. Pixels: lit area within 3 levels on every pair, one baked/live pair identical |
+
+Every "before" and "after" in one row is from the same session and scene, A/B/A through a render
+toggle (`sharedBakesPerFrame`, `signalLayoutPerFrame`, the sign `*PerFrame` toggles), with
+screenshots compared frame by frame. "Pixels identical" means every same-path and cross-path pair
+matched to the byte below the horizon. Rows marked cross-session compare against this morning's
+figures and carry the 5-7% restart noise.
+
+**Not taken, and why.**
+
+- **X3, idle strobes skipped before the dispatcher.** The saving is 0.29 µs a block, and it needs
+  a `shouldRenderInPass` override the crack overlay depends on. The inventory itself advised against
+  it on this evidence.
+- **The cover's 9x9x9 render box.** A box that is too large costs only a looser frustum test; one
+  that is too small culls a tilted cover early. It was left alone.
+- **The Honeywell module's animated texture.** Re-uploading it less often would slow the animation,
+  which is a visible change.
+- **A low-graphics mode.** It gives up part of the picture by design, so it is a separate, opt-in
+  decision (see [Levers](#levers-for-a-low-graphics-mode)).
+- **The two fire alarm channel bugs.** These are correctness bugs, not cost: panels sharing the
+  strobe-only channel replace each other's positions, and a position stays active when the stop
+  packet never arrives. They are still open.
 
 ## Read this first
 
@@ -120,6 +153,9 @@ plausible view; make eviction refuse anything rendered this frame or last; and c
 frame so a thrashing cache announces itself. Only the first is a one-line change.
 
 ## Headline ranking
+
+The figures in this and the next two sections are the picture **before** the fixes; the
+[Fix status](#fix-status) table has what each block costs now.
 
 Steady-state cost per placed instance, idle unless noted, with the best-evidence source. "Per ms"
 is how many fit in one millisecond of frame time (1000 / microseconds). "Frame" means measured as
