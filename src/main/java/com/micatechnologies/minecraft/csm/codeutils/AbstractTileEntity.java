@@ -215,15 +215,45 @@ public abstract class AbstractTileEntity extends TileEntity {
    */
   @Override
   public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity pkt) {
+    long bakedBefore = getBakedModelKey();
+
     // Read the update packet data NBT tag compound in to the tile entity NBT data
     this.readFromNBT(pkt.getNbtCompound());
 
     // Trigger a re-render on the client so that getActualState properties (which are
-    // computed from tile entity data) are visually updated immediately
-    if (world != null) {
+    // computed from tile entity data) are visually updated immediately. That re-render rebuilds
+    // the whole chunk section, so it is skipped when nothing a baked model reads has changed:
+    // see getBakedModelKey.
+    if (world != null
+        && (bakedBefore == ALWAYS_REBUILD_ON_SYNC || bakedBefore != getBakedModelKey())) {
       IBlockState state = world.getBlockState(pos);
       world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
     }
+  }
+
+  /**
+   * Returned by {@link #getBakedModelKey()} to rebuild the chunk section on every sync.
+   */
+  protected static final long ALWAYS_REBUILD_ON_SYNC = Long.MIN_VALUE;
+
+  /**
+   * Returns a value that changes whenever something a baked block model reads from this tile
+   * entity changes -- this block's own {@code getActualState} or {@code getExtendedState}, or a
+   * neighbour's (a signal backplate reads the head's tilt).
+   *
+   * <p>A sync packet rebuilds the client's chunk section so those models catch up, and a rebuild
+   * is not free: in a section holding heavy baked geometry a tile entity syncing a few times a
+   * second produced 445 ms hitches, and once exhausted direct buffer memory. Most tile entities
+   * that sync on a cadence (a countdown, a thermostat ramp, a radar reading, a signal aspect) feed
+   * only their own special renderer, which reads the tile entity every frame anyway. Such a tile
+   * entity overrides this to return the fields a baked model does read, packed into a
+   * {@code long}, or a constant when there are none. The default rebuilds on every sync, which is
+   * always correct.</p>
+   *
+   * @return the baked model key, or {@link #ALWAYS_REBUILD_ON_SYNC}
+   */
+  protected long getBakedModelKey() {
+    return ALWAYS_REBUILD_ON_SYNC;
   }
 
   /**

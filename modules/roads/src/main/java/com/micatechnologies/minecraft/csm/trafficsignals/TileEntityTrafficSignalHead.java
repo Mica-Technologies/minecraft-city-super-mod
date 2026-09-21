@@ -1478,4 +1478,15 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       TileEntityTrafficSignalHeadRenderer.cleanupDisplayList(pos);
     }
   }
+
+  /**
+   * The signal backplate beside this head reads its tilt into its baked model
+   * ({@code AbstractBlockSignalBackplate.getActualState}); nothing else baked reads this tile
+   * entity. An aspect change syncs this tile entity many times a cycle, and none of those
+   * needs the chunk section rebuilt unless the tilt moved.
+   */
+  @Override
+  protected long getBakedModelKey() {
+    return getBodyTilt().ordinal();
+  }
 }

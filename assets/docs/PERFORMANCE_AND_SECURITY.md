@@ -199,15 +199,17 @@ a single quad, both visual trade-offs to cost against measured numbers before pr
   `&&` it back in, or spectators start placing calls at intersections.
 - **`markDirtySync` schedules a block update only for blocks implementing
   `ICsmScheduledTickConsumer`** -- the three that override `updateTick`.
-- **Every tile entity data packet rebuilds the client's chunk section.**
-  `AbstractTileEntity.onDataPacket` calls `world.notifyBlockUpdate`, because `getActualState` may
-  read tile entity data. For a block whose model never reads it (thermostats, crosswalks, heads,
-  the radar and school beacons) that rebuild is waste. Measured at 27 syncs a second: no effect in
-  an empty section or one of 4,096 stairs, but a 445 ms hitch when the section holds 167,000
-  triangles of furnishings. A tile entity that syncs on a cadence (crosswalk countdown once a
-  second, thermostat ramp every few seconds, radar reading up to five a second) is the case to
-  watch. New crosswalks also set `dirty` in `readNBT`, discarding all three of their caches on
-  every countdown packet.
+- **A tile entity data packet rebuilds the client's chunk section only if a baked model needs
+  it.** `AbstractTileEntity.onDataPacket` calls `world.notifyBlockUpdate` so a `getActualState`
+  that reads the tile entity catches up, and that rebuilds the whole section: at 27 syncs a second
+  in a section of 64 heavy furnishings it was a 445 ms hitch, and 2.25 s on a later run. A tile
+  entity whose data feeds only its special renderer overrides `getBakedModelKey()` to return what a
+  baked model does read (the head returns its tilt, because the backplate beside it reads that),
+  or a constant; the rebuild then runs only when that key changes. Any new tile entity that syncs
+  on a cadence should do the same, after checking its own block's and its neighbours'
+  `getActualState` / `getExtendedState`. Likewise, a renderer's `dirty` flag discards every list
+  for the position, so set it in `readNBT` only when a field the compiled geometry depends on
+  changed -- not for the countdown or the aspect the keys already cover.
 - **A static cache needs a lifecycle hook.** `CsmClientLifecycleHandler` stops sounds, strobes and
   display lists on disconnect -- without it a fire alarm's strobes could render in the next world
   at the same coordinates. `CsmCommonLifecycleHandler` clears the sign setback cache on world

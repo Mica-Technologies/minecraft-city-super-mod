@@ -103,4 +103,13 @@ public class TileEntityVariableSpeedLimit extends AbstractTileEntity {
         pos.getX() - 4, pos.getY(), pos.getZ() - 4,
         pos.getX() + 5, pos.getY() + 7, pos.getZ() + 5);
   }
+
+  /**
+   * No baked model reads this tile entity -- only its special renderer, which reads it every
+   * frame -- so a sync never needs the chunk section rebuilt.
+   */
+  @Override
+  protected long getBakedModelKey() {
+    return 0L;
+  }
 }

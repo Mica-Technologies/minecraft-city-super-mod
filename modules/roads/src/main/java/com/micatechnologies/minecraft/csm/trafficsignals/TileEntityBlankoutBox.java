@@ -36,13 +36,31 @@ public class TileEntityBlankoutBox extends AbstractTileEntity {
 
     @Override
     public void readNBT( NBTTagCompound compound ) {
+        long appearanceBefore = appearanceKey();
         bodyColor = TrafficSignalBodyColor.fromNBT( readInt( compound, NBT_BODY_COLOR ) );
         visorColor = TrafficSignalBodyColor.fromNBT( readInt( compound, NBT_VISOR_COLOR ) );
         visorType = BlankoutBoxVisorType.fromNBT( readInt( compound, NBT_VISOR_TYPE ) );
         mountType = CrosswalkMountType.fromNBT( readInt( compound, NBT_MOUNT_TYPE ) );
         bodyTilt = TrafficSignalBodyTilt.fromNBT( readInt( compound, NBT_BODY_TILT ) );
         blankoutType = BlankoutBoxType.fromNBT( readInt( compound, NBT_BLANKOUT_TYPE ) );
-        dirty = true;
+        // Only the housing is compiled into the renderer's display list; the message
+        // (blankoutType) is drawn live on top of it, so changing it must not throw the list away.
+        if ( appearanceKey() != appearanceBefore ) {
+            dirty = true;
+        }
+    }
+
+    /** Packs every field the compiled housing depends on, so a change of any of them is seen. */
+    private long appearanceKey() {
+        return ordinalOf( bodyColor )
+            | ( ordinalOf( visorColor ) << 8 )
+            | ( ordinalOf( visorType ) << 16 )
+            | ( ordinalOf( mountType ) << 24 )
+            | ( ordinalOf( bodyTilt ) << 32 );
+    }
+
+    private static long ordinalOf( Enum<?> value ) {
+        return value == null ? 0xFFL : value.ordinal() & 0xFFL;
     }
 
     private static int readInt( NBTTagCompound compound, String key ) {
@@ -67,8 +85,8 @@ public class TileEntityBlankoutBox extends AbstractTileEntity {
 
     @Override
     public void onDataPacket( NetworkManager networkManager, SPacketUpdateTileEntity pkt ) {
+        // readNBT sets the dirty flag when, and only when, the compiled housing changed.
         super.onDataPacket( networkManager, pkt );
-        dirty = true;
     }
 
     // endregion
@@ -227,4 +245,13 @@ public class TileEntityBlankoutBox extends AbstractTileEntity {
       TileEntityBlankoutBoxRenderer.cleanupDisplayList(pos);
     }
   }
+
+    /**
+     * No baked model reads this tile entity -- only its special renderer, which reads it every
+     * frame -- so a sync never needs the chunk section rebuilt.
+     */
+    @Override
+    protected long getBakedModelKey() {
+        return 0L;
+    }
 }

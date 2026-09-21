@@ -19,6 +19,8 @@ logged in [Fix status](#fix-status), each with its own before and after.
 |---|---|---|---|---|
 | C2, C3 | Display-list cache evicts only at frame start and never an entry drawn in the last frame; peak and evictions in `/csm displaylists`, a log line the first time a cache holds more than its bound | `ff912beae` | 1,025 heads 500 ms, 1,600 heads 833 ms | 1,025 heads 3.2 ms, 1,600 heads 4.7 ms, linear |
 | - | Lane control signal draws directly when no list can be allocated, instead of calling list 0 | `ff912beae` | would blank | draws |
+| X1 | A sync packet rebuilds the chunk section only when something a baked model reads changed (`AbstractTileEntity.getBakedModelKey`); heads key on tilt (the backplate reads it), crosswalks, thermostats, lane control, blankout, sensor, speaker, TTS and speed limit signs on nothing | (this change) | thermostat flood in a 64-crate section: max frame 445 ms (doc); same-session control on a street sign 2,250 ms | max 12.2 ms against 11.7 quiet |
+| X2 | Crosswalk, blankout and lane control set `dirty` only when an appearance field changed, not on every packet (the countdown once a second, an aspect change) | (this change) | three list recompiles per crosswalk a second in clearance; a body recompile per aspect change | none; a synced colour change still redraws (checked on all three) |
 | P3 | Emergency lights: glow compiled once per block class into a list shared by every light (`CsmSharedDisplayLists`), both bulbs in one draw | `7d5af67c4` | 16.6 µs a light live (46 draws before) | 1.4 µs a light; 256 placed, 155 in view: frame 3.3 to 0.9 ms. Pixels: lit area within 3 levels on every pair, one baked/live pair identical |
 
 ## Read this first

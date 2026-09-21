@@ -262,4 +262,13 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity implements ICsmTts
     this.ttsVoice = ttsVoice;
     markDirtySync(getWorld(), getPos(), true);
   }
+
+  /**
+   * No baked model reads this tile entity -- only its special renderer, which reads it every
+   * frame -- so a sync never needs the chunk section rebuilt.
+   */
+  @Override
+  protected long getBakedModelKey() {
+    return 0L;
+  }
 }
