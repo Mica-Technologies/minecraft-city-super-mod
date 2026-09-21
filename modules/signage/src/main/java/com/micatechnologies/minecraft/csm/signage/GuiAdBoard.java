@@ -43,6 +43,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
   private static final int SLD_INTERVAL = 11;
   private static final int BTN_DONE = 12;
   private static final int BTN_CANCEL = 13;
+  private static final int BTN_BACK = 14;
 
   private static final int COL = 160;
   private static final int GAP = 10;
@@ -67,6 +68,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
   private int categoryIndex;
   private AdFit fit;
   private AdLight light;
+  private AdBack back;
 
   private GuiSlider widthSlider;
   private GuiSlider heightSlider;
@@ -75,6 +77,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
   private GuiButton alignButton;
   private GuiButton fitButton;
   private GuiButton lightButton;
+  private GuiButton backButton;
   private GuiButton adButton;
   private GuiButton rotationButton;
   private GuiButton categoryButton;
@@ -98,6 +101,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     this.rotation = te.getRotation();
     this.fit = te.getFit();
     this.light = te.getLight();
+    this.back = te.getBack();
     AdEntry current = library.resolve(te.getAdId());
     this.adIndex = Math.max(0, ads.indexOf(current));
     this.categoryIndex = Math.max(0, categories.indexOf(te.getCategory()));
@@ -129,6 +133,9 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     fitButton = add(new GuiButton(BTN_FIT, left, y, COL, H, ""));
     y += ROW;
     lightButton = add(new GuiButton(BTN_LIGHT, left, y, COL, H, ""));
+    y += ROW;
+    backButton = add(new GuiButton(BTN_BACK, left, y, COL, H, ""));
+    backButton.visible = kind.isCabinet();
 
     // Right column: the ads.
     previewX = right;
@@ -160,7 +167,8 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
   /** A new board's screen offers a sensible size rather than one block. */
   private int[] defaultSize() {
     int[][] presets = kind.getPresets();
-    return presets[Math.min(3, presets.length - 1)];
+    // A wall poster starts at 8 x 4; a billboard at the 14 x 48 ft bulletin, 15 x 4.
+    return presets[Math.min(kind.isCabinet() ? 2 : 3, presets.length - 1)];
   }
 
   private String presetLabel() {
@@ -179,6 +187,8 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
         + I18n.format("gui.csm.adboard.fit." + fit.name().toLowerCase(Locale.ROOT));
     lightButton.displayString = I18n.format("gui.csm.adboard.light") + ": "
         + I18n.format("gui.csm.adboard.light." + light.name().toLowerCase(Locale.ROOT));
+    backButton.displayString = I18n.format("gui.csm.adboard.back") + ": "
+        + I18n.format("gui.csm.adboard.back." + back.name().toLowerCase(Locale.ROOT));
     rotationButton.displayString = I18n.format("gui.csm.adboard.rotation."
         + rotation.name().toLowerCase(Locale.ROOT));
     boolean single = rotation == AdRotation.SINGLE;
@@ -224,6 +234,9 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
       case BTN_LIGHT:
         light = light.next();
         break;
+      case BTN_BACK:
+        back = back.next();
+        break;
       case BTN_AD_PREV:
         adIndex = (adIndex + ads.size() - 1) % ads.size();
         break;
@@ -254,7 +267,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     String category = categories.isEmpty() ? "" : categories.get(categoryIndex);
     CsmSignage.NETWORK.sendToServer(new AdBoardConfigPacket(clicked, widthSlider.getValueInt(),
         heightSlider.getValueInt(), align, ads.get(adIndex).getId(), rotation, category,
-        interval.getValueInt(), fit, light));
+        interval.getValueInt(), fit, light, back));
   }
 
   @Override

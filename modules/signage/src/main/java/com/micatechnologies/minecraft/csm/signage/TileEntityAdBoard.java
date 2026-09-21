@@ -32,6 +32,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
   private static final String KEY_FIT = "fi";
   private static final String KEY_LIGHT = "li";
   private static final String KEY_POWERED = "pw";
+  private static final String KEY_BACK = "bk";
 
   private int width = 1;
   private int height = 1;
@@ -43,6 +44,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
   private AdFit fit = AdFit.COVER;
   private AdLight light = AdLight.UNLIT;
   private boolean powered;
+  private AdBack back = AdBack.NONE;
 
   /** The ads the rotation draws from, rebuilt when the rotation or category changes. */
   private transient List<AdEntry> pool;
@@ -70,7 +72,9 @@ public class TileEntityAdBoard extends AbstractTileEntity {
     List<AdEntry> ads = AdLibrary.get().rotation();
     adId = ads.isEmpty() ? AdLibrary.HOUSE_AD
         : ads.get((int) Math.floorMod(seed(at), (long) ads.size())).getId();
-    light = kind == AdBoardKind.WALL_POSTER ? AdLight.UNLIT : AdLight.LIT;
+    // Paper is lit by the day; a screen, and a printed billboard's floodlights, by themselves.
+    light = kind == AdBoardKind.WALL_POSTER ? AdLight.UNLIT
+        : kind == AdBoardKind.BILLBOARD ? AdLight.NIGHT : AdLight.LIT;
     pool = null;
   }
 
@@ -141,6 +145,23 @@ public class TileEntityAdBoard extends AbstractTileEntity {
 
   public boolean isPowered() {
     return powered;
+  }
+
+  public AdBack getBack() {
+    return back;
+  }
+
+  /** Called on the server with a setting its packet handler has already checked. */
+  void setBack(AdBack back) {
+    this.back = back;
+  }
+
+  /** The ad on the back at {@code worldTime}: the front's, or the one the front shows next. */
+  public AdEntry showingBack(long worldTime) {
+    if (back == AdBack.NEXT) {
+      return showing(worldTime + AdRotation.clampInterval(interval) * 20L);
+    }
+    return showing(worldTime);
   }
 
   /** Called on the server with a configuration its packet handler has already checked. */
@@ -274,6 +295,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
     fit = AdFit.fromOrdinal(compound.getByte(KEY_FIT));
     light = AdLight.fromOrdinal(compound.getByte(KEY_LIGHT));
     powered = compound.getBoolean(KEY_POWERED);
+    back = AdBack.fromOrdinal(compound.getByte(KEY_BACK));
     pool = null;
     renderBox = null;
   }
@@ -290,6 +312,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
     compound.setByte(KEY_FIT, (byte) fit.ordinal());
     compound.setByte(KEY_LIGHT, (byte) light.ordinal());
     compound.setBoolean(KEY_POWERED, powered);
+    compound.setByte(KEY_BACK, (byte) back.ordinal());
     return compound;
   }
 

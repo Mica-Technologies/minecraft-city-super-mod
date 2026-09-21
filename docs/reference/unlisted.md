@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "113 blocks in this tab"
+!!! info "115 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,12 +11,14 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Billboard | `csm:ad_billboard_part` | 1.5 | 10 | pickaxe | 0 |
 | Black Angled Thin Traffic Pole w/ 1 Mount | `csm:trafficpolehorizontalanglemount1black` |  | 10 | pickaxe | 1 |
 | Black Angled Thin Traffic Pole w/ 2 Mounts | `csm:trafficpolehorizontalanglemount2black` |  | 10 | pickaxe | 1 |
 | Black Angled Thin Traffic Pole w/ 4 Mounts | `csm:trafficpolehorizontalanglemount3black` |  | 10 | pickaxe | 1 |
 | Black Horizontal Traffic Pole with Double Mount | `csm:trafficpolehorizontalmountdoubleblack` | 2 | 10 | pickaxe | 1 |
 | Black Horizontal Traffic Pole with Single Mount | `csm:trafficpolehorizontalsinglemountblack` | 2 | 10 | pickaxe | 1 |
 | Crosswalk Signal (Gray) | `csm:controllablecrosswalkmountgray` | 2 | 10 | pickaxe | 1 |
+| Digital Billboard | `csm:ad_digital_billboard_part` | 1.5 | 10 | pickaxe | 0 |
 | Horizontal Angle Traffic Signal (Ahead Arrow) | `csm:controllablehorizontalangleaheadsignal` |  |  |  |  |
 | Horizontal Angle Traffic Signal (Bike, Protected) | `csm:controllablehorizontalanglebikesignal` |  |  |  |  |
 | Horizontal Angle Traffic Signal (Left Arrow) | `csm:controllablehorizontalangleleftsignal` |  |  |  |  |

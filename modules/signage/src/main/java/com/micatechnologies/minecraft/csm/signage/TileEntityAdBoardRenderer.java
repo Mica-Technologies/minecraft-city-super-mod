@@ -36,7 +36,6 @@ public class TileEntityAdBoardRenderer extends TileEntitySpecialRenderer<TileEnt
     }
     AdBoardKind kind = ((BlockAdBoard) state.getBlock()).kind();
     EnumFacing facing = state.getValue(AbstractBlockAdBoard.FACING);
-    AdEntry ad = te.showing(world.getTotalWorldTime());
 
     double frame = kind.getFramePx() / 16.0;
     int column = te.getControllerColumn();
@@ -44,13 +43,7 @@ public class TileEntityAdBoardRenderer extends TileEntitySpecialRenderer<TileEnt
     double right = te.getWidth() - column - frame;
     double bottom = frame;
     double top = te.getHeight() - frame;
-    double faceW = right - left;
-    double faceH = top - bottom;
     double depth = kind.getFacePx() / 16.0;
-
-    AdShape shape = ad.shapeFor(faceW, faceH);
-    AdFit fit = te.getFit();
-    double[] place = fit.place(faceW / faceH, shape.getAspect());
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x + 0.5, y, z + 0.5);
@@ -64,42 +57,78 @@ public class TileEntityAdBoardRenderer extends TileEntitySpecialRenderer<TileEnt
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light & 0xFFFF,
         light >>> 16);
 
+    long time = world.getTotalWorldTime();
+    face(te.showing(time), te.getFit(), left, bottom, right, top, depth, false);
+    if (kind.isCabinet() && te.getBack() != AdBack.NONE) {
+      face(te.showingBack(time), te.getFit(), left, bottom, right, top,
+          kind.getBackFacePx() / 16.0, true);
+    }
+
+    GlStateManager.enableLighting();
+    GlStateManager.popMatrix();
+  }
+
+  /**
+   * One face of the board: the ad fitted into {@code left..right} by {@code bottom..top} at depth
+   * {@code z}. The back is seen from the north, so it is wound the other way and its image runs
+   * from high x to low, or it would read mirrored.
+   */
+  private static void face(AdEntry ad, AdFit fit, double left, double bottom, double right,
+      double top, double z, boolean back) {
+    double faceW = right - left;
+    double faceH = top - bottom;
+    AdShape shape = ad.shapeFor(faceW, faceH);
+    double[] place = fit.place(faceW / faceH, shape.getAspect());
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buf = tessellator.getBuffer();
+    double lift = back ? 0.001 : -0.001;
 
     if (fit == AdFit.CONTAIN) {
       // The letterbox: the ad's own background colour behind it, over the whole face.
       int bg = ad.getBackground();
       GlStateManager.disableTexture2D();
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-      quadColour(buf, left, bottom, right, top, depth - 0.001, (bg >> 16) & 255, (bg >> 8) & 255,
-          bg & 255);
+      quadColour(buf, left, bottom, right, top, z + lift, back, (bg >> 16) & 255,
+          (bg >> 8) & 255, bg & 255);
       tessellator.draw();
       GlStateManager.enableTexture2D();
     }
 
     AdTextures.bind(ad.texture(shape));
-    double x0 = left + place[0] * faceW;
-    double x1 = left + place[2] * faceW;
+    // Image left and right as seen by whoever looks at this face.
+    double imageLeft = back ? right - place[0] * faceW : left + place[0] * faceW;
+    double imageRight = back ? right - place[2] * faceW : left + place[2] * faceW;
     double y0 = bottom + place[1] * faceH;
     double y1 = bottom + place[3] * faceH;
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-    buf.pos(x0, y0, depth).tex(place[4], place[7]).endVertex();
-    buf.pos(x1, y0, depth).tex(place[6], place[7]).endVertex();
-    buf.pos(x1, y1, depth).tex(place[6], place[5]).endVertex();
-    buf.pos(x0, y1, depth).tex(place[4], place[5]).endVertex();
+    if (back) {
+      // imageRight is the lower x here: counter-clockwise as seen from the north.
+      buf.pos(imageRight, y0, z).tex(place[6], place[7]).endVertex();
+      buf.pos(imageRight, y1, z).tex(place[6], place[5]).endVertex();
+      buf.pos(imageLeft, y1, z).tex(place[4], place[5]).endVertex();
+      buf.pos(imageLeft, y0, z).tex(place[4], place[7]).endVertex();
+    } else {
+      buf.pos(imageLeft, y0, z).tex(place[4], place[7]).endVertex();
+      buf.pos(imageRight, y0, z).tex(place[6], place[7]).endVertex();
+      buf.pos(imageRight, y1, z).tex(place[6], place[5]).endVertex();
+      buf.pos(imageLeft, y1, z).tex(place[4], place[5]).endVertex();
+    }
     tessellator.draw();
-
-    GlStateManager.enableLighting();
-    GlStateManager.popMatrix();
   }
 
   private static void quadColour(BufferBuilder buf, double x0, double y0, double x1, double y1,
-      double z, int r, int g, int b) {
-    buf.pos(x0, y0, z).color(r, g, b, 255).endVertex();
-    buf.pos(x1, y0, z).color(r, g, b, 255).endVertex();
-    buf.pos(x1, y1, z).color(r, g, b, 255).endVertex();
-    buf.pos(x0, y1, z).color(r, g, b, 255).endVertex();
+      double z, boolean back, int r, int g, int b) {
+    if (back) {
+      buf.pos(x0, y0, z).color(r, g, b, 255).endVertex();
+      buf.pos(x0, y1, z).color(r, g, b, 255).endVertex();
+      buf.pos(x1, y1, z).color(r, g, b, 255).endVertex();
+      buf.pos(x1, y0, z).color(r, g, b, 255).endVertex();
+    } else {
+      buf.pos(x0, y0, z).color(r, g, b, 255).endVertex();
+      buf.pos(x1, y0, z).color(r, g, b, 255).endVertex();
+      buf.pos(x1, y1, z).color(r, g, b, 255).endVertex();
+      buf.pos(x0, y1, z).color(r, g, b, 255).endVertex();
+    }
   }
 
   /**

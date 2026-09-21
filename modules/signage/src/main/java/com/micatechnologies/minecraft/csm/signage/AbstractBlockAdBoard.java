@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.signage;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -56,6 +58,14 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   public static final PropertyBool RIGHT = PropertyBool.create("right");
   public static final PropertyBool UP = PropertyBool.create("up");
   public static final PropertyBool DOWN = PropertyBool.create("down");
+  /** A floodlight on this block's stretch of catwalk: one every third block along the board. */
+  public static final PropertyBool LAMP = PropertyBool.create("lamp");
+
+  /** The catwalk in front of a board's bottom row: its deck, and its railing to fall against. */
+  private static final AxisAlignedBB CATWALK_DECK =
+      new AxisAlignedBB(0, 0, 1, 1, 1.5 / 16.0, 30 / 16.0);
+  private static final AxisAlignedBB CATWALK_RAIL =
+      new AxisAlignedBB(0, 0, 29 / 16.0, 1, 1, 30 / 16.0);
 
   /** Sheet metal that comes down by hand, as signs do. */
   private static final Material BOARD = new Material(MapColor.IRON);
@@ -84,9 +94,13 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
     return registryName != null ? registryName : PENDING_REGISTRY_NAME.get();
   }
 
-  /** The kind of board this block belongs to. */
+  /**
+   * The kind of board this block belongs to. Read from the pending name while the constructor is
+   * still running: Block's own constructor asks whether the block is an opaque cube, which a
+   * cabinet board is.
+   */
   public AdBoardKind kind() {
-    return kind;
+    return kind != null ? kind : AdBoardKind.of(PENDING_REGISTRY_NAME.get());
   }
 
   /** The block the player places for this kind of board. */
@@ -104,7 +118,7 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, TAG, LEFT, RIGHT, UP, DOWN);
+    return new BlockStateContainer(this, FACING, TAG, LEFT, RIGHT, UP, DOWN, LAMP);
   }
 
   @Override
@@ -148,10 +162,16 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   public IBlockState getActualState(@Nonnull IBlockState state, @Nonnull IBlockAccess worldIn,
       @Nonnull BlockPos pos) {
     EnumFacing right = right(state.getValue(FACING));
+    boolean down = sameBoard(worldIn, pos.down(), state);
+    // Where along the board a block is, counted in world blocks so it needs no controller: one
+    // floodlight every third block of catwalk.
+    int along = pos.getX() * right.getXOffset() + pos.getZ() * right.getZOffset();
+    boolean lamp = kind().hasCatwalk() && !down && Math.floorMod(along, 3) == 1;
     return state.withProperty(LEFT, sameBoard(worldIn, pos.offset(right.getOpposite()), state))
         .withProperty(RIGHT, sameBoard(worldIn, pos.offset(right), state))
         .withProperty(UP, sameBoard(worldIn, pos.up(), state))
-        .withProperty(DOWN, sameBoard(worldIn, pos.down(), state));
+        .withProperty(DOWN, down)
+        .withProperty(LAMP, lamp);
   }
 
   // --- breaking: one board, one object --------------------------------------------------------
@@ -191,7 +211,7 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   @Nonnull
   public ItemStack getPickBlock(@Nonnull IBlockState state, @Nonnull RayTraceResult target,
       @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
-    return new ItemStack(controller(kind));
+    return new ItemStack(controller(kind()));
   }
 
   /** A piston moving one block of a board would tear it; a board does not move. */
@@ -238,8 +258,28 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   @Override
   @Nonnull
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return turn(new AxisAlignedBB(0, 0, 0, 1, 1, kind.getDepthPx() / 16.0),
+    return turn(new AxisAlignedBB(0, 0, 0, 1, 1, kind().getDepthPx() / 16.0),
         state.getValue(FACING));
+  }
+
+  /**
+   * The board, and on the bottom row of a board with a catwalk, the catwalk in front of it: its
+   * deck to stand on and its railing. Both are outside the block's own cell, which is fine for
+   * collision -- entities gather boxes from the blocks around them.
+   */
+  @Override
+  @SuppressWarnings("deprecation")
+  public void addCollisionBoxToList(@Nonnull IBlockState state, @Nonnull World worldIn,
+      @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox,
+      @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn,
+      boolean isActualState) {
+    EnumFacing facing = state.getValue(FACING);
+    addCollisionBoxToList(pos, entityBox, collidingBoxes,
+        getBlockBoundingBox(state, worldIn, pos));
+    if (kind().hasCatwalk() && !sameBoard(worldIn, pos.down(), state)) {
+      addCollisionBoxToList(pos, entityBox, collidingBoxes, turn(CATWALK_DECK, facing));
+      addCollisionBoxToList(pos, entityBox, collidingBoxes, turn(CATWALK_RAIL, facing));
+    }
   }
 
   @Override
@@ -250,14 +290,18 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
     return BlockFaceShape.UNDEFINED;
   }
 
+  /**
+   * A cabinet board is a solid box, so the faces between its blocks are culled; a wall board is
+   * a plate.
+   */
   @Override
   public boolean getBlockIsOpaqueCube(IBlockState state) {
-    return false;
+    return kind().isCabinet();
   }
 
   @Override
   public boolean getBlockIsFullCube(IBlockState state) {
-    return false;
+    return kind().isCabinet();
   }
 
   @Override
