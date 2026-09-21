@@ -110,6 +110,12 @@ opening, out through the top of the opening to the shoe.
   to the solver and the arm clear all the way round: change a constant and it fails until the
   generator and the Java agree again.
 
+**A push bar presses.** On the exit and storefront doors the touch bar (`TINT_PUSH`) dips a pixel
+toward the leaf over the first quarter of an opening swing and comes back out over the second, as
+it does under the hand that unlatches a real one. Closing, it stays out: a door shutting on its
+closer latches without the bar moving. This is the renderer's alone -- at rest the models draw the
+bar out, as they always did, so a door with no swing in progress costs nothing more.
+
 Glazed doors (the lites, the fire door, storefront, half-glass back door) are on the translucent
 layer; the rest are cutout.
 
