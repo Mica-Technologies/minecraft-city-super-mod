@@ -319,6 +319,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   whole blind, redstone to close it, light taken by state), flooring (overlays on any floor and
   full-block sets, why a tile grid is never turned), wall finishes and corner guards, and where
   the decor track grows next
+- `assets/docs/ADVERTISING_SYSTEM.md` -- The Signage & Advertising boards: a board as one object
+  (controller + tagged parts with no tile entity), drawn as one quad across the board, the three
+  ad sources (generated, public-domain vintage, server-supplied), rotation and transitions,
+  what server ads trust and why, and the traps (polygon offset, mipmap levels, render range)
 - `assets/docs/GARAGE_DOORS.md` -- Sectional, roll-up and grille garage doors built to the size
   of the opening: why a door at rest is baked models with no tile entity and only the anchor of a
   moving one has a renderer, the sectional door's path round the bend shared between its OBJ
@@ -452,6 +456,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   2:3, square, poster 2:1, bulletin 7:2 -- laid out per shape rather than cropped, written as
   256-colour PNGs plus the `ads/parody.json` index `AdLibrary` reads; `--sheet` makes the review
   contact sheet, `--check` fails on drift
+- `fetch_vintage_ads.py` -- the public-domain vintage ads: fetches each from Wikimedia Commons
+  into the gitignored `_vintage_cache/`, refuses any file Commons does not record as public
+  domain, sets it whole on a flat backdrop in the ad shapes, and writes `ads/vintage.json` and
+  `ads/vintage-sources.md`. Paces its requests and backs off on HTTP 429; `--check`, `--sheet`
 - `gen_ad_boards.py` -- the advertising boards' blocks: the backing and aluminium frame models,
   the multipart blockstate shared by a board's controller and its parts (frame only on the edge
   blocks, picked from actual state; left and right strips run the full height and top and bottom

@@ -346,6 +346,14 @@ consulted (`getStringWidth` 2-5 times per string per frame). The street sign ren
 330 lines in the commits after `14415298d` (post-top blades); its frame-level idle cost did not move
 (7.6-7.7 vs 7.8).
 
+### Advertising boards (measured)
+
+Ten 40 x 40 digital billboards (16,000 blocks, fading, LED grid on) and 50 kiosks, all in view,
+cost **0.32 ms** of render work a frame (1.00 with, 0.68 without, one session, three 10 s samples
+each side within 0.02 ms): about 5 microseconds a board, baked geometry included. The design is
+why: the ad is one quad per board from the controller, the parts are baked, and the cabinets are
+opaque so the faces between their blocks are culled. See `ADVERTISING_SYSTEM.md`.
+
 ### Thermostats
 
 6-9 µs each: four vanilla `FontRenderer.drawString` calls (about 31 immediate glyphs) plus a

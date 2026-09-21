@@ -30,7 +30,7 @@ world ever sees is namespaced with them.
 | Furniture & Novelties | `csm_furnishings` | CSM: Furniture & Novelties | `…-furnishings-<version>.jar` | `furniture`, `novelties` | Novelties (5), Furniture (11), Gaming (12) | 116 |
 | Building Materials | `csm_building` | CSM: Building Materials | `…-building-<version>.jar` | `buildingmaterials` | Building Materials (1) | 87 |
 | Text to Speech | `csm_tts` | CSM: Text to Speech | `…-tts-<version>.jar` | `tts` | none — its blocks appear in Technology | 1 block + 1 item |
-| Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage` | Signage & Advertising (17) | 0 (in development) |
+| Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage`, hidden (−8) | Signage & Advertising (17) | 13 |
 
 Block counts are blockstates shipped in that tree, so they include hidden (retiring) blocks and the
 itemless `*_slab_double` states.
