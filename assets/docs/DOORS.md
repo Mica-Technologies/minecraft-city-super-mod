@@ -21,9 +21,12 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
   hangs on the outside face of its cell and swings inward, as a vanilla door's does -- except the
   **Exit Door, the Storefront Door and the Fire Door, which swing out** (below). **Sneak while
   placing** to hang it the other way: an interior door that swings out, an exit door that swings
-  in. The hinge is on the side of the opening clicked, unless there is a door beside it hinged on
-  its far side, in which case the new one hinges the other way and the two are a **pair**, which
-  opens and closes together -- and swings the way its partner does, sneaking or not.
+  in. A door placed beside another of the same kind facing the same way, not already one of a
+  pair, makes a **pair** with it: it hinges on its far side, so the latches (and handles) meet in
+  the middle, and a shut neighbour hinged on the shared side is turned round to match -- one
+  already hinged on its far side is preferred, since it needs no change. A pair opens and closes
+  together, and swings the way the first door does, sneaking or not. With no door to pair with,
+  the hinge is on the side of the opening clicked.
 - **Door Swing Tool** (item, crafted from an iron ingot and a Fastener Kit): right-click a door,
   either half, to make it swing the other way, and its pair with it, so a pair always swings the
   same way. It refuses (a status line says so) while the door or its pair is open or still moving,
