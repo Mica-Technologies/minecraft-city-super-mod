@@ -82,6 +82,41 @@ can produce a signal — a tripwire, a pressure plate, or a circuit of your own.
 
 ## Exit signage
 
-The Life Safety tab also carries exit signs and emergency lighting, which are ordinary blocks rather
-than part of the panel system. They are listed in the
-[Life Safety reference](../reference/life-safety.md).
+The Life Safety tab also carries exit signs and emergency lighting. They are not part of the
+panel system, and are listed in the [Life Safety reference](../reference/life-safety.md).
+
+### Traditional and specialty exit signs
+
+Seven exit signs are set up after you place them, instead of coming in a block per combination:
+
+| Sign | What it is |
+|---|---|
+| Traditional Exit Sign | The everyday square-cornered plastic sign, white or black |
+| Traditional Exit Sign (Rounded) | The same with rounded corners |
+| Exit Sign / Emergency Light Combo | A sign with two emergency lamp heads above its top corners |
+| Die-Cast Exit Sign | A heavier cast metal sign: brushed aluminum, black or white |
+| Vandal-Resistant Exit Sign | A sign inside a clear protective shield, for garages, stairwells and outdoors |
+| Photoluminescent Exit Sign | A thin self-glowing panel that needs no power |
+| Explosion-Proof Exit Sign | An industrial sign in a heavy cast frame with a conduit hub on top |
+
+**Right-click a placed sign** to open its screen. Each row is one option; left-click a button for
+the next choice and right-click for the previous one. The sign changes as you click:
+
+- **Legend:** EXIT or SALIDA
+- **Letters:** red or green
+- **Housing:** the sign's color, which its mount matches
+- **Arrow:** none, left, right or both. Arrows you have not picked still show faintly, molded
+  into the housing, as on a real sign
+- **Mount:** on the wall; hung from the ceiling; or sticking out from a wall at one end. A hung
+  sign shows its legend on both sides
+- **Emergency Heads:** none, square LED heads or round lamps, on the ends of a traditional sign
+
+Placing a sign against a wall mounts it on the wall, facing out; placing it under a ceiling hangs
+it from the ceiling. The creative tab has a few common setups ready to place, and a sign you pick
+up or break keeps its setup.
+
+!!! tip "Emergency heads and redstone"
+
+    As with the emergency lights, redstone is the building's mains power. A sign with heads that
+    loses its redstone signal is running on battery: its heads light up and throw light forward.
+    The legend is lit either way. Signs without heads ignore redstone.
