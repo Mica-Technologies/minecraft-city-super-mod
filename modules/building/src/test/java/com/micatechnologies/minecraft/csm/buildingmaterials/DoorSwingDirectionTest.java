@@ -30,7 +30,7 @@ class DoorSwingDirectionTest {
   private static final String[] DOORS = {"door_wood_oak", "door_wood_oak_lite",
       "door_wood_white", "door_wood_white_lite", "door_metal_grey", "door_metal_fire",
       "door_metal_exit", "door_storefront_bronze", "door_front_white", "door_front_red",
-      "door_front_black", "door_back_halfglass"};
+      "door_front_black", "door_back_halfglass", "job_trailer_door"};
   private static final String[] FACINGS = {"north", "east", "south", "west"};
 
   @Test

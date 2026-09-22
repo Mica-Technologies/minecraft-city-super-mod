@@ -7,179 +7,199 @@
   "multipart": [
     {
       "when": {
-        "north": "false",
+        "north": "in|out",
         "upper": "false",
         "topped": "false"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_window"
+        "model": "csm:constructionsite/job_trailer_window_north"
       }
     },
     {
       "when": {
-        "north": "false",
+        "north": "in|out",
         "upper": "false",
         "topped": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowbottom"
+        "model": "csm:constructionsite/job_trailer_windowbottom_north"
       }
     },
     {
       "when": {
-        "north": "false",
+        "north": "in|out",
         "upper": "true",
         "topped": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowmiddle"
+        "model": "csm:constructionsite/job_trailer_windowmiddle_north"
       }
     },
     {
       "when": {
-        "north": "false",
+        "north": "in|out",
         "upper": "true",
         "topped": "false"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowtop"
+        "model": "csm:constructionsite/job_trailer_windowtop_north"
       }
     },
     {
       "when": {
-        "east": "false",
+        "north": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_reveal_north"
+      }
+    },
+    {
+      "when": {
+        "east": "in|out",
         "upper": "false",
         "topped": "false"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_window",
-        "y": 90
+        "model": "csm:constructionsite/job_trailer_window_east"
       }
     },
     {
       "when": {
-        "east": "false",
+        "east": "in|out",
         "upper": "false",
         "topped": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowbottom",
-        "y": 90
+        "model": "csm:constructionsite/job_trailer_windowbottom_east"
       }
     },
     {
       "when": {
-        "east": "false",
+        "east": "in|out",
         "upper": "true",
         "topped": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowmiddle",
-        "y": 90
+        "model": "csm:constructionsite/job_trailer_windowmiddle_east"
       }
     },
     {
       "when": {
-        "east": "false",
+        "east": "in|out",
         "upper": "true",
         "topped": "false"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowtop",
-        "y": 90
+        "model": "csm:constructionsite/job_trailer_windowtop_east"
       }
     },
     {
       "when": {
-        "south": "false",
+        "east": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_reveal_east"
+      }
+    },
+    {
+      "when": {
+        "south": "in|out",
         "upper": "false",
         "topped": "false"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_window",
-        "y": 180
+        "model": "csm:constructionsite/job_trailer_window_south"
       }
     },
     {
       "when": {
-        "south": "false",
+        "south": "in|out",
         "upper": "false",
         "topped": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowbottom",
-        "y": 180
+        "model": "csm:constructionsite/job_trailer_windowbottom_south"
       }
     },
     {
       "when": {
-        "south": "false",
+        "south": "in|out",
         "upper": "true",
         "topped": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowmiddle",
-        "y": 180
+        "model": "csm:constructionsite/job_trailer_windowmiddle_south"
       }
     },
     {
       "when": {
-        "south": "false",
+        "south": "in|out",
         "upper": "true",
         "topped": "false"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowtop",
-        "y": 180
+        "model": "csm:constructionsite/job_trailer_windowtop_south"
       }
     },
     {
       "when": {
-        "west": "false",
+        "south": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_reveal_south"
+      }
+    },
+    {
+      "when": {
+        "west": "in|out",
         "upper": "false",
         "topped": "false"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_window",
-        "y": 270
+        "model": "csm:constructionsite/job_trailer_window_west"
       }
     },
     {
       "when": {
-        "west": "false",
+        "west": "in|out",
         "upper": "false",
         "topped": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowbottom",
-        "y": 270
+        "model": "csm:constructionsite/job_trailer_windowbottom_west"
       }
     },
     {
       "when": {
-        "west": "false",
+        "west": "in|out",
         "upper": "true",
         "topped": "true"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowmiddle",
-        "y": 270
+        "model": "csm:constructionsite/job_trailer_windowmiddle_west"
       }
     },
     {
       "when": {
-        "west": "false",
+        "west": "in|out",
         "upper": "true",
         "topped": "false"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_windowtop",
-        "y": 270
+        "model": "csm:constructionsite/job_trailer_windowtop_west"
       }
     },
     {
       "when": {
-        "up": "false"
+        "west": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_reveal_west"
+      }
+    },
+    {
+      "when": {
+        "up": "out"
       },
       "apply": {
         "model": "csm:constructionsite/job_trailer_roof"
@@ -187,7 +207,15 @@
     },
     {
       "when": {
-        "down": "false"
+        "up": "in"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_floorin"
+      }
+    },
+    {
+      "when": {
+        "down": "out"
       },
       "apply": {
         "model": "csm:constructionsite/job_trailer_floor"
@@ -195,119 +223,970 @@
     },
     {
       "when": {
-        "north": "false",
-        "west": "false"
+        "down": "in"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_post"
+        "model": "csm:constructionsite/job_trailer_ceiling"
       }
     },
     {
       "when": {
-        "north": "false",
-        "east": "false"
+        "OR": [
+          {
+            "up": "joined",
+            "topped": "false",
+            "north": "in|out"
+          },
+          {
+            "up": "joined",
+            "topped": "false",
+            "south": "in|out"
+          }
+        ]
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_post",
-        "y": 90
+        "model": "csm:constructionsite/job_trailer_reveal_up_z"
       }
     },
     {
       "when": {
-        "south": "false",
-        "east": "false"
+        "OR": [
+          {
+            "up": "joined",
+            "topped": "false",
+            "east": "in|out"
+          },
+          {
+            "up": "joined",
+            "topped": "false",
+            "west": "in|out"
+          }
+        ]
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_post",
-        "y": 180
+        "model": "csm:constructionsite/job_trailer_reveal_up_x"
       }
     },
     {
       "when": {
-        "south": "false",
-        "west": "false"
+        "OR": [
+          {
+            "down": "joined",
+            "upper": "false",
+            "north": "in|out"
+          },
+          {
+            "down": "joined",
+            "upper": "false",
+            "south": "in|out"
+          }
+        ]
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_post",
-        "y": 270
+        "model": "csm:constructionsite/job_trailer_reveal_down_z"
       }
     },
     {
       "when": {
-        "north": "false",
-        "up": "false"
+        "OR": [
+          {
+            "down": "joined",
+            "upper": "false",
+            "east": "in|out"
+          },
+          {
+            "down": "joined",
+            "upper": "false",
+            "west": "in|out"
+          }
+        ]
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_rail_top"
+        "model": "csm:constructionsite/job_trailer_reveal_down_x"
       }
     },
     {
       "when": {
-        "north": "false",
-        "down": "false"
+        "OR": [
+          {
+            "north": "out",
+            "west": "in|out"
+          },
+          {
+            "north": "in",
+            "west": "out"
+          }
+        ]
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_rail_bottom"
+        "model": "csm:constructionsite/job_trailer_post_north_west"
       }
     },
     {
       "when": {
-        "east": "false",
-        "up": "false"
+        "OR": [
+          {
+            "north": "out",
+            "west": "in|out",
+            "up": "joined"
+          },
+          {
+            "north": "in",
+            "west": "out",
+            "up": "joined"
+          }
+        ]
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_rail_top",
-        "y": 90
+        "model": "csm:constructionsite/job_trailer_post_north_west_up"
       }
     },
     {
       "when": {
-        "east": "false",
-        "down": "false"
+        "OR": [
+          {
+            "north": "out",
+            "west": "in|out",
+            "down": "joined"
+          },
+          {
+            "north": "in",
+            "west": "out",
+            "down": "joined"
+          }
+        ]
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_rail_bottom",
-        "y": 90
+        "model": "csm:constructionsite/job_trailer_post_north_west_down"
       }
     },
     {
       "when": {
-        "south": "false",
-        "up": "false"
+        "north": "joined",
+        "west": "joined",
+        "down": "in|out",
+        "up": "in|out"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_rail_top",
-        "y": 180
+        "model": "csm:constructionsite/job_trailer_bead_north_west_oo"
       }
     },
     {
       "when": {
-        "south": "false",
-        "down": "false"
+        "north": "joined",
+        "west": "joined",
+        "down": "in|out",
+        "up": "joined"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_rail_bottom",
-        "y": 180
+        "model": "csm:constructionsite/job_trailer_bead_north_west_oj"
       }
     },
     {
       "when": {
-        "west": "false",
-        "up": "false"
+        "north": "joined",
+        "west": "joined",
+        "down": "joined",
+        "up": "in|out"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_rail_top",
-        "y": 270
+        "model": "csm:constructionsite/job_trailer_bead_north_west_jo"
       }
     },
     {
       "when": {
-        "west": "false",
-        "down": "false"
+        "north": "joined",
+        "west": "joined",
+        "down": "joined",
+        "up": "joined"
       },
       "apply": {
-        "model": "csm:constructionsite/job_trailer_rail_bottom",
-        "y": 270
+        "model": "csm:constructionsite/job_trailer_bead_north_west_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "out",
+            "east": "in|out"
+          },
+          {
+            "north": "in",
+            "east": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_post_north_east"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "out",
+            "east": "in|out",
+            "up": "joined"
+          },
+          {
+            "north": "in",
+            "east": "out",
+            "up": "joined"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_post_north_east_up"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "out",
+            "east": "in|out",
+            "down": "joined"
+          },
+          {
+            "north": "in",
+            "east": "out",
+            "down": "joined"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_post_north_east_down"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "east": "joined",
+        "down": "in|out",
+        "up": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_east_oo"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "east": "joined",
+        "down": "in|out",
+        "up": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_east_oj"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "east": "joined",
+        "down": "joined",
+        "up": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_east_jo"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "east": "joined",
+        "down": "joined",
+        "up": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_east_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "out",
+            "east": "in|out"
+          },
+          {
+            "south": "in",
+            "east": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_post_south_east"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "out",
+            "east": "in|out",
+            "up": "joined"
+          },
+          {
+            "south": "in",
+            "east": "out",
+            "up": "joined"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_post_south_east_up"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "out",
+            "east": "in|out",
+            "down": "joined"
+          },
+          {
+            "south": "in",
+            "east": "out",
+            "down": "joined"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_post_south_east_down"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "east": "joined",
+        "down": "in|out",
+        "up": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_east_oo"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "east": "joined",
+        "down": "in|out",
+        "up": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_east_oj"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "east": "joined",
+        "down": "joined",
+        "up": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_east_jo"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "east": "joined",
+        "down": "joined",
+        "up": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_east_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "out",
+            "west": "in|out"
+          },
+          {
+            "south": "in",
+            "west": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_post_south_west"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "out",
+            "west": "in|out",
+            "up": "joined"
+          },
+          {
+            "south": "in",
+            "west": "out",
+            "up": "joined"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_post_south_west_up"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "out",
+            "west": "in|out",
+            "down": "joined"
+          },
+          {
+            "south": "in",
+            "west": "out",
+            "down": "joined"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_post_south_west_down"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "west": "joined",
+        "down": "in|out",
+        "up": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_west_oo"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "west": "joined",
+        "down": "in|out",
+        "up": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_west_oj"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "west": "joined",
+        "down": "joined",
+        "up": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_west_jo"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "west": "joined",
+        "down": "joined",
+        "up": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_west_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "out",
+            "up": "in|out"
+          },
+          {
+            "north": "in",
+            "up": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_rail_north_up"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "up": "joined",
+        "west": "in|out",
+        "east": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_up_oo"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "up": "joined",
+        "west": "in|out",
+        "east": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_up_oj"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "up": "joined",
+        "west": "joined",
+        "east": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_up_jo"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "up": "joined",
+        "west": "joined",
+        "east": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_up_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "out",
+            "up": "in|out"
+          },
+          {
+            "east": "in",
+            "up": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_rail_east_up"
+      }
+    },
+    {
+      "when": {
+        "east": "joined",
+        "up": "joined",
+        "north": "in|out",
+        "south": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_east_up_oo"
+      }
+    },
+    {
+      "when": {
+        "east": "joined",
+        "up": "joined",
+        "north": "in|out",
+        "south": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_east_up_oj"
+      }
+    },
+    {
+      "when": {
+        "east": "joined",
+        "up": "joined",
+        "north": "joined",
+        "south": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_east_up_jo"
+      }
+    },
+    {
+      "when": {
+        "east": "joined",
+        "up": "joined",
+        "north": "joined",
+        "south": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_east_up_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "out",
+            "up": "in|out"
+          },
+          {
+            "south": "in",
+            "up": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_rail_south_up"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "up": "joined",
+        "west": "in|out",
+        "east": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_up_oo"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "up": "joined",
+        "west": "in|out",
+        "east": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_up_oj"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "up": "joined",
+        "west": "joined",
+        "east": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_up_jo"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "up": "joined",
+        "west": "joined",
+        "east": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_up_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "west": "out",
+            "up": "in|out"
+          },
+          {
+            "west": "in",
+            "up": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_rail_west_up"
+      }
+    },
+    {
+      "when": {
+        "west": "joined",
+        "up": "joined",
+        "north": "in|out",
+        "south": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_west_up_oo"
+      }
+    },
+    {
+      "when": {
+        "west": "joined",
+        "up": "joined",
+        "north": "in|out",
+        "south": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_west_up_oj"
+      }
+    },
+    {
+      "when": {
+        "west": "joined",
+        "up": "joined",
+        "north": "joined",
+        "south": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_west_up_jo"
+      }
+    },
+    {
+      "when": {
+        "west": "joined",
+        "up": "joined",
+        "north": "joined",
+        "south": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_west_up_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "out",
+            "down": "in|out"
+          },
+          {
+            "north": "in",
+            "down": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_rail_north_down"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "down": "joined",
+        "west": "in|out",
+        "east": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_down_oo"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "down": "joined",
+        "west": "in|out",
+        "east": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_down_oj"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "down": "joined",
+        "west": "joined",
+        "east": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_down_jo"
+      }
+    },
+    {
+      "when": {
+        "north": "joined",
+        "down": "joined",
+        "west": "joined",
+        "east": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_north_down_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "out",
+            "down": "in|out"
+          },
+          {
+            "east": "in",
+            "down": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_rail_east_down"
+      }
+    },
+    {
+      "when": {
+        "east": "joined",
+        "down": "joined",
+        "north": "in|out",
+        "south": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_east_down_oo"
+      }
+    },
+    {
+      "when": {
+        "east": "joined",
+        "down": "joined",
+        "north": "in|out",
+        "south": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_east_down_oj"
+      }
+    },
+    {
+      "when": {
+        "east": "joined",
+        "down": "joined",
+        "north": "joined",
+        "south": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_east_down_jo"
+      }
+    },
+    {
+      "when": {
+        "east": "joined",
+        "down": "joined",
+        "north": "joined",
+        "south": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_east_down_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "out",
+            "down": "in|out"
+          },
+          {
+            "south": "in",
+            "down": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_rail_south_down"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "down": "joined",
+        "west": "in|out",
+        "east": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_down_oo"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "down": "joined",
+        "west": "in|out",
+        "east": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_down_oj"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "down": "joined",
+        "west": "joined",
+        "east": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_down_jo"
+      }
+    },
+    {
+      "when": {
+        "south": "joined",
+        "down": "joined",
+        "west": "joined",
+        "east": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_south_down_jj"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "west": "out",
+            "down": "in|out"
+          },
+          {
+            "west": "in",
+            "down": "out"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_rail_west_down"
+      }
+    },
+    {
+      "when": {
+        "west": "joined",
+        "down": "joined",
+        "north": "in|out",
+        "south": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_west_down_oo"
+      }
+    },
+    {
+      "when": {
+        "west": "joined",
+        "down": "joined",
+        "north": "in|out",
+        "south": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_west_down_oj"
+      }
+    },
+    {
+      "when": {
+        "west": "joined",
+        "down": "joined",
+        "north": "joined",
+        "south": "in|out"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_west_down_jo"
+      }
+    },
+    {
+      "when": {
+        "west": "joined",
+        "down": "joined",
+        "north": "joined",
+        "south": "joined"
+      },
+      "apply": {
+        "model": "csm:constructionsite/job_trailer_bead_west_down_jj"
       }
     }
   ]

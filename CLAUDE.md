@@ -542,10 +542,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_logistics.py` -- the construction site's loads: brick, block, drywall and bagged concrete
   pallets, lumber stack, insulation rolls, pipe and conduit bundles, wire spool (one axial class,
   `BlockSiteAxialProp`); round things are a square plus the same square turned 45; `--check`
-- `gen_facilities.py` -- build-to-size shipping containers and roll-off dumpsters (four colours)
-  and the job trailer's wall/window/door (`BlockSiteShell`: walls only on outside faces, rails
-  only on outside edges), plus the portable toilet, gang box and concrete washout
-  (`BlockSiteFacingProp`); `--check` fails on drift
+- `gen_facilities.py` -- build-to-size shipping containers and roll-off dumpsters (four colours,
+  `BlockSiteShell`: walls only on outside faces, rails only on outside edges), the job trailer's
+  wall and window (`BlockJobTrailer`: built hollow, each face inside or outside by whether its
+  space has trailer above and below; its door is a `gen_doors.py` door), plus the portable toilet,
+  gang box and concrete washout (`BlockSiteFacingProp`); `--check` fails on drift
 - `gen_fencing.py` -- the site and chain-link fences (one class, `BlockSiteFence`): temporary
   fence with and without privacy screen, silt fence, stacking chain-link in two finishes and its
   barbed-wire top. The mesh is a zero-thickness cutout plane, a panel is drawn once running east

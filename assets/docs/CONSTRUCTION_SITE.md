@@ -174,7 +174,7 @@ spool standing on its flanges.
 
 ## Site facilities
 
-### Built to size: containers, dumpsters, the job trailer
+### Built to size: containers and dumpsters
 
 A shipping container is six blocks long, a forty-footer twelve, a roll-off dumpster anything from
 four to eight; a fixed multi-block prop would need its own placement and multi-block breaking and
@@ -192,12 +192,7 @@ object, with no seams inside it.
 - **Dumpsters** are containers with the top left open, at the user's request: the walls are drawn
   as solid plates, painted outside and scuffed inside, with a lip along the top edge; only the walls
   and floor collide, so a dumpster can be stood in and filled.
-- **The job trailer** is three blocks that all join one trailer: plain wall, window and door, so the
-  windows and door go where they are placed. A door block with a door block under it draws the
-  door's upper half (the light); on its own it draws the lower half (the handle). Window blocks
-  stacked on window blocks are one tall window: each keeps only the frame rows that are the whole
-  window's top or bottom (`upper` / `topped`, actual state). A real site office is three to four
-  blocks tall -- build it that high; nothing about these blocks assumes a height.
+- **The job trailer** is its own story, below: it is built hollow, to be walked into.
 - **Nothing drawn across a block that a tall object repeats.** The container door texture once had
   a stiffener row at the top and bottom of every block, which striped a three-high door; the door
   is now plain but for its lock bars, and the frame rails close its top and bottom.
@@ -208,6 +203,73 @@ object, with no seams inside it.
   block of a twelve-block wall and reads as polka dots; the shell walls have none.
 - Priced per block, as they are built: container and dumpster 2 Sheet Metal, trailer Sheet Metal +
   planks.
+
+### The job trailer: built hollow, walked into
+
+The trailer started as a shell like the container, a solid box of blocks that read as one trailer
+with a door and windows painted on it. Issue #228 asked for the door to open and the window to be
+glass, which means a trailer has to have an inside. So it is built the way a building is: a
+**floor, walls and a roof** of Job Trailer Wall and Job Trailer Window blocks (`BlockJobTrailer`),
+with air inside to walk about and furnish, and the **Job Trailer Door** -- a real door from the
+doors family (`BlockBuildingDoor`, see `DOORS.md`) -- set in a two-high opening in a wall.
+
+- **Inside or outside is worked out, never stored.** Each side of a block is `joined` (more
+  trailer), `out` or `in` (`TrailerSide`, actual state). A wall's side is **in** when the space it
+  faces has trailer both above and below it within eight blocks -- the roof over a room and the
+  floor under it; a top face is in when there is trailer above the space over it (the floor of a
+  room), a bottom face when there is trailer below the space under it (the ceiling). Out is
+  siding, roof and underside; in is panelling, floor and ceiling. The rule needs nothing placed
+  from a particular side, it makes a doorway's jambs inside (the header is over the opening and the
+  floor under it), a porch under an eave comes out as floor and ceiling, and a trailer built solid,
+  as the first ones were, has no space inside and looks as it always did. **A trailer with no
+  floor** has nothing under its rooms, so its inside is siding until a floor is laid.
+- **The rays pass through anything that is not trailer**, so furniture, the door, a lamp in the
+  room do not change which side a wall is on. They look only straight up and down, which the
+  chunk cache a block is built from always has (it holds whole columns).
+- **A change reaches further than the game rebuilds.** Laying a floor, or the roof, changes faces
+  up to eight blocks away, and the game rebuilds only the blocks beside a changed one. A wall in
+  the next sixteen-block section kept its old faces until something else rebuilt it, so each client
+  world has `JobTrailerRenderUpdater`, a world listener that rebuilds the columns round a trailer
+  block that comes or goes as far up and down as the rule looks. The server sends nothing extra
+  (and could not: re-sending a block the client already has is ignored as no change).
+- **The door is the doors family's**, registered in this tab beside the walls: two blocks, the
+  swing, pairs, redstone, the Door Closer and keypad locks. It swings in by default, so its leaf
+  hangs on the outside face of the opening, flush with the casing. Its textures come from
+  `gen_doors.py` (style `trailer`). It is not trailer to the walls, so they draw the opening round
+  it: jambs, head and sill inside, and a casing rail on every edge between an outside face and an
+  inside one.
+- **The window is glass you can see through** (the translucent layer), the same drawing inside and
+  out. On each side where the wall carries on it draws a reveal -- the frame's face inside the
+  window, from the glass on one face of the wall to the glass on the other -- or a window looked
+  through at an angle showed the hollow inside the wall beside it and the room past that. Windows
+  stacked on windows are still one tall window (`upper` / `topped`), with the head and sill only at
+  the top and bottom of the whole window.
+
+**The gaps in issue #228's screenshots** were two things, both from the faces being planes half a
+pixel in from the cell face (which is what lets the rails stand proud, and keeps two different
+objects side by side from fighting):
+
+- **Concave corners.** Where two walls meet in an inside corner, each face is drawn by its own
+  block half a pixel in, so they stopped half a pixel short of meeting and the corner was a slit
+  the sky showed through. The block between them fills it with a **bead**, the half-pixel square
+  the faces left out, standing half a pixel proud of them. That block cannot know the corner is
+  concave -- that is the block diagonally across, not in its state -- so it draws a bead on every
+  edge where both sides join; inside solid trailer the bead is walled in and never seen. Along the
+  edge it reaches the cell face where the trailer carries on, so a bead runs unbroken from block to
+  block, and stops half a pixel short where the block is open, behind the face there, which it
+  would otherwise poke through as a nub at every block.
+- **The corners of a door opening.** The casing post down each side ends at its block and the rail
+  over the opening starts in the next, so the corner between them, in a block that has neither,
+  was an empty notch. A casing post continues a rail's depth into the block above or below where
+  the trailer carries on.
+- **A casing's face toward the opening lies in the plane of the door leaf's edge and does not
+  fight it**: the two face opposite ways, so each is culled from the side the other is seen from.
+  The first build left that face out to be safe, which opened a half-pixel channel down which the
+  siding showed edge-on, its rib rows dark nubs up the jamb.
+
+Every part of the trailer's model is written where it goes rather than turned by the blockstate,
+so which face is which side is never in doubt: 136 multipart entries for the window, fewer for the
+wall.
 
 ### Props with a front
 

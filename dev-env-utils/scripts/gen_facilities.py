@@ -60,8 +60,6 @@ BLOCKS.update({
                          "Bodvagn (Vägg)"),
     "job_trailer_window": ("Job Trailer Window", "Oficina de Obra (Ventana)",
                            "Baucontainer (Fenster)", "Bodvagn (Fönster)"),
-    "job_trailer_door": ("Job Trailer Door", "Oficina de Obra (Puerta)", "Baucontainer (Tür)",
-                         "Bodvagn (Dörr)"),
     "portable_toilet": ("Portable Toilet", "Baño Portátil", "Mobile Toilette", "Bajamaja"),
     "gang_box": ("Gang Box", "Caja de Herramientas de Obra", "Baustellenbox", "Verktygsbox"),
     "concrete_washout": ("Concrete Washout", "Lavadero de Hormigón", "Betonauswaschstation",
@@ -162,39 +160,49 @@ def trailer_wall():
     return img
 
 
+TRAILER_GLASS = (58, 80, 100)
+TRAILER_GLASS_ALPHA = 120
+
+
 def trailer_window(top=True, bottom=True):
-    """A sliding window: a grey frame, dark tinted glass in two panes, a glint across it. A window
-    stacked on a window leaves out the frame between them ({top} and {bottom} say which of its own
-    frame rows it keeps), so stacked window blocks are one tall window."""
+    """A sliding window: a grey frame, two panes of tinted glass you can see through, a glint
+    across them. A window stacked on a window leaves out the frame between them ({top} and
+    {bottom} say which of its own frame rows it keeps), so stacked window blocks are one tall
+    window. The same drawing serves inside and out."""
     img, px, rng = _canvas(20261514, (200, 202, 200), 3)
     for y in range(2 if top else 0, 14 if bottom else 16):
         for x in range(2, 14):
             if x in (7, 8):
                 px[x, y] = _shift((170, 172, 170), rng.uniform(-3, 3))
+            elif (x + y) in (9, 10, 19):
+                px[x, y] = _shift(TRAILER_GLASS, 70)[:3] + (170,)
             else:
-                glint = 30 if (x + y) in (9, 10, 19) else 0
-                px[x, y] = _shift((52, 70, 88), glint + rng.uniform(-3, 3))
+                px[x, y] = _shift(TRAILER_GLASS, rng.uniform(-3, 3))[:3] + (TRAILER_GLASS_ALPHA,)
     return img
 
 
-def trailer_door(upper):
-    """A steel entry door: the frame down both sides; the lower half has the lever handle, the
-    upper half a small wired-glass light."""
-    img, px, rng = _canvas(20261515 + upper, (214, 214, 208), 3)
+def trailer_panel():
+    """Inside a trailer's walls: vinyl-faced panel, warm white, a batten at each panel joint (one a
+    block, so it lands on the seam between blocks and never across a wall)."""
+    img, px, rng = _canvas(20261516, (226, 220, 204), 2)
     for y in range(16):
-        for x in (1, 14):
-            px[x, y] = _shift((150, 150, 146), rng.uniform(-3, 3))
-    if upper:
-        for x in range(1, 15):
-            px[x, 1] = _shift((150, 150, 146), rng.uniform(-3, 3))
-        for y in range(4, 10):
-            for x in range(5, 11):
-                px[x, y] = _shift((60, 76, 92), rng.uniform(-3, 3))
-    else:
-        for x in (10, 11, 12):
-            px[x, 6] = _shift((70, 70, 72), rng.uniform(-3, 3))
-        px[12, 7] = _shift((70, 70, 72), 0)
+        px[0, y] = _shift((196, 190, 174), rng.uniform(-2, 2))
     return img
+
+
+def trailer_floor_in():
+    """The floor inside: vinyl composition tile, eight pixels a tile, joints barely darker."""
+    img, px, rng = _canvas(20261519, (170, 164, 150), 3)
+    for y in range(16):
+        for x in range(16):
+            if x % 8 == 0 or y % 8 == 0:
+                px[x, y] = _shift((162, 156, 143), rng.uniform(-2, 2))
+    return img
+
+
+def trailer_ceiling():
+    """The ceiling inside: plain white panel, faintly mottled."""
+    return _canvas(20261520, (232, 232, 226), 3)[0]
 
 
 def trailer_roof():
@@ -304,8 +312,8 @@ def textures():
            "trailer_window_bottom": trailer_window(top=False),
            "trailer_window_top": trailer_window(bottom=False),
            "trailer_window_middle": trailer_window(top=False, bottom=False),
-           "trailer_door_lower": trailer_door(0), "trailer_door_upper": trailer_door(1),
-           "trailer_roof": trailer_roof(),
+           "trailer_panel": trailer_panel(), "trailer_floor_in": trailer_floor_in(),
+           "trailer_ceiling": trailer_ceiling(), "trailer_roof": trailer_roof(),
            "trailer_trim": frame((232, 232, 226), 20261518, d=-40),
            "toilet_side": toilet_side(), "toilet_door_lower": toilet_door(0),
            "toilet_door_upper": toilet_door(1), "toilet_roof": toilet_roof(),
@@ -506,6 +514,216 @@ def _rails(prefix, top=True):
     return parts
 
 
+# --------------------------------------------------------------------------------------------
+# The job trailer
+# --------------------------------------------------------------------------------------------
+#
+# A trailer is built as a building is: a floor, walls and a roof of trailer blocks, with air inside
+# to walk about and furnish. Each side of a block is "joined" (more trailer), "out" or "in", which
+# BlockJobTrailer works out: a side is in when the space it faces has trailer both above and below
+# it (for the top and bottom, the one of those that is across the space). Out is siding, roof and
+# underside; in is panelling, floor and ceiling. The door is a real door from the doors family,
+# set in an opening in the wall, and the window's glass can be seen through.
+#
+# Every part is written where it goes rather than turned by the blockstate, so which of its faces
+# is which side is never in doubt.
+
+T_HORIZONTAL = ("north", "east", "south", "west")
+T_QUARTER = {"north": 0, "east": 1, "south": 2, "west": 3}
+T_OPPOSITE = {"north": "south", "south": "north", "east": "west", "west": "east",
+              "up": "down", "down": "up"}
+# side -> (axis, whether it is the positive end of it)
+T_AXIS = {"west": (0, False), "east": (0, True), "down": (1, False), "up": (1, True),
+          "north": (2, False), "south": (2, True)}
+T_AXIS_ENDS = {0: ("west", "east"), 1: ("down", "up"), 2: ("north", "south")}
+EXPOSED = "in|out"
+# Every edge of the cell, as the two sides that meet there: the four corner posts, then the rails
+# along the top and the bottom.
+T_POSTS = (("north", "west"), ("north", "east"), ("south", "east"), ("south", "west"))
+T_EDGES = T_POSTS + tuple((h, v) for v in ("up", "down") for h in T_HORIZONTAL)
+
+
+def _span(side, depth):
+    """The span along a side's axis that lies within {depth} of that side's face."""
+    return (16 - depth, 16) if T_AXIS[side][1] else (0, depth)
+
+
+def _cuboid(ranges, tex, faces):
+    (x0, x1), (y0, y1), (z0, z1) = ranges
+    return box(x0, y0, z0, x1, y1, z1, tex, faces=tuple(faces))
+
+
+def t_plane(side, tex):
+    """A trailer face on {side}: a plane half a pixel in from the cell face, as a container's."""
+    if side == "up":
+        return roof_plane(tex)
+    if side == "down":
+        return floor_plane(tex)
+    return _turn(wall_plane(tex), T_QUARTER[side])
+
+
+def t_rail(a, b, extend=None):
+    """The frame rail along the edge where sides {a} and {b} meet: a corner post where both are
+    walls, a top or bottom rail where one is the roof or the underside.
+
+    It is drawn on every edge where both sides are open and one of them is out. Where the other
+    is in -- the sides of a door opening, whose jambs face a space with the header over it and the
+    floor under it -- the rail is the opening's casing. Its face toward the opening lies in the
+    plane of the door leaf's edge, but the two face opposite ways, so each is culled from the
+    side the other is seen from and they never fight. (Leaving that face out, as the first build
+    did, opened a channel down which the siding showed edge-on, its rib rows dark nubs up the
+    jamb.)
+
+    {extend} ("up" or "down") draws instead the post's continuation a rail's depth into the block
+    above or below. At the top of a door opening the casing post ends at its block and the rail
+    over the opening starts in the next, and the corner between them, in a block that has neither,
+    was left open: the notch at the top of the doorway in issue #228."""
+    ranges = [(0, 16), (0, 16), (0, 16)]
+    for side in (a, b):
+        ranges[T_AXIS[side][0]] = _span(side, RAIL)
+    if extend == "up":
+        ranges[1] = (16, 16 + RAIL)
+    elif extend == "down":
+        ranges[1] = (-RAIL, 0)
+    return [_cuboid(ranges, "#frame", sc.FACES)]
+
+
+def t_bead(a, b, ends):
+    """The bead in a concave corner: the edge where sides {a} and {b} both join more trailer.
+
+    The faces either side of a concave corner are drawn by the two blocks beside this one, each
+    half a pixel in from its cell face, so they stop half a pixel short of meeting and the corner
+    was a slit you could see the sky through (issue #228). This block cannot tell whether the
+    corner is concave -- that is the block diagonally across, which is not in its state -- so it
+    draws the bead on every edge where both sides join: inside a solid run of trailer it is walled
+    in and never seen. It is the half pixel square the two faces left out, standing half a pixel
+    proud of them, so both faces run into it.
+
+    Along the edge it reaches the cell face where more trailer carries on ({ends}: whether the
+    lower and upper ends join), so a bead runs unbroken from block to block, and stops half a
+    pixel short where the block is open, behind the face drawn there, which it would otherwise
+    poke through."""
+    ranges = [None, None, None]
+    for side in (a, b):
+        ranges[T_AXIS[side][0]] = _span(side, INSET)
+    c = ranges.index(None)
+    ranges[c] = (0 if ends[0] else INSET, 16 if ends[1] else 16 - INSET)
+    return [_cuboid(ranges, "#frame", (a, b))]
+
+
+def t_reveal(side, through=None):
+    """A window's reveal on a side where the wall carries on: the frame's face inside the window,
+    from the glass on one face of the wall to the glass on the other, so a window seen at an angle
+    shows the depth of the wall rather than the hollow inside the wall beside it.
+
+    A reveal on a wall side spans the wall's depth, which is its other horizontal axis. The head
+    and sill reveals ({side} up or down) span it along {through}, the axis through the wall
+    (0 for x, 2 for z)."""
+    ranges = [(0, 16), (0, 16), (0, 16)]
+    axis, positive = T_AXIS[side]
+    ranges[axis] = (16, 16) if positive else (0, 0)
+    depth = through if through is not None else 2 - axis
+    ranges[depth] = (INSET, 16 - INSET)
+    return [_cuboid(ranges, "#frame", (T_OPPOSITE[side],))]
+
+
+# The window's four drawings, by (upper, topped): whether a window is below it and above it.
+T_WINDOWS = (("false", "false", "window"), ("false", "true", "windowbottom"),
+             ("true", "true", "windowmiddle"), ("true", "false", "windowtop"))
+
+
+def trailer_models():
+    tex = {"wall": _t("trailer_wall"), "panel": _t("trailer_panel"),
+           "window": _t("trailer_window"), "windowbottom": _t("trailer_window_bottom"),
+           "windowtop": _t("trailer_window_top"), "windowmiddle": _t("trailer_window_middle"),
+           "roof": _t("trailer_roof"), "floorin": _t("trailer_floor_in"),
+           "floor": _t("shell_floor"), "ceiling": _t("trailer_ceiling"),
+           "frame": _t("trailer_trim")}
+    out = {}
+    p = "job_trailer_"
+    for side in T_HORIZONTAL:
+        for key in ("wall", "panel") + tuple(w for _, _, w in T_WINDOWS):
+            out[p + key + "_" + side] = _model(t_plane(side, "#" + key), tex, "wall")
+        out[p + "reveal_" + side] = _model(t_reveal(side), tex, "wall")
+    for side, key in (("up", "roof"), ("up", "floorin"), ("down", "floor"),
+                      ("down", "ceiling")):
+        out[p + key] = _model(t_plane(side, "#" + key), tex, "wall")
+    for side in ("up", "down"):
+        for through, name in ((2, "z"), (0, "x")):
+            out[p + "reveal_%s_%s" % (side, name)] = _model(t_reveal(side, through), tex, "wall")
+    for a, b in T_EDGES:
+        post = b not in ("up", "down")
+        name = p + ("post_%s_%s" if post else "rail_%s_%s") % (a, b)
+        out[name] = _model(t_rail(a, b), tex, "wall")
+        if post:
+            for extend in ("up", "down"):
+                out[name + "_" + extend] = _model(t_rail(a, b, extend), tex, "wall")
+        for ends in ((False, False), (False, True), (True, False), (True, True)):
+            out[p + "bead_%s_%s_%s" % (a, b, _ends_name(ends))] = _model(
+                t_bead(a, b, ends), tex, "wall")
+    for name, key in (("job_trailer_wall", "wall"), ("job_trailer_window", "window")):
+        lone = [el for side in T_HORIZONTAL for el in t_plane(side, "#" + key)]
+        lone += t_plane("up", "#roof") + t_plane("down", "#floor")
+        for a, b in T_EDGES:
+            lone += t_rail(a, b)
+        out[name + "_inventory"] = _model(lone, tex, "wall", parent="block/block")
+    return out
+
+
+def _ends_name(ends):
+    return "".join("j" if e else "o" for e in ends)
+
+
+def _apply_t(model):
+    return {"model": MODEL_REF % ("job_trailer_" + model)}
+
+
+def trailer_state(key):
+    """The multipart blockstate of the wall ({key} "wall") or the window ("window")."""
+    parts = []
+    for side in T_HORIZONTAL:
+        if key == "window":
+            for upper, topped, drawing in T_WINDOWS:
+                parts.append({"when": {side: EXPOSED, "upper": upper, "topped": topped},
+                              "apply": _apply_t(drawing + "_" + side)})
+            parts.append({"when": {side: "joined"}, "apply": _apply_t("reveal_" + side)})
+        else:
+            parts.append({"when": {side: "out"}, "apply": _apply_t("wall_" + side)})
+            parts.append({"when": {side: "in"}, "apply": _apply_t("panel_" + side)})
+    parts.append({"when": {"up": "out"}, "apply": _apply_t("roof")})
+    parts.append({"when": {"up": "in"}, "apply": _apply_t("floorin")})
+    parts.append({"when": {"down": "out"}, "apply": _apply_t("floor")})
+    parts.append({"when": {"down": "in"}, "apply": _apply_t("ceiling")})
+    if key == "window":
+        # The head and sill of the whole window: left out between stacked windows.
+        for side, stacked in (("up", "topped"), ("down", "upper")):
+            for through, name, faces in ((2, "z", ("north", "south")),
+                                         (0, "x", ("east", "west"))):
+                parts.append({"when": {"OR": [{side: "joined", stacked: "false", f: EXPOSED}
+                                              for f in faces]},
+                              "apply": _apply_t("reveal_%s_%s" % (side, name))})
+    for a, b in T_EDGES:
+        post = b not in ("up", "down")
+        base = ("post_%s_%s" if post else "rail_%s_%s") % (a, b)
+        # Both open and one of them out: out and out, or out and in either way round.
+        rail = [{a: "out", b: EXPOSED}, {a: "in", b: "out"}]
+        parts.append({"when": {"OR": rail}, "apply": _apply_t(base)})
+        if post:
+            for extend in ("up", "down"):
+                when = [dict(w, **{extend: "joined"}) for w in rail]
+                parts.append({"when": {"OR": when}, "apply": _apply_t(base + "_" + extend)})
+        c = [i for i in range(3) if i not in (T_AXIS[a][0], T_AXIS[b][0])][0]
+        lo, hi = T_AXIS_ENDS[c]
+        for ends in ((False, False), (False, True), (True, False), (True, True)):
+            when = {a: "joined", b: "joined", lo: "joined" if ends[0] else EXPOSED,
+                    hi: "joined" if ends[1] else EXPOSED}
+            parts.append({"when": when,
+                          "apply": _apply_t("bead_%s_%s_%s" % (a, b, _ends_name(ends)))})
+    name = "job_trailer_" + key
+    return {"variants": {"inventory": {"model": MODEL_REF % (name + "_inventory")}},
+            "multipart": parts}
+
+
 def models():
     out = {}
     for c in COLOURS:
@@ -536,24 +754,7 @@ def models():
                 + _around(rail_vertical()) + _around(rail_bottom()))
         out[d + "_inventory"] = _model(lone, tex, "wall", parent="block/block")
 
-    tex = {"wall": _t("trailer_wall"), "window": _t("trailer_window"),
-           "windowbottom": _t("trailer_window_bottom"), "windowtop": _t("trailer_window_top"),
-           "windowmiddle": _t("trailer_window_middle"),
-           "doorlow": _t("trailer_door_lower"), "doorhigh": _t("trailer_door_upper"),
-           "roof": _t("trailer_roof"), "frame": _t("trailer_trim"), "floor": _t("shell_floor")}
-    for key in ("wall", "window", "windowbottom", "windowtop", "windowmiddle", "doorlow",
-                "doorhigh"):
-        out["job_trailer_" + key] = _model(wall_plane("#" + key), tex, "wall")
-    out["job_trailer_roof"] = _model(roof_plane("#roof"), tex, "wall")
-    out["job_trailer_floor"] = _model(floor_plane("#floor"), tex, "wall")
-    out["job_trailer_post"] = _model(rail_vertical(), tex, "wall")
-    out["job_trailer_rail_top"] = _model(rail_top(), tex, "wall")
-    out["job_trailer_rail_bottom"] = _model(rail_bottom(), tex, "wall")
-    for name, key in (("job_trailer_wall", "wall"), ("job_trailer_window", "window"),
-                      ("job_trailer_door", "doorlow")):
-        lone = (_around(wall_plane("#" + key)) + roof_plane("#roof") + floor_plane("#floor")
-                + _around(rail_vertical()) + _around(rail_top()) + _around(rail_bottom()))
-        out[name + "_inventory"] = _model(lone, tex, "wall", parent="block/block")
+    out.update(trailer_models())
 
     out["portable_toilet"] = _model(portable_toilet(), {
         "side": _t("toilet_side"), "doorlow": _t("toilet_door_lower"),
@@ -619,32 +820,8 @@ def blockstates():
         out[d] = {"variants": {"inventory": {"model": MODEL_REF % (d + "_inventory")}},
                   "multipart": parts}
 
-    for name, key in (("job_trailer_wall", "wall"), ("job_trailer_window", "window"),
-                      ("job_trailer_door", None)):
-        parts = []
-        for side, rot in SIDES:
-            if key == "window":
-                # Windows stacked on windows are one tall window: each keeps only the frame rows
-                # that are the whole window's top or bottom.
-                for upper, topped, model in (("false", "false", "window"),
-                                             ("false", "true", "windowbottom"),
-                                             ("true", "true", "windowmiddle"),
-                                             ("true", "false", "windowtop")):
-                    parts.append({"when": {side: "false", "upper": upper, "topped": topped},
-                                  "apply": _apply("job_trailer_" + model, rot)})
-            elif key:
-                parts.append({"when": {side: "false"},
-                              "apply": _apply("job_trailer_" + key, rot)})
-            else:
-                parts.append({"when": {side: "false", "upper": "false"},
-                              "apply": _apply("job_trailer_doorlow", rot)})
-                parts.append({"when": {side: "false", "upper": "true"},
-                              "apply": _apply("job_trailer_doorhigh", rot)})
-        parts.append({"when": {"up": "false"}, "apply": _apply("job_trailer_roof", 0)})
-        parts.append({"when": {"down": "false"}, "apply": _apply("job_trailer_floor", 0)})
-        parts += _rails("job_trailer")
-        out[name] = {"variants": {"inventory": {"model": MODEL_REF % (name + "_inventory")}},
-                     "multipart": parts}
+    for key in ("wall", "window"):
+        out["job_trailer_" + key] = trailer_state(key)
 
     for name in BOXES:
         ref = MODEL_REF % name

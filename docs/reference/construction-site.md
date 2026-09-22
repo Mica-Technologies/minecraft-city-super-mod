@@ -22,7 +22,7 @@ What stands around a building while it goes up: scaffolding, formwork, earthwork
 | Gang Box | `csm:gang_box` |  |  |  |  |
 | Gravel Stockpile | `csm:stockpile_gravel` | 0.6 | 3 | shovel | 0 |
 | Insulation Rolls | `csm:insulation_rolls` |  |  |  |  |
-| Job Trailer Door | `csm:job_trailer_door` | 2 | 10 | pickaxe | 0 |
+| Job Trailer Door | `csm:job_trailer_door` |  |  |  |  |
 | Job Trailer Wall | `csm:job_trailer_wall` | 2 | 10 | pickaxe | 0 |
 | Job Trailer Window | `csm:job_trailer_window` | 2 | 10 | pickaxe | 0 |
 | Lumber Stack | `csm:lumber_stack` |  |  |  |  |

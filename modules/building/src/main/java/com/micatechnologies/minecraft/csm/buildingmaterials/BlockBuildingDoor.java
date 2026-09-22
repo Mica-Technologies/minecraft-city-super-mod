@@ -173,7 +173,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   }
 
   private static boolean metal(String registryName) {
-    return registryName.contains("metal") || registryName.contains("storefront");
+    return registryName.contains("metal") || registryName.contains("storefront")
+        || registryName.contains("trailer");
   }
 
   private static Material pendingMaterial(String registryName) {
@@ -230,7 +231,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   protected boolean glazed() {
     String n = getBlockRegistryName();
     return n.contains("lite") || n.contains("fire") || n.contains("storefront")
-        || n.contains("glass");
+        || n.contains("glass") || n.contains("trailer");
   }
 
   // --- state --------------------------------------------------------------------------------------
