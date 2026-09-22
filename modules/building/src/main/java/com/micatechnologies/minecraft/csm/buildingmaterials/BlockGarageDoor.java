@@ -234,8 +234,14 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
   }
 
   /**
-   * Faces the way the player looks: a door is placed from outside, looking at the building, and
-   * its tracks and hood go on the inside, away from the player.
+   * Which way a door faces, where its tracks and hood go. A sectional or roll-up door is placed
+   * from outside, looking at the building, and they go on the inside, away from the player. A
+   * grille is fitted and worked from inside the shop, so its hood and guides go on the player's
+   * side. Sneaking puts them on the other side, for any kind.
+   *
+   * <p>A block added to a door takes that door's state -- its facing whichever side it is placed
+   * from, and its motion, so an open door stays one door -- preferring a door facing the way this
+   * block would.</p>
    *
    * @since 1.0
    */
@@ -243,16 +249,36 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
   @Nonnull
   public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
       float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-    // A block added to a door takes the door's state, so an open door stays one door.
+    EnumFacing f = placer.getHorizontalFacing();
+    if (kind() == Kind.GRILLE) {
+      f = f.getOpposite();
+    }
+    if (placer.isSneaking()) {
+      f = f.getOpposite();
+    }
+    IBlockState join = null;
     for (EnumFacing side : EnumFacing.values()) {
+      // Only the blocks beside it in the door's own plane: not the ones in front or behind.
+      if (side.getAxis() == f.getAxis()) {
+        continue;
+      }
       IBlockState other = worldIn.getBlockState(pos.offset(side));
-      if (other.getBlock() == this && other.getValue(FACING) == placer.getHorizontalFacing()
+      if (other.getBlock() == this && other.getValue(FACING).getAxis() == f.getAxis()
           && !other.getValue(MOTION).moving()) {
-        return getDefaultState().withProperty(FACING, other.getValue(FACING))
-            .withProperty(MOTION, other.getValue(MOTION));
+        if (other.getValue(FACING) == f) {
+          join = other;
+          break;
+        }
+        if (join == null) {
+          join = other;
+        }
       }
     }
-    return getDefaultState().withProperty(FACING, placer.getHorizontalFacing());
+    if (join != null) {
+      return getDefaultState().withProperty(FACING, join.getValue(FACING))
+          .withProperty(MOTION, join.getValue(MOTION));
+    }
+    return getDefaultState().withProperty(FACING, f);
   }
 
   /** Whether {@code pos} holds a block of this same door hung the same way. */
