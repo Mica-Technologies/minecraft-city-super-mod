@@ -294,9 +294,14 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
         worldIn.getTileEntity(upperPos) instanceof TileEntityDoorSwing);
   }
 
-  /** The whole door's state, read from wherever {@code pos} is in it. */
+  /**
+   * The whole door's state, read from wherever {@code pos} is in it. If there is no door at
+   * {@code pos} -- the other half of one that has lost a half -- the default state: a shut door,
+   * which nothing then finds to open.
+   */
   protected IBlockState whole(IBlockAccess world, BlockPos pos) {
-    return getActualState(world.getBlockState(pos), world, pos);
+    IBlockState state = world.getBlockState(pos);
+    return state.getBlock() == this ? getActualState(state, world, pos) : getDefaultState();
   }
 
   protected static BlockPos lower(IBlockState state, BlockPos pos) {

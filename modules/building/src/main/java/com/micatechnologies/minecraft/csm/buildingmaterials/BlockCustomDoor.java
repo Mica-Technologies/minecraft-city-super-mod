@@ -171,8 +171,11 @@ public class BlockCustomDoor extends BlockBuildingDoor {
     if (!(state instanceof IExtendedBlockState)) {
       return state;
     }
+    // Read from the half being drawn, not the lower half: an upper half can be drawn with no lower
+    // half under it -- a client rebuilding the chunk between the two halves going -- and the block
+    // there is then not a door at all.
     BlockPos lowerPos = lower(state, pos);
-    IBlockState door = whole(world, lowerPos);
+    IBlockState door = getActualState(state, world, pos);
     return ((IExtendedBlockState) state).withProperty(SETTINGS, settings(world, pos))
         .withProperty(PAIRED, paired(world, lowerPos, door))
         .withProperty(HIDDEN, CustomDoorMotion.isMoving(lowerPos));
