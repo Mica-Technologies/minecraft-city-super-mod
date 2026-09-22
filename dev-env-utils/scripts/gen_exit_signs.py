@@ -917,6 +917,12 @@ def item_models(style):
                     model = _model(elements, finish, lens=head != "none", trim=trim)
                     model = dict({"parent": "block/block"}, **model)
                     out["%s_%s_%s_%s_%s" % (style["block"], legend, letters, finish, head)] = model
+    # The plain item model, named after the block: the default preset's icon. The game never
+    # asks for it (the stack's setup picks its icon), but anything that looks an item's model up
+    # by its registry name -- the integrity tool, another mod -- finds a sign and not nothing.
+    out[style["block"]] = {"parent": "csm:item/%s_%s_%s_%s_%s" % (
+        style["block"], style["legends"][0], style["letters"][0], style["finishes"][0],
+        style["heads"][0])}
     return out
 
 
