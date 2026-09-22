@@ -376,7 +376,7 @@ HEAD_REGIONS = {
 
 
 # The specialty housings' trim, on a sheet of its own: the vandal-resistant sign's clear
-# polycarbonate shield (drawn in the translucent layer), its gasket, and the bare metal of
+# polycarbonate shield (a cutout rim and glints), its gasket, and the bare metal of
 # screws, bolts and hanging rods.
 TRIM_SHEET = 64
 TRIM_REGIONS = {
@@ -394,18 +394,21 @@ def trim_uv(region):
 
 def trim_sheet():
     img = np.zeros((TRIM_SHEET, TRIM_SHEET, 4))
-    # shield: faintly frosted clear plastic, its moulded edge catching more light, and one
-    # diagonal reflection so it reads as a surface and not as nothing
+    # shield: clear, drawn as cutout -- only its moulded rim and two short glints in one corner
+    # are opaque, and the rest is fully transparent. It was a faint translucent haze once, and
+    # that put the whole block in the translucent layer, where faces are sorted by their centres:
+    # from some angles the shield's large faces sorted in front of the sign's end cell, wrote
+    # depth first, and cut the end of the sign off.
     x0, y0, x1, y1 = TRIM_REGIONS["shield"]
     n = x1 - x0
     yy, xx = np.mgrid[0:n, 0:n]
-    alpha = np.full((n, n), 34.0)
-    edge = (xx < 2) | (yy < 2) | (xx >= n - 2) | (yy >= n - 2)
-    alpha[edge] = 110.0
-    streak = np.abs((xx - yy) - 6) < 2
-    alpha[streak & ~edge] = 70.0
-    img[y0:y1, x0:x1, :3] = 235.0
-    img[y0:y1, x0:x1, 3] = alpha
+    rim = (xx < 1) | (yy < 1) | (xx >= n - 1) | (yy >= n - 1)
+    glint = ((np.abs(xx - yy - 3) < 1) | (np.abs(xx - yy - 7) < 1)) & (xx + yy < 16) & ~rim
+    rgb = np.zeros((n, n, 3))
+    rgb[rim] = (206.0, 213.0, 219.0)
+    rgb[glint] = (246.0, 248.0, 250.0)
+    img[y0:y1, x0:x1, :3] = rgb
+    img[y0:y1, x0:x1, 3] = np.where(rim | glint, 255.0, 0.0)
     x0, y0, x1, y1 = TRIM_REGIONS["gasket"]
     img[y0:y1, x0:x1] = (58.0, 58.0, 60.0, 255.0)
     x0, y0, x1, y1 = TRIM_REGIONS["metal"]

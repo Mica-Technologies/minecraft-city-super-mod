@@ -87,7 +87,7 @@ from the front is a right arrow from behind, as a real double-faced sign's knock
 
 **Housings** are picked by the generator's `kind`: plastic (flat; rounded, whose end cells step
 in under an alpha-cut 1.5 px corner; combo), die-cast (a quarter-pixel lip round the face),
-vandal-resistant (a clear shield on a gasketed plate, in the translucent layer), photoluminescent
+vandal-resistant (a clear shield on a gasketed plate: a cutout rim and glints), photoluminescent
 (a thin panel with corner screws, hung on two rods) and explosion-proof (a cast frame a pixel wide
 round a recessed face, corner bolts, and a conduit hub that is also what it hangs from). Trim that
 is not the housing's colour -- shield, gasket, bare metal -- is on `trim.png`.
@@ -137,6 +137,11 @@ the generator's `STYLES` (plus a `kind` if its housing is new), a line in
 - **Ordinals are saved.** In the tile entity, the item tag and the packet. Append only.
 - **A block whose metadata changes keeps its tile entity** (`shouldRefresh` is block-only), which
   is what lets redstone toggle `POWERED` without losing the setup.
+- **Nothing here may be translucent.** The vandal-resistant shield was once a faint haze, which
+  put the whole block in the translucent layer. There faces are sorted by their centres and still
+  write depth, so from some angles the shield's big faces sorted ahead of the sign's end cell and
+  cut the end of the sign off. A block has one layer for every quad of its multipart model, so the
+  shield is cutout -- a clear face with an opaque rim and two glints -- like everything else.
 - **The glow list is keyed on (block, variant).** A block whose bulbs could differ without the
   variant differing would draw another sign's glow; `getGlowVariant` must change whenever
   `getBulbs` does.
