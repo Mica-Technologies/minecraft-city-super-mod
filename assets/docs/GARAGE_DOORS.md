@@ -22,8 +22,11 @@ Every asset comes from `dev-env-utils/scripts/gen_garage_doors.py` (`--check` fa
 ## Building one
 
 Fill an opening with door blocks, placed from outside looking in: the door faces the way the
-player looked, and its tracks, springs and hood go on the inside. Blocks of one kind hung the same
-way are one door, up to 16 x 16. Right-click any block of it, or give any block of it a redstone
+player looked, and its tracks, springs and hood go on the inside. A grille is the other way round,
+since it is fitted and worked from inside the shop: its hood and guides go on the player's side.
+Sneak while placing to put them on the other side, for any kind. A block added to a door joins it
+whichever side it is placed from. Blocks of one kind hung the same way are one door, up to
+16 x 16. Right-click any block of it, or give any block of it a redstone
 signal, and the whole door opens or closes. Only the rising edge of a signal counts, so a button
 opens the door rather than opening it and closing it again at once, and a lever works it on every
 flip. As with the blinds, what was powered is remembered only while the world is loaded.
