@@ -65,7 +65,9 @@ public final class ExitSignSpec {
     this.legend = property("legend", Legend.class, legends);
     this.defaults = new ExitSignConfig(arrows.get(0), letterColours.get(0), housings.get(0),
         mounts.get(0), headTypes.get(0), legends.get(0));
-    this.mainsPowered = b.mainsPowered;
+    // Redstone is mains power, and all it changes is whether emergency heads light: a sign that
+    // cannot have heads has no use for the property, and leaving it out halves its state count.
+    this.mainsPowered = b.mainsPowered && headTypes.stream().anyMatch(h -> h != Heads.NONE);
     this.lightValue = b.lightValue;
     List<ExitSignConfig> clamped = new ArrayList<>();
     for (Preset preset : b.presets) {
@@ -151,7 +153,10 @@ public final class ExitSignSpec {
     return defaults;
   }
 
-  /** Whether the sign reacts to redstone: powered is mains on, unpowered is on battery. */
+  /**
+   * Whether the sign reacts to redstone: powered is mains on, unpowered is on battery. Only a sign
+   * that can have emergency heads does, since nothing else about it changes on battery.
+   */
   public boolean isMainsPowered() {
     return mainsPowered;
   }
@@ -241,7 +246,10 @@ public final class ExitSignSpec {
       return this;
     }
 
-    /** A sign with no mains supply: it ignores redstone and has no powered property. */
+    /**
+     * A sign with no mains supply at all, such as a self-luminous one: it ignores redstone and has
+     * no powered property even if it had heads.
+     */
     public Builder unpowered() {
       mainsPowered = false;
       return this;

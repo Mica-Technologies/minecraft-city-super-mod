@@ -375,6 +375,49 @@ HEAD_REGIONS = {
 }
 
 
+# The specialty housings' trim, on a sheet of its own: the vandal-resistant sign's clear
+# polycarbonate shield (drawn in the translucent layer), its gasket, and the bare metal of
+# screws, bolts and hanging rods.
+TRIM_SHEET = 64
+TRIM_REGIONS = {
+    "shield": (0, 0, 32, 32),
+    "gasket": (32, 0, 48, 16),
+    "metal": (48, 0, 64, 16),
+}
+
+
+def trim_uv(region):
+    x0, y0, x1, y1 = TRIM_REGIONS[region]
+    k = 16.0 / TRIM_SHEET
+    return [x0 * k, y0 * k, x1 * k, y1 * k]
+
+
+def trim_sheet():
+    img = np.zeros((TRIM_SHEET, TRIM_SHEET, 4))
+    # shield: faintly frosted clear plastic, its moulded edge catching more light, and one
+    # diagonal reflection so it reads as a surface and not as nothing
+    x0, y0, x1, y1 = TRIM_REGIONS["shield"]
+    n = x1 - x0
+    yy, xx = np.mgrid[0:n, 0:n]
+    alpha = np.full((n, n), 34.0)
+    edge = (xx < 2) | (yy < 2) | (xx >= n - 2) | (yy >= n - 2)
+    alpha[edge] = 110.0
+    streak = np.abs((xx - yy) - 6) < 2
+    alpha[streak & ~edge] = 70.0
+    img[y0:y1, x0:x1, :3] = 235.0
+    img[y0:y1, x0:x1, 3] = alpha
+    x0, y0, x1, y1 = TRIM_REGIONS["gasket"]
+    img[y0:y1, x0:x1] = (58.0, 58.0, 60.0, 255.0)
+    x0, y0, x1, y1 = TRIM_REGIONS["metal"]
+    m = x1 - x0
+    shade = np.linspace(196.0, 150.0, m)[:, None] * np.ones((1, m))
+    img[y0:y1, x0:x1, 0] = shade
+    img[y0:y1, x0:x1, 1] = shade
+    img[y0:y1, x0:x1, 2] = shade + 4
+    img[y0:y1, x0:x1, 3] = 255.0
+    return {"trim.png": Image.fromarray(np.uint8(np.round(img)), "RGBA")}
+
+
 def head_uv(region):
     x0, y0, x1, y1 = HEAD_REGIONS[region]
     k = 16.0 / HEADS_SHEET
@@ -476,6 +519,9 @@ LIT_ON = {"east": ("left", "both"), "west": ("right", "both")}
 #   y0           the face's bottom edge, px
 #   rounded      rounded housing corners: alpha on the face, a stepped end on the model
 #   heads_at     "ends": lamp heads on arms off each end; "top": above the top corners
+#   kind         the housing: "plastic" (flat, rounded, combo), "diecast", "vandal", "panel"
+#                (photoluminescent) or "xp" (explosion-proof); picks the extras and mounts
+#   depth        the body's z range, px, wall-mounted and hung (default DEPTH)
 STYLES = [
     dict(name="flat", block="exit_sign_traditional_flat", rounded=False, y0=4.5,
          heads_at="ends", finishes=["white", "black"], heads=["none", "square", "round"],
@@ -486,7 +532,30 @@ STYLES = [
     dict(name="combo", block="exit_sign_combo_compact", rounded=False, y0=2.0,
          heads_at="top", finishes=["white", "black"], heads=["square", "round"],
          mounts=MOUNTS, letters=["red", "green"], legends=["exit", "salida"]),
+    dict(name="diecast", block="exit_sign_diecast", kind="diecast", rounded=False, y0=4.5,
+         depth={"wall": (13.0, 16.0), "hung": (6.5, 9.5)},
+         finishes=["brushed", "black", "white"], heads=["none"], mounts=MOUNTS,
+         letters=["red", "green"], legends=["exit", "salida"]),
+    dict(name="vandal", block="exit_sign_vandal_resistant", kind="vandal", rounded=False, y0=4.5,
+         finishes=["white", "black"], heads=["none"], mounts=["wall", "ceiling"],
+         letters=["red", "green"], legends=["exit", "salida"]),
+    dict(name="panel", block="exit_sign_photoluminescent", kind="panel", rounded=False, y0=4.5,
+         depth={"wall": (15.5, 16.0), "hung": (7.75, 8.25)},
+         finishes=["white", "black"], heads=["none"], mounts=["wall", "ceiling"],
+         letters=["green", "red"], legends=["exit", "salida"]),
+    dict(name="xp", block="exit_sign_explosion_proof", kind="xp", rounded=False, y0=3.5,
+         depth={"wall": (12.0, 16.0), "hung": (6.0, 10.0)},
+         finishes=["brushed"], heads=["none"], mounts=["wall", "ceiling"],
+         letters=["red", "green"], legends=["exit", "salida"]),
 ]
+
+
+def _depth(style, mc):
+    return style.get("depth", DEPTH)[mc]
+
+
+def _kind(style):
+    return style.get("kind", "plastic")
 SIX = ("north", "south", "east", "west", "up", "down")
 
 
@@ -533,7 +602,7 @@ def _back(mc, faces, back_uv):
 def legend_elements(style, legend, letters, mc):
     cw = LEGENDS[legend]["arrow"]["cell"] / TEXELS_PER_PX
     y0, top = style["y0"], style["y0"] + FACE_PX
-    z0, z1 = DEPTH[mc]
+    z0, z1 = _depth(style, mc)
     x0, v0, x1, v1 = REGIONS["legend_%s_%s" % (legend, letters)]
     legend_uv = _uv_texels(x0, v0, x1, v1)
     faces = {"north": _face(legend_uv)}
@@ -548,7 +617,7 @@ def cell_elements(style, legend, kind, side, mc):
     the body follows the corner the face's alpha cuts."""
     cw = LEGENDS[legend]["arrow"]["cell"] / TEXELS_PER_PX
     y0, top = style["y0"], style["y0"] + FACE_PX
-    z0, z1 = DEPTH[mc]
+    z0, z1 = _depth(style, mc)
     region = "arrow_%s_%s%s" % (legend, kind, "_rounded" if style["rounded"] else "")
     rx, ry, _, _ = REGIONS[region]
     pieces = [(0.0, 0.5, 0.25), (0.5, cw, 0.0)] if style["rounded"] else [(0.0, cw, 0.0)]
@@ -590,10 +659,89 @@ def _mirror_x(elements):
     return out
 
 
+def _trim(names, region, cull=None):
+    cull = cull or {}
+    return {n: _face(trim_uv(region), texture="#trim", cull=cull.get(n)) for n in names}
+
+
+def extra_elements(style, mc):
+    """What a specialty housing adds around the plain sign, whatever it shows:
+
+    - die-cast: a cast lip standing a quarter pixel proud round the face's edge, clear of the
+      chevrons' tips
+    - vandal-resistant: a clear polycarbonate shield over the whole sign, on a gasketed back plate
+      when it is on a wall
+    - photoluminescent: a screw in each corner of the thin panel
+    - explosion-proof: a heavy cast frame a pixel wide round the face, standing proud so the face
+      sits recessed in it, a bolt at each corner, and a threaded conduit hub on top
+    Returns (elements, uses the trim sheet)."""
+    kind = _kind(style)
+    y0, top = style["y0"], style["y0"] + FACE_PX
+    z0, z1 = _depth(style, mc)
+    hung = mc == "hung"
+    out = []
+    if kind == "diecast":
+        lip = 0.25
+        for zf, zb in ([(z0 - lip, z0)] + ([(z1, z1 + lip)] if hung else [])):
+            out.append(_box((0, top - lip, zf), (16, top, zb), _housing_faces(SIX)))
+            out.append(_box((0, y0, zf), (16, y0 + lip, zb), _housing_faces(SIX)))
+            out.append(_box((0, y0 + lip, zf), (lip, top - lip, zb), _housing_faces(SIX)))
+            out.append(_box((16 - lip, y0 + lip, zf), (16, top - lip, zb), _housing_faces(SIX)))
+        return out, False
+    if kind == "vandal":
+        faces = ("north", "east", "west", "up", "down") + (("south",) if hung else ())
+        back = z1 + 1.5 if hung else 15.5
+        out.append(_box((-0.75, y0 - 0.75, z0 - 1.5), (16.75, top + 0.75, back),
+                        _trim(faces, "shield")))
+        if not hung:
+            out.append(_box((-1, y0 - 1, 15.5), (17, top + 1, 16),
+                            _trim(SIX, "gasket", cull={"south": "south"})))
+        return out, True
+    if kind == "panel":
+        for x in (0.4, 15.1):
+            for y in (y0 + 0.4, top - 0.9):
+                out.append(_box((x, y, z0 - 0.125), (x + 0.5, y + 0.5, z0), _trim(SIX, "metal")))
+                if hung:
+                    out.append(_box((x, y, z1), (x + 0.5, y + 0.5, z1 + 0.125),
+                                    _trim(SIX, "metal")))
+        return out, True
+    if kind == "xp":
+        front = z0 - 0.75
+        back = z1 + 0.75 if hung else z1
+        cull = {} if hung else {"south": "south"}
+        out.append(_box((-1, y0 - 1, front), (0, top + 1, back), _housing_faces(SIX, cull=cull)))
+        out.append(_box((16, y0 - 1, front), (17, top + 1, back), _housing_faces(SIX, cull=cull)))
+        out.append(_box((0, top, front), (16, top + 1, back), _housing_faces(SIX, cull=cull)))
+        out.append(_box((0, y0 - 1, front), (16, y0, back), _housing_faces(SIX, cull=cull)))
+        for x in (-0.75, 16.25):
+            for y in (y0 - 0.75, top + 0.25):
+                out.append(_box((x, y, front - 0.25), (x + 0.5, y + 0.5, front),
+                                _trim(SIX, "metal")))
+        # the conduit hub: a squat cylinder, two crossed boxes, up to the top of the block
+        mid = (z0 + z1) / 2
+        out.append(_box((7, top + 1, mid - 0.75), (9, 16, mid + 0.75),
+                        _housing_faces(SIX, cull={"up": "up"})))
+        out.append(_box((7.25, top + 1, mid - 1), (8.75, 16, mid + 1),
+                        _housing_faces(SIX, cull={"up": "up"})))
+        return out, True
+    return out, False
+
+
 def hardware_elements(style, mount):
     """The colour-matched mount: a canopy on the ceiling (with a stem down to a combo unit,
-    whose heads leave no room for the canopy on the body), or a plate on the wall at one end."""
+    whose heads leave no room for the canopy on the body), or a plate on the wall at one end.
+    A photoluminescent panel hangs from two rods, a vandal-resistant sign's canopy sits on its
+    shield, and an explosion-proof sign hangs from its own conduit hub, so has nothing more."""
     y0, top = style["y0"], style["y0"] + FACE_PX
+    kind = _kind(style)
+    if mount == "ceiling" and kind == "xp":
+        return []
+    if mount == "ceiling" and kind == "panel":
+        z0, z1 = _depth(style, "hung")
+        return [_box((x, top, z0), (x + 0.5, 16, z1), _trim(SIX, "metal", cull={"up": "up"}))
+                for x in (2.75, 12.75)]
+    if mount == "ceiling" and kind == "vandal":
+        return [_box((4, top + 0.75, 6), (12, 16, 10), _housing_faces(SIX, cull={"up": "up"}))]
     if mount == "ceiling":
         out = []
         if top < 15:
@@ -614,7 +762,7 @@ def head_elements(style, head, mc, lit):
     """One lamp head, on the east side (``_mirror_x`` gives the west one). An end head sits on
     a short arm off the sign's end; a top head (combo) on a short arm above its top corner."""
     y0, top = style["y0"], style["y0"] + FACE_PX
-    z0, z1 = DEPTH[mc]
+    z0, z1 = _depth(style, mc)
     lens_uv = head_uv("%s_%s" % (head, "lit" if lit else "unlit"))
     back_cull = {"south": "south"} if mc == "wall" else {}
     if style["heads_at"] == "ends":
@@ -644,10 +792,12 @@ def head_elements(style, head, mc, lit):
     return out
 
 
-def _model(elements, finish, lens=False):
+def _model(elements, finish, lens=False, trim=False):
     textures = {"sheet": TEX_REF % finish, "particle": TEX_REF % finish}
     if lens:
         textures["lens"] = TEX_REF % "heads"
+    if trim:
+        textures["trim"] = TEX_REF % "trim"
     return {"textures": textures, "elements": elements}
 
 
@@ -675,9 +825,13 @@ def part_models(style):
                         east, finish, lens=True)
                     out[p + "head_%s_%s_west_%s" % (head, state, mc)] = _model(
                         _mirror_x(east), finish, lens=True)
+            extras, trim = extra_elements(style, mc)
+            if extras:
+                out[p + "extras_%s" % mc] = _model(extras, finish, trim=trim)
         for mount in style["mounts"]:
-            if mount != "wall":
-                out[p + "mount_%s" % mount] = _model(hardware_elements(style, mount), finish)
+            hardware = hardware_elements(style, mount) if mount != "wall" else []
+            if hardware:
+                out[p + "mount_%s" % mount] = _model(hardware, finish, trim=_kind(style) == "panel")
     return out
 
 
@@ -735,8 +889,11 @@ def blockstate(style):
                     for lit, powered in ((True, "false"), (False, "true")):
                         add(p + "head_%s_%s_%s_%s" % (head, "lit" if lit else "dark", side, mc),
                             housing=finish, mount=ok, heads=head, powered=powered)
+            if extra_elements(style, mc)[0]:
+                add(p + "extras_%s" % mc, housing=finish, mount=mounts)
         for mount in hung:
-            add(p + "mount_%s" % mount, housing=finish, mount=mount)
+            if hardware_elements(style, mount):
+                add(p + "mount_%s" % mount, housing=finish, mount=mount)
     return {"multipart": parts}
 
 
@@ -755,7 +912,9 @@ def item_models(style):
                     if head != "none":
                         heads = head_elements(style, head, "hung", False)
                         elements += heads + _mirror_x(heads)
-                    model = _model(elements, finish, lens=head != "none")
+                    extras, trim = extra_elements(style, "hung")
+                    elements += extras
+                    model = _model(elements, finish, lens=head != "none", trim=trim)
                     model = dict({"parent": "block/block"}, **model)
                     out["%s_%s_%s_%s_%s" % (style["block"], legend, letters, finish, head)] = model
     return out
@@ -833,6 +992,7 @@ def write_all(roots):
     os.makedirs(roots["tex"], exist_ok=True)
     images = dict(sheets())
     images.update(head_sheets())
+    images.update(trim_sheet())
     for name, img in sorted(images.items()):
         img.save(os.path.join(roots["tex"], name), optimize=False)
         written.append(("tex", name))
