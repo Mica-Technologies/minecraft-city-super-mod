@@ -62,8 +62,9 @@ import net.minecraft.world.World;
  *   upper half have one, {@link TileEntityDoorSwing}, on the clients only, whose renderer turns
  *   the closed model about the hinge and which takes itself away when the swing is over. Whether
  *   the swing is drawn or the door snaps is each client's own choice ({@code animateDoors}).</li>
- *   <li><b>Pairs.</b> A door placed beside one hinged on its far side hinges the other way, and a
- *   pair opens and closes together.</li>
+ *   <li><b>Pairs.</b> A door placed beside another hinges on its far side, turning a shut
+ *   neighbour round if need be, so the two meet at the latch; a pair opens and closes
+ *   together.</li>
  *   <li><b>Redstone</b> holds a door open while it is powered.</li>
  *   <li><b>A door closer</b>, fitted with the item, shuts the door three seconds after it is
  *   opened. Sneak-clicking the door with an empty hand takes it off again.</li>
@@ -148,6 +149,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
   private static final ThreadLocal<Hinge> PENDING_HINGE = new ThreadLocal<>();
   private static final ThreadLocal<Boolean> PENDING_REVERSED = new ThreadLocal<>();
+  /** A neighbour to turn round to pair with the door being placed, or null. */
+  private static final ThreadLocal<BlockPos> PENDING_FLIP = new ThreadLocal<>();
 
   private final String registryName;
 
@@ -319,10 +322,16 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   /**
    * The lower half, facing the way the player looks -- a door is hung from outside, looking in.
    * The hinge and the swing are decided here and handed to {@link #onBlockPlacedBy}, which puts up
-   * the upper half that stores them. The hinge goes opposite a door beside it hinged on its far
-   * side, so the two make a pair, or else on the side of the opening the player clicked. The door
-   * swings its kind's way, or the other way if the player is sneaking -- unless it makes a pair,
-   * when it swings the way its partner does, since a pair opens together.
+   * the upper half that stores them.
+   *
+   * <p>A door placed beside another facing the same way, not already one of a pair, makes a pair
+   * with it: it hinges on its far side, so the two latches meet in the middle. A neighbour hinged
+   * on the shared side is turned round to match, if it is shut -- otherwise the two would stand
+   * hinge to hinge, opening apart, their handles on the outer edges. A neighbour already hinged on
+   * its far side is preferred, since it needs no change. With no neighbour to pair with, the hinge
+   * goes on the side of the opening the player clicked. The door swings its kind's way, or the
+   * other way if the player is sneaking -- unless it makes a pair, when it swings the way its
+   * partner does, since a pair opens together.</p>
    *
    * @since 1.0
    */
@@ -332,26 +341,56 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
     EnumFacing f = placer.getHorizontalFacing();
     EnumFacing left = f.rotateYCCW();
-    IBlockState onLeft = worldIn.getBlockState(pos.offset(left));
-    IBlockState onRight = worldIn.getBlockState(pos.offset(left.getOpposite()));
+    BlockPos onLeft = pos.offset(left);
+    BlockPos onRight = pos.offset(left.getOpposite());
     Hinge hinge;
     boolean reversed = reversible() && placer.isSneaking();
-    if (onLeft.getBlock() == this && whole(worldIn, pos.offset(left)).getValue(HINGE) == Hinge.LEFT
-        && whole(worldIn, pos.offset(left)).getValue(FACING) == f) {
-      hinge = Hinge.RIGHT;
-      reversed = whole(worldIn, pos.offset(left)).getValue(REVERSED);
-    } else if (onRight.getBlock() == this
-        && whole(worldIn, pos.offset(left.getOpposite())).getValue(HINGE) == Hinge.RIGHT
-        && whole(worldIn, pos.offset(left.getOpposite())).getValue(FACING) == f) {
-      hinge = Hinge.LEFT;
-      reversed = whole(worldIn, pos.offset(left.getOpposite())).getValue(REVERSED);
+    BlockPos flip = null;
+    // A partner on the left leaves this door hinged right, and one on the right hinged left.
+    BlockPos mate = pairable(worldIn, onLeft, f, Hinge.LEFT, false) ? onLeft
+        : pairable(worldIn, onRight, f, Hinge.RIGHT, false) ? onRight
+            : pairable(worldIn, onLeft, f, Hinge.LEFT, true) ? onLeft
+                : pairable(worldIn, onRight, f, Hinge.RIGHT, true) ? onRight : null;
+    if (mate != null) {
+      hinge = mate == onLeft ? Hinge.RIGHT : Hinge.LEFT;
+      IBlockState door = whole(worldIn, mate);
+      reversed = door.getValue(REVERSED);
+      if (door.getValue(HINGE) == hinge) {
+        flip = mate;
+      }
     } else {
       double along = (hitX - 0.5) * left.getXOffset() + (hitZ - 0.5) * left.getZOffset();
       hinge = along > 0 ? Hinge.LEFT : Hinge.RIGHT;
     }
     PENDING_HINGE.set(hinge);
     PENDING_REVERSED.set(reversed);
+    PENDING_FLIP.set(flip);
     return getDefaultState().withProperty(FACING, f);
+  }
+
+  /**
+   * Whether the door whose lower half is at {@code pos} could pair with one placed beside it.
+   *
+   * @param world     the world
+   * @param pos       where a neighbour's lower half may be
+   * @param f         the facing of the door being placed
+   * @param farHinge  the neighbour's hinge that keeps it on the far side of the new door
+   * @param allowFlip whether a neighbour hinged the other way counts, to be turned round
+   *
+   * @return whether it pairs
+   */
+  private boolean pairable(World world, BlockPos pos, EnumFacing f, Hinge farHinge,
+      boolean allowFlip) {
+    IBlockState state = world.getBlockState(pos);
+    if (state.getBlock() != this || state.getValue(HALF) != Half.LOWER) {
+      return false;
+    }
+    IBlockState door = whole(world, pos);
+    if (door.getValue(FACING) != f || partner(world, pos, door) != null) {
+      return false;
+    }
+    return door.getValue(HINGE) == farHinge || allowFlip && !door.getValue(OPEN)
+        && world.getBlockState(pos.up()).getBlock() == this;
   }
 
   @Override
@@ -359,11 +398,21 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       EntityLivingBase placer, ItemStack stack) {
     Hinge hinge = PENDING_HINGE.get();
     Boolean reversed = PENDING_REVERSED.get();
+    BlockPos flip = PENDING_FLIP.get();
     PENDING_HINGE.remove();
     PENDING_REVERSED.remove();
+    PENDING_FLIP.remove();
     worldIn.setBlockState(pos.up(), getDefaultState().withProperty(HALF, Half.UPPER)
         .withProperty(HINGE, hinge == null ? Hinge.LEFT : hinge)
         .withProperty(REVERSED, reversed != null && reversed), 2);
+    if (flip != null) {
+      IBlockState upper = worldIn.getBlockState(flip.up());
+      if (upper.getBlock() == this && upper.getValue(HALF) == Half.UPPER) {
+        // Flag 3: a client redraws round the change, so the lower half's model follows.
+        worldIn.setBlockState(flip.up(), upper.withProperty(HINGE,
+            upper.getValue(HINGE) == Hinge.LEFT ? Hinge.RIGHT : Hinge.LEFT), 3);
+      }
+    }
   }
 
   /**
