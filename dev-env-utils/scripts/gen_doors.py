@@ -133,6 +133,10 @@ DOORS = {
     "door_back_halfglass": ("halfglass", (236, 236, 230), True, (
         "Back Door (Half Glass)", "Puerta Trasera (Media Vidriera)", "Hintertür (Halbverglast)",
         "Bakdörr (Halvglasad)")),
+    # The job trailer's entry door, registered in the Construction Site tab beside the trailer's
+    # walls (issue #228: it was a wall block with a door drawn on it).
+    "job_trailer_door": ("trailer", (214, 214, 208), True, (
+        "Job Trailer Door", "Oficina de Obra (Puerta)", "Baucontainer (Tür)", "Bodvagn (Dörr)")),
 }
 
 CLOSER_NAMES = ("Door Closer", "Cierrapuertas", "Türschließer", "Dörrstängare")
@@ -323,6 +327,15 @@ def door_faces(name):
         _panel(up, rgb, 9, 7, 14, 14)
         _panel(lp, rgb, 2, 1, 7, 12)
         _panel(lp, rgb, 9, 1, 14, 12)
+    elif style == "trailer":
+        # A steel entry door: a stile down each side and a small wired-glass light up top.
+        for img_px in (lp, up):
+            for y in range(16):
+                for x in (1, 14):
+                    img_px[x, y] = _shift(rgb, -64 + rng.uniform(-3, 3))
+        for x in range(1, 15):
+            up[x, 1] = _shift(rgb, -64 + rng.uniform(-3, 3))
+        _glass(up, 6, 4, 9, 9, rgb, wired=True)
     elif style == "halfglass":
         for gx in range(3):
             for gy in range(3):
@@ -882,7 +895,7 @@ def lang_entries():
 
 def tab_lines():
     lines = ['    initTabBlock(new BlockBuildingDoor("%s")); // %s' % (n, v[3][0])
-             for n, v in DOORS.items()]
+             for n, v in DOORS.items() if n.startswith("door_")]
     lines.append("    initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer")
     lines.append("    initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent);"
                  " // Door Swing Tool")

@@ -1,0 +1,50 @@
+{
+  "textures": {
+    "wall": "csm:blocks/constructionsite/trailer_wall",
+    "panel": "csm:blocks/constructionsite/trailer_panel",
+    "window": "csm:blocks/constructionsite/trailer_window",
+    "windowbottom": "csm:blocks/constructionsite/trailer_window_bottom",
+    "windowtop": "csm:blocks/constructionsite/trailer_window_top",
+    "windowmiddle": "csm:blocks/constructionsite/trailer_window_middle",
+    "roof": "csm:blocks/constructionsite/trailer_roof",
+    "floorin": "csm:blocks/constructionsite/trailer_floor_in",
+    "floor": "csm:blocks/constructionsite/shell_floor",
+    "ceiling": "csm:blocks/constructionsite/trailer_ceiling",
+    "frame": "csm:blocks/constructionsite/trailer_trim",
+    "particle": "csm:blocks/constructionsite/trailer_wall"
+  },
+  "elements": [
+    {
+      "from": [
+        15.5,
+        0.5,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        0.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            0.5,
+            15.5
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            15.5,
+            0,
+            16.0,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}

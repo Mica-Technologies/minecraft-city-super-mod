@@ -14,6 +14,7 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Storefront Door (Dark Bronze) | `door_storefront_bronze` |
 | Front Door (White / Red / Black) | `door_front_white`, `door_front_red`, `door_front_black` |
 | Back Door (Half Glass) | `door_back_halfglass` |
+| Job Trailer Door (in the Construction Site tab, for the job trailer; see `CONSTRUCTION_SITE.md`) | `job_trailer_door` |
 
 ## Using them
 

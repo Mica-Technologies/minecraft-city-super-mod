@@ -1,11 +1,13 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBuildingDoor;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockCraneHead;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockCraneMast;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockCraneMastLarge;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockFormworkWall;
+import com.micatechnologies.minecraft.csm.constructionsite.BlockJobTrailer;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockPortableToilet;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockPostShore;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockRebarBundle;
@@ -154,9 +156,9 @@ public class CsmTabConstructionSite extends CsmTab {
     initTabBlock(new BlockSiteShell("dumpster_maroon")); // Roll-Off Dumpster (Maroon)
     initTabBlock(new BlockSiteShell("dumpster_green")); // Roll-Off Dumpster (Green)
     initTabBlock(new BlockSiteShell("dumpster_grey")); // Roll-Off Dumpster (Grey)
-    initTabBlock(new BlockSiteShell("job_trailer_wall")); // Job Trailer Wall
-    initTabBlock(new BlockSiteShell("job_trailer_window")); // Job Trailer Window
-    initTabBlock(new BlockSiteShell("job_trailer_door")); // Job Trailer Door
+    initTabBlock(new BlockJobTrailer("job_trailer_wall")); // Job Trailer Wall
+    initTabBlock(new BlockJobTrailer("job_trailer_window")); // Job Trailer Window
+    initTabBlock(new BlockBuildingDoor("job_trailer_door")); // Job Trailer Door
     initTabBlock(new BlockPortableToilet()); // Portable Toilet
     initTabBlock(new BlockSiteFacingProp("gang_box", Material.IRON, SoundType.METAL, "pickaxe",
         BlockSiteProp.box16(0, 0, 2.5, 16, 10.5, 13.5))); // Gang Box

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
+import com.micatechnologies.minecraft.csm.constructionsite.JobTrailerRenderUpdater;
 import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldClimbHandler;
 import com.micatechnologies.minecraft.csm.constructionsite.TileEntityCraneHead;
 import com.micatechnologies.minecraft.csm.constructionsite.TileEntityCraneHeadRenderer;
@@ -22,6 +23,9 @@ public class CsmBuildingClientProxy extends CsmBuildingCommonProxy {
     // Jump-to-climb for scaffolding and crane masts. The client decides its own player's
     // movement, so this lives here and nowhere else.
     ScaffoldClimbHandler.register();
+    // A job trailer face's inside or outside depends on trailer further off than the game
+    // rebuilds round a changed block.
+    JobTrailerRenderUpdater.register();
     // The crane head renderer's lists are not in a CsmDisplayListCache, so release them on
     // disconnect here.
     CsmLifecycleHooks.onClientDisconnect(TileEntityCraneHeadRenderer::releaseAll);
