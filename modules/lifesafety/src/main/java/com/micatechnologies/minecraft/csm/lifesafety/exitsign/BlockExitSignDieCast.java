@@ -26,6 +26,12 @@ public class BlockExitSignDieCast extends AbstractBlockExitSign {
     return SPEC;
   }
 
+  /** A deeper cast body, and its lip standing a quarter pixel proud of the face. */
+  @Override
+  protected double[] getBodyDepth(boolean wall) {
+    return wall ? new double[]{12.75, 16} : new double[]{6.25, 9.75};
+  }
+
   @Override
   public String getBlockRegistryName() {
     return "exit_sign_diecast";

@@ -59,4 +59,15 @@ class ExitSignSpecTest {
     assertEquals(4, BlockExitSignExplosionProof.SPEC.properties().size());
     assertFalse(BlockExitSignPhotoluminescent.SPEC.isMainsPowered());
   }
+
+  @Test
+  void onlySignsThatCanHaveHeadsTakeMainsPower() {
+    assertTrue(BlockExitSignTraditionalFlat.SPEC.isMainsPowered());
+    assertTrue(BlockExitSignCombo.SPEC.isMainsPowered());
+    assertFalse(BlockExitSignDieCast.SPEC.isMainsPowered());
+    assertFalse(BlockExitSignVandalResistant.SPEC.isMainsPowered());
+    assertFalse(BlockExitSignExplosionProof.SPEC.isMainsPowered());
+    assertEquals(768, BlockExitSignDieCast.SPEC.stateCount());
+    assertEquals(128, BlockExitSignExplosionProof.SPEC.stateCount());
+  }
 }

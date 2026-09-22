@@ -2,7 +2,7 @@
 
 Fire alarm horns, strobes, pull stations, panels and exit signage.
 
-!!! info "158 blocks in this tab"
+!!! info "162 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,7 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Die-Cast Exit Sign | `csm:exit_sign_diecast` | 2 | 10 | pickaxe | 1 |
 | Edge Lit Exit Sign (Bi, Double-Sided) | `csm:mclacodeapprovedexitsigndual` |  |  |  |  |
 | Edge Lit Exit Sign (Double-Sided) | `csm:mclacodeapprovedexitsign` |  |  |  |  |
 | Edge Lit Exit Sign (Left, Double-Sided) | `csm:mclacodeapprovedexitsignleft` |  |  |  |  |
@@ -48,6 +49,7 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 | Exit Sign (Green Man, Up Left Arrow) | `csm:greenmanexitsignupleftarrow` |  |  |  |  |
 | Exit Sign (Green Man, Up Right Arrow) | `csm:greenmanexitsignuprightarrow` |  |  |  |  |
 | Exit Sign / Emergency Light Combo | `csm:exit_sign_combo_compact` | 2 | 10 | pickaxe | 1 |
+| Explosion-Proof Exit Sign | `csm:exit_sign_explosion_proof` | 2 | 10 | pickaxe | 1 |
 | FCI Pull Station | `csm:firealarmfcipull` | 2 | 10 | pickaxe | 1 |
 | Fire Alarm Beacon (Blue Lens) | `csm:firealarmbeaconblue` | 2 | 10 | pickaxe | 1 |
 | Fire Alarm Beacon (Clear Lens) | `csm:firealarmbeaconclear` | 2 | 10 | pickaxe | 1 |
@@ -81,6 +83,7 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 | Old Fire Sprinkler 4 | `csm:oldfiresprinkler4` | 2 | 10 | pickaxe | 1 |
 | Old Fire Sprinkler 5 | `csm:oldfiresprinkler5` | 2 | 10 | pickaxe | 1 |
 | Old Fire Sprinkler 6 | `csm:oldfiresprinkler6` | 2 | 10 | pickaxe | 1 |
+| Photoluminescent Exit Sign | `csm:exit_sign_photoluminescent` | 2 | 10 | pickaxe | 1 |
 | Simplex 2901 Red (Horn Strobe) | `csm:firealarmsimplex2901hornstrobered` | 2 | 10 | pickaxe | 1 |
 | Simplex 2901 Red (Horn) | `csm:firealarmsimplex2901hornred` | 2 | 10 | pickaxe | 1 |
 | Simplex 4050 Red (Horn) | `csm:firealarmsimplex4050red` | 2 | 10 | pickaxe | 1 |
@@ -143,6 +146,7 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 | System Sensor SpectrAlert Classic White (Horn Strobe) | `csm:firealarmsystemsensorclassichornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | Traditional Exit Sign | `csm:exit_sign_traditional_flat` | 2 | 10 | pickaxe | 1 |
 | Traditional Exit Sign (Rounded) | `csm:exit_sign_traditional_rounded` | 2 | 10 | pickaxe | 1 |
+| Vandal-Resistant Exit Sign | `csm:exit_sign_vandal_resistant` | 2 | 10 | pickaxe | 1 |
 | Wheelock 7002T Red (Horn Strobe) | `csm:firealarmwheelock7002tred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS Red (Horn Strobe) | `csm:firealarmwheelockasred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS White (Horn Strobe) | `csm:firealarmwheelockaswhite` | 2 | 10 | pickaxe | 1 |

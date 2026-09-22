@@ -27,13 +27,17 @@ import org.junit.jupiter.api.Test;
  */
 class ExitSignBlockstateTest {
 
-  /** The blocks that have assets, with their registry names. */
+  /** Every exit sign block, with its registry name. */
   private static final Map<String, ExitSignSpec> MODELLED = new HashMap<>();
 
   static {
     MODELLED.put("exit_sign_traditional_flat", BlockExitSignTraditionalFlat.SPEC);
     MODELLED.put("exit_sign_traditional_rounded", BlockExitSignTraditionalRounded.SPEC);
     MODELLED.put("exit_sign_combo_compact", BlockExitSignCombo.SPEC);
+    MODELLED.put("exit_sign_diecast", BlockExitSignDieCast.SPEC);
+    MODELLED.put("exit_sign_vandal_resistant", BlockExitSignVandalResistant.SPEC);
+    MODELLED.put("exit_sign_photoluminescent", BlockExitSignPhotoluminescent.SPEC);
+    MODELLED.put("exit_sign_explosion_proof", BlockExitSignExplosionProof.SPEC);
   }
 
   private static final List<String> FACINGS = Arrays.asList("north", "east", "south", "west");

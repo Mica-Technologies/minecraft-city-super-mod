@@ -17,6 +17,7 @@ public class BlockExitSignPhotoluminescent extends AbstractBlockExitSign {
   static final ExitSignSpec SPEC = ExitSignSpec.builder()
       .mounts(Mount.WALL, Mount.CEILING)
       .heads(Heads.NONE)
+      .letters(Letters.GREEN, Letters.RED)
       .unpowered()
       .lightValue(4)
       .preset(Letters.GREEN, Housing.WHITE)
@@ -26,6 +27,12 @@ public class BlockExitSignPhotoluminescent extends AbstractBlockExitSign {
   @Override
   public ExitSignSpec getSpec() {
     return SPEC;
+  }
+
+  /** A thin panel, its corner screws standing an eighth of a pixel proud. */
+  @Override
+  protected double[] getBodyDepth(boolean wall) {
+    return wall ? new double[]{15.375, 16} : new double[]{7.625, 8.375};
   }
 
   @Override

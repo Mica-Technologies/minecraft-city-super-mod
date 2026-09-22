@@ -383,11 +383,13 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     ExitSignConfig config = getConfig(source, pos);
-    double bottom = getFaceBottom();
-    double top = bottom + FACE_HEIGHT;
     boolean wall = config.getMount() == Mount.WALL;
-    double minX = 0;
-    double maxX = 16;
+    double margin = getHousingMargin();
+    double bottom = getFaceBottom() - margin;
+    double top = getFaceBottom() + FACE_HEIGHT + margin;
+    double minX = -margin;
+    double maxX = 16 + margin;
+    double[] depth = getBodyDepth(wall);
     if (config.getHeads() != Heads.NONE) {
       if (hasHeadsOnTop()) {
         top += HEAD_SIZE;
@@ -399,8 +401,24 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
     if (config.getMount() == Mount.CEILING) {
       top = 16;
     }
-    return new AxisAlignedBB(minX / 16, bottom / 16, (wall ? 13.25 : 6.25) / 16, maxX / 16,
-        top / 16, (wall ? 16 : 9.75) / 16);
+    return new AxisAlignedBB(minX / 16, bottom / 16, depth[0] / 16, maxX / 16, top / 16,
+        depth[1] / 16);
+  }
+
+  /**
+   * How far the housing stands out round the face on every side, in model pixels: nothing for a
+   * sign whose face is its whole front.
+   */
+  protected double getHousingMargin() {
+    return 0;
+  }
+
+  /**
+   * The fixture's front and back z, in model pixels, drawn facing north: against the block's
+   * south face on a wall, down its middle hung. Includes the heads' lenses, which stand in front.
+   */
+  protected double[] getBodyDepth(boolean wall) {
+    return wall ? new double[]{13.25, 16} : new double[]{6.25, 9.75};
   }
 
   /** The face's height in model pixels. */
