@@ -338,6 +338,12 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   solid without blocks, climbing by inserting sections, containers built to size, and
   the UV traps (explicit UVs past 0..16, shift a span a whole block, never clamp it)
 - `assets/docs/FIRE_ALARM_SYSTEM.md` -- MovingSound architecture, channel system, sound standards, full inventory
+- `assets/docs/EXIT_SIGN_SYSTEM.md` -- The configurable traditional and specialty exit signs:
+  setup as tile entity data picked by a multipart blockstate, what each block offers
+  (`ExitSignSpec`) and why mains power exists only where there are heads, the face built from
+  three cells, why a hung sign's arrow reverses from behind, the heads' glow through the
+  emergency lights' renderer, the setup screen, and the traps (ordinals are saved, the generator
+  repeats the specs)
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
 - `assets/docs/LANE_CONTROL_SYSTEM.md` -- Reversible lanes: the lane control signal, its own
   controller cabinet, groups on a time-of-day schedule, and why the clearance runs one way only
@@ -382,6 +388,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_wiki_reference.py` -- the guidebook's block catalogue under `docs/reference/`, generated from that index.
   The site publishes only what is committed, so `--check` (writes nothing, exits 1 on drift) runs on every pull request
 - `audit_fabricator_costs.py` -- mirrors the Fabricator cost rules against that index to sanity check what every block costs, without launching the game
+- `gen_exit_signs.py` -- every asset the configurable exit signs ship: the face sheets (legend and
+  arrow cells, measured letterforms, embossed unlit chevrons, `_e` companions), lamp-head lenses,
+  trim, the per-finish part models, multipart blockstates and per-setup item icons, from one
+  `STYLES` catalogue that `ExitSignBlockstateTest` holds to the Java specs; `--sheet` makes the
+  face review sheet, `--check` fails on drift
 - `gen_firealarm_obj.py` -- generates the OBJ models for the fire alarm appliances with round strobe lenses (the System Sensor L-Series LED family and the beacons); traces each enclosure's silhouette and measures each lens circle off the texture rather than hard-coding either
 - `gen_dynamic_street_sign_texture.py` -- inventory/particle texture for the dynamic street sign block
 - `gen_bike_route_shield.py` -- the bicycle route marker (MUTCD M1-8) for the shared sign
