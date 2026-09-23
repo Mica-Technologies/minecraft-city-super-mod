@@ -35,6 +35,12 @@ public class BlockParkProp extends AbstractBlock {
         false),
     /** A timber post: a pergola's. */
     POST(Material.WOOD, SoundType.WOOD, "axe", 2.0F, BlockRenderLayer.CUTOUT, true, false),
+    /**
+     * A gazebo roof: drawn over the whole footprint from the one block on top of its middle, but
+     * solid only inside that block's own cell (a box past the cell is only asked about when an
+     * entity is in the cell, so it would snag rather than hold anyone up).
+     */
+    ROOF(Material.WOOD, SoundType.WOOD, "axe", 2.0F, BlockRenderLayer.CUTOUT, true, false),
     /** A shrub: solid, but only its own size. */
     SHRUB(Material.LEAVES, SoundType.PLANT, null, 0.3F, BlockRenderLayer.CUTOUT_MIPPED, true,
         false),
@@ -73,7 +79,8 @@ public class BlockParkProp extends AbstractBlock {
    * @param registryName its registry name
    * @param kind         what it is
    * @param height       its height in sixteenths (16 for a ground block)
-   * @param inset        how far its box stands in from each side, in sixteenths
+   * @param inset        how far its box stands in from each side, in sixteenths (negative for a
+   *                     box past the cell, as a gazebo roof's selection box is)
    */
   public BlockParkProp(String registryName, Kind kind, int height, int inset) {
     super(stash(registryName, kind), kind.sound, kind.tool, 0, kind.hardness, kind.hardness * 2,
@@ -110,7 +117,14 @@ public class BlockParkProp extends AbstractBlock {
   @SuppressWarnings("deprecation")
   public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess source,
       BlockPos pos) {
-    return getKind().collides ? box : NULL_AABB;
+    if (!getKind().collides) {
+      return NULL_AABB;
+    }
+    if (getKind() == Kind.ROOF) {
+      return new AxisAlignedBB(Math.max(0, box.minX), box.minY, Math.max(0, box.minZ),
+          Math.min(1, box.maxX), Math.min(1, box.maxY), Math.min(1, box.maxZ));
+    }
+    return box;
   }
 
   @Override

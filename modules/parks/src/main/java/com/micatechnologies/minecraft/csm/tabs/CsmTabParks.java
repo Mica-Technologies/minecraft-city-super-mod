@@ -13,6 +13,7 @@ import com.micatechnologies.minecraft.csm.parks.amenities.BlockSprinkler;
 import com.micatechnologies.minecraft.csm.parks.amenities.BlockTeeterTotter;
 import com.micatechnologies.minecraft.csm.parks.amenities.BlockWbs;
 import com.micatechnologies.minecraft.csm.parks.amenities.BlockWbt;
+import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkColumn;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkFacing;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkJoining;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkProp;
@@ -83,5 +84,10 @@ public class CsmTabParks extends CsmTab {
     initTabBlock(BlockIrrigationController.class, fmlPreInitializationEvent);
     initTabBlock(new BlockParkFacing("backflow_preventer", new int[]{2, 0, 3, 14, 14, 13}, true));
     initTabBlock(new BlockParkProp("ground_rubber_safety", BlockParkProp.Kind.COVER, 1, 0));
+    initTabBlock(new BlockParkColumn("gazebo_post", BlockParkProp.Kind.POST, 16, 5));
+    initTabBlock(new BlockParkJoining("gazebo_railing", BlockParkJoining.Kind.RAIL, 10, 2));
+    initTabBlock(new BlockParkProp("gazebo_deck", BlockParkProp.Kind.COVER, 2, 0));
+    initTabBlock(new BlockParkProp("gazebo_roof_3x3", BlockParkProp.Kind.ROOF, 16, -16));
+    initTabBlock(new BlockParkProp("gazebo_roof_5x5", BlockParkProp.Kind.ROOF, 16, -32));
   }
 }

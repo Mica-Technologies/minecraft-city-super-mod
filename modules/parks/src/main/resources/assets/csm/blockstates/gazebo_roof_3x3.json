@@ -1,0 +1,24 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "normal": [
+      {
+        "model": "csm:parks/amenities/gazebo_roof_3x3.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#shingle": "csm:blocks/parks/amenities/gazebo_shingle",
+          "#trim": "csm:blocks/parks/amenities/white_paint",
+          "#ceiling": "csm:blocks/parks/amenities/gazebo_ceiling",
+          "particle": "csm:blocks/parks/amenities/gazebo_shingle"
+        }
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:parks/amenities/gazebo_roof_3x3_item"
+      }
+    ]
+  }
+}

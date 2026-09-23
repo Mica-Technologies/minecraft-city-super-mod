@@ -1,0 +1,77 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "paint": "csm:blocks/parks/amenities/white_paint",
+    "particle": "csm:blocks/parks/amenities/white_paint"
+  },
+  "elements": [
+    {
+      "from": [
+        7,
+        0,
+        7
+      ],
+      "to": [
+        9,
+        10,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paint",
+          "uv": [
+            7,
+            6,
+            9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#paint",
+          "uv": [
+            7,
+            6,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#paint",
+          "uv": [
+            7,
+            6,
+            9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#paint",
+          "uv": [
+            7,
+            6,
+            9,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#paint",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#paint",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        }
+      }
+    }
+  ]
+}
