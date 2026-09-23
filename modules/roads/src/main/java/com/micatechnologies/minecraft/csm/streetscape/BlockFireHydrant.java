@@ -45,7 +45,7 @@ public class BlockFireHydrant extends AbstractBlockRotatableNSEWUD
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.318750, 0.000000, -0.262500, 0.318750, 0.862500, 0.356250);
+    return new AxisAlignedBB(0.181250, 0.000000, 0.237500, 0.818750, 0.862500, 0.856250);
   }
 
   @Override
