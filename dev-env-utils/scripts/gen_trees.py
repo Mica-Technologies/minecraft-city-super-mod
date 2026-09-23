@@ -209,16 +209,26 @@ TOOL_LANG = {
         "Trädplanteringsverktyg"),
     "csm.parks.planting.mode": (
         "Planting: %s", "Pflanzen: %s", "Plantar: %s", "Planterar: %s"),
-    "csm.parks.planting.blocked": (
-        "Can't plant %s here: %s blocks in the way",
-        "%s kann hier nicht gepflanzt werden: %s Blöcke im Weg",
-        "No se puede plantar %s aquí: %s bloques estorban",
-        "Kan inte plantera %s här: %s block i vägen"),
+    "csm.parks.planting.noroom": (
+        "Can't plant %s here: no room for its trunk",
+        "%s kann hier nicht gepflanzt werden: kein Platz für den Stamm",
+        "No se puede plantar %s aquí: no hay sitio para el tronco",
+        "Kan inte plantera %s här: ingen plats för stammen"),
+    "csm.parks.planting.trimmed": (
+        "Planted %s, pruned to fit (%s blocks cut back)",
+        "%s gepflanzt, passend zurückgeschnitten (%s Blöcke)",
+        "%s plantado, podado para que quepa (%s bloques recortados)",
+        "%s planterad, beskuren för att få plats (%s block bortklippta)"),
     "csm.parks.planting.tooltip.use": (
-        "Right-click a block to plant a tree, leaning the way you face",
-        "Rechtsklick auf einen Block pflanzt einen Baum, der sich in Blickrichtung neigt",
-        "Clic derecho en un bloque para plantar un árbol inclinado hacia donde miras",
-        "Högerklicka på ett block för att plantera ett träd som lutar åt det håll du tittar"),
+        "Right-click a block to plant a tree, leaning the way you face or away from walls",
+        "Rechtsklick auf einen Block pflanzt einen Baum, der sich in Blickrichtung oder von Wänden weg neigt",
+        "Clic derecho en un bloque para plantar un árbol inclinado hacia donde miras o lejos de las paredes",
+        "Högerklicka på ett block för att plantera ett träd som lutar åt det håll du tittar eller bort från väggar"),
+    "csm.parks.planting.tooltip.fell": (
+        "Breaking a log fells what it held up; sneak to break just that block",
+        "Ein abgebauter Stamm fällt, was er trug; schleichen baut nur diesen Block ab",
+        "Romper un tronco derriba lo que sostenía; agáchate para romper solo ese bloque",
+        "Att bryta en stam fäller det den bar upp; smyg för att bryta bara det blocket"),
     "csm.parks.planting.tooltip.cycle": (
         "Sneak + right-click to change species", "Schleichen + Rechtsklick wechselt die Art",
         "Agáchate + clic derecho para cambiar de especie", "Smyg + högerklicka för att byta art"),

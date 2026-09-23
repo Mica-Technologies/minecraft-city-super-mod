@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkProp;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
+import com.micatechnologies.minecraft.csm.parks.trees.TreeLogConnections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +33,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * The Tree Planting Tool: plants a whole tree of the selected species where it is used, built from
  * ordinary log and leaves blocks, so it can be edited block by block afterwards.
  *
- * <p>Right-click a block to plant on it; the tree leans and reaches the way the player faces, so
- * standing on a sidewalk facing the road plants a tree that arches over the road. Sneak and
- * right-click to change species. Every block of the tree is checked before any is placed: if
- * anything but air, plants, snow or a ground cover is in the way, or the player may not build
- * there, nothing is planted. Clicking a ground cover plants through it, on the ground below.</p>
+ * <p>Right-click a block to plant on it; in the open the tree leans and reaches the way the player
+ * looks, so standing on a sidewalk facing the road plants a tree that arches over the road. Near a
+ * building it grows into the room there is instead ({@link TreeGenerators}): leaning away from the
+ * wall, pruned flat against it, reaching out where it is open. Anything but air, plants, snow or a
+ * ground cover, or anywhere the player may not build, is in the way; another tree's leaves are met
+ * rather than avoided, so a row's canopies join. Only when there is no room for the trunk itself
+ * is nothing planted. Sneak and right-click to change species. Clicking a ground cover plants
+ * through it, on the ground below.</p>
  *
  * @since 2026.9
  */
@@ -101,20 +105,23 @@ public class ItemTreePlantingTool extends AbstractItem {
     }
     BlockPos base = replaceable(world, pos) ? pos : pos.offset(facing);
     TreePreset preset = getPreset(stack);
-    TreePlan plan = TreeGenerators.grow(preset, player.getHorizontalFacing(),
-        new Random(world.rand.nextLong()));
-
-    int blocked = 0;
-    for (BlockPos rel : plan.parts().keySet()) {
+    TreeSpace space = rel -> {
       BlockPos at = base.add(rel);
-      if (at.getY() < 0 || at.getY() > 255 || !world.isBlockModifiable(player, at)
-          || !player.canPlayerEdit(at, EnumFacing.UP, stack) || !replaceable(world, at)) {
-        blocked++;
+      if (at.getY() < 0 || at.getY() > 255 || !world.isBlockLoaded(at)) {
+        return TreeSpace.Cell.BLOCKED;
       }
-    }
-    if (blocked > 0) {
-      player.sendStatusMessage(new TextComponentTranslation("csm.parks.planting.blocked",
-          new TextComponentTranslation(preset.getTranslationKey()), blocked), true);
+      if (replaceable(world, at)) {
+        return world.isBlockModifiable(player, at) && player.canPlayerEdit(at, EnumFacing.UP, stack)
+            ? TreeSpace.Cell.FREE : TreeSpace.Cell.BLOCKED;
+      }
+      return TreeLogConnections.isLeaves(world.getBlockState(at).getBlock())
+          ? TreeSpace.Cell.FOLIAGE : TreeSpace.Cell.BLOCKED;
+    };
+    TreePlan plan = TreeGenerators.grow(preset, TreeGenerators.headingOfYaw(player.rotationYaw),
+        new Random(world.rand.nextLong()), space);
+    if (plan.hasNoRoom() || plan.parts().isEmpty()) {
+      player.sendStatusMessage(new TextComponentTranslation("csm.parks.planting.noroom",
+          new TextComponentTranslation(preset.getTranslationKey())), true);
       return EnumActionResult.FAIL;
     }
 
@@ -128,6 +135,10 @@ public class ItemTreePlantingTool extends AbstractItem {
           }
         }
       }
+    }
+    if (plan.getTrimmed() > 0) {
+      player.sendStatusMessage(new TextComponentTranslation("csm.parks.planting.trimmed",
+          new TextComponentTranslation(preset.getTranslationKey()), plan.getTrimmed()), true);
     }
     return EnumActionResult.SUCCESS;
   }
@@ -168,6 +179,7 @@ public class ItemTreePlantingTool extends AbstractItem {
     List<String> lines = new ArrayList<>();
     lines.add(I18n.format("csm.parks.planting.tooltip.use"));
     lines.add(I18n.format("csm.parks.planting.tooltip.cycle"));
+    lines.add(I18n.format("csm.parks.planting.tooltip.fell"));
     lines.add(I18n.format("csm.parks.planting.tooltip.current",
         I18n.format(getPreset(stack).getTranslationKey())));
     tooltip.addAll(lines);

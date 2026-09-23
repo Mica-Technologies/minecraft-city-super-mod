@@ -26,22 +26,24 @@ class TreeRenderBudgetTest {
   private static final int SEEDS = 10;
 
   /**
-   * Each preset's average quads when the geometry was last tuned (2026-09-23, after the sheeted
-   * leaves, fewer log sides, straight-through tubes and a curtain hung only from a weeping crown's
-   * underside took one of every preset from 82,178 quads to 31,199). A preset may grow 15% past
-   * this before the test fails; beyond that, look at what grew, and raise the number here only if
-   * it earns its cost.
+   * Each preset's average quads when the geometry was last tuned. The 2026-09-23 pass (sheeted
+   * leaves, fewer log sides, straight-through tubes and a curtain hung only from a weeping
+   * crown's underside) took one of every preset from 82,178 quads to 31,199; the adaptive
+   * generator that followed it (forked leaders, side branches, lopsided clusters) brought that
+   * back to about 33,700, the price of limbed trees that no longer all look alike. A preset may
+   * grow 15% past this before the test fails; beyond that, look at what grew, and raise the
+   * number here only if it earns its cost.
    */
   private static final Map<String, Integer> BUDGET = new HashMap<>();
   /** One of every preset together. */
   private static final int TOTAL_BUDGET = 36000;
 
   static {
-    String[] rows = {"liveoak 3414", "elm 2746", "plane 3171", "honeylocust 1588", "cypress 188",
-        "ginkgo 516", "fanpalm 242", "leaningpalm 240", "lollipopplane 576", "jacaranda 2845",
-        "peppertree 3242", "coastliveoak 2712", "weepingwillow 5557", "poplar 661",
-        "sweetgum 369", "hornbeam 479", "queenpalm 178", "lemongum 1592", "arborvitae 74",
-        "pleachedlinden 306", "pollardedplane 503"};
+    String[] rows = {"liveoak 3832", "elm 3210", "plane 3588", "honeylocust 1670", "cypress 188",
+        "ginkgo 514", "fanpalm 228", "leaningpalm 244", "lollipopplane 576", "jacaranda 3122",
+        "peppertree 3562", "coastliveoak 2798", "weepingwillow 5708", "poplar 638",
+        "sweetgum 372", "hornbeam 484", "queenpalm 178", "lemongum 1789", "arborvitae 74",
+        "pleachedlinden 306", "pollardedplane 590"};
     for (String row : rows) {
       String[] kv = row.split(" ");
       BUDGET.put(kv[0], Integer.parseInt(kv[1]));
@@ -168,6 +170,7 @@ class TreeRenderBudgetTest {
     StringBuilder out = new StringBuilder(String.format(
         "%-16s %7s %7s %7s %7s %9s%n", "preset", "logs", "leaves", "hang", "cells", "total"));
     long all = 0;
+    StringBuilder over = new StringBuilder();
     for (TreePreset preset : TreePreset.values()) {
       long[] sum = new long[4];
       for (long seed = 0; seed < SEEDS; seed++) {
@@ -180,13 +183,16 @@ class TreeRenderBudgetTest {
       all += total;
       Integer budget = BUDGET.get(preset.id);
       assertTrue(budget != null, "no budget for preset " + preset.id + "; add it to BUDGET");
-      assertTrue(total <= budget * 1.15, preset.id + " draws " + total
-          + " quads, over its budget of " + budget + " (+15%)");
+      if (total > budget * 1.15) {
+        over.append(preset.id).append(" draws ").append(total)
+            .append(" quads, over its budget of ").append(budget).append(" (+15%); ");
+      }
       out.append(String.format("%-16s %7d %7d %7d %7d %9d%n", preset.id, sum[0] / SEEDS,
           sum[1] / SEEDS, sum[2] / SEEDS, sum[3] / SEEDS, total));
     }
     out.append(String.format("all presets, one of each: %d quads%n", all));
     System.out.println(out);
+    assertTrue(over.length() == 0, over.toString());
     assertTrue(all <= TOTAL_BUDGET, "one of every preset draws " + all + " quads, over "
         + TOTAL_BUDGET);
   }

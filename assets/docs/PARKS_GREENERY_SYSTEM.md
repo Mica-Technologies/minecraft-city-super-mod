@@ -95,7 +95,8 @@ neighbouring blocks differ but a given block always looks the same.
 | `CLIPPED` | the pleached linden: a flat leafy face flush with each open side, for topiary |
 | `PALM_FAN`, `PALM_FAN_SKIRT`, `PALM_FEATHER` | palm crowns, drawn by `TreePalmGeometry` |
 
-Leaves never decay: a street tree that disappears would ruin a build. They have **no collision**,
+Leaves never decay on their own: a street tree that disappears would ruin a build. They go only
+when the logs holding them are felled (see Felling). They have **no collision**,
 so a canopy never blocks a sidewalk or snags on a sign, but the selection box is the full block so
 they are still easy to break.
 
@@ -121,18 +122,58 @@ fixed for each species, with no biome tint, so a street looks the same in any bi
 `ItemTreePlantingTool` plants a whole tree of the selected species, made of ordinary log and leaves
 blocks. It works in three steps:
 
-1. **Grow.** `TreeGenerators.grow(preset, facing, rng)` fills a `TreePlan`, a map from each
-   position to a named part. Logs win over leaves, and leaves over moss.
-2. **Check.** Every position must be air, a plant, snow or a ground cover (a `COVER` prop, a
-   carpet), and editable by the player. If anything is in the way, nothing is placed, and the
-   action bar says how many blocks are in the way. Clicking a ground cover plants through it: the
-   trunk replaces the cover and stands on the ground, where it would otherwise stand a block up,
-   on top of a one-pixel layer.
-3. **Place.** Logs first, then leaves, then moss, so each has what it hangs from.
+1. **Grow.** `TreeGenerators.grow(preset, heading, rng, space)` fills a `TreePlan`, a map from
+   each position to a named part. Logs win over leaves, and leaves over moss. The `TreeSpace`
+   answers, cell by cell, what is around the spot: `FREE` (air, a plant, snow, a ground cover such
+   as a `COVER` prop or a carpet, and editable by the player), `FOLIAGE` (another tree's leaves)
+   or `BLOCKED` (anything else).
+2. **Refuse only for want of a trunk.** The tree grows into whatever room there is (next
+   section). Nothing is planted only when the trunk cannot reach its shortest clear height, or the
+   tree would have no leaves at all; the action bar then says there is no room for its trunk.
+   Clicking a ground cover plants through it: the trunk replaces the cover and stands on the
+   ground, where it would otherwise stand a block up, on top of a one-pixel layer.
+3. **Place.** Logs first, then leaves, then moss, so each has what it hangs from. If anything was
+   pruned to fit, the action bar says how many blocks were cut back.
 
-The tree leans and reaches the way the player faces. Stand on a sidewalk facing the road and the
-tree arches over the road. Sneak and right-click to change species. The preset is the tool's
-`csm_tree_preset` NBT ordinal, so **add presets at the end** of `TreePreset`.
+In the open the tree leans and reaches the way the player looks (the yaw, not the nearest
+facing). Stand on a sidewalk facing the road and the tree arches over the road. Sneak and
+right-click to change species. The preset is the tool's `csm_tree_preset` NBT ordinal, so **add
+presets at the end** of `TreePreset`.
+
+### Growing into the room there is
+
+A street tree planted against a building has spent years leaning away from it and being pruned
+flat on that side. The generator reproduces the result rather than the years:
+
+- **It looks round first.** `awayFromWalls` marches out in 16 directions at the heights the crown
+  will fill, and sums a vector pointing from what is built toward the open, longer the nearer and
+  wider the walls. The planter's heading is jittered (about 20 degrees, so a row is not cloned)
+  and then turned by that vector; the walls win. Pushed off a wall, a tree leans a step or two
+  further than it would in the open.
+- **The trunk steps sideways on one axis at a time**, whichever keeps it nearer the heading's
+  line, so a diagonal lean is a staircase of edge-diagonal steps the log kit bridges. It goes
+  round something overhead where it can.
+- **Limbs keep a block off anything built** (no wall beside a limb log, no roof on it). A limb
+  that would run into something tries turning up to about 60 degrees either way, and takes the
+  direction that runs furthest, less a little for each step turned and for crowding a limb already
+  grown. Where it cannot turn it is cut back, and keeps a smaller tuft at the cut.
+- **Foliage is filled outward from its limb through open cells only**, so a crown meets a wall
+  with a flat face (leaves may touch the wall; logs may not) and never reaches through it or round
+  it into a room. Leaves also need three clear blocks over them, so nothing grows under an awning
+  or balcony.
+- **Another tree's leaves are no wall.** A limb and a crown grow up to them without entering, and
+  sensing ignores them, so a row planted a few blocks apart joins into one canopy over the street.
+
+For the variety the open-ground trees lacked, a limbed tree now also:
+
+- forks into two leaders now and then (`fork`: elm 60%, jacaranda 40%, plane and pepper tree
+  30%), each carrying half the limbs and its own closing cluster;
+- springs some limbs a block or two lower on the trunk;
+- grows each limb as an arch (up early, then levelling off) with its own curve, reach jitter and
+  fan jitter;
+- puts out a side branch with a smaller cluster from about 45% of the way along a long limb
+  (`branchChance`, 45%), sharing the limb's foliage rather than adding to it;
+- draws each cluster a little lopsided.
 
 A preset (`TreePreset`) is a generator **shape** plus species parameters: trunk and height ranges,
 lean, limb count, reach, rise, cluster size, street clearance and the leaves block. Each planting
@@ -155,7 +196,34 @@ A limb line never steps on all three axes at once. The log kit bridges edge diag
 diagonals, so a corner step is split in two. `TreeGeneratorsTest` grows every preset in every
 facing from 20 seeds and fails if the logs are not one piece joined through faces and edge
 diagonals. The same test fails if a limbed tree has leaves under its clearance, or if a palm's
-crown is not on its top log.
+crown is not on its top log. It also grows every preset against a wall and in a building's
+corner: nothing may grow into a wall, no limb may stand against one, a tree by a wall must reach
+mostly away from it, nothing grows under an awning, another tree's leaves are never entered, and
+every leaf must be near enough a log that felling a neighbouring limb could not strip it.
+
+---
+
+## Felling
+
+Broken by a player, a tree log fells what it alone held up (`BlockTreeLog.removedByPlayer` to
+`TreeFelling.fell`). **Sneaking breaks just that block**, so a tree can still be edited by hand.
+
+- **Logs.** From each log joined to the broken one (through faces and edge diagonals, as the kit
+  draws them), the connected logs are searched. A piece is held up if any of its logs stands on
+  something solid that is not part of a tree, or is joined to a vanilla log; otherwise it falls,
+  dropping its logs unless the player is in creative. Cut the trunk and the tree comes down; cut
+  a limb and only the limb goes. A log touching a wall does not hold anything up: the generator
+  keeps logs off walls, and a limb resting on a roof stands on it anyway.
+- **Leaves.** The leaves joined, through leaves, to what went are kept if they are within
+  `LEAF_REACH` (8) steps through leaves of a remaining log, or stand straight on one through
+  leaves (a cypress's one-wide column, which has no room for a trunk inside it). The rest go,
+  dropping nothing, as decaying leaves do. A neighbour's canopy that touched the felled tree keeps
+  every leaf near its own logs.
+- **Bounded.** More than 2,048 logs in a piece is taken as held up, and leaves are searched only
+  within a box 26 blocks past what went, with the box's edge counted as held, so a felling can
+  only ever do too little. The first 24 logs play their break effect; the rest go quietly.
+
+The searches are pure functions over a `Cells` view (`TreeFellingTest`).
 
 ---
 
@@ -293,7 +361,8 @@ about 0.2 ms a frame on a fast card, but a canopy is exactly where a slower one 
 and fails when any preset grows more than 15% past its recorded budget.
 
 One pass (2026-09-23) took one of every preset from 82,178 quads to 31,199 without changing how
-the trees read. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
+the trees read. The adaptive generator that followed (forks, side branches, lopsided clusters)
+brought it back to about 33,700, the price of limbed trees that no longer all look alike. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
 - **Sheeted leaves.** Every leaf type but clipped draws a leaf sheet on each open face (one quad,
   facing out, 1 px inside the face), a tuft card past each open side and the top, and one card
   inside, where they had drawn six interior cards, three fringe cards per open face and cover
@@ -321,8 +390,15 @@ renderer.
   also be edited.
 - **The lean comes from diagonal steps, not a lean property.** It is how players already build
   curved trees. The bridge is what makes thin logs work.
-- **Leaves are fixed colours for each species, never decay and have no collision.** See the leaves
-  section.
+- **Leaves are fixed colours for each species, never decay on their own and have no collision.**
+  See the leaves section.
+- **A tree adapts to its site; it is not refused for it.** The tool used to refuse a tree if any
+  cell was in the way. Now it grows into the room there is, and refuses only when the trunk has
+  none, because a street tree against a building is exactly the case a city needs.
+- **Leaves touch a wall, logs keep off it.** A crown pruned flat against a facade reads right; a
+  limb pressed into one does not.
+- **Felling is on by default, sneaking opts out.** The user asked for trees that come down when
+  cut, and hand editing still needs single blocks.
 - **Nothing bicycle-related.** LDIB covers bicycles, racks, docks and bike-share.
 - **Biomes O' Plenty (CC BY-NC-ND 4.0) was a reference for ideas only.** Those ideas were a
   generator for each shape with parameter ranges, checking the whole volume before placing, a
@@ -343,5 +419,10 @@ renderer.
   saved with.
 - **An element can only turn in steps of 22.5 degrees, up to 45.** The slide's chute is 45
   degrees, and the fuller grasses are four planes at ±22.5 degrees about each axis.
+- **A trunk cell may stand against a wall; a limb may not.** A tree may be planted in a pit right
+  beside a building, so `canLog` accepts any open cell and only `canLimb` asks for the margin.
+- **Leaf reach and cluster size go together.** Felling keeps leaves within `LEAF_REACH` of a log.
+  A preset whose clusters reach further from their limbs would have part of its crown stripped
+  whenever a neighbouring limb is cut; `TreeGeneratorsTest.everyLeafIsNearALog` catches it.
 - **Edge diagonals only.** Anything that lays logs (a generator, a player) must avoid corner-diagonal
   steps, or the trunk falls apart into pieces.

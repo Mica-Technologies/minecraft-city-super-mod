@@ -41,6 +41,8 @@ public final class TreePlan {
   }
 
   private final Map<BlockPos, Part> parts = new LinkedHashMap<>();
+  private int trimmed;
+  private boolean noRoom;
 
   /** Lays a log, unless a log is already there. Replaces leaves or moss. */
   public void log(BlockPos pos, TreeWood wood, TreeLogWidth width, EnumFacing.Axis axis) {
@@ -74,5 +76,30 @@ public final class TreePlan {
 
   public Map<BlockPos, Part> parts() {
     return parts;
+  }
+
+  /** Counts a cell the tree would have grown into, had something not been in the way. */
+  void trim() {
+    trimmed++;
+  }
+
+  /** Counts {@code n} cells pruned at once (the rest of a limb cut back). */
+  void trimCount(int n) {
+    trimmed += n;
+  }
+
+  /** How many cells the tree was pruned back from, because something was in the way. */
+  public int getTrimmed() {
+    return trimmed;
+  }
+
+  /** Marks the tree as not plantable: its trunk could not grow to its shortest clear height. */
+  void noRoom() {
+    noRoom = true;
+  }
+
+  /** Whether there was no room for the trunk, so nothing should be planted. */
+  public boolean hasNoRoom() {
+    return noRoom;
   }
 }

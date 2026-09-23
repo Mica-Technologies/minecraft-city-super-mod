@@ -25,12 +25,12 @@ public enum TreePreset {
   ELM("elm", Shape.LIMB, TreeWood.ELM, TreeLogWidth.THICK, TreeLogWidth.MEDIUM, "tree_leaves_elm",
       null,
       p -> p.trunk(4, 5).lean(0, 1).limbs(3, 4).reach(3, 5).rise(6, 8).cluster(3.0, 2.0)
-          .clearance(5).spread(1.6)),
+          .clearance(5).spread(1.6).fork(0.6)),
   /** London plane: a tall trunk and a broad, rounded crown. */
   PLANE("plane", Shape.LIMB, TreeWood.PLANE, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
       "tree_leaves_plane", null,
       p -> p.trunk(5, 6).lean(0, 1).limbs(4, 4).reach(3, 5).rise(3, 5).cluster(3.0, 2.4)
-          .clearance(5).spread(2.2)),
+          .clearance(5).spread(2.2).fork(0.3)),
   /** Honey locust: a slender leaning trunk and an airy, one-sided head. */
   HONEY_LOCUST("honeylocust", Shape.LIMB, TreeWood.HONEY_LOCUST, TreeLogWidth.MEDIUM,
       TreeLogWidth.THIN, "tree_leaves_honeylocust", null,
@@ -60,12 +60,12 @@ public enum TreePreset {
   JACARANDA("jacaranda", Shape.LIMB, TreeWood.JACARANDA, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
       "tree_leaves_jacaranda_blossom", null,
       p -> p.trunk(3, 4).lean(0, 1).limbs(5, 6).reach(3, 5).rise(2, 3).cluster(3.0, 1.4)
-          .clearance(4).spread(2.6)),
+          .clearance(4).spread(2.6).fork(0.4)),
   /** California pepper tree: a gnarled leaning trunk and weeping tips. */
   PEPPER_TREE("peppertree", Shape.LIMB, TreeWood.PEPPER, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
       "tree_leaves_pepper", null,
       p -> p.trunk(2, 3).lean(1, 2).limbs(4, 5).reach(3, 5).rise(1, 3).cluster(2.8, 1.8)
-          .clearance(3).spread(1.8)),
+          .clearance(3).spread(1.8).fork(0.3)),
   /** Coast live oak: low and twisting, limbs reaching out close to the ground. */
   COAST_LIVE_OAK("coastliveoak", Shape.LIMB, TreeWood.LIVE_OAK, TreeLogWidth.THICK,
       TreeLogWidth.MEDIUM, "tree_leaves_liveoak", null,
@@ -148,6 +148,10 @@ public enum TreePreset {
   /** Of the crown's outer undersides, the share that get a hanging block, and its longest drop. */
   double hangChance = 0.22;
   int hangMax = 3;
+  /** The chance a limbed tree's trunk forks into two leaders, as an elm's does. */
+  double forkChance;
+  /** The chance a long limb puts out a side branch with its own cluster. */
+  double branchChance = 0.45;
 
   TreePreset(String id, Shape shape, TreeWood wood, TreeLogWidth trunkWidth,
       TreeLogWidth limbWidth, String leaves, String extra, Consumer<TreePreset> setup) {
@@ -216,6 +220,11 @@ public enum TreePreset {
   private TreePreset hang(double chance, int max) {
     hangChance = chance;
     hangMax = max;
+    return this;
+  }
+
+  private TreePreset fork(double chance) {
+    forkChance = chance;
     return this;
   }
 
