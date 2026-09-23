@@ -1,799 +1,319 @@
 # HVAC System
 
-Deep-dive technical documentation for the HVAC (heating, ventilation, and air conditioning)
-subsystem in the City Super Mod.
+How the CSM: HVAC module heats and cools rooms: the thermal simulation every temperature comes
+from, the controllers that drive the equipment, what the player sees, and why each piece is the
+way it is. Everything lives in `modules/hvac/src/main/java/com/micatechnologies/minecraft/csm/hvac/`.
 
-## Overview
+## The model in one paragraph
 
-The HVAC system simulates realistic indoor temperature control. It computes a per-position
-temperature in degrees Fahrenheit based on the Minecraft biome, modifies it with distance-weighted
-contributions from active heaters, coolers, and vent relays, and displays the result both on an
-in-game HUD overlay and on thermostat TESR displays. A thermostat controller provides automatic
-heating/cooling with cycle hysteresis on the restart side, a two-phase ramp-up system, and multi-zone support
-via zone thermostats with independent setpoints and vent networks.
-
-All HVAC code lives in `src/main/java/com/micatechnologies/minecraft/csm/hvac/`.
-
-## Architecture
+Rooms hold heat. Every enclosed air space the equipment touches is found by flood fill, split into
+regions of about 8 x 4 x 8 blocks, and each region keeps a temperature that is saved with the
+world. Once a second, on the server, each region loses heat to what it touches (the outdoors
+through walls and openings, the ground, the room next door through a shared wall, and its
+neighbouring regions through the open air between them) and gains what the equipment delivers.
+Thermostats, the HUD and Core's `CsmEnvironment` all read that one stored number, so they cannot
+disagree.
 
 ```
-                     Server Side                                 Client Side
-          ┌──────────────────────────────┐            ┌──────────────────────────┐
-          │  TileEntityHvacThermostat    │  NBT sync  │  HvacThermostatGui       │
-          │  (primary controller)        │ ─────────> │  (setpoint adjustment)   │
-          │                              │            │                          │
-          │  - Reads temperature via     │            │  HvacThermostatRenderer  │
-          │    HvacTemperatureManager    │            │  (TESR: LCD display)     │
-          │  - Cycle hysteresis          │            │                          │
-          │  - Activates heaters/coolers │            │  HvacHudOverlay          │
-          │  - Pushes vent contributions │            │  (temperature readout)   │
-          │  - Two-phase ramp system     │            │                          │
-          └───────┬──────────┬───────────┘            └──────────────────────────┘
-                  │          │
-     ┌────────────┤          ├────────────────┐
-     │            │          │                │
-┌────┴────┐  ┌───┴───┐  ┌───┴──────┐  ┌──────┴──────────────────┐
-│ Heaters │  │Coolers│  │ Vents    │  │ TileEntityHvac          │
-│ (IHvac  │  │(IHvac │  │ (IHvac   │  │ ZoneThermostat          │
-│  Unit)  │  │ Unit) │  │  Unit)   │  │                         │
-│ +15 deg F│  │-15degF│  │ pushed   │  │ - Own setpoints/vents   │
-│ direct  │  │direct │  │ by tstat │  │ - Delegates to primary  │
-└─────────┘  └───────┘  └──────────┘  │   for unit activation   │
-                                      │ - Own ramp accumulator  │
-         ┌──────────────────┐         └──────────┬──────────────┘
-         │  RTU Variants    │                    │
-         │ +2 deg F local   │               ┌────┴────┐
-         │ +/-12 deg F vent │               │ Zone    │
-         │ 100-block range  │               │ Vents   │
-         └──────────────────┘               └─────────┘
+   C_r dT_r/dt = Q_r - SUM_i UA_ri (T_r - T_i)          (per region, stepped implicitly)
+
+   thermostat display ──┐
+   HUD (via packet) ────┼──>  region temperature  <── controllers deliver Q
+   CsmEnvironment ──────┘
 ```
 
-## Key Classes
-
-### Temperature Engine
-
-- **`HvacTemperatureManager`** -- Temperature calculation engine. Computes per-position
-  temperature from biome baseline plus distance-weighted HVAC offset. Caches biome baselines
-  per chunk (40-tick / 2-second lifetime). Public APIs:
-  - `getTemperatureAt(World, BlockPos)` -- Instantaneous raw reading at a single position.
-  - `getAmbientTemperatureAt(World, BlockPos, EnumFacing)` -- Raw reading for a wall-mounted
-    device. Samples the device's pos plus up to 3 blocks forward through the room direction
-    (stopping at the first solid block) and returns whichever sample has the largest offset
-    from baseline. This is the method thermostats use: the device's own `pos` sits flush
-    against the wall it's mounted on, so a single-point read accumulates wall-attenuation
-    against every HVAC source and collapses the per-direction offset cap.
-  - `getBaselineAt(World, BlockPos)` -- The biome baseline alone (no HVAC). Used by consumers
-    that maintain their own smoothing state and need to separate HVAC offset from baseline
-    drift across biome boundaries.
-- **`TemperatureSmoother`** -- Per-consumer asymmetric EMA. The HUD overlay owns one of
-  these; thermostats run their own thermal-mass blend on top of `getAmbientTemperatureAt`
-  instead. Smoothing state is intentionally not held inside the manager so consumers can't
-  silently corrupt each other.
-
-### Controllers
-
-- **`TileEntityHvacThermostat`** -- Primary controller. Tickable TE (40-tick rate = 2 seconds).
-  Manages linked heaters/coolers, vents, and zone thermostats. Implements cycle hysteresis,
-  thermal smoothing, and the two-phase ramp system. Emits redstone signal strength 15 when calling.
-- **`TileEntityHvacZoneThermostat`** -- Zone controller. Same tick rate and control logic as
-  primary, but does not own heaters/coolers directly. Links to a primary thermostat for unit
-  access and manages its own set of vent relays with independent setpoints. Has its own ramp
-  accumulator. Emits redstone signal strength 15 when calling.
-
-### HVAC Units
-
-- **`IHvacUnit`** -- Interface for all tile entities that influence temperature. Methods:
-  - `getTemperatureContribution()` -- Degrees F offset (positive = heating, negative = cooling)
-  - `isHvacActive()` -- Whether the unit is currently operating
-  - `getMaxVentLinkDistance()` -- Maximum vent link distance (default 30 blocks)
-  - `getVentRelayContribution()` -- Base vent contribution (default +/-15 deg F)
-- **`TileEntityHvacHeater`** -- Base heater TE. Accepts Forge Energy (1000 FE max, 100 FE/t
-  receive, 10 FE/tick consumption). Active when redstone-powered OR has stored FE. In thermostat
-  mode, also requires thermostat calling. Contributes +15 deg F.
-- **`TileEntityHvacCooler`** -- Extends `TileEntityHvacHeater`, overrides contribution to -15 deg F.
-- **`TileEntityHvacRtuHeater`** -- Rooftop unit heater. +2 deg F local contribution (minimal
-  local effect), +12 deg F vent relay contribution, 100-block vent link range.
-- **`TileEntityHvacRtuCooler`** -- Rooftop unit cooler. +2 deg F local contribution (compressor
-  waste heat), -12 deg F vent relay contribution, 100-block vent link range.
-- **`TileEntityHvacVentRelay`** -- Vent distribution point. Does not generate temperature on its
-  own; receives contribution values from the linked thermostat. Active when absolute contribution
-  exceeds 0.1 deg F. Can link to either a primary or zone thermostat.
-
-### Display and GUI
-
-- **`HvacHudOverlay`** -- Client-side HUD overlay registered on the Forge event bus. Renders a
-  temperature readout with color indicator when the player is within 24 blocks of any HVAC unit.
-  Configurable anchor position (four corners) and offset.
-- **`TileEntityHvacThermostatRenderer`** -- TESR for both thermostat types. Renders LCD-styled
-  text on the block face: in-world time, room temperature (with heating/cooling indicator
-  arrows), setpoint range, and outside temperature. Gated by `CsmConfig.isThermostatDisplayEnabled()`.
-- **`IHvacThermostatDisplay`** -- Interface shared by both thermostat TEs to provide data to
-  the TESR: `getCurrentTemperature()`, `getTargetTempLow()`, `getTargetTempHigh()`, `isCalling()`,
-  `getCallingMode()`.
-- **`HvacThermostatGui`** -- Primary thermostat GUI. Shows temperature gauge bar (0-120 deg F),
-  comfort range controls (5 deg F step), current temperature, calling status with efficiency
-  percentage, and linked unit/vent counts.
-- **`HvacZoneThermostatGui`** -- Zone thermostat GUI. Same gauge and controls as primary, plus
-  linked-to-primary status and zone vent counts.
-
-### Networking
-
-- **`HvacThermostatConfigPacket`** -- Client-to-server packet for setpoint changes (BlockPos +
-  targetTempLow + targetTempHigh).
-- **`HvacThermostatConfigPacketHandler`** -- Server-side handler that applies setpoint changes
-  to either a primary or zone thermostat TE.
-
-### Linking Tool
-
-- **`ItemHvacLinker`** -- Item for connecting HVAC components. Registry name: `hvaclinker`.
-  All linking flows through the thermostat as central controller.
-
-## Temperature Calculation
-
-### Biome Baseline Formula
-
-```
-tempF = biomeTemp * 90 - 4
-```
-
-| Biome | biomeTemp | Result (deg F) |
-|---|---|---|
-| Ice Plains | 0.0 | -4 |
-| Taiga | 0.25 | 18.5 |
-| Forest | 0.5 | 41 |
-| Plains | 0.8 | 68 |
-| Jungle | 1.0 | 86 |
-| Mesa | 1.5 | 131 |
-| Desert | 2.0 | 176 |
-
-The high end is intentionally extreme to make coolers meaningful in hot biomes. Baseline is
-cached per chunk with a 40-tick (2-second) lifetime. Stale cache entries are evicted every
-600 ticks (30 seconds) if older than 1200 ticks (60 seconds).
-
-### HVAC Offset Calculation
-
-The system gathers active `IHvacUnit` tile entities from a 7x7 chunk grid
-(`CHUNK_SCAN_RADIUS = 3`) around the query position, then measures each one along the actual
-**air path** from the query point. Each reachable unit's contribution is weighted by:
-
-1. **Air-path propagation (flood fill)** -- A 6-connected breadth-first flood fill expands
-   outward through open (non-solid) air from the query position, recording the shortest number
-   of path steps to every reachable air cell. A unit contributes only if the fill reaches an air
-   cell adjacent to it; its contribution is weighted by that **path-step distance**.
-   - Air bends around corners and through doorways but is stopped by a sealed wall (the basis of
-     zone separation), so a thermostat just around the corner from its vent still feels it.
-   - "Solid" (blocks airflow) = `material.isSolid() && !material.isReplaceable()`.
-   - **Path steps, not straight-line blocks.** Because air routes around obstacles, a path-step
-     count is always ≥ the Euclidean distance — e.g. a ceiling vent 6 blocks away horizontally
-     in an 8-tall room is ~8.5 blocks Euclidean but ~12 path steps (over and down). The
-     thresholds below are tuned for that inflation.
-   - Bounded by `MAX_FLOOD_BLOCKS = 4096` visited cells (a hard per-query cost ceiling), with an
-     early-stop: the fill quits as soon as every candidate source has been located, so the
-     typical cost is far below the ceiling. The full budget is only paid when a source is
-     genuinely unreachable within range. A source beyond the budget reads as unreachable.
-
-2. **Distance weight** -- Linear falloff over the **path-step** distance:
-   - Direct units (heaters/coolers): full effect within 6 steps, zero at 20 steps
-   - Vent relays: full effect within 8 steps, zero at 40 steps (wide enough to bend around a
-     corner into a connected adjacent space)
-
-3. **Outdoor attenuation** -- If the query position can see the sky (`World.canSeeSky()`),
-   the total offset is multiplied by 0.3 (30% effectiveness outdoors).
-
-4. **Dynamic offset cap** -- Heating and cooling offsets are each clamped before combining to
-   `min(BASE_HVAC_OFFSET_CAP + HVAC_OFFSET_PER_EXTRA_UNIT * (contributors - 1), HVAC_OFFSET_HARD_CAP)`,
-   where `BASE_HVAC_OFFSET_CAP = 50 deg F`, `HVAC_OFFSET_PER_EXTRA_UNIT = 25 deg F`,
-   `HVAC_OFFSET_HARD_CAP = 250 deg F`, and `contributors` is the number of reachable active
-   delivery points (heaters, coolers, **and vent relays**) with non-zero weighted contribution.
-   Counting vents lets a stacked rooftop-unit-plus-vents system raise the ceiling enough to
-   condition an extreme biome.
-
-Final offset = `min(heatingSum, heatingCap) - min(coolingSum, coolingCap)`, then multiplied by
-0.3 if outdoors.
-
-### Worked numbers (8-tall room simulations)
-
-| Scenario | path steps | vent weight | felt at full ramp (×15°F base) |
-|---|---|---|---|
-| Ceiling vent 6 blocks away (Euclidean ~8.5) | 12 | 0.88 | ~13°F |
-| Ceiling vent 14 blocks away | 20 | 0.62 | ~9°F |
-| Floor heater 6 blocks away (direct) | 6 | 1.00 (direct) | 15°F |
-| Vent around a corner | 30 | 0.31 | ~5°F |
-| Vent in a sealed adjacent closet | — | 0 (unreachable) | 0°F |
-
-## HUD Display
-
-The `HvacHudOverlay` renders a semi-transparent temperature readout (80x16 pixels) with a
-color-coded indicator square:
-
-| Temperature Range | Color | Hex |
-|---|---|---|
-| Below 60 deg F | Blue (cold) | `#3399FF` |
-| 60-80 deg F | Green (comfortable) | `#33CC33` |
-| 80-95 deg F | Yellow (warm) | `#FFCC00` |
-| Above 95 deg F | Red (hot) | `#FF3333` |
-
-An up-arrow indicator appears when the player is above Y=64. The display shows whenever any
-HVAC unit (active or not) is within 24 blocks.
-
-### Asymmetric EMA Smoothing
-
-The HUD temperature uses asymmetric exponential moving average smoothing (in
-`TemperatureSmoother`) to simulate realistic thermal behavior:
-
-- **Ramp factor (0.08)** -- Used when HVAC is actively pushing temperature away from baseline,
-  or when the direction crosses from heating to cooling. Responsive enough to track offset in
-  ~10-15 seconds.
-- **Transition factor (0.04)** -- Used when the raw offset has dropped to near zero or by
-  more than half of the smoothed value (player walked out of the conditioned space).
-  Converges to baseline in ~20-30 seconds.
-- **Decay factor (0.003)** -- Used when the raw offset has dropped only slightly within the
-  same space (thermal-mass holdover):
-  - 30 seconds after shutoff: ~83% of offset retained
-  - 1 minute: ~70% retained
-  - 2 minutes: ~49% retained
-  - 5 minutes: ~16% retained
-
-Direction change detection: if the current and smoothed offsets cross from positive to
-negative (or vice versa) beyond a +/-0.5 threshold, the ramp factor is used.
-
-Smoothing state lives on a per-consumer `TemperatureSmoother` instance, not on a shared static
-field — so the HUD's smoothing history can't be silently corrupted by other temperature
-consumers (server-side thermostat reads, future indicators).
-
-## Thermostat Control Logic
-
-### Thermal Blend
-
-Both primary and zone thermostats apply thermal smoothing to their temperature readings to
-prevent oscillation from the thermostat's own HVAC equipment:
-
-```
-currentTemperature += (rawTemp - currentTemperature) * THERMAL_BLEND_FACTOR
-```
-
-- `THERMAL_BLEND_FACTOR = 0.06` per tick (40-tick interval = 2 seconds per tick)
-- ~38 ticks (~76 seconds) to cover 90% of a temperature change
-- On first tick or world load with no saved temperature, initializes directly to raw reading
-
-### Hysteresis on the Restart Side
-
-The thermostat's state machine stops calling the moment the room reaches the user's setpoint
-(no overshoot), and only re-engages after the temperature has drifted past the setpoint by
-`CYCLE_HYSTERESIS`. Putting the gap on the restart side rather than as an overshoot deadband
-above the setpoint matches real residential HVAC, and avoids the failure mode where the
-proportional-control term throttles output to ~20% before the temperature can push past an
-overshoot stop — leaving the system stuck calling forever at the setpoint.
-
-```
-CYCLE_HYSTERESIS = 1.5 deg F
-```
-
-**State transitions:**
-
-| Current Mode | Condition | New Mode |
-|---|---|---|
-| IDLE | `currentTemp < targetTempLow - CYCLE_HYSTERESIS` | HEATING |
-| IDLE | `currentTemp > targetTempHigh + CYCLE_HYSTERESIS` | COOLING |
-| IDLE | within hysteresis-padded range | IDLE |
-| HEATING | `currentTemp >= targetTempLow` | IDLE |
-| COOLING | `currentTemp <= targetTempHigh` | IDLE |
-
-Default setpoints: `targetTempLow = 65`, `targetTempHigh = 80`. Adjustable in the GUI from
-0 to 120 deg F in 5 deg F steps. The low setpoint cannot exceed `high - 5`, and vice versa.
-
-### Unit Activation
-
-When the primary thermostat is calling:
-- **HEATING mode**: Only heaters are activated (coolers remain off)
-- **COOLING mode**: Only coolers are activated (heaters remain off)
-
-Units operate in two modes:
-- **Standalone mode** (not linked to thermostat): Activates whenever powered (redstone or FE)
-- **Thermostat mode** (linked): Requires BOTH power AND thermostat calling for this specific
-  unit type
-
-The thermostat emits redstone signal strength 15 when calling (either heating or cooling),
-enabling redstone-based automation.
-
-## Extended Ramp System
-
-When the thermostat starts calling, HVAC units do not immediately operate at full capacity.
-The system ramps up in two phases, simulating real HVAC startup behavior:
-
-### Phase 1: Startup Ramp (0-5 minutes)
-
-- Duration: 6000 ticks (5 minutes at 20 TPS)
-- Curve: Square root (`sqrt(progress)`)
-- Range: 0.2 (20%) to 1.0 (100%)
-- Formula: `RAMP_MIN_FACTOR + (1.0 - RAMP_MIN_FACTOR) * sqrt(accumulatedRampTicks / PHASE1_RAMP_TICKS)`
-- Effect: Ramps quickly in the early phase, then tapers
-
-### Phase 2: Extended Ramp (5-15 minutes)
-
-- Duration: 12000 additional ticks (10 more minutes)
-- Curve: Linear
-- Range: 1.0 (100%) to 1.6 (160%)
-- Formula: `1.0 + (MAX_EXTENDED_RAMP - 1.0) * min(1.0, phase2Elapsed / PHASE2_RAMP_TICKS)`
-- Effect: Vent contributions are multiplied by this factor, so 1.6 * 15 deg F base = 24 deg F
-  max vent output after 15 minutes of sustained operation
-
-### Ramp Persistence
-
-- `accumulatedRampTicks` is persisted to NBT, surviving chunk unload/reload
-- While calling: increments by `getTickRate()` (40) each thermostat tick
-- While idle: decrements by `getTickRate()` (40) each thermostat tick (1:1 decay rate)
-- This preserves ramp progress across short thermostat cycles, allowing the system to
-  gradually build to extended ramp levels over many heating/cooling cycles
-- At `accumulatedRampTicks <= 0`: factor is 0.0 (system completely cold)
-
-### Efficiency Display
-
-The GUI shows the ramp factor as a percentage (e.g., "Heating (47%)"). The cached efficiency
-percent is synced from server to client via NBT.
-
-## Multi-Zone Architecture
-
-### Primary Thermostat Role
-
-The primary thermostat is the central controller that:
-- Owns all heater/cooler units directly
-- Can own its own vent relays for the primary zone
-- Can link to multiple zone thermostats
-- Decides whether to activate heaters or coolers based on its own calling mode only
-
-### Zone Thermostat Role
-
-A zone thermostat:
-- Links to exactly one primary thermostat (stores `linkedPrimaryPos`)
-- Owns its own set of vent relays
-- Has independent setpoints and temperature reading at its own position
-- Has its own ramp accumulator (independent of the primary)
-- Delegates to the primary for unit information (power status, unit counts)
-- Gets base vent contribution from the primary's strongest linked unit
-
-### Zone Demand Isolation
-
-Zone demand does NOT activate the primary's opposing units. If the primary is heating
-but a zone needs cooling (or vice versa), the zone's vent contributions use the zone's
-own calling mode sign. This prevents heaters and coolers from canceling each other out
-at nearby positions. The primary only activates heaters when it is in HEATING mode and
-coolers when it is in COOLING mode, regardless of zone demands.
-
-### System Calling
-
-The primary thermostat considers the system "calling" if either:
-- The primary itself is calling, OR
-- Any linked zone thermostat is calling
-
-This keeps the ramp accumulator advancing on the primary even when only zones are active.
-
-## Vent Density Bonus
-
-When multiple vents are linked to the same thermostat (primary or zone), additional vents
-beyond the first provide a stacking bonus:
-
-- **Bonus per extra vent:** 2 deg F (`VENT_DENSITY_BONUS_PER_VENT`)
-- **Maximum bonus:** 8 deg F (`VENT_DENSITY_BONUS_CAP`)
-- Sign matches the contribution direction (positive for heating, negative for cooling)
-- Formula: `min((ventCount - 1) * 2.0, 8.0)` added to the base contribution
-
-Example with 5 vents in heating mode at full ramp (factor = 1.0):
-- Base contribution: 15 deg F (from strongest linked unit)
-- Density bonus: min(4 * 2.0, 8.0) = 8 deg F
-- Total per-vent contribution: 15 + 8 = 23 deg F
-
-The contribution pushed to each vent includes both the base (with ramp factor) and the density
-bonus: `finalContribution = (baseContribution * rampFactor) + densityBonus`.
-
-## Linking Flow
-
-All linking uses the `ItemHvacLinker` tool. The tool stores one thermostat position in memory
-as the "selected source."
-
-### Step-by-Step Linking
-
-1. **Click primary thermostat** -- Selects it as the linking source. Chat message confirms
-   selection with current link counts.
-2. **Click heater/cooler** -- Links the unit to the selected primary thermostat. Only works
-   with a primary thermostat selected (not zone). The unit must be a `TileEntityHvacHeater`
-   (or subclass).
-3. **Click vent relay** -- Links the vent to the selected thermostat (primary or zone). Distance
-   is validated against `getMaxVentLinkDistance()` (30 blocks for standard units, 100 blocks if
-   an RTU is linked to the primary).
-4. **Click zone thermostat (with primary selected)** -- Links the zone to the primary. Both
-   sides store the link (primary adds to `linkedZones`, zone stores `linkedPrimaryPos`).
-5. **Click zone thermostat (no primary selected)** -- Selects the zone as the linking source
-   (for linking vents to the zone).
-
-### Unlinking (Sneak+Click)
-
-- **Sneak+click vent relay** -- Clears the vent's link
-- **Sneak+click zone thermostat** -- Clears all zone vents and unlinks from primary
-- **Sneak+click primary thermostat** -- Clears all units, vents, and zones
-
-### Max Vent Link Distance
-
-| Strongest Linked Unit | Max Distance |
+## Why it was rebuilt (2026-09)
+
+The old engine computed `T(pos) = biome + SUM(offsets of the units running right now)`, with no
+state. The moment a call ended, a room fell straight back toward the biome, so a -50°F store could
+only swing between extremes. Four smoothing layers (vent residual decay, thermostat blend, HUD
+EMA, a two-phase "ramp") were stacked on top to hide it, and they are what produced the swings.
+The HUD recomputed its own number on the client from equipment state the client never had
+(whether a linked heater was running was not synced), then smoothed it differently, so in a real
+store it read 82-84°F beside a thermostat reading 68-70°F. Caps of 50°F + 25°F per unit, a 20%
+ramp start and a 15°F vent contribution meant a -50°F biome could never be kept up with. All of
+that is gone; see git history before 2026-09-23 for the old design.
+
+## Classes
+
+| Class | Role |
 |---|---|
-| Standard heater/cooler | 30 blocks |
-| RTU heater/cooler | 100 blocks |
+| `ThermalCellSource` | What the scanner needs to know about a cell: `AIR` (enclosed), `SKY`, `WALL`, `UNLOADED`, and a wall's material factor. Lets the scanner run on hand-built grids in unit tests |
+| `HvacAirflow` | Which blocks air passes through, and the world implementation of `ThermalCellSource` |
+| `ThermalScanner` | Flood fill of a space, its regions, and the envelope of each region |
+| `ThermalSpace` | One space: per-region capacity, conductances, temperatures; the implicit step |
+| `ThermalAnchor` | A device (or player) that keeps a space alive and reads it |
+| `HvacThermalWorld` | One world's simulation: spaces, anchors, rescans, the once-a-second step, players' HUD readings; also the block-change listener |
+| `HvacThermal` | Per-world registry, tick and unload events, Core's temperature provider |
+| `HvacSystemControl` | The controllers: systems (primary + zones + units + vents) and standalone units |
+| `HvacStatus` | Calling modes and status flags shared by control, tile entities and screens |
+| `TileEntityHvacThermostatBase` | What both thermostats share: setpoints, vents, the reported status, the anchor |
+| `TileEntityHvacThermostat` / `TileEntityHvacZoneThermostat` | Primary (units, zones, system mode) / zone (link to a primary) |
+| `TileEntityHvacHeater` (+ `Cooler`, `RtuHeater`, `RtuCooler`) | Units: capacity, power, output, standalone behaviour |
+| `TileEntityHvacVentRelay` | Where a system's air enters a room |
+| `HvacHudPacket` / `HvacHudOverlay` | Server-sent reading for the player's position, and the HUD that draws it |
+| `HvacStatusText` | The status lines on both thermostat screens |
+| `CommandHvac` | `/csmhvac` diagnostics and fast-forward |
 
-The thermostat iterates all linked units and returns the maximum `getMaxVentLinkDistance()`.
+No tile entity ticks. All control and physics runs in `HvacThermalWorld.tick()`, from the world
+tick, once every 20 ticks.
 
-## Block Inventory
+## Spaces
 
-### Heaters (direct heating, +15 deg F)
+### Which blocks air passes through (`HvacAirflow.passesAir`)
 
-| Block Class | Registry Name | Color | Tile Entity |
-|---|---|---|---|
-| `BlockHvacHeater` | `hvac_heater` | White | `TileEntityHvacHeater` |
-| `BlockHvacHeaterBlack` | `hvac_heater_black` | Black | `TileEntityHvacHeater` |
-| `BlockHvacHeaterSilver` | `hvac_heater_silver` | Silver | `TileEntityHvacHeater` |
+This module may reference Core and vanilla only, yet rooms are built from every module's blocks,
+so a block is judged by its shape and state, not its class:
 
-### Coolers (direct cooling, -15 deg F)
+- Air, replaceable blocks and blocks with no collision box pass air.
+- A block with an `open` property set, or a `motion` of `open`/`moving`, passes air: vanilla and
+  CSM doors, fence gates, trapdoors, the garage doors. The actual state is read, because a vanilla
+  door's upper half never stores that it is open.
+- Closed trapdoors, slabs and stairs block air (floors and roofs). Fences and walls pass it.
+- A full cube blocks air. A box spanning the cell in two directions is a plane: a vertical plane
+  (glass pane, closed door, glazing, wall finish) blocks; a horizontal one blocks only when
+  thicker than a quarter block, so carpets, floor finishes and flush ceiling vents stay in the room.
+- Everything else (furniture, lights, the thermostats themselves) passes air, so a table does not
+  cut a room in two. The old engine used `material.isSolid()`, which did.
 
-| Block Class | Registry Name | Color | Tile Entity |
-|---|---|---|---|
-| `BlockHvacCooler` | `hvac_cooler` | White | `TileEntityHvacCooler` |
-| `BlockHvacCoolerBlack` | `hvac_cooler_black` | Black | `TileEntityHvacCooler` |
-| `BlockHvacCoolerSilver` | `hvac_cooler_silver` | Silver | `TileEntityHvacCooler` |
+### Sky versus enclosed air
 
-### RTU Heaters (+2 deg F local, +12 deg F via vents, 100-block range)
+A passable cell is enclosed when something that blocks airflow lies anywhere above it in its
+column. **Do not use Minecraft's sky or precipitation height for this**: both count a thermostat, a
+lamp or a sign as a roof, so a thermostat on a post outdoors made itself a two-cell "room" and held
+it at 66°F (found in the lab). A light-based test would count a glass roof as open sky. The
+precipitation height only starts the downward search; each column's answer is cached for the life
+of one `worldSource`, so a new source is made per scan.
 
-| Block Class | Registry Name | Color | Tile Entity |
-|---|---|---|---|
-| `BlockHvacRtuHeater` | `hvac_rtu_heater` | White | `TileEntityHvacRtuHeater` |
-| `BlockHvacRtuHeaterBlack` | `hvac_rtu_heater_black` | Black | `TileEntityHvacRtuHeater` |
-| `BlockHvacRtuHeaterSilver` | `hvac_rtu_heater_silver` | Silver | `TileEntityHvacRtuHeater` |
+### The scan (`ThermalScanner`)
 
-### RTU Coolers (+2 deg F local waste heat, -12 deg F via vents, 100-block range)
+- Six-connected flood through enclosed air from the anchor's cell. Sky cells are not part of the
+  space; a face onto one is an **opening**, losing heat `OPENING_FACTOR` (40) times a wall face:
+  an open door in a hard winter roughly doubles a small room's load.
+- More than `MAX_CELLS` (40,000, a 50 x 50 x 16 hall) is `TOO_LARGE`: a cave system, the underside
+  of a canopy. Not conditionable; reads the biome.
+- Reaching an unloaded chunk is `UNLOADED`: the space is not built until it can be seen whole.
+- Each wall face is followed through the wall up to 3 cells: back into the same space is a
+  partition (no loss); into other enclosed air records the far cell (coupled later to whatever
+  space owns it, e.g. the flat next door, or half-way to outdoors if none does); into the open is
+  an exterior wall, `U_FACE` x material factor / thickness; never out is ground, x0.3, to a ground
+  temperature half-way between the air and 50°F soil. Material factors: glass/ice x2, wool/snow
+  x0.35, wood x0.8.
 
-| Block Class | Registry Name | Color | Tile Entity |
-|---|---|---|---|
-| `BlockHvacRtuCooler` | `hvac_rtu_cooler` | White | `TileEntityHvacRtuCooler` |
-| `BlockHvacRtuCoolerBlack` | `hvac_rtu_cooler_black` | Black | `TileEntityHvacRtuCooler` |
-| `BlockHvacRtuCoolerSilver` | `hvac_rtu_cooler_silver` | Silver | `TileEntityHvacRtuCooler` |
+### Regions
 
-### Controllers
+A space is split by a world-aligned grid of 8 x 4 x 8. Each region has its own temperature and
+mixes with its neighbours through the open faces between them at `MIX_PER_FACE` (2.0 per face,
+~750x a wall face, x3 when the lower region is the warmer: warm air rises). This is what lets the
+four zones of one open-plan store hold different setpoints, a tall atrium stratify a little, and
+the HUD change as you walk across a big room.
 
-| Block Class | Registry Name | Tile Entity |
+- A **compact** space (<= 2,000 cells, < 20 blocks across, < 8 high) is one region: an ordinary room
+  is well mixed, and cutting it by an arbitrary grid made up a 7°F spread across a 10 x 10 room.
+- A long hallway or tall stair hall is split even when small.
+- In a split space, grid cells holding fewer than 64 of the space's cells (the slivers a wall or
+  ceiling line leaves) join their largest neighbour.
+
+### Numbers
+
+| Constant | Value | Meaning |
 |---|---|---|
-| `BlockHvacThermostat` | `hvac_thermostat` | `TileEntityHvacThermostat` |
-| `BlockHvacZoneThermostat` | `hvac_zone_thermostat` | `TileEntityHvacZoneThermostat` |
+| `U_FACE` | 0.0027 /s/°F | one face of one-block stone wall |
+| capacity | 1 per air cell + 0.5 per envelope face | a 10 x 4 x 10 room: C = 580, UA = 0.97, time constant ~10 min |
+| `MIX_PER_FACE` | 2.0 | air movement between regions of one space |
+| cabinet heater/cooler | 300 /s | holds a ~14 x 14 room against -50°F |
+| rooftop unit | 1,200 /s | vents only |
+| vent | 250 /s max | per vent |
 
-### Distribution
+Chosen with the user (2026-09-23): an unheated 10 x 10 x 4 room loses most of its heat to a -50°F
+winter in about 10 minutes; a properly sized system warms it from freezing in 4-5.
 
-All vent blocks share the same `TileEntityHvacVentRelay` tile entity and are functionally
-identical from the HVAC engine's point of view. The decorative families exist purely to give
-players the right *visual* fixture for their build (ceiling diffuser, floor return, plaque
-register, etc.). When a vent is not linked to any thermostat, its TE pauses ticking entirely
-(`pauseTicking()` returns `true` while `linkedThermostatPos` is null), so cosmetic-only
-placements have effectively zero per-tick cost.
+## Lifecycle: anchors, rescans, unloads
 
-| Block Class | Registry Name | Notes |
-|---|---|---|
-| `BlockHvacVentRelay` | `hvac_vent_relay` | Default thin-ceiling vent (1/8-block tall) |
-| `BlockHvacVentFactory` | `art1`, `art2`, `artd1`, `artd2` | Air return grilles (4 — white/dark × 2 styles) |
-| `BlockHvacVentFactory` | `dfv1`, `dfv2`, `dfvd1`, `dfvd2` | Diffuser vents (4 — white/black × 2 styles) |
-| `BlockHvacVentFactory` | `lcv` | Large circle ceiling vent |
-| `BlockHvacVentFactory` | `mv1`, `mv2`, `mv3`, `mvd1`, `mvd2` | Modular vents (5) |
-| `BlockHvacVentFactory` | `pbf` | Panasonic-style bath fan |
-| `BlockHvacVentFactory` | `pv`, `pvd` | Plaque vents (white / dark) |
-| `BlockHvacVentFactory` | `rv1`, `rv2` | Residential vents |
-| `BlockHvacVentFactory` | `scv` | Small circle ceiling vent |
-| `BlockHvacVentFactory` | `sv1`–`sv5`, `svd1`–`svd5` | Four-way supply vents (10 — white/black) |
+- Thermostats, units and **linked** vents register as anchors on `onLoad` and unregister on
+  `onChunkUnload`/`invalidate`. An unlinked, decorative vent costs nothing.
+- An anchor without a space tries its own cell, then its six neighbours (a full-block heater sits
+  beside its room). A failure is retried: 2 s if unloaded, 5 s if open to the sky, 30 s if too
+  large (and the too-large flood's cells are remembered so its neighbours do not repeat it).
+- A space with no anchors left is dropped.
+- A player standing in enclosed air near HVAC that no device's space covers (a hallway, a
+  storeroom) anchors a space of their own, started at its equilibrium, so the HUD there comes from
+  the simulation too.
+- `HvacThermalWorld` is an `IWorldEventListener`: a block **state** change on or beside a space's
+  cells marks it dirty and it is rescanned a second later (a same-state update is a tile-entity
+  sync and is ignored). Every space is also rescanned every 5 minutes as a safety net. Rescanning
+  the 25,714-cell store takes 15-25 ms.
+- A rescan keeps each cell's temperature: new regions start from the cells they took over (from
+  live spaces, or ones taken apart this step), so opening a door mixes two rooms and closing it
+  leaves each as it was. A rescan that hits an unloaded chunk puts the old space back unchanged.
 
-All `BlockHvacVentFactory` instances register under the same TE name
-(`tileentityhvacventrelay`); the `Csm#init` registration loop's duplicate-name guard skips
-the redundant `GameRegistry.registerTileEntity` calls silently.
+### Holding temperature while unloaded
 
-### Items
+Asked for explicitly: a room held at its setpoint must not need reheating because nobody was
+nearby. Three rules make that true:
 
-| Item Class | Registry Name | Purpose |
-|---|---|---|
-| `ItemHvacLinker` | `hvaclinker` | Links HVAC components to thermostats |
+1. **Saved temperature.** Every anchor saves its region's temperature (thermostat `cT`, vent
+   `sT`); a space found again seeds each region from the anchors in it, the rest from their mean.
+2. **Waiting for chunks.** A scan that reaches an unloaded chunk does not build a partial space.
+3. **Freezing.** Chunks do not unload all at once. In the lab, the west end of the store (with the
+   primary thermostat) unloaded first, the rest kept simulating with no system running, cooled
+   toward -49°F, and each thermostat saved whatever it had when its own chunk went: the store came
+   back at 4-45°F. So a space is **frozen** (not stepped, nothing delivered) in any step where any
+   chunk it lies in is unloaded, or any member of a system serving it (primary, zone, unit, vent)
+   is unloaded. Verified: store at 71/71/69.5/66.7/66°F before leaving, 71.3/70.7/69.1/67.4/67.0 on
+   return; the same after a save-and-quit.
 
-**Totals:** 45 blocks (12 unit variants + 2 thermostats + 1 native vent relay + 30
-decorative vents via `BlockHvacVentFactory`) + 1 item.
+## Control (`HvacSystemControl`)
 
-The native HVAC blocks (heaters, coolers, RTUs, thermostats, `hvac_vent_relay`) extend
-`AbstractBlockRotatableNSEWUD` (full rotation including up/down) and implement
-`ICsmTileEntityProvider`. They use `Material.IRON`, `SoundType.METAL`, `pickaxe` harvest
-tool, harvest level 1, `BlockRenderLayer.CUTOUT_MIPPED`. RTU blocks have a 2-block tall
-bounding box; the vent relay has a thin ceiling-mounted bounding box (Y: 0.875 to 1.0).
-Thermostats have a small wall-mounted bounding box.
+### Model-based, modulating
 
-The 30 decorative vents go through `BlockHvacVentFactory`, which extends
-`BlockRotatableNSEWUDFactory` and adds `ICsmTileEntityProvider` wiring. Each registry name
-keeps its existing material (`Material.ROCK`), sound type (`STONE`), bounding box, opacity,
-and render layer — only the TE attachment is new. Because their TE pauses when not linked,
-worlds with thousands of decorative vent placements pay only the standard chunk-TE memory
-overhead and no per-tick CPU.
+The simulation knows exactly how fast every region is losing heat, so a region's need is computed,
+not guessed:
 
-## Forge Energy Integration
+```
+need = lossAt(target) + C * (target - T) / TAU        TAU = 90 s
+```
 
-Heaters and coolers (including RTU variants) implement `IEnergyStorage` via Forge's
-`CapabilityEnergy.ENERGY` capability:
+At the target the request equals the loss, so the room is held with no error and nothing to cycle;
+away from it the gap closes smoothly. Because the request scales with the room's own capacity and
+loss, the loop behaves the same in a 2 x 3 x 2 closet on a rooftop unit (1% output) and in a
+25,000-cell store on eight. The step is implicit, so nothing can ring. Equipment output modulates
+0-100%.
 
-| Parameter | Value |
+Targets: heating holds the low setpoint + 1°F, cooling the high setpoint - 1°F (so the display
+reads inside the range); nothing runs in between.
+
+### What is regulated
+
+- **Ducted systems** (any vent linked anywhere in the system): every region a zone's vents blow
+  into is held at that zone's setpoints. A zone serving five offices from a hallway thermostat
+  keeps all five right. A region two zones blow into follows the zone whose thermostat is in that
+  room. Equipment capacity is pooled and shared in proportion to requests; each vent is capped at
+  250/s.
+- **Vent throw.** 40% of a vent's air stays in its own region, 60% is thrown down the column below
+  it (up to three regions, twelve blocks), as a ceiling diffuser's jet reaches the floor. Without it
+  a 20-tall atrium sat 16°F colder at the floor than under the roof.
+- **Trim.** Where a zone's vents share a room with its thermostat, a slow integrator raises (or
+  lowers) the vent regions' target until the thermostat itself reads the setpoint, up to 20°F. It
+  only integrates once those regions have reached the target they are being given (anti-windup);
+  integrating during warm-up overshot the store's zone 1 to 73°F.
+- **No vents at all:** each unit delivers into its own region. Rooftop units then deliver nothing
+  (flag "Rooftop units need vents").
+- **Standalone** (unlinked, powered) units hold their own room: heaters at 70°F, coolers at 74°F,
+  like a space heater or window unit (decided with the user).
+
+### One mode at a time
+
+A system with heaters and coolers heats or cools, never both. It reverses only after a minute with
+nothing to do in its current mode, or when the other mode has out-demanded it for five minutes.
+Zones wanting the opposite show "Waiting".
+
+### What the thermostats report
+
+`applyControl` sets the display temperature (the region's; the saved value while the room loads;
+the biome's outdoors), calling mode (drives the redstone output, 15 when calling), output %
+(primary: equipment; zone: its vents' share), `HvacStatus` flags, and on the primary the capacity
+as a percentage of the served rooms' load at the setpoint. Flags: not enclosed, too large, room
+still loading, no power, at full capacity, no vents, no vent in this room, rooftop units need
+vents, waiting, not linked to a primary. `HvacStatusText` turns them into the screen's lines.
+
+## What the player sees
+
+- **HUD.** `HvacThermalWorld` sends each player near HVAC (24 blocks) or inside a known space
+  their region's temperature about once a second (`HvacHudPacket`, only when it changes by 0.1°F or
+  every 5 s). The overlay draws it as received and hides after 8 s without one. It computes
+  nothing. In the lab, HUD and thermostat read the same number in every zone of the store.
+- **Thermostat screen (TESR)** shows the synced display temperature, synced whenever its rounded
+  value changes.
+- **`CsmEnvironment.getTemperatureAt`** (Core, used by the technology module's computer screens):
+  the simulation on the server; on the client, the HUD's last reading when the position is within
+  8 blocks of where it was taken, else the biome.
+
+## Core's biome baseline (`CsmEnvironment`)
+
+`tempF = biomeTemp(pos) * 90 - 4`, cached per chunk for 2 s. The cache is keyed **per world
+object**. It was keyed by dimension number, so after switching singleplayer worlds in one session
+every chunk at the same coordinates read the previous world's biome, and never expired, because
+the new world's clock was behind the old one's (found in the lab: a desert room cooling toward
+-49°F). Negative ages now count as stale.
+
+## Testing
+
+### `/csmhvac` (permission level 2)
+
+| Command | Does |
 |---|---|
-| Max stored energy | 1000 FE |
-| Max receive rate | 100 FE/t |
-| Energy consumption | 10 FE per tick (20-tick tick rate = 0.5 FE/game tick) |
-| Can extract | No |
+| `info [x y z]` | the room at your feet: cells, regions, openings, anchors, outdoor/mean/here, capacity, UA, loss, delivered, region range |
+| `spaces` | every room in the dimension |
+| `settemp <F>` | sets your room's every region (start a test from cold or hot) |
+| `ff <seconds>` | runs that much simulated time now (an hour of the whole lab: ~0.2 s) |
+| `rescan` | rescans your room now and reports the time |
 
-Units activate with either redstone power OR stored FE. Both power sources work simultaneously.
+### The lab
 
-## Configuration
+`dev-env-utils/scripts/build_hvac_lab.py` builds twelve scenarios along +X in a superflat world
+loaded in the dev client, linking and powering everything through saved data: a small room, a
+closet on a rooftop unit, a 20-tall atrium, a 40-block hallway, an L-shaped room, two storeys with an
+open stair, three flats sharing walls (middle unheated), an office of three zones off a hallway, a
+replica of a real store (86 x 13 x 23, 8 rooftop units, a primary with no vents, four zones), open
+door and window, a standalone unit, and a thermostat under the sky. It refuses to build unless the
+server's world name contains "HVAC Lab". Worlds: a Cold Taiga superflat (~-49°F) and a Desert one
+(~176°F), `--cooling` for the second; create them by copying a flat world's `level.dat` with
+`generatorOptions` `3;minecraft:bedrock,3*minecraft:dirt,minecraft:grass;30;` (or `;2;`).
 
-The `CsmConfig` class provides one HVAC-related setting:
+Results (2026-09-23), from -49°F and from 176°F: every scenario reaches its target in 5-10 minutes,
+overshoots by under 1°F, and holds to 0.1°F with delivered = loss. Unit tests
+(`ThermalModelTest`) cover the scanner on hand-built grids and the physics/control law.
 
-- **`enableThermostatDisplay`** -- Enables/disables the TESR in-world display on thermostats
-  showing time, room temperature, setpoints, and outside temperature. Checked by
-  `TileEntityHvacThermostatRenderer.render()` on every frame.
+## Linking
 
-## Tick Rates Summary
+Unchanged. The `ItemHvacLinker` (`hvaclinker`) stores one thermostat as the source:
 
-| Tile Entity | Tick Rate | Effective Interval |
-|---|---|---|
-| `TileEntityHvacThermostat` | 40 ticks | 2 seconds |
-| `TileEntityHvacZoneThermostat` | 40 ticks | 2 seconds |
-| `TileEntityHvacHeater` (+ cooler) | 20 ticks | 1 second |
-| `TileEntityHvacVentRelay` | 40 ticks (paused while unlinked) | 2 seconds |
-| Chunk temp cache lifetime | 40 ticks | 2 seconds |
-| Cache eviction sweep | 600 ticks | 30 seconds |
-| Cache entry max age | 1200 ticks | 60 seconds |
+1. Click a primary thermostat to select it.
+2. Click a heater/cooler to link it (primary only).
+3. Click a vent to link it to the selected thermostat (primary or zone); within 30 blocks, or 100
+   with a rooftop unit in the system.
+4. Click a zone thermostat with a primary selected to link it; with none selected, to select it.
 
-All tile entities tick server-side only (`doClientTick() = false`).
+Sneak+click unlinks: a vent clears its link, a zone its vents and primary, a primary everything.
 
-## Data Persistence (NBT)
+## Block inventory
 
-### TileEntityHvacThermostat
+| Family | Registry names | Tile entity | Capacity |
+|---|---|---|---|
+| Cabinet heaters | `hvac_heater`, `_black`, `_silver` | `TileEntityHvacHeater` | 300 /s |
+| Cabinet coolers | `hvac_cooler`, `_black`, `_silver` | `TileEntityHvacCooler` | 300 /s |
+| Rooftop heaters | `hvac_rtu_heater`, `_black`, `_silver` | `TileEntityHvacRtuHeater` | 1,200 /s, vents only |
+| Rooftop coolers | `hvac_rtu_cooler`, `_black`, `_silver` | `TileEntityHvacRtuCooler` | 1,200 /s, vents only |
+| Thermostats | `hvac_thermostat`, `hvac_zone_thermostat` | primary / zone | |
+| Vents | `hvac_vent_relay` and 30 decorative (`art*`, `dfv*`, `lcv`, `mv*`, `pbf`, `pv`/`pvd`, `rv*`, `scv`, `sv*`/`svd*` via `BlockHvacVentFactory`) | `TileEntityHvacVentRelay` | 250 /s each |
+| Linker | `hvaclinker` | | |
 
-| Key | Type | Purpose |
-|---|---|---|
-| `targetTempLow` | int | Low setpoint (default 65) |
-| `targetTempHigh` | int | High setpoint (default 80) |
-| `isCalling` | boolean | Whether thermostat is calling |
-| `callingMode` | int | 0=idle, 1=heating, 2=cooling |
-| `efficiency` | int | Cached efficiency percent |
-| `rampTicks` | long | Accumulated ramp ticks |
-| `currentTemp` | float | Last smoothed temperature |
-| `linkedUnits` | TAG_LIST | List of heater/cooler BlockPos |
-| `linkedVents` | TAG_LIST | List of vent relay BlockPos |
-| `linkedZones` | TAG_LIST | List of zone thermostat BlockPos |
+All `BlockHvacVentFactory` instances register under one tile-entity name; the duplicate-name
+warnings at start-up are expected.
 
-### TileEntityHvacZoneThermostat
+Units run on redstone or Forge Energy (1,000 FE buffer, 100 FE/t in, up to 10 FE/t at full output
+drawn in proportion to output; redstone is free). `TileEntityHvacRtuCooler` extends
+`TileEntityHvacCooler` so `instanceof` finds it as a cooler.
 
-Same as primary, minus `linkedUnits` and `linkedZones`, plus:
+## Saved data
 
-| Key | Type | Purpose |
-|---|---|---|
-| `hasPrimary` | boolean | Whether linked to a primary |
-| `linkedPrimary` | TAG_COMPOUND (x/y/z) | Primary thermostat position |
-| `linkedVents` | TAG_LIST | List of vent relay BlockPos |
+| Tile entity | Keys |
+|---|---|
+| both thermostats | `tLo`, `tHi` setpoints; `cT` region temperature; `cL`, `cM` calling; `bM` blocked mode; `eff` output %; `sF` flags; `cap` capacity % (-1 n/a); `pU`, `tU` units powered/total; `trH`, `trC` trims; `lV` vents |
+| primary | `lU` units, `lZ` zones, `sM` system mode |
+| zone | `hP`, `lP` primary |
+| unit | `energy`, `out` output fraction |
+| vent | `hasLink`, `linkX/Y/Z`, `sT` region temperature |
 
-### TileEntityHvacHeater
+Long-form keys from before the short-key change are still read. The retired ramp (`rT`/`rampTicks`)
+and vent `contribution` are dropped on load.
 
-| Key | Type | Purpose |
-|---|---|---|
-| `energy` | int | Stored Forge Energy |
-| `thermostatCalling` | boolean | Whether thermostat is calling this unit |
-| `linkedToThermostat` | boolean | Whether linked to a thermostat |
+## Known limitations
 
-### TileEntityHvacVentRelay
-
-| Key | Type | Purpose |
-|---|---|---|
-| `hasLink` | boolean | Whether linked to a thermostat |
-| `linkX`, `linkY`, `linkZ` | int | Linked thermostat position |
-| `contribution` | float | Current temperature contribution |
-
-## Class Hierarchy
-
-```
-AbstractTickableTileEntity
-├── TileEntityHvacThermostat (IHvacThermostatDisplay)
-├── TileEntityHvacZoneThermostat (IHvacThermostatDisplay)
-├── TileEntityHvacHeater (IHvacUnit, IEnergyStorage)
-│   ├── TileEntityHvacCooler
-│   ├── TileEntityHvacRtuHeater
-│   └── TileEntityHvacRtuCooler
-└── TileEntityHvacVentRelay (IHvacUnit)
-
-AbstractBlockRotatableNSEWUD (ICsmTileEntityProvider)
-├── BlockHvacThermostat
-├── BlockHvacZoneThermostat
-├── BlockHvacHeater / BlockHvacHeaterBlack / BlockHvacHeaterSilver
-├── BlockHvacCooler / BlockHvacCoolerBlack / BlockHvacCoolerSilver
-├── BlockHvacRtuHeater / BlockHvacRtuHeaterBlack / BlockHvacRtuHeaterSilver
-├── BlockHvacRtuCooler / BlockHvacRtuCoolerBlack / BlockHvacRtuCoolerSilver
-└── BlockHvacVentRelay
-
-BlockRotatableNSEWUDFactory
-└── BlockHvacVentFactory (ICsmTileEntityProvider)
-    └── 30 decorative vent registry names (art*, dfv*, lcv, mv*, pbf, pv/pvd, rv*, scv, sv*/svd*)
-
-AbstractItem
-└── ItemHvacLinker
-```
-
-## Thermal Reliability & Stability Model
-
-The temperature engine and thermostat controllers are deliberately layered to stay stable under
-adverse setups: extreme biomes, dense vent fields, sealed-room geometry, and chunk reloads across
-biome boundaries. This section documents the mechanisms that keep the readings bounded and
-non-oscillating, and the design reasoning behind each.
-
-### Per-Unit Offset Cap
-
-The per-direction HVAC offset is clamped before heating and cooling are combined, using a cap that
-scales with the number of active **heater/cooler** units in range — not with vent count.
-
-```
-cap = min(BASE_HVAC_OFFSET_CAP + HVAC_OFFSET_PER_EXTRA_UNIT * (units - 1), HVAC_OFFSET_HARD_CAP)
-```
-
-| Constant | Value | Role |
-|---|---|---|
-| `BASE_HVAC_OFFSET_CAP` | 50 deg F | Ceiling for a single active heater/cooler |
-| `HVAC_OFFSET_PER_EXTRA_UNIT` | 25 deg F | Headroom added per additional active heater/cooler |
-| `HVAC_OFFSET_HARD_CAP` | 250 deg F | Absolute ceiling regardless of unit count |
-
-All three live in `HvacTemperatureManager`; the cap is computed by `computeOffsetCap(unitCount)`,
-which floors the extra-unit count at zero so one unit sits at exactly `BASE_HVAC_OFFSET_CAP`. Sample
-caps: 1 unit = 50 deg F, 3 units = 100 deg F, 5 units = 150 deg F.
-
-The defining rule is that **vent relays do not count toward the cap.** Vents are delivery points for
-conditioned air, not independent heat sources, so a wall of vents fed by one rooftop unit must not
-raise the indoor temperature ceiling. Counting only heater/cooler units means the cap reflects actual
-installed conditioning capacity: a 5-RTU rooftop on a -30 deg F mountain biome can push the indoor
-temperature comfortably above 70 deg F, while a single unit feeding seventy-five vents cannot exceed
-the single-unit floor. The hard cap is the final backstop against pathological or world-edited HVAC
-fields producing thousand-degree offsets that would destabilize the smoothing and display logic.
-
-> Note: this contributor count is distinct from the *delivery-point* contributor count used elsewhere
-> in the offset math for stacking purposes. The cap specifically counts heater/cooler tile entities,
-> scanning the gathered sources and skipping `TileEntityHvacVentRelay` instances.
-
-### Air-Path Distance via Flood Fill
-
-Source-to-query distance is measured along the actual air path rather than by a straight-line
-raycast. `calculateHvacOffset` runs a 6-connected breadth-first flood fill (`floodFillAirDistances`)
-outward through open air from the query position, recording the shortest step-distance to every
-reachable air cell. Each source contributes only if the fill reaches an air cell adjacent to it
-(`shortestAirPathTo`), weighted by that path-step distance.
-
-This is more sophisticated than straight-line attenuation in three ways:
-
-- **Air bends.** A vent around a corner or through a doorway still reaches the thermostat, because
-  the fill routes around obstacles. A straight-line raycast counted the intervening partition wall
-  and pinned the contribution to a few percent, so a thermostat just around the corner from its own
-  vent never felt it.
-- **Sealed walls are hard boundaries.** The fill cannot cross a solid block
-  (`material.isSolid() && !material.isReplaceable()`), so a sealed adjacent room is a genuinely
-  separate thermal zone rather than a partially-attenuated one. This is the basis of multi-zone
-  separation.
-- **Path steps inflate over Euclidean distance.** Because air routes around geometry, a path-step
-  count is always at least the straight-line distance — a ceiling vent ~8.5 blocks away Euclidean in
-  an 8-tall room reads ~12 path steps (over and down). The distance thresholds are tuned for that
-  inflation.
-
-The fill is bounded by `MAX_FLOOD_BLOCKS = 4096` visited cells and early-stops as soon as every
-candidate source has been located, so the typical per-query cost is far below the ceiling; the full
-budget is only paid when a source is genuinely unreachable. A source beyond the budget or behind a
-sealed wall reads as unreachable (weight 0), identical to being walled off.
-
-### Three-Layer Thermal-Mass Model
-
-"The room cools down slowly after the equipment shuts off" is simulated by three independent layers,
-ordered from longest to shortest time constant. Each layer is owned by a different component, and the
-layers compensate for one another so removing any one is safe.
-
-| Layer | Owner | Constant | Time constant | Purpose |
-|---|---|---|---|---|
-| Vent residual decay | `TileEntityHvacVentRelay.setContribution` | `RESIDUAL_DECAY_FACTOR = 0.93f` per 2s tick | ~2 min to full decay (~20s to 50%, ~80s to 95%) | A player walking into a recently-conditioned room still feels lingering warmth/coolness |
-| Thermostat thermal smoothing | `currentTemperature` in both thermostats | `THERMAL_BLEND_FACTOR = 0.06f` per 2s tick | ~76s to cover 90% of a change | The thermostat reading lags air temperature like a real thermostat in a real room |
-| HUD asymmetric EMA | `TemperatureSmoother` (HUD overlay) | ramp/transition/decay factors | ~20-30s on transition | The player HUD smoothly tracks temperature while walking between zones |
-
-When a vent's commanded contribution drops to near zero (system idle) while its previous value was
-meaningful, `setContribution` applies `RESIDUAL_DECAY_FACTOR` instead of snapping to zero, then snaps
-to exactly zero once the magnitude falls below a small threshold. The vent layer simulates
-room-level thermal mass specifically; equipment-coil residual heat is intentionally *not* simulated
-at the heater level (heaters snap on/off via `getActiveContribution`), because that shorter effect is
-already covered by the smoothing layers.
-
-### Proportional Control
-
-Both thermostats throttle vent output as the room approaches setpoint, via
-`computeProportionalTerm()`. The term is the temperature error toward the active setpoint (the low
-setpoint when heating, the high setpoint when cooling) divided by `P_TERM_FULL_RANGE`, clamped to the
-range `[P_TERM_MIN_OUTPUT, 1.0]`.
-
-| Constant | Value | Role |
-|---|---|---|
-| `P_TERM_FULL_RANGE` | 5.0 deg F | Error at which output saturates at 100% |
-| `P_TERM_MIN_OUTPUT` | 0.4 (40%) | Output floor while a calling state is active |
-
-Per-vent output is `baseContribution * rampFactor * pTerm`. At 5 deg F or more off setpoint the term
-is 1.0 (full output); at 2.5 deg F off it is 0.5; near setpoint it is held at the 0.4 floor. This
-prevents overshoot: the old "full output until a deadband fires" approach drove the room 25-30 deg F
-past target before stopping. The floor exists because a pure proportional term decays toward zero as
-the reading nears setpoint, which would let the room asymptote 1-2 deg F short and stall the system;
-the 0.4 floor guarantees enough output to close the last degree against ambient heat loss while the
-calling state still exits the instant the setpoint is reached.
-
-### Snap-to-Raw on First Tick After Load
-
-Each thermostat carries a transient `firstTickAfterLoad` flag, set in `readNBT` (when a saved
-temperature is present) and cleared on the first `onTick`. While the flag is set — or when the
-smoother has no saved reading at all — `currentTemperature` snaps directly to the raw reading instead
-of blending through `THERMAL_BLEND_FACTOR`. On every subsequent tick the thermostat always blends.
-
-The flag exists to handle the "block reloaded into a wildly different temperature" case (for
-example, a thermostat that was moved between biomes between sessions, or a saved value that is far out
-of sync with reality). A single snap on load realigns the smoother immediately rather than crawling
-across a tens-of-degrees gap over minutes. Crucially, snapping is confined to that one tick: a
-previous design snapped whenever the raw and smoothed readings differed by more than 60 deg F, which
-also fired on every tick during transient HVAC overshoot — bypassing hysteresis and oscillating the
-thermostat between heating and cooling modes once per tick. Restricting the snap to the first tick
-after load closes that bypass.
-
-### Why the Design Is the Way It Is
-
-These mechanisms exist to fix three stacked bugs that combined into a runaway in a live modpack
-(snowy biome, ~75 vents per zone across two zones, readings swinging between -20 deg F and -253 deg F
-every few seconds):
-
-1. **Violent oscillation.** Three flaws compounded: vent contribution sign was flipped purely by
-   calling mode with no check that matching equipment was linked (a heater-only system could command
-   phantom cooling); the offset cap scaled with vent count, letting seventy-five vents push a
-   ~1800 deg F ceiling; and a "snap to raw when off by >60 deg F" smoothing branch bypassed
-   hysteresis every tick. The per-unit cap, equipment-aware mode lockout, and the first-tick-only
-   snap each address one leg of this.
-2. **Wall attenuation through openings.** A single straight-line raycast counted walls and gave a
-   vent under a balcony almost no influence on a player standing to the side, even though air would
-   diffuse out through the openings. The flood-fill air path replaces that pessimistic single ray.
-3. **Steady-state overshoot.** A 15x15 room targeting 85 deg F sat at ~110 deg F labeled
-   "comfortable": the thermostat had gone idle, but the old 0.99/tick vent residual decay (~13 min)
-   kept the vents effectively blowing at the cap long after the call stopped, and there was no
-   proportional throttling to prevent the climb in the first place. The tightened residual decay and
-   proportional control resolve this.
-
-Each layer is therefore intentionally bounded and single-purpose: the cap bounds magnitude, the flood
-fill bounds reach to real air paths, the three thermal-mass layers provide realistic lag without any
-one of them running away, proportional control prevents overshoot, and the first-tick snap realigns
-on load without re-opening the hysteresis bypass.
-
-## Known Limitations / Future Work
-
-- **Extreme biome scaling:** In very hot biomes (desert, mesa, 131-176 deg F baseline) or very
-  cold high-altitude locations (snowy biomes at Y=240 can reach -75 deg F), a single-unit HVAC
-  system cannot bring the space to a comfortable setpoint. Multiple units are required. The
-  dynamic per-unit cap (24 deg F per active contributor) means 5 well-placed vents/heaters can
-  provide up to 120 deg F of conditioning, which is sufficient for most extreme climates.
-  Design guideline: for every 24 deg F of gap between biome baseline and target setpoint, add
-  one additional contributing unit (heater or vent) in range of the thermostat and living area.
-
-- **Celsius display:** The HUD and thermostat display are Fahrenheit-only. A toggle for Celsius
-  display has not been implemented. The internal temperature engine operates in Fahrenheit.
-
-- **RTU cooler local heating:** The RTU cooler contributes +2 deg F locally (simulating
-  compressor waste heat). This is physically realistic but may confuse players who expect a
-  cooler to always cool nearby positions. The cooling effect only reaches indoor spaces via
-  linked vent relays.
-
-- **Single smoother on dimension change:** The HUD overlay holds a single
-  `TemperatureSmoother` instance for the lifetime of the client. Stepping through a
-  dimension portal carries the prior dimension's smoothed offset into the new one; it
-  re-converges over the asymmetric EMA window but produces a brief visual artifact.
-
-- **No vent-to-vent chaining:** Vent relays cannot chain to other vent relays. Each vent must
-  link directly to a thermostat.
-
-- **Zone-primary mode conflict:** When the primary is heating but a zone needs cooling, the
-  zone's vents will push cold air contribution (correct) but no cooler unit is actually
-  activated by the primary (by design). The vent contribution formula uses the base vent
-  contribution magnitude from the strongest unit regardless of type, so the zone can still
-  provide some offset, but it is not backed by an active cooling unit's direct contribution.
+- A system's units far from the rooms it serves (a rooftop unit 100 blocks away) freeze those
+  rooms while unloaded; a room whose system is incomplete neither heats nor cools until it loads.
+- Two systems heating and cooling one room at once fight to an equilibrium between their
+  setpoints, as real ones do.
+- A vent whose thermostat was broken keeps its link (and its room alive) until relinked.
+- Fahrenheit only.

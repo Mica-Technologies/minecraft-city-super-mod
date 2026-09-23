@@ -140,55 +140,23 @@ public class HvacZoneThermostatGui extends GuiScreen {
     drawCenteredString(fontRenderer, highTarget + "\u00B0F", valueCenterX, maxY + 4, COLOR_HOT);
 
     // === Zone Status ===
-    int statusY = guiTop + 136;
-    boolean calling = thermostat.isCalling();
-    boolean hasLinkedPrimary = thermostat.hasLinkedPrimary();
-    int unitCount = thermostat.getLinkedUnitCount();
-    int ventCount = thermostat.getLinkedVentCount();
-
-    if (!hasLinkedPrimary) {
-      drawCenteredString(fontRenderer, "\u00A7c\u26A0 NOT LINKED to primary", cx, statusY, 0xFFFF4444);
-    } else if (unitCount == 0) {
-      drawCenteredString(fontRenderer, "\u00A7e\u26A0 Primary has no units", cx, statusY, 0xFFFFAA00);
-    } else if (!thermostat.hasSystemPower()) {
-      drawCenteredString(fontRenderer, "\u00A7c\u26A0 NO POWER", cx, statusY, 0xFFFF4444);
-    } else if (calling) {
-      int efficiency = thermostat.getSystemEfficiencyPercent();
-      int mode = thermostat.getCallingMode();
-      if (mode == 1) {
-        drawCenteredString(fontRenderer, "\u25CF Heating (" + efficiency + "%)", cx, statusY, COLOR_HOT);
-      } else {
-        drawCenteredString(fontRenderer, "\u25CF Cooling (" + efficiency + "%)", cx, statusY, COLOR_COLD);
-      }
-    } else {
-      // Surface "Need heater" / "Need cooler" warning when the zone is out of comfort
-      // range but the linked primary lacks the appropriate equipment.
-      int blocked = thermostat.getBlockedMode();
-      if (blocked == 1) {
-        drawCenteredString(fontRenderer, "\u00A7e\u26A0 Below setpoint, no heater in primary",
-            cx, statusY, 0xFFFFAA00);
-      } else if (blocked == 2) {
-        drawCenteredString(fontRenderer, "\u00A7e\u26A0 Above setpoint, no cooler in primary",
-            cx, statusY, 0xFFFFAA00);
-      } else {
-        drawCenteredString(fontRenderer, "\u25CF Comfortable", cx, statusY, COLOR_COMFORT);
-      }
-    }
-
-    // System info line
-    int infoY = statusY + 12;
-    String linkStatus = hasLinkedPrimary ? "\u00A7aLinked to primary" : "\u00A7cNOT LINKED";
-    drawCenteredString(fontRenderer, linkStatus, cx, infoY, 0xFF777777);
-
-    int ventInfoY = infoY + 12;
-    String ventInfo = ventCount + " vents";
-    if (hasLinkedPrimary) {
-      int poweredCount = thermostat.getPoweredUnitCount();
-      ventInfo = poweredCount + "/" + unitCount + " units powered | " + ventCount + " vents";
-    }
-    drawCenteredString(fontRenderer, ventInfo, cx, ventInfoY, 0xFF777777);
+    drawStatus(HvacStatusText.lines(thermostat, false, thermostat.getLinkedUnitCount(), 0), cx,
+        guiTop + 134, guiTop + GUI_HEIGHT - 22);
 
     super.drawScreen(mouseX, mouseY, partialTicks);
+  }
+
+  /** Draws status lines from {@code top}, as many as fit above {@code bottom}. */
+  private void drawStatus(java.util.List<HvacStatusText.Line> lines, int cx, int top,
+      int bottom) {
+    int y = top;
+    for (HvacStatusText.Line line : lines) {
+      if (y + fontRenderer.FONT_HEIGHT > bottom) {
+        break;
+      }
+      drawCenteredString(fontRenderer, line.text, cx, y, line.color);
+      y += 11;
+    }
   }
 
   @Override

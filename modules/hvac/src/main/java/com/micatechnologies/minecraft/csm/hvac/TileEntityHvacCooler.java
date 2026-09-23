@@ -1,8 +1,7 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
 /**
- * Tile entity for the HVAC cooler block. Identical to {@link TileEntityHvacHeater} except that it
- * contributes a negative temperature offset (cooling).
+ * The cabinet cooler: a {@link TileEntityHvacHeater} that removes heat instead of adding it.
  *
  * @author Mica Technologies
  * @since 2026.4
@@ -10,7 +9,7 @@ package com.micatechnologies.minecraft.csm.hvac;
 public class TileEntityHvacCooler extends TileEntityHvacHeater {
 
   @Override
-  protected float getActiveContribution() {
-    return -15.0F;
+  public boolean isCoolingUnit() {
+    return true;
   }
 }

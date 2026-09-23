@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
@@ -71,17 +72,21 @@ public class CsmHvac {
         HvacThermostatConfigPacketHandler.class,
         HvacThermostatConfigPacket.class,
         Side.SERVER);
+    NETWORK.registerMessage(
+        HvacHudPacket.Handler.class,
+        HvacHudPacket.class,
+        Side.CLIENT);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
     // pre-initialization before it fires the sound registry event, so Core sees the complete
     // union when it creates the sound events.
     HvacSounds.registerSounds();
 
-    // Answer Core's temperature queries with the full HVAC reading. Core's default answer is
-    // the biome baseline, which is what this manager returns anyway when no HVAC equipment is
-    // in range, so installing or removing this module only ever changes the equipment's own
-    // contribution.
-    CsmEnvironment.setTemperatureProvider(HvacTemperatureManager::getTemperatureAt);
+    // Run the thermal simulation, and answer Core's temperature queries from it. Core's default
+    // answer is the biome baseline, which is what the simulation returns anywhere outside a room
+    // it knows, so installing or removing this module only changes readings indoors.
+    HvacThermal.register();
+    CsmEnvironment.setTemperatureProvider(HvacThermal::temperatureAt);
     proxy.preInit(event);
   }
 
@@ -89,5 +94,10 @@ public class CsmHvac {
   public void init(FMLInitializationEvent event) {
     // Client: bind this module's tile-entity renderers. Server: nothing.
     proxy.init(event);
+  }
+
+  @Mod.EventHandler
+  public void serverStarting(FMLServerStartingEvent event) {
+    event.registerServerCommand(new CommandHvac());
   }
 }

@@ -462,18 +462,20 @@ of the viewer, 40 blocks away).
 
 ### Other client-thread costs found (argued from code)
 
-- `HvacHudOverlay.java:144-148` runs **two** 49-chunk tile-entity scans every 500 ms for **every
-  player with the mod**: `isNearAnyHvac` scans once (`HvacTemperatureManager.java:318-339`), and
-  `getTemperatureAt` scans again to gather sources (`:395-423`) whatever the first returned, both
-  before the `cachedNearHvac` early-out. The result is discarded when no HVAC is near; near HVAC it
-  adds a flood fill of up to 4,096 cells on the client thread.
+- *(Resolved 2026-09-23.)* The HVAC HUD used to run two 49-chunk tile-entity scans and a flood fill
+  of up to 4,096 cells on the client thread every 500 ms. The thermal rebuild moved every
+  temperature to the server; the HUD now only draws the value `HvacHudPacket` brings, and costs
+  nothing on the client. See `assets/docs/HVAC_SYSTEM.md`.
 - The one non-roads animated texture (`honeywell_addressable_module`, 128x128 frames) re-uploads
   every tick. Roads has 59 `.mcmeta` files; 20 are 32x32 at `frametime 1`.
 - Sound: fire alarms use one `MovingSound` per channel (good); ambient speakers use one per speaker
   per client, which is an audio-source pressure risk rather than CPU. MaryTTS loads on every client
   start, which counts against the 2 GB heap floor.
-- All non-roads tickable tile entities are server-only. The one heavy per-tick job is the HVAC air
-  query (49-chunk scan plus a 4,096-cell flood fill per thermostat every 2 s).
+- All non-roads tickable tile entities are server-only. The HVAC air query that used to be the one
+  heavy per-tick job (a 49-chunk scan plus a 4,096-cell flood fill per thermostat every 2 s) is
+  gone: HVAC tile entities no longer tick, and the thermal simulation steps every loaded room once a
+  second (an hour of the whole HVAC lab simulates in ~0.2 s) and floods a room only when its
+  blocks change (the largest allowed room: 15-25 ms).
 
 ## Improvement candidates
 

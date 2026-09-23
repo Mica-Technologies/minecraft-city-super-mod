@@ -46,7 +46,7 @@ class TileEntityHvacThermostatNbtTest {
     assertTrue(output.getBoolean("cL"));
     assertEquals(1, output.getInteger("cM"));
     assertEquals(85, output.getInteger("eff"));
-    assertEquals(500L, output.getLong("rT"));
+    assertFalse(output.hasKey("rT"), "the retired ramp accumulator is dropped");
     assertEquals(72.5f, output.getFloat("cT"), 0.01f);
 
     // Linked unit list preserved
@@ -95,7 +95,7 @@ class TileEntityHvacThermostatNbtTest {
     assertFalse(output.getBoolean("cL"));
     assertEquals(2, output.getInteger("cM"));
     assertEquals(92, output.getInteger("eff"));
-    assertEquals(1000L, output.getLong("rT"));
+    assertFalse(output.hasKey("rT"), "the retired ramp accumulator is dropped");
     assertEquals(75.0f, output.getFloat("cT"), 0.01f);
 
     NBTTagList units = output.getTagList("lU", Constants.NBT.TAG_COMPOUND);

@@ -54,7 +54,7 @@ class TileEntityHvacZoneThermostatNbtTest {
     assertTrue(output.getBoolean("cL"));
     assertEquals(2, output.getInteger("cM"));
     assertEquals(50, output.getInteger("eff"));
-    assertEquals(200L, output.getLong("rT"));
+    assertFalse(output.hasKey("rT"), "the retired ramp accumulator is dropped");
     assertEquals(70.0f, output.getFloat("cT"), 0.01f);
     assertTrue(output.getBoolean("hP"));
 

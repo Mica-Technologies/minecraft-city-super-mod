@@ -387,6 +387,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   palm crowns, the Tree Planting Tool and its six generator shapes (street clearance, one volume
   check, presets appended by ordinal), the plantings and amenities (why nothing shares a trunk's
   cell, bench runs, the irrigation controller and sprinklers), and the traps
+- `assets/docs/HVAC_SYSTEM.md` -- Rooms that hold heat: the thermal simulation (flood-filled
+  spaces split into regions, walls/openings/ground/neighbours, implicit step), model-based
+  modulating control, vent throw and the thermostat trim, why a partly unloaded room freezes, the
+  server-sent HUD, `/csmhvac` and the test lab, and why the old offset engine was replaced
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 - `assets/docs/PERFORMANCE_AND_SECURITY.md` -- Where frame time and memory actually go (client frame time is
   the whole story; the server tick is 0.4%), how to measure without fooling yourself, the rules render and
@@ -595,6 +599,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_life_safety_sounds.py` -- the Life Safety module's own sounds, synthesised (numpy to
   ffmpeg to OGG) so nothing recorded is shipped; adds a `sounds.json` entry for each. No
   `--check` (Vorbis output is not byte-stable): listen, then commit the OGG
+- `build_hvac_lab.py` -- builds the HVAC test lab (twelve scenarios from a closet to a replica of a
+  real four-zone store) in a Cold Taiga or Desert superflat loaded in the dev client, over MCMCP,
+  linked and powered through saved data; refuses any world not named "HVAC Lab". Drive it with
+  `/csmhvac info|settemp|ff|rescan`
 - `build_life_safety_demo.py` -- builds the Life Safety demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street with a fire station
   (alerting, pole, fire alarm with door holder and annunciator, riser room), a police station, an

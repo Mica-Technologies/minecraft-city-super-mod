@@ -1,526 +1,31 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.Constants;
 
 /**
- * Zone thermostat for the HVAC system. A zone thermostat does not own any heater/cooler units
- * directly; instead it links to a primary {@link TileEntityHvacThermostat} and manages a
- * separate set of vent relays. It reads the temperature at its own position, determines
- * whether it needs heating or cooling, and pushes vent contributions to its own vents using
- * the primary thermostat's units and ramp state.
- *
- * <p>This allows a single set of heaters/coolers (controlled by the primary thermostat) to
- * serve multiple rooms, each with independent setpoints and vent networks.</p>
+ * A zone thermostat: its own setpoints and its own vents, served by the equipment of the primary
+ * thermostat it is linked to. The rooms its vents blow into are held at its setpoints; see
+ * {@link HvacSystemControl}.
  *
  * @author Mica Technologies
  * @since 2026.4
  */
-public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
-    implements IHvacThermostatDisplay {
+public class TileEntityHvacZoneThermostat extends TileEntityHvacThermostatBase {
 
-  // Short-form NBT keys. LEGACY_* counterparts only read for back-compat.
-  private static final String NBT_TARGET_TEMP_LOW = "tLo";
-  private static final String LEGACY_NBT_TARGET_TEMP_LOW = "targetTempLow";
-  private static final String NBT_TARGET_TEMP_HIGH = "tHi";
-  private static final String LEGACY_NBT_TARGET_TEMP_HIGH = "targetTempHigh";
-  private static final String NBT_IS_CALLING = "cL";
-  private static final String LEGACY_NBT_IS_CALLING = "isCalling";
-  private static final String NBT_CALLING_MODE = "cM";
-  private static final String LEGACY_NBT_CALLING_MODE = "callingMode";
-  private static final String NBT_BLOCKED_MODE = "bM";
-  private static final String NBT_EFFICIENCY = "eff";
-  private static final String LEGACY_NBT_EFFICIENCY = "efficiency";
-  private static final String NBT_RAMP_TICKS = "rT";
-  private static final String LEGACY_NBT_RAMP_TICKS = "rampTicks";
-  private static final String NBT_CURRENT_TEMP = "cT";
-  private static final String LEGACY_NBT_CURRENT_TEMP = "currentTemp";
-  private static final String NBT_LINKED_VENTS = "lV";
-  private static final String LEGACY_NBT_LINKED_VENTS = "linkedVents";
-  private static final String NBT_LINKED_PRIMARY = "lP";
-  private static final String LEGACY_NBT_LINKED_PRIMARY = "linkedPrimary";
-  private static final String NBT_HAS_PRIMARY = "hP";
-  private static final String LEGACY_NBT_HAS_PRIMARY = "hasPrimary";
+  static final String NBT_LINKED_PRIMARY = "lP";
+  static final String LEGACY_NBT_LINKED_PRIMARY = "linkedPrimary";
+  static final String NBT_HAS_PRIMARY = "hP";
+  static final String LEGACY_NBT_HAS_PRIMARY = "hasPrimary";
 
-  /**
-   * Blending factor per tick for thermal smoothing. Matches the primary thermostat.
-   */
-  private static final float THERMAL_BLEND_FACTOR = 0.06f;
-
-  /**
-   * Restart hysteresis in degrees F. Mirrors {@link TileEntityHvacThermostat#CYCLE_HYSTERESIS}.
-   */
-  private static final float CYCLE_HYSTERESIS = 1.5f;
-
-  /** Bonus temperature per additional vent beyond the first. */
-  private static final float VENT_DENSITY_BONUS_PER_VENT = 2.0f;
-
-  /** Maximum total vent density bonus in degrees F. */
-  private static final float VENT_DENSITY_BONUS_CAP = 8.0f;
-
-  /** Calling mode constants. */
-  private static final int MODE_IDLE = 0;
-  private static final int MODE_HEATING = 1;
-  private static final int MODE_COOLING = 2;
-
-  /**
-   * Temperature error (in °F) at which the proportional-control term saturates at full
-   * output. Mirrors {@link TileEntityHvacThermostat#P_TERM_FULL_RANGE}. See that field's
-   * Javadoc for the regulator design.
-   */
-  private static final float P_TERM_FULL_RANGE = 5.0f;
-
-  /**
-   * Minimum P-term output while calling. Mirrors
-   * {@link TileEntityHvacThermostat#P_TERM_MIN_OUTPUT}.
-   */
-  private static final float P_TERM_MIN_OUTPUT = 0.4f;
-
-  private int targetTempLow = 65;
-  private int targetTempHigh = 80;
-  private float currentTemperature = 72.0f;
-  private boolean isCalling = false;
-  private int callingMode = MODE_IDLE;
-  /**
-   * Mode the zone would have entered if equipment was available. Mirrors
-   * {@link TileEntityHvacThermostat#getBlockedMode()} — see that field's Javadoc.
-   * Used by {@link HvacZoneThermostatGui} to display "Need heater" / "Need cooler"
-   * warnings instead of the misleading "Comfortable" status.
-   */
-  private int blockedMode = MODE_IDLE;
-  private boolean temperatureInitialized = false;
-
-  /**
-   * Set after readNBT and cleared on the first tick. While set, smoothing snaps to the
-   * raw reading even if it differs wildly. After the first tick we never snap again so
-   * transient HVAC overshoot can't bypass thermal smoothing and cause oscillation.
-   */
-  private transient boolean firstTickAfterLoad = false;
-
-  /** Positions of linked vent relays. Persisted in NBT. */
-  private final List<BlockPos> linkedVents = new ArrayList<>();
-
-  /** Position of the linked primary thermostat, or null if not linked. */
-  private BlockPos linkedPrimaryPos = null;
-
-  /**
-   * Accumulated ramp ticks. Increases while calling, decreases while idle.
-   * Persisted in NBT so the ramp survives chunk unload/reload.
-   */
-  private long accumulatedRampTicks = 0L;
-
-  /** Cached efficiency percent for client sync. */
-  private int cachedEfficiencyPercent = 0;
-
-  // region AbstractTickableTileEntity
+  /** Position of the linked primary thermostat, or null. */
+  private BlockPos linkedPrimaryPos;
 
   @Override
-  public boolean doClientTick() {
-    return false;
+  protected int anchorKind() {
+    return ThermalAnchor.ZONE;
   }
-
-  @Override
-  public boolean pauseTicking() {
-    return false;
-  }
-
-  @Override
-  public long getTickRate() {
-    return 40;
-  }
-
-  @Override
-  public void onTick() {
-    if (world == null || world.isRemote) {
-      return;
-    }
-
-    // Self-heal: if we think we have a primary but the primary no longer lists us
-    // (e.g. primary was replaced), clear our stale back-link so the display is accurate.
-    if (linkedPrimaryPos != null && world.isBlockLoaded(linkedPrimaryPos)) {
-      TileEntityHvacThermostat primary = getPrimaryThermostat();
-      if (primary != null && !primary.getLinkedZones().contains(pos)) {
-        linkedPrimaryPos = null;
-        markDirtySync(world, pos, true);
-      }
-    }
-
-    // Sample the room ambient instead of just this block's pos — see the matching
-    // comment in TileEntityHvacThermostat.onTick() and the Javadoc on
-    // HvacTemperatureManager#getAmbientTemperatureAt for why a wall-mounted device's
-    // exact pos undersamples the room.
-    EnumFacing facing = getRoomFacing();
-    float rawTemp = HvacTemperatureManager.getAmbientTemperatureAt(world, pos, facing);
-    float previousTemp = currentTemperature;
-
-    // Thermal smoothing. Snap-to-raw only on first tick after load (handles "moved to a
-    // new biome" reload case); subsequent ticks always smooth so HVAC overshoot can't
-    // bypass hysteresis and cause runaway oscillation.
-    if (!temperatureInitialized || firstTickAfterLoad) {
-      currentTemperature = rawTemp;
-      temperatureInitialized = true;
-      firstTickAfterLoad = false;
-    } else {
-      currentTemperature += (rawTemp - currentTemperature) * THERMAL_BLEND_FACTOR;
-    }
-
-    boolean wasPreviouslyCalling = isCalling;
-    int previousBlockedMode = blockedMode;
-
-    // Determine which equipment is reachable through the linked primary. Mirrors the
-    // primary thermostat's logic — a zone served by a heater-only primary must never
-    // enter cooling mode (and vice versa) or vent contributions flip negative and cause
-    // runaway oscillation.
-    boolean hasHeater = false;
-    boolean hasCooler = false;
-    TileEntityHvacThermostat primary = getPrimaryThermostat();
-    if (primary != null) {
-      for (BlockPos unitPos : primary.getLinkedUnits()) {
-        if (!world.isBlockLoaded(unitPos)) continue;
-        TileEntity unitTe = world.getTileEntity(unitPos);
-        if (unitTe instanceof TileEntityHvacCooler) {
-          hasCooler = true;
-        } else if (unitTe instanceof TileEntityHvacHeater) {
-          hasHeater = true;
-        }
-        if (hasHeater && hasCooler) break;
-      }
-    }
-
-    blockedMode = MODE_IDLE;
-
-    // Stop-at-setpoint / hysteresis-on-restart logic — mirrors the primary thermostat.
-    // See TileEntityHvacThermostat.onTick() for the rationale.
-    switch (callingMode) {
-      case MODE_HEATING:
-        if (!hasHeater || currentTemperature >= targetTempLow) {
-          callingMode = MODE_IDLE;
-          isCalling = false;
-        }
-        break;
-      case MODE_COOLING:
-        if (!hasCooler || currentTemperature <= targetTempHigh) {
-          callingMode = MODE_IDLE;
-          isCalling = false;
-        }
-        break;
-      default:
-        if (currentTemperature < targetTempLow - CYCLE_HYSTERESIS) {
-          if (hasHeater) {
-            callingMode = MODE_HEATING;
-            isCalling = true;
-          } else {
-            blockedMode = MODE_HEATING;
-            isCalling = false;
-          }
-        } else if (currentTemperature > targetTempHigh + CYCLE_HYSTERESIS) {
-          if (hasCooler) {
-            callingMode = MODE_COOLING;
-            isCalling = true;
-          } else {
-            blockedMode = MODE_COOLING;
-            isCalling = false;
-          }
-        } else {
-          isCalling = false;
-        }
-        break;
-    }
-
-    // Debug: log zone thermostat state after mode evaluation
-    if (HvacTemperatureManager.isDebugLogging()) {
-      String modeStr = callingMode == MODE_HEATING ? "HEATING"
-          : callingMode == MODE_COOLING ? "COOLING" : "IDLE";
-      org.apache.logging.log4j.LogManager.getLogger("CSM-HVAC").info(
-          String.format("[HVAC-ZONE-TICK] pos=%s raw=%.1f smoothed=%.1f mode=%s calling=%s low=%d high=%d ramp=%d%%",
-              pos, rawTemp, currentTemperature, modeStr, isCalling,
-              targetTempLow, targetTempHigh, Math.round(getSystemRampFactor() * 100)));
-    }
-
-    // Track ramp-up: accumulate ticks while calling, decay while idle
-    if (isCalling) {
-      accumulatedRampTicks += getTickRate();
-    } else if (accumulatedRampTicks > 0) {
-      accumulatedRampTicks = Math.max(0L, accumulatedRampTicks - getTickRate());
-    }
-
-    if (isCalling != wasPreviouslyCalling) {
-      world.notifyNeighborsOfStateChange(pos, getBlockType(), false);
-    }
-
-    // Update efficiency from zone's own ramp
-    int newEfficiency = Math.round(getSystemRampFactor() * 100);
-    boolean efficiencyChanged = newEfficiency != cachedEfficiencyPercent;
-    cachedEfficiencyPercent = newEfficiency;
-
-    // Update linked vents
-    updateLinkedVents();
-
-    // Sync to client when state changes
-    boolean tempChanged = Math.abs(currentTemperature - previousTemp) >= 0.5f;
-    boolean blockedModeChanged = blockedMode != previousBlockedMode;
-    if (isCalling != wasPreviouslyCalling || efficiencyChanged || tempChanged
-        || blockedModeChanged) {
-      markDirtySync(world, pos, true);
-    }
-  }
-
-  /**
-   * Returns the "into the room" direction for this zone thermostat, derived from the
-   * block's {@code FACING} property. Mirrors {@code TileEntityHvacThermostat#getRoomFacing}.
-   */
-  private EnumFacing getRoomFacing() {
-    if (world == null) return null;
-    IBlockState state = world.getBlockState(pos);
-    if (state.getPropertyKeys().contains(AbstractBlockRotatableNSEWUD.FACING)) {
-      return state.getValue(AbstractBlockRotatableNSEWUD.FACING);
-    }
-    return null;
-  }
-
-  // endregion
-
-  // region Primary Thermostat Delegation
-
-  /**
-   * Returns the primary thermostat this zone is linked to, or null if not linked or unloaded.
-   */
-  private TileEntityHvacThermostat getPrimaryThermostat() {
-    if (linkedPrimaryPos == null || world == null || !world.isBlockLoaded(linkedPrimaryPos)) {
-      return null;
-    }
-    TileEntity te = world.getTileEntity(linkedPrimaryPos);
-    if (te instanceof TileEntityHvacThermostat) {
-      return (TileEntityHvacThermostat) te;
-    }
-    return null;
-  }
-
-  /** Ramp constants — match primary thermostat. */
-  private static final long PHASE1_RAMP_TICKS = 6000L;
-  private static final long PHASE2_RAMP_TICKS = 12000L;
-  private static final float RAMP_MIN_FACTOR = 0.2f;
-  private static final float MAX_EXTENDED_RAMP = 1.6f;
-
-  /**
-   * Returns the zone's own ramp factor. Phase 1 (0–5 min): 0.2→1.0 sqrt curve.
-   * Phase 2 (5–15 min): 1.0→1.6 linear. Persisted via accumulatedRampTicks.
-   */
-  public float getSystemRampFactor() {
-    if (accumulatedRampTicks <= 0L) {
-      return 0.0f;
-    }
-    if (accumulatedRampTicks <= PHASE1_RAMP_TICKS) {
-      float progress = (float) accumulatedRampTicks / (float) PHASE1_RAMP_TICKS;
-      float curved = (float) Math.sqrt(progress);
-      return RAMP_MIN_FACTOR + (1.0f - RAMP_MIN_FACTOR) * curved;
-    }
-    long phase2Elapsed = accumulatedRampTicks - PHASE1_RAMP_TICKS;
-    float phase2Progress = Math.min(1.0f, (float) phase2Elapsed / (float) PHASE2_RAMP_TICKS);
-    return 1.0f + (MAX_EXTENDED_RAMP - 1.0f) * phase2Progress;
-  }
-
-  /**
-   * Returns the system efficiency percentage for GUI display.
-   */
-  public int getSystemEfficiencyPercent() {
-    return cachedEfficiencyPercent;
-  }
-
-  /**
-   * Returns true if at least one unit on the primary thermostat has power.
-   */
-  public boolean hasSystemPower() {
-    TileEntityHvacThermostat primary = getPrimaryThermostat();
-    return primary != null && primary.hasSystemPower();
-  }
-
-  /**
-   * Returns the number of powered units on the primary thermostat.
-   */
-  public int getPoweredUnitCount() {
-    TileEntityHvacThermostat primary = getPrimaryThermostat();
-    return primary != null ? primary.getPoweredUnitCount() : 0;
-  }
-
-  /**
-   * Returns the total linked unit count from the primary thermostat.
-   */
-  public int getLinkedUnitCount() {
-    TileEntityHvacThermostat primary = getPrimaryThermostat();
-    return primary != null ? primary.getLinkedUnitCount() : 0;
-  }
-
-  // endregion
-
-  // region Linked Vent Management
-
-  public boolean linkVent(BlockPos ventPos, int maxDistance) {
-    if (linkedVents.contains(ventPos)) {
-      return false;
-    }
-    if (world != null) {
-      TileEntity te = world.getTileEntity(ventPos);
-      if (!(te instanceof TileEntityHvacVentRelay)) {
-        return false;
-      }
-      if (pos.getDistance(ventPos.getX(), ventPos.getY(), ventPos.getZ()) > maxDistance) {
-        return false;
-      }
-      ((TileEntityHvacVentRelay) te).setLinkedThermostat(pos, maxDistance);
-    }
-    linkedVents.add(ventPos.toImmutable());
-    if (world != null && !world.isRemote) {
-      markDirtySync(world, pos, true);
-    }
-    return true;
-  }
-
-  public boolean unlinkVent(BlockPos ventPos) {
-    boolean removed = linkedVents.remove(ventPos);
-    if (removed && world != null && !world.isRemote) {
-      if (world.isBlockLoaded(ventPos)) {
-        TileEntity te = world.getTileEntity(ventPos);
-        if (te instanceof TileEntityHvacVentRelay) {
-          ((TileEntityHvacVentRelay) te).clearLink();
-        }
-      }
-      markDirtySync(world, pos, true);
-    }
-    return removed;
-  }
-
-  public List<BlockPos> getLinkedVents() {
-    return linkedVents;
-  }
-
-  public int getLinkedVentCount() {
-    return linkedVents.size();
-  }
-
-  /**
-   * Returns the maximum vent link distance, delegating to the primary thermostat.
-   */
-  public int getMaxVentLinkDistance() {
-    TileEntityHvacThermostat primary = getPrimaryThermostat();
-    return primary != null ? primary.getMaxVentLinkDistance() : 30;
-  }
-
-  /**
-   * Returns the proportional output factor (0..1) for the current calling mode. Mirrors
-   * the primary thermostat's regulator: saturates at full output for large errors,
-   * smoothly throttles down to 0 at setpoint to prevent overshoot.
-   */
-  private float computeProportionalTerm() {
-    float error;
-    if (callingMode == MODE_HEATING) {
-      error = targetTempLow - currentTemperature;
-    } else if (callingMode == MODE_COOLING) {
-      error = currentTemperature - targetTempHigh;
-    } else {
-      return 0.0f;
-    }
-    float pTerm = error / P_TERM_FULL_RANGE;
-    if (pTerm < P_TERM_MIN_OUTPUT) return P_TERM_MIN_OUTPUT;
-    if (pTerm > 1.0f) return 1.0f;
-    return pTerm;
-  }
-
-  /**
-   * Returns the base vent contribution from the primary thermostat's strongest linked unit.
-   */
-  private float getBaseVentContribution() {
-    TileEntityHvacThermostat primary = getPrimaryThermostat();
-    if (primary == null || world == null) {
-      return 0.0f;
-    }
-    float best = 0.0f;
-    for (BlockPos unitPos : primary.getLinkedUnits()) {
-      if (world.isBlockLoaded(unitPos)) {
-        TileEntity te = world.getTileEntity(unitPos);
-        if (te instanceof IHvacUnit) {
-          float abs = Math.abs(((IHvacUnit) te).getVentRelayContribution());
-          if (abs > best) {
-            best = abs;
-          }
-        }
-      }
-    }
-    return best;
-  }
-
-  /**
-   * Pushes contribution values to all linked vents.
-   */
-  private void updateLinkedVents() {
-    float rampFactor = getSystemRampFactor();
-    float baseContribution = getBaseVentContribution();
-    // Proportional-control scaling (mirrors primary thermostat): full output at large
-    // error, throttles toward 0 as the zone approaches its setpoint, eliminating overshoot.
-    float pTerm = computeProportionalTerm();
-    float contribution = baseContribution * rampFactor * pTerm;
-
-    // Determine sign from callingMode (not temperature comparison, which breaks
-    // during the deadband zone where temp has crossed the threshold but we're still calling)
-    if (callingMode == MODE_COOLING) {
-      contribution = -Math.abs(contribution);
-    } else if (callingMode == MODE_HEATING) {
-      contribution = Math.abs(contribution);
-    } else {
-      contribution = 0.0f;
-    }
-
-    // Single pass: validate links, count vents, and collect references
-    List<TileEntityHvacVentRelay> validVents = new ArrayList<>();
-    Iterator<BlockPos> it = linkedVents.iterator();
-    while (it.hasNext()) {
-      BlockPos ventPos = it.next();
-      if (!world.isBlockLoaded(ventPos)) {
-        continue;
-      }
-      TileEntity te = world.getTileEntity(ventPos);
-      if (te instanceof TileEntityHvacVentRelay) {
-        TileEntityHvacVentRelay vent = (TileEntityHvacVentRelay) te;
-        // Repair back-link if the vent was replaced and no longer knows its thermostat.
-        if (!pos.equals(vent.getLinkedThermostatPos())) {
-          vent.setLinkedThermostat(pos, getMaxVentLinkDistance());
-        }
-        validVents.add(vent);
-      } else {
-        it.remove();
-      }
-    }
-
-    // Calculate vent density bonus and push to all vents
-    float densityBonus = 0.0f;
-    if (validVents.size() > 1 && contribution != 0.0f) {
-      densityBonus = Math.min((validVents.size() - 1) * VENT_DENSITY_BONUS_PER_VENT,
-          VENT_DENSITY_BONUS_CAP);
-      if (contribution < 0) {
-        densityBonus = -densityBonus;
-      }
-    }
-
-    float finalContribution = contribution + densityBonus;
-    for (TileEntityHvacVentRelay vent : validVents) {
-      vent.setContribution(finalContribution);
-    }
-  }
-
-  // endregion
-
-  // region Linked Primary Management
 
   public BlockPos getLinkedPrimaryPos() {
     return linkedPrimaryPos;
@@ -537,183 +42,54 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     return linkedPrimaryPos != null;
   }
 
-  // endregion
+  private TileEntityHvacThermostat getPrimaryThermostat() {
+    if (linkedPrimaryPos == null || world == null || !world.isBlockLoaded(linkedPrimaryPos)) {
+      return null;
+    }
+    TileEntity te = world.getTileEntity(linkedPrimaryPos);
+    return te instanceof TileEntityHvacThermostat ? (TileEntityHvacThermostat) te : null;
+  }
 
-  // region NBT
+  /** Farthest a vent may be linked: the primary's reach. */
+  @Override
+  public int getMaxVentLinkDistance() {
+    TileEntityHvacThermostat primary = getPrimaryThermostat();
+    return primary != null ? primary.getMaxVentLinkDistance() : 30;
+  }
+
+  /** Units in the primary's system, as last reported. */
+  public int getLinkedUnitCount() {
+    return totalUnits;
+  }
 
   @Override
   public void readNBT(NBTTagCompound compound) {
-    this.targetTempLow = readInt(compound, NBT_TARGET_TEMP_LOW, LEGACY_NBT_TARGET_TEMP_LOW);
-    this.targetTempHigh = readInt(compound, NBT_TARGET_TEMP_HIGH, LEGACY_NBT_TARGET_TEMP_HIGH);
-    this.isCalling = readBool(compound, NBT_IS_CALLING, LEGACY_NBT_IS_CALLING);
-    this.callingMode = readInt(compound, NBT_CALLING_MODE, LEGACY_NBT_CALLING_MODE);
-    this.blockedMode = compound.hasKey(NBT_BLOCKED_MODE) ? compound.getInteger(NBT_BLOCKED_MODE) : MODE_IDLE;
-    this.cachedEfficiencyPercent = readInt(compound, NBT_EFFICIENCY, LEGACY_NBT_EFFICIENCY);
-    this.accumulatedRampTicks = readLong(compound, NBT_RAMP_TICKS, LEGACY_NBT_RAMP_TICKS);
-    boolean hasCurrentTemp = compound.hasKey(NBT_CURRENT_TEMP)
-        || compound.hasKey(LEGACY_NBT_CURRENT_TEMP);
-    if (compound.hasKey(NBT_CURRENT_TEMP)) {
-      this.currentTemperature = compound.getFloat(NBT_CURRENT_TEMP);
-    } else if (compound.hasKey(LEGACY_NBT_CURRENT_TEMP)) {
-      this.currentTemperature = compound.getFloat(LEGACY_NBT_CURRENT_TEMP);
+    super.readNBT(compound);
+    linkedPrimaryPos = null;
+    if (readBool(compound, NBT_HAS_PRIMARY, LEGACY_NBT_HAS_PRIMARY)) {
+      String key = compound.hasKey(NBT_LINKED_PRIMARY) ? NBT_LINKED_PRIMARY
+          : LEGACY_NBT_LINKED_PRIMARY;
+      NBTTagCompound tag = compound.getCompoundTag(key);
+      linkedPrimaryPos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"),
+          tag.getInteger("z"));
     }
-    if (hasCurrentTemp) {
-      this.temperatureInitialized = true;
-      this.firstTickAfterLoad = true;
-    }
-    if (targetTempLow == 0 && targetTempHigh == 0) {
-      targetTempLow = 65;
-      targetTempHigh = 80;
-    }
-
-    // Read linked primary
-    boolean hasPrimary = readBool(compound, NBT_HAS_PRIMARY, LEGACY_NBT_HAS_PRIMARY);
-    if (hasPrimary) {
-      String primaryKey = compound.hasKey(NBT_LINKED_PRIMARY)
-          ? NBT_LINKED_PRIMARY : LEGACY_NBT_LINKED_PRIMARY;
-      NBTTagCompound primaryTag = compound.getCompoundTag(primaryKey);
-      linkedPrimaryPos = new BlockPos(
-          primaryTag.getInteger("x"),
-          primaryTag.getInteger("y"),
-          primaryTag.getInteger("z"));
-    } else {
-      linkedPrimaryPos = null;
-    }
-
-    // Read linked vents
-    linkedVents.clear();
-    String ventsKey = null;
-    if (compound.hasKey(NBT_LINKED_VENTS)) {
-      ventsKey = NBT_LINKED_VENTS;
-    } else if (compound.hasKey(LEGACY_NBT_LINKED_VENTS)) {
-      ventsKey = LEGACY_NBT_LINKED_VENTS;
-    }
-    if (ventsKey != null) {
-      NBTTagList list = compound.getTagList(ventsKey, Constants.NBT.TAG_COMPOUND);
-      for (int i = 0; i < list.tagCount(); i++) {
-        NBTTagCompound tag = list.getCompoundTagAt(i);
-        linkedVents.add(new BlockPos(tag.getInteger("x"), tag.getInteger("y"),
-            tag.getInteger("z")));
-      }
-    }
-
-    // Strip legacy long-form keys so the next save produces only short-form output
-    compound.removeTag(LEGACY_NBT_TARGET_TEMP_LOW);
-    compound.removeTag(LEGACY_NBT_TARGET_TEMP_HIGH);
-    compound.removeTag(LEGACY_NBT_IS_CALLING);
-    compound.removeTag(LEGACY_NBT_CALLING_MODE);
-    compound.removeTag(LEGACY_NBT_EFFICIENCY);
-    compound.removeTag(LEGACY_NBT_RAMP_TICKS);
-    compound.removeTag(LEGACY_NBT_CURRENT_TEMP);
-    compound.removeTag(LEGACY_NBT_LINKED_VENTS);
     compound.removeTag(LEGACY_NBT_LINKED_PRIMARY);
     compound.removeTag(LEGACY_NBT_HAS_PRIMARY);
   }
 
-  private static int readInt(NBTTagCompound compound, String key, String legacyKey) {
-    if (compound.hasKey(key)) return compound.getInteger(key);
-    if (compound.hasKey(legacyKey)) return compound.getInteger(legacyKey);
-    return 0;
-  }
-
-  private static boolean readBool(NBTTagCompound compound, String key, String legacyKey) {
-    if (compound.hasKey(key)) return compound.getBoolean(key);
-    return compound.hasKey(legacyKey) && compound.getBoolean(legacyKey);
-  }
-
-  private static long readLong(NBTTagCompound compound, String key, String legacyKey) {
-    if (compound.hasKey(key)) return compound.getLong(key);
-    if (compound.hasKey(legacyKey)) return compound.getLong(legacyKey);
-    return 0L;
-  }
-
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
-    compound.setInteger(NBT_TARGET_TEMP_LOW, targetTempLow);
-    compound.setInteger(NBT_TARGET_TEMP_HIGH, targetTempHigh);
-    compound.setBoolean(NBT_IS_CALLING, isCalling);
-    compound.setInteger(NBT_CALLING_MODE, callingMode);
-    compound.setInteger(NBT_BLOCKED_MODE, blockedMode);
-    compound.setInteger(NBT_EFFICIENCY, cachedEfficiencyPercent);
-    compound.setLong(NBT_RAMP_TICKS, accumulatedRampTicks);
-    compound.setFloat(NBT_CURRENT_TEMP, currentTemperature);
-
-    // Write linked primary
+    super.writeNBT(compound);
     if (linkedPrimaryPos != null) {
       compound.setBoolean(NBT_HAS_PRIMARY, true);
-      NBTTagCompound primaryTag = new NBTTagCompound();
-      primaryTag.setInteger("x", linkedPrimaryPos.getX());
-      primaryTag.setInteger("y", linkedPrimaryPos.getY());
-      primaryTag.setInteger("z", linkedPrimaryPos.getZ());
-      compound.setTag(NBT_LINKED_PRIMARY, primaryTag);
+      NBTTagCompound tag = new NBTTagCompound();
+      tag.setInteger("x", linkedPrimaryPos.getX());
+      tag.setInteger("y", linkedPrimaryPos.getY());
+      tag.setInteger("z", linkedPrimaryPos.getZ());
+      compound.setTag(NBT_LINKED_PRIMARY, tag);
     } else {
       compound.setBoolean(NBT_HAS_PRIMARY, false);
     }
-
-    // Write linked vents
-    NBTTagList ventList = new NBTTagList();
-    for (BlockPos ventPos : linkedVents) {
-      NBTTagCompound tag = new NBTTagCompound();
-      tag.setInteger("x", ventPos.getX());
-      tag.setInteger("y", ventPos.getY());
-      tag.setInteger("z", ventPos.getZ());
-      ventList.appendTag(tag);
-    }
-    compound.setTag(NBT_LINKED_VENTS, ventList);
     return compound;
-  }
-
-  // endregion
-
-  // region Getters/Setters
-
-  @Override
-  public float getCurrentTemperature() { return currentTemperature; }
-
-  @Override
-  public int getTargetTempLow() { return targetTempLow; }
-
-  public void setTargetTempLow(int targetTempLow) {
-    this.targetTempLow = targetTempLow;
-    if (world != null && !world.isRemote) { markDirtySync(world, pos, true); }
-  }
-
-  @Override
-  public int getTargetTempHigh() { return targetTempHigh; }
-
-  public void setTargetTempHigh(int targetTempHigh) {
-    this.targetTempHigh = targetTempHigh;
-    if (world != null && !world.isRemote) { markDirtySync(world, pos, true); }
-  }
-
-  @Override
-  public boolean isCalling() { return isCalling; }
-
-  public int getCallingMode() { return callingMode; }
-
-  /** See {@link TileEntityHvacThermostat#getBlockedMode()}. */
-  public int getBlockedMode() { return blockedMode; }
-
-  /**
-   * Returns a render bounding box covering just the zone-thermostat block itself. Mirrors
-   * {@link TileEntityHvacThermostat#getRenderBoundingBox()} — same TESR, same culling
-   * footprint.
-   */
-  @Override
-  public AxisAlignedBB getRenderBoundingBox() {
-    return new AxisAlignedBB(
-        pos.getX(), pos.getY(), pos.getZ(),
-        pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0);
-  }
-
-  // endregion
-
-  /**
-   * No baked model reads this tile entity -- only its special renderer, which reads it every
-   * frame -- so a sync never needs the chunk section rebuilt.
-   */
-  @Override
-  protected long getBakedModelKey() {
-    return 0L;
   }
 }

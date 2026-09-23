@@ -25,16 +25,12 @@ public class HvacThermostatConfigPacketHandler implements
       World world = player.world;
       TileEntity te = world.getTileEntity(message.getPos());
 
-      if (te instanceof TileEntityHvacThermostat) {
-        TileEntityHvacThermostat thermostat = (TileEntityHvacThermostat) te;
-        thermostat.setTargetTempLow(message.getTargetTempLow());
-        thermostat.setTargetTempHigh(message.getTargetTempHigh());
-        thermostat.syncServerToClient(world);
-      } else if (te instanceof TileEntityHvacZoneThermostat) {
-        TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) te;
-        zone.setTargetTempLow(message.getTargetTempLow());
-        zone.setTargetTempHigh(message.getTargetTempHigh());
-        zone.syncServerToClient(world);
+      if (te instanceof TileEntityHvacThermostatBase) {
+        int low = Math.max(0, Math.min(115, message.getTargetTempLow()));
+        int high = Math.max(low + 5, Math.min(120, message.getTargetTempHigh()));
+        TileEntityHvacThermostatBase thermostat = (TileEntityHvacThermostatBase) te;
+        thermostat.setTargetTempLow(low);
+        thermostat.setTargetTempHigh(high);
       }
     });
     return null;

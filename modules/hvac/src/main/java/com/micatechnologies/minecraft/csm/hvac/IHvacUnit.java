@@ -1,47 +1,33 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
 /**
- * Marker interface for HVAC tile entities that influence chunk temperature. Implemented by heater
- * and cooler tile entities to participate in the {@link HvacTemperatureManager} temperature
- * calculation system.
+ * A heating or cooling unit: something that moves heat into or out of the rooms it serves.
  *
  * @author Mica Technologies
- * @see HvacTemperatureManager
+ * @see HvacSystemControl
  * @since 2026.4
  */
 public interface IHvacUnit {
 
   /**
-   * Returns the temperature offset in degrees Fahrenheit that this unit contributes when active.
-   * Positive values indicate heating, negative values indicate cooling.
-   *
-   * @return the temperature contribution in degrees Fahrenheit
+   * Heat the unit moves at full output, per second, in the simulation's units (degrees
+   * Fahrenheit times air cells). Always positive; {@link #isCoolingUnit()} gives the direction.
    */
-  float getTemperatureContribution();
+  float getHeatCapacity();
+
+  /** Whether the unit removes heat rather than adding it. */
+  boolean isCoolingUnit();
 
   /**
-   * Returns whether this HVAC unit is currently active (powered and operating).
-   *
-   * @return {@code true} if this unit is currently active, {@code false} otherwise
+   * Whether the unit can only deliver through vents. A rooftop unit sits outdoors: with no vents
+   * it heats nothing.
    */
-  boolean isHvacActive();
-
-  /**
-   * Returns the maximum distance in blocks at which a vent relay can be linked to this unit.
-   *
-   * @return the maximum vent link distance in blocks
-   */
-  default int getMaxVentLinkDistance() {
-    return 30;
+  default boolean isDuctedOnly() {
+    return false;
   }
 
-  /**
-   * Returns the temperature contribution that a vent relay linked to this unit should provide.
-   * This is typically weaker than the unit's own direct contribution.
-   *
-   * @return the vent relay temperature contribution in degrees Fahrenheit
-   */
-  default float getVentRelayContribution() {
-    return getTemperatureContribution() > 0 ? 15.0f : -15.0f;
+  /** Farthest a vent may be linked from a system containing this unit, blocks. */
+  default int getMaxVentLinkDistance() {
+    return 30;
   }
 }

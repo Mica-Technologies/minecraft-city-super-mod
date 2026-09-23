@@ -22,7 +22,7 @@ public class HvacThermostatGui extends GuiScreen {
   private static final int TEMP_STEP = 5;
 
   private static final int GUI_WIDTH = 240;
-  private static final int GUI_HEIGHT = 200;
+  private static final int GUI_HEIGHT = 210;
 
   private static final int COLOR_COLD = 0xFF3399FF;
   private static final int COLOR_COMFORT = 0xFF33CC33;
@@ -146,46 +146,23 @@ public class HvacThermostatGui extends GuiScreen {
     drawCenteredString(fontRenderer, highTarget + "\u00B0F", valueCenterX, maxY + 4, COLOR_HOT);
 
     // === Status ===
-    int statusY = guiTop + 136;
-    boolean calling = thermostat.isCalling();
-    boolean hasPower = thermostat.hasSystemPower();
-    int unitCount = thermostat.getLinkedUnitCount();
-    int ventCount = thermostat.getLinkedVentCount();
-
-    if (unitCount == 0) {
-      drawCenteredString(fontRenderer, "\u00A7e\u26A0 No units linked", cx, statusY, 0xFFFFAA00);
-    } else if (!hasPower) {
-      drawCenteredString(fontRenderer, "\u00A7c\u26A0 NO POWER", cx, statusY, 0xFFFF4444);
-    } else if (calling) {
-      int efficiency = thermostat.getSystemEfficiencyPercent();
-      int mode = thermostat.getCallingMode();
-      if (mode == 1) {
-        drawCenteredString(fontRenderer, "\u25CF Heating (" + efficiency + "%)", cx, statusY, COLOR_HOT);
-      } else {
-        drawCenteredString(fontRenderer, "\u25CF Cooling (" + efficiency + "%)", cx, statusY, COLOR_COLD);
-      }
-    } else {
-      // Show "Need heater" / "Need cooler" warning when the thermostat is out of the
-      // comfort range but lacks the equipment to act on it. Otherwise show "Comfortable".
-      int blocked = thermostat.getBlockedMode();
-      if (blocked == 1) {
-        drawCenteredString(fontRenderer, "\u00A7e\u26A0 Below setpoint, no heater linked",
-            cx, statusY, 0xFFFFAA00);
-      } else if (blocked == 2) {
-        drawCenteredString(fontRenderer, "\u00A7e\u26A0 Above setpoint, no cooler linked",
-            cx, statusY, 0xFFFFAA00);
-      } else {
-        drawCenteredString(fontRenderer, "\u25CF Comfortable", cx, statusY, COLOR_COMFORT);
-      }
-    }
-
-    // System info line
-    int infoY = statusY + 12;
-    int poweredCount = thermostat.getPoweredUnitCount();
-    String info = poweredCount + "/" + unitCount + " units powered | " + ventCount + " vents";
-    drawCenteredString(fontRenderer, info, cx, infoY, 0xFF777777);
+    drawStatus(HvacStatusText.lines(thermostat, true, thermostat.getTotalUnitCount(),
+        thermostat.getLinkedZoneCount()), cx, guiTop + 134, guiTop + GUI_HEIGHT - 22);
 
     super.drawScreen(mouseX, mouseY, partialTicks);
+  }
+
+  /** Draws status lines from {@code top}, as many as fit above {@code bottom}. */
+  private void drawStatus(java.util.List<HvacStatusText.Line> lines, int cx, int top,
+      int bottom) {
+    int y = top;
+    for (HvacStatusText.Line line : lines) {
+      if (y + fontRenderer.FONT_HEIGHT > bottom) {
+        break;
+      }
+      drawCenteredString(fontRenderer, line.text, cx, y, line.color);
+      y += 11;
+    }
   }
 
   @Override

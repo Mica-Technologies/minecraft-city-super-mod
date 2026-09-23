@@ -4,9 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -14,13 +12,16 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
- * Client-side HUD overlay that renders a temperature readout when the player is near HVAC
- * equipment (active or not). Position is configurable via anchor (top-left, top-right,
- * bottom-left, bottom-right) and offset. The HUD shows whenever any HVAC unit is nearby,
- * even if unpowered, so players can see the ambient temperature in HVAC-equipped areas.
+ * Client-side HUD overlay showing the temperature where the player stands, whenever they are near
+ * HVAC equipment or inside a room the simulation knows. Position is configurable via anchor
+ * (top-left, top-right, bottom-left, bottom-right) and offset.
+ *
+ * <p>The number is the server's: {@link HvacHudPacket} brings the simulation's temperature for the
+ * player's position about once a second, and this overlay draws it as it came. It computes and
+ * smooths nothing of its own, so it shows what a thermostat in the same spot shows.</p>
  *
  * @author Mica Technologies
- * @see HvacTemperatureManager
+ * @see HvacThermalWorld
  * @since 2026.4
  */
 @SideOnly(Side.CLIENT)
@@ -46,13 +47,6 @@ public class HvacHudOverlay {
   private static final int COLOR_WARM = 0xFFFFCC00;
   private static final int COLOR_HOT = 0xFFFF3333;
 
-  /** Detection range in blocks for nearby HVAC equipment. */
-  private static final int HVAC_DETECTION_RANGE = 24;
-
-  /** Receives the proximity answer from the combined temperature query, reused every check. */
-  private final boolean[] nearHvacScratch = new boolean[1];
-
-  private static final long RECHECK_INTERVAL_MS = 500L;
   private static final int ALTITUDE_THRESHOLD = 64;
   private static final float THRESHOLD_COLD = 60.0f;
   private static final float THRESHOLD_WARM = 80.0f;
@@ -69,19 +63,6 @@ public class HvacHudOverlay {
 
   /** Y offset from the anchor edge in pixels. */
   private static int hudOffsetY = 4;
-
-  private boolean cachedNearHvac = false;
-  private float cachedTemperature = 0.0f;
-  private long cachedChunkKey = Long.MIN_VALUE;
-  private long lastCheckTime = 0L;
-
-  /**
-   * Per-overlay smoother that adds the asymmetric ramp-fast / decay-slow behavior on top
-   * of the manager's raw reading. Owned here instead of being a static field on the manager
-   * so it can't be corrupted by other temperature consumers (thermostat ticks, future
-   * indicators) silently sharing state.
-   */
-  private final TemperatureSmoother smoother = new TemperatureSmoother();
 
   /**
    * Sets the HUD position anchor and offset. Can be called from a config system or command.
@@ -112,53 +93,14 @@ public class HvacHudOverlay {
       return;
     }
 
-    World world = player.world;
-
-    // Derive the chunk key straight from the player's coordinates rather than allocating a
-    // BlockPos: this runs every frame, and for a player nowhere near an HVAC unit it is the
-    // only work the overlay should be doing.
-    int playerBlockX = MathHelper.floor(player.posX);
+    if (!HvacHudPacket.clientVisible
+        || System.currentTimeMillis() - HvacHudPacket.clientReceivedMs
+        > HvacHudPacket.CLIENT_STALE_MS) {
+      return;
+    }
     int playerBlockY = MathHelper.floor(player.posY);
-    int playerBlockZ = MathHelper.floor(player.posZ);
 
-    // Force recheck when player moves to a different chunk
-    long currentChunkKey = ((long) (playerBlockX >> 4)) ^ (((long) (playerBlockZ >> 4)) << 32);
-    boolean chunkChanged = currentChunkKey != cachedChunkKey;
-    if (chunkChanged) {
-      cachedChunkKey = currentChunkKey;
-    }
-
-    // Recheck HVAC proximity and temperature periodically or on chunk change. Smoothing
-    // runs every refresh tick so the displayed value eases toward the raw reading at the
-    // dynamics defined by TemperatureSmoother (fast ramp when HVAC pushes, slow decay
-    // when it stops).
-    long now = System.currentTimeMillis();
-    boolean recheckDue = chunkChanged || (now - lastCheckTime > RECHECK_INTERVAL_MS);
-
-    // Nothing on screen and nothing to refresh -- leave before touching the world. The
-    // proximity scan below walks every tile entity in a 3x3 chunk block, and CSM chunks are
-    // unusually tile-entity dense, so this exit matters for players with no HVAC at all.
-    if (!recheckDue && !cachedNearHvac) {
-      return;
-    }
-
-    if (recheckDue) {
-      lastCheckTime = now;
-      BlockPos playerPos = new BlockPos(playerBlockX, playerBlockY, playerBlockZ);
-      // One walk over the nearby chunks' tile entities answers both questions; see
-      // HvacTemperatureManager.getTemperatureAt(World, BlockPos, int, boolean[]).
-      float rawTemp = HvacTemperatureManager.getTemperatureAt(world, playerPos,
-          HVAC_DETECTION_RANGE, nearHvacScratch);
-      cachedNearHvac = nearHvacScratch[0];
-      float baseline = HvacTemperatureManager.getBaselineAt(world, playerPos);
-      cachedTemperature = smoother.update(rawTemp, baseline);
-    }
-
-    if (!cachedNearHvac) {
-      return;
-    }
-
-    float temperature = cachedTemperature;
+    float temperature = HvacHudPacket.clientTemperature;
     int indicatorColor = getIndicatorColor(temperature);
     String altitudeIndicator = playerBlockY > ALTITUDE_THRESHOLD ? " \u2191" : "";
     String tempText = Math.round(temperature) + "\u00B0F" + altitudeIndicator;
