@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmBeaconFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.IStrobeBlock;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmControlPanel;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmDetectorFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmESTPull;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmEdwardsGlassRodPullStation;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmFCIPull;
@@ -43,6 +44,7 @@ import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHor
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHornWhite;
 import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmConfigTool;
 import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmLinker;
+import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockRemoteAnnunciator;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -124,6 +126,7 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmBeaconFactory("firealarmbeaconblue", new AxisAlignedBB(0.187500, 0.187500, 0.500000, 0.812500, 0.812500, 1.000000), new float[]{5.4f, 5.4f, 8f}, new float[]{10.6f, 10.6f, 9f}, new float[]{0.28f, 0.5f, 1.0f}));
     initTabBlock(new BlockFireAlarmBeaconFactory("firealarmbeaconclear", new AxisAlignedBB(0.187500, 0.187500, 0.500000, 0.812500, 0.812500, 1.000000), new float[]{5.4f, 5.4f, 8f}, new float[]{10.6f, 10.6f, 9f}, new float[]{1.0f, 1.0f, 1.0f}));
     initTabBlock(BlockFireAlarmControlPanel.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockRemoteAnnunciator("remote_annunciator", new int[]{3, 3, 14, 13, 13, 16}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmest2028atstrobered", null, new AxisAlignedBB(0.187500, 0.087500, 0.675000, 0.812500, 1.000000, 1.000000), new float[]{5.63f, 2.78f, 10.8f}, new float[]{10.55f, 14.38f, 12.6f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmest2028atwstrobewhite", null, new AxisAlignedBB(0.187500, 0.087500, 0.675000, 0.812500, 1.000000, 1.000000), new float[]{5.63f, 2.78f, 10.8f}, new float[]{10.55f, 14.38f, 12.6f}));
     initTabBlock(new BlockFireAlarmSounderFactory("firealarmestadaptahorngray", "csm:edwards_adaptahorn_code44", new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000)));
@@ -149,6 +152,9 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmSoundIndexStrobeFactory("firealarmgentexcommander5white", new AxisAlignedBB(0.156250, 0.156250, 0.775000, 0.843750, 0.843750, 1.000000), new float[]{4.74f, 4.74f, 12.4f}, new float[]{11.17f, 8.38f, 13.1f}, FireAlarmSoundSets.GENTEX_GOS, FireAlarmSoundSets.GENTEX_GOS_NAMES));
     initTabBlock(new BlockFireAlarmSoundIndexStrobeFactory("firealarmgentexcommander5black", new AxisAlignedBB(0.156250, 0.156250, 0.775000, 0.843750, 0.843750, 1.000000), new float[]{4.74f, 4.74f, 12.4f}, new float[]{11.17f, 8.38f, 13.1f}, FireAlarmSoundSets.GENTEX_GOS, FireAlarmSoundSets.GENTEX_GOS_NAMES));
     initTabBlock(BlockFireAlarmHeatDetector.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockFireAlarmDetectorFactory("smoke_detector_photoelectric", new AxisAlignedBB(0.218750, 0.218750, 0.812500, 0.781250, 0.781250, 1.000000)));
+    initTabBlock(new BlockFireAlarmDetectorFactory("duct_smoke_detector", new AxisAlignedBB(0.125000, 0.187500, 0.750000, 0.875000, 0.812500, 1.000000)));
+    initTabBlock(new BlockFireAlarmDetectorFactory("beam_smoke_detector", new AxisAlignedBB(0.250000, 0.187500, 0.625000, 0.750000, 0.812500, 1.000000)));
     initTabBlock(new BlockRotatableNSEWUDFactory("hwam", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.125000, 0.312500, 0.937500, 0.875000, 0.937500, 1.000000), false, false, true, BlockRenderLayer.SOLID, false, false));
     initTabBlock(BlockFireAlarmKACCallPoint.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmKACSounderRed.class, fmlPreInitializationEvent);

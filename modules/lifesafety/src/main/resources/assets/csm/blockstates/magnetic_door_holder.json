@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lifesafety/fireprotection/magnetic_door_holder"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "alarm": {
+      "false": {},
+      "true": {
+        "textures": {
+          "led": "csm:blocks/lifesafety/fireprotection/led_off"
+        }
+      }
+    }
+  }
+}

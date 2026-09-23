@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "face": "csm:blocks/lifesafety/fireprotection/annunciator",
+    "beige": "csm:blocks/lifesafety/fireprotection/beige",
+    "particle": "csm:blocks/lifesafety/fireprotection/beige"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        3,
+        14.5
+      ],
+      "to": [
+        13,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#beige",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#beige",
+          "uv": [
+            0,
+            3,
+            1.5,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#beige",
+          "uv": [
+            14.5,
+            3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#beige",
+          "uv": [
+            3,
+            14.5,
+            13,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#beige",
+          "uv": [
+            3,
+            0,
+            13,
+            1.5
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -139,7 +139,24 @@ public class ItemFireAlarmLinker extends AbstractItem {
       TileEntityFireAlarmControlPanel fireAlarmControlPanel
           = (TileEntityFireAlarmControlPanel) worldIn.getTileEntity(alarmPanelPos);
 
-      if (state.getBlock() instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
+      if (state.getBlock() instanceof IFireAlarmPanelFollower) {
+        // A door holder or annunciator: it keeps the panel it follows and looks at it; the panel
+        // keeps no list of them.
+        TileEntity followerTe = worldIn.getTileEntity(pos);
+        if (followerTe instanceof TileEntityFireAlarmSensor) {
+          TileEntityFireAlarmSensor.LinkResult result =
+              ((TileEntityFireAlarmSensor) followerTe).setLinkedPanelPos(alarmPanelPos);
+          if (!worldIn.isRemote) {
+            String panelDescription = "fire alarm control panel at (" + alarmPanelPos.getX()
+                + "," + alarmPanelPos.getY() + "," + alarmPanelPos.getZ() + ")";
+            player.sendMessage(new TextComponentString(
+                result == TileEntityFireAlarmSensor.LinkResult.ALREADY_LINKED
+                    ? "Already following " + panelDescription
+                    : "Now following " + panelDescription));
+          }
+        }
+        return EnumActionResult.SUCCESS;
+      } else if (state.getBlock() instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
         boolean didAdd = fireAlarmControlPanel.addLinkedAlarm(pos);
         if (didAdd && !worldIn.isRemote) {
           player.sendMessage(

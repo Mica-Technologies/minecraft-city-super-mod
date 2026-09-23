@@ -308,6 +308,16 @@ def cost_for(registry, info, ancestors):
             return ("CONTROL_BOARD", "SHEET_METAL")
         if has("AbstractBlockFireAlarmSounder"):
             return ("SOUNDER_DRIVER", "ENCLOSURE_SHELL")
+        if has_word(registry, "sign"):
+            return ("SIGN_BLANK",)
+        if has_word(registry, "aed"):
+            return ("SHEET_METAL", "CONTROL_BOARD", "WIRING_HARNESS")
+        if has_word(registry, "cabinet"):
+            return ("SHEET_METAL x2", "FASTENER_KIT")
+        if has_word(registry, "extinguisher"):
+            return ("SHEET_METAL x2",)
+        if has_any(registry, ("valve", "connection", "riser", "preventer", "box")):
+            return ("SHEET_METAL", "FASTENER_KIT")
         return ("SHEET_METAL", "WIRING_HARNESS")
     if tab == "tablighting":
         return ("LED_MODULE", "SHEET_METAL", "WIRING_HARNESS")

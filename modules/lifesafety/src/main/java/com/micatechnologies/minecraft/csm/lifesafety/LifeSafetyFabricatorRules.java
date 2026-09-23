@@ -104,8 +104,11 @@ public final class LifeSafetyFabricatorRules {
   }
 
   /**
-   * Prices the Fire Protection tab. Sprinklers keep their price from {@link #price}; anything
-   * else takes steel and a wiring harness, as it would have in the one Life Safety tab.
+   * Prices the Fire Protection tab. Sprinklers, the gong (a sounder) and anything else of the
+   * fire alarm's own kinds keep their price from {@link #price}. The rest by name: a sign plate is
+   * a sign blank, a cabinet steel and fixings (an AED's also its electronics), an extinguisher two
+   * sheets of steel, a valve, pipe or connection steel and fixings. Anything else, such as the door
+   * holders, takes steel and a wiring harness, as it would have in the one Life Safety tab.
    *
    * @param block        the block to price
    * @param registryName the block's registry name
@@ -116,6 +119,29 @@ public final class LifeSafetyFabricatorRules {
     List<FabricatorIngredient> priced = price(block, registryName);
     if (priced != null) {
       return priced;
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "sign")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "aed")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "cabinet")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "extinguisher")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "valve")
+        || CsmBlockDisplayNames.hasWord(registryName, "connection")
+        || CsmBlockDisplayNames.hasWord(registryName, "riser")
+        || CsmBlockDisplayNames.hasWord(registryName, "preventer")
+        || CsmBlockDisplayNames.hasWord(registryName, "box")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }
     return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
         FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
