@@ -43,6 +43,8 @@ public class BlockParkJoining extends AbstractBlock {
     FENCE(Material.IRON, SoundType.METAL, "pickaxe", 2.0F, BlockRenderLayer.CUTOUT),
     /** A raised bed or fountain basin, joins its own block only. */
     BED(Material.ROCK, SoundType.STONE, "pickaxe", 1.5F, BlockRenderLayer.CUTOUT),
+    /** A gazebo railing: joins its own block, and runs into a post (a post prop) beside it. */
+    RAIL(Material.WOOD, SoundType.WOOD, "axe", 1.5F, BlockRenderLayer.CUTOUT),
     /** A pergola's roof of beams and rafters, sitting on its posts; joins its own block only. */
     PERGOLA(Material.WOOD, SoundType.WOOD, "axe", 2.0F, BlockRenderLayer.CUTOUT);
 
@@ -126,6 +128,10 @@ public class BlockParkJoining extends AbstractBlock {
   /** Whether this joins the block on the given side. */
   public boolean joins(IBlockAccess world, BlockPos pos, EnumFacing side) {
     IBlockState other = world.getBlockState(pos.offset(side));
+    if (kind == Kind.RAIL && other.getBlock() instanceof BlockParkProp
+        && ((BlockParkProp) other.getBlock()).getKind() == BlockParkProp.Kind.POST) {
+      return true;
+    }
     if (kind == Kind.BED && getBlockRegistryName().equals("fountain_basin")) {
       // A basin runs up to a fountain standing in it, so the fountain stands in the water.
       String name = other.getBlock().getRegistryName() == null ? ""
@@ -138,7 +144,8 @@ public class BlockParkJoining extends AbstractBlock {
       return false;
     }
     BlockParkJoining o = (BlockParkJoining) other.getBlock();
-    return kind == Kind.BED || kind == Kind.PERGOLA ? o == this : o.kind == kind;
+    return kind == Kind.BED || kind == Kind.PERGOLA || kind == Kind.RAIL ? o == this
+        : o.kind == kind;
   }
 
   @Override

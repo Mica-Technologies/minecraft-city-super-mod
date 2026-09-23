@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:parks/amenities/gazebo_post_shaft"
+      }
+    },
+    {
+      "when": {
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:parks/amenities/gazebo_post_base"
+      }
+    },
+    {
+      "when": {
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:parks/amenities/gazebo_post_cap"
+      }
+    }
+  ]
+}

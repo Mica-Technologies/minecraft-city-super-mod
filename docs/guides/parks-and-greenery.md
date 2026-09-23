@@ -93,6 +93,10 @@ tree afterwards if you like.
   go under them.
 - **A pergola**: stand pergola posts at the corners, then fill the top with pergola beams at any
   size. The beams run round the outside and the rafters across.
+- **A gazebo**: lay a floor of gazebo deck, stand gazebo posts 3 high at the corners (and at the
+  middle of each side for a big one), and run gazebo railings between them, leaving a gap for the
+  way in. Then put a **Gazebo Roof** on top of the middle, level with the post tops: the 3x3 roof
+  covers a 3 by 3 gazebo, the 5x5 a 5 by 5.
 - **Fountains.** Fountain basins join into a pool of any size. Stand a tiered fountain in the middle
   and the pool runs right up to it. There are also water bubblers, a bird bath and flower pots.
 - **Irrigation.** The **Irrigation Controller** is a wall box that sends out a redstone signal

@@ -11,7 +11,8 @@ Areas (ground is y=3, things stand at y=4):
   street    a road with two sidewalks: leaning street trees on grates arching over the road,
             pleached lindens, a staked young tree, a hoop-fenced pit, benches, bins, baskets
   park      south of the street: hedged, paths, fountain plaza, playground, pergola with
-            picnic tables, gardens, pond with a willow, lawn with irrigation
+            picnic tables, gardens, pond with a willow, lawn with irrigation; two gazebos east
+            of it
   arboretum west of the park: one of every Tree Planting Tool preset, each with a sign
   kit       north of the street: every leaves block and crown on a plinth, hand-built log
             leans in every width, moss and willow strands
@@ -301,6 +302,39 @@ put(PX1 - 4, Y, PZ1 - 3, 'dog_waste_station', W)
 put(PX1 - 4, Y, PZ1 - 6, 'parktrashcan', UD[W])
 for z in (PZ1 - 5, PZ1 - 4):
     put(PX1 - 6, Y, z, 'park_bench_backless', E)
+flush()
+
+# ------------------------------------------------------------------------------------------
+# Gazebos, east of the park, down a path from its east gate
+# ------------------------------------------------------------------------------------------
+def gazebo(cx, cz, n):
+    """An n x n gazebo centred on (cx, cz), open to the west: deck, posts at the corners (and
+    mid-sides on a 5x5), railings between them, and the roof block on top of the middle."""
+    h = n // 2
+    for x in range(cx - h, cx + h + 1):
+        for z in range(cz - h, cz + h + 1):
+            put(x, Y, z, 'gazebo_deck')
+    posts = {(cx + dx, cz + dz) for dx in (-h, h) for dz in (-h, h)}
+    if n >= 5:
+        posts |= {(cx, cz - h), (cx, cz + h), (cx + h, cz)}
+    for x in range(cx - h, cx + h + 1):
+        for z in range(cz - h, cz + h + 1):
+            if abs(x - cx) != h and abs(z - cz) != h:
+                continue
+            if (x, z) in posts:
+                for y in range(Y, Y + 3):
+                    put(x, y, z, 'gazebo_post')
+            elif not (x == cx - h and abs(z - cz) <= 1):
+                put(x, Y, z, 'gazebo_railing')
+    put(cx, Y + 3, cz, 'gazebo_roof_%dx%d' % (n, n))
+
+
+gazebo(PX1 + 10, CZ, 5)
+gazebo(PX1 + 10, CZ - 11, 3)
+for x in range(PX1 + 1, PX1 + 8):
+    for dz in (-1, 0, 1):
+        put(x, Y, CZ + dz, 'ground_decomposed_granite')
+sign(PX1 + 5, CZ - 3, ["Gazebos:", "posts, railings,", "deck and a roof", "block (3x3, 5x5)"], 8)
 flush()
 
 # ------------------------------------------------------------------------------------------

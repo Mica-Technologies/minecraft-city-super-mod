@@ -210,6 +210,24 @@ Everything else there is written by `gen_park_amenities.py`.
   outer row, centred over the post line, and rafters across on top. Where two beams cross at a
   corner the turned one is drawn with `uvlock`, so the shared faces carry identical pixels and
   cannot z-fight.
+- **Gazebos** are a kit, like the pergola:
+  - posts (`BlockParkColumn`, which draws its base only on the bottom block of a stack and its
+    capital only on the top one, so a three-block post is one column);
+  - railings (a `RAIL` joining block, which also runs into a post beside it);
+  - a board deck;
+  - one **roof block** set on top of the middle of the footprint: `gazebo_roof_3x3` or
+    `_5x5`.
+
+  The roof is the one OBJ model in the module. A hip roof has sloped triangular faces, which no
+  JSON element can draw, and its footprint (up to 86 px across) is past the -16..32 an element
+  may reach. It has:
+  - four shingled faces up to a cupola and finial;
+  - a white fascia round the eave, which sits on the posts;
+  - a board ceiling underneath, tiled at 16 px so the boards keep their width.
+
+  The roof block is solid only inside its own cell (Kind `ROOF` clips its collision), because a
+  box past the cell is only consulted when an entity is inside the cell. Its selection box
+  covers the whole roof.
 - **Fountains.** The basin joins into a pool of any size, and also runs up to any `fountain_` block
   standing in it. The tiered fountain's water and falling water are animated textures (`.mcmeta`).
 - **Irrigation.** `BlockIrrigationController` is a wall box that polls the world clock every 2

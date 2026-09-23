@@ -144,7 +144,11 @@ public final class ParksFabricatorRules {
     if (registryName.equals("birdbath") || registryName.startsWith("fountain_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 3));
     }
-    if (registryName.endsWith("_wood") || registryName.startsWith("pergola_")) {
+    if (registryName.startsWith("gazebo_roof_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 8));
+    }
+    if (registryName.endsWith("_wood") || registryName.startsWith("pergola_")
+        || registryName.startsWith("gazebo_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3));
     }
     if (registryName.equals("irrigation_controller")) {

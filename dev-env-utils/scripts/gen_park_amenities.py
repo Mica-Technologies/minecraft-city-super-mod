@@ -10,6 +10,8 @@ texture, JSON model, blockstate and lang line, under modules/parks/.../assets/cs
   * textures/blocks/parks/amenities/*.png  (+ .mcmeta for the animated water)
   * models/block/parks/amenities/*.json
   * blockstates/<registry>.json, and models/item/<registry>.json for multipart blocks
+  * models/block/parks/amenities/gazebo_roof_<n>.obj (+ one .mtl): the gazebo roofs, the one
+    shape here a JSON element cannot draw (sloped faces, and a footprint past -16..32)
 
 Every model faces north with its back (the wall, the ladder, a bench's backrest) at +Z, which
 is how the rotatable blocks in the mod are drawn. Benches and picnic tables are one block of seat
@@ -193,7 +195,74 @@ def controller_face(seed):
     return img
 
 
+def shingles(seed):
+    """A roof face's shingles: staggered courses on a 64 px tile, one tile per face, so courses
+    come out a few pixels apart on the roof whatever its size."""
+    rng = random.Random(seed)
+    base = [(70, 92, 76), (62, 84, 68), (56, 76, 62), (48, 66, 54)]
+    img = Image.new("RGBA", (64, 64))
+    px = img.load()
+    for y in range(64):
+        course = y // 6
+        for x in range(64):
+            tab = (x + (course % 2) * 5) // 10
+            c = base[(course * 7 + tab * 3) % len(base)]
+            c = tuple(v + rng.randint(-5, 5) for v in c)
+            if y % 6 == 5:
+                c = (32, 44, 36)          # the shadow line under a course
+            elif (x + (course % 2) * 5) % 10 == 0:
+                c = (40, 54, 44)          # the slot between two tabs
+            px[x, y] = clamp(c) + (255,)
+    return img
+
+
+def beadboard(seed):
+    """The ceiling under a gazebo roof: white-washed boards with a bead every four pixels."""
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (32, 32))
+    px = img.load()
+    for y in range(32):
+        for x in range(32):
+            v = 232 + rng.randint(-6, 4)
+            if x % 4 == 0:
+                v -= 34
+            px[x, y] = (v, v - 2, v - 8, 255)
+    return img
+
+
+def white_paint(seed):
+    return noise_tex([(240, 240, 234), (230, 230, 224), (220, 220, 214)], seed, grain=0.5)
+
+
+def gazebo_icon():
+    """A little gazebo for the roof blocks' inventory icon."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = img.load()
+    green, dark, white = (70, 92, 76, 255), (48, 66, 54, 255), (238, 238, 232, 255)
+    for y in range(1, 8):
+        half = y + 1
+        for x in range(8 - half, 8 + half):
+            px[x, y] = green if (x + y) % 3 else dark
+    for x in range(0, 16):
+        px[x, 8] = white
+    px[7, 0] = px[8, 0] = white
+    for y in range(9, 15):
+        for x in (1, 2, 13, 14, 7, 8):
+            px[x, y] = white
+    for x in range(1, 15):
+        px[x, 15] = (150, 120, 84, 255)
+        if x % 2:
+            px[x, 12] = white
+    return img
+
+
 TEXTURES = {
+    "gazebo_shingle": lambda: shingles(131),
+    "gazebo_ceiling": lambda: beadboard(132),
+    "white_paint": lambda: white_paint(133),
+    "gazebo_deck": lambda: pp.boards([(214, 204, 186), (200, 190, 172), (186, 176, 158),
+                                      (170, 160, 142)], 134),
+    "gazebo_icon": gazebo_icon,
     "teak": lambda: slats(TEAK, 101),
     "iron": lambda: noise_tex(IRON, 102, grain=0.8),
     "green_steel": lambda: noise_tex(GREEN_STEEL, 103, grain=0.6),
@@ -533,6 +602,177 @@ add("ground_rubber_safety",
     {"forge_marker": 1, "defaults": {"model": MODEL + "ground_rubber_safety"},
      "variants": {"normal": [{}], "inventory": [{}]}})
 
+# --- gazebo: a kit of post, railing and deck, and a roof block drawn as an OBJ ---
+white = {"paint": T("white_paint"), "particle": T("white_paint")}
+# A post stacked from blocks is one turned column: the shaft in every block, the base only at the
+# bottom and the capital only at the top (BlockParkColumn's actual state).
+post_base = box([5, 0, 5], [11, 2, 11], "paint")
+post_cap = box([5, 14, 5], [11, 16, 11], "paint")
+add("gazebo_post", 'new BlockParkColumn("gazebo_post", BlockParkProp.Kind.POST, 16, 5)',
+    ("Gazebo Post", "Pavillonpfosten", "Poste de cenador", "Paviljongstolpe"),
+    {"gazebo_post_shaft": model(white, [box([6, 0, 6], [10, 16, 10], "paint",
+                                            faces=("north", "south", "east", "west"))]),
+     "gazebo_post_base": model(white, [post_base]),
+     "gazebo_post_cap": model(white, [post_cap]),
+     "gazebo_post_item": model(white, [post_base, box([6, 2, 6], [10, 14, 10], "paint"),
+                                       post_cap])},
+    {"multipart": [
+        {"apply": {"model": MODEL + "gazebo_post_shaft"}},
+        {"when": {"base": "true"}, "apply": {"model": MODEL + "gazebo_post_base"}},
+        {"when": {"cap": "true"}, "apply": {"model": MODEL + "gazebo_post_cap"}}]},
+    {"parent": "csm:block/parks/amenities/gazebo_post_item"})
+rail_side = [box([7, 9, 0], [9, 10, 8], "paint", faces=("east", "west", "up", "down")),
+             box([7, 1, 0], [9, 2, 8], "paint", faces=("east", "west", "up", "down"))]
+rail_side += [box([7.5, 2, z], [8.5, 9, z + 1], "paint", faces=("north", "south", "east", "west"))
+              for z in (1.5, 4.5)]
+joining_block("gazebo_railing", "RAIL", 10, 2,
+              ("Gazebo Railing", "Pavillongeländer", "Barandilla de cenador", "Paviljongräcke"),
+              model(white, [box([7, 0, 7], [9, 10, 9], "paint")]),
+              model(white, rail_side), rail_side, "true")
+add("gazebo_deck", 'new BlockParkProp("gazebo_deck", BlockParkProp.Kind.COVER, 2, 0)',
+    ("Gazebo Deck", "Pavillonboden", "Suelo de cenador", "Paviljonggolv"),
+    {"gazebo_deck": model({"all": T("gazebo_deck"), "particle": T("gazebo_deck")},
+                          [box([0, 0, 0], [16, 2, 16], "all")])},
+    {"forge_marker": 1, "defaults": {"model": MODEL + "gazebo_deck"},
+     "variants": {"normal": [{}], "inventory": [{}]}})
+
+
+class Mesh:
+    """An OBJ in pixels, grouped by material. Faces are wound counter-clockwise seen from
+    outside, which is what the normal given says outside is."""
+
+    def __init__(self):
+        self.v, self.vt, self.vn = [], [], []
+        self.groups = {}
+
+    def face(self, mat, pts, uvs, normal):
+        a, b, c = pts[0], pts[1], pts[2]
+        e1 = [b[i] - a[i] for i in range(3)]
+        e2 = [c[i] - a[i] for i in range(3)]
+        cr = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2],
+              e1[0] * e2[1] - e1[1] * e2[0]]
+        if sum(cr[i] * normal[i] for i in range(3)) < 0:
+            pts, uvs = list(reversed(pts)), list(reversed(uvs))
+        ln = sum(n * n for n in normal) ** 0.5
+        self.vn.append(tuple(n / ln for n in normal))
+        ni = len(self.vn)
+        idx = []
+        for p_, t in zip(pts, uvs):
+            self.v.append(p_)
+            # Inside the sprite's border, where mip levels do not bleed; flip-v is on.
+            self.vt.append((0.02 + 0.96 * t[0], 1.0 - (0.02 + 0.96 * t[1])))
+            idx.append((len(self.v), len(self.vt), ni))
+        self.groups.setdefault(mat, []).append(idx)
+
+    def box(self, mat, lo, hi, skip=()):
+        x0, y0, z0 = lo
+        x1, y1, z1 = hi
+        faces = {
+            "down": ([(x0, y0, z0), (x1, y0, z0), (x1, y0, z1), (x0, y0, z1)], (0, -1, 0)),
+            "up": ([(x0, y1, z0), (x0, y1, z1), (x1, y1, z1), (x1, y1, z0)], (0, 1, 0)),
+            "north": ([(x0, y0, z0), (x0, y1, z0), (x1, y1, z0), (x1, y0, z0)], (0, 0, -1)),
+            "south": ([(x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)], (0, 0, 1)),
+            "west": ([(x0, y0, z0), (x0, y0, z1), (x0, y1, z1), (x0, y1, z0)], (-1, 0, 0)),
+            "east": ([(x1, y0, z0), (x1, y1, z0), (x1, y1, z1), (x1, y0, z1)], (1, 0, 0)),
+        }
+        for name, (pts, n) in faces.items():
+            if name not in skip:
+                self.face(mat, pts, [(0, 0), (1, 0), (1, 1), (0, 1)], n)
+
+    def text(self, mtl):
+        lines = ["# Generated by dev-env-utils/scripts/gen_park_amenities.py -- do not hand edit",
+                 "mtllib %s" % mtl, "o gazebo_roof"]
+        lines += ["v %.6f %.6f %.6f" % (x / 16.0, y / 16.0, z / 16.0) for x, y, z in self.v]
+        lines += ["vt %.6f %.6f" % t for t in self.vt]
+        lines += ["vn %.6f %.6f %.6f" % n for n in self.vn]
+        for mat in sorted(self.groups):
+            lines.append("usemtl %s" % mat)
+            for f in self.groups[mat]:
+                lines.append("f " + " ".join("%d/%d/%d" % i for i in f))
+        return "\n".join(lines) + "\n"
+
+
+def gazebo_roof(n):
+    """A hip roof over an n x n footprint, from the block on top of its middle: the eave on the
+    posts (the cell's floor), a white fascia, a boarded ceiling to look up at, four shingled
+    faces up to a cupola, and a finial on the cupola's cap."""
+    m = Mesh()
+    c = 8.0
+    half = n * 8 + 3                   # the footprint, and a 3 px overhang
+    eave = 2.0                         # the fascia's height
+    rise = half * 0.62                 # a pitch of about 32 degrees
+    apex = eave + rise
+    # Ceiling, seen from below, tiled a texture to 16 px so the boards keep their width (one
+    # stretched quad made each bead a finger wide), and the fascia round the eave.
+    edges = [c - half]
+    while edges[-1] + 16 < c + half:
+        edges.append(edges[-1] + 16)
+    edges.append(c + half)
+    for i in range(len(edges) - 1):
+        for j in range(len(edges) - 1):
+            x0, x1, z0, z1 = edges[i], edges[i + 1], edges[j], edges[j + 1]
+            u1, v1 = (x1 - x0) / 16.0, (z1 - z0) / 16.0
+            m.face("ceiling", [(x0, 0.02, z0), (x1, 0.02, z0), (x1, 0.02, z1), (x0, 0.02, z1)],
+                   [(0, 0), (u1, 0), (u1, v1), (0, v1)], (0, -1, 0))
+    t = 1.2
+    m.box("trim", (c - half, 0, c - half), (c + half, eave, c - half + t), skip=("up",))
+    m.box("trim", (c - half, 0, c + half - t), (c + half, eave, c + half), skip=("up",))
+    m.box("trim", (c - half, 0, c - half + t), (c - half + t, eave, c + half - t),
+          skip=("up", "north", "south"))
+    m.box("trim", (c + half - t, 0, c - half + t), (c + half, eave, c + half - t),
+          skip=("up", "north", "south"))
+    # The four faces, eave corners to the apex.
+    corners = [(c - half, c - half), (c + half, c - half), (c + half, c + half),
+               (c - half, c + half)]
+    for i in range(4):
+        (ax, az), (bx, bz) = corners[i], corners[(i + 1) % 4]
+        mx, mz = (ax + bx) / 2 - c, (az + bz) / 2 - c
+        # Outward normal of a face: horizontal part toward the edge, vertical part up.
+        normal = (mx / half * rise, half, mz / half * rise)
+        m.face("shingle", [(ax, eave, az), (bx, eave, bz), (c, apex, c)],
+               [(0, 0), (1, 0), (0.5, 1)], normal)
+    # Cupola: a white box where the faces are 4.5 px from the ridge line, capped with a small
+    # shingled pyramid and a finial.
+    r = 4.5
+    y_c = eave + rise * (1 - r / half) - 1
+    m.box("trim", (c - r, y_c, c - r), (c + r, y_c + 5, c + r), skip=("down",))
+    cap = r + 1.5
+    for i in range(4):
+        ax, az = [(c - cap, c - cap), (c + cap, c - cap), (c + cap, c + cap), (c - cap, c + cap)][i]
+        bx, bz = [(c + cap, c - cap), (c + cap, c + cap), (c - cap, c + cap), (c - cap, c - cap)][i]
+        mx, mz = (ax + bx) / 2 - c, (az + bz) / 2 - c
+        m.face("shingle", [(ax, y_c + 5, az), (bx, y_c + 5, bz), (c, y_c + 9, c)],
+               [(0, 0), (1, 0), (0.5, 1)], (mx / cap * 4, cap, mz / cap * 4))
+    m.face("ceiling", [(c - cap, y_c + 5, c - cap), (c + cap, y_c + 5, c - cap),
+                       (c + cap, y_c + 5, c + cap), (c - cap, y_c + 5, c + cap)],
+           [(0, 0), (1, 0), (1, 1), (0, 1)], (0, -1, 0))
+    m.box("trim", (c - 0.75, y_c + 8, c - 0.75), (c + 0.75, y_c + 12, c + 0.75), skip=("down",))
+    return m
+
+
+OBJ_FILES = {}
+GAZEBO_MTL = "gazebo_roof.mtl"
+for n in (3, 5):
+    reg = "gazebo_roof_%dx%d" % (n, n)
+    OBJ_FILES["models/block/parks/amenities/%s.obj" % reg] = gazebo_roof(n).text(GAZEBO_MTL)
+    add(reg, 'new BlockParkProp("%s", BlockParkProp.Kind.ROOF, 16, %d)' % (reg, -8 * (n - 1)),
+        ("Gazebo Roof (%dx%d)" % (n, n), "Pavillondach (%dx%d)" % (n, n),
+         "Tejado de cenador (%dx%d)" % (n, n), "Paviljongtak (%dx%d)" % (n, n)),
+        {reg + "_item": {"parent": "item/generated", "textures": {"layer0": T("gazebo_icon")}}},
+        {"forge_marker": 1,
+         "variants": {
+             "normal": [{"model": MODEL + reg + ".obj", "custom": {"flip-v": True},
+                         "textures": {"#shingle": T("gazebo_shingle"),
+                                      "#trim": T("white_paint"),
+                                      "#ceiling": T("gazebo_ceiling"),
+                                      "particle": T("gazebo_shingle")}}],
+             "inventory": [{"model": MODEL + reg + "_item"}]}})
+OBJ_FILES["models/block/parks/amenities/" + GAZEBO_MTL] = (
+    "# Generated by gen_park_amenities.py -- do not hand edit; the blockstate retextures these\n"
+    + "".join("newmtl %s\nmap_Kd %s\n" % (mat, T(tex)) for mat, tex in
+              (("ceiling", "gazebo_ceiling"), ("shingle", "gazebo_shingle"),
+               ("trim", "white_paint"))))
+
 # Blocks built from their own class, with a fixed registry name, register by class.
 CLASS_BLOCKS = {"irrigation_sprinkler": "BlockSprinkler",
                 "irrigation_controller": "BlockIrrigationController"}
@@ -590,6 +830,12 @@ def generate(assets):
             rel = "models/item/%s.json" % b["registry"]
             pp.dump(os.path.join(assets, rel), b["item"])
             written.append(rel)
+    for rel, text in OBJ_FILES.items():
+        path = os.path.join(assets, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", newline="\n", encoding="utf-8") as fh:
+            fh.write(text)
+        written.append(rel)
     gen_trees.write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in LOCALES]
     return written

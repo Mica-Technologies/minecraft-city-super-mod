@@ -2,7 +2,7 @@
 
 Park amenities: benches, tables, bins, playground pieces, fountains and irrigation.
 
-!!! info "27 blocks in this tab"
+!!! info "32 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -16,6 +16,11 @@ Park amenities: benches, tables, bins, playground pieces, fountains and irrigati
 | Bird Bath | `csm:birdbath` | 2 | 10 | pickaxe | 1 |
 | Dog Waste Station | `csm:dog_waste_station` | 1.0 | 2.0 | axe | 0 |
 | Fountain Basin | `csm:fountain_basin` |  |  |  |  |
+| Gazebo Deck | `csm:gazebo_deck` |  |  |  |  |
+| Gazebo Post | `csm:gazebo_post` |  |  |  |  |
+| Gazebo Railing | `csm:gazebo_railing` |  |  |  |  |
+| Gazebo Roof (3x3) | `csm:gazebo_roof_3x3` |  |  |  |  |
+| Gazebo Roof (5x5) | `csm:gazebo_roof_5x5` |  |  |  |  |
 | Irrigation Controller | `csm:irrigation_controller` | 2.0 | 4.0 | pickaxe | 0 |
 | Large Flower Pot | `csm:largeflowerpot` | 2 | 10 | pickaxe | 1 |
 | Park Bench | `csm:park_bench_wood` | 1.5 | 3.0 | axe | 0 |
