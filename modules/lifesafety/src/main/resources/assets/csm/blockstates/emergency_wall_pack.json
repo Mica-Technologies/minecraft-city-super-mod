@@ -1,0 +1,40 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lifesafety/emergencylighting/emergency_wall_pack"
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ],
+    "powered": {
+      "true": {},
+      "false": {
+        "textures": {
+          "prism": "csm:blocks/lifesafety/emergencylighting/prism_on"
+        }
+      }
+    }
+  }
+}

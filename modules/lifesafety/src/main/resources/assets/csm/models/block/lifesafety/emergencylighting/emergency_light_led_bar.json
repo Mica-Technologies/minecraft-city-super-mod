@@ -1,0 +1,101 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "h": "csm:blocks/lifesafety/emergencylighting/housing_white",
+    "particle": "csm:blocks/lifesafety/emergencylighting/housing_white",
+    "strip": "csm:blocks/lifesafety/emergencylighting/strip_off"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        6,
+        13.6
+      ],
+      "to": [
+        15,
+        10,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#h",
+          "uv": [
+            1,
+            6,
+            15,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#h",
+          "uv": [
+            1,
+            6,
+            15,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#h",
+          "uv": [
+            0,
+            6,
+            2.4,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#h",
+          "uv": [
+            13.6,
+            6,
+            16,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#h",
+          "uv": [
+            1,
+            13.6,
+            15,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#h",
+          "uv": [
+            1,
+            0,
+            15,
+            2.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        6.8,
+        13.5
+      ],
+      "to": [
+        14,
+        8.8,
+        13.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#strip",
+          "uv": [
+            2,
+            7.2,
+            14,
+            9.2
+          ]
+        }
+      }
+    }
+  ]
+}

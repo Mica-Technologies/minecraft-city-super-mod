@@ -570,6 +570,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   open, standpipe, fire department connections, riser room valves, the water motor gong, door
   holders, sign plates) and the new detectors and remote annunciator in Fire Alarm & Detection;
   `--check`, `--fragments`
+- `gen_emergency_lighting.py` -- the emergency lights added to Exits & Emergency Lighting
+  (twin-head units, LED bar, remote heads, wall pack, recessed downlight), all one factory class;
+  the lamp boxes in its tab lines are the model's lamps, so the renderer's glow sits on them;
+  `--check`, `--fragments`
 - `gen_life_safety_sounds.py` -- the Life Safety module's own sounds, synthesised (numpy to
   ffmpeg to OGG) so nothing recorded is shipped; adds a `sounds.json` entry for each. No
   `--check` (Vorbis output is not byte-stable): listen, then commit the OGG
