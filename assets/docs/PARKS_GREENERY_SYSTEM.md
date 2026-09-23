@@ -67,20 +67,19 @@ There is deliberately no custom state mapper. One registered in pre-initializati
 registry name that does not exist yet, and collapses every block into one entry. That trap is
 described in PEDESTAL_POLE_SYSTEM.md.
 
-### Leaves: cards, not cubes
+### Leaves: sheets and cards, not cubes
 
-Leaves drawn as cubes read as stacked boxes, and a one-wide crown looks like a pillar. A leaves
-block is drawn as **leaf cards** instead: double-sided cutout quads showing the species'
-leaf-cluster sprite (`TreeLeavesGeometry`). Each block has:
+Leaves drawn as full cubes read as stacked boxes, and a one-wide crown looks like a pillar. A
+leaves block is drawn from the species' leaf-cluster sprite (`TreeLeavesGeometry`) as:
 
-- a few cards inside the cell;
-- a **fringe** of cards reaching up to 3 px past each **open** face (one with no leaves and no
-  opaque block beyond it), so a crown's outline is not the block grid;
-- a near-flat **cover card** across an open top or bottom, so a canopy seen from below is a mass of
-  leaves rather than sky between scattered cards.
+- a **sheet** on each **open** face (one with no leaves and no opaque block beyond it): one quad
+  1 px inside the face, facing out, whose ragged alpha keeps the outline soft;
+- a **tuft**, a double-sided cutout card reaching up to 3 px past each open side and the top, so a
+  crown's outline is not the block grid;
+- one card inside the cell (two in an upright needle column), so a gap in the crown is not sky.
 
-Nothing is drawn between two leaves cells. A cell with no open face draws a reduced interior, and
-Fast graphics draws the interior only.
+Nothing is drawn between two leaves cells, and Fast graphics leaves out the tufts and the curtain.
+The crowns read a little blockier than cards alone would, which is deliberate: see Rendering cost.
 
 The open faces and a per-position variant (0 to 3) travel in the extended state (`SHAPE`), so
 neighbouring blocks differ but a given block always looks the same.
@@ -90,9 +89,9 @@ neighbouring blocks differ but a given block always looks the same.
 | Type | For |
 |---|---|
 | `BROADLEAF` | oaks, elm, plane, ginkgo, poplar, sweetgum, hornbeam, linden |
-| `AIRY` | honey locust, jacaranda, gum: fewer cards, lets the light through |
+| `AIRY` | honey locust, jacaranda, gum: an open sprite, so the sheets let the light through |
 | `NEEDLE` | cypress, arborvitae: upright narrow cards, so a one-wide column is the whole tree |
-| `WEEPING` | pepper tree, willow: long narrow strands hang down every open side and under an open bottom, reaching well below the cell |
+| `WEEPING` | pepper tree, willow: from the crown's underside (a cell open below), long narrow strands hang down each open side and under the cell, reaching well below it, in place of the side tufts |
 | `CLIPPED` | the pleached linden: a flat leafy face flush with each open side, for topiary |
 | `PALM_FAN`, `PALM_FAN_SKIRT`, `PALM_FEATHER` | palm crowns, drawn by `TreePalmGeometry` |
 
@@ -293,17 +292,28 @@ about 0.2 ms a frame on a fast card, but a canopy is exactly where a slower one 
 `TreeRenderBudgetTest` counts each preset's quads exactly, from the geometry the baked models use,
 and fails when any preset grows more than 15% past its recorded budget.
 
-One pass (2026-09-23) took one of every preset from 82,178 quads to 37,687 without changing how
+One pass (2026-09-23) took one of every preset from 82,178 quads to 31,199 without changing how
 the trees read. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
-- **Sheeted leaves.** Broadleaf, needle and weeping leaves draw a leaf sheet on each open face
-  (one quad, facing out, 1 px inside the face), a tuft card past each open side and the top, and
-  one card inside, where they had drawn six interior cards, three fringe cards per open face and
-  cover cards. The crowns read a little more like blocks, deliberately, and keep their ragged
-  outline. Airy leaves stay all cards so light comes through them.
+- **Sheeted leaves.** Every leaf type but clipped draws a leaf sheet on each open face (one quad,
+  facing out, 1 px inside the face), a tuft card past each open side and the top, and one card
+  inside, where they had drawn six interior cards, three fringe cards per open face and cover
+  cards. The crowns read a little more like blocks, deliberately (the user preferred it), and keep
+  their ragged outline. Airy leaves are sheeted too; their sprite is mostly gaps, so the jacaranda
+  and honey locust still let the light through.
+- **A curtain only under the crown.** Weeping leaves hang their strands only from cells open
+  below, two to a side and two under, and draw no side tufts there. Strands hung higher up the
+  crown's wall were hidden behind the ones below them. The willow went from 7,822 quads to 5,557
+  and the pepper tree from 4,767 to 3,242.
 - **Fewer log sides where they cannot be seen.** A twig is a 4-sided tube and a thin log 6-sided;
   8 sides only from medium up.
 - **Straight-through tubes.** A log between two logs of its width in a straight line draws one
   tube through the cell, not two arms meeting at the centre.
+
+Off the render thread: a log's collision boxes are cached per width and connection mask
+(`TreeLogGeometry.boxes`), since every entity near a tree asks for them every tick. The sprinkler's
+spray is client-only particles, which the game already drops beyond 32 blocks, and the irrigation
+controller is one scheduled tick every two seconds. Nothing in the module has a tile entity
+renderer.
 
 ## Decisions
 

@@ -1,7 +1,10 @@
 package com.micatechnologies.minecraft.csm.parks.trees;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 
@@ -219,14 +222,26 @@ public final class TreeLogGeometry {
   }
 
   /**
+   * {@link #boxes} by width and mask. An entity near a tree asks for these every tick, and a
+   * world holds only as many masks as its trees have distinct joints.
+   */
+  private static final Map<TreeLogWidth, Map<Long, List<AxisAlignedBB>>> BOXES =
+      new ConcurrentHashMap<>();
+
+  /**
    * The log's collision and selection boxes, in block units (0-1).
    *
    * @param width the log's width
    * @param mask  its connection mask
    *
-   * @return the boxes
+   * @return the boxes, unmodifiable and shared
    */
   public static List<AxisAlignedBB> boxes(TreeLogWidth width, long mask) {
+    return BOXES.computeIfAbsent(width, w -> new ConcurrentHashMap<>())
+        .computeIfAbsent(mask, m -> Collections.unmodifiableList(computeBoxes(width, m)));
+  }
+
+  private static List<AxisAlignedBB> computeBoxes(TreeLogWidth width, long mask) {
     List<AxisAlignedBB> boxes = new ArrayList<>();
     if (width == TreeLogWidth.FULL) {
       boxes.add(new AxisAlignedBB(0, 0, 0, 1, 1, 1));
