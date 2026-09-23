@@ -61,7 +61,34 @@ After all verification passes, reports files that were never referenced:
 - Unused model files (block, item, custom)
 - Unused texture files
 - Unused sound files
-- Unused lang entries (checks `tile.*`, `item.*`, `itemGroup.*`, and `I18n.format()` calls)
+- Unused lang entries: a key counts as used if it is a discovered block's, item's or tab's name,
+  an `I18n.format("...")` literal in a registered block's class, or named by the sources in one of
+  the three ways `LangKeyUsage` reads (below)
+
+### Which lang keys the sources use (`LangKeyUsage`)
+
+Screens, chat messages and tooltips name keys that belong to no block. The tool used to report
+all of them as unused (176 keys in each of four languages on `feat/signage-advertising`, every one
+checked by hand and every one in use). `LangKeyUsage` reads them the three ways the mod writes
+them, each strict enough that a key that really is unused is still reported:
+
+1. **Literal** — a string literal anywhere in any tree that is exactly the key: a
+   `TextComponentTranslation`, a key handed to a helper that translates it (the crane GUI's
+   `slider(…, "gui.csm.crane.hook", …)`), either side of a ternary. Comments are stripped first.
+2. **Template** — a key built by concatenation, `"gui.csm.door.movement." + s.movement().key()`.
+   Each variable part matches exactly one lower-case segment, and that segment must be a word
+   the mod has: a constant name lower-cased, a string literal, or a string in a data JSON file
+   (the ad index supplies the categories). Templates never vouch for `tile.` or `item.` keys.
+3. **Per-stack name** — `tile.<block>.<part>.name` for a block whose item block overrides
+   `getTranslationKey` to append a part (crane mast liveries, insulated framing walls); the part
+   must be in the same vocabulary.
+
+Checked against planted keys: an unknown key, a removed block or item, a key with an extra
+segment, a template or per-stack part that is no word of the mod, and a key only in a comment are
+all reported. What still gets through is a real word of the mod in the wrong place
+(`tile.crane_mast.purple.name` if any enum has a `PURPLE`); what it still cannot see is a key
+assembled away from the expression that translates it. Check any reported key by hand before
+deleting it.
 
 ## How blocks and items are discovered
 
@@ -76,6 +103,12 @@ initTabItem( new ItemCraftingPart( CsmParts.SHEET_METAL, … ) ); // name from a
 
 Registration order is creative order, so a tab is the one place every block must appear whatever
 class builds it. The class-based path survives only as the fallback for the first form.
+
+For the first form the name is the literal the class (or its source) returns. One indirection is
+also followed, narrowly: a getter that returns `accessor().getItemRegistryName()`, where the class
+or an ancestor's `accessor()` returns `SomeEnum.CONSTANT` and that constant is declared with
+exactly one string. That is how the scaffold add-on items name themselves (`ScaffoldAddon`); before
+it, they were never discovered, and their names, item models and textures were reported unused.
 
 This matters because **one class is not one block.** `BlockTrafficSign` alone is 472 blocks;
 `BlockGuardrail`, `BlockWorkZoneDevice`, the sensors and every factory register many instances
@@ -144,9 +177,10 @@ Uses `AtomicInteger` counters for thread-safe error/warning reporting.
    to be skipped during scanning. This list must be manually updated as new abstract classes are
    added.
 
-4. **Fragile I18n detection** — Uses regex `I18n.format("...")` to find dynamically referenced
-   lang keys. Won't catch string concatenation, variable references, or alternative formatting
-   patterns.
+4. **Lang key detection is textual** — `LangKeyUsage` follows literals, concatenations and
+   per-stack names, but not a key stored in a field or passed through several methods before it
+   is translated, and it cannot tell which enum a template's variable part reads (see "Which lang
+   keys the sources use").
 
 5. **No JSON schema validation** — Checks for file existence and basic structure but doesn't
    validate that JSON files conform to Minecraft's expected schema.
