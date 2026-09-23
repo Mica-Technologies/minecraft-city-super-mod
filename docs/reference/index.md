@@ -11,15 +11,15 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 |---|---|---|
 | [Building Materials](building-materials.md) | 203 | Bulk material sets, with matching stairs, slabs and fences. |
 | [Construction Site](construction-site.md) | 42 | What stands around a building while it goes up: scaffolding, formwork, earthworks, site logistics and facilities. |
-| [Furniture](furniture.md) | 62 | Interior fittings: seating, counters, appliances and fixtures. |
+| [Furniture](furniture.md) | 55 | Interior fittings: seating, counters, appliances and fixtures. |
 | [Gaming](gaming.md) | 19 | Arcade cabinets and the playable machines that go with them. |
 | [HVAC](hvac.md) | 45 | Heating and cooling that actually simulates room temperature. |
 | [Interior Finishes](interior-finishes.md) | 60 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
 | [Life Safety](life-safety.md) | 162 | Fire alarm horns, strobes, pull stations, panels and exit signage. |
 | [Lighting](lighting.md) | 132 | Street lights, floodlights, pendants and sconces, all switchable. |
 | [Materials](materials.md) | 1 | The CSM Fabricator, which turns vanilla ingots into CSM blocks. |
-| [Novelties](novelties.md) | 35 | Decorative oddities that did not belong anywhere else. |
-| [Parks](parks.md) | 0 | Park amenities: benches, tables, bins, playground pieces, fountains and irrigation. |
+| [Novelties](novelties.md) | 33 | Decorative oddities that did not belong anywhere else. |
+| [Parks](parks.md) | 9 | Park amenities: benches, tables, bins, playground pieces, fountains and irrigation. |
 | [Power Grid](power-grid.md) | 46 | Utility poles, transformers and the Forge Energy that runs through them. |
 | [Road Signs](road-signs.md) | 677 | The MUTCD sign set, grouped the way the manual groups it. |
 | [Signage & Advertising](signage.md) | 5 | Street ad kiosks, wall poster boards and billboards built to size. |

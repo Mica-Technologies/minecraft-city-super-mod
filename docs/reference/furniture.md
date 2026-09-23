@@ -2,7 +2,7 @@
 
 Interior fittings: seating, counters, appliances and fixtures.
 
-!!! info "62 blocks in this tab"
+!!! info "55 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -18,7 +18,6 @@ Interior fittings: seating, counters, appliances and fixtures.
 | Beer Rack | `csm:beerrack` | 2 | 10 | pickaxe | 1 |
 | Beer Tap | `csm:beertap` | 2 | 10 | pickaxe | 1 |
 | Beet Crate | `csm:beetcrate` | 2 | 10 | pickaxe | 1 |
-| Bird Bath | `csm:birdbath` | 2 | 10 | pickaxe | 1 |
 | Birdhouse | `csm:birdhouse` | 2 | 10 | pickaxe | 1 |
 | Boarded Wood Planks | `csm:boardedwoodplanks` | 2 | 10 | pickaxe | 1 |
 | Carrot Barrel | `csm:carrotbarrel` | 2 | 10 | pickaxe | 1 |
@@ -43,14 +42,10 @@ Interior fittings: seating, counters, appliances and fixtures.
 | Hummingbird Feeder | `csm:hummingbirdfeeder` | 2 | 10 | pickaxe | 1 |
 | Jukebox | `csm:csmjukebox` | 2 | 10 | pickaxe | 1 |
 | Large Crate | `csm:largecrate` | 2 | 10 | pickaxe | 1 |
-| Large Flower Pot | `csm:largeflowerpot` | 2 | 10 | pickaxe | 1 |
 | Lettuce Crate | `csm:lettucecrate` | 2 | 10 | pickaxe | 1 |
 | Office Chair | `csm:officechair` | 2 | 10 | pickaxe | 1 |
 | Onion Crate | `csm:onioncrate` | 2 | 10 | pickaxe | 1 |
 | Orange Crate | `csm:orangecrate` | 2 | 10 | pickaxe | 1 |
-| Park Swing A | `csm:parkswinga` | 2 | 10 | pickaxe | 1 |
-| Park Swing B | `csm:parkswingb` | 2 | 10 | pickaxe | 1 |
-| Park Trash Can | `csm:parktrashcan` | 2 | 10 | pickaxe | 1 |
 | Pear Crate | `csm:pearcrate` | 2 | 10 | pickaxe | 1 |
 | Phonograph | `csm:phonograph` | 2 | 10 | pickaxe | 1 |
 | Plunger | `csm:plunger` | 2 | 10 | pickaxe | 1 |
@@ -58,12 +53,10 @@ Interior fittings: seating, counters, appliances and fixtures.
 | Radiator | `csm:csmradiator` | 2 | 10 | pickaxe | 1 |
 | Restroom Sign (Female) | `csm:restroomsignfemale` | 2 | 10 | pickaxe | 1 |
 | Restroom Sign (Male) | `csm:restroomsignmale` | 2 | 10 | pickaxe | 1 |
-| Round Flower Pot | `csm:roundflowerpot` | 2 | 10 | pickaxe | 1 |
 | Silverware | `csm:silverware` | 2 | 10 | pickaxe | 1 |
 | Small Anchor | `csm:smallanchor` | 2 | 10 | pickaxe | 1 |
 | Swing Chair | `csm:swingchair` | 2 | 10 | pickaxe | 1 |
 | Tall Wall Mirror | `csm:tallwallmirror` | 2 | 10 | pickaxe | 1 |
-| Teeter Totter | `csm:teetertotter` | 2 | 10 | pickaxe | 1 |
 | Telescope | `csm:telescope` | 2 | 10 | pickaxe | 1 |
 | Tiki Torch | `csm:tikitorch` | 2 | 10 | pickaxe | 1 |
 | Tomato Crate | `csm:tomatoecrate` | 2 | 10 | pickaxe | 1 |

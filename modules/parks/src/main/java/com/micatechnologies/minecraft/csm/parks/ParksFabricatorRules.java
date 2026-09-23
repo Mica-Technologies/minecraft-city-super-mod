@@ -10,7 +10,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 
 /**
- * What the Fabricator charges for the Trees &amp; Plants tab: wood for wood.
+ * What the Fabricator charges for the Parks &amp; Greenery tabs.
+ *
+ * <p>Trees &amp; Plants: wood for wood.</p>
  *
  * <p>A log costs planks in proportion to how much wood it is -- a twig one plank, a full-width
  * log four -- so building a tree in survival costs about what the wood in it would. Leaves cost
@@ -20,12 +22,16 @@ import net.minecraft.block.Block;
  */
 public final class ParksFabricatorRules {
 
-  /** The tab these rules price. */
+  /** The Trees &amp; Plants tab, priced by {@link #price}. */
   public static final String TAB_ID = "tabtreesplants";
+  /** The Parks tab, priced by {@link #priceParks}. */
+  public static final String PARKS_TAB_ID = "tabparks";
 
   private static final String MC_PLANKS = "minecraft:planks";
   private static final String MC_LEAVES = "minecraft:leaves";
   private static final String MC_VINE = "minecraft:vine";
+  private static final String MC_CLAY_BALL = "minecraft:clay_ball";
+  private static final String MC_STONE = "minecraft:stone";
 
   private ParksFabricatorRules() {
   }
@@ -65,6 +71,26 @@ public final class ParksFabricatorRules {
     }
     if (block instanceof BlockHangingMoss) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_VINE, 1));
+    }
+    return null;
+  }
+
+  /**
+   * Prices a block in the Parks tab. Planters are fired clay and a bird bath is cast stone; the
+   * playground, trash can and drinking fountains are steel, the generic cost.
+   *
+   * @param block        the block
+   * @param registryName its registry name
+   *
+   * @return the cost, or null for the generic cost
+   */
+  @Nullable
+  public static List<FabricatorIngredient> priceParks(Block block, String registryName) {
+    if (registryName.endsWith("flowerpot")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY_BALL, 3));
+    }
+    if (registryName.equals("birdbath")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 2));
     }
     return null;
   }

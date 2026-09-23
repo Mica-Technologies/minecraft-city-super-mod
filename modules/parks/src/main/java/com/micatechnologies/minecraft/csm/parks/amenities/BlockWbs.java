@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.novelties;
+package com.micatechnologies.minecraft.csm.parks.amenities;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import javax.annotation.Nonnull;

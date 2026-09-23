@@ -9,7 +9,6 @@ import com.micatechnologies.minecraft.csm.furniture.BlockBarbedWire;
 import com.micatechnologies.minecraft.csm.furniture.BlockBeerRack;
 import com.micatechnologies.minecraft.csm.furniture.BlockBeertap;
 import com.micatechnologies.minecraft.csm.furniture.BlockBeetCrate;
-import com.micatechnologies.minecraft.csm.furniture.BlockBirdbath;
 import com.micatechnologies.minecraft.csm.furniture.BlockBirdhouse;
 import com.micatechnologies.minecraft.csm.furniture.BlockBoardedWoodPlanks;
 import com.micatechnologies.minecraft.csm.furniture.BlockCarrotBarrel;
@@ -35,26 +34,20 @@ import com.micatechnologies.minecraft.csm.furniture.BlockHottub;
 import com.micatechnologies.minecraft.csm.furniture.BlockHourglass;
 import com.micatechnologies.minecraft.csm.furniture.BlockHummingbirdFeeder;
 import com.micatechnologies.minecraft.csm.furniture.BlockLargeCrate;
-import com.micatechnologies.minecraft.csm.furniture.BlockLargeFlowerPot;
 import com.micatechnologies.minecraft.csm.furniture.BlockLettuceCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockOfficeChair;
 import com.micatechnologies.minecraft.csm.furniture.BlockOnionCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockOrangeCrate;
-import com.micatechnologies.minecraft.csm.furniture.BlockParkSwingA;
-import com.micatechnologies.minecraft.csm.furniture.BlockParkSwingB;
-import com.micatechnologies.minecraft.csm.furniture.BlockParkTrashCan;
 import com.micatechnologies.minecraft.csm.furniture.BlockPearCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockPhonograph;
 import com.micatechnologies.minecraft.csm.furniture.BlockPlunger;
 import com.micatechnologies.minecraft.csm.furniture.BlockPotatoeCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockRestroomSignFemale;
 import com.micatechnologies.minecraft.csm.furniture.BlockRestroomSignMale;
-import com.micatechnologies.minecraft.csm.furniture.BlockRoundFlowerPot;
 import com.micatechnologies.minecraft.csm.furniture.BlockSilverware;
 import com.micatechnologies.minecraft.csm.furniture.BlockSmallAnchor;
 import com.micatechnologies.minecraft.csm.furniture.BlockSwingchair;
 import com.micatechnologies.minecraft.csm.furniture.BlockTallWallMirror;
-import com.micatechnologies.minecraft.csm.furniture.BlockTeeterTotter;
 import com.micatechnologies.minecraft.csm.furniture.BlockTelescope;
 import com.micatechnologies.minecraft.csm.furniture.BlockTikiTorch;
 import com.micatechnologies.minecraft.csm.furniture.BlockTomatoeCrate;
@@ -125,17 +118,10 @@ public class CsmTabFurniture extends CsmTab {
 
     // Outdoor & Garden
     initTabBlock(BlockBarbedWire.class, fmlPreInitializationEvent); // Barbed Wire
-    initTabBlock(BlockBirdbath.class, fmlPreInitializationEvent); // Bird Bath
     initTabBlock(BlockBirdhouse.class, fmlPreInitializationEvent); // Birdhouse
     initTabBlock(BlockDoghouse.class, fmlPreInitializationEvent); // Doghouse
     initTabBlock(BlockFireHydrant.class, fmlPreInitializationEvent); // Fire Hydrant
     initTabBlock(BlockHummingbirdFeeder.class, fmlPreInitializationEvent); // Hummingbird Feeder
-    initTabBlock(BlockLargeFlowerPot.class, fmlPreInitializationEvent); // Large Flower Pot
-    initTabBlock(BlockParkSwingA.class, fmlPreInitializationEvent); // Park Swing A
-    initTabBlock(BlockParkSwingB.class, fmlPreInitializationEvent); // Park Swing B
-    initTabBlock(BlockParkTrashCan.class, fmlPreInitializationEvent); // Park Trash Can
-    initTabBlock(BlockRoundFlowerPot.class, fmlPreInitializationEvent); // Round Flower Pot
-    initTabBlock(BlockTeeterTotter.class, fmlPreInitializationEvent); // Teeter Totter
     initTabBlock(BlockTikiTorch.class, fmlPreInitializationEvent); // Tiki Torch
     initTabBlock(BlockWaterBucket.class, fmlPreInitializationEvent); // Water Bucket
     initTabBlock(BlockWaterPump.class, fmlPreInitializationEvent); // Water Pump

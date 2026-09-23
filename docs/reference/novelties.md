@@ -2,7 +2,7 @@
 
 Decorative oddities that did not belong anywhere else.
 
-!!! info "35 blocks in this tab"
+!!! info "33 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -42,8 +42,6 @@ Decorative oddities that did not belong anywhere else.
 | Snowman | `csm:snowman` | 2 | 10 | pickaxe | 1 |
 | TARDIS | `csm:tardis` | 2 | 10 | pickaxe | 1 |
 | Treasure Chest | `csm:treasurechest` | 2 | 10 | pickaxe | 1 |
-| Water Bubbler (Short) | `csm:wbs` | 2 | 10 | pickaxe | 1 |
-| Water Bubbler (Tall) | `csm:wbt` | 2 | 10 | pickaxe | 1 |
 | Water Dispenser | `csm:waterdispenser` | 1 | 10 | pickaxe | 1 |
 | Xylophone | `csm:xylophone` | 2 | 10 | pickaxe | 1 |
 
