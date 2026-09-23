@@ -212,6 +212,9 @@ def call_box_ring():
                            click * 0.8, silence(0.2)])
 
 
+# Levels are RMS of 32767. The station alerting sounds are at the fire alarm horns' level (about
+# 10,000; FIRE_ALARM_SYSTEM.md § Sound File Standards): at 6,000 they were too soft to carry
+# through a station.
 SOUNDS = {
     'siren_steady': (siren_steady, 7000),
     'siren_wail': (siren_wail, 7000),
@@ -219,14 +222,14 @@ SOUNDS = {
     'siren_growl': (siren_growl, 6000),
     'call_box_ring': (call_box_ring, 5000),
     'metal_detector_alarm': (metal_detector_alarm, 6500),
-    'station_prealert': (station_prealert, 6000),
-    'station_tone_engine': (two_tone(630, 1010), 6000),
-    'station_tone_ladder': (two_tone(720, 1180), 6000),
-    'station_tone_medic': (two_tone(840, 1320), 6000),
-    'station_tone_battalion': (two_tone(930, 570), 6000),
-    'station_tone_all_call': (all_call, 6000),
+    'station_prealert': (station_prealert, 10000),
+    'station_tone_engine': (two_tone(630, 1010), 10000),
+    'station_tone_ladder': (two_tone(720, 1180), 10000),
+    'station_tone_medic': (two_tone(840, 1320), 10000),
+    'station_tone_battalion': (two_tone(930, 570), 10000),
+    'station_tone_all_call': (all_call, 10000),
     'aed_cabinet_alarm': (aed_cabinet_alarm, 7000),
-    'station_bell': (station_bell, 6500),
+    'station_bell': (station_bell, 9000),
 }
 
 

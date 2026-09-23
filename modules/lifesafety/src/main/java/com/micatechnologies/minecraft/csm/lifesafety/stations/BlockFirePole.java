@@ -9,8 +9,10 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -19,9 +21,10 @@ import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
- * A firehouse brass pole, stacked floor to floor. It is not solid: step into its cell and you are
- * holding it, and you slide down at a steady pace, faster than a ladder and with no fall damage at
- * the bottom. Sneaking grips the pole and holds you where you are.
+ * A firehouse brass pole, stacked floor to floor. Right-click it to grab it: you are pulled onto
+ * the pole (a flying player stops flying) and slide down at a steady pace, faster than a ladder,
+ * held to the pole so you do not drift off it, and with no fall damage at the bottom. Dropping or
+ * stepping into its cell does the same. Sneaking grips the pole and holds you where you are.
  *
  * <p>The slide is applied as the entity moves through the cell ({@link #onEntityCollision}): a
  * player's motion is decided on its own client, so it needs no packet and no tile entity. Fall
@@ -49,19 +52,54 @@ public class BlockFirePole extends AbstractBlock {
 
   @Override
   public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
-    slide(entity);
+    slide(entity, pos);
   }
 
-  /** Holds an entity to the pole: a steady slide down, or a grip while it sneaks. */
-  static void slide(Entity entity) {
+  /**
+   * Grabs the pole: the player is put on it, stops flying, and starts down. Both sides run this,
+   * since the client decides a player's own motion and flight.
+   */
+  @Override
+  public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
+      EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    if (hand != EnumHand.MAIN_HAND) {
+      return true;
+    }
+    if (player.capabilities.isFlying) {
+      player.capabilities.isFlying = false;
+      if (world.isRemote) {
+        player.sendPlayerAbilities();
+      }
+    }
+    // Onto the pole, at the height the player already is, clear of the floor they stood on.
+    double y = Math.min(player.posY, pos.getY() + 0.9);
+    player.setPositionAndUpdate(pos.getX() + 0.5, Math.max(y, pos.getY() + 0.1),
+        pos.getZ() + 0.5);
+    player.motionX = 0;
+    player.motionZ = 0;
+    player.motionY = -SLIDE_SPEED;
+    player.fallDistance = 0;
+    return true;
+  }
+
+  /**
+   * Holds an entity to the pole: a steady slide down, or a grip while it sneaks, and a pull toward
+   * the pole's axis so a slide does not carry the player off it.
+   */
+  static void slide(Entity entity, BlockPos pos) {
     if (!(entity instanceof EntityLivingBase) || entity.onGround) {
+      return;
+    }
+    if (entity instanceof EntityPlayer && ((EntityPlayer) entity).capabilities.isFlying) {
       return;
     }
     if (entity.isSneaking()) {
       entity.motionY = 0;
-    } else if (entity.motionY < -SLIDE_SPEED) {
+    } else if (entity.motionY < -SLIDE_SPEED || entity.motionY > 0) {
       entity.motionY = -SLIDE_SPEED;
     }
+    entity.motionX = (pos.getX() + 0.5 - entity.posX) * 0.3;
+    entity.motionZ = (pos.getZ() + 0.5 - entity.posZ) * 0.3;
     entity.fallDistance = 0;
   }
 

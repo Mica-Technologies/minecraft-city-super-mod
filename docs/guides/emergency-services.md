@@ -34,7 +34,8 @@ power: take it away and they light.
 - Turnout gear lockers, the SCBA rack, cylinder cascade and **fill station**, hose racks, rolls and
   a drying rack, the nozzle rack, a tool board, the gear washer and an air compressor.
 - **Fire pole.** Stack it from floor to floor, with the **floor opening** where it passes through
-  a floor. Step into it to slide down; sneak to hold on. You take no fall damage at the bottom.
+  a floor. Right-click the pole or the opening to grab it and slide down (it works while flying,
+  too), or just step into the opening. Sneak to hold on. You take no fall damage at the bottom.
 - The **firehouse gong** strikes its signal when it gets a redstone signal or is clicked.
 - The **Maltese cross**, and the **station number plaque**: click to change the units digit, and
   sneak-click to change the tens, for any number from 0 to 99.

@@ -82,7 +82,7 @@ shows only a number.
 | Magnetic door holder | Holds the door beside it open with redstone until its panel alarms | `BlockMagneticDoorHolder`, `FIRE_ALARM_SYSTEM.md` |
 | Remote annunciator | Lights with its panel; click reads out status and first alarm | `BlockRemoteAnnunciator` |
 | Water motor gong | Rings with the panel's horns (an ordinary sounder) | `BlockFireAlarmSounderFactory` |
-| Fire pole and floor opening | Slide down at a steady pace; sneak to grip; no fall damage | `BlockFirePole`, `BlockFirePoleHole` |
+| Fire pole and floor opening | Right-click to grab (a flying player stops flying) and slide down, held to the pole; stepping into it does the same; sneak to grip; no fall damage | `BlockFirePole`, `BlockFirePoleHole` |
 | Firehouse gong | Strikes three-three-three on a redstone signal or a click | `BlockStationBell` |
 | Station number plaque | Any number 0-99: click the units, sneak-click the tens | `BlockStationNumberPlaque` |
 | Station alerting | Controller, speakers, alert lights, relays, bay clearance lights | `STATION_ALERTING_SYSTEM.md` |
@@ -103,7 +103,14 @@ door in the game (CSM's, vanilla's) is held open by power. The station alerting 
 how a call opens a garage door (the opener takes a signal), strikes the gong, or turns on Roads'
 preemption beacon (a redstone-powered block). Nothing in Life Safety names another module's class.
 
-### The fire pole's fall
+### The fire pole
+
+**Right-click grabs it.** Just being in the pole's cell was not enough in play: a creative player
+flies and never falls into it, and the floor opening's first rim left a ten-pixel hole for a
+player nearly that wide, which nobody could drop through. Now the opening has no collision at all
+(it is a hole), and right-clicking the pole or the opening puts the player on it, turns flight
+off, and starts the slide; while sliding, the player is pulled to the pole's axis so the slide
+does not carry them off it.
 
 The slide is applied in `onEntityCollision`, where a player's own motion is decided, on its client.
 Fall damage is decided on the server from the distance the client reports, which that reset does
@@ -137,6 +144,8 @@ never runs twice. The signal ordinals are saved (`SirenSignal`): append, never r
   controller.
 - **A flat test world spawns slimes.** Their hits read like fall damage in a fire pole test. Set a
   test world to peaceful first.
+- **A synthesised sound needs the horns' level.** The alerting tones were first made at 6,000 RMS
+  and were too soft to carry through a station; they are at the fire alarm horns' 10,000.
 - **An item texture is not a block texture.** The catalogue writes an item's texture under
   `textures/items/`; drawn under `textures/blocks/` as well, it is an unused file.
 - **SNBT has no backslash-n.** The fire alarm panel's `apps` list is one position per line; set it
