@@ -1,0 +1,43 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/parks/landscape/steel",
+    "hoop": "csm:blocks/parks/landscape/hoop",
+    "particle": "csm:blocks/parks/landscape/steel"
+  },
+  "elements": [
+    {
+      "from": [
+        8,
+        0,
+        0
+      ],
+      "to": [
+        8,
+        8,
+        8
+      ],
+      "shade": false,
+      "faces": {
+        "east": {
+          "texture": "#hoop",
+          "uv": [
+            8,
+            8,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#hoop",
+          "uv": [
+            0,
+            8,
+            8,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

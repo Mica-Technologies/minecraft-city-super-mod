@@ -1,0 +1,9 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "top": "csm:blocks/parks/landscape/grate_square",
+    "side": "csm:blocks/parks/landscape/concrete",
+    "bottom": "csm:blocks/parks/landscape/concrete",
+    "particle": "csm:blocks/parks/landscape/concrete"
+  }
+}

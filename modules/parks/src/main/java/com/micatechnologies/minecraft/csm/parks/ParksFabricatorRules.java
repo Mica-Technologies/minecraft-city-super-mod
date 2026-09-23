@@ -12,7 +12,7 @@ import net.minecraft.block.Block;
 /**
  * What the Fabricator charges for the Parks &amp; Greenery tabs.
  *
- * <p>Trees &amp; Plants: wood for wood.</p>
+ * <p>Trees &amp; Plants: wood for wood, and a planting costs what it is planted with.</p>
  *
  * <p>A log costs planks in proportion to how much wood it is -- a twig one plank, a full-width
  * log four -- so building a tree in survival costs about what the wood in it would. Leaves cost
@@ -32,6 +32,13 @@ public final class ParksFabricatorRules {
   private static final String MC_VINE = "minecraft:vine";
   private static final String MC_CLAY_BALL = "minecraft:clay_ball";
   private static final String MC_STONE = "minecraft:stone";
+  private static final String MC_SAPLING = "minecraft:sapling";
+  private static final String MC_TALLGRASS = "minecraft:tallgrass";
+  private static final String MC_FLOWER = "minecraft:red_flower";
+  private static final String MC_GRAVEL = "minecraft:gravel";
+  private static final String MC_SAND = "minecraft:sand";
+  private static final String MC_WOOL = "minecraft:wool";
+  private static final String MC_STICK = "minecraft:stick";
 
   private ParksFabricatorRules() {
   }
@@ -71,6 +78,48 @@ public final class ParksFabricatorRules {
     }
     if (block instanceof BlockHangingMoss) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_VINE, 1));
+    }
+    return plantingCost(registryName);
+  }
+
+  /**
+   * The street tree accessories and plantings, by name. Grates and the pit fence are cast and
+   * bent steel, the generic cost (null).
+   */
+  @Nullable
+  private static List<FabricatorIngredient> plantingCost(String name) {
+    if (name.startsWith("hedge_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_LEAVES, 2));
+    }
+    if (name.startsWith("shrub_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SAPLING, 1));
+    }
+    if (name.startsWith("grass_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_TALLGRASS, 1));
+    }
+    if (name.startsWith("flower_bed_") || name.startsWith("hanging_basket_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_FLOWER, 2));
+    }
+    if (name.equals("tree_stake")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STICK, 2));
+    }
+    if (name.equals("ground_pea_gravel")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_GRAVEL, 1));
+    }
+    if (name.equals("ground_decomposed_granite")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SAND, 1));
+    }
+    if (name.equals("ground_turf")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (name.equals("ground_mulch") || name.equals("tree_pit_mulch")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 1));
+    }
+    if (name.endsWith("_wood") && (name.startsWith("planter_") || name.startsWith("raised_bed_"))) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3));
+    }
+    if (name.endsWith("_concrete")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 3));
     }
     return null;
   }
