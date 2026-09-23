@@ -271,8 +271,9 @@ resolution, inventory variants, `#material` textures, model path extensions, and
 
 See `assets/docs/agent_progress/UNFINISHED_ITEMS.md` Phase F. Circular model parent chains are now
 reported as errors (a chain is linear, so meeting a model twice on one is a loop the game cannot
-bake either; they used to be skipped silently). The open item is running the tool in CI: it exits
-1 when it finds an error, and 0 otherwise, whatever it reports as unused.
+bake either; they used to be skipped silently). It exits 1 when it finds an error and 0 otherwise,
+whatever it reports as unused, and runs on every pull request as the "Block/Item Integrity" job in
+`.github/workflows/test-mod-build-pr.yml`.
 
 ## Usage
 
