@@ -530,6 +530,9 @@ CLASS_BLOCKS = {"irrigation_sprinkler": "BlockSprinkler",
                 "irrigation_controller": "BlockIrrigationController"}
 
 EXTRA_LANG = {
+    "csm.parks.seat.taken": (
+        "Someone is already sitting there", "Da sitzt schon jemand",
+        "Ya hay alguien sentado ahí", "Någon sitter redan där"),
     "csm.parks.irrigation.manual_on": (
         "Manual watering on", "Manuelle Bewässerung an", "Riego manual activado",
         "Manuell bevattning på"),
