@@ -1,0 +1,76 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "#bark"
+  },
+  "elements": [
+    {
+      "from": [
+        2.0,
+        0,
+        2.0
+      ],
+      "to": [
+        14.0,
+        16,
+        14.0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2.0,
+            0,
+            14.0,
+            16
+          ],
+          "texture": "#bark"
+        },
+        "south": {
+          "uv": [
+            2.0,
+            0,
+            14.0,
+            16
+          ],
+          "texture": "#bark"
+        },
+        "east": {
+          "uv": [
+            2.0,
+            0,
+            14.0,
+            16
+          ],
+          "texture": "#bark"
+        },
+        "west": {
+          "uv": [
+            2.0,
+            0,
+            14.0,
+            16
+          ],
+          "texture": "#bark"
+        },
+        "up": {
+          "uv": [
+            2.0,
+            2.0,
+            14.0,
+            14.0
+          ],
+          "texture": "#bark"
+        },
+        "down": {
+          "uv": [
+            2.0,
+            2.0,
+            14.0,
+            14.0
+          ],
+          "texture": "#bark"
+        }
+      }
+    }
+  ]
+}

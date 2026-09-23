@@ -1,7 +1,11 @@
 package com.micatechnologies.minecraft.csm.parks;
 
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
@@ -32,6 +36,11 @@ public class CsmParks {
   public static final String MOD_ID = "csm_parks";
   public static final String MOD_NAME = "CSM: Parks & Greenery";
 
+  @SidedProxy(
+      clientSide = "com.micatechnologies.minecraft.csm.parks.CsmParksClientProxy",
+      serverSide = "com.micatechnologies.minecraft.csm.parks.CsmParksCommonProxy")
+  public static ICsmProxy proxy;
+
   @Mod.Instance(MOD_ID)
   public static CsmParks instance;
 
@@ -45,5 +54,16 @@ public class CsmParks {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
+
+    // Safe here: Fabricator costs are first read at post-initialization and thereafter only
+    // when a Fabricator GUI is opened, both after every mod's pre-initialization.
+    CsmFabricatorCosts.registerRule(ParksFabricatorRules.TAB_ID, ParksFabricatorRules::price);
+
+    proxy.preInit(event);
+  }
+
+  @Mod.EventHandler
+  public void init(FMLInitializationEvent event) {
+    proxy.init(event);
   }
 }
