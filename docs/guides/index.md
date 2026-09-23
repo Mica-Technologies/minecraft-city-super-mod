@@ -125,4 +125,11 @@ How each system works, and how to build with it.
 
     Poster boards, billboards up to 40 x 40 and street kiosks, with ads that rotate.
 
+-   :material-tree:{ .lg .middle } **[Parks & Greenery](parks-and-greenery.md)**
+
+    ---
+
+    Street trees built from blocks that lean over the road, a planting tool, hedges and beds,
+    benches, playgrounds, fountains and sprinklers.
+
 </div>
