@@ -85,6 +85,8 @@ final class LangKeyUsage {
    */
   private final Set<String> vocabulary = new HashSet<>();
 
+  private final Map<String, String> texts = new java.util.HashMap<>();
+
   /**
    * Reads every source class the layout knows and every block registration.
    *
@@ -92,7 +94,6 @@ final class LangKeyUsage {
    */
   LangKeyUsage(CsmLayout layout) {
     Map<String, CsmLayout.SourceClass> classes = layout.classes();
-    Map<String, String> texts = new java.util.HashMap<>();
     for (Map.Entry<String, CsmLayout.SourceClass> entry : classes.entrySet()) {
       CsmLayout.SourceClass info = entry.getValue();
       if (info.file == null) {
@@ -173,6 +174,21 @@ final class LangKeyUsage {
       }
     }
     return true;
+  }
+
+  /** Every string literal in the mod's Java sources, comments stripped. */
+  Set<String> literals() {
+    return literals;
+  }
+
+  /** The words a variable part of a name can be; see {@link #vocabulary}. */
+  boolean isWord(String word) {
+    return vocabulary.contains(word);
+  }
+
+  /** Simple class name to comment-stripped source, for every class the layout knows. */
+  Map<String, String> texts() {
+    return texts;
   }
 
   /**

@@ -193,36 +193,61 @@ Uses `AtomicInteger` counters for thread-safe error/warning reporting.
 7. **BlockSet variant names** — Hardcoded to check fence/stairs/slab. If new variant types are
    added to `AbstractBlockSetBasic`, the tool won't know to check them.
 
-## The baseline (2026-09-10)
+## The baseline (2026-09-22)
 
 A clean tree reports:
 
 ```
-Discovered 1795 blocks and 38 items from the creative tab registrations.
-On disk: 1810 blockstate files across 10 source tree(s).
-Total Checked: 1848
+Discovered 2151 blocks and 44 items from the creative tab registrations.
 Total Errors: 0
+Total Unused Files: 80
 Total Unused Lang Entries: 0
-Total Unused Files: 236
+Total Generator Source Files: 85
 ```
 
-**0 errors is the bar. Any error it prints now is worth investigating** — that was not true before
-the repair, when ~65 standing false positives trained everyone to ignore it.
+**0 errors and 0 unused lang entries are the bar. Any error it prints is worth investigating.**
 
-The first two lines exist so that a discovery bug is two numbers that disagree rather than a
-silently short run. The 15-file gap is blockstates for block-set siblings and is expected; a gap of
-hundreds is the tool failing to find blocks.
+### How a file counts as used
 
-**The 236 unused files (2026-09-13 evening; 222 that morning, before the LED pedestrian signs and the rail crossing flasher added their companions and timing files) are the expected steady state and are fully accounted for. Do not delete on
-the tool's say-so:**
+A blockstate reaching it, through its models and their textures, as before -- now checked as one
+set of canonical paths, so an item model a blockstate names (`csm:item/radar_speed_sign`) is no
+longer checked only against the block-model list and reported unused. Past that, `AssetUsage`:
 
-| Count | What they are | Why the tool cannot see the use |
+| Rule | What it covers | Why it is safe |
 |---|---|---|
-| 29 | OptiFine `_e` emissive companions | Declared by *suffix* in `emissive.properties`, so nothing names the file |
-| 15 | `.png.mcmeta` timing files of the animated companions and the LED sign strips | An `.mcmeta` rides on its texture; nothing names it either |
-| 63 | Signal lens, blankout and crosswalk textures | Tiled into `atlas.png` and read at runtime by `TrafficSignalTextureMap`, never by a model |
-| 110 | Named by a Java class or a generator script | The reference is in code, not in a blockstate |
-| 5 | Genuinely orphaned model JSONs | Left in place deliberately, pending a human call — `alto_round_lot_light`, `trafficpolecamera_modern`, `signal_backplate_888_vertical`, `signal_backplate_8812_vertical`, `signal_backplate_hawk_full` |
+| Companion | `x.png.mcmeta` and OptiFine `x_e.png` (suffix read from `emissive.properties`) are used when `x.png` is, found by resource path in any tree | The game reads them whenever it reads `x.png`; nothing ever names them |
+| Named in Java | a string literal in the mod's sources (comments stripped) that is exactly one of the file's resource names: `csm:blocks/…`, `textures/blocks/….png`, `csm:item/…` | A bare file name does not count: `"yellow"` in an enum is not `bodies/yellow.png` |
+| Per-setup item model | `models/item/<block>_<parts>.json` for a block that binds item models in code (`setCustomMeshDefinition` / `registerItemVariants`, in its class, a superclass or a class it calls), when every part is a word the mod has | How the exit signs name an icon per setup. All 103 were checked against `gen_exit_signs.py`'s own output |
+
+**Generator sources** are listed apart (`G####`), not as unused: textures the game never loads but a
+dev-env-utils tool or script names -- the atlas tiles `ImageTilerTool`, `BlankoutBoxAtlasTool`,
+`CrosswalkAtlasTool` and `LaneControlSignalAtlasTool` list, 85 of them. Deleting one breaks the next
+atlas regeneration. A bare file name only counts when the same tool also names the file's folder.
+Only textures qualify: a model a generator names is its output, and one no blockstate reaches is a
+stale output (`gen_work_zone_devices.py` still names `workzone_concrete_barrier` as the stem of the
+pieces it writes, not the whole-barrier OBJ it wrote before the barriers joined).
+
+Tested by planting files that must be reported: an atlas-folder tile no tool lists, its `.mcmeta`,
+an `_e` with no base, an exit sign icon for a colour that does not exist, and a model nothing
+names. All five were.
+
+### The 80 unused files
+
+Every one was traced by hand on 2026-09-22 and is a genuine leftover. **None has been deleted:
+that is a human call, not the tool's.**
+
+| Count | What they are |
+|---|---|
+| 30 | `trafficsignals/shared_textures/*off.png` bulb faces, superseded by the copies under `old_bulb_body/` that the blockstates use |
+| 13 | `old_bulb_body/gray/*` variants no gray signal head uses |
+| 12 | `lights/*` lens tiles `ImageTilerTool` does not list (`ge_gtx_*`, `inca_off`, `biled_off`, `wled_red` …) |
+| 7 | `trafficsignals/bodies/*.png`: the signal body colour is an RGB tint (`TrafficSignalBodyColor`), not a texture |
+| 6 | `trafficpolecamera*.json`: the sensors draw the `.obj` versions |
+| 4 | `workzone_{channelizing_wall,concrete_barrier,road_plate,safety_fence}.obj`: the whole-device OBJs from before the barriers joined; the blockstates use the `_core`/`_end_*` pieces |
+| 3 | `signal_backplate_{888,8812}_vertical.json`, `signal_backplate_hawk_full.json` at their old path; the blockstates use `shared_models/backplates/` |
+| 2 | `trafficpolehorizontal.json`, `trafficpolehorizontalangle.json`: the thin poles draw `small` and `black_angled_thin_traffic_pole` |
+| 2 | `hvac_vent_relay` model and texture: the relay block draws `modular_vent_3` |
+| 1 | `alto_round_lot_light.json` |
 
 ## Repair (2026-09-10)
 
@@ -244,8 +269,10 @@ resolution, inventory variants, `#material` textures, model path extensions, and
 
 ## Planned Improvements
 
-See `assets/docs/agent_progress/UNFINISHED_ITEMS.md` Phase F — circular-reference detection in
-model parent chains is the open item for this tool.
+See `assets/docs/agent_progress/UNFINISHED_ITEMS.md` Phase F. Circular model parent chains are now
+reported as errors (a chain is linear, so meeting a model twice on one is a loop the game cannot
+bake either; they used to be skipped silently). The open item is running the tool in CI: it exits
+1 when it finds an error, and 0 otherwise, whatever it reports as unused.
 
 ## Usage
 
