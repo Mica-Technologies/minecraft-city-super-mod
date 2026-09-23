@@ -41,7 +41,8 @@ nothing hangs into traffic. Each tree comes out a little different, so a planted
 copy-pasted.
 
 If anything is in the way (a building, a pole, another tree), nothing is planted, and the tool tells
-you how many blocks are in the way. Everything it plants is ordinary blocks, so trim or reshape the
+you how many blocks are in the way. Plant straight onto mulch, gravel or turf and the trunk goes
+through it to the ground. Everything it plants is ordinary blocks, so trim or reshape the
 tree afterwards if you like.
 
 | Leaning and spreading | Tall and thin | Palms | Street styles |

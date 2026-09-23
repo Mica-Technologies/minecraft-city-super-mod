@@ -557,6 +557,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_park_amenities.py` -- the Parks tab: benches and picnic tables (end frames only at a run's
   ends), bins, playground, pergola, fountains with animated water, irrigation; borrows
   gen_park_plantings.py's helpers; `--check`, `--fragments`
+- `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
+  in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
+  park with every amenity, an arboretum of every planting preset with signs, and the tree kit on
+  plinths. Every tree is planted with the real Tree Planting Tool, aimed with `client_look` (a
+  teleport's yaw and pitch can leave the camera pointing anywhere, and a click then plants there)
 - `gen_crane.py` -- the tower crane mast in three liveries: 3D corner chords, and the lacing drawn
   into a cutout texture on a plane per face -- a 1x1 face's chord-to-chord diagonal is not an angle
   an element can be turned to, and a texture diagonal can be any angle and meets the chord at the
