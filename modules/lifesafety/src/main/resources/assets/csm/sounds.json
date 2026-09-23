@@ -799,5 +799,14 @@
         "stream": false
       }
     ]
+  },
+  "water_motor_gong": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:water_motor_gong",
+        "stream": false
+      }
+    ]
   }
 }

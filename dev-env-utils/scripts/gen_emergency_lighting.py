@@ -147,7 +147,8 @@ NAMES = {
 
 def head(cx, cy, r, z0, z1, tex, lens_tex="lens"):
     """A lamp head facing north: the shell, and its lens as the front cap."""
-    els = pipe_z(cx, cy, r, z0 + 0.3, z1, tex, front=False)
+    # The shell is capped: the lens is smaller, and an open shell showed its inside round it.
+    els = pipe_z(cx, cy, r, z0 + 0.3, z1, tex)
     els += pipe_z(cx, cy, r * 0.85, z0, z0 + 0.3, lens_tex)
     return els
 
@@ -206,7 +207,7 @@ light("emergency_downlight_recessed", (3.5, 3.5, 14.5, 12.5, 12.5, 16),
       ("Recessed Emergency Downlight", "Einbau-Notleuchte (Downlight)",
        "Foco empotrado de emergencia", "Infälld nödbelysningsspot"),
       {"h": T("housing_white"), "particle": T("housing_white")},
-      pipe_z(8, 8, 4.5, 15.3, 16, "h", front=False) + pipe_z(8, 8, 3.2, 15, 15.3, "lens"),
+      pipe_z(8, 8, 4.5, 15.3, 16, "h") + pipe_z(8, 8, 3.2, 15, 15.3, "lens"),
       [(5.2, 5.2, 14.9, 10.8, 10.8, 15.5)])
 
 

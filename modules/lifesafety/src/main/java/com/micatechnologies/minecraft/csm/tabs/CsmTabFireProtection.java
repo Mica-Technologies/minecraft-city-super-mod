@@ -71,7 +71,7 @@ public class CsmTabFireProtection extends CsmTab {
     initTabBlock(new BlockFireProtectionProp("osy_gate_valve", new int[]{3, 0, 7, 13, 16, 16}, true));
     initTabBlock(new BlockFireProtectionProp("post_indicator_valve", new int[]{5, 0, 4, 11, 16, 12}, true));
     initTabBlock(new BlockFireProtectionProp("fire_backflow_preventer", new int[]{0, 0, 4, 16, 14, 12}, true));
-    initTabBlock(new BlockFireAlarmSounderFactory("water_motor_gong", "csm:bell", new AxisAlignedBB(0.250000, 0.250000, 0.687500, 0.750000, 0.750000, 1.000000)));
+    initTabBlock(new BlockFireAlarmSounderFactory("water_motor_gong", "csm:water_motor_gong", new AxisAlignedBB(0.093750, 0.093750, 0.650000, 0.906250, 0.906250, 1.000000)));
     initTabBlock(new BlockMagneticDoorHolder("magnetic_door_holder", new int[]{5, 4, 12, 11, 12, 16}));
     initTabBlock(new BlockMagneticDoorHolder("magnetic_door_holder_floor", new int[]{5, 0, 4, 11, 9, 12}));
     initTabBlock(new BlockFireProtectionProp("extinguisher_sign", new int[]{2, 1, 15, 14, 15, 16}, false));

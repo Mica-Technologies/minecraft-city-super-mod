@@ -5,12 +5,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -21,14 +22,29 @@ import net.minecraft.world.IBlockAccess;
  * side of any block, which it is tied to. It does not collide (tape is stepped over or ducked
  * under), and the connections are actual state, so nothing is stored but the block.
  *
+ * <p>A side toward a stanchion is {@link Link#POST}: the tape runs on past its own block to the
+ * post in the middle of the next, since the stanchion draws no tape and an arm that stopped at
+ * the block edge left half a block of nothing beside every post.</p>
+ *
  * @since 2026.9
  */
 public class BlockSceneTape extends AbstractBlock {
 
-  public static final PropertyBool NORTH = PropertyBool.create("north");
-  public static final PropertyBool EAST = PropertyBool.create("east");
-  public static final PropertyBool SOUTH = PropertyBool.create("south");
-  public static final PropertyBool WEST = PropertyBool.create("west");
+  /** What a side of the tape runs to. */
+  public enum Link implements IStringSerializable {
+    NONE, TAPE, POST;
+
+    @Override
+    @Nonnull
+    public String getName() {
+      return name().toLowerCase();
+    }
+  }
+
+  public static final PropertyEnum<Link> NORTH = PropertyEnum.create("north", Link.class);
+  public static final PropertyEnum<Link> EAST = PropertyEnum.create("east", Link.class);
+  public static final PropertyEnum<Link> SOUTH = PropertyEnum.create("south", Link.class);
+  public static final PropertyEnum<Link> WEST = PropertyEnum.create("west", Link.class);
 
   private static final ThreadLocal<String> PENDING = new ThreadLocal<>();
 
@@ -40,8 +56,9 @@ public class BlockSceneTape extends AbstractBlock {
     super(stash(registryName), SoundType.CLOTH, "shears", 0, 0.2F, 0.2F, 0.0F, 0);
     this.registryName = registryName;
     PENDING.remove();
-    setDefaultState(blockState.getBaseState().withProperty(NORTH, false)
-        .withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false));
+    setDefaultState(blockState.getBaseState().withProperty(NORTH, Link.NONE)
+        .withProperty(EAST, Link.NONE).withProperty(SOUTH, Link.NONE)
+        .withProperty(WEST, Link.NONE));
   }
 
   private static Material stash(String registryName) {
@@ -83,15 +100,18 @@ public class BlockSceneTape extends AbstractBlock {
         .withProperty(WEST, joins(world, pos, EnumFacing.WEST));
   }
 
-  /** Whether the tape runs toward a side: to tape, a stanchion, or a solid face to tie onto. */
-  private static boolean joins(IBlockAccess world, BlockPos pos, EnumFacing side) {
+  /** What the tape runs to on a side: tape or a solid face to tie onto, a stanchion, or nothing. */
+  private static Link joins(IBlockAccess world, BlockPos pos, EnumFacing side) {
     BlockPos next = pos.offset(side);
     IBlockState other = world.getBlockState(next);
-    if (other.getBlock() instanceof BlockSceneTape
-        || other.getBlock() instanceof BlockTapeStanchion) {
-      return true;
+    if (other.getBlock() instanceof BlockTapeStanchion) {
+      return Link.POST;
     }
-    return other.getBlockFaceShape(world, next, side.getOpposite()) == BlockFaceShape.SOLID;
+    if (other.getBlock() instanceof BlockSceneTape
+        || other.getBlockFaceShape(world, next, side.getOpposite()) == BlockFaceShape.SOLID) {
+      return Link.TAPE;
+    }
+    return Link.NONE;
   }
 
   @Override

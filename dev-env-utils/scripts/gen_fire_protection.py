@@ -323,10 +323,14 @@ def _piv_head():
 
 @C.texture("gong_face")
 def _gong_face():
+    # Drawn over the dome's stepped rings, each ring's front showing its own band: lighter
+    # toward the crown, a highlight, and the chrome bolt at the centre.
     img = fill(RED, grain=3, seed=91)
-    disc(img, 8, 8, 6.5, shade(RED, 1.1))
-    disc(img, 6.5, 6.5, 2.2, shade(RED, 1.35))
-    disc(img, 8, 8, 1.3, CHROME)
+    disc(img, 8, 8, 5.6, shade(RED, 1.08))
+    disc(img, 8, 8, 4.2, shade(RED, 1.16))
+    disc(img, 8, 8, 2.4, shade(RED, 1.24))
+    disc(img, 6.6, 6.6, 1.4, shade(RED, 1.45))
+    disc(img, 8, 8, 1.0, CHROME)
     return img
 
 
@@ -745,19 +749,28 @@ fp_prop("fire_backflow_preventer", (0, 0, 4, 16, 14, 12), True,
                box([4.5, 13, 4.5], [11.5, 13.6, 11.5], "wheel", faces=("up", "down"))])},
         facing_state(M("fire_backflow_preventer")))
 
+def gong_dome():
+    """The gong's dome, crown out: stepped rings, each capped at the front with its band of the
+    face texture, so the steps read as one rounded bell. (Each ring must be capped: an open ring
+    shows its inside, as the first gong did.)"""
+    els = [box([6, 6, 15.5], [10, 10, 16], "steel")]
+    for r, z0, z1 in ((6.5, 13.6, 15.5), (5.6, 12.2, 13.6), (4.2, 11.1, 12.2), (2.4, 10.4, 11.1)):
+        for el in pipe_z(8, 8, r, z0, z1, "red"):
+            if "north" in el["faces"]:
+                el["faces"]["north"]["texture"] = "#face"
+            els.append(el)
+    return els
+
+
 # The water motor gong rings with the panel's horns: it is a sounder, and a sounder is six-way
-# like every fire alarm appliance.
+# like every fire alarm appliance. Its sound is its own, a struck gong, not the electric bell.
 C.add("water_motor_gong",
-      'new BlockFireAlarmSounderFactory("water_motor_gong", "csm:bell", %s)'
-      % aabb(4, 4, 11, 12, 12, 16),
+      'new BlockFireAlarmSounderFactory("water_motor_gong", "csm:water_motor_gong", %s)'
+      % aabb(1.5, 1.5, 10.4, 14.5, 14.5, 16),
       ("Water Motor Gong", "Wassermotorglocke", "Campana hidráulica de alarma",
        "Vattenmotorklocka"),
       {"water_motor_gong": model({"red": T("red"), "face": T("gong_face"), "steel": T("steel"),
-                                  "particle": T("red")},
-                                 [box([6, 6, 15], [10, 10, 16], "steel")]
-                                 + pipe_z(8, 8, 4, 12, 15, "red", front=False)
-                                 + [box([5, 5, 11.5], [11, 11, 12], "red",
-                                        per={"north": "face"})])},
+                                  "particle": T("red")}, gong_dome())},
       nsewud_state(M("water_motor_gong")), tab=FP)
 
 
@@ -825,8 +838,8 @@ detector("smoke_detector_photoelectric", (3.5, 3.5, 13, 12.5, 12.5, 16),
          ("Photoelectric Smoke Detector", "Optischer Rauchmelder", "Detector de humo fotoeléctrico",
           "Optisk rökdetektor"),
          {"white": T("white"), "face": T("smoke_face"), "particle": T("white")},
-         pipe_z(8, 8, 4.5, 14.8, 16, "white", front=False)
-         + pipe_z(8, 8, 3.5, 13.6, 14.8, "white", front=False)
+         pipe_z(8, 8, 4.5, 14.8, 16, "white")
+         + pipe_z(8, 8, 3.5, 13.6, 14.8, "white")
          + [box([5, 5, 13.5], [11, 11, 13.6], "face", faces=("north",))])
 detector("duct_smoke_detector", (2, 3, 12, 14, 13, 16),
          ("Duct Smoke Detector", "Kanalrauchmelder", "Detector de humo para conductos",

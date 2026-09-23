@@ -2,10 +2,10 @@
   "multipart": [
     {
       "when": {
-        "north": "false",
-        "east": "false",
-        "south": "false",
-        "west": "false"
+        "north": "none",
+        "east": "none",
+        "south": "none",
+        "west": "none"
       },
       "apply": {
         "model": "csm:lifesafety/services/fire_line_tape_single"
@@ -13,7 +13,7 @@
     },
     {
       "when": {
-        "north": "true"
+        "north": "tape|post"
       },
       "apply": {
         "model": "csm:lifesafety/services/fire_line_tape_arm"
@@ -21,7 +21,15 @@
     },
     {
       "when": {
-        "east": "true"
+        "north": "post"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/fire_line_tape_to_post"
+      }
+    },
+    {
+      "when": {
+        "east": "tape|post"
       },
       "apply": {
         "model": "csm:lifesafety/services/fire_line_tape_arm",
@@ -30,7 +38,16 @@
     },
     {
       "when": {
-        "south": "true"
+        "east": "post"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/fire_line_tape_to_post",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "tape|post"
       },
       "apply": {
         "model": "csm:lifesafety/services/fire_line_tape_arm",
@@ -39,10 +56,28 @@
     },
     {
       "when": {
-        "west": "true"
+        "south": "post"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/fire_line_tape_to_post",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "tape|post"
       },
       "apply": {
         "model": "csm:lifesafety/services/fire_line_tape_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "post"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/fire_line_tape_to_post",
         "y": 270
       }
     }

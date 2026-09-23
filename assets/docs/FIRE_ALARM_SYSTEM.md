@@ -269,8 +269,10 @@ status and the first alarm's device and position, from the panel's own fields
 `BlockFireAlarmDetectorFactory` builds detectors that differ only in name and box: the
 photoelectric smoke detector, the duct detector and the beam detector. They scan exactly as the
 heat detector does and only report. The water motor gong in the Fire Protection tab is an
-ordinary sounder (`BlockFireAlarmSounderFactory` with the `bell` sound), so it rings with the
-panel's horns; a real one rings on sprinkler water flow, which the mod does not model separately.
+ordinary sounder (`BlockFireAlarmSounderFactory` with its own `water_motor_gong` sound, a dome
+struck about three times a second, synthesised by `gen_life_safety_sounds.py`), so it links to a
+panel with the linker and rings with the panel's horns; a real one rings on sprinkler water flow,
+which the mod does not model separately.
 
 ## Sound Selection Patterns
 

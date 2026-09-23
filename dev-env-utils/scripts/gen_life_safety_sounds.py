@@ -103,6 +103,23 @@ def station_bell():
     return total
 
 
+def water_motor_gong():
+    """A sprinkler's water motor gong: the water flow spins a turbine whose hammer strikes a
+    ten-inch dome over and over, about three times a second, for as long as the water runs.
+    It loops as a fire alarm sounder does, so each strike's ring-out is wrapped round past the
+    loop's end onto its start and the loop has no seam. The hammer's strength wanders a little,
+    as a turbine's does. 4.2 s, fourteen strikes."""
+    period, count = 0.3, 14
+    total = np.zeros(int(RATE * period * count))
+    strike = gong_strike(3.0, fundamental=540.0, seed=11)
+    levels = 1.0 - 0.12 * np.random.RandomState(12).rand(count)
+    for k in range(count):
+        i = int(RATE * period * k)
+        idx = (np.arange(len(strike)) + i) % len(total)
+        np.add.at(total, idx, levels[k] * strike)
+    return total
+
+
 def station_prealert():
     """The alerting system's pre-alert: a two-pitch warble for two seconds, so the tones that
     follow are listened for."""
@@ -230,6 +247,7 @@ SOUNDS = {
     'station_tone_all_call': (all_call, 10000),
     'aed_cabinet_alarm': (aed_cabinet_alarm, 7000),
     'station_bell': (station_bell, 9000),
+    'water_motor_gong': (water_motor_gong, 9900),
 }
 
 
