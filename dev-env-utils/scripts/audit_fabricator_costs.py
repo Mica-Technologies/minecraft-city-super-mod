@@ -276,7 +276,7 @@ def cost_for(registry, info, ancestors):
 
     # Never in the framing tab: see the note in CsmFabricatorCosts. A base plate and a
     # sole plate are structure, not brackets.
-    if tab != "tabstructureframing" and noun in MOUNT_NOUNS:
+    if tab not in ("tabstructureframing", "tabstreetscape") and noun in MOUNT_NOUNS:
         return ("SHEET_METAL", "FASTENER_KIT")
 
     if has_any(registry, OPTICAL_WORDS):
@@ -369,6 +369,13 @@ def cost_for(registry, info, ancestors):
         if has("AbstractBlockControllableSignal"):
             return ("LED_MODULE", "LENS_ASSEMBLY", "SHEET_METAL")
         return ("SHEET_METAL", "WIRING_HARNESS")
+    if tab == "tabstreetscape" and has("BlockStreetCover"):
+        # Mirrors StreetscapeFabricatorRules.
+        if registry.startswith("storm_drain_marker"):
+            return ("SIGN_BLANK",)
+        if registry.startswith(("vault_lid", "valve_box", "sewer_cleanout")):
+            return ("iron_ingot", "CONCRETE_MIX")
+        return ("iron_ingot x2",)
     if tab == "tabfurniture":
         if has_any(registry, METAL_FURNITURE_WORDS):
             return ("SHEET_METAL", "FASTENER_KIT")

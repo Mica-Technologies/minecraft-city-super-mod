@@ -79,6 +79,7 @@ public final class CsmFabricatorCosts {
   private static final String TAB_ROAD_SIGNS = "tabroadsigns";
   private static final String TAB_SIGNAGE = "tabsignage";
   private static final String TAB_STRUCTURE_FRAMING = "tabstructureframing";
+  private static final String TAB_STREETSCAPE = "tabstreetscape";
   private static final String TAB_TECHNOLOGY = "tabtechnology";
   private static final String TAB_TRAFFIC_ACCESSORIES = "tabtrafficaccessories";
   private static final String TAB_TRAFFIC_SIGNALS = "tabtrafficsignals";
@@ -240,7 +241,11 @@ public final class CsmFabricatorCosts {
     // any tab is looked at, so a structural base plate and a timber sole plate were both being
     // priced as brackets — and the timber one in sheet metal, which is not even the right
     // material. A plate that a building stands on is structure, not hardware.
-    if (!TAB_STRUCTURE_FRAMING.equals(tabId) && matches(noun, MOUNT_NOUNS)) {
+    //
+    // Nor in the streetscape tab, whose manhole covers end in "cover" and are cast iron, not a
+    // bracket; that tab's own rule prices them.
+    if (!TAB_STRUCTURE_FRAMING.equals(tabId) && !TAB_STREETSCAPE.equals(tabId)
+        && matches(noun, MOUNT_NOUNS)) {
       return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }

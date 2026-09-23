@@ -1,0 +1,39 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "csm:blocks/streetscape/vault_lid_fiber_optic"
+  },
+  "display": {
+    "gui": {
+      "rotation": [
+        0,
+        0,
+        180
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        180
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        180
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

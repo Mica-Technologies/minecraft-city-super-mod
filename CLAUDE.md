@@ -479,6 +479,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   road, so each is written for both hands and all three pole fits (the `arm` and `polefit`
   actual-state properties, resolved from whichever neighbour is a pole). Also the per-model
   inventory fits, projected rather than guessed; `--check` fails on drift
+- `gen_streetscape_covers.py` -- the Streetscape tab's covers (`BlockStreetCover`): manholes,
+  utility vault lids, valve boxes, drainage grates and the storm drain marker, each with a
+  "(Rusted)" twin where it is iron. A cover is one upward face with a 64 px cutout texture, so a
+  round cover is round; textures are drawn as the placer sees them and stored turned 180 (the
+  item models turn the icon back). Borrows `life_safety_gen_common.py`'s catalogue and font;
+  `--check`, `--fragments`
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →

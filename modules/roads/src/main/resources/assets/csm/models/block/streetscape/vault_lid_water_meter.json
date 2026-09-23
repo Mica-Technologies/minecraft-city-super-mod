@@ -1,0 +1,33 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cover": "csm:blocks/streetscape/vault_lid_water_meter",
+    "particle": "csm:blocks/streetscape/vault_lid_water_meter"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        0,
+        0.2,
+        0
+      ],
+      "to": [
+        16,
+        0.2,
+        16
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#cover"
+        }
+      }
+    }
+  ]
+}

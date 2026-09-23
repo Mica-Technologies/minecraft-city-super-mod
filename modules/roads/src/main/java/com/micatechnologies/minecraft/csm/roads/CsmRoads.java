@@ -26,6 +26,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityBarricade
 import com.micatechnologies.minecraft.csm.trafficaccessories.TrafficAccessoriesGuiProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacketHandler;
+import com.micatechnologies.minecraft.csm.streetscape.StreetscapeFabricatorRules;
 import com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.InRoadwayLightConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.InRoadwayLightConfigPacketHandler;
@@ -125,6 +126,8 @@ public class CsmRoads {
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.
     CsmFabricatorCosts.registerRule(TrafficSignalsFabricatorRules.TAB_ID,
         TrafficSignalsFabricatorRules::price);
+    CsmFabricatorCosts.registerRule(StreetscapeFabricatorRules.TAB_ID,
+        StreetscapeFabricatorRules::price);
 
     // A lambda, not APSSoundPacketHandler::stopAllSounds: that method is @SideOnly(CLIENT), so
     // it is stripped from the class on a dedicated server and a method reference — which

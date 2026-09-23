@@ -278,8 +278,10 @@ def nsewud_state(model_path):
 class Catalogue(object):
     """One generator's blocks, textures and extra lang, and how to write and check them."""
 
-    def __init__(self, name, tex_dir, model_dir):
+    def __init__(self, name, tex_dir, model_dir, assets=None):
         self.name = name
+        self.assets = assets or ASSETS  # another module's assets/csm, for generators outside
+                                        # Life Safety that borrow this catalogue
         self.tex_dir = tex_dir          # e.g. "lifesafety/fireprotection"
         self.model_dir = model_dir      # e.g. "lifesafety/fireprotection"
         self.blocks = []
@@ -389,16 +391,16 @@ class Catalogue(object):
             print(self.fragments())
             return 0
         if not args.check:
-            written = self.generate(ASSETS)
-            print("wrote %d files under %s" % (len(written), ASSETS))
+            written = self.generate(self.assets)
+            print("wrote %d files under %s" % (len(written), self.assets))
             return 0
         tmp = tempfile.mkdtemp(prefix="lifesafety_")
         try:
-            shutil.copytree(os.path.join(ASSETS, "lang"), os.path.join(tmp, "lang"))
+            shutil.copytree(os.path.join(self.assets, "lang"), os.path.join(tmp, "lang"))
             written = self.generate(tmp)
             stale = [rel for rel in written
                      if not gen_trees.same_file(os.path.join(tmp, rel),
-                                                os.path.join(ASSETS, rel))]
+                                                os.path.join(self.assets, rel))]
             if stale:
                 print("out of date (re-run without --check):\n  " + "\n  ".join(stale))
                 return 1
