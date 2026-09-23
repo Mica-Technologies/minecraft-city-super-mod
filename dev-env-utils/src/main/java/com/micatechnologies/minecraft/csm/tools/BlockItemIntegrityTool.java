@@ -165,6 +165,7 @@ public class BlockItemIntegrityTool {
   private static final AtomicInteger suppressedErrorCount = new AtomicInteger(0);
   private static final AtomicInteger unusedCount = new AtomicInteger(0);
   private static final AtomicInteger unusedLangCount = new AtomicInteger(0);
+  private static final AtomicInteger generatorSourceCount = new AtomicInteger(0);
 
   private static final List<String> knownMetaLangs = new ArrayList<>();
   private static final List<String> knownBlockIds = new ArrayList<>();
@@ -280,8 +281,16 @@ public class BlockItemIntegrityTool {
           System.out.println("Total Suppressed Errors: " + suppressedErrorCount.get());
           System.out.println("Total Unused Files: " + unusedCount.get());
           System.out.println("Total Unused Lang Entries: " + unusedLangCount.get());
+          System.out.println("Total Generator Source Files: " + generatorSourceCount.get());
           System.out.println("========================================\n");
         });
+
+    // A non-zero exit on errors is what lets a CI job fail on one. Unused files and lang entries
+    // do not fail it: whether to delete a leftover is a human call, and a new unused file is
+    // just as often an asset committed a step before the code that uses it.
+    if (errorCount.get() > 0) {
+      System.exit(1);
+    }
   }
 
   private static void verifyTabIntegritys(File devEnvironmentPath, List<File> sourceExcludes,
@@ -365,32 +374,45 @@ public class BlockItemIntegrityTool {
           AssetFolder.ofAsset(layout(devEnvironmentPath), ITEM_TEXTURES_FOLDER);
       AssetFolder soundsResourceFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), SOUNDS_FOLDER);
 
+      // Every file a blockstate or model reaches, as one set of canonical paths. The per-kind
+      // lists were checked only against their own folder, so an item model a blockstate names
+      // ("csm:item/radar_speed_sign") landed in the block-model list and was reported unused.
+      Set<String> usedPaths = new HashSet<>();
+      for (List<File> used : List.of(usedBlockstateFiles, usedBlockModelFiles, usedCustomModelFiles,
+          usedItemModelFiles, usedBlockTexturesFiles, usedItemTexturesFiles, usedSoundFiles)) {
+        for (File file : used) {
+          usedPaths.add(AssetUsage.canonical(file));
+        }
+      }
+      LangKeyUsage sourceUsage = new LangKeyUsage(layout(devEnvironmentPath));
+      AssetUsage assetUsage = new AssetUsage(layout(devEnvironmentPath), sourceUsage, usedPaths);
+
       // Check for unused files
-      checkUnusedFiles(blockstateFolder, usedBlockstateFiles);
-      // Walk all block models (including shared_models in subsystem subdirs) as one combined set
-      List<File> allUsedBlockModels = new ArrayList<>();
-      allUsedBlockModels.addAll(usedBlockModelFiles);
-      allUsedBlockModels.addAll(usedCustomModelFiles);
-      checkUnusedFiles(blockModelsFolder, allUsedBlockModels);
-      checkUnusedFiles(itemModelsFolder, usedItemModelFiles);
-      checkUnusedFiles(blockTexturesFolder, usedBlockTexturesFiles);
-      checkUnusedFiles(itemTexturesFolder, usedItemTexturesFiles);
-      checkUnusedFiles(soundsResourceFolder, usedSoundFiles);
-      checkForUnusedLang(devEnvironmentPath);
+      checkUnusedFiles(blockstateFolder, assetUsage);
+      checkUnusedFiles(blockModelsFolder, assetUsage);
+      checkUnusedFiles(itemModelsFolder, assetUsage);
+      checkUnusedFiles(blockTexturesFolder, assetUsage);
+      checkUnusedFiles(itemTexturesFolder, assetUsage);
+      checkUnusedFiles(soundsResourceFolder, assetUsage);
+      checkForUnusedLang(devEnvironmentPath, sourceUsage);
     } catch (Exception e) {
       logError("Unable to check for unused files.");
       e.printStackTrace();
     }
   }
 
-  public static void checkForUnusedLang(File devEnvironmentPath) {
+  /**
+   * Reports lang entries nothing uses.
+   *
+   * @param devEnvironmentPath the repository root
+   * @param sourceUsage        what the sources name beyond block, item and tab names: screen,
+   *                           chat and tooltip keys, literal or built by concatenation, and
+   *                           per-stack names. See {@link LangKeyUsage}.
+   */
+  public static void checkForUnusedLang(File devEnvironmentPath, LangKeyUsage sourceUsage) {
     try {
       // Create common File objects
       AssetFolder langFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), LANG_FOLDER);
-
-      // What the sources name beyond block, item and tab names: screen, chat and tooltip keys,
-      // literal or built by concatenation, and per-stack names. See LangKeyUsage.
-      LangKeyUsage sourceUsage = new LangKeyUsage(layout(devEnvironmentPath));
 
       // Go line by line in each lang file and check for unused entries
       for (File langFile : langFolder.list()) {
@@ -502,33 +524,33 @@ public class BlockItemIntegrityTool {
     }
   }
 
-  public static void checkUnusedFiles(AssetFolder folder, List<File> usedFiles) throws Exception {
-    checkUnusedFiles(folder, usedFiles, null);
-  }
-
-  public static void checkUnusedFiles(AssetFolder folder, List<File> usedFiles,
-      Predicate<Path> excludeFilter) throws Exception {
+  public static void checkUnusedFiles(AssetFolder folder, AssetUsage usage) throws Exception {
     // Every tree's copy of the folder, because an unused file in a module jar is just as unused.
     for (File dir : folder.dirs()) {
-      checkUnusedFiles(dir, usedFiles, excludeFilter);
+      checkUnusedFiles(dir, usage);
     }
   }
 
-  public static void checkUnusedFiles(File folder, List<File> usedFiles,
-      Predicate<Path> excludeFilter) throws Exception {
-    try (Stream<Path> filesStream = Files.walk(folder.toPath()).parallel()) {
-      Stream<Path> filtered = filesStream.filter(Files::isRegularFile);
-      if (excludeFilter != null) {
-        filtered = filtered.filter(excludeFilter);
-      }
-      List<File> allFiles = filtered.map(Path::toFile).collect(Collectors.toList());
+  public static void checkUnusedFiles(File folder, AssetUsage usage) throws Exception {
+    try (Stream<Path> filesStream = Files.walk(folder.toPath())) {
+      List<File> allFiles = filesStream.filter(Files::isRegularFile).map(Path::toFile).sorted()
+          .collect(Collectors.toList());
 
       // Increment validations count by the number of files checked
       validationsCount.addAndGet(allFiles.size());
 
-      allFiles.parallelStream() // Use parallelStream for potential performance improvement
-          .filter(file -> !usedFiles.contains(file))
-          .forEach(BlockItemIntegrityTool::reportUnusedFile);
+      for (File file : allFiles) {
+        switch (usage.classify(file)) {
+          case UNUSED:
+            reportUnusedFile(file);
+            break;
+          case GENERATOR_SOURCE:
+            reportGeneratorSource(file, usage.generatorReading(file));
+            break;
+          default:
+            break;
+        }
+      }
     } catch (IOException e) {
       throw new Exception("Error while checking for unused files", e);
     }
@@ -538,6 +560,17 @@ public class BlockItemIntegrityTool {
     int currentUnusedCount = unusedCount.incrementAndGet();
     String unusedCountString = String.format("%04d", currentUnusedCount);
     System.err.println("U" + unusedCountString + ": Unused file found: " + unusedFile.getPath());
+  }
+
+  /**
+   * A file the game never loads but a dev-env-utils tool or script reads: an atlas tile, a
+   * texture generator's input. Not unused -- deleting it breaks the next regeneration -- so it is
+   * listed apart, with what reads it.
+   */
+  private static void reportGeneratorSource(File file, String reader) {
+    int count = generatorSourceCount.incrementAndGet();
+    System.out.println("G" + String.format("%04d", count) + ": Generator source file (read by "
+        + reader + ", never loaded by the game): " + file.getPath());
   }
 
   public static List<String> listEligibleSoundFiles(File devEnvironmentPath) {
@@ -820,12 +853,13 @@ public class BlockItemIntegrityTool {
       return;
     }
 
-    // Circular reference detection
+    // Circular reference detection. The visited set is fresh for each chain the wrapper starts, and
+    // a model has one parent, so meeting a model again on the same chain can only be a loop --
+    // one the game cannot bake either. It used to be skipped silently; it is an error.
     String canonicalPath = modelFileJson.getCanonicalPath();
     if (visitedModels.contains(canonicalPath)) {
-      if (DEBUG) {
-        System.out.println("Skipping already-visited model: " + canonicalPath);
-      }
+      logError("Circular model parent chain: " + modelFileJson.getPath()
+          + " is its own ancestor");
       return;
     }
     visitedModels.add(canonicalPath);
