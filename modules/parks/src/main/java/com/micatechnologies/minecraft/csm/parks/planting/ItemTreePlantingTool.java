@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.parks.planting;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
+import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkProp;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +35,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * <p>Right-click a block to plant on it; the tree leans and reaches the way the player faces, so
  * standing on a sidewalk facing the road plants a tree that arches over the road. Sneak and
  * right-click to change species. Every block of the tree is checked before any is placed: if
- * anything but air, plants or snow is in the way, or the player may not build there, nothing is
- * planted.</p>
+ * anything but air, plants, snow or a ground cover is in the way, or the player may not build
+ * there, nothing is planted. Clicking a ground cover plants through it, on the ground below.</p>
  *
  * @since 2026.9
  */
@@ -131,12 +132,19 @@ public class ItemTreePlantingTool extends AbstractItem {
     return EnumActionResult.SUCCESS;
   }
 
-  /** Air, plants, snow and anything else a block may be placed over. */
+  /**
+   * Air, plants, snow, and a thin covering on the ground (a mulch or gravel cover, a carpet): a
+   * tree is planted through a ground cover, so its trunk stands on the ground beneath rather than
+   * a block up on top of the cover.
+   */
   private static boolean replaceable(World world, BlockPos pos) {
     IBlockState state = world.getBlockState(pos);
     Material m = state.getMaterial();
-    return state.getBlock().isReplaceable(world, pos) || m == Material.PLANTS
-        || m == Material.VINE;
+    Block block = state.getBlock();
+    boolean cover = block instanceof BlockParkProp
+        && ((BlockParkProp) block).getKind() == BlockParkProp.Kind.COVER;
+    return block.isReplaceable(world, pos) || m == Material.PLANTS || m == Material.VINE
+        || m == Material.CARPET || cover;
   }
 
   @Nullable

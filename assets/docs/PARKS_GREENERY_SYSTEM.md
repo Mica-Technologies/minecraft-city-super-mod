@@ -124,8 +124,11 @@ blocks. It works in three steps:
 
 1. **Grow.** `TreeGenerators.grow(preset, facing, rng)` fills a `TreePlan`, a map from each
    position to a named part. Logs win over leaves, and leaves over moss.
-2. **Check.** Every position must be air, a plant or snow, and editable by the player. If anything
-   is in the way, nothing is placed, and the action bar says how many blocks are in the way.
+2. **Check.** Every position must be air, a plant, snow or a ground cover (a `COVER` prop, a
+   carpet), and editable by the player. If anything is in the way, nothing is placed, and the
+   action bar says how many blocks are in the way. Clicking a ground cover plants through it: the
+   trunk replaces the cover and stands on the ground, where it would otherwise stand a block up,
+   on top of a one-pixel layer.
 3. **Place.** Logs first, then leaves, then moss, so each has what it hangs from.
 
 The tree leans and reaches the way the player faces. Stand on a sidewalk facing the road and the
@@ -250,6 +253,15 @@ scripts only append, so existing textures, whose seeds are their index, never ch
 catalogue grows.
 
 ---
+
+## The demo world
+
+`dev-env-utils/scripts/build_parks_demo.py` builds a showcase of the whole module in a flat
+creative world loaded in the dev client: a street of leaning trees on grates with pleached lindens
+opposite, a park (fountain plaza, playground, pergola with picnic tables, community garden, pond
+and willow, an irrigated lawn), an arboretum of every planting preset with a sign each, and the
+tree kit: every leaves block on a plinth, a hand-built lean in each log width, every bark, the palm
+crowns, moss and willow strands. It plants with the real tool, so it doubles as a test of it.
 
 ## Decisions
 
