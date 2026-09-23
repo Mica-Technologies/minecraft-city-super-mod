@@ -2,19 +2,22 @@
 """
 gen_trees.py -- every asset of the Parks & Greenery tree kit.
 
-Trees are built block by block from log and leaves blocks, as vanilla trees are. The log is drawn
-in Java (TreeLogGeometry / TreeLogBakedModel) from what surrounds it, so what this script writes
-for a log is only what the game needs from files:
+Trees are built block by block from log and leaves blocks, as vanilla trees are. Logs and leaves
+are drawn in Java (TreeLogGeometry, TreeLeavesGeometry and their baked models) from what
+surrounds them, so what this script writes is only what the game needs from files:
 
-  * textures/blocks/parks/bark_<wood>.png   one bark per wood, tileable both ways
-  * models/block/parks/log_<width>.json     a straight log of that width: the item's model, and
-                                            the placeholder the baked model replaces in the world
-  * blockstates/tree_log_<wood>_<width>.json axis=x/y/z and inventory, all that one model with
-                                            the wood's bark
-  * lang lines (tile.tree_log_*.name) in all four languages, kept in place by key
+  * textures/blocks/parks/bark_<wood>.png     one bark per wood, tileable both ways
+  * textures/blocks/parks/leaves_<leaf>.png   one leaf-cluster sprite per leaves block, drawn to
+                                              its leaf type (broad, large, fan, airy, needle)
+  * models/block/parks/log_<width>.json       a straight log of that width: the item's model, and
+                                              the placeholder the baked model replaces in the world
+  * models/block/parks/leaves_<leaf>.json     a leaves cube with the cluster: the item's model and
+                                              the world placeholder
+  * blockstates for every log and leaves block
+  * lang lines (tile.tree_log_* / tile.tree_leaves_*) in all four languages, kept in place by key
 
-The woods and widths must match TreeWood and TreeLogWidth, in the same order; the tab lines
-(--fragments) are the other place the catalogue is spelled out.
+The woods, widths and leaves must match TreeWood, TreeLogWidth and the tab registrations, in the
+same order (--fragments prints the tab lines).
 
 Usage:
     python gen_trees.py              # write everything
@@ -70,6 +73,26 @@ WIDTHS = [
                           "Hel stam ({w})")),
 ]
 
+LEAF_NAMES = ("{w} Leaves", "Laub ({w})", "Hojas de {w}", "Löv ({w})")
+NEEDLE_NAMES = ("{w} Foliage", "Nadeln ({w})", "Follaje de {w}", "Barr ({w})")
+
+# Leaves: (id, TreeLeafType constant, species names en/de/es/sv, texture style, palette light to
+# dark, name patterns). Order = tab order.
+LEAVES = [
+    ("liveoak", "BROADLEAF", WOODS[0][2], "broad",
+     [(96, 124, 58), (76, 104, 46), (58, 84, 38), (44, 66, 30)], LEAF_NAMES),
+    ("elm", "BROADLEAF", WOODS[1][2], "broad",
+     [(112, 150, 64), (90, 128, 52), (70, 106, 42), (52, 84, 34)], LEAF_NAMES),
+    ("plane", "BROADLEAF", WOODS[2][2], "broad_large",
+     [(120, 154, 70), (98, 134, 58), (78, 112, 48), (60, 90, 38)], LEAF_NAMES),
+    ("honeylocust", "AIRY", WOODS[3][2], "airy",
+     [(168, 184, 84), (142, 164, 70), (116, 140, 58), (92, 116, 46)], LEAF_NAMES),
+    ("ginkgo", "BROADLEAF", WOODS[5][2], "fan",
+     [(142, 178, 82), (118, 158, 68), (96, 136, 56), (76, 112, 46)], LEAF_NAMES),
+    ("cypress", "NEEDLE", WOODS[4][2], "needle",
+     [(70, 100, 66), (56, 84, 54), (42, 68, 44), (32, 54, 36)], NEEDLE_NAMES),
+]
+
 
 def cap_first(s):
     return s[:1].upper() + s[1:]
@@ -79,22 +102,26 @@ def log_name(wood, width):
     return "tree_log_%s_%s" % (wood, width)
 
 
+def leaves_name(leaf_id):
+    return "tree_leaves_%s" % leaf_id
+
+
 # ------------------------------------------------------------------------------------------
 # Bark
 # ------------------------------------------------------------------------------------------
 SIZE = 16
 
 
-def _noise(rng, cells):
-    """Tileable value noise on a cells x cells lattice, eased, wrapped. SIZE x SIZE in -1..1."""
+def _noise(rng, cells, size=SIZE):
+    """Tileable value noise on a cells x cells lattice, eased, wrapped. size x size in -1..1."""
     lattice = [[rng.uniform(-1, 1) for _ in range(cells)] for _ in range(cells)]
-    step = SIZE / cells
-    out = [[0.0] * SIZE for _ in range(SIZE)]
-    for y in range(SIZE):
+    step = size / cells
+    out = [[0.0] * size for _ in range(size)]
+    for y in range(size):
         gy, fy = divmod(y / step, 1)
         wy = (1 - math.cos(fy * math.pi)) / 2
         y0, y1 = int(gy) % cells, (int(gy) + 1) % cells
-        for x in range(SIZE):
+        for x in range(size):
             gx, fx = divmod(x / step, 1)
             wx = (1 - math.cos(fx * math.pi)) / 2
             x0, x1 = int(gx) % cells, (int(gx) + 1) % cells
@@ -105,7 +132,7 @@ def _noise(rng, cells):
 
 
 def _furrows(rng, count, dark, jitter=1):
-    """Vertical furrows that wander a pixel side to side and wrap top to bottom."""
+    """Vertical furrows that wander a pixel side to side."""
     field = [[0.0] * SIZE for _ in range(SIZE)]
     for _ in range(count):
         x = rng.randrange(SIZE)
@@ -113,7 +140,6 @@ def _furrows(rng, count, dark, jitter=1):
             field[y][x % SIZE] -= dark
             if rng.random() < 0.3:
                 x += rng.choice((-jitter, jitter))
-        # keep the wrap seamless: the furrow ends where it began
     return field
 
 
@@ -175,6 +201,84 @@ def bark(recipe, seed):
 
 
 # ------------------------------------------------------------------------------------------
+# Leaf clusters
+# ------------------------------------------------------------------------------------------
+LEAF_SIZE = 32
+
+
+def _cluster_mask(rng, narrow=False):
+    """A lumpy outline, so a card's edge is foliage rather than a square."""
+    mask = [[False] * LEAF_SIZE for _ in range(LEAF_SIZE)]
+    lobes = [(rng.uniform(9, 23), rng.uniform(9, 23), rng.uniform(7, 11)) for _ in range(6)]
+    for y in range(LEAF_SIZE):
+        for x in range(LEAF_SIZE):
+            xx = 16 + (x - 16) * (1.9 if narrow else 1.0)
+            if any((xx - cx) ** 2 + (y - cy) ** 2 < r * r for cx, cy, r in lobes):
+                mask[y][x] = True
+    return mask
+
+
+def leaf_cluster(style, palette, seed):
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (LEAF_SIZE, LEAF_SIZE), (0, 0, 0, 0))
+    px = img.load()
+    mask = _cluster_mask(rng, narrow=(style == "needle"))
+
+    def put(x, y, colour):
+        if 0 <= x < LEAF_SIZE and 0 <= y < LEAF_SIZE and mask[y][x]:
+            px[x, y] = tuple(colour) + (255,)
+
+    if style in ("broad", "broad_large"):
+        big = style == "broad_large"
+        for _ in range(95 if big else 140):
+            cx, cy = rng.uniform(0, LEAF_SIZE), rng.uniform(0, LEAF_SIZE)
+            a = rng.uniform(0, math.pi)
+            length = rng.uniform(3.0, 4.5) if big else rng.uniform(2.0, 3.4)
+            width = length * 0.55
+            shade = rng.randrange(len(palette))
+            for t in range(-int(length * 2), int(length * 2) + 1):
+                for w in range(-int(width * 2), int(width * 2) + 1):
+                    u, v = t / 2.0, w / 2.0
+                    if (u / length) ** 2 + (v / width) ** 2 <= 1:
+                        x = int(round(cx + u * math.cos(a) - v * math.sin(a)))
+                        y = int(round(cy + u * math.sin(a) + v * math.cos(a)))
+                        edge = (u / length) ** 2 + (v / width) ** 2 > 0.6
+                        put(x, y, palette[min(len(palette) - 1, shade + (1 if edge else 0))])
+    elif style == "fan":
+        for _ in range(90):
+            cx, cy = rng.uniform(0, LEAF_SIZE), rng.uniform(0, LEAF_SIZE)
+            a = rng.uniform(0, 2 * math.pi)
+            shade = rng.randrange(len(palette) - 1)
+            for r in range(0, 4):
+                for k in range(-r, r + 1):
+                    ang = a + k * 0.35 / max(1, r)
+                    put(int(round(cx + r * math.cos(ang))), int(round(cy + r * math.sin(ang))),
+                        palette[shade + (1 if r == 3 else 0)])
+    elif style == "airy":
+        for _ in range(18):
+            x, y = rng.uniform(4, 28), rng.uniform(4, 28)
+            a = rng.uniform(0, math.pi)
+            for step in range(16):
+                x += math.cos(a)
+                y += math.sin(a)
+                put(int(x), int(y), palette[-1])
+                if step % 2 == 0 or rng.random() < 0.5:
+                    for side in (-1, 1):
+                        lx = x + math.cos(a + side * 1.2) * 1.6
+                        ly = y + math.sin(a + side * 1.2) * 1.6
+                        put(int(round(lx)), int(round(ly)), palette[rng.randrange(3)])
+    elif style == "needle":
+        for _ in range(420):
+            x, y = rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE)
+            shade = rng.randrange(len(palette))
+            for d in range(3):
+                put(x, y + d, palette[min(len(palette) - 1, shade + (1 if d == 2 else 0))])
+    else:
+        raise ValueError(style)
+    return img
+
+
+# ------------------------------------------------------------------------------------------
 # Models and blockstates
 # ------------------------------------------------------------------------------------------
 def log_model(pixels):
@@ -209,6 +313,21 @@ def log_blockstate(wood, width):
     }
 
 
+def leaves_model(leaf_id):
+    return {"parent": "block/leaves", "textures": {"all": "csm:blocks/parks/leaves_%s" % leaf_id}}
+
+
+def leaves_blockstate(leaf_id):
+    model = "csm:parks/leaves_%s" % leaf_id
+    return {
+        "variants": {
+            # "normal" is replaced by TreeLeavesBakedModel at bake time (TreeModels).
+            "normal": {"model": model},
+            "inventory": {"model": model},
+        },
+    }
+
+
 # ------------------------------------------------------------------------------------------
 # Lang
 # ------------------------------------------------------------------------------------------
@@ -219,9 +338,11 @@ def lang_entries():
         for width, _, _, patterns in WIDTHS:
             key = "tile.%s.name" % log_name(wood, width)
             for i, loc in enumerate(LOCALES):
-                w = names[i]
-                value = patterns[i].format(w=w)
-                out[loc][key] = cap_first(value)
+                out[loc][key] = cap_first(patterns[i].format(w=names[i]))
+    for leaf_id, _, names, _, _, patterns in LEAVES:
+        key = "tile.%s.name" % leaves_name(leaf_id)
+        for i, loc in enumerate(LOCALES):
+            out[loc][key] = cap_first(patterns[i].format(w=names[i]))
     return out
 
 
@@ -259,13 +380,17 @@ def dump(path, data):
         fh.write("\n")
 
 
+def save_png(path, img):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    img.save(path)
+
+
 def generate(assets):
     """Writes everything under an assets/csm root; returns the relative paths written."""
     written = []
     for i, (wood, _, _, recipe) in enumerate(WOODS):
         rel = "textures/blocks/parks/bark_%s.png" % wood
-        os.makedirs(os.path.dirname(os.path.join(assets, rel)), exist_ok=True)
-        bark(recipe, 20260922 + i).save(os.path.join(assets, rel))
+        save_png(os.path.join(assets, rel), bark(recipe, 20260922 + i))
         written.append(rel)
     for width, _, pixels, _ in WIDTHS:
         rel = "models/block/parks/log_%s.json" % width
@@ -276,6 +401,16 @@ def generate(assets):
             rel = "blockstates/%s.json" % log_name(wood, width)
             dump(os.path.join(assets, rel), log_blockstate(wood, width))
             written.append(rel)
+    for i, (leaf_id, _, _, style, palette, _) in enumerate(LEAVES):
+        rel = "textures/blocks/parks/leaves_%s.png" % leaf_id
+        save_png(os.path.join(assets, rel), leaf_cluster(style, palette, 20260923 + i))
+        written.append(rel)
+        rel = "models/block/parks/leaves_%s.json" % leaf_id
+        dump(os.path.join(assets, rel), leaves_model(leaf_id))
+        written.append(rel)
+        rel = "blockstates/%s.json" % leaves_name(leaf_id)
+        dump(os.path.join(assets, rel), leaves_blockstate(leaf_id))
+        written.append(rel)
     write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in LOCALES]
     return written
@@ -287,6 +422,10 @@ def fragments():
         for width, dconst, _, _ in WIDTHS:
             lines.append('    initTabBlock(new BlockTreeLog("%s", TreeWood.%s, TreeLogWidth.%s));'
                          % (log_name(wood, width), wconst, dconst))
+    for leaf_id, ltype, _, _, _, _ in LEAVES:
+        lines.append('    initTabBlock(new BlockTreeLeaves("%s", TreeLeafType.%s,'
+                     % (leaves_name(leaf_id), ltype))
+        lines.append('        "csm:blocks/parks/leaves_%s"));' % leaf_id)
     return "\n".join(lines)
 
 

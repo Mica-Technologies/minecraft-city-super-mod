@@ -47,6 +47,13 @@ public final class TreeModels {
           event.getModelRegistry().putObject(new ModelResourceLocation(
               block.getRegistryName(), "axis=" + axis.getName()), model);
         }
+      } else if (block instanceof BlockTreeLeaves) {
+        BlockTreeLeaves leaves = (BlockTreeLeaves) block;
+        TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks()
+            .getAtlasSprite(leaves.getTexture());
+        event.getModelRegistry().putObject(
+            new ModelResourceLocation(block.getRegistryName(), "normal"),
+            new TreeLeavesBakedModel(leaves.getLeafType(), sprite));
       }
     }
   }
