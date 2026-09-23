@@ -467,6 +467,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   `--art <dir>` rebuilds the face textures from the source art, `--check` fails on drift
 - `detect_legend_series.py` -- measures a sign's original texture (first git version): each legend
   line's centre, cap height and nearest FHWA series, for a remake's `layout=`
+- `gen_enforcement_cameras.py` -- the red light cameras, speed cameras and flash unit
+  (`BlockEnforcementCamera`), in white and black, all hung on the mod's own traffic poles: the
+  pole-top units wear a slip-fitter collar that fits every pole width, and the side-arm units
+  hang beside the pole with the arm running sideways into it and the device turned to face the
+  road, so each is written for both hands and all three pole fits (the `arm` and `polefit`
+  actual-state properties, resolved from whichever neighbour is a pole). Also the per-model
+  inventory fits, projected rather than guessed; `--check` fails on drift
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →

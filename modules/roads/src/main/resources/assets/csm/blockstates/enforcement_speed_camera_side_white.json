@@ -1,0 +1,226 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#housing": "csm:blocks/trafficaccessories/enforcement/housing_white",
+      "#trim": "csm:blocks/trafficaccessories/enforcement/trim_black",
+      "#bracket": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
+  },
+  "variants": {
+    "arm=right,facing=north,polefit=large": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right.obj"
+      }
+    ],
+    "arm=right,facing=north,polefit=thin": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right_thin.obj"
+      }
+    ],
+    "arm=right,facing=north,polefit=pedestal": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right_pedestal.obj"
+      }
+    ],
+    "arm=right,facing=east,polefit=large": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right.obj",
+        "y": 90
+      }
+    ],
+    "arm=right,facing=east,polefit=thin": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right_thin.obj",
+        "y": 90
+      }
+    ],
+    "arm=right,facing=east,polefit=pedestal": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right_pedestal.obj",
+        "y": 90
+      }
+    ],
+    "arm=right,facing=south,polefit=large": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right.obj",
+        "y": 180
+      }
+    ],
+    "arm=right,facing=south,polefit=thin": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right_thin.obj",
+        "y": 180
+      }
+    ],
+    "arm=right,facing=south,polefit=pedestal": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right_pedestal.obj",
+        "y": 180
+      }
+    ],
+    "arm=right,facing=west,polefit=large": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right.obj",
+        "y": 270
+      }
+    ],
+    "arm=right,facing=west,polefit=thin": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right_thin.obj",
+        "y": 270
+      }
+    ],
+    "arm=right,facing=west,polefit=pedestal": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right_pedestal.obj",
+        "y": 270
+      }
+    ],
+    "arm=left,facing=north,polefit=large": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left.obj"
+      }
+    ],
+    "arm=left,facing=north,polefit=thin": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left_thin.obj"
+      }
+    ],
+    "arm=left,facing=north,polefit=pedestal": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left_pedestal.obj"
+      }
+    ],
+    "arm=left,facing=east,polefit=large": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left.obj",
+        "y": 90
+      }
+    ],
+    "arm=left,facing=east,polefit=thin": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left_thin.obj",
+        "y": 90
+      }
+    ],
+    "arm=left,facing=east,polefit=pedestal": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left_pedestal.obj",
+        "y": 90
+      }
+    ],
+    "arm=left,facing=south,polefit=large": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left.obj",
+        "y": 180
+      }
+    ],
+    "arm=left,facing=south,polefit=thin": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left_thin.obj",
+        "y": 180
+      }
+    ],
+    "arm=left,facing=south,polefit=pedestal": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left_pedestal.obj",
+        "y": 180
+      }
+    ],
+    "arm=left,facing=west,polefit=large": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left.obj",
+        "y": 270
+      }
+    ],
+    "arm=left,facing=west,polefit=thin": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left_thin.obj",
+        "y": 270
+      }
+    ],
+    "arm=left,facing=west,polefit=pedestal": [
+      {
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_left_pedestal.obj",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              30,
+              225,
+              0
+            ],
+            "scale": 0.5483,
+            "translation": [
+              0.1468,
+              0.0775,
+              0.0
+            ]
+          },
+          "ground": {
+            "translation": [
+              0,
+              0.1875,
+              0
+            ],
+            "scale": 0.25
+          },
+          "fixed": {
+            "scale": 0.5
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0,
+              0.15625,
+              0
+            ],
+            "scale": 0.375
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0,
+              0.15625,
+              0
+            ],
+            "scale": 0.375
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "scale": 0.4
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "scale": 0.4
+          }
+        },
+        "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_side_right.obj"
+      }
+    ]
+  }
+}

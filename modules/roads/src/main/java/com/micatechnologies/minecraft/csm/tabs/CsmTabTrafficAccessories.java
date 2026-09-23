@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BarricadeGeometry;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockAlprCameraSolar;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockAlprCameraSolarWall;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockEnforcementCamera;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSnowBeacon;
@@ -621,6 +622,29 @@ public class CsmTabTrafficAccessories extends CsmTab {
     // --- Class-based: Solar ALPR Cameras (OBJ models) ---
     initTabBlock(BlockAlprCameraSolar.class, fmlPreInitializationEvent);
     initTabBlock(BlockAlprCameraSolarWall.class, fmlPreInitializationEvent);
+
+    // --- Factory: Enforcement Cameras (OBJ models, gen_enforcement_cameras.py) ---
+    // Pole-top devices sleeve over a pole's top; side-arm devices fit the pole behind them.
+    initTabBlock(new BlockEnforcementCamera.PoleTop("enforcement_red_light_camera_top_white",
+        BlockEnforcementCamera.BB_RED_LIGHT_CAMERA_TOP));
+    initTabBlock(new BlockEnforcementCamera.PoleTop("enforcement_red_light_camera_top_black",
+        BlockEnforcementCamera.BB_RED_LIGHT_CAMERA_TOP));
+    initTabBlock(new BlockEnforcementCamera.SideArm("enforcement_red_light_camera_side_white",
+        BlockEnforcementCamera.BB_RED_LIGHT_CAMERA_SIDE));
+    initTabBlock(new BlockEnforcementCamera.SideArm("enforcement_red_light_camera_side_black",
+        BlockEnforcementCamera.BB_RED_LIGHT_CAMERA_SIDE));
+    initTabBlock(new BlockEnforcementCamera.SideArm("enforcement_flash_unit_side_white",
+        BlockEnforcementCamera.BB_FLASH_UNIT_SIDE));
+    initTabBlock(new BlockEnforcementCamera.SideArm("enforcement_flash_unit_side_black",
+        BlockEnforcementCamera.BB_FLASH_UNIT_SIDE));
+    initTabBlock(new BlockEnforcementCamera.PoleTop("enforcement_speed_camera_top_white",
+        BlockEnforcementCamera.BB_SPEED_CAMERA_TOP));
+    initTabBlock(new BlockEnforcementCamera.PoleTop("enforcement_speed_camera_top_black",
+        BlockEnforcementCamera.BB_SPEED_CAMERA_TOP));
+    initTabBlock(new BlockEnforcementCamera.SideArm("enforcement_speed_camera_side_white",
+        BlockEnforcementCamera.BB_SPEED_CAMERA_SIDE));
+    initTabBlock(new BlockEnforcementCamera.SideArm("enforcement_speed_camera_side_black",
+        BlockEnforcementCamera.BB_SPEED_CAMERA_SIDE));
 
     // --- Class-based: Portable Message Sign ---
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableMessageSign.class,

@@ -1,0 +1,103 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/enforcement/speed_camera_top.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#housing": "csm:blocks/trafficaccessories/enforcement/housing_white",
+      "#trim": "csm:blocks/trafficaccessories/enforcement/trim_black",
+      "#bracket": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              30,
+              225,
+              0
+            ],
+            "scale": 0.4425,
+            "translation": [
+              -0.0203,
+              -0.0842,
+              0.0
+            ]
+          },
+          "ground": {
+            "translation": [
+              0,
+              0.1875,
+              0
+            ],
+            "scale": 0.25
+          },
+          "fixed": {
+            "scale": 0.5
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0,
+              0.15625,
+              0
+            ],
+            "scale": 0.375
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0,
+              0.15625,
+              0
+            ],
+            "scale": 0.375
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "scale": 0.4
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "scale": 0.4
+          }
+        }
+      }
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "379 blocks in this tab"
+!!! info "389 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -76,6 +76,8 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Dynamic Signal Cover | `csm:tlvcover` | 2.0 | 10.0 | pickaxe | 1 |
 | Dynamic Signal Mount Kit | `csm:trafficlightmountkit` | 2.0 | 10.0 | pickaxe | 1 |
 | Dynamic Street Sign | `csm:dynamic_street_sign` | 2 | 10 | pickaxe | 1 |
+| Enforcement Camera Flash Unit (Side Arm, Black) | `csm:enforcement_flash_unit_side_black` | 2 | 10 | pickaxe | 1 |
+| Enforcement Camera Flash Unit (Side Arm, White) | `csm:enforcement_flash_unit_side_white` | 2 | 10 | pickaxe | 1 |
 | Flagger STOP/SLOW Paddle | `csm:flagger_paddle` | 0.6 | 3 | pickaxe | 0 |
 | Freeway Call Box | `csm:freewaycallbox` |  | 10 | pickaxe | 1 |
 | Hanging Signal Mount Kit (Vertical) | `csm:tlhangmount` |  | 10 | pickaxe | 1 |
@@ -137,6 +139,10 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Railroad Crossing Gate (1 Lane) | `csm:railroad_crossing_gate_1` | 2 | 10 | pickaxe | 1 |
 | Railroad Crossing Gate (2 Lanes) | `csm:railroad_crossing_gate_2` | 2 | 10 | pickaxe | 1 |
 | Railroad Crossing Gate (3 Lanes) | `csm:railroad_crossing_gate_3` | 2 | 10 | pickaxe | 1 |
+| Red Light Camera (Pole Top, Black) | `csm:enforcement_red_light_camera_top_black` | 2 | 10 | pickaxe | 1 |
+| Red Light Camera (Pole Top, White) | `csm:enforcement_red_light_camera_top_white` | 2 | 10 | pickaxe | 1 |
+| Red Light Camera (Side Arm, Black) | `csm:enforcement_red_light_camera_side_black` | 2 | 10 | pickaxe | 1 |
+| Red Light Camera (Side Arm, White) | `csm:enforcement_red_light_camera_side_white` | 2 | 10 | pickaxe | 1 |
 | Safety Fence | `csm:safety_fence` | 0.6 | 3 | pickaxe | 0 |
 | Sand Barrel | `csm:sand_barrel_array` | 0.6 | 3 | pickaxe | 0 |
 | School Zone Beacon Assembly | `csm:school_zone_beacon` | 2 | 10 | pickaxe | 1 |
@@ -171,6 +177,10 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Span Wire Anchor | `csm:spanwireanchor` | 2 | 10 | pickaxe | 1 |
 | Span Wire Disconnect Box | `csm:spanwiredisconnectbox` |  | 10 | pickaxe | 1 |
 | Span Wire Guy Anchor | `csm:spanwireguyanchor` | 2 | 10 | pickaxe | 1 |
+| Speed Camera (Pole Top, Black) | `csm:enforcement_speed_camera_top_black` | 2 | 10 | pickaxe | 1 |
+| Speed Camera (Pole Top, White) | `csm:enforcement_speed_camera_top_white` | 2 | 10 | pickaxe | 1 |
+| Speed Camera (Side Arm, Black) | `csm:enforcement_speed_camera_side_black` | 2 | 10 | pickaxe | 1 |
+| Speed Camera (Side Arm, White) | `csm:enforcement_speed_camera_side_white` | 2 | 10 | pickaxe | 1 |
 | Steel Road Plate | `csm:road_plate` | 0.6 | 3 | pickaxe | 0 |
 | Street Name Sign | `csm:trafficstreetnamesign` | 2 | 10 | pickaxe | 1 |
 | Street Name Sign (Double) | `csm:trafficstreetnamesigndouble` | 2 | 10 | pickaxe | 1 |

@@ -28,11 +28,11 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Signage & Advertising](signage.md) | 5 | Street ad kiosks, wall poster boards and billboards built to size. |
 | [Structure & Framing](structure-framing.md) | 32 | Steel and wood stud walls, the structure that spans between them, and structural steel. |
 | [Technology](technology.md) | 37 | Servers, routers, screens and consumer electronics. |
-| [Traffic Accessories](traffic-accessories.md) | 379 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
+| [Traffic Accessories](traffic-accessories.md) | 389 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Trees & Plants](trees-and-plants.md) | 134 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Unlisted](unlisted.md) | 127 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **2410** | |
+| **Total** | **2420** | |
 
 ## How to read the table
 
