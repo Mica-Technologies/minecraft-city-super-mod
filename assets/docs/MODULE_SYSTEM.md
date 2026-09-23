@@ -1,13 +1,13 @@
 # The Module System
 
-City Super Mod ships as **one mandatory jar and ten optional ones**, built from this single
+City Super Mod ships as **one mandatory jar and eleven optional ones**, built from this single
 repository and released together. A player installs CSM: Core plus whichever subsystems they want;
-with all eleven jars installed the mod behaves exactly as the old single jar did — same registry
+with all twelve jars installed the mod behaves exactly as the old single jar did — same registry
 names, same creative tabs in the same order, same config file, same saves, same sounds, same
 Fabricator costs.
 
 This document is the durable design record: what is in which jar, how registration still works when
-the classes are spread across eleven of them, which Core service a module registers with and when, how
+the classes are spread across twelve of them, which Core service a module registers with and when, how
 to add a module or move a block between two, and the traps that have already cost time once.
 
 ---
@@ -31,6 +31,7 @@ world ever sees is namespaced with them.
 | Building Materials | `csm_building` | CSM: Building Materials | `…-building-<version>.jar` | `buildingmaterials` | Building Materials (1) | 87 |
 | Text to Speech | `csm_tts` | CSM: Text to Speech | `…-tts-<version>.jar` | `tts` | none — its blocks appear in Technology | 1 block + 1 item |
 | Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage`, hidden (−8) | Signage & Advertising (17) | 13 |
+| Parks & Greenery | `csm_parks` | CSM: Parks & Greenery | `…-parks-<version>.jar` | `parks` | Trees & Plants (18), Parks (19) | 160 + 1 item |
 
 Block counts are blockstates shipped in that tree, so they include hidden (retiring) blocks and the
 itemless `*_slab_double` states.
@@ -102,7 +103,7 @@ Core that the module's class implements:
 
 ---
 
-## How registration works across eleven jars
+## How registration works across twelve jars
 
 Forge runs the lifecycle **per phase, across all mods**, not per mod. The order that matters here:
 
@@ -175,7 +176,7 @@ For each entry in `modules.gradle`'s `csmModules` list it creates:
 - test sources under `modules/<name>/src/test/java` folded into the one JUnit suite.
 
 ```bash
-./gradlew build                       # Core + all ten module jars, dev and release
+./gradlew build                       # Core + all eleven module jars, dev and release
 ./gradlew runClient                   # dev client with every module jar on the classpath
 ./gradlew runClient -PcsmRunModules=core          # Core alone
 ./gradlew runClient -PcsmRunModules=lighting      # Core + Lighting
@@ -351,7 +352,7 @@ simply skipped when Roads & Traffic is absent.
 `CsmSoundsTest` fails the build on it, and on any drift between the enums and the shipped
 `sounds.json` files in either direction.
 
-**Versions are pinned.** All eleven jars come from one release and pin each other exactly. A player
+**Versions are pinned.** All twelve jars come from one release and pin each other exactly. A player
 mixing versions gets a startup failure, which is the intended outcome.
 
 **A module's reobfuscation needs Core's classes.** A release jar must name every Minecraft field and

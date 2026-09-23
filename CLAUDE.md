@@ -75,7 +75,7 @@ CSM adds nothing to world generation. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
 ### Modules
 
-The mod ships as a mandatory **CSM: Core** jar (`csm`) plus ten optional module jars, all built
+The mod ships as a mandatory **CSM: Core** jar (`csm`) plus eleven optional module jars, all built
 from this repository and released together at the same version. Every module pins Core to that
 exact version, and **all content keeps the `csm:` namespace** — module ids only give Forge a
 container per jar.
@@ -93,6 +93,7 @@ container per jar.
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
+| `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, plantings and park amenities; two tabs, Trees & Plants and Parks |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -119,6 +120,8 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 ├── lighting/
 ├── powergrid/        # Utility poles, electrical infrastructure
 ├── signage/         (modules/signage) ad kiosks, poster boards, billboards
+├── parks/           (modules/parks) trees/ (log and leaves kit), planting/ (the tool and its
+│                    generators), landscape/ (plantings), amenities/ (the Parks tab)
 ├── technology/       # Modern tech: servers, routers, TVs
 ├── tts/              (modules/tts)
 ├── trafficaccessories/
@@ -301,7 +304,7 @@ Voice evac sound volume target: ~4,500 RMS.
 ## In-Depth System Documentation
 
 See `assets/docs/` for detailed technical documentation on major subsystems:
-- `assets/docs/MODULE_SYSTEM.md` -- Core plus ten optional module jars: what each owns, how
+- `assets/docs/MODULE_SYSTEM.md` -- Core plus eleven optional module jars: what each owns, how
   registration still works across jars, the Core service registries, adding a module, the traps
 - `assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md` -- Every abstract class, constructors, rotation, meta encoding, registration
 - `assets/docs/FRAMING_SYSTEM.md` -- Stud walls, joists, deck and structural steel: why a wall is
@@ -369,6 +372,12 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/RAILROAD_CROSSING_SYSTEM.md` -- The grade crossing: crossbuck and signs, the
   redstone-driven flasher mast (wig-wag in the texture, bell from the tile entity) and the gate
   whose arm is a renderer swinging at a real gate's pace; why redstone and not a controller
+- `assets/docs/PARKS_GREENERY_SYSTEM.md` -- Street trees built from log and leaves blocks: logs
+  whose connections (including the 12 edge diagonals that make a stepped lean read as one trunk)
+  travel in an extended state to a baked model, leaves drawn as cards with a fringe past open faces,
+  palm crowns, the Tree Planting Tool and its six generator shapes (street clearance, one volume
+  check, presets appended by ordinal), the plantings and amenities (why nothing shares a trunk's
+  cell, bench runs, the irrigation controller and sprinklers), and the traps
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 - `assets/docs/PERFORMANCE_AND_SECURITY.md` -- Where frame time and memory actually go (client frame time is
   the whole story; the server tick is 0.4%), how to measure without fooling yourself, the rules render and
@@ -537,6 +546,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_formwork.py` -- the construction site's formwork, shoring and rebar: wall and column forms,
   the stack-aware post shore, and rebar mat, dowels, column cage and bundle. Reuses gen_scaffold's
   element helpers so every face has fitted UVs; `--check` fails on drift
+- `gen_trees.py` -- the Parks & Greenery tree kit: bark and leaf-cluster textures (an autumn set
+  drawn with its summer sibling's seed), palm crown sheets, moss, the log and leaves placeholder
+  models and blockstates, and the lang for woods, leaves and planting presets. Logs and leaves are
+  drawn in Java from their connections; the catalogue only appends, so existing textures never
+  change. `--fragments` prints the tab lines; `--check` fails on drift
+- `gen_park_plantings.py` -- the street-tree accessories and plantings (grates, pit fence, stakes,
+  pole-fitted hanging baskets, hedges, shrubs, grasses, flower beds, ground covers, planters and
+  raised beds) from one catalogue whose tab lines carry each block's size; `--check`, `--fragments`
+- `gen_park_amenities.py` -- the Parks tab: benches and picnic tables (end frames only at a run's
+  ends), bins, playground, pergola, fountains with animated water, irrigation; borrows
+  gen_park_plantings.py's helpers; `--check`, `--fragments`
 - `gen_crane.py` -- the tower crane mast in three liveries: 3D corner chords, and the lacing drawn
   into a cutout texture on a plane per face -- a 1x1 face's chord-to-chord diagonal is not an angle
   an element can be turned to, and a texture diagonal can be any angle and meets the chord at the
