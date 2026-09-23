@@ -27,19 +27,20 @@ class TreeRenderBudgetTest {
 
   /**
    * Each preset's average quads when the geometry was last tuned (2026-09-23, after the sheeted
-   * leaves, fewer log sides and straight-through tubes took one of every preset from 82,178 quads
-   * to 37,687). A preset may grow 15% past this before the test fails; beyond that, look at what
-   * grew, and raise the number here only if it earns its cost.
+   * leaves, fewer log sides, straight-through tubes and a curtain hung only from a weeping crown's
+   * underside took one of every preset from 82,178 quads to 31,199). A preset may grow 15% past
+   * this before the test fails; beyond that, look at what grew, and raise the number here only if
+   * it earns its cost.
    */
   private static final Map<String, Integer> BUDGET = new HashMap<>();
   /** One of every preset together. */
-  private static final int TOTAL_BUDGET = 45000;
+  private static final int TOTAL_BUDGET = 36000;
 
   static {
-    String[] rows = {"liveoak 3414", "elm 2746", "plane 3171", "honeylocust 2245", "cypress 188",
-        "ginkgo 516", "fanpalm 242", "leaningpalm 240", "lollipopplane 576", "jacaranda 4210",
-        "peppertree 4767", "coastliveoak 2712", "weepingwillow 7822", "poplar 661",
-        "sweetgum 369", "hornbeam 479", "queenpalm 178", "lemongum 2268", "arborvitae 74",
+    String[] rows = {"liveoak 3414", "elm 2746", "plane 3171", "honeylocust 1588", "cypress 188",
+        "ginkgo 516", "fanpalm 242", "leaningpalm 240", "lollipopplane 576", "jacaranda 2845",
+        "peppertree 3242", "coastliveoak 2712", "weepingwillow 5557", "poplar 661",
+        "sweetgum 369", "hornbeam 479", "queenpalm 178", "lemongum 1592", "arborvitae 74",
         "pleachedlinden 306", "pollardedplane 503"};
     for (String row : rows) {
       String[] kv = row.split(" ");

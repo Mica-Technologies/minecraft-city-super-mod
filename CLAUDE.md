@@ -374,7 +374,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   whose arm is a renderer swinging at a real gate's pace; why redstone and not a controller
 - `assets/docs/PARKS_GREENERY_SYSTEM.md` -- Street trees built from log and leaves blocks: logs
   whose connections (including the 12 edge diagonals that make a stepped lean read as one trunk)
-  travel in an extended state to a baked model, leaves drawn as cards with a fringe past open faces,
+  travel in an extended state to a baked model, leaves drawn as sheets on open faces with tufts past them,
   palm crowns, the Tree Planting Tool and its six generator shapes (street clearance, one volume
   check, presets appended by ordinal), the plantings and amenities (why nothing shares a trunk's
   cell, bench runs, the irrigation controller and sprinklers), and the traps

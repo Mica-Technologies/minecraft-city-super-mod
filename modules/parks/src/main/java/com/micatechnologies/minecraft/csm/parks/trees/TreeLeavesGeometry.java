@@ -10,21 +10,21 @@ import net.minecraft.util.EnumFacing;
  * leaf-cluster sprite, arranged so a group of leaves blocks reads as a crown rather than a stack
  * of green cubes.
  *
- * <p>Most leaf types are <b>sheeted</b>: each open face is a sheet of leaves just inside the
- * cell's face (one quad, facing out; the sprite's ragged alpha keeps its outline soft), with a
- * tuft card or two breaking the silhouette and one card inside. That is a leafy block with a
+ * <p>Leaves are <b>sheeted</b>: each <b>open</b> face (no leaves and no solid block beyond it) is a
+ * sheet of leaves just inside the cell's face (one quad, facing out; the sprite's ragged alpha
+ * keeps its outline soft), with a tuft card past each open side and the top breaking the
+ * silhouette and one card inside (two in an upright needle column). That is a leafy block with a
  * fuzzy edge, at around a third of the quads of a crown drawn all in cards. Airy leaves (honey
- * locust, jacaranda, gum) stay all cards, so light still comes through them.</p>
+ * locust, jacaranda, gum) are sheeted too; their sprite is mostly gaps, so light still comes
+ * through the sheets. Clipped leaves are sheets a hair inside the face on a few interior cards,
+ * with no tufts.</p>
  *
  * <ul>
- *   <li>A few cards inside the cell, at seeded positions and angles.</li>
- *   <li>A fringe of smaller cards reaching up to three sixteenths past each <b>open</b> face -- one
- *       with no leaves and no solid block beyond it -- so the crown's outline is not the block
- *       grid. A one-wide column of leaves becomes a narrow columnar crown.</li>
- *   <li>Nothing is drawn between two leaves cells, and a cell with no open face draws only a
- *       reduced interior (enough that the crown is not see-through).</li>
- *   <li>Weeping leaves hang a curtain of long strands down every open side and below an open
- *       bottom, reaching well under the cell, so a crown of them weeps rather than billows.</li>
+ *   <li>Nothing is drawn between two leaves cells, and a cell with no open face draws only its
+ *       interior card (enough that the crown is not see-through).</li>
+ *   <li>Weeping leaves hang a curtain of long strands from the crown's underside, down each
+ *       open side of a cell open below and under it, reaching well under the cell, so a crown of
+ *       them weeps rather than billows.</li>
  * </ul>
  *
  * <p>The shape is seeded by the block's type, a per-position variant (0-3) and the open faces, so
@@ -35,7 +35,7 @@ import net.minecraft.util.EnumFacing;
  */
 public final class TreeLeavesGeometry {
 
-  /** How far a fringe card's centre may sit past the face, in sixteenths. */
+  /** How far a tuft card's centre may sit past the face, in sixteenths. */
   static final double FRINGE_REACH = 3.0;
   /** Variants per position. */
   public static final int VARIANTS = 4;
@@ -73,13 +73,13 @@ public final class TreeLeavesGeometry {
     Random rng = new Random(type.ordinal() * 7919L + variant * 104729L + open * 31L);
     List<TreeLogGeometry.Quad> quads = new ArrayList<>();
 
-    if (sheeted(type)) {
+    if (type != TreeLeafType.CLIPPED) {
       sheeted(quads, type, rng, open, fancy);
       return quads;
     }
-    // Interior cards scale with how exposed the cell is: one open side shows only a little of
-    // its inside past its neighbours' cards, so it needs few; a cell open all round needs the
-    // lot. A cell closed on every side keeps one, so a gap in the crown is not sky.
+    // Clipped flat: a few cards inside and a sheet of leaves a hair inside each open face, so a
+    // run of them is a box hedge on stilts rather than a cloud. A cell closed on every side keeps
+    // one card, so a gap in the crown is not sky.
     int interior = open == 0 ? 1 : Math.min(type.interior, 1 + Integer.bitCount(open));
     if (!fancy) {
       interior = Math.max(2, interior / 2);
@@ -89,72 +89,27 @@ public final class TreeLeavesGeometry {
           rng.nextDouble() * 10 + 3};
       card(quads, type, rng, c, size(type, rng));
     }
-    if (type == TreeLeafType.CLIPPED) {
-      // Clipped flat: each open side is a sheet of leaves a hair inside the cell's face, so a
-      // run of them is a box hedge on stilts rather than a cloud.
-      for (EnumFacing f : EnumFacing.values()) {
-        if ((open >> f.getIndex() & 1) != 0) {
-          clippedFace(quads, f, 0.3);
-        }
-      }
-      return quads;
-    }
-    if (!fancy) {
-      return quads;
-    }
     for (EnumFacing f : EnumFacing.values()) {
-      if ((open >> f.getIndex() & 1) == 0) {
-        continue;
+      if ((open >> f.getIndex() & 1) != 0) {
+        clippedFace(quads, f, 0.3);
       }
-      double[] n = {f.getXOffset(), f.getYOffset(), f.getZOffset()};
-      if (f.getAxis() == EnumFacing.Axis.Y && !type.upright) {
-        // A near-flat card across an open top or bottom, so a canopy seen from below (or from a
-        // window above) is a mass of leaves rather than sky between scattered cards.
-        double y = f == EnumFacing.DOWN ? 1.5 + rng.nextDouble() : 14.5 - rng.nextDouble();
-        addCard(quads, new double[]{8, y, 8}, 9.5, 9.5, rng.nextDouble() * Math.PI,
-            Math.PI / 2 + (rng.nextDouble() * 2 - 1) * 0.2);
-      }
-      // A top or bottom already has its cover card, so one fringe card breaks its edge; a side
-      // is the crown's silhouette, so it gets the most, a little larger to cover the same span
-      // with fewer.
-      boolean vertical = f.getAxis() == EnumFacing.Axis.Y && !type.upright;
-      int count = vertical ? 1 : Math.max(1, type.fringe - 1);
-      double grow = vertical || type.fringe <= 1 ? 1.0 : (double) type.fringe / count * 0.85;
-      for (int i = 0; i < count; i++) {
-        double reach = 8 + rng.nextDouble() * FRINGE_REACH - 1;
-        double[] c = {8 + n[0] * reach, 8 + n[1] * reach, 8 + n[2] * reach};
-        for (int k = 0; k < 3; k++) {
-          if (n[k] == 0) {
-            c[k] += (rng.nextDouble() - 0.5) * 11;
-          }
-        }
-        card(quads, type, rng, c, size(type, rng) * 0.8 * grow);
-      }
-    }
-    if (type == TreeLeafType.WEEPING) {
-      curtain(quads, rng, open);
     }
     return quads;
-  }
-
-  /** Whether a type is drawn as sheets on its open faces rather than all in cards. */
-  static boolean sheeted(TreeLeafType type) {
-    return type == TreeLeafType.BROADLEAF || type == TreeLeafType.NEEDLE
-        || type == TreeLeafType.WEEPING;
   }
 
   /** How far inside the cell's face a sheet lies, in sixteenths. */
   static final double SHEET_INSET = 1.0;
 
   /**
-   * A sheeted cell: a sheet on each open face, one card inside (two for upright needles, whose
-   * column is all inside), a tuft card past each open side and the top, and a weeping crown's
-   * curtain.
+   * A sheeted cell: a sheet on each open face, the type's cards inside (two for upright needles,
+   * whose column is all inside), a tuft card past each open side and the top, and, under a
+   * weeping crown, the curtain in place of the side tufts.
    */
   private static void sheeted(List<TreeLogGeometry.Quad> quads, TreeLeafType type, Random rng,
       int open, boolean fancy) {
-    int inside = type.upright ? 2 : 1;
-    for (int i = 0; i < inside; i++) {
+    boolean curtained = fancy && type == TreeLeafType.WEEPING
+        && (open >> EnumFacing.DOWN.getIndex() & 1) != 0;
+    for (int i = 0; i < type.interior; i++) {
       double[] c = {rng.nextDouble() * 8 + 4, rng.nextDouble() * 8 + 4, rng.nextDouble() * 8 + 4};
       card(quads, type, rng, c, size(type, rng));
     }
@@ -164,6 +119,10 @@ public final class TreeLeavesGeometry {
       }
       clippedFace(quads, f, SHEET_INSET);
       if (!fancy || f == EnumFacing.DOWN) {
+        continue;
+      }
+      if (curtained && f != EnumFacing.UP) {
+        // The curtain hangs past this side and is its outline.
         continue;
       }
       // A tuft past the face, so the crown's outline is not the block grid.
@@ -177,18 +136,18 @@ public final class TreeLeavesGeometry {
       }
       card(quads, type, rng, c, size(type, rng) * 1.05);
     }
-    if (fancy && type == TreeLeafType.WEEPING) {
+    if (curtained) {
       curtain(quads, rng, open);
     }
   }
 
   /**
-   * A weeping crown's curtain: long, narrow upright strands just outside each open side, hanging
-   * from near the top of the cell, and more under an open bottom. They reach below the cell only
-   * where the bottom is open; with leaves below, the cell under it hangs its own.
+   * A weeping crown's curtain, for a cell open below: long, narrow upright strands just outside
+   * each open side, from near its top to well below it, and more under it. Only the crown's
+   * underside hangs one; higher up the crown's wall the sheets already read as leaves, and a
+   * curtain there would hang behind the one below it.
    */
   private static void curtain(List<TreeLogGeometry.Quad> quads, Random rng, int open) {
-    boolean openBelow = (open >> EnumFacing.DOWN.getIndex() & 1) != 0;
     for (EnumFacing f : EnumFacing.HORIZONTALS) {
       if ((open >> f.getIndex() & 1) == 0) {
         continue;
@@ -199,21 +158,19 @@ public final class TreeLeavesGeometry {
       double tx = -nz;
       double tz = nx;
       double yaw = Math.atan2(tz, tx);
-      for (int i = 0; i < 3; i++) {
-        double along = (i + 0.2 + rng.nextDouble() * 0.6) * 16.0 / 3 - 8;
+      for (int i = 0; i < 2; i++) {
+        double along = (i + 0.2 + rng.nextDouble() * 0.6) * 16.0 / 2 - 8;
         double out = 8.3 + rng.nextDouble() * 1.8;
         double top = 12 + rng.nextDouble() * 3.5;
-        double bottom = openBelow ? -4 - rng.nextDouble() * 10 : 0.5 + rng.nextDouble() * 3;
+        double bottom = -4 - rng.nextDouble() * 10;
         strand(quads, rng, 8 + nx * out + tx * along, 8 + nz * out + tz * along, top, bottom,
-            4 + rng.nextDouble() * 2.5, yaw);
+            6 + rng.nextDouble() * 2.5, yaw);
       }
     }
-    if (openBelow) {
-      for (int i = 0; i < 3; i++) {
-        strand(quads, rng, 2 + rng.nextDouble() * 12, 2 + rng.nextDouble() * 12,
-            4 + rng.nextDouble() * 3, -8 - rng.nextDouble() * 12, 3 + rng.nextDouble() * 3,
-            rng.nextDouble() * Math.PI);
-      }
+    for (int i = 0; i < 2; i++) {
+      strand(quads, rng, 2 + rng.nextDouble() * 12, 2 + rng.nextDouble() * 12,
+          4 + rng.nextDouble() * 3, -8 - rng.nextDouble() * 12, 4 + rng.nextDouble() * 3,
+          rng.nextDouble() * Math.PI);
     }
   }
 
