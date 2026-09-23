@@ -354,6 +354,14 @@ each side within 0.02 ms): about 5 microseconds a board, baked geometry included
 why: the ad is one quad per board from the controller, the parts are baked, and the cabinets are
 opaque so the faces between their blocks are culled. See `ADVERTISING_SYSTEM.md`.
 
+Re-measured 2026-09-23 at realistic sizes, frame level (854 x 480, one session, 30 s windows
+each side): twenty 18 x 6 digital bulletins in view cost **0.12 ms** a frame (1.03 vs 0.91 mean),
+about 6 microseconds a board, and one 32 x 12 filling the screen from ten blocks cost **0.04 ms**
+(1.08 vs 1.04). All twenty change ads on the same tick with a fade, and the worst frame over
+30 s was the same with the boards as without (8.1 vs 8.6 ms): no hitch on a change. The TESR
+profiler agrees (4 microseconds a call, CPU). Nothing left to take out. The one case not measured
+is a shader pack, which draws global renderers again in its shadow pass.
+
 ### Thermostats
 
 6-9 µs each: four vanilla `FontRenderer.drawString` calls (about 31 immediate glyphs) plus a
