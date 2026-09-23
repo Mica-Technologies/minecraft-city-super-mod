@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/shared_models/trafficpoleverticalconnector",
+    "model": "csm:trafficaccessories/shared_models/trafficpoleverticalconnector_concrete",
     "textures": {
       "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
       "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",

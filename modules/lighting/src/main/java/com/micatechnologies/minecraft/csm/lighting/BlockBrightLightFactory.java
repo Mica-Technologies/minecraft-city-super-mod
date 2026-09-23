@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmPostTopFixture;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -57,5 +58,22 @@ public class BlockBrightLightFactory extends AbstractBrightLight {
   @Override
   public int getBrightLightXOffset() {
     return brightLightXOffset;
+  }
+
+  /**
+   * A light that sits on a pole top, slipped over its tenon: a concrete pole under it shows its
+   * collar and tenon rather than a cap.
+   *
+   * <p>A nested flavour rather than a constructor flag for the reason {@link ICsmPostTopFixture}
+   * gives: it is a fact about the block's type.
+   *
+   * @see ICsmPostTopFixture
+   * @since 2026.9
+   */
+  public static class PostTop extends BlockBrightLightFactory implements ICsmPostTopFixture {
+
+    public PostTop(String registryName, AxisAlignedBB boundingBox, int brightLightXOffset) {
+      super(registryName, boundingBox, brightLightXOffset);
+    }
   }
 }

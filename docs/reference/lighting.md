@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "139 blocks in this tab"
+!!! info "132 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -111,13 +111,6 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Lithonia Strip Light (Half, Edge-Lit) | `csm:slhe` | 2 | 10 | pickaxe | 1 |
 | Lithonia Strip Light Half | `csm:slh` | 2 | 10 | pickaxe | 1 |
 | Lithonia Wall Strip Light | `csm:wsl` | 2 | 10 | pickaxe | 1 |
-| NOV Octagon Concrete Pole | `csm:ocpb` | 1 | 10 | pickaxe | 1 |
-| NOV Octagon Concrete Pole (Middle) | `csm:ocpm` | 1 | 10 | pickaxe | 1 |
-| NOV Octagon Concrete Pole (Top) | `csm:ocpt` | 1 | 10 | pickaxe | 1 |
-| NOV Round Concrete Pole (Base 1) | `csm:rcpb` | 1 | 10 | pickaxe | 1 |
-| NOV Round Concrete Pole (Base 2) | `csm:rcpb2` | 1 | 10 | pickaxe | 1 |
-| NOV Round Concrete Pole (Middle) | `csm:rcpm` | 2 | 10 | pickaxe | 1 |
-| NOV Round Concrete Pole (Top) | `csm:rcpt` | 1 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Eliptical Curve) | `csm:novtm2` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Lakewood, CA Style) | `csm:novtm3` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Straight Mount Long) | `csm:novtm4` | 2 | 10 | pickaxe | 1 |

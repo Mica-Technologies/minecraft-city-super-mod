@@ -28,6 +28,8 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLar
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleMastArmCurve;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleFinial;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleConcrete;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleConcrete;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPolePedestal;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireAnchor;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireClusterMount;
@@ -431,6 +433,41 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalwhite", TRAFFIC_POLE_COLOR.WHITE));
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalunpainted", TRAFFIC_POLE_COLOR.UNPAINTED));
     initTabBlock(BlockTrafficPoleFinial.class, fmlPreInitializationEvent); // Pole Finial
+
+    // --- Concrete poles (round and octagon, thick and thin; each block draws its own base, cap
+    // and tenon from its neighbours -- see BlockTrafficPoleConcrete and gen_concrete_poles.py) ---
+    initTabBlock(new BlockTrafficPoleConcrete("trafficpoleverticalconcrete", 6.0, 8.0));
+    initTabBlock(new BlockTrafficPoleConcrete("trafficpoleverticalconcreteoctagon", 6.0, 8.0));
+    initTabBlock(new BlockTrafficPoleConcrete("trafficpolehorizontalconcrete", 4.0, 6.0));
+    initTabBlock(new BlockTrafficPoleConcrete("trafficpolehorizontalconcreteoctagon", 4.0, 6.0));
+    initTabBlock(BlockTrafficPoleHorizontalAngleConcrete.class, fmlPreInitializationEvent);
+
+    // --- Concrete pole accessories: every live family in round concrete, and the straight
+    // vertical sections again in octagon concrete (curves and arms stay round) ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorconcrete", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorconcreteoctagon", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorangledconcrete", BB_TRAFFIC_POLE_VERT_CONNECTOR_ANGLED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorangledconcreteoctagon", BB_TRAFFIC_POLE_VERT_CONNECTOR_ANGLED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectordoubleconcrete", BB_TRAFFIC_POLE_VERT_CONNECTOR_DOUBLE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectordoubleconcreteoctagon", BB_TRAFFIC_POLE_VERT_CONNECTOR_DOUBLE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmountconcrete", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmountconcreteoctagon", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmountconcrete", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmountconcreteoctagon", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountconcrete", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountconcreteoctagon", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblconcrete", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblconcreteoctagon", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblconcrete", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizsignmountconcrete", BB_TRAFFIC_POLE_HORIZ_SIGN_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectorconcrete", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectordoubleguyconcrete", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD.PoleFitted("trafficpoleverticallightmountconcrete", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve4x1concrete", MastArmCurveProfile.P4X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve5x1concrete", MastArmCurveProfile.P5X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve6x2concrete", MastArmCurveProfile.P6X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve8x2concrete", MastArmCurveProfile.P8X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2concrete", MastArmCurveProfile.P10X2));
     initTabItem(ItemStreetLightConfigTool.class, fmlPreInitializationEvent); // Street Light Configuration Tool
 
     // --- Class-based: Traffic Pole Large (vertical) ---
@@ -549,7 +586,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
 
     // --- NSEWUD factory blocks: Horizontal Double Poles ---
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblblack", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblconcrete", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblsilver", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdbltan", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblunpainted", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
@@ -565,19 +601,15 @@ public class CsmTabTrafficAccessories extends CsmTab {
 
     // --- NSEWUD factory blocks: Vertical Double Poles ---
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblblack", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblconcrete", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblsilver", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdbltan", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblunpainted", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblwhite", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
 
     // --- NSEWUD factory blocks: Legacy lowercase connectors/mounts ---
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorconcrete", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorunpainted", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectorunpainted", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmountconcrete", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmountunpainted", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmountconcrete", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmountunpainted", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
 
     // --- Class-based: Traffic Pole Large (Unpainted) ---

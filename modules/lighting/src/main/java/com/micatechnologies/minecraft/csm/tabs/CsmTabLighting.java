@@ -16,15 +16,8 @@ import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM2;
 import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM3;
 import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM4;
 import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM5;
-import com.micatechnologies.minecraft.csm.lighting.BlockOCPB;
-import com.micatechnologies.minecraft.csm.lighting.BlockOCPM;
-import com.micatechnologies.minecraft.csm.lighting.BlockOCPT;
 import com.micatechnologies.minecraft.csm.lighting.BlockPCRM;
 import com.micatechnologies.minecraft.csm.lighting.BlockRBM;
-import com.micatechnologies.minecraft.csm.lighting.BlockRCPB;
-import com.micatechnologies.minecraft.csm.lighting.BlockRCPB2;
-import com.micatechnologies.minecraft.csm.lighting.BlockRCPM;
-import com.micatechnologies.minecraft.csm.lighting.BlockRCPT;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -153,8 +146,8 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("ltgc1v1", new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.437500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("ltgc1v2", new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.437500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("ltgcm", new AxisAlignedBB(0.312500, 0.000000, 0.250000, 0.687500, 0.312500, 1.000000), 0));
-    initTabBlock(new BlockBrightLightFactory("mclaclassicpostlight", new AxisAlignedBB(0.117188, 0.000000, 0.117188, 0.882813, 1.250000, 0.882813), 1));
-    initTabBlock(new BlockBrightLightFactory("mclaparklight", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.000000, 0.937500), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTop("mclaclassicpostlight", new AxisAlignedBB(0.117188, 0.000000, 0.117188, 0.882813, 1.250000, 0.882813), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTop("mclaparklight", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.000000, 0.937500), 1));
     initTabBlock(new BlockBrightLightPoleColoredFactory("postlight1", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.437500, 0.937500), 1));
     initTabBlock(new BlockBrightLightPoleColoredFactory("postlight2", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.437500, 0.937500), 1));
     initTabBlock(new BlockBrightLightPoleColoredFactory("postlight3", new AxisAlignedBB(-0.125000, 0.000000, -0.125000, 1.125000, 1.437500, 1.125000), 1));
@@ -228,14 +221,7 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(BlockNOVTM3.class, fmlPreInitializationEvent);
     initTabBlock(BlockNOVTM4.class, fmlPreInitializationEvent);
     initTabBlock(BlockNOVTM5.class, fmlPreInitializationEvent);
-    initTabBlock(BlockOCPB.class, fmlPreInitializationEvent);
-    initTabBlock(BlockOCPM.class, fmlPreInitializationEvent);
-    initTabBlock(BlockOCPT.class, fmlPreInitializationEvent);
     initTabBlock(BlockPCRM.class, fmlPreInitializationEvent);
     initTabBlock(BlockRBM.class, fmlPreInitializationEvent);
-    initTabBlock(BlockRCPB.class, fmlPreInitializationEvent);
-    initTabBlock(BlockRCPB2.class, fmlPreInitializationEvent);
-    initTabBlock(BlockRCPM.class, fmlPreInitializationEvent);
-    initTabBlock(BlockRCPT.class, fmlPreInitializationEvent);
   }
 }
