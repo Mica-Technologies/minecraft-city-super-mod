@@ -12,6 +12,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -33,6 +34,9 @@ import net.minecraftforge.common.property.IUnlistedProperty;
  * axis it was placed along, used when it has no neighbours at all; everything else reaches the
  * client model through {@link #CONNECTIONS} in the extended state, which Forge does not
  * enumerate.</p>
+ *
+ * <p>Broken by a player, it fells whatever of the tree it alone held up, and the leaves that
+ * leaves stranded ({@link TreeFelling}); broken while sneaking, only this block goes.</p>
  *
  * <p>One class for every wood and width; the constructor arguments ride past {@code super()} the
  * way {@code BlockTrafficPolePedestal}'s do, because the registry name is read from the
@@ -218,6 +222,22 @@ public class BlockTreeLog extends AbstractBlock {
   @Nonnull
   public BlockRenderLayer getBlockRenderLayer() {
     return BlockRenderLayer.SOLID;
+  }
+
+  // --- felling ---
+
+  /**
+   * Broken by a player, a log fells what it held up ({@link TreeFelling}); sneaking breaks this
+   * block alone, so a tree can still be edited by hand.
+   */
+  @Override
+  public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos,
+      @Nonnull EntityPlayer player, boolean willHarvest) {
+    boolean removed = super.removedByPlayer(state, world, pos, player, willHarvest);
+    if (removed && !world.isRemote && !player.isSneaking()) {
+      TreeFelling.fell(world, pos, player);
+    }
+    return removed;
   }
 
   // --- wood ---
