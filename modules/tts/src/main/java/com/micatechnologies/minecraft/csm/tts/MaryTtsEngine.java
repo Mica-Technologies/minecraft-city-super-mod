@@ -144,6 +144,9 @@ public class MaryTtsEngine implements ICsmTtsEngine {
       byte[] buffer = new byte[AUDIO_BUFFER_SIZE];
       int bytesRead;
       while ((bytesRead = audioStream.read(buffer)) != -1) {
+        // The line is Java Sound's, not Minecraft's, so the game's volume sliders reach it only
+        // through this. Read per buffer, so a slider moved mid-sentence is heard at once.
+        PcmVolume.apply(buffer, bytesRead, format, CsmTts.getVolume());
         line.write(buffer, 0, bytesRead);
       }
       line.drain();
