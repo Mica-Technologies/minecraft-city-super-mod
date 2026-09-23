@@ -150,7 +150,7 @@ public final class TreeGenerators {
       cluster(plan, p, c, rng);
     }
     if (p.extra != null) {
-      hangMoss(plan, p, rng);
+      hangMoss(plan, p, top, rng);
     }
   }
 
@@ -210,8 +210,12 @@ public final class TreeGenerators {
     }
   }
 
-  /** Moss under some of the crown's lowest leaves, one to three blocks long. */
-  private static void hangMoss(TreePlan plan, TreePreset p, Random rng) {
+  /**
+   * Hanging blocks (Spanish moss, willow strands) under some of the crown's lowest leaves, away
+   * from the trunk so the trunk stays in view, each down to the preset's longest drop and never
+   * lower than two blocks off the ground.
+   */
+  private static void hangMoss(TreePlan plan, TreePreset p, BlockPos top, Random rng) {
     List<BlockPos> undersides = new ArrayList<>();
     for (java.util.Map.Entry<BlockPos, TreePlan.Part> e : plan.parts().entrySet()) {
       if (e.getValue().kind == TreePlan.Kind.LEAVES && plan.isEmpty(e.getKey().down())) {
@@ -219,10 +223,12 @@ public final class TreeGenerators {
       }
     }
     for (BlockPos leaf : undersides) {
-      if (rng.nextDouble() > 0.22) {
+      boolean nearTrunk = Math.abs(leaf.getX() - top.getX()) <= 1
+          && Math.abs(leaf.getZ() - top.getZ()) <= 1;
+      if (nearTrunk || rng.nextDouble() > p.hangChance) {
         continue;
       }
-      int length = 1 + rng.nextInt(3);
+      int length = 1 + rng.nextInt(p.hangMax);
       for (int k = 1; k <= length; k++) {
         BlockPos at = leaf.down(k);
         if (at.getY() < 2 || !plan.isEmpty(at)) {

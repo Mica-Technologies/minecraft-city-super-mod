@@ -2,7 +2,7 @@
 
 Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings.
 
-!!! info "133 blocks in this tab"
+!!! info "134 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -143,6 +143,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Weeping Willow Leaves | `csm:tree_leaves_willow` | 0.2 | 1.0 |  | 0 |
 | Weeping Willow Log | `csm:tree_log_willow_medium` | 2.0 | 5.0 | axe | 0 |
 | Weeping Willow Twig | `csm:tree_log_willow_twig` | 2.0 | 5.0 | axe | 0 |
+| Willow Strands | `csm:willow_strands` | 0.1 | 0.1 |  | 0 |
 | Yellow Flower Bed | `csm:flower_bed_yellow` |  |  |  |  |
 
 </div>

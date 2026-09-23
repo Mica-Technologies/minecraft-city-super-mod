@@ -73,9 +73,9 @@ public enum TreePreset {
           .clearance(3).spread(2.2).backLimb(true)),
   /** Weeping willow, for parks rather than streets: a curtain of leaves to the ground. */
   WEEPING_WILLOW("weepingwillow", Shape.LIMB, TreeWood.WILLOW, TreeLogWidth.THICK,
-      TreeLogWidth.MEDIUM, "tree_leaves_willow", null,
+      TreeLogWidth.MEDIUM, "tree_leaves_willow", "willow_strands",
       p -> p.trunk(3, 4).lean(0, 1).limbs(5, 6).reach(3, 4).rise(3, 4).cluster(3.2, 2.2)
-          .clearance(4).spread(2.8)),
+          .clearance(4).spread(2.8).hang(0.8, 4)),
   /** Lombardy poplar: a tall, narrow column. */
   LOMBARDY_POPLAR("poplar", Shape.PROFILE, TreeWood.POPLAR, TreeLogWidth.MEDIUM,
       TreeLogWidth.THIN, "tree_leaves_poplar", null,
@@ -145,6 +145,9 @@ public enum TreePreset {
   int clearance;
   boolean backLimb;
   double spread = 0.9;
+  /** Of the crown's outer undersides, the share that get a hanging block, and its longest drop. */
+  double hangChance = 0.22;
+  int hangMax = 3;
 
   TreePreset(String id, Shape shape, TreeWood wood, TreeLogWidth trunkWidth,
       TreeLogWidth limbWidth, String leaves, String extra, Consumer<TreePreset> setup) {
@@ -207,6 +210,12 @@ public enum TreePreset {
 
   private TreePreset backLimb(boolean value) {
     backLimb = value;
+    return this;
+  }
+
+  private TreePreset hang(double chance, int max) {
+    hangChance = chance;
+    hangMax = max;
     return this;
   }
 

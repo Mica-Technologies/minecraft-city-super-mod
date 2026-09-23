@@ -20,7 +20,7 @@ The kit has three kinds of block:
 |---|---|---|
 | Logs | `BlockTreeLog` | One block for every wood in each of five widths: twig 2 px, thin 4, medium 8, thick 12, full 16 |
 | Leaves | `BlockTreeLeaves` | One block for each species and season. The same class draws the palm crowns |
-| Hanging moss | `BlockHangingMoss` | Spanish moss, hung under a limb or crown |
+| Hanging moss | `BlockHangingMoss` | Spanish moss and willow strands, hung under a limb or crown |
 
 The logs and leaves are one class each, constructed by name. The tab source has one explicit
 `initTabBlock(new BlockTreeLog("tree_log_<wood>_<width>", ...))` line per block, because the tools
@@ -92,7 +92,7 @@ neighbouring blocks differ but a given block always looks the same.
 | `BROADLEAF` | oaks, elm, plane, ginkgo, poplar, sweetgum, hornbeam, linden |
 | `AIRY` | honey locust, jacaranda, gum: fewer cards, lets the light through |
 | `NEEDLE` | cypress, arborvitae: upright narrow cards, so a one-wide column is the whole tree |
-| `WEEPING` | pepper tree, willow: a curtain hangs below any open bottom |
+| `WEEPING` | pepper tree, willow: long narrow strands hang down every open side and under an open bottom, reaching well below the cell |
 | `CLIPPED` | the pleached linden: a flat leafy face flush with each open side, for topiary |
 | `PALM_FAN`, `PALM_FAN_SKIRT`, `PALM_FEATHER` | palm crowns, drawn by `TreePalmGeometry` |
 
