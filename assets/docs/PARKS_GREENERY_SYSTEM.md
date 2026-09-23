@@ -285,6 +285,26 @@ and willow, an irrigated lawn), an arboretum of every planting preset with a sig
 tree kit: every leaves block on a plinth, a hand-built lean in each log width, every bark, the palm
 crowns, moss and willow strands. It plants with the real tool, so it doubles as a test of it.
 
+## Rendering cost
+
+Trees are chunk geometry (baked models, no renderer), so their cost is the quads they add to
+their chunks, and the cutout fragments those quads cover. A whole demo world of trees in view cost
+about 0.2 ms a frame on a fast card, but a canopy is exactly where a slower one feels it.
+`TreeRenderBudgetTest` counts each preset's quads exactly, from the geometry the baked models use,
+and fails when any preset grows more than 15% past its recorded budget.
+
+One pass (2026-09-23) took one of every preset from 82,178 quads to 37,687 without changing how
+the trees read. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
+- **Sheeted leaves.** Broadleaf, needle and weeping leaves draw a leaf sheet on each open face
+  (one quad, facing out, 1 px inside the face), a tuft card past each open side and the top, and
+  one card inside, where they had drawn six interior cards, three fringe cards per open face and
+  cover cards. The crowns read a little more like blocks, deliberately, and keep their ragged
+  outline. Airy leaves stay all cards so light comes through them.
+- **Fewer log sides where they cannot be seen.** A twig is a 4-sided tube and a thin log 6-sided;
+  8 sides only from medium up.
+- **Straight-through tubes.** A log between two logs of its width in a straight line draws one
+  tube through the cell, not two arms meeting at the centre.
+
 ## Decisions
 
 - **Trees are blocks, not objects.** The user asked for trees built like vanilla trees, which can
