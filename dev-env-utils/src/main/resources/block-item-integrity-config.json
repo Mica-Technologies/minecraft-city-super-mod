@@ -27,9 +27,7 @@
     "codeutils/AbstractBlockRotatableHZSixteen.java",
     "trafficsignals/logic/AbstractBlockControllableSignalHead.java",
     "trafficaccessories/AbstractBlockSignalBackplate.java",
-    "trafficaccessories/AbstractBlockSignalBackplateFitted.java",
-    "tabs/CsmTabRoadsHidden.java",
-    "tabs/CsmTabLightingHidden.java"
+    "trafficaccessories/AbstractBlockSignalBackplateFitted.java"
   ],
   "eligibleExtendsBlocks": [
     "AbstractBlock",
