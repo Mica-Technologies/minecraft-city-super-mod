@@ -176,6 +176,10 @@ public final class LifeSafetyFabricatorRules {
     if (CsmBlockDisplayNames.hasWord(registryName, "hose")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 2));
     }
+    if (CsmBlockDisplayNames.hasWord(registryName, "tape")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:paper", 1),
+          FabricatorIngredient.any("minecraft:dye", 1));
+    }
     if (CsmBlockDisplayNames.hasWord(registryName, "gong")
         || CsmBlockDisplayNames.hasWord(registryName, "bell")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),

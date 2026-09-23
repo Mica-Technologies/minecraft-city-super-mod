@@ -98,7 +98,8 @@ public enum LifeSafetySounds implements ICsmSound {
   STATION_TONE_LADDER("station_tone_ladder"),
   STATION_TONE_MEDIC("station_tone_medic"),
   STATION_TONE_BATTALION("station_tone_battalion"),
-  STATION_TONE_ALL_CALL("station_tone_all_call");
+  STATION_TONE_ALL_CALL("station_tone_all_call"),
+  METAL_DETECTOR_ALARM("metal_detector_alarm");
 
   /**
    * The name of the sound.

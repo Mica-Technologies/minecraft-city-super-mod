@@ -3,12 +3,17 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockCellDoor;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirePole;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirePoleHole;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockLitProp;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockMetalDetector;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockSceneTape;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertController;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertDevice;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationBell;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationNumberPlaque;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockTapeStanchion;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -68,5 +73,24 @@ public class CsmTabEmergencyServices extends CsmTab {
     initTabBlock(new BlockStationAlertDevice("station_alert_light_white", BlockStationAlertDevice.Kind.LIGHT, new int[]{2, 5, 12, 14, 11, 16}));
     initTabBlock(new BlockStationAlertDevice("station_alert_relay", BlockStationAlertDevice.Kind.RELAY, new int[]{5, 4, 13, 11, 12, 16}));
     initTabBlock(new BlockStationAlertDevice("bay_clearance_light", BlockStationAlertDevice.Kind.CLEARANCE, new int[]{4, 1, 12, 12, 15, 16}));
+    initTabBlock(new BlockFireProtectionProp("front_desk_counter", new int[]{0, 0, 3, 16, 16, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("pass_through_tray", new int[]{3, 0, 2, 13, 3, 14}, false));
+    initTabBlock(new BlockFireProtectionProp("lobby_phone", new int[]{5, 3, 12, 11, 13, 16}, false));
+    initTabBlock(new BlockMetalDetector("metal_detector", new int[]{0, 0, 5, 16, 16, 11}));
+    initTabBlock(new BlockCellDoor("holding_cell_door", new int[]{0, 0, 7, 16, 16, 9}));
+    initTabBlock(new BlockFireProtectionProp("holding_cell_bench", new int[]{0, 5, 8, 16, 8, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("holding_cell_toilet", new int[]{3, 0, 8, 13, 15, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("height_chart", new int[]{0, 0, 15, 16, 16, 16}, false));
+    initTabBlock(new BlockFireProtectionProp("fingerprint_scanner", new int[]{4, 0, 5, 12, 4, 12}, false));
+    initTabBlock(new BlockFireProtectionProp("booking_camera", new int[]{5, 0, 5, 11, 16, 11}, true));
+    initTabBlock(new BlockFireProtectionProp("property_bins", new int[]{0, 0, 6, 16, 16, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("evidence_locker", new int[]{0, 0, 2, 16, 16, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("equipment_locker", new int[]{0, 0, 3, 16, 16, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("k9_kennel", new int[]{0, 0, 0, 16, 12, 16}, true));
+    initTabBlock(new BlockLitProp("police_lamp", new int[]{4, 2, 4, 12, 15, 16}, 14));
+    initTabBlock(new BlockFireProtectionProp("police_star_emblem", new int[]{1, 1, 15, 15, 15, 16}, false));
+    initTabBlock(new BlockSceneTape("police_line_tape"));
+    initTabBlock(new BlockSceneTape("fire_line_tape"));
+    initTabBlock(new BlockTapeStanchion("tape_stanchion", new int[]{5, 0, 5, 11, 14, 11}));
   }
 }

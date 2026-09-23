@@ -1,0 +1,213 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "s": "csm:blocks/lifesafety/services/stainless",
+    "particle": "csm:blocks/lifesafety/services/stainless"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        2
+      ],
+      "to": [
+        13,
+        0.5,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#s",
+          "uv": [
+            3,
+            15.5,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#s",
+          "uv": [
+            3,
+            15.5,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#s",
+          "uv": [
+            2,
+            15.5,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#s",
+          "uv": [
+            2,
+            15.5,
+            14,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#s",
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#s",
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        0.5,
+        2
+      ],
+      "to": [
+        3.5,
+        2.5,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#s",
+          "uv": [
+            12.5,
+            13.5,
+            13,
+            15.5
+          ]
+        },
+        "south": {
+          "texture": "#s",
+          "uv": [
+            3,
+            13.5,
+            3.5,
+            15.5
+          ]
+        },
+        "east": {
+          "texture": "#s",
+          "uv": [
+            2,
+            13.5,
+            14,
+            15.5
+          ]
+        },
+        "west": {
+          "texture": "#s",
+          "uv": [
+            2,
+            13.5,
+            14,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#s",
+          "uv": [
+            3,
+            2,
+            3.5,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#s",
+          "uv": [
+            3,
+            2,
+            3.5,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        12.5,
+        0.5,
+        2
+      ],
+      "to": [
+        13,
+        2.5,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#s",
+          "uv": [
+            3,
+            13.5,
+            3.5,
+            15.5
+          ]
+        },
+        "south": {
+          "texture": "#s",
+          "uv": [
+            12.5,
+            13.5,
+            13,
+            15.5
+          ]
+        },
+        "east": {
+          "texture": "#s",
+          "uv": [
+            2,
+            13.5,
+            14,
+            15.5
+          ]
+        },
+        "west": {
+          "texture": "#s",
+          "uv": [
+            2,
+            13.5,
+            14,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#s",
+          "uv": [
+            12.5,
+            2,
+            13,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#s",
+          "uv": [
+            12.5,
+            2,
+            13,
+            14
+          ]
+        }
+      }
+    }
+  ]
+}

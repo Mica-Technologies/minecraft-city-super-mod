@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "navy": "csm:blocks/lifesafety/services/navy",
+    "front": "csm:blocks/lifesafety/services/locker_front",
+    "particle": "csm:blocks/lifesafety/services/navy"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        3
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#navy",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#navy",
+          "uv": [
+            0,
+            0,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#navy",
+          "uv": [
+            3,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#navy",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#navy",
+          "uv": [
+            0,
+            0,
+            16,
+            13
+          ]
+        }
+      }
+    }
+  ]
+}
