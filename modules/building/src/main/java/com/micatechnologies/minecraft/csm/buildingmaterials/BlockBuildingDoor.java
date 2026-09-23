@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -141,6 +142,18 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   private static final AxisAlignedBB OPEN_LEFT_NORTH = new AxisAlignedBB(0, 0, 0, LEAF, 1, 1);
   private static final AxisAlignedBB OPEN_RIGHT_NORTH =
       new AxisAlignedBB(1 - LEAF, 0, 0, 1, 1, 1);
+
+  /**
+   * When each door that shuts itself is due to, per world, as a world tick: the last time it was
+   * opened by hand plus its hold time -- a fitted closer's, or a custom door's auto-close. The
+   * scheduled tick reads it ({@link #closeDue}) rather than shutting outright, because a tick
+   * cannot be moved or cancelled once scheduled, and a second schedule for the same block is
+   * dropped while the first is pending: a door shut by hand and opened again before its time was
+   * up slammed on the first opening's tick, long before the second opening's time was up (issue
+   * #234). Not saved: after a restart a pending tick shuts the door as it always did.
+   */
+  private static final Map<World, Map<BlockPos, Long>> CLOSE_AT =
+      Collections.synchronizedMap(new WeakHashMap<>());
 
   /** Which doors were last seen powered, per world, to act only when the signal changes. */
   private static final Map<World, Set<BlockPos>> POWERED =
@@ -563,8 +576,66 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
           world.rand.nextFloat() * 0.1F + 0.9F);
     }
     if (open && byHand && upper.getValue(CLOSER)) {
-      world.scheduleUpdate(lowerPos, this, CLOSER_TICKS);
+      armClose(world, lowerPos, CLOSER_TICKS);
+    } else if (!open) {
+      disarmClose(world, lowerPos);
     }
+  }
+
+  /**
+   * Sets a door to shut itself {@code ticks} from now, pushing back any earlier time: every
+   * opening by hand restarts the count. The pending tick, if there is one, waits on for it.
+   *
+   * @param world    the server's world
+   * @param lowerPos the door's lower half
+   * @param ticks    how long it stays open
+   *
+   * @since 1.1
+   */
+  protected void armClose(World world, BlockPos lowerPos, int ticks) {
+    CLOSE_AT.computeIfAbsent(world, w -> new HashMap<>())
+        .put(lowerPos.toImmutable(), world.getTotalWorldTime() + ticks);
+    world.scheduleUpdate(lowerPos, this, ticks);
+  }
+
+  /**
+   * Forgets when a door was due to shut itself: it has been shut some other way.
+   *
+   * @param world    the server's world
+   * @param lowerPos the door's lower half
+   *
+   * @since 1.1
+   */
+  protected void disarmClose(World world, BlockPos lowerPos) {
+    Map<BlockPos, Long> due = CLOSE_AT.get(world);
+    if (due != null) {
+      due.remove(lowerPos);
+    }
+  }
+
+  /**
+   * Whether a door's time to shut itself has come, asked by its scheduled tick. If it was opened
+   * again since the tick was scheduled, it is not, and the tick is scheduled again for the rest of
+   * the latest opening's time -- this tick is off the pending list by now, so the new one is not
+   * dropped. A door with no time recorded (the server restarted) is due.
+   *
+   * @param world    the server's world
+   * @param lowerPos the door's lower half
+   *
+   * @return whether to shut it now
+   *
+   * @since 1.1
+   */
+  protected boolean closeDue(World world, BlockPos lowerPos) {
+    Map<BlockPos, Long> due = CLOSE_AT.get(world);
+    Long at = due == null ? null : due.get(lowerPos);
+    long now = world.getTotalWorldTime();
+    if (at != null && now < at) {
+      world.scheduleUpdate(lowerPos, this, (int) (at - now));
+      return false;
+    }
+    disarmClose(world, lowerPos);
+    return true;
   }
 
   /**
@@ -609,6 +680,9 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       // Nothing to do: the pending tick was only there to say the door is moving. A world saved
       // mid-swing by a version where this tick ended the swing brings the tick back with it.
       TileEntityDoorSwing.putRightLegacySwing(worldIn, pos);
+      return;
+    }
+    if (!closeDue(worldIn, pos)) {
       return;
     }
     IBlockState door = whole(worldIn, pos);

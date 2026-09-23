@@ -304,7 +304,9 @@ public class BlockCustomDoor extends BlockBuildingDoor {
     }
     // A sensor door's own looks close it; see updateTick.
     if (open && s.autoCloseTicks() > 0 && byHand && !s.proximity()) {
-      world.scheduleUpdate(lowerPos, this, s.autoCloseTicks());
+      armClose(world, lowerPos, s.autoCloseTicks());
+    } else if (!open) {
+      disarmClose(world, lowerPos);
     }
   }
 
@@ -351,7 +353,7 @@ public class BlockCustomDoor extends BlockBuildingDoor {
       worldIn.scheduleUpdate(pos, this, SENSE_TICKS);
       return;
     }
-    if (door.getValue(OPEN) && s.autoCloseTicks() > 0 && !held) {
+    if (door.getValue(OPEN) && s.autoCloseTicks() > 0 && !held && closeDue(worldIn, pos)) {
       setOpen(worldIn, pos, false, false);
     }
   }

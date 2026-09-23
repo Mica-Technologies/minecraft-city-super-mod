@@ -34,8 +34,8 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
   and on a custom door, whose movement is set in the Door Workshop.
 - **Redstone** holds a door (and its pair) open while it is powered.
 - **Door Closer** (item, crafted from two iron ingots, a Sheet Metal and a Fastener Kit): right-click
-  a door to fit one. The door then shuts itself three seconds after a player (or a keypad) opens
-  it, unless redstone is holding it open, and wears a parallel-arm closer on its **push side** --
+  a door to fit one. The door then shuts itself three seconds after a player (or a keypad) last
+  opened it, unless redstone is holding it open, and wears a parallel-arm closer on its **push side** --
   the side it swings away from: the outside of a door that swings in, the inside of one that swings
   out -- with a shoe on the wall above the opening and an arm that folds and unfolds between them
   as the door moves. Sneak-click the door with an empty hand to take it off again. It is an
@@ -211,6 +211,11 @@ Door Swing Tool are items, so they have crafting recipes (`recipes/door_closer.j
   glass and wrong for anything solid: solid parts in that pass are drawn in whatever order the sort
   left them, so a nearer box can be painted over by a farther face. Anything solid on a glazed
   block belongs in the cutout pass.
+- **A self-closing door's time runs from its latest opening.** A scheduled tick cannot be moved or
+  cancelled, and a second schedule for the same block is dropped while the first is pending, so
+  the closer's (and a custom door's auto-close) tick reads a deadline each hand-opening pushes back
+  (`armClose` / `closeDue` in `BlockBuildingDoor`) and waits on if it has come early. Before that, a
+  door shut by hand and opened again inside its time slammed on the first opening's tick (#234).
 - **1.12's long array tag cannot be read back** (no getter), so `DoorLocks` stores positions as
   pairs of ints.
 
