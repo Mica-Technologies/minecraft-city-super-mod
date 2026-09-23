@@ -1,0 +1,68 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leaves": "csm:blocks/parks/landscape/boxwood",
+    "particle": "csm:blocks/parks/landscape/boxwood"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        0
+      ],
+      "to": [
+        15,
+        16,
+        1
+      ],
+      "faces": {
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            1,
+            0,
+            15,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            1,
+            15,
+            15,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            1,
+            0,
+            15,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

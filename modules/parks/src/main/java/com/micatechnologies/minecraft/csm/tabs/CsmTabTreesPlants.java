@@ -2,6 +2,9 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkFacing;
+import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkJoining;
+import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkProp;
 import com.micatechnologies.minecraft.csm.parks.planting.ItemTreePlantingTool;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockHangingMoss;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
@@ -112,5 +115,38 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockTreeLeaves("tree_crown_palm_feather", TreeLeafType.PALM_FEATHER,
         "csm:blocks/parks/palm_crown_feather"));
     initTabBlock(new BlockHangingMoss("spanish_moss"));
+
+    // Street tree accessories and plantings, written by gen_park_plantings.py (--fragments).
+    initTabBlock(new BlockParkProp("tree_grate_square", BlockParkProp.Kind.GROUND, 16, 0));
+    initTabBlock(new BlockParkProp("tree_grate_round", BlockParkProp.Kind.GROUND, 16, 0));
+    initTabBlock(new BlockParkProp("tree_pit_mulch", BlockParkProp.Kind.GROUND, 16, 0));
+    initTabBlock(new BlockParkJoining("hedge_boxwood_low", BlockParkJoining.Kind.HEDGE, 10, 14));
+    initTabBlock(new BlockParkJoining("hedge_boxwood_tall", BlockParkJoining.Kind.HEDGE, 16, 14));
+    initTabBlock(new BlockParkJoining("hedge_privet_low", BlockParkJoining.Kind.HEDGE, 10, 14));
+    initTabBlock(new BlockParkJoining("hedge_privet_tall", BlockParkJoining.Kind.HEDGE, 16, 14));
+    initTabBlock(new BlockParkJoining("tree_pit_fence", BlockParkJoining.Kind.FENCE, 9, 2));
+    initTabBlock(new BlockParkJoining("raised_bed_concrete", BlockParkJoining.Kind.BED, 12, 16));
+    initTabBlock(new BlockParkProp("planter_concrete", BlockParkProp.Kind.PLANTER, 14, 1));
+    initTabBlock(new BlockParkJoining("raised_bed_wood", BlockParkJoining.Kind.BED, 12, 16));
+    initTabBlock(new BlockParkProp("planter_wood", BlockParkProp.Kind.PLANTER, 14, 1));
+    initTabBlock(new BlockParkJoining("raised_bed_corten", BlockParkJoining.Kind.BED, 12, 16));
+    initTabBlock(new BlockParkProp("planter_corten", BlockParkProp.Kind.PLANTER, 14, 1));
+    initTabBlock(new BlockParkProp("shrub_boxwood", BlockParkProp.Kind.SHRUB, 12, 2));
+    initTabBlock(new BlockParkProp("shrub_hydrangea", BlockParkProp.Kind.SHRUB, 14, 1));
+    initTabBlock(new BlockParkProp("shrub_juniper", BlockParkProp.Kind.SHRUB, 16, 2));
+    initTabBlock(new BlockParkProp("grass_fountain", BlockParkProp.Kind.PLANT, 12, 2));
+    initTabBlock(new BlockParkProp("grass_feather_reed", BlockParkProp.Kind.PLANT, 12, 2));
+    initTabBlock(new BlockParkProp("grass_blue_fescue", BlockParkProp.Kind.PLANT, 12, 2));
+    initTabBlock(new BlockParkProp("flower_bed_red", BlockParkProp.Kind.PLANT, 6, 0));
+    initTabBlock(new BlockParkProp("flower_bed_yellow", BlockParkProp.Kind.PLANT, 6, 0));
+    initTabBlock(new BlockParkProp("flower_bed_purple", BlockParkProp.Kind.PLANT, 6, 0));
+    initTabBlock(new BlockParkProp("flower_bed_mixed", BlockParkProp.Kind.PLANT, 6, 0));
+    initTabBlock(new BlockParkProp("ground_mulch", BlockParkProp.Kind.COVER, 1, 0));
+    initTabBlock(new BlockParkProp("ground_pea_gravel", BlockParkProp.Kind.COVER, 1, 0));
+    initTabBlock(new BlockParkProp("ground_decomposed_granite", BlockParkProp.Kind.COVER, 1, 0));
+    initTabBlock(new BlockParkProp("ground_turf", BlockParkProp.Kind.COVER, 1, 0));
+    initTabBlock(new BlockParkFacing("tree_stake", new int[]{7, 0, 11, 9, 24, 13}, true));
+    initTabBlock(new BlockParkFacing.PoleFitted("hanging_basket_petunia", new int[]{2, 0, 0, 14, 16, 12}, false));
+    initTabBlock(new BlockParkFacing.PoleFitted("hanging_basket_mixed", new int[]{2, 0, 0, 14, 16, 12}, false));
   }
 }

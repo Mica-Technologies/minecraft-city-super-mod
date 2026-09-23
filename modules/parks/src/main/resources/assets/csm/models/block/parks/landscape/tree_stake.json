@@ -1,0 +1,137 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "wood": "csm:blocks/parks/landscape/stake",
+    "tie": "csm:blocks/parks/landscape/tie",
+    "particle": "csm:blocks/parks/landscape/stake"
+  },
+  "elements": [
+    {
+      "from": [
+        7,
+        0,
+        11
+      ],
+      "to": [
+        9,
+        24,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            3,
+            0,
+            5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            11,
+            0,
+            13,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            7,
+            11,
+            9,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            7,
+            3,
+            9,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.5,
+        17,
+        13
+      ],
+      "to": [
+        8.5,
+        18.5,
+        22
+      ],
+      "faces": {
+        "east": {
+          "texture": "#tie",
+          "uv": [
+            0,
+            0,
+            3,
+            0.01
+          ]
+        },
+        "west": {
+          "texture": "#tie",
+          "uv": [
+            13,
+            0,
+            16,
+            0.01
+          ]
+        },
+        "up": {
+          "texture": "#tie",
+          "uv": [
+            7.5,
+            13,
+            8.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#tie",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#tie",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            0.01
+          ]
+        }
+      }
+    }
+  ]
+}
