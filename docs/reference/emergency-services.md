@@ -2,7 +2,7 @@
 
 Fire, police and ambulance station fittings, community warning sirens and dispatch.
 
-!!! info "17 blocks in this tab"
+!!! info "23 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -12,6 +12,7 @@ Fire, police and ambulance station fittings, community warning sirens and dispat
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Air Compressor | `csm:air_compressor` | 2.0 | 6.0 | pickaxe | 0 |
+| Bay Door Clearance Light | `csm:bay_clearance_light` | 2.0 | 6.0 | pickaxe | 0 |
 | Fire Pole | `csm:fire_pole` | 2.0 | 6.0 | pickaxe | 0 |
 | Fire Pole Floor Opening | `csm:fire_pole_hole` | 2.0 | 6.0 | pickaxe | 0 |
 | Firefighting Tool Board | `csm:fire_tool_board` | 2.0 | 6.0 | pickaxe | 0 |
@@ -23,6 +24,11 @@ Fire, police and ambulance station fittings, community warning sirens and dispat
 | SCBA Cylinder Cascade | `csm:scba_cylinder_cascade` | 2.0 | 6.0 | pickaxe | 0 |
 | SCBA Fill Station | `csm:scba_fill_station` | 2.0 | 6.0 | pickaxe | 0 |
 | SCBA Wall Rack | `csm:scba_wall_rack` | 2.0 | 6.0 | pickaxe | 0 |
+| Station Alert Light (Red) | `csm:station_alert_light_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Station Alert Light (White) | `csm:station_alert_light_white` | 2.0 | 6.0 | pickaxe | 0 |
+| Station Alerting Controller | `csm:station_alert_controller` | 2.0 | 6.0 | pickaxe | 0 |
+| Station Alerting Relay | `csm:station_alert_relay` | 2.0 | 6.0 | pickaxe | 0 |
+| Station Alerting Speaker | `csm:station_alert_speaker` | 2.0 | 6.0 | pickaxe | 0 |
 | Station Number Plaque | `csm:station_number_plaque` | 2.0 | 6.0 | pickaxe | 0 |
 | Turnout Gear Extractor | `csm:gear_extractor` | 2.0 | 6.0 | pickaxe | 0 |
 | Turnout Gear Locker | `csm:turnout_gear_locker` | 2.0 | 6.0 | pickaxe | 0 |

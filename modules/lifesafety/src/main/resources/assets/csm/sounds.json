@@ -691,5 +691,59 @@
         "stream": false
       }
     ]
+  },
+  "station_prealert": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:station_prealert",
+        "stream": false
+      }
+    ]
+  },
+  "station_tone_engine": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:station_tone_engine",
+        "stream": false
+      }
+    ]
+  },
+  "station_tone_ladder": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:station_tone_ladder",
+        "stream": false
+      }
+    ]
+  },
+  "station_tone_medic": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:station_tone_medic",
+        "stream": false
+      }
+    ]
+  },
+  "station_tone_battalion": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:station_tone_battalion",
+        "stream": false
+      }
+    ]
+  },
+  "station_tone_all_call": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:station_tone_all_call",
+        "stream": false
+      }
+    ]
   }
 }

@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "white": "csm:blocks/lifesafety/services/silver",
+    "grille": "csm:blocks/lifesafety/services/speaker_grille",
+    "particle": "csm:blocks/lifesafety/services/silver"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        3,
+        14
+      ],
+      "to": [
+        13,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grille",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#white",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#white",
+          "uv": [
+            0,
+            3,
+            2,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#white",
+          "uv": [
+            14,
+            3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#white",
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#white",
+          "uv": [
+            3,
+            0,
+            13,
+            2
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -92,7 +92,13 @@ public enum LifeSafetySounds implements ICsmSound {
   SIMPLEX_VOICE_EVAC_OLD_ALT2("simplex_voice_evac_old_alt2"),
   BROKEN_GENTEX_GOS("broken_gentex_gos"),
   AED_CABINET_ALARM("aed_cabinet_alarm"),
-  STATION_BELL("station_bell");
+  STATION_BELL("station_bell"),
+  STATION_PREALERT("station_prealert"),
+  STATION_TONE_ENGINE("station_tone_engine"),
+  STATION_TONE_LADDER("station_tone_ladder"),
+  STATION_TONE_MEDIC("station_tone_medic"),
+  STATION_TONE_BATTALION("station_tone_battalion"),
+  STATION_TONE_ALL_CALL("station_tone_all_call");
 
   /**
    * The name of the sound.

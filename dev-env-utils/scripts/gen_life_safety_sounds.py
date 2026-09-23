@@ -103,7 +103,38 @@ def station_bell():
     return total
 
 
+def station_prealert():
+    """The alerting system's pre-alert: a two-pitch warble for two seconds, so the tones that
+    follow are listened for."""
+    parts = []
+    for i in range(16):
+        parts.append(tone(880 if i % 2 == 0 else 1180, 0.125, attack=0.002, release=0.002))
+    return np.concatenate(parts)
+
+
+def two_tone(a, b):
+    """Sequential two-tone paging: one tone for a second, the next for two, as a station's
+    receiver is set to answer. The pairs here are this mod's own, one per zone."""
+    def make():
+        return np.concatenate([tone(a, 1.0), silence(0.05), tone(b, 2.0, release=0.05),
+                               silence(0.3)])
+    return make
+
+
+def all_call():
+    """The all-call: a long single tone, then the zone pairs' first tones stepped through."""
+    return np.concatenate([tone(1500, 1.6), silence(0.1)]
+                          + [tone(f, 0.35, attack=0.003, release=0.01)
+                             for f in (660, 780, 900, 1020, 1140, 1260)] + [silence(0.3)])
+
+
 SOUNDS = {
+    'station_prealert': (station_prealert, 6000),
+    'station_tone_engine': (two_tone(630, 1010), 6000),
+    'station_tone_ladder': (two_tone(720, 1180), 6000),
+    'station_tone_medic': (two_tone(840, 1320), 6000),
+    'station_tone_battalion': (two_tone(930, 570), 6000),
+    'station_tone_all_call': (all_call, 6000),
     'aed_cabinet_alarm': (aed_cabinet_alarm, 7000),
     'station_bell': (station_bell, 6500),
 }

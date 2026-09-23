@@ -347,6 +347,9 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   three cells, why a hung sign's arrow reverses from behind, the heads' glow through the
   emergency lights' renderer, the setup screen, and the traps (ordinals are saved, the generator
   repeats the specs)
+- `assets/docs/STATION_ALERTING_SYSTEM.md` -- A fire station's alerting: the controller, its
+  linked speakers, alert lights, relays and bay clearance lights, the dispatch sequence, and why
+  the relay's redstone is how it opens bay doors, strikes the gong and preempts traffic signals
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
 - `assets/docs/LANE_CONTROL_SYSTEM.md` -- Reversible lanes: the lane control signal, its own
   controller cabinet, groups on a time-of-day schedule, and why the clearance runs one way only

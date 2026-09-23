@@ -5,6 +5,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirePole;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirePoleHole;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertController;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertDevice;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationBell;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationNumberPlaque;
 import net.minecraft.block.Block;
@@ -60,5 +62,11 @@ public class CsmTabEmergencyServices extends CsmTab {
     initTabBlock(new BlockFirePoleHole());
     initTabBlock(new BlockFireProtectionProp("maltese_cross_emblem", new int[]{1, 1, 15, 15, 15, 16}, false));
     initTabBlock(new BlockStationNumberPlaque("station_number_plaque", new int[]{2, 2, 15, 14, 14, 16}));
+    initTabBlock(new BlockStationAlertController("station_alert_controller", new int[]{2, 1, 11, 14, 15, 16}));
+    initTabBlock(new BlockStationAlertDevice("station_alert_speaker", BlockStationAlertDevice.Kind.SPEAKER, new int[]{3, 3, 13, 13, 13, 16}));
+    initTabBlock(new BlockStationAlertDevice("station_alert_light_red", BlockStationAlertDevice.Kind.LIGHT, new int[]{2, 5, 12, 14, 11, 16}));
+    initTabBlock(new BlockStationAlertDevice("station_alert_light_white", BlockStationAlertDevice.Kind.LIGHT, new int[]{2, 5, 12, 14, 11, 16}));
+    initTabBlock(new BlockStationAlertDevice("station_alert_relay", BlockStationAlertDevice.Kind.RELAY, new int[]{5, 4, 13, 11, 12, 16}));
+    initTabBlock(new BlockStationAlertDevice("bay_clearance_light", BlockStationAlertDevice.Kind.CLEARANCE, new int[]{4, 1, 12, 12, 15, 16}));
   }
 }

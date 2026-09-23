@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertController;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertDevice;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.TileEntityStationAlertController;
 import java.util.List;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -115,6 +118,29 @@ public class ItemFireAlarmLinker extends AbstractItem {
     IBlockState state = worldIn.getBlockState(pos);
     ItemStack heldStack = player.getHeldItem(hand);
     BlockPos alarmPanelPos = getSelectedPanel(heldStack);
+
+    // A station alerting controller is selected the way a panel is, and its devices link to it.
+    if (state.getBlock() instanceof BlockStationAlertController) {
+      setSelectedPanel(heldStack, pos);
+      if (!worldIn.isRemote) {
+        player.sendMessage(new TextComponentString("Linking to station alerting controller at ("
+            + pos.getX() + "," + pos.getY() + "," + pos.getZ() + ")"));
+      }
+      return EnumActionResult.SUCCESS;
+    }
+    if (alarmPanelPos != null && state.getBlock() instanceof BlockStationAlertDevice
+        && worldIn.getTileEntity(alarmPanelPos) instanceof TileEntityStationAlertController) {
+      TileEntityStationAlertController controller =
+          (TileEntityStationAlertController) worldIn.getTileEntity(alarmPanelPos);
+      boolean added = controller.addDevice(pos);
+      if (!worldIn.isRemote) {
+        player.sendMessage(new TextComponentString(added
+            ? "Linked to the station alerting controller at (" + alarmPanelPos.getX() + ","
+            + alarmPanelPos.getY() + "," + alarmPanelPos.getZ() + ")"
+            : "Already linked to that station alerting controller"));
+      }
+      return EnumActionResult.SUCCESS;
+    }
 
     // Save panel location if click on panel
     if (state.getBlock() instanceof BlockFireAlarmControlPanel) {
