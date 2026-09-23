@@ -196,6 +196,11 @@ Everything else there is written by `gen_park_amenities.py`.
   into a run. `LEFT` and `RIGHT` (the sitter's, actual state) say whether the same block, facing the
   same way, continues on that side. The multipart blockstate draws the legs and arms only where the
   run ends, so three in a row are one long bench.
+- **Sitting.** Right-click a bench or table to sit on Core's `EntityCsmSeat` (the portable
+  toilet's seat), and sneak to get up. A bench seats one a block, on the middle of its slats,
+  facing out. A picnic table seats one on each side: the bench on the player's side, facing across
+  the table, and you step out on that side. That second seat is why `EntityCsmSeat.sit` has an
+  overload taking the box another seat must be in to count as taken.
 - **Pergola.** Timber posts, and a joining roof of rafters with beams round the outside. The roof's
   collision starts 10 px up, so people walk under it.
 - **Fountains.** The basin joins into a pool of any size, and also runs up to any `fountain_` block

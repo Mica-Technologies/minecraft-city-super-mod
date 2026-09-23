@@ -83,7 +83,9 @@ tree afterwards if you like.
 ## The Parks tab
 
 - **Benches and picnic tables.** Place them side by side for a longer one: the legs and arms appear
-  only at the two ends.
+  only at the two ends. Right-click one to **sit down**, and sneak to get up. A bench seats one
+  person a block. A picnic table seats one on each side: you sit on the bench on your side,
+  facing across the table.
 - **Bins**: a recycling bin, a trash and recycling station, the park trash can and a dog waste
   station.
 - **Playground**: the slide, spring rider, swings and teeter totter, and a rubber safety surface to

@@ -17,8 +17,8 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 /**
- * An invisible seat a player sits on, for blocks that can be sat in or on -- the first is the
- * construction site's portable toilet.
+ * An invisible seat a player sits on, for blocks that can be sat in or on: the construction
+ * site's portable toilet, and the park benches and picnic tables.
  *
  * <p>It uses the game's own riding: the player mounts the seat, sits in the riding pose, and
  * dismounts by sneaking. A seat carries one rider, so a block that uses it is one person at a
@@ -94,10 +94,40 @@ public class EntityCsmSeat extends Entity {
   public static boolean sit(World world, BlockPos anchor, double x, double y, double z,
       double riderOffset, EnumFacing facing, double exitX, double exitY, double exitZ,
       EntityPlayer player) {
-    List<EntityCsmSeat> taken = world.getEntitiesWithinAABB(EntityCsmSeat.class,
-        new AxisAlignedBB(anchor));
+    return sit(world, anchor, new AxisAlignedBB(anchor), "gui.csm.seat.taken", x, y, z,
+        riderOffset, facing, exitX, exitY, exitZ, player);
+  }
+
+  /**
+   * As {@link #sit(World, BlockPos, double, double, double, double, EnumFacing, double, double,
+   * double, EntityPlayer)}, but the seat counts as taken only if another seat is inside
+   * {@code occupancy}, so one block can seat more than one person -- a picnic table seats one on
+   * each side.
+   *
+   * @param world       the world
+   * @param anchor      the block being sat on; the seat goes when it does
+   * @param occupancy   where another seat makes this one taken
+   * @param takenKey    the lang key of the status message when it is taken
+   * @param x           the seat's x
+   * @param y           the seat's y
+   * @param z           the seat's z
+   * @param riderOffset how far above {@code y} the rider sits
+   * @param facing      the way the rider faces
+   * @param exitX       where the rider leaves, x
+   * @param exitY       where the rider leaves, y
+   * @param exitZ       where the rider leaves, z
+   * @param player      the player
+   *
+   * @return whether the player sat down
+   *
+   * @since 2026.9
+   */
+  public static boolean sit(World world, BlockPos anchor, AxisAlignedBB occupancy,
+      String takenKey, double x, double y, double z, double riderOffset, EnumFacing facing,
+      double exitX, double exitY, double exitZ, EntityPlayer player) {
+    List<EntityCsmSeat> taken = world.getEntitiesWithinAABB(EntityCsmSeat.class, occupancy);
     if (!taken.isEmpty()) {
-      player.sendStatusMessage(new TextComponentTranslation("gui.csm.seat.taken"), true);
+      player.sendStatusMessage(new TextComponentTranslation(takenKey), true);
       return false;
     }
     if (player.isRiding()) {
