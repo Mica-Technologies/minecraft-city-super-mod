@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/leaves_jacaranda_blossom"
+    },
+    "inventory": {
+      "model": "csm:parks/leaves_jacaranda_blossom"
+    }
+  }
+}

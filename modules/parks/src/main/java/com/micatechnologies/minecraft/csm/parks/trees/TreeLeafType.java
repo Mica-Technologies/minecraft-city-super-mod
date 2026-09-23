@@ -16,6 +16,8 @@ public enum TreeLeafType {
   NEEDLE(10, 4, 7, 14, 0.15, true),
   /** Willow, pepper tree tips: broad cards, and a curtain hanging past the bottom face. */
   WEEPING(5, 3, 8, 12, 0.5, false),
+  /** Pleached lindens, topiary: clipped flat, a leafy face flush with each open side. */
+  CLIPPED(3, 0, 8, 12, 0.4, false),
   /** A fan palm's crown: round fan fronds on short stalks, a tight ball. */
   PALM_FAN(18, 26, 16, false),
   /** A fan palm's crown with the skirt of dead fronds that hangs down its trunk. */

@@ -27,9 +27,9 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Technology](technology.md) | 37 | Servers, routers, screens and consumer electronics. |
 | [Traffic Accessories](traffic-accessories.md) | 379 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
-| [Trees & Plants](trees-and-plants.md) | 80 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
+| [Trees & Plants](trees-and-plants.md) | 133 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Unlisted](unlisted.md) | 127 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **2249** | |
+| **Total** | **2302** | |
 
 ## How to read the table
 

@@ -17,7 +17,15 @@ public enum TreeWood {
   HONEY_LOCUST("honeylocust"),
   CYPRESS("cypress"),
   GINKGO("ginkgo"),
-  PALM("palm");
+  PALM("palm"),
+  JACARANDA("jacaranda"),
+  PEPPER("pepper"),
+  POPLAR("poplar"),
+  SWEETGUM("sweetgum"),
+  HORNBEAM("hornbeam"),
+  GUM("gum"),
+  WILLOW("willow"),
+  LINDEN("linden");
 
   private final String id;
 
