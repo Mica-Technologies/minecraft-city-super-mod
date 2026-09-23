@@ -110,7 +110,11 @@ public class BlockTreeLeaves extends AbstractBlock implements ICsmTreeLeaves {
     if (!(state instanceof IExtendedBlockState)) {
       return state;
     }
-    return ((IExtendedBlockState) state).withProperty(SHAPE, shape(world, pos));
+    int key = shape(world, pos);
+    if (type.isPalm()) {
+      key &= ~63; // a crown's fronds do not depend on its neighbours; only the variant counts
+    }
+    return ((IExtendedBlockState) state).withProperty(SHAPE, key);
   }
 
   /** The shape key where this block stands. */

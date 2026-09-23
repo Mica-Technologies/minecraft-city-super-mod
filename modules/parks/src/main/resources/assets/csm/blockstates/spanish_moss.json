@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/spanish_moss"
+  },
+  "variants": {
+    "tip": {
+      "false": {},
+      "true": {
+        "model": "csm:parks/spanish_moss_tip"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:parks/spanish_moss_item"
+      }
+    ]
+  }
+}
