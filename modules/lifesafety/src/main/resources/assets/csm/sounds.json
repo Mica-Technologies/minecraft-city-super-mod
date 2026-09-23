@@ -745,5 +745,14 @@
         "stream": false
       }
     ]
+  },
+  "metal_detector_alarm": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:metal_detector_alarm",
+        "stream": false
+      }
+    ]
   }
 }

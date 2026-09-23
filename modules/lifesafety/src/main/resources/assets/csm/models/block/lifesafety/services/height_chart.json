@@ -1,0 +1,77 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "chart": "csm:blocks/lifesafety/services/height_chart",
+    "particle": "csm:blocks/lifesafety/services/height_chart"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        15.5
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chart",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#chart",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#chart",
+          "uv": [
+            0,
+            0,
+            0.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#chart",
+          "uv": [
+            15.5,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#chart",
+          "uv": [
+            0,
+            15.5,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#chart",
+          "uv": [
+            0,
+            0,
+            16,
+            0.5
+          ]
+        }
+      }
+    }
+  ]
+}

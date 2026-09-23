@@ -1,0 +1,41 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "star": "csm:blocks/lifesafety/services/police_star",
+    "particle": "csm:blocks/lifesafety/services/police_star"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        1,
+        15.5
+      ],
+      "to": [
+        15,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#star",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#star",
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

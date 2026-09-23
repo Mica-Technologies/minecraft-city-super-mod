@@ -1,0 +1,146 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/lifesafety/services/black",
+    "top": "csm:blocks/lifesafety/services/scanner_top",
+    "particle": "csm:blocks/lifesafety/services/black"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        5
+      ],
+      "to": [
+        12,
+        3,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#body",
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            6,
+            13,
+            11,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            5,
+            13,
+            10,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            4,
+            5,
+            12,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            4,
+            6,
+            12,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        0,
+        10
+      ],
+      "to": [
+        12,
+        4,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#body",
+          "uv": [
+            4,
+            12,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            4,
+            12,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            4,
+            12,
+            6,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            10,
+            12,
+            12,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            4,
+            10,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            4,
+            4,
+            12,
+            6
+          ]
+        }
+      }
+    }
+  ]
+}

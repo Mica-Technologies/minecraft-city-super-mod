@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/lifesafety/services/steel",
+    "front": "csm:blocks/lifesafety/services/evidence_front",
+    "particle": "csm:blocks/lifesafety/services/steel"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        2
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            2,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            16,
+            14
+          ]
+        }
+      }
+    }
+  ]
+}

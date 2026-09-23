@@ -324,6 +324,8 @@ def cost_for(registry, info, ancestors):
             return ("SIGN_BLANK",)
         if has_word(registry, "hose"):
             return ("wool x2",)
+        if has_word(registry, "tape"):
+            return ("paper", "dye")
         if has_any(registry, ("gong", "bell")):
             return ("SHEET_METAL", "SOUNDER_DRIVER")
         if has_any(registry, ("compressor", "extractor", "fill", "console", "siren", "controller",

@@ -128,7 +128,18 @@ def all_call():
                              for f in (660, 780, 900, 1020, 1140, 1260)] + [silence(0.3)])
 
 
+def metal_detector_alarm():
+    """A walk-through metal detector's alarm: a rising two-tone beep, three times, about a
+    second."""
+    parts = []
+    for _ in range(3):
+        parts += [tone(1400, 0.12, attack=0.003, release=0.01),
+                  tone(1850, 0.12, attack=0.003, release=0.01), silence(0.08)]
+    return np.concatenate(parts)
+
+
 SOUNDS = {
+    'metal_detector_alarm': (metal_detector_alarm, 6500),
     'station_prealert': (station_prealert, 6000),
     'station_tone_engine': (two_tone(630, 1010), 6000),
     'station_tone_ladder': (two_tone(720, 1180), 6000),

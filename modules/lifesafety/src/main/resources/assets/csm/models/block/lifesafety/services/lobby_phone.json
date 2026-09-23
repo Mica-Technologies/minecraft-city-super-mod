@@ -1,0 +1,147 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/lifesafety/services/dark_steel",
+    "front": "csm:blocks/lifesafety/services/phone_front",
+    "black": "csm:blocks/lifesafety/services/black",
+    "particle": "csm:blocks/lifesafety/services/dark_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        4,
+        14
+      ],
+      "to": [
+        11,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            5,
+            4,
+            11,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            5,
+            4,
+            11,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0,
+            4,
+            2,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            14,
+            4,
+            16,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            5,
+            14,
+            11,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            5,
+            0,
+            11,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        10.5,
+        5,
+        13
+      ],
+      "to": [
+        12,
+        11.5,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#black",
+          "uv": [
+            4,
+            4.5,
+            5.5,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#black",
+          "uv": [
+            10.5,
+            4.5,
+            12,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#black",
+          "uv": [
+            1.5,
+            4.5,
+            3,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#black",
+          "uv": [
+            13,
+            4.5,
+            14.5,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#black",
+          "uv": [
+            10.5,
+            13,
+            12,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#black",
+          "uv": [
+            10.5,
+            1.5,
+            12,
+            3
+          ]
+        }
+      }
+    }
+  ]
+}

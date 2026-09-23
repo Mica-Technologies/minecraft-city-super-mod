@@ -9,7 +9,13 @@ warning and dispatch equipment around them. No vehicles. Grown a station at a ti
     racks, rolls and drying rack, the nozzle rack and tool board, the gear extractor and air
     compressor, the brass gong (BlockStationBell), the fire pole and the hole it passes through
     (BlockFirePole, BlockFirePoleHole: you slide down), the Maltese cross and the station number
-    plaque (BlockStationNumberPlaque, 0-99 by clicking).
+    plaque (BlockStationNumberPlaque, 0-99 by clicking); the station alerting controller and
+    its speakers, alert lights, relays and bay clearance lights (STATION_ALERTING_SYSTEM.md).
+  * police station: the front desk, deal tray and lobby phone, the walk-through metal detector
+    (BlockMetalDetector, which beeps at metal), the holding cell's sliding barred door
+    (BlockCellDoor), bench and toilet, booking (height chart, fingerprint scanner, camera,
+    property bins), evidence and equipment lockers, the K-9 kennel, the blue lamp and police
+    star, and police and fire line tape (BlockSceneTape, laid like a fence) with its stanchion.
 
 Emblems are generic (the Maltese cross, the Star of Life, a plain police star); no real agency's
 name, patch or badge is drawn here.
@@ -659,6 +665,336 @@ for key, names in (
         ("zone.battalion", ("Battalion", "Einsatzleitung", "Jefatura de batallón", "Insatsledare")),
         ("zone.all_call", ("All call", "Vollalarm", "Llamada general", "Allmänt larm"))):
     C.add_lang("csm.lifesafety.station." + key, names)
+
+
+# ==========================================================================================
+# Police station
+# ==========================================================================================
+NAVY = (36, 48, 84)
+POLICE_BLUE = (40, 70, 150)
+BEIGE = (206, 196, 170)
+flat("navy", NAVY, seed=400)
+flat("beige", BEIGE, seed=401)
+flat("stainless", (184, 188, 192), grain=6, seed=402)
+flat("laminate", (150, 110, 74), grain=5, seed=403)
+
+
+@C.texture("counter_top")
+def _counter_top():
+    img = fill((196, 190, 176), grain=6, seed=404)
+    rect(img, 0, 0, 16, 1, (150, 146, 136))
+    return img
+
+
+@C.texture("counter_front")
+def _counter_front():
+    img = fill((150, 110, 74), grain=5, seed=405)
+    for x in range(0, 16, 4):
+        rect(img, x, 0, x + 1, 16, (126, 90, 60))
+    rect(img, 0, 14, 16, 16, (60, 50, 44))
+    return img
+
+
+@C.texture("phone_front")
+def _phone_front():
+    img = fill((60, 62, 66), grain=2, seed=406)
+    x0, y0, x1, y1 = north_region((5, 4), (11, 12), 16)
+    for r in range(3):
+        for c in range(3):
+            rect(img, x0 + 1 + c * 2, y0 + 4 + r, x0 + 2 + c * 2, y0 + 5 + r, (200, 200, 196))
+    rect(img, x0 + 1, y0 + 1, x1 - 1, y0 + 3, (150, 180, 140))
+    return img
+
+
+@C.texture("md_panel")
+def _md_panel():
+    img = fill(BEIGE, grain=3, seed=407)
+    for y in range(2, 16, 2):
+        rect(img, 4, y, 12, y + 1, shade(BEIGE, 0.8))
+    return img
+
+
+def md_lamp(alarm):
+    def draw():
+        img = fill((50, 52, 56), grain=2, seed=408)
+        disc(img, 8, 8, 3, (255, 40, 30) if alarm else (80, 20, 16))
+        disc(img, 8, 8, 1.2, (255, 160, 140) if alarm else (100, 30, 24))
+        rect(img, 1, 6, 4, 10, (40, 220, 80) if not alarm else (20, 60, 30))
+        rect(img, 12, 6, 15, 10, (40, 220, 80) if not alarm else (20, 60, 30))
+        return img
+    return draw
+
+
+C.textures["md_lamp"] = md_lamp(False)
+C.textures["md_lamp_alarm"] = md_lamp(True)
+
+
+@C.texture("height_chart")
+def _height_chart():
+    img = fill((236, 236, 230), size=64, grain=2, seed=409)
+    for y in range(0, 64, 4):
+        rect(img, 0, y, 64 if y % 16 == 0 else 10, y + 1, (70, 70, 76))
+    for i, label in enumerate(("6-0", "5-6", "5-0", "4-6")):
+        draw_text(img, label, 14, i * 16 + 2, (40, 40, 44))
+    return img
+
+
+@C.texture("scanner_top")
+def _scanner_top():
+    img = fill((40, 42, 46), grain=2, seed=410)
+    rect(img, 4, 4, 12, 12, (60, 200, 110))
+    rect(img, 5, 5, 11, 11, (120, 240, 170))
+    return img
+
+
+@C.texture("bins")
+def _bins():
+    img = fill((96, 100, 106), grain=3, seed=411)
+    rect(img, 4, 3, 12, 6, (240, 240, 236))
+    return img
+
+
+@C.texture("evidence_front")
+def _evidence_front():
+    img = fill((150, 154, 160), size=64, grain=3, seed=412)
+    for r in range(4):
+        for c in range(3):
+            x0, y0 = 2 + c * 20, 2 + r * 15
+            bevel(img, x0, y0, x0 + 19, y0 + 14, (150, 154, 160))
+            draw_text(img, str(r * 3 + c + 1), x0 + 3, y0 + 3, (40, 40, 44))
+            rect(img, x0 + 15, y0 + 6, x0 + 17, y0 + 9, (60, 60, 64))
+    return img
+
+
+@C.texture("locker_front")
+def _locker_front():
+    img = fill(NAVY, grain=3, seed=413)
+    rect(img, 7, 0, 9, 16, shade(NAVY, 0.7))
+    for x0 in (1, 9):
+        for y in (2, 3, 4):
+            rect(img, x0 + 1, y, x0 + 5, y + 1, shade(NAVY, 0.6))
+        rect(img, x0 + 5, 8, x0 + 6, 11, (170, 174, 180))
+    return img
+
+
+@C.texture("dog_bed")
+def _dog_bed():
+    img = fill((120, 80, 56), grain=5, seed=414)
+    rect(img, 2, 2, 14, 14, (160, 120, 90))
+    return img
+
+
+@C.texture("police_globe")
+def _police_globe():
+    img = fill((60, 110, 230), grain=3, seed=415)
+    rect(img, 0, 5, 16, 11, (250, 250, 250))
+    draw_text_centred(img, "POL", 8, 6, (30, 50, 130))
+    return img
+
+
+@C.texture("police_star")
+def _police_star():
+    """A seven-point star, gold, with a blue disc lettered POLICE: a generic emblem, no
+    department's name or seal on it."""
+    size = 64
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    px = img.load()
+    c = size / 2.0
+    for y in range(size):
+        for x in range(size):
+            u, v = x + 0.5 - c, y + 0.5 - c
+            r = math.hypot(u, v)
+            a = math.atan2(u, -v)
+            k = (a / (2 * math.pi / 7)) % 1
+            edge = 14 + 16 * (1 - abs(k - 0.5) * 2) ** 2
+            if r < edge:
+                px[x, y] = (206, 168, 70, 255) if r < edge - 2 else (150, 116, 40, 255)
+    disc(img, c, c, 11, POLICE_BLUE)
+    draw_text_centred(img, "POLICE", c, c - 2, (240, 230, 190))
+    return img
+
+
+def tape_texture(bg, fg, words):
+    def draw():
+        img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+        rect(img, 0, 22, 64, 28, bg)
+        for i, word in enumerate(words):
+            draw_text_centred(img, word, 16 + i * 32, 23, fg)
+        return img
+    return draw
+
+
+def tape_item(bg):
+    def draw():
+        img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+        disc(img, 8, 8, 6.5, bg)
+        disc(img, 8, 8, 3, (0, 0, 0, 0))
+        disc(img, 8, 8, 2.2, (150, 150, 150))
+        rect(img, 8, 11, 16, 14, bg)
+        return img
+    return draw
+
+
+C.textures["tape_police"] = tape_texture((250, 214, 30), (20, 20, 20), ("POLICE", "LINE"))
+C.textures["tape_fire"] = tape_texture((200, 30, 30), (250, 250, 250), ("FIRE", "LINE"))
+C.textures["tape_police_item"] = tape_item((250, 214, 30))
+C.textures["tape_fire_item"] = tape_item((200, 30, 30))
+
+prop("front_desk_counter", (0, 0, 3, 16, 16, 16), True,
+     ("Front Desk Counter", "Empfangstheke", "Mostrador de recepción", "Receptionsdisk"),
+     {"top": T("counter_top"), "front": T("counter_front"), "side": T("laminate"),
+      "particle": T("counter_top")},
+     [box([0, 0, 5], [16, 14, 16], "side", per={"north": "front"}),
+      box([0, 14, 3], [16, 16, 16], "top")])
+prop("pass_through_tray", (3, 0, 2, 13, 3, 14), False,
+     ("Pass-Through Deal Tray", "Durchreiche-Schale", "Bandeja pasamonedas", "Kassalucka"),
+     {"s": T("stainless"), "particle": T("stainless")},
+     [box([3, 0, 2], [13, 0.5, 14], "s"), box([3, 0.5, 2], [3.5, 2.5, 14], "s"),
+      box([12.5, 0.5, 2], [13, 2.5, 14], "s")])
+prop("lobby_phone", (5, 3, 12, 11, 13, 16), False,
+     ("Lobby Courtesy Phone", "Lobby-Telefon", "Teléfono del vestíbulo", "Lobbytelefon"),
+     {"body": T("dark_steel"), "front": T("phone_front"), "black": T("black"),
+      "particle": T("dark_steel")},
+     [box([5, 4, 14], [11, 12, 16], "body", per={"north": "front"}),
+      box([10.5, 5, 13], [12, 11.5, 14.5], "black")])
+
+# Two blocks tall: the arch stands up into the block above, which should be left air.
+C.add("metal_detector", 'new BlockMetalDetector("metal_detector", %s)' % B(0, 0, 5, 16, 16, 11),
+      ("Walk-Through Metal Detector", "Metalldetektor-Torrahmen", "Arco detector de metales",
+       "Metalldetektorbåge"),
+      {"metal_detector": model(
+          {"panel": T("md_panel"), "lamp": T("md_lamp"), "beige": T("beige"),
+           "particle": T("beige")},
+          [box([0, 0, 5.5], [2, 29, 10.5], "beige", per={"north": "panel", "south": "panel"}),
+           box([14, 0, 5.5], [16, 29, 10.5], "beige", per={"north": "panel", "south": "panel"}),
+           box([0, 29, 5], [16, 32, 11], "beige", per={"north": "lamp", "south": "lamp"})])},
+      facing_state(M("metal_detector"),
+                   {"alarm": {"false": {}, "true": {"textures": {"lamp": T("md_lamp_alarm")}}}}),
+      tab=ES)
+for f in ("north", "south"):
+    C.blocks[-1]["models"]["metal_detector"]["elements"][2]["faces"][f]["uv"] = [0, 5, 16, 11]
+
+
+def bars(dx):
+    els = [box([x + dx, 0, 7.5], [x + 1 + dx, 16, 8.5], "steel") for x in range(1, 16, 2)]
+    els += [box([0 + dx, y, 7.3], [16 + dx, y + 1, 8.7], "steel") for y in (0.5, 7.5, 14.5)]
+    return els
+
+
+C.add("holding_cell_door", 'new BlockCellDoor("holding_cell_door", %s)' % B(0, 0, 7, 16, 16, 9),
+      ("Holding Cell Door", "Zellentür (Gitter)", "Puerta de celda", "Celldörr (galler)"),
+      {"holding_cell_door": model({"steel": T("dark_steel"), "particle": T("dark_steel")},
+                                  bars(0)),
+       "holding_cell_door_open": model({"steel": T("dark_steel"), "particle": T("dark_steel")},
+                                       bars(14))},
+      facing_state(M("holding_cell_door"),
+                   {"open": {"false": {}, "true": {"model": M("holding_cell_door_open")}},
+                    "powered": {"false": {}, "true": {}}}), tab=ES)
+prop("holding_cell_bench", (0, 5, 8, 16, 8, 16), True,
+     ("Holding Cell Bench", "Zellenbank", "Banco de celda", "Cellbänk"),
+     {"s": T("stainless"), "particle": T("stainless")},
+     [box([0, 6.5, 8], [16, 7.5, 16], "s"), box([1, 4, 14], [2, 6.5, 16], "s"),
+      box([14, 4, 14], [15, 6.5, 16], "s")])
+prop("holding_cell_toilet", (3, 0, 8, 13, 15, 16), True,
+     ("Holding Cell Toilet and Sink", "Zellen-WC mit Waschbecken", "Inodoro y lavabo de celda",
+      "Celltoalett med tvättställ"),
+     {"s": T("stainless"), "black": T("black"), "particle": T("stainless")},
+     [box([4, 0, 11], [12, 5, 16], "s"), box([3.5, 5, 8.5], [12.5, 6, 16], "s"),
+      box([4.5, 6, 9.5], [11.5, 6.01, 14], "black", faces=("up",)),
+      box([3, 6, 13], [13, 15, 16], "s"), box([4.5, 11, 11], [11.5, 12, 13], "s"),
+      box([7.5, 12, 12], [8.5, 13, 13], "s")])
+prop("height_chart", (0, 0, 15, 16, 16, 16), False,
+     ("Booking Height Chart", "Messlatte für Erkennungsdienst", "Tabla de estatura para fichaje",
+      "Längdskala för registrering"),
+     {"chart": T("height_chart"), "particle": T("height_chart")},
+     [box([0, 0, 15.5], [16, 16, 16], "chart")])
+prop("fingerprint_scanner", (4, 0, 5, 12, 4, 12), False,
+     ("Fingerprint Scanner", "Fingerabdruckscanner", "Escáner de huellas", "Fingeravtrycksläsare"),
+     {"body": T("black"), "top": T("scanner_top"), "particle": T("black")},
+     [box([4, 0, 5], [12, 3, 10], "body", per={"up": "top"}),
+      box([4, 0, 10], [12, 4, 12], "body")])
+prop("booking_camera", (5, 0, 5, 11, 16, 11), True,
+     ("Booking Camera", "Erkennungsdienst-Kamera", "Cámara de fichaje", "Registreringskamera"),
+     {"black": T("black"), "steel": T("steel"), "particle": T("black")},
+     post(8, 8, 2.5, 0, 0.5, "steel") + post(8, 8, 0.5, 0.5, 12, "steel", bottom=False)
+     + [box([5, 12, 6], [11, 16, 11], "black")] + pipe_z(8, 14, 1.4, 4.5, 6, "black"))
+prop("property_bins", (0, 0, 6, 16, 16, 16), True,
+     ("Property Bin Shelf", "Asservatenregal", "Estante de pertenencias",
+      "Hylla för tillhörigheter"),
+     {"steel": T("steel"), "bin": T("bins"), "particle": T("steel")},
+     [box([0, 0, 6], [16, 1, 16], "steel"), box([0, 5.5, 6], [16, 6.5, 16], "steel"),
+      box([0, 11, 6], [16, 12, 16], "steel"), box([0, 15, 6], [16, 16, 16], "steel"),
+      box([0, 0, 15.5], [16, 16, 16], "steel")]
+     + [box([x, y + 0.2, 7], [x + 7, y + 4.5, 15], "bin")
+        for x in (0.5, 8.5) for y in (1, 6.5, 12)])
+prop("evidence_locker", (0, 0, 2, 16, 16, 16), True,
+     ("Evidence Locker", "Asservatenschließfach", "Taquilla de pruebas", "Beslagsskåp"),
+     {"steel": T("steel"), "front": T("evidence_front"), "particle": T("steel")},
+     [box([0, 0, 2], [16, 16, 16], "steel", per={"north": "front"})])
+prop("equipment_locker", (0, 0, 3, 16, 16, 16), True,
+     ("Equipment Locker", "Ausrüstungsspind", "Taquilla de equipo", "Utrustningsskåp"),
+     {"navy": T("navy"), "front": T("locker_front"), "particle": T("navy")},
+     [box([0, 0, 3], [16, 16, 16], "navy", per={"north": "front"})])
+prop("k9_kennel", (0, 0, 0, 16, 12, 16), True,
+     ("K-9 Kennel", "Diensthundezwinger", "Perrera K-9", "Hundgård för tjänstehund"),
+     {"mesh": T("mesh"), "steel": T("dark_steel"), "bed": T("dog_bed"),
+      "particle": T("dark_steel")},
+     [box([0, 0, 0], [16, 12, 0.5], "mesh"), box([0, 0, 15.5], [16, 12, 16], "mesh"),
+      box([0, 0, 0.5], [0.5, 12, 15.5], "mesh"), box([15.5, 0, 0.5], [16, 12, 15.5], "mesh"),
+      box([0, 11.5, 0], [16, 12, 16], "steel"),
+      box([0, 0, 0], [1, 12, 1], "steel"), box([15, 0, 0], [16, 12, 1], "steel"),
+      box([0, 0, 15], [1, 12, 16], "steel"), box([15, 0, 15], [16, 12, 16], "steel"),
+      box([3, 0, 7], [13, 1.5, 14], "bed")])
+
+C.add("police_lamp", 'new BlockLitProp("police_lamp", %s, 14)' % B(4, 2, 4, 12, 15, 16),
+      ("Police Station Blue Lamp", "Blaue Polizeilaterne", "Farol azul de comisaría",
+       "Blå polislykta"),
+      {"police_lamp": model(
+          {"globe": T("police_globe"), "black": T("black"), "particle": T("police_globe")},
+          [box([7.5, 13, 8], [8.5, 14, 16], "black"), box([6, 12, 14.5], [10, 15, 16], "black")]
+          + post(8, 8, 3.2, 3, 11, "globe", top=False, bottom=False)
+          + post(8, 8, 3.6, 11, 12.5, "black") + post(8, 8, 1.5, 2, 3, "black"))},
+      facing_state(M("police_lamp")), tab=ES)
+prop("police_star_emblem", (1, 1, 15, 15, 15, 16), False,
+     ("Police Star Emblem", "Polizeistern-Emblem", "Emblema de estrella policial",
+      "Polisstjärna-emblem"),
+     {"star": T("police_star"), "particle": T("police_star")},
+     [box([1, 1, 15.5], [15, 15, 16], "star", faces=("north", "south"))])
+C.blocks[-1]["models"]["police_star_emblem"]["elements"][0]["faces"]["north"]["uv"] = [0, 0, 16, 16]
+C.blocks[-1]["models"]["police_star_emblem"]["elements"][0]["faces"]["south"]["uv"] = [16, 0, 0, 16]
+
+
+def tape(reg, tex, names):
+    arm = model({"tape": T(tex), "particle": T(tex)},
+                [box([7.9, 9, 0], [8.1, 10.5, 8], "tape", faces=("east", "west"))], ao=False)
+    single = model({"tape": T(tex), "particle": T(tex)},
+                   [box([0, 9, 7.9], [16, 10.5, 8.1], "tape", faces=("north", "south"))],
+                   ao=False)
+    parts = [{"when": {"north": "false", "east": "false", "south": "false", "west": "false"},
+              "apply": {"model": M(reg + "_single")}}]
+    for d, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        apply = {"model": M(reg + "_arm")}
+        if rot:
+            apply["y"] = rot
+        parts.append({"when": {d: "true"}, "apply": apply})
+    item = {"parent": "item/generated", "textures": {"layer0": T(tex + "_item")}}
+    C.add(reg, 'new BlockSceneTape("%s")' % reg, names,
+          {reg + "_arm": arm, reg + "_single": single}, {"multipart": parts}, item=item, tab=ES)
+
+
+tape("police_line_tape", "tape_police",
+     ("Police Line Tape", "Polizei-Absperrband", "Cinta de acordonamiento policial",
+      "Polisens avspärrningsband"))
+tape("fire_line_tape", "tape_fire",
+     ("Fire Line Tape", "Feuerwehr-Absperrband", "Cinta de acordonamiento de bomberos",
+      "Räddningstjänstens avspärrningsband"))
+C.add("tape_stanchion", 'new BlockTapeStanchion("tape_stanchion", %s)' % B(5, 0, 5, 11, 14, 11),
+      ("Tape Stanchion", "Absperrpfosten", "Poste para cinta", "Avspärrningsstolpe"),
+      {"tape_stanchion": model(
+          {"black": T("black"), "yellow": T("yellow"), "particle": T("black")},
+          post(8, 8, 2.8, 0, 1, "black") + post(8, 8, 0.8, 1, 12, "black", bottom=False)
+          + post(8, 8, 1.2, 12, 14, "yellow"))},
+      facing_state(M("tape_stanchion")), tab=ES)
 
 
 if __name__ == "__main__":
