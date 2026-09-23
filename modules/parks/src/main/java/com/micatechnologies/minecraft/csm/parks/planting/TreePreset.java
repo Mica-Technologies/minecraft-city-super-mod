@@ -55,11 +55,67 @@ public enum TreePreset {
   /** A clipped round head on a clear trunk, the European street tree. */
   LOLLIPOP_PLANE("lollipopplane", Shape.HEAD, TreeWood.PLANE, TreeLogWidth.MEDIUM,
       TreeLogWidth.THIN, "tree_leaves_plane", null,
-      p -> p.trunk(4, 5).cluster(2.3, 2.3));
+      p -> p.trunk(4, 5).cluster(2.3, 2.3)),
+  /** Jacaranda: a low, wide umbrella of arching limbs, in its purple blossom. */
+  JACARANDA("jacaranda", Shape.LIMB, TreeWood.JACARANDA, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_jacaranda_blossom", null,
+      p -> p.trunk(3, 4).lean(0, 1).limbs(5, 6).reach(3, 5).rise(2, 3).cluster(3.0, 1.4)
+          .clearance(4).spread(2.6)),
+  /** California pepper tree: a gnarled leaning trunk and weeping tips. */
+  PEPPER_TREE("peppertree", Shape.LIMB, TreeWood.PEPPER, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
+      "tree_leaves_pepper", null,
+      p -> p.trunk(2, 3).lean(1, 2).limbs(4, 5).reach(3, 5).rise(1, 3).cluster(2.8, 1.8)
+          .clearance(3).spread(1.8)),
+  /** Coast live oak: low and twisting, limbs reaching out close to the ground. */
+  COAST_LIVE_OAK("coastliveoak", Shape.LIMB, TreeWood.LIVE_OAK, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_liveoak", null,
+      p -> p.trunk(2, 3).lean(1, 2).limbs(4, 5).reach(4, 6).rise(1, 2).cluster(2.8, 1.6)
+          .clearance(3).spread(2.2).backLimb(true)),
+  /** Weeping willow, for parks rather than streets: a curtain of leaves to the ground. */
+  WEEPING_WILLOW("weepingwillow", Shape.LIMB, TreeWood.WILLOW, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_willow", null,
+      p -> p.trunk(3, 4).lean(0, 1).limbs(5, 6).reach(3, 4).rise(3, 4).cluster(3.2, 2.2)
+          .clearance(4).spread(2.8)),
+  /** Lombardy poplar: a tall, narrow column. */
+  LOMBARDY_POPLAR("poplar", Shape.PROFILE, TreeWood.POPLAR, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_poplar", null,
+      p -> p.trunk(3, 3).height(16, 20).cluster(1.3, 0)),
+  /** 'Slender Silhouette' sweetgum: barely wider than its trunk. */
+  SWEETGUM("sweetgum", Shape.PROFILE, TreeWood.SWEETGUM, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_sweetgum", null,
+      p -> p.trunk(3, 3).height(12, 14).cluster(1.1, 0)),
+  /** Columnar hornbeam: a formal upright oval. */
+  HORNBEAM("hornbeam", Shape.PROFILE, TreeWood.HORNBEAM, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_hornbeam", null,
+      p -> p.trunk(2, 3).height(10, 12).cluster(1.8, 0)),
+  /** Queen palm: straight or nearly, a feathery crown. */
+  QUEEN_PALM("queenpalm", Shape.PALM, TreeWood.PALM, TreeLogWidth.THIN, TreeLogWidth.THIN,
+      "tree_crown_palm_feather", null,
+      p -> p.height(10, 12).lean(0, 1)),
+  /** Lemon-scented gum: a tall smooth white trunk and a sparse crown high up. */
+  LEMON_GUM("lemongum", Shape.LIMB, TreeWood.GUM, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_gum", null,
+      p -> p.trunk(8, 10).lean(0, 1).limbs(3, 4).reach(2, 3).rise(3, 5).cluster(2.4, 1.6)
+          .clearance(8).spread(2.4)),
+  /** Emerald arborvitae: a small green column, for screening. */
+  ARBORVITAE("arborvitae", Shape.PROFILE, TreeWood.CYPRESS, TreeLogWidth.THIN, TreeLogWidth.THIN,
+      "tree_leaves_arborvitae", null,
+      p -> p.trunk(1, 1).height(4, 5).cluster(0.4, 0)),
+  /**
+   * Pleached linden: a box-clipped crown on a clear trunk, wide across the way the planter
+   * faces, so a row planted a few blocks apart joins into a hedge on stilts.
+   */
+  PLEACHED_LINDEN("pleachedlinden", Shape.BOX, TreeWood.LINDEN, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_linden_clipped", null,
+      p -> p.trunk(4, 5).cluster(2.5, 3)),
+  /** Pollarded plane: a stout trunk cut back to knuckles, each with a tight tuft of shoots. */
+  POLLARDED_PLANE("pollardedplane", Shape.POLLARD, TreeWood.PLANE, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_plane", null,
+      p -> p.trunk(4, 5).limbs(4, 5).cluster(1.4, 1.1));
 
-  /** The four generator shapes. */
+  /** The generator shapes. */
   public enum Shape {
-    PROFILE, LIMB, PALM, HEAD
+    PROFILE, LIMB, PALM, HEAD, BOX, POLLARD
   }
 
   public final String id;

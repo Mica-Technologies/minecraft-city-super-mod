@@ -63,6 +63,18 @@ WOODS = [
      ("Italian Cypress", "Säulenzypresse", "ciprés italiano", "pelarcypress"), "fibrous"),
     ("ginkgo", "GINKGO", ("Ginkgo", "Ginkgo", "ginkgo", "ginkgo"), "fissured"),
     ("palm", "PALM", ("Palm", "Palme", "palmera", "palm"), "ringed"),
+    ("jacaranda", "JACARANDA", ("Jacaranda", "Jacaranda", "jacarandá", "jakaranda"),
+     "fissured_brown"),
+    ("pepper", "PEPPER", ("Pepper Tree", "Pfefferbaum", "pimentero", "pepparträd"), "gnarled"),
+    ("poplar", "POPLAR", ("Lombardy Poplar", "Pyramidenpappel", "chopo lombardo",
+                          "pyramidpoppel"), "furrowed_grey"),
+    ("sweetgum", "SWEETGUM", ("Sweetgum", "Amberbaum", "liquidámbar", "ambraträd"), "corky"),
+    ("hornbeam", "HORNBEAM", ("Hornbeam", "Hainbuche", "carpe", "avenbok"), "smooth_grey"),
+    ("gum", "GUM", ("Lemon-scented Gum", "Zitroneneukalyptus", "eucalipto limón",
+                    "citroneukalyptus"), "white_smooth"),
+    ("willow", "WILLOW", ("Weeping Willow", "Trauerweide", "sauce llorón", "tårpil"),
+     "furrowed_deep"),
+    ("linden", "LINDEN", ("Linden", "Linde", "tilo", "lind"), "smooth_grey"),
 ]
 
 # id -> (Java constant, pixels across, name patterns en/de/es/sv). Order = TreeLogWidth order.
@@ -80,6 +92,10 @@ WIDTHS = [
 LEAF_NAMES = ("{w} Leaves", "Laub ({w})", "Hojas de {w}", "Löv ({w})")
 NEEDLE_NAMES = ("{w} Foliage", "Nadeln ({w})", "Follaje de {w}", "Barr ({w})")
 
+BLOSSOM_NAMES = ("{w} Blossom", "Blüten ({w})", "Flores de {w}", "Blommor ({w})")
+CLIPPED_NAMES = ("Clipped {w} Leaves", "Geschnittenes Laub ({w})", "Hojas recortadas de {w}",
+                 "Klippt löv ({w})")
+ARBORVITAE = ("Arborvitae", "Lebensbaum", "tuya", "tuja")
 AUTUMN_NAMES = ("Autumn {w} Leaves", "Herbstlaub ({w})", "Hojas otoñales de {w}",
                 "Höstlöv ({w})")
 
@@ -107,9 +123,36 @@ LEAVES = [
      [(238, 208, 92), (216, 182, 70), (188, 152, 56), (152, 120, 44)], AUTUMN_NAMES),
     ("ginkgo_autumn", "BROADLEAF", WOODS[5][2], "fan",
      [(248, 222, 88), (234, 198, 60), (208, 170, 46), (172, 138, 36)], AUTUMN_NAMES),
+    ("jacaranda", "AIRY", WOODS[7][2], "airy",
+     [(126, 170, 84), (104, 150, 70), (84, 128, 58), (66, 106, 46)], LEAF_NAMES),
+    ("jacaranda_blossom", "AIRY", WOODS[7][2], "blossom",
+     [(178, 150, 222), (150, 120, 204), (124, 96, 182), (96, 120, 70)], BLOSSOM_NAMES),
+    ("pepper", "WEEPING", WOODS[8][2], "airy",
+     [(142, 170, 92), (120, 150, 76), (98, 128, 62), (78, 106, 50)], LEAF_NAMES),
+    ("poplar", "BROADLEAF", WOODS[9][2], "broad",
+     [(120, 164, 70), (98, 144, 58), (78, 122, 48), (60, 100, 38)], LEAF_NAMES),
+    ("poplar_autumn", "BROADLEAF", WOODS[9][2], "broad",
+     [(240, 206, 76), (222, 182, 56), (196, 156, 44), (160, 124, 36)], AUTUMN_NAMES),
+    ("sweetgum", "BROADLEAF", WOODS[10][2], "broad_large",
+     [(98, 146, 64), (80, 126, 54), (64, 106, 44), (50, 88, 36)], LEAF_NAMES),
+    ("sweetgum_autumn", "BROADLEAF", WOODS[10][2], "broad_large",
+     [(214, 70, 52), (180, 46, 58), (134, 36, 70), (96, 30, 60)], AUTUMN_NAMES),
+    ("hornbeam", "BROADLEAF", WOODS[11][2], "broad",
+     [(110, 150, 66), (90, 130, 54), (72, 110, 44), (56, 90, 36)], LEAF_NAMES),
+    ("gum", "AIRY", WOODS[12][2], "airy",
+     [(150, 170, 140), (126, 150, 120), (104, 130, 102), (84, 110, 86)], LEAF_NAMES),
+    ("willow", "WEEPING", WOODS[13][2], "willow",
+     [(170, 190, 92), (146, 170, 76), (122, 150, 62), (100, 128, 50)], LEAF_NAMES),
+    ("arborvitae", "NEEDLE", ARBORVITAE, "needle",
+     [(104, 150, 64), (86, 130, 54), (68, 110, 44), (54, 92, 36)], NEEDLE_NAMES),
+    ("linden", "BROADLEAF", WOODS[14][2], "broad",
+     [(114, 156, 70), (94, 136, 58), (76, 116, 48), (60, 96, 38)], LEAF_NAMES),
+    ("linden_clipped", "CLIPPED", WOODS[14][2], "clipped",
+     [(100, 144, 62), (84, 126, 52), (68, 108, 44), (54, 90, 36)], CLIPPED_NAMES),
 ]
 SEASON_OF = {"elm_autumn": "elm", "plane_autumn": "plane", "honeylocust_autumn": "honeylocust",
-             "ginkgo_autumn": "ginkgo"}
+             "ginkgo_autumn": "ginkgo", "poplar_autumn": "poplar",
+             "sweetgum_autumn": "sweetgum"}
 
 # Palm crowns: (id, TreeLeafType constant, sheet, names en/de/es/sv). Order = tab order.
 PALMS = [
@@ -137,6 +180,26 @@ PRESETS = [
                      "Palmera de pluma inclinada", "Lutande fjäderpalm")),
     ("lollipopplane", ("Clipped Ball-Head Plane", "Kugelplatane", "Plátano de copa esférica",
                        "Klotformad platan")),
+    ("jacaranda", ("Jacaranda", "Jacaranda", "Jacarandá", "Jakaranda")),
+    ("peppertree", ("California Pepper Tree", "Kalifornischer Pfefferbaum",
+                    "Pimentero californiano", "Kaliforniskt pepparträd")),
+    ("coastliveoak", ("Coast Live Oak", "Kalifornische Eiche", "Encino de la costa",
+                      "Kustek")),
+    ("weepingwillow", ("Weeping Willow", "Trauerweide", "Sauce llorón", "Tårpil")),
+    ("poplar", ("Lombardy Poplar", "Pyramidenpappel", "Chopo lombardo", "Pyramidpoppel")),
+    ("sweetgum", ("Slender Sweetgum", "Säulen-Amberbaum", "Liquidámbar columnar",
+                  "Pelarambraträd")),
+    ("hornbeam", ("Columnar Hornbeam", "Säulen-Hainbuche", "Carpe columnar",
+                  "Pelaravenbok")),
+    ("queenpalm", ("Queen Palm", "Königinpalme", "Palmera reina", "Drottningpalm")),
+    ("lemongum", ("Lemon-scented Gum", "Zitroneneukalyptus", "Eucalipto limón",
+                  "Citroneukalyptus")),
+    ("arborvitae", ("Emerald Arborvitae", "Smaragd-Lebensbaum", "Tuya esmeralda",
+                    "Smaragdtuja")),
+    ("pleachedlinden", ("Pleached Linden", "Spalierlinde", "Tilo en espaldera",
+                        "Spaljerad lind")),
+    ("pollardedplane", ("Pollarded Plane", "Kopfplatane", "Plátano desmochado",
+                        "Hamlad platan")),
 ]
 
 # The tool's own lines: key -> en/de/es/sv.
@@ -252,7 +315,25 @@ def bark(recipe, seed):
             elif y % 4 == 1:
                 for x in range(SIZE):
                     field[y][x] += 10
-    elif recipe == "mottled":
+    elif recipe == "fissured_brown":
+        base, spread = (116, 104, 92), 8
+        field = _furrows(rng, 6, 18)
+    elif recipe == "gnarled":
+        base, spread = (122, 88, 66), 12
+        field = _furrows(rng, 6, 30, jitter=2)
+    elif recipe == "corky":
+        base, spread = (104, 92, 80), 10
+        field = _furrows(rng, 5, 34)
+        for y in range(0, SIZE, 3):
+            for x in range(SIZE):
+                field[(y + (x // 3) % 2) % SIZE][x] -= 12
+    elif recipe == "smooth_grey":
+        base, spread = (140, 138, 132), 6
+        field = _furrows(rng, 3, 10, jitter=0)
+    elif recipe == "furrowed_deep":
+        base, spread = (98, 90, 80), 10
+        field = _furrows(rng, 7, 36)
+    elif recipe in ("mottled", "white_smooth"):
         base, spread = (168, 160, 132), 0
         field = [[0.0] * SIZE for _ in range(SIZE)]
     else:
@@ -260,9 +341,12 @@ def bark(recipe, seed):
     grain = _noise(rng, 4)
     img = Image.new("RGBA", (SIZE, SIZE))
     px = img.load()
-    if recipe == "mottled":
-        # London plane: flaking patches of cream, olive and grey.
-        patches = [(186, 180, 150), (150, 146, 104), (128, 124, 116), (196, 188, 160)]
+    if recipe in ("mottled", "white_smooth"):
+        # London plane: flaking patches of cream, olive and grey. Lemon-scented gum: powdery
+        # white with pink and grey where the old bark has just shed.
+        patches = ([(186, 180, 150), (150, 146, 104), (128, 124, 116), (196, 188, 160)]
+                   if recipe == "mottled" else
+                   [(222, 218, 210), (236, 232, 226), (206, 196, 196), (228, 222, 214)])
         patch = _noise(rng, 3)
         patch2 = _noise(rng, 5)
         for y in range(SIZE):
@@ -346,6 +430,34 @@ def leaf_cluster(style, palette, seed):
                         lx = x + math.cos(a + side * 1.2) * 1.6
                         ly = y + math.sin(a + side * 1.2) * 1.6
                         put(int(round(lx)), int(round(ly)), palette[rng.randrange(3)])
+    elif style == "blossom":
+        # Jacaranda in flower: panicles of violet bells over a little fern-green.
+        for _ in range(60):
+            x, y = rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE)
+            put(x, y, palette[3])
+        for _ in range(70):
+            cx, cy = rng.uniform(0, LEAF_SIZE), rng.uniform(0, LEAF_SIZE)
+            shade = rng.randrange(3)
+            for dx, dy in ((0, 0), (1, 0), (0, 1), (-1, 0), (0, -1), (1, 1)):
+                if rng.random() < 0.8:
+                    put(int(cx) + dx, int(cy) + dy, palette[min(2, shade + (dx + dy) % 2)])
+    elif style == "willow":
+        # Long narrow leaves on hanging strands.
+        for _ in range(26):
+            x = rng.uniform(1, 31)
+            for y in range(rng.randrange(0, 8), LEAF_SIZE):
+                if rng.random() < 0.85:
+                    put(int(x), y, palette[rng.randrange(len(palette))])
+                if rng.random() < 0.2:
+                    x += rng.choice((-1, 1)) * 0.5
+    elif style == "clipped":
+        # Clipped dense: the whole card is leaf, no gaps, for a flat topiary face.
+        for y in range(LEAF_SIZE):
+            for x in range(LEAF_SIZE):
+                px[x, y] = tuple(palette[rng.randrange(len(palette))]) + (255,)
+        for _ in range(120):
+            cx, cy = rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE)
+            px[cx, cy] = tuple(palette[0]) + (255,)
     elif style == "needle":
         for _ in range(420):
             x, y = rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE)

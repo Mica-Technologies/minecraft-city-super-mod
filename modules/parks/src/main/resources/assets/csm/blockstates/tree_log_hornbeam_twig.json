@@ -1,0 +1,20 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/log_twig",
+    "textures": {
+      "bark": "csm:blocks/parks/bark_hornbeam",
+      "particle": "csm:blocks/parks/bark_hornbeam"
+    }
+  },
+  "variants": {
+    "axis": {
+      "x": {},
+      "y": {},
+      "z": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

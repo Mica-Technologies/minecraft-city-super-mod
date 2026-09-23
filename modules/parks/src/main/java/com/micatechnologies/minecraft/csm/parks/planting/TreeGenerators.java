@@ -20,6 +20,9 @@ import net.minecraft.util.math.BlockPos;
  *   <li><b>Palm</b>: a trunk whose sideways offset grows with the square of the height, so it
  *       curves rather than leans straight, and a crown on top.</li>
  *   <li><b>Head</b>: a clear trunk and a clipped round head.</li>
+ *   <li><b>Box</b>: a clear trunk and a box-clipped crown wide across the facing, so a row
+ *       joins into a pleached hedge on stilts.</li>
+ *   <li><b>Pollard</b>: a stout trunk cut back to a head of knuckles, each with a tuft.</li>
  * </ul>
  *
  * <p>A line never steps on all three axes at once: the log kit bridges edge diagonals, not corner
@@ -53,6 +56,12 @@ public final class TreeGenerators {
         break;
       case PALM:
         palm(plan, preset, facing, rng);
+        break;
+      case BOX:
+        box(plan, preset, facing, rng);
+        break;
+      case POLLARD:
+        pollard(plan, preset, rng);
         break;
       default:
         head(plan, preset, rng);
@@ -247,6 +256,52 @@ public final class TreeGenerators {
     }
     String crown = p.extra != null && rng.nextBoolean() ? p.extra : p.leaves;
     plan.leaves(pos, crown);
+  }
+
+  // --- Box (pleached) ---
+
+  private static void box(TreePlan plan, TreePreset p, EnumFacing facing, Random rng) {
+    int trunk = range(rng, p.trunkMin, p.trunkMax);
+    int half = (int) Math.floor(p.clusterRx);
+    int height = (int) Math.round(p.clusterRy);
+    // Across the facing: the row runs this way.
+    int sx = -facing.getZOffset();
+    int sz = facing.getXOffset();
+    for (int y = 0; y < trunk + height / 2 + 1; y++) {
+      plan.log(new BlockPos(0, y, 0), p.wood, y < trunk ? p.trunkWidth : p.limbWidth,
+          EnumFacing.Axis.Y);
+    }
+    for (int a = -half; a <= half; a++) {
+      for (int d = 0; d <= 1; d++) {
+        for (int y = trunk; y < trunk + height; y++) {
+          // Two deep: the cell of the trunk and the one behind it, away from the facing.
+          int dx = sx * a - facing.getXOffset() * d;
+          int dz = sz * a - facing.getZOffset() * d;
+          plan.leaves(new BlockPos(dx, y, dz), p.leaves);
+        }
+      }
+    }
+  }
+
+  // --- Pollard ---
+
+  private static void pollard(TreePlan plan, TreePreset p, Random rng) {
+    int trunk = range(rng, p.trunkMin, p.trunkMax);
+    for (int y = 0; y < trunk; y++) {
+      plan.log(new BlockPos(0, y, 0), p.wood, y < trunk - 1 ? p.trunkWidth : p.limbWidth,
+          EnumFacing.Axis.Y);
+    }
+    BlockPos top = new BlockPos(0, trunk - 1, 0);
+    int knuckles = range(rng, p.limbsMin, p.limbsMax);
+    double turn = rng.nextDouble() * Math.PI * 2;
+    for (int i = 0; i < knuckles; i++) {
+      double a = turn + i * 2 * Math.PI / knuckles;
+      BlockPos knuckle = top.add(Math.round(Math.cos(a) * 1.4), 1 + rng.nextInt(2),
+          Math.round(Math.sin(a) * 1.4));
+      line(plan, p, top, knuckle);
+      cluster(plan, p, new double[]{knuckle.getX(), knuckle.getY() + 1, knuckle.getZ(), 1.0},
+          rng);
+    }
   }
 
   // --- Head ---

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/leaves_linden_clipped"
+    },
+    "inventory": {
+      "model": "csm:parks/leaves_linden_clipped"
+    }
+  }
+}

@@ -75,6 +75,16 @@ public final class TreeLeavesGeometry {
           rng.nextDouble() * 10 + 3};
       card(quads, type, rng, c, size(type, rng));
     }
+    if (type == TreeLeafType.CLIPPED) {
+      // Clipped flat: each open side is a sheet of leaves a hair inside the cell's face, so a
+      // run of them is a box hedge on stilts rather than a cloud.
+      for (EnumFacing f : EnumFacing.values()) {
+        if ((open >> f.getIndex() & 1) != 0) {
+          clippedFace(quads, f);
+        }
+      }
+      return quads;
+    }
     if (!fancy) {
       return quads;
     }
@@ -109,6 +119,46 @@ public final class TreeLeavesGeometry {
       }
     }
     return quads;
+  }
+
+  /** A sheet of leaves over one face of the cell, 0.3 inside it, facing out. */
+  private static void clippedFace(List<TreeLogGeometry.Quad> quads, EnumFacing f) {
+    double in = 0.3;
+    double[][] c;
+    switch (f) {
+      case UP:
+        c = new double[][]{{0, 16 - in, 16}, {16, 16 - in, 16}, {16, 16 - in, 0},
+            {0, 16 - in, 0}};
+        break;
+      case DOWN:
+        c = new double[][]{{0, in, 0}, {16, in, 0}, {16, in, 16}, {0, in, 16}};
+        break;
+      case NORTH:
+        c = new double[][]{{16, 0, in}, {0, 0, in}, {0, 16, in}, {16, 16, in}};
+        break;
+      case SOUTH:
+        c = new double[][]{{0, 0, 16 - in}, {16, 0, 16 - in}, {16, 16, 16 - in},
+            {0, 16, 16 - in}};
+        break;
+      case WEST:
+        c = new double[][]{{in, 0, 0}, {in, 0, 16}, {in, 16, 16}, {in, 16, 0}};
+        break;
+      default:
+        c = new double[][]{{16 - in, 0, 16}, {16 - in, 0, 0}, {16 - in, 16, 0},
+            {16 - in, 16, 16}};
+        break;
+    }
+    double[][] uv = {{0, 16}, {16, 16}, {16, 0}, {0, 0}};
+    TreeLogGeometry.Quad q = new TreeLogGeometry.Quad();
+    for (int i = 0; i < 4; i++) {
+      q.pos[i] = c[i];
+      q.uv[i] = uv[i];
+    }
+    double[] n = q.faceNormal();
+    for (int i = 0; i < 4; i++) {
+      q.normal[i] = n;
+    }
+    quads.add(q);
   }
 
   private static double size(TreeLeafType type, Random rng) {
