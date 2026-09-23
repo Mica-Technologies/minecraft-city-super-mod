@@ -580,7 +580,8 @@ def facing_state(model_name, fitted=False):
 
 
 stake_tex = {"wood": T("stake"), "tie": T("tie"), "particle": T("stake")}
-add("tree_stake", 'new BlockParkFacing("tree_stake", new int[]{7, 0, 11, 9, 24, 13}, true)',
+add("tree_stake",
+    'new BlockParkFacing.TreeStake("tree_stake", new int[]{7, 0, 11, 9, 24, 13}, true)',
     ("Tree Stake", "Baumpfahl", "Tutor para árbol", "Trädstöd"),
     {"tree_stake": model(stake_tex, [
         box([7, 0, 11], [9, 24, 13], "wood"),

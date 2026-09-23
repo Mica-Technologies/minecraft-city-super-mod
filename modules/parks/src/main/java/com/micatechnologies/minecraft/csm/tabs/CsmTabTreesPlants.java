@@ -212,7 +212,7 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockParkProp("ground_pea_gravel", BlockParkProp.Kind.COVER, 1, 0));
     initTabBlock(new BlockParkProp("ground_decomposed_granite", BlockParkProp.Kind.COVER, 1, 0));
     initTabBlock(new BlockParkProp("ground_turf", BlockParkProp.Kind.COVER, 1, 0));
-    initTabBlock(new BlockParkFacing("tree_stake", new int[]{7, 0, 11, 9, 24, 13}, true));
+    initTabBlock(new BlockParkFacing.TreeStake("tree_stake", new int[]{7, 0, 11, 9, 24, 13}, true));
     initTabBlock(new BlockParkFacing.PoleFitted("hanging_basket_petunia", new int[]{2, 0, 0, 14, 16, 12}, false));
     initTabBlock(new BlockParkFacing.PoleFitted("hanging_basket_mixed", new int[]{2, 0, 0, 14, 16, 12}, false));
   }

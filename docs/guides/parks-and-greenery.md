@@ -67,8 +67,8 @@ tree afterwards if you like.
 - **Tree grates** (square and round) and the **mulched tree pit** replace the ground block under a
   tree. The trunk stands on them.
 - The **Tree Pit Hoop Fence** goes round a pit and joins up like a fence.
-- A **Tree Stake** stands next to a young tree, with its tie reaching over to the trunk. Place one
-  on each side.
+- A **Tree Stake** stands next to a young tree, with its tie reaching over to the trunk; it turns
+  to the trunk by itself when you place it. Place one on each side.
 - **Hanging baskets** hang on a bracket from a wall or pole, and fit any traffic pole's thickness.
 
 ## Plantings

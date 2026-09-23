@@ -176,7 +176,9 @@ trunk would have to share the trunk's cell, so the tree guard became:
 
 - a **hoop fence** round the pit, a joining fence of arches;
 - a **tree stake** that stands in the next cell, with its tie reaching back to a thin trunk's skin
-  (the element runs past the cell, to z = 22).
+  (the element runs past the cell, to z = 22). Placed like any facing prop it would face the
+  player, pointing the tie wherever the player happens to look, so `BlockParkFacing.TreeStake`
+  turns it toward a neighbouring log when it is placed (the one looked toward first).
 
 **Hanging baskets** are side-mounted accessories (`ICsmPoleFitted`). Their `_thin` and `_pedestal`
 model copies move the bracket plate back to the thinner pole's skin, as
@@ -204,8 +206,10 @@ Everything else there is written by `gen_park_amenities.py`.
   facing out. A picnic table seats one on each side: the bench on the player's side, facing across
   the table, and you step out on that side. That second seat is why `EntityCsmSeat.sit` has an
   overload taking the box another seat must be in to count as taken.
-- **Pergola.** Timber posts, and a joining roof of rafters with beams round the outside. The roof's
-  collision starts 10 px up, so people walk under it.
+- **Pergola.** Timber posts, and a joining roof that sits straight on them: a beam along each
+  outer row, centred over the post line, and rafters across on top. Where two beams cross at a
+  corner the turned one is drawn with `uvlock`, so the shared faces carry identical pixels and
+  cannot z-fight.
 - **Fountains.** The basin joins into a pool of any size, and also runs up to any `fountain_` block
   standing in it. The tiered fountain's water and falling water are animated textures (`.mcmeta`).
 - **Irrigation.** `BlockIrrigationController` is a wall box that polls the world clock every 2

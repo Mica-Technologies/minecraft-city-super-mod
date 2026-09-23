@@ -154,8 +154,9 @@ for x, z in young:
     put(x, Y + 5, z, 'tree_leaves_ginkgo')
     put(x - 1, Y + 4, z, 'tree_leaves_ginkgo')
     put(x + 1, Y + 4, z, 'tree_leaves_ginkgo')
-    put(x - 1, Y, z, 'tree_stake', E)
-    put(x + 1, Y, z, 'tree_stake', W)
+    # A stake's tie reaches back to the trunk: west of the trunk it faces west, east of it east.
+    put(x - 1, Y, z, 'tree_stake', W)
+    put(x + 1, Y, z, 'tree_stake', E)
 # Brick pillars at the street's ends with hanging baskets.
 for x in (XS + 1, XE - 1):
     for z in (Z0 + 1, Z0 + 14):
