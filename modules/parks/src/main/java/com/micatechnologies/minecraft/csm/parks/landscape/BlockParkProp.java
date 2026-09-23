@@ -33,6 +33,8 @@ public class BlockParkProp extends AbstractBlock {
     /** A planter box: solid to its own size, soil on top. */
     PLANTER(Material.ROCK, SoundType.STONE, "pickaxe", 1.5F, BlockRenderLayer.CUTOUT, true,
         false),
+    /** A timber post: a pergola's. */
+    POST(Material.WOOD, SoundType.WOOD, "axe", 2.0F, BlockRenderLayer.CUTOUT, true, false),
     /** A shrub: solid, but only its own size. */
     SHRUB(Material.LEAVES, SoundType.PLANT, null, 0.3F, BlockRenderLayer.CUTOUT_MIPPED, true,
         false),

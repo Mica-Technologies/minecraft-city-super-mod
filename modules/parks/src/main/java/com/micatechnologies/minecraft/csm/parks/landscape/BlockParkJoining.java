@@ -41,8 +41,10 @@ public class BlockParkJoining extends AbstractBlock {
     HEDGE(Material.LEAVES, SoundType.PLANT, null, 0.4F, BlockRenderLayer.CUTOUT_MIPPED),
     /** A low steel hoop fence, joins its own kind. */
     FENCE(Material.IRON, SoundType.METAL, "pickaxe", 2.0F, BlockRenderLayer.CUTOUT),
-    /** A raised bed, joins beds of the same material only. */
-    BED(Material.ROCK, SoundType.STONE, "pickaxe", 1.5F, BlockRenderLayer.CUTOUT);
+    /** A raised bed or fountain basin, joins its own block only. */
+    BED(Material.ROCK, SoundType.STONE, "pickaxe", 1.5F, BlockRenderLayer.CUTOUT),
+    /** A pergola's roof of beams and rafters: above head height, joins its own block only. */
+    PERGOLA(Material.WOOD, SoundType.WOOD, "axe", 2.0F, BlockRenderLayer.CUTOUT);
 
     final Material material;
     final SoundType sound;
@@ -124,11 +126,19 @@ public class BlockParkJoining extends AbstractBlock {
   /** Whether this joins the block on the given side. */
   public boolean joins(IBlockAccess world, BlockPos pos, EnumFacing side) {
     IBlockState other = world.getBlockState(pos.offset(side));
+    if (kind == Kind.BED && getBlockRegistryName().equals("fountain_basin")) {
+      // A basin runs up to a fountain standing in it, so the fountain stands in the water.
+      String name = other.getBlock().getRegistryName() == null ? ""
+          : other.getBlock().getRegistryName().getPath();
+      if (name.startsWith("fountain_")) {
+        return true;
+      }
+    }
     if (!(other.getBlock() instanceof BlockParkJoining)) {
       return false;
     }
     BlockParkJoining o = (BlockParkJoining) other.getBlock();
-    return kind == Kind.BED ? o == this : o.kind == kind;
+    return kind == Kind.BED || kind == Kind.PERGOLA ? o == this : o.kind == kind;
   }
 
   @Override
@@ -143,8 +153,13 @@ public class BlockParkJoining extends AbstractBlock {
 
   // --- shape ---
 
+  /** Where it starts: a pergola roof sits on its posts, clear of the heads beneath it. */
+  private double bottom() {
+    return kind == Kind.PERGOLA ? 0.625 : 0;
+  }
+
   private AxisAlignedBB post() {
-    return new AxisAlignedBB(0.5 - half, 0, 0.5 - half, 0.5 + half, height, 0.5 + half);
+    return new AxisAlignedBB(0.5 - half, bottom(), 0.5 - half, 0.5 + half, height, 0.5 + half);
   }
 
   @Override
@@ -161,7 +176,7 @@ public class BlockParkJoining extends AbstractBlock {
     double x1 = s.getValue(EAST) ? 1 : 0.5 + half;
     double z0 = s.getValue(NORTH) ? 0 : 0.5 - half;
     double z1 = s.getValue(SOUTH) ? 1 : 0.5 + half;
-    return new AxisAlignedBB(x0, 0, z0, x1, height, z1);
+    return new AxisAlignedBB(x0, bottom(), z0, x1, height, z1);
   }
 
   @Override
@@ -172,23 +187,24 @@ public class BlockParkJoining extends AbstractBlock {
     IBlockState s = isActualState ? state : getActualState(state, world, pos);
     // A fence is jumped like a fence; a bed or hedge is climbed on like a slab or a wall.
     double top = kind == Kind.FENCE ? 1.5 : height;
+    double b = bottom();
     addCollisionBoxToList(pos, entityBox, boxes,
-        new AxisAlignedBB(0.5 - half, 0, 0.5 - half, 0.5 + half, top, 0.5 + half));
+        new AxisAlignedBB(0.5 - half, b, 0.5 - half, 0.5 + half, top, 0.5 + half));
     if (s.getValue(NORTH)) {
       addCollisionBoxToList(pos, entityBox, boxes,
-          new AxisAlignedBB(0.5 - half, 0, 0, 0.5 + half, top, 0.5));
+          new AxisAlignedBB(0.5 - half, b, 0, 0.5 + half, top, 0.5));
     }
     if (s.getValue(SOUTH)) {
       addCollisionBoxToList(pos, entityBox, boxes,
-          new AxisAlignedBB(0.5 - half, 0, 0.5, 0.5 + half, top, 1));
+          new AxisAlignedBB(0.5 - half, b, 0.5, 0.5 + half, top, 1));
     }
     if (s.getValue(WEST)) {
       addCollisionBoxToList(pos, entityBox, boxes,
-          new AxisAlignedBB(0, 0, 0.5 - half, 0.5, top, 0.5 + half));
+          new AxisAlignedBB(0, b, 0.5 - half, 0.5, top, 0.5 + half));
     }
     if (s.getValue(EAST)) {
       addCollisionBoxToList(pos, entityBox, boxes,
-          new AxisAlignedBB(0.5, 0, 0.5 - half, 1, top, 0.5 + half));
+          new AxisAlignedBB(0.5, b, 0.5 - half, 1, top, 0.5 + half));
     }
   }
 
@@ -207,7 +223,8 @@ public class BlockParkJoining extends AbstractBlock {
   @SuppressWarnings("deprecation")
   public BlockFaceShape getBlockFaceShape(@Nonnull IBlockAccess world, @Nonnull IBlockState state,
       @Nonnull BlockPos pos, @Nonnull EnumFacing face) {
-    return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+    return face == EnumFacing.DOWN && kind != Kind.PERGOLA ? BlockFaceShape.SOLID
+        : BlockFaceShape.UNDEFINED;
   }
 
   @Override

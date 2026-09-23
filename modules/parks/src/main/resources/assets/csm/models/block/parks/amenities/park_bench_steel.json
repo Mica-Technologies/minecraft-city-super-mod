@@ -1,0 +1,146 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "sheet": "csm:blocks/parks/amenities/perforated_green",
+    "frame": "csm:blocks/parks/amenities/green_steel",
+    "particle": "csm:blocks/parks/amenities/perforated_green"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        7,
+        2
+      ],
+      "to": [
+        16,
+        8,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#sheet",
+          "uv": [
+            0,
+            8,
+            16,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#sheet",
+          "uv": [
+            0,
+            8,
+            16,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#sheet",
+          "uv": [
+            6.5,
+            8,
+            14,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#sheet",
+          "uv": [
+            2,
+            8,
+            9.5,
+            9
+          ]
+        },
+        "up": {
+          "texture": "#sheet",
+          "uv": [
+            0,
+            2,
+            16,
+            9.5
+          ]
+        },
+        "down": {
+          "texture": "#sheet",
+          "uv": [
+            0,
+            6.5,
+            16,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        9,
+        10
+      ],
+      "to": [
+        16,
+        14.5,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#sheet",
+          "uv": [
+            0,
+            1.5,
+            16,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#sheet",
+          "uv": [
+            0,
+            1.5,
+            16,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#sheet",
+          "uv": [
+            5,
+            1.5,
+            6,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#sheet",
+          "uv": [
+            10,
+            1.5,
+            11,
+            7
+          ]
+        },
+        "up": {
+          "texture": "#sheet",
+          "uv": [
+            0,
+            10,
+            16,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#sheet",
+          "uv": [
+            0,
+            5,
+            16,
+            6
+          ]
+        }
+      }
+    }
+  ]
+}

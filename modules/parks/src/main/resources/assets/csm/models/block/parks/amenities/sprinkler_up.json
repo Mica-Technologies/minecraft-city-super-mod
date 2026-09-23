@@ -1,0 +1,214 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cap": "csm:blocks/parks/amenities/sprinkler_cap",
+    "riser": "csm:blocks/parks/amenities/iron",
+    "particle": "csm:blocks/parks/amenities/sprinkler_cap"
+  },
+  "elements": [
+    {
+      "from": [
+        7,
+        0,
+        7
+      ],
+      "to": [
+        9,
+        4,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#riser",
+          "uv": [
+            7,
+            12,
+            9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#riser",
+          "uv": [
+            7,
+            12,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#riser",
+          "uv": [
+            7,
+            12,
+            9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#riser",
+          "uv": [
+            7,
+            12,
+            9,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#riser",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#riser",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        4,
+        6.5
+      ],
+      "to": [
+        9.5,
+        5.5,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            10.5,
+            9.5,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            10.5,
+            9.5,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            10.5,
+            9.5,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            10.5,
+            9.5,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.5,
+        4.5,
+        5.5
+      ],
+      "to": [
+        8.5,
+        5,
+        6.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cap",
+          "uv": [
+            7.5,
+            11,
+            8.5,
+            11.5
+          ]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [
+            7.5,
+            11,
+            8.5,
+            11.5
+          ]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [
+            9.5,
+            11,
+            10.5,
+            11.5
+          ]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [
+            5.5,
+            11,
+            6.5,
+            11.5
+          ]
+        },
+        "up": {
+          "texture": "#cap",
+          "uv": [
+            7.5,
+            5.5,
+            8.5,
+            6.5
+          ]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [
+            7.5,
+            9.5,
+            8.5,
+            10.5
+          ]
+        }
+      }
+    }
+  ]
+}

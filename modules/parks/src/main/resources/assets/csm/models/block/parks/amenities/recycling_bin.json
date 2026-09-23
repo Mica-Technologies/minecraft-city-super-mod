@@ -1,0 +1,146 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "bin": "csm:blocks/parks/amenities/bin_blue",
+    "lid": "csm:blocks/parks/amenities/lid_blue",
+    "particle": "csm:blocks/parks/amenities/bin_blue"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        13,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bin",
+          "uv": [
+            3,
+            3,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#bin",
+          "uv": [
+            3,
+            3,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#bin",
+          "uv": [
+            3,
+            3,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#bin",
+          "uv": [
+            3,
+            3,
+            13,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#bin",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#bin",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        13,
+        2.5
+      ],
+      "to": [
+        13.5,
+        15,
+        13.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bin",
+          "uv": [
+            2.5,
+            1,
+            13.5,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#bin",
+          "uv": [
+            2.5,
+            1,
+            13.5,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#bin",
+          "uv": [
+            2.5,
+            1,
+            13.5,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#bin",
+          "uv": [
+            2.5,
+            1,
+            13.5,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#lid",
+          "uv": [
+            2.5,
+            2.5,
+            13.5,
+            13.5
+          ]
+        },
+        "down": {
+          "texture": "#bin",
+          "uv": [
+            2.5,
+            2.5,
+            13.5,
+            13.5
+          ]
+        }
+      }
+    }
+  ]
+}
