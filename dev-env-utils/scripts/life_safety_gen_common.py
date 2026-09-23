@@ -307,6 +307,13 @@ class Catalogue(object):
                             "models": models, "blockstate": blockstate, "item": item,
                             "tab": tab})
 
+    def add_item(self, registry, java, names, texture, tab=None):
+        """An item: its Java, names (item.<registry>.name), and the name of one of this
+        catalogue's textures, which is written under textures/items/<tex_dir>/ as well."""
+        assert len(names) == 4, registry
+        self.items.append({"registry": registry, "java": java, "names": names,
+                           "texture": texture, "tab": tab})
+
     def add_lang(self, key, names):
         for i, loc in enumerate(LOCALES):
             self.lang[loc][key] = names[i]
@@ -316,11 +323,17 @@ class Catalogue(object):
         for b in self.blocks:
             for i, loc in enumerate(LOCALES):
                 out[loc]["tile.%s.name" % b["registry"]] = b["names"][i]
+        for it in self.items:
+            for i, loc in enumerate(LOCALES):
+                out[loc]["item.%s.name" % it["registry"]] = it["names"][i]
         return out
 
     def generate(self, assets):
         written = []
+        item_textures = set(it["texture"] for it in self.items)
         for name, draw in sorted(self.textures.items()):
+            if name in item_textures:
+                continue
             rel = "textures/blocks/%s/%s.png" % (self.tex_dir, name)
             path = os.path.join(assets, rel)
             os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -338,6 +351,16 @@ class Catalogue(object):
                 rel = "models/item/%s.json" % b["registry"]
                 dump(os.path.join(assets, rel), b["item"])
                 written.append(rel)
+        for it in self.items:
+            rel = "textures/items/%s/%s.png" % (self.tex_dir, it["texture"])
+            path = os.path.join(assets, rel)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            self.textures[it["texture"]]().save(path)
+            written.append(rel)
+            rel = "models/item/%s.json" % it["registry"]
+            dump(os.path.join(assets, rel), {"parent": "item/generated", "textures": {
+                "layer0": "csm:items/%s/%s" % (self.tex_dir, it["texture"])}})
+            written.append(rel)
         gen_trees.write_lang(os.path.join(assets, "lang"), self.lang_entries())
         written += ["lang/%s.lang" % loc for loc in LOCALES]
         return written
@@ -348,9 +371,13 @@ class Catalogue(object):
         for b in self.blocks:
             if b["tab"] not in tabs:
                 tabs.append(b["tab"])
+        for it in self.items:
+            if it["tab"] not in tabs:
+                tabs.append(it["tab"])
         for t in tabs:
             out.append("    // --- %s (%s --fragments) ---" % (t or "tab", self.name))
             out += ["    initTabBlock(%s);" % b["java"] for b in self.blocks if b["tab"] == t]
+            out += ["    initTabItem(%s);" % it["java"] for it in self.items if it["tab"] == t]
         return "\n".join(out)
 
     def main(self):

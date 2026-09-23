@@ -2,7 +2,7 @@
 
 Fire, police and ambulance station fittings, community warning sirens and dispatch.
 
-!!! info "61 blocks in this tab"
+!!! info "62 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -34,6 +34,7 @@ Fire, police and ambulance station fittings, community warning sirens and dispat
 | Fire Pole Floor Opening | `csm:fire_pole_hole` | 2.0 | 6.0 | pickaxe | 0 |
 | Firefighting Tool Board | `csm:fire_tool_board` | 2.0 | 6.0 | pickaxe | 0 |
 | Firehouse Alarm Gong | `csm:station_alarm_gong` | 2.0 | 6.0 | pickaxe | 0 |
+| First Aid Cabinet | `csm:first_aid_cabinet` | 2.0 | 6.0 | pickaxe | 0 |
 | Front Desk Counter | `csm:front_desk_counter` | 2.0 | 6.0 | pickaxe | 0 |
 | Holding Cell Bench | `csm:holding_cell_bench` | 2.0 | 6.0 | pickaxe | 0 |
 | Holding Cell Door | `csm:holding_cell_door` | 2.0 | 6.0 | pickaxe | 0 |

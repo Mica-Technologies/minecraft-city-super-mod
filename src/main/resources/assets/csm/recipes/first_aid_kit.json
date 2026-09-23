@@ -1,0 +1,29 @@
+{
+  "type": "forge:ore_shapeless",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_lifesafety"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "minecraft:wool",
+      "data": 0
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:dye",
+      "data": 1
+    }
+  ],
+  "result": {
+    "item": "csm:first_aid_kit",
+    "count": 2
+  }
+}

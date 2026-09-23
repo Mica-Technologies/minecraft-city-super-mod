@@ -382,11 +382,15 @@ prop("scba_cylinder_cascade", (0, 0, 3, 16, 16, 13), True,
      + pipe_x(15.2, 8, 0.4, 2.5, 13.5, "brass")
      + [box([0.5, 4, 5], [15.5, 5, 5.4], "steel"), box([0.5, 4, 10.6], [15.5, 5, 11], "steel")])
 
-prop("scba_fill_station", (1, 0, 3, 15, 16, 16), True,
-     ("SCBA Fill Station", "Atemluft-Füllstation", "Estación de llenado de equipos de respiración",
-      "Fyllstation för andningsskydd"),
-     {"y": T("yellow"), "front": T("fill_front"), "particle": T("yellow")},
-     [box([1, 0, 3], [15, 16, 16], "y", per={"north": "front"})])
+# Also recharges fire extinguishers (BlockScbaFillStation).
+C.add("scba_fill_station", 'new BlockScbaFillStation("scba_fill_station", %s)'
+      % B(1, 0, 3, 15, 16, 16),
+      ("SCBA Fill Station", "Atemluft-Füllstation", "Estación de llenado de equipos de respiración",
+       "Fyllstation för andningsskydd"),
+      {"scba_fill_station": model({"y": T("yellow"), "front": T("fill_front"),
+                                   "particle": T("yellow")},
+                                  [box([1, 0, 3], [15, 16, 16], "y", per={"north": "front"})])},
+      facing_state(M("scba_fill_station")), tab=ES)
 
 
 # --- hose ---------------------------------------------------------------------------------------
@@ -1447,6 +1451,81 @@ for key, names in (
         ("choice.weekly_test", ("Weekly test switch", "Wöchentlicher Probealarm (Schalter)",
                                 "Interruptor de prueba semanal", "Omkopplare för veckotest"))):
     C.add_lang("csm.lifesafety.siren." + key, names)
+
+
+# ==========================================================================================
+# The working items, and the first aid cabinet that hands out kits
+# ==========================================================================================
+@C.texture("item_extinguisher")
+def _item_extinguisher():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    rect(img, 6, 4, 11, 15, RED)
+    rect(img, 6, 4, 7, 15, shade(RED, 1.3))
+    rect(img, 7, 8, 10, 11, WHITE)
+    rect(img, 7, 2, 10, 4, (190, 194, 200))
+    rect(img, 5, 1, 11, 2, BLACK)
+    rect(img, 10, 3, 13, 4, BLACK)
+    rect(img, 12, 4, 13, 9, BLACK)
+    return img
+
+
+@C.texture("item_first_aid")
+def _item_first_aid():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    rect(img, 2, 4, 14, 14, WHITE)
+    frame(img, 2, 4, 14, 14, shade(WHITE, 0.7))
+    rect(img, 6, 2, 10, 4, shade(WHITE, 0.6))
+    rect(img, 7, 6, 9, 12, RED)
+    rect(img, 5, 8, 11, 10, RED)
+    return img
+
+
+@C.texture("first_aid_cabinet_front")
+def _first_aid_cabinet_front():
+    img = fill(WHITE, grain=2, seed=700)
+    x0, y0, x1, y1 = north_region((3, 2), (13, 14), 16)
+    bevel(img, x0, y0, x1, y1, WHITE)
+    rect(img, 7, 4, 9, 11, RED)
+    rect(img, 5, 6, 11, 8, RED)
+    rect(img, x0 + 1, 12, x0 + 2, 14, (150, 150, 150))
+    return img
+
+
+flat("white_paint", WHITE, grain=2, seed=701)
+C.add("first_aid_cabinet", 'new BlockFirstAidCabinet("first_aid_cabinet", %s)'
+      % B(3, 2, 11, 13, 14, 16),
+      ("First Aid Cabinet", "Erste-Hilfe-Schrank", "Botiquín de pared", "Första hjälpen-skåp"),
+      {"first_aid_cabinet": model({"white": T("white_paint"), "front": T("first_aid_cabinet_front"),
+                                   "particle": T("white_paint")},
+                                  [box([3, 2, 11], [13, 14, 16], "white",
+                                       per={"north": "front"})])},
+      facing_state(M("first_aid_cabinet")), tab=ES)
+C.add_item("fire_extinguisher_item", "new ItemFireExtinguisher()",
+           ("Fire Extinguisher", "Feuerlöscher", "Extintor", "Brandsläckare"),
+           "item_extinguisher", tab=ES)
+C.add_item("first_aid_kit", "new ItemFirstAidKit()",
+           ("First Aid Kit", "Verbandkasten", "Botiquín de primeros auxilios", "Förbandslåda"),
+           "item_first_aid", tab=ES)
+for key, names in (
+        ("extinguisher.charge", ("Charge: %s%%", "Füllung: %s %%", "Carga: %s %%",
+                                 "Laddning: %s %%")),
+        ("extinguisher.hint", ("Hold use to spray. Sneak-use on a wall to hang it. Refill at an SCBA fill station.",
+                               "Benutzen halten zum Sprühen. Schleichend an eine Wand zum Aufhängen. Nachfüllen an der Atemluft-Füllstation.",
+                               "Mantén usar para rociar. Agáchate y úsalo en una pared para colgarlo. Recárgalo en una estación de llenado.",
+                               "Håll inne använd för att spruta. Smyg och använd mot en vägg för att hänga upp. Fyll på vid en fyllstation.")),
+        ("extinguisher.refilled", ("[Fill station] Extinguisher recharged.",
+                                   "[Füllstation] Feuerlöscher nachgefüllt.",
+                                   "[Estación de llenado] Extintor recargado.",
+                                   "[Fyllstation] Brandsläckaren påfylld.")),
+        ("first_aid.hint", ("Hold use to heal four hearts. Kits rest thirty seconds after.",
+                            "Benutzen halten heilt vier Herzen. Danach ruhen Verbandkästen dreißig Sekunden.",
+                            "Mantén usar para curar cuatro corazones. Después los botiquines esperan treinta segundos.",
+                            "Håll inne använd för att hela fyra hjärtan. Därefter vilar lådorna i trettio sekunder.")),
+        ("first_aid.empty", ("[First aid] You have already taken a kit from this cabinet today.",
+                             "[Erste Hilfe] Du hast heute schon einen Verbandkasten aus diesem Schrank genommen.",
+                             "[Primeros auxilios] Ya has cogido un botiquín de este armario hoy.",
+                             "[Första hjälpen] Du har redan tagit en låda ur det här skåpet i dag."))):
+    C.add_lang("csm.lifesafety." + key, names)
 
 
 if __name__ == "__main__":
