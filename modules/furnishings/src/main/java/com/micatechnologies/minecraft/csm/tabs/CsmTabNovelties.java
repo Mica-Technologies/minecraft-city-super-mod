@@ -34,8 +34,6 @@ import com.micatechnologies.minecraft.csm.novelties.BlockScarecrow;
 import com.micatechnologies.minecraft.csm.novelties.BlockShootingDummy;
 import com.micatechnologies.minecraft.csm.novelties.BlockSinglePumpkin;
 import com.micatechnologies.minecraft.csm.novelties.BlockWaterDispenser;
-import com.micatechnologies.minecraft.csm.novelties.BlockWbs;
-import com.micatechnologies.minecraft.csm.novelties.BlockWbt;
 import com.micatechnologies.minecraft.csm.novelties.BlockXylophone;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -108,8 +106,6 @@ public class CsmTabNovelties extends CsmTab {
     initTabBlock(BlockPSThatCrazyPandog.class,
         fmlPreInitializationEvent); // Player Statue ThatCrazyPandog
     initTabBlock(BlockWaterDispenser.class, fmlPreInitializationEvent); // Water Dispenser
-    initTabBlock(BlockWbs.class, fmlPreInitializationEvent); // Water Bubbler (Short)
-    initTabBlock(BlockWbt.class, fmlPreInitializationEvent); // Water Bubbler (Tall)
     initTabBlock(BlockXylophone.class, fmlPreInitializationEvent); // Xylophone
   }
 }

@@ -58,6 +58,8 @@ public class CsmParks {
     // Safe here: Fabricator costs are first read at post-initialization and thereafter only
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.
     CsmFabricatorCosts.registerRule(ParksFabricatorRules.TAB_ID, ParksFabricatorRules::price);
+    CsmFabricatorCosts.registerRule(ParksFabricatorRules.PARKS_TAB_ID,
+        ParksFabricatorRules::priceParks);
 
     proxy.preInit(event);
   }
