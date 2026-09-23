@@ -2,7 +2,7 @@
 
 Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings.
 
-!!! info "35 blocks in this tab"
+!!! info "41 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Elm Leaves | `csm:tree_leaves_elm` | 0.2 | 1.0 |  | 0 |
 | Elm Log | `csm:tree_log_elm_medium` | 2.0 | 5.0 | axe | 0 |
 | Elm Twig | `csm:tree_log_elm_twig` | 2.0 | 5.0 | axe | 0 |
 | Full Elm Log | `csm:tree_log_elm_full` | 2.0 | 5.0 | axe | 0 |
@@ -20,14 +21,19 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Full Live Oak Log | `csm:tree_log_liveoak_full` | 2.0 | 5.0 | axe | 0 |
 | Full London Plane Log | `csm:tree_log_plane_full` | 2.0 | 5.0 | axe | 0 |
 | Full Palm Log | `csm:tree_log_palm_full` | 2.0 | 5.0 | axe | 0 |
+| Ginkgo Leaves | `csm:tree_leaves_ginkgo` | 0.2 | 1.0 |  | 0 |
 | Ginkgo Log | `csm:tree_log_ginkgo_medium` | 2.0 | 5.0 | axe | 0 |
 | Ginkgo Twig | `csm:tree_log_ginkgo_twig` | 2.0 | 5.0 | axe | 0 |
+| Honey Locust Leaves | `csm:tree_leaves_honeylocust` | 0.2 | 1.0 |  | 0 |
 | Honey Locust Log | `csm:tree_log_honeylocust_medium` | 2.0 | 5.0 | axe | 0 |
 | Honey Locust Twig | `csm:tree_log_honeylocust_twig` | 2.0 | 5.0 | axe | 0 |
+| Italian Cypress Foliage | `csm:tree_leaves_cypress` | 0.2 | 1.0 |  | 0 |
 | Italian Cypress Log | `csm:tree_log_cypress_medium` | 2.0 | 5.0 | axe | 0 |
 | Italian Cypress Twig | `csm:tree_log_cypress_twig` | 2.0 | 5.0 | axe | 0 |
+| Live Oak Leaves | `csm:tree_leaves_liveoak` | 0.2 | 1.0 |  | 0 |
 | Live Oak Log | `csm:tree_log_liveoak_medium` | 2.0 | 5.0 | axe | 0 |
 | Live Oak Twig | `csm:tree_log_liveoak_twig` | 2.0 | 5.0 | axe | 0 |
+| London Plane Leaves | `csm:tree_leaves_plane` | 0.2 | 1.0 |  | 0 |
 | London Plane Log | `csm:tree_log_plane_medium` | 2.0 | 5.0 | axe | 0 |
 | London Plane Twig | `csm:tree_log_plane_twig` | 2.0 | 5.0 | axe | 0 |
 | Palm Log | `csm:tree_log_palm_medium` | 2.0 | 5.0 | axe | 0 |

@@ -2,7 +2,9 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
+import com.micatechnologies.minecraft.csm.parks.trees.TreeLeafType;
 import com.micatechnologies.minecraft.csm.parks.trees.TreeLogWidth;
 import com.micatechnologies.minecraft.csm.parks.trees.TreeWood;
 import net.minecraft.block.Block;
@@ -76,5 +78,19 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockTreeLog("tree_log_palm_medium", TreeWood.PALM, TreeLogWidth.MEDIUM));
     initTabBlock(new BlockTreeLog("tree_log_palm_thick", TreeWood.PALM, TreeLogWidth.THICK));
     initTabBlock(new BlockTreeLog("tree_log_palm_full", TreeWood.PALM, TreeLogWidth.FULL));
+
+    // Leaves: one block a species (and later a season). Also written by gen_trees.py.
+    initTabBlock(new BlockTreeLeaves("tree_leaves_liveoak", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_liveoak"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_elm", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_elm"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_plane", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_plane"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_honeylocust", TreeLeafType.AIRY,
+        "csm:blocks/parks/leaves_honeylocust"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_ginkgo", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_ginkgo"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_cypress", TreeLeafType.NEEDLE,
+        "csm:blocks/parks/leaves_cypress"));
   }
 }
