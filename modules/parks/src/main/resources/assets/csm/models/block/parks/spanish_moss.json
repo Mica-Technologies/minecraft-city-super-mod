@@ -1,0 +1,7 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "csm:blocks/parks/spanish_moss",
+    "particle": "csm:blocks/parks/spanish_moss"
+  }
+}

@@ -13,7 +13,10 @@ surrounds them, so what this script writes is only what the game needs from file
                                               the placeholder the baked model replaces in the world
   * models/block/parks/leaves_<leaf>.json     a leaves cube with the cluster: the item's model and
                                               the world placeholder
-  * blockstates for every log and leaves block
+  * textures/blocks/parks/palm_crown_<style>.png  a palm crown's 2x2 sheet: live frond, dead frond,
+                                              boot (TreePalmGeometry), plus a _icon for the item
+  * textures/blocks/parks/<moss>[_tip].png     the hanging moss strands and a curtain's ragged tip
+  * blockstates for every log, leaves, crown and moss block
   * lang lines (tile.tree_log_* / tile.tree_leaves_*) in all four languages, kept in place by key
 
 The woods, widths and leaves must match TreeWood, TreeLogWidth and the tab registrations, in the
@@ -76,8 +79,12 @@ WIDTHS = [
 LEAF_NAMES = ("{w} Leaves", "Laub ({w})", "Hojas de {w}", "Löv ({w})")
 NEEDLE_NAMES = ("{w} Foliage", "Nadeln ({w})", "Follaje de {w}", "Barr ({w})")
 
+AUTUMN_NAMES = ("Autumn {w} Leaves", "Herbstlaub ({w})", "Hojas otoñales de {w}",
+                "Höstlöv ({w})")
+
 # Leaves: (id, TreeLeafType constant, species names en/de/es/sv, texture style, palette light to
-# dark, name patterns). Order = tab order.
+# dark, name patterns). Order = tab order. A season is a separate block whose sprite is drawn
+# with its summer sibling's seed (SEASON_OF), so the leaves are the same shapes in a new colour.
 LEAVES = [
     ("liveoak", "BROADLEAF", WOODS[0][2], "broad",
      [(96, 124, 58), (76, 104, 46), (58, 84, 38), (44, 66, 30)], LEAF_NAMES),
@@ -91,6 +98,33 @@ LEAVES = [
      [(142, 178, 82), (118, 158, 68), (96, 136, 56), (76, 112, 46)], LEAF_NAMES),
     ("cypress", "NEEDLE", WOODS[4][2], "needle",
      [(70, 100, 66), (56, 84, 54), (42, 68, 44), (32, 54, 36)], NEEDLE_NAMES),
+    ("elm_autumn", "BROADLEAF", WOODS[1][2], "broad",
+     [(222, 196, 86), (198, 168, 62), (168, 138, 48), (130, 104, 38)], AUTUMN_NAMES),
+    ("plane_autumn", "BROADLEAF", WOODS[2][2], "broad_large",
+     [(206, 170, 88), (182, 140, 68), (152, 112, 52), (118, 86, 40)], AUTUMN_NAMES),
+    ("honeylocust_autumn", "AIRY", WOODS[3][2], "airy",
+     [(238, 208, 92), (216, 182, 70), (188, 152, 56), (152, 120, 44)], AUTUMN_NAMES),
+    ("ginkgo_autumn", "BROADLEAF", WOODS[5][2], "fan",
+     [(248, 222, 88), (234, 198, 60), (208, 170, 46), (172, 138, 36)], AUTUMN_NAMES),
+]
+SEASON_OF = {"elm_autumn": "elm", "plane_autumn": "plane", "honeylocust_autumn": "honeylocust",
+             "ginkgo_autumn": "ginkgo"}
+
+# Palm crowns: (id, TreeLeafType constant, sheet, names en/de/es/sv). Order = tab order.
+PALMS = [
+    ("palm_fan", "PALM_FAN", "fan",
+     ("Fan Palm Crown", "Fächerpalmen-Krone", "Copa de palmera de abanico", "Solfjäderspalmkrona")),
+    ("palm_fan_skirt", "PALM_FAN_SKIRT", "fan",
+     ("Fan Palm Crown with Skirt", "Fächerpalmen-Krone mit Trockenwedeln",
+      "Copa de palmera de abanico con faldón", "Solfjäderspalmkrona med kjol")),
+    ("palm_feather", "PALM_FEATHER", "feather",
+     ("Feather Palm Crown", "Fiederpalmen-Krone", "Copa de palmera de pluma", "Fjäderpalmkrona")),
+]
+PALM_SHEETS = ["fan", "feather"]
+
+# Hanging moss: (id, names en/de/es/sv).
+MOSSES = [
+    ("spanish_moss", ("Spanish Moss", "Spanisches Moos", "Musgo español", "Spansk mossa")),
 ]
 
 
@@ -104,6 +138,10 @@ def log_name(wood, width):
 
 def leaves_name(leaf_id):
     return "tree_leaves_%s" % leaf_id
+
+
+def crown_name(palm_id):
+    return "tree_crown_%s" % palm_id
 
 
 # ------------------------------------------------------------------------------------------
@@ -279,6 +317,128 @@ def leaf_cluster(style, palette, seed):
 
 
 # ------------------------------------------------------------------------------------------
+# Palm crowns: a 64 px sheet of four 32 px cells (TreePalmGeometry's regions)
+# ------------------------------------------------------------------------------------------
+FROND_GREEN = [(118, 150, 70), (96, 128, 56), (76, 106, 46), (58, 84, 36)]
+FROND_FEATHER = [(124, 156, 72), (100, 134, 58), (80, 112, 48), (70, 92, 40)]
+FROND_DEAD = [(196, 170, 118), (172, 146, 96), (146, 120, 76), (118, 94, 60)]
+STALK = (104, 110, 60)
+
+
+def _fan_frond(px, ox, oy, palette, rng, ragged):
+    """A palmate fan on a short stalk: stalk at the cell's bottom centre, fan opening upward."""
+    cx, cy = ox + 16, oy + 19
+    stalk = palette[2] if ragged else STALK
+    for y in range(oy + 19, oy + 32):
+        for dx in (0, 1):
+            px[cx - 1 + dx, y] = stalk + (255,)
+    segments = 15
+    for y in range(oy, oy + 32):
+        for x in range(ox, ox + 32):
+            dx, dy = x + 0.5 - cx, cy - (y + 0.5)
+            r = math.hypot(dx, dy)
+            if r > 15.5 or r < 1:
+                continue
+            ang = math.atan2(dx, dy)  # 0 = straight up
+            if abs(ang) > math.radians(82):
+                continue
+            seg = (ang + math.radians(82)) / math.radians(164) * segments
+            frac = seg - int(seg)
+            # Split tips: the outer part of each segment is cut down its middle.
+            if r > 10.5 and abs(frac - 0.5) < 0.12:
+                continue
+            reach = 15.5
+            if ragged and (int(seg) * 7) % 3 == 0:
+                reach -= 3.5
+            if abs(frac - 0.5) > 0.38:
+                reach -= 1.5
+            if r > reach:
+                continue
+            shade = 1 if abs(frac - 0.5) < 0.3 else 2
+            if r < 4:
+                shade = 2
+            if frac < 0.06 or frac > 0.94:
+                shade = 3
+            if rng.random() < 0.15:
+                shade += 1
+            elif rng.random() < 0.15:
+                shade -= 1
+            px[x, y] = palette[max(0, min(3, shade))] + (255,)
+
+
+def _feather_frond(px, ox, oy, palette, rng):
+    """A pinnate frond: a midrib bottom to top, leaflets angled toward the tip."""
+    cx = ox + 16
+    for y in range(oy, oy + 32):
+        px[cx, y] = palette[3] + (255,)
+    for y in range(oy + 30, oy + 1, -2):
+        t = (oy + 31 - y) / 31.0
+        length = 15 * math.sin(math.pi * min(1.0, t * 1.1 + 0.08)) ** 0.7
+        for side in (-1, 1):
+            shade = rng.randrange(3)
+            for k in range(1, int(length) + 1):
+                x = cx + side * k
+                yy = y - int(k * 0.45) + (1 if k > length * 0.7 else 0)
+                if ox <= x < ox + 32 and oy <= yy < oy + 32:
+                    px[x, yy] = palette[shade] + (255,)
+                    if k < length * 0.6 and oy <= yy + 1 < oy + 32 and rng.random() < 0.5:
+                        px[x, yy + 1] = palette[min(3, shade + 1)] + (255,)
+
+
+def _boot(px, ox, oy, rng):
+    """Woven frond bases: a lattice of fibre over brown and olive."""
+    for y in range(oy, oy + 32):
+        for x in range(ox, ox + 32):
+            u, v = x - ox, y - oy
+            if (u + v) % 6 < 2 or (u - v) % 6 < 2:
+                c = (88, 70, 48)
+            else:
+                c = (126, 112, 70) if ((u // 6) + (v // 6)) % 2 else (110, 96, 60)
+            px[x, y] = tuple(max(0, min(255, ch + rng.randint(-8, 8))) for ch in c) + (255,)
+
+
+def palm_sheet(style, seed):
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    px = img.load()
+    if style == "fan":
+        _fan_frond(px, 0, 0, FROND_GREEN, rng, ragged=False)
+    else:
+        _feather_frond(px, 0, 0, FROND_FEATHER, rng)
+    _fan_frond(px, 32, 0, FROND_DEAD, rng, ragged=True)
+    _boot(px, 0, 32, rng)
+    return img
+
+
+def palm_icon(sheet):
+    """The item icon: the live frond cell, halved."""
+    return sheet.crop((0, 0, 32, 32)).resize((16, 16), Image.NEAREST)
+
+
+# ------------------------------------------------------------------------------------------
+# Hanging moss
+# ------------------------------------------------------------------------------------------
+MOSS = [(172, 180, 158), (148, 158, 136), (124, 136, 114), (100, 112, 92)]
+
+
+def moss(tip, seed):
+    """Strands hanging the full height (a curtain block), or ending raggedly (the tip)."""
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    px = img.load()
+    for _ in range(9):
+        x = rng.randrange(SIZE)
+        end = rng.randint(6, 15) if tip else SIZE
+        for y in range(end):
+            px[x % SIZE, y] = MOSS[rng.randrange(len(MOSS))] + (255,)
+            if rng.random() < 0.35:
+                px[(x + rng.choice((-1, 1))) % SIZE, y] = MOSS[rng.randrange(1, len(MOSS))] + (255,)
+            if rng.random() < 0.25:
+                x += rng.choice((-1, 1))
+    return img
+
+
+# ------------------------------------------------------------------------------------------
 # Models and blockstates
 # ------------------------------------------------------------------------------------------
 def log_model(pixels):
@@ -328,6 +488,41 @@ def leaves_blockstate(leaf_id):
     }
 
 
+def crown_model(style):
+    tex = "csm:blocks/parks/palm_crown_%s" % style
+    return {"parent": "block/cross", "textures": {"cross": tex, "particle": tex}}
+
+
+def flat_item_model(texture):
+    return {"parent": "item/generated", "textures": {"layer0": texture}}
+
+
+def crown_blockstate(style):
+    return {
+        "variants": {
+            # "normal" is replaced by TreeLeavesBakedModel at bake time (TreeModels).
+            "normal": {"model": "csm:parks/palm_crown_%s" % style},
+            "inventory": {"model": "csm:parks/palm_crown_%s_item" % style},
+        },
+    }
+
+
+def moss_model(moss_id, tip):
+    tex = "csm:blocks/parks/%s%s" % (moss_id, "_tip" if tip else "")
+    return {"parent": "block/cross", "textures": {"cross": tex, "particle": tex}}
+
+
+def moss_blockstate(moss_id):
+    return {
+        "forge_marker": 1,
+        "defaults": {"model": "csm:parks/%s" % moss_id},
+        "variants": {
+            "tip": {"false": {}, "true": {"model": "csm:parks/%s_tip" % moss_id}},
+            "inventory": [{"model": "csm:parks/%s_item" % moss_id}],
+        },
+    }
+
+
 # ------------------------------------------------------------------------------------------
 # Lang
 # ------------------------------------------------------------------------------------------
@@ -343,6 +538,12 @@ def lang_entries():
         key = "tile.%s.name" % leaves_name(leaf_id)
         for i, loc in enumerate(LOCALES):
             out[loc][key] = cap_first(patterns[i].format(w=names[i]))
+    for palm_id, _, _, names in PALMS:
+        for i, loc in enumerate(LOCALES):
+            out[loc]["tile.%s.name" % crown_name(palm_id)] = names[i]
+    for moss_id, names in MOSSES:
+        for i, loc in enumerate(LOCALES):
+            out[loc]["tile.%s.name" % moss_id] = names[i]
     return out
 
 
@@ -401,15 +602,51 @@ def generate(assets):
             rel = "blockstates/%s.json" % log_name(wood, width)
             dump(os.path.join(assets, rel), log_blockstate(wood, width))
             written.append(rel)
-    for i, (leaf_id, _, _, style, palette, _) in enumerate(LEAVES):
+    seed_index = {leaf[0]: i for i, leaf in enumerate(LEAVES)}
+    for leaf_id, _, _, style, palette, _ in LEAVES:
+        seed = 20260923 + seed_index[SEASON_OF.get(leaf_id, leaf_id)]
         rel = "textures/blocks/parks/leaves_%s.png" % leaf_id
-        save_png(os.path.join(assets, rel), leaf_cluster(style, palette, 20260923 + i))
+        save_png(os.path.join(assets, rel), leaf_cluster(style, palette, seed))
         written.append(rel)
         rel = "models/block/parks/leaves_%s.json" % leaf_id
         dump(os.path.join(assets, rel), leaves_model(leaf_id))
         written.append(rel)
         rel = "blockstates/%s.json" % leaves_name(leaf_id)
         dump(os.path.join(assets, rel), leaves_blockstate(leaf_id))
+        written.append(rel)
+    for i, style in enumerate(PALM_SHEETS):
+        sheet = palm_sheet(style, 20260924 + i)
+        rel = "textures/blocks/parks/palm_crown_%s.png" % style
+        save_png(os.path.join(assets, rel), sheet)
+        written.append(rel)
+        rel = "textures/blocks/parks/palm_crown_%s_icon.png" % style
+        save_png(os.path.join(assets, rel), palm_icon(sheet))
+        written.append(rel)
+        rel = "models/block/parks/palm_crown_%s.json" % style
+        dump(os.path.join(assets, rel), crown_model(style))
+        written.append(rel)
+        rel = "models/block/parks/palm_crown_%s_item.json" % style
+        dump(os.path.join(assets, rel),
+             flat_item_model("csm:blocks/parks/palm_crown_%s_icon" % style))
+        written.append(rel)
+    for palm_id, _, style, _ in PALMS:
+        rel = "blockstates/%s.json" % crown_name(palm_id)
+        dump(os.path.join(assets, rel), crown_blockstate(style))
+        written.append(rel)
+    for i, (moss_id, _) in enumerate(MOSSES):
+        for tip in (False, True):
+            suffix = "_tip" if tip else ""
+            rel = "textures/blocks/parks/%s%s.png" % (moss_id, suffix)
+            save_png(os.path.join(assets, rel), moss(tip, 20260925 + 2 * i + tip))
+            written.append(rel)
+            rel = "models/block/parks/%s%s.json" % (moss_id, suffix)
+            dump(os.path.join(assets, rel), moss_model(moss_id, tip))
+            written.append(rel)
+        rel = "models/block/parks/%s_item.json" % moss_id
+        dump(os.path.join(assets, rel), flat_item_model("csm:blocks/parks/%s_tip" % moss_id))
+        written.append(rel)
+        rel = "blockstates/%s.json" % moss_id
+        dump(os.path.join(assets, rel), moss_blockstate(moss_id))
         written.append(rel)
     write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in LOCALES]
@@ -426,6 +663,12 @@ def fragments():
         lines.append('    initTabBlock(new BlockTreeLeaves("%s", TreeLeafType.%s,'
                      % (leaves_name(leaf_id), ltype))
         lines.append('        "csm:blocks/parks/leaves_%s"));' % leaf_id)
+    for palm_id, ptype, style, _ in PALMS:
+        lines.append('    initTabBlock(new BlockTreeLeaves("%s", TreeLeafType.%s,'
+                     % (crown_name(palm_id), ptype))
+        lines.append('        "csm:blocks/parks/palm_crown_%s"));' % style)
+    for moss_id, _ in MOSSES:
+        lines.append('    initTabBlock(new BlockHangingMoss("%s"));' % moss_id)
     return "\n".join(lines)
 
 

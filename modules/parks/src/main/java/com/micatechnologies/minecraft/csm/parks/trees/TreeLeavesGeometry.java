@@ -60,6 +60,9 @@ public final class TreeLeavesGeometry {
   public static List<TreeLogGeometry.Quad> quads(TreeLeafType type, int key, boolean fancy) {
     int open = key & 63;
     int variant = (key >> 6) & 3;
+    if (type.isPalm()) {
+      return TreePalmGeometry.quads(type, variant, fancy);
+    }
     Random rng = new Random(type.ordinal() * 7919L + variant * 104729L + open * 31L);
     List<TreeLogGeometry.Quad> quads = new ArrayList<>();
 

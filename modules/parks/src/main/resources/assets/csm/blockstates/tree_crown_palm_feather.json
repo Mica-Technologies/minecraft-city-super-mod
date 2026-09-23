@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/palm_crown_feather"
+    },
+    "inventory": {
+      "model": "csm:parks/palm_crown_feather_item"
+    }
+  }
+}

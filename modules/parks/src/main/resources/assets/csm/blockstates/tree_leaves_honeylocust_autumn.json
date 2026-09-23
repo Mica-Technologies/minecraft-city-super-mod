@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/leaves_honeylocust_autumn"
+    },
+    "inventory": {
+      "model": "csm:parks/leaves_honeylocust_autumn"
+    }
+  }
+}

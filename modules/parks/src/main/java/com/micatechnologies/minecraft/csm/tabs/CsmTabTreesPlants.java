@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.parks.trees.BlockHangingMoss;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
 import com.micatechnologies.minecraft.csm.parks.trees.TreeLeafType;
@@ -79,7 +80,8 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockTreeLog("tree_log_palm_thick", TreeWood.PALM, TreeLogWidth.THICK));
     initTabBlock(new BlockTreeLog("tree_log_palm_full", TreeWood.PALM, TreeLogWidth.FULL));
 
-    // Leaves: one block a species (and later a season). Also written by gen_trees.py.
+    // Leaves: one block a species and season, then the palm crowns and the hanging moss. Also
+    // written by gen_trees.py.
     initTabBlock(new BlockTreeLeaves("tree_leaves_liveoak", TreeLeafType.BROADLEAF,
         "csm:blocks/parks/leaves_liveoak"));
     initTabBlock(new BlockTreeLeaves("tree_leaves_elm", TreeLeafType.BROADLEAF,
@@ -92,5 +94,20 @@ public class CsmTabTreesPlants extends CsmTab {
         "csm:blocks/parks/leaves_ginkgo"));
     initTabBlock(new BlockTreeLeaves("tree_leaves_cypress", TreeLeafType.NEEDLE,
         "csm:blocks/parks/leaves_cypress"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_elm_autumn", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_elm_autumn"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_plane_autumn", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_plane_autumn"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_honeylocust_autumn", TreeLeafType.AIRY,
+        "csm:blocks/parks/leaves_honeylocust_autumn"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_ginkgo_autumn", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_ginkgo_autumn"));
+    initTabBlock(new BlockTreeLeaves("tree_crown_palm_fan", TreeLeafType.PALM_FAN,
+        "csm:blocks/parks/palm_crown_fan"));
+    initTabBlock(new BlockTreeLeaves("tree_crown_palm_fan_skirt", TreeLeafType.PALM_FAN_SKIRT,
+        "csm:blocks/parks/palm_crown_fan"));
+    initTabBlock(new BlockTreeLeaves("tree_crown_palm_feather", TreeLeafType.PALM_FEATHER,
+        "csm:blocks/parks/palm_crown_feather"));
+    initTabBlock(new BlockHangingMoss("spanish_moss"));
   }
 }

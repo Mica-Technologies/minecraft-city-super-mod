@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/leaves_elm_autumn"
+    },
+    "inventory": {
+      "model": "csm:parks/leaves_elm_autumn"
+    }
+  }
+}
