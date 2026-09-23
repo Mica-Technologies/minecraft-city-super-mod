@@ -137,7 +137,8 @@ TABS = {
                    "Street ad kiosks, wall poster boards and billboards built to size."),
     "tabstreetscape": ("streetscape", "Streetscape",
                        "Street fixtures between the curb and the building line: fire hydrants, "
-                       "delineators, manhole covers, utility lids and drainage grates."),
+                       "delineators, manhole covers, utility lids, drainage grates, pad-mount "
+                       "transformers and utility pedestals."),
     "tabstructureframing": ("structure-framing", "Structure & Framing",
                             "Steel and wood stud walls, the structure that spans between "
                             "them, and structural steel."),

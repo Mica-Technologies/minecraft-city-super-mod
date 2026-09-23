@@ -369,6 +369,8 @@ def cost_for(registry, info, ancestors):
         if has("AbstractBlockControllableSignal"):
             return ("LED_MODULE", "LENS_ASSEMBLY", "SHEET_METAL")
         return ("SHEET_METAL", "WIRING_HARNESS")
+    if tab == "tabstreetscape" and has("BlockUtilityBox") and registry.startswith("transformer"):
+        return ("SHEET_METAL x2", "WIRING_HARNESS", "CONCRETE_MIX")
     if tab == "tabstreetscape" and has("BlockStreetCover"):
         # Mirrors StreetscapeFabricatorRules.
         if registry.startswith("storm_drain_marker"):

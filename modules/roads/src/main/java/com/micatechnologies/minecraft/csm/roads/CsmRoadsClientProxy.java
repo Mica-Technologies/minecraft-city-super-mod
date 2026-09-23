@@ -112,5 +112,10 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTattleTaleBeacon.class,
         new com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTattleTaleBeaconRenderer());
+
+    // A utility box's ID number decal.
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.streetscape.TileEntityUtilityBoxLabel.class,
+        new com.micatechnologies.minecraft.csm.streetscape.TileEntityUtilityBoxLabelRenderer());
   }
 }

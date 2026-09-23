@@ -1,0 +1,92 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "post": "csm:blocks/streetscape/utility/marker_electric",
+    "face": "csm:blocks/streetscape/utility/marker_electric",
+    "particle": "csm:blocks/streetscape/utility/marker_electric"
+  },
+  "elements": [
+    {
+      "from": [
+        7.3,
+        0,
+        7.6
+      ],
+      "to": [
+        8.7,
+        20,
+        8.4
+      ],
+      "faces": {
+        "south": {
+          "texture": "#post",
+          "uv": [
+            7.3,
+            0,
+            8.7,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            7.3,
+            7.6,
+            8.7,
+            8.4
+          ]
+        },
+        "down": {
+          "texture": "#post",
+          "uv": [
+            7.3,
+            7.6,
+            8.7,
+            8.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.3,
+        0,
+        7.6
+      ],
+      "to": [
+        8.7,
+        20,
+        8.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

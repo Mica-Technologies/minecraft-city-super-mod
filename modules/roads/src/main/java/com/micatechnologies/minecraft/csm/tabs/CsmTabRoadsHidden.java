@@ -240,6 +240,9 @@ public class CsmTabRoadsHidden extends CsmTab {
     initTabBlock(BlockTrafficPoleHorizontalSingleMountBlack.class, fmlPreInitializationEvent);
     initTabBlock(BlockTrafficPoleHorizontalSingleMountTan.class, fmlPreInitializationEvent);
     initTabBlock(BlockTrafficPoleHorizontalSingleMountWhite.class, fmlPreInitializationEvent);
+    // The invisible cells of a utility box more than one block in size.
+    initTabBlock(com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBoxPart.class,
+        fmlPreInitializationEvent);
   }
 
   /**

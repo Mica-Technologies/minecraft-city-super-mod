@@ -485,6 +485,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   round cover is round; textures are drawn as the placer sees them and stored turned 180 (the
   item models turn the icon back). Borrows `life_safety_gen_common.py`'s catalogue and font;
   `--check`, `--fragments`
+- `gen_streetscape_utility.py` -- the Streetscape tab's utility boxes (`BlockUtilityBox`,
+  `BlockUtilityBoxLabelled`): pad-mount transformers in four sizes, metal and plastic telecom
+  pedestals, the low telecom enclosure, buried utility markers, with "(Rusted)" twins of the
+  metal ones. A unit up to 2x2x2 is drawn whole by its root; invisible `utility_box_part` blocks
+  fill its other cells. The unit box and ID-number decal position in each tab line are measured
+  from the model's own elements, and a big unit gets a second, shrunken inventory model;
+  `--check`, `--fragments`
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →

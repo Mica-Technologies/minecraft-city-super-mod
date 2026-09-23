@@ -12,8 +12,9 @@ import net.minecraft.block.Block;
  *
  * <p>Covers are cast iron, so they cost iron rather than the sheet metal and fasteners a bracket
  * does; the ones set in a concrete box add concrete, and the storm drain marker is a printed
- * plaque. Anything this does not know (the hydrant, the delineators) returns {@code null} and
- * takes the generic cost, which is what those blocks cost before they moved to this tab.</p>
+ * plaque. A pad-mount transformer is sheet metal, wiring and its concrete pad. Anything this does
+ * not know (the hydrant, the delineators, the other utility boxes) returns {@code null} and takes
+ * the generic cost, which is what the hydrant and delineators cost before they moved here.</p>
  *
  * @version 1.0
  */
@@ -39,6 +40,16 @@ public final class StreetscapeFabricatorRules {
    */
   @Nullable
   public static List<FabricatorIngredient> price(Block block, String registryName) {
+    if (block instanceof BlockUtilityBox) {
+      // A transformer is a steel cabinet full of windings on a concrete pad; every other box
+      // is an enclosure, and takes the generic sheet metal and fasteners.
+      if (registryName.startsWith("transformer")) {
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
+            FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
+      }
+      return null;
+    }
     if (!(block instanceof BlockStreetCover)) {
       return null;
     }

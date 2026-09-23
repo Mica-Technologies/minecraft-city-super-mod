@@ -26,7 +26,10 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityBarricade
 import com.micatechnologies.minecraft.csm.trafficaccessories.TrafficAccessoriesGuiProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacketHandler;
+import com.micatechnologies.minecraft.csm.streetscape.StreetscapeGuiProvider;
 import com.micatechnologies.minecraft.csm.streetscape.StreetscapeFabricatorRules;
+import com.micatechnologies.minecraft.csm.streetscape.UtilityBoxLabelPacket;
+import com.micatechnologies.minecraft.csm.streetscape.UtilityBoxLabelPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.InRoadwayLightConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.InRoadwayLightConfigPacketHandler;
@@ -121,6 +124,7 @@ public class CsmRoads {
     CsmGuiRegistry.register(new TrafficSignalsGuiProvider());
     CsmGuiRegistry.register(new TrafficAccessoriesGuiProvider());
     CsmGuiRegistry.register(new TrafficSignsGuiProvider());
+    CsmGuiRegistry.register(new StreetscapeGuiProvider());
 
     // Safe here: Fabricator costs are first read at post-initialization and thereafter only
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.
@@ -230,6 +234,10 @@ public class CsmRoads {
     NETWORK.registerMessage(
         RouteMarkerConfigPacketHandler.class,
         RouteMarkerConfigPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        UtilityBoxLabelPacketHandler.class,
+        UtilityBoxLabelPacket.class,
         Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
