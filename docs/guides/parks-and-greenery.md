@@ -27,8 +27,8 @@ cypress. Leaves:
 - come in fixed colours for each species, the same in every biome. Several species also have an
   **autumn** set, and the jacaranda a **blossom** set: swap them in for the season.
 
-**Palm crowns** go on top of a palm log. **Spanish Moss** hangs under a limb or crown and stacks
-downward into a curtain.
+**Palm crowns** go on top of a palm log. **Spanish Moss** and **Willow Strands** hang under a limb or
+crown and stack downward into a curtain.
 
 ## The Tree Planting Tool
 

@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/willow_strands"
+  },
+  "variants": {
+    "tip": {
+      "false": {},
+      "true": {
+        "model": "csm:parks/willow_strands_tip"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:parks/willow_strands_item"
+      }
+    ]
+  }
+}

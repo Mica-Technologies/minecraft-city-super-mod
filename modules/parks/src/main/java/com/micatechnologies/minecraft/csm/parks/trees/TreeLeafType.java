@@ -14,7 +14,7 @@ public enum TreeLeafType {
   AIRY(4, 2, 8, 12, 0.8, false),
   /** Italian cypress, arborvitae: upright narrow cards; a one-wide column is the whole tree. */
   NEEDLE(10, 4, 7, 14, 0.15, true),
-  /** Willow, pepper tree tips: broad cards, and a curtain hanging past the bottom face. */
+  /** Willow, pepper tree: a curtain of long strands down every open side and under the crown. */
   WEEPING(5, 3, 8, 12, 0.5, false),
   /** Pleached lindens, topiary: clipped flat, a leafy face flush with each open side. */
   CLIPPED(3, 0, 8, 12, 0.4, false),

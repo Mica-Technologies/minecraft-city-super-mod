@@ -228,7 +228,10 @@ TOOL_LANG = {
 
 # Hanging moss: (id, names en/de/es/sv).
 MOSSES = [
-    ("spanish_moss", ("Spanish Moss", "Spanisches Moos", "Musgo español", "Spansk mossa")),
+    ("spanish_moss", ("Spanish Moss", "Spanisches Moos", "Musgo español", "Spansk mossa"), None),
+    ("willow_strands", ("Willow Strands", "Hängende Weidenruten", "Ramas colgantes de sauce",
+                        "Hängande pilgrenar"),
+     [(186, 204, 100), (160, 184, 82), (134, 162, 66), (108, 138, 52)]),
 ]
 
 
@@ -571,11 +574,12 @@ def palm_icon(sheet):
 # ------------------------------------------------------------------------------------------
 # Hanging moss
 # ------------------------------------------------------------------------------------------
-MOSS = [(172, 180, 158), (148, 158, 136), (124, 136, 114), (100, 112, 92)]
+MOSS_GREY = [(172, 180, 158), (148, 158, 136), (124, 136, 114), (100, 112, 92)]
 
 
-def moss(tip, seed):
+def moss(tip, seed, palette=None):
     """Strands hanging the full height (a curtain block), or ending raggedly (the tip)."""
+    MOSS = palette or MOSS_GREY
     rng = random.Random(seed)
     img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
     px = img.load()
@@ -725,7 +729,7 @@ def lang_entries():
     for palm_id, _, _, names in PALMS:
         for i, loc in enumerate(LOCALES):
             out[loc]["tile.%s.name" % crown_name(palm_id)] = names[i]
-    for moss_id, names in MOSSES:
+    for moss_id, names, _ in MOSSES:
         for i, loc in enumerate(LOCALES):
             out[loc]["tile.%s.name" % moss_id] = names[i]
     for key, names in TOOL_LANG.items():
@@ -823,11 +827,11 @@ def generate(assets):
         rel = "blockstates/%s.json" % crown_name(palm_id)
         dump(os.path.join(assets, rel), crown_blockstate(style))
         written.append(rel)
-    for i, (moss_id, _) in enumerate(MOSSES):
+    for i, (moss_id, _, palette) in enumerate(MOSSES):
         for tip in (False, True):
             suffix = "_tip" if tip else ""
             rel = "textures/blocks/parks/%s%s.png" % (moss_id, suffix)
-            save_png(os.path.join(assets, rel), moss(tip, 20260925 + 2 * i + tip))
+            save_png(os.path.join(assets, rel), moss(tip, 20260925 + 2 * i + tip, palette))
             written.append(rel)
             rel = "models/block/parks/%s%s.json" % (moss_id, suffix)
             dump(os.path.join(assets, rel), moss_model(moss_id, tip))
@@ -863,7 +867,7 @@ def fragments():
         lines.append('    initTabBlock(new BlockTreeLeaves("%s", TreeLeafType.%s,'
                      % (crown_name(palm_id), ptype))
         lines.append('        "csm:blocks/parks/palm_crown_%s"));' % style)
-    for moss_id, _ in MOSSES:
+    for moss_id, _, _ in MOSSES:
         lines.append('    initTabBlock(new BlockHangingMoss("%s"));' % moss_id)
     return "\n".join(lines)
 

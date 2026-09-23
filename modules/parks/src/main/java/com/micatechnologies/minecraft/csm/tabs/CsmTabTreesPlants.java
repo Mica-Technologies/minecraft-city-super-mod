@@ -181,6 +181,7 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockTreeLeaves("tree_crown_palm_feather", TreeLeafType.PALM_FEATHER,
         "csm:blocks/parks/palm_crown_feather"));
     initTabBlock(new BlockHangingMoss("spanish_moss"));
+    initTabBlock(new BlockHangingMoss("willow_strands"));
 
     // Street tree accessories and plantings, written by gen_park_plantings.py (--fragments).
     initTabBlock(new BlockParkProp("tree_grate_square", BlockParkProp.Kind.GROUND, 16, 0));

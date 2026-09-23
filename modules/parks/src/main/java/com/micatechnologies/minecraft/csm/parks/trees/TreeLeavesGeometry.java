@@ -17,7 +17,8 @@ import net.minecraft.util.EnumFacing;
  *       grid. A one-wide column of leaves becomes a narrow columnar crown.</li>
  *   <li>Nothing is drawn between two leaves cells, and a cell with no open face draws only a
  *       reduced interior (enough that the crown is not see-through).</li>
- *   <li>Weeping leaves hang their bottom fringe well below the cell.</li>
+ *   <li>Weeping leaves hang a curtain of long strands down every open side and below an open
+ *       bottom, reaching well under the cell, so a crown of them weeps rather than billows.</li>
  * </ul>
  *
  * <p>The shape is seeded by the block's type, a per-position variant (0-3) and the open faces, so
@@ -93,32 +94,70 @@ public final class TreeLeavesGeometry {
         continue;
       }
       double[] n = {f.getXOffset(), f.getYOffset(), f.getZOffset()};
-      boolean hang = type == TreeLeafType.WEEPING && f == EnumFacing.DOWN;
-      if (f.getAxis() == EnumFacing.Axis.Y && !type.upright && !hang) {
+      if (f.getAxis() == EnumFacing.Axis.Y && !type.upright) {
         // A near-flat card across an open top or bottom, so a canopy seen from below (or from a
         // window above) is a mass of leaves rather than sky between scattered cards.
         double y = f == EnumFacing.DOWN ? 1.5 + rng.nextDouble() : 14.5 - rng.nextDouble();
         addCard(quads, new double[]{8, y, 8}, 9.5, 9.5, rng.nextDouble() * Math.PI,
             Math.PI / 2 + (rng.nextDouble() * 2 - 1) * 0.2);
       }
-      int count = hang ? type.fringe + 2 : type.fringe;
-      for (int i = 0; i < count; i++) {
-        double reach = 8 + rng.nextDouble() * FRINGE_REACH - (hang ? 6 : 1);
+      for (int i = 0; i < type.fringe; i++) {
+        double reach = 8 + rng.nextDouble() * FRINGE_REACH - 1;
         double[] c = {8 + n[0] * reach, 8 + n[1] * reach, 8 + n[2] * reach};
         for (int k = 0; k < 3; k++) {
           if (n[k] == 0) {
             c[k] += (rng.nextDouble() - 0.5) * 11;
           }
         }
-        double s = size(type, rng) * 0.8;
-        if (hang) {
-          hangingCard(quads, rng, c, s);
-        } else {
-          card(quads, type, rng, c, s);
-        }
+        card(quads, type, rng, c, size(type, rng) * 0.8);
       }
     }
+    if (type == TreeLeafType.WEEPING) {
+      curtain(quads, rng, open);
+    }
     return quads;
+  }
+
+  /**
+   * A weeping crown's curtain: long, narrow upright strands just outside each open side, hanging
+   * from near the top of the cell, and more under an open bottom. They reach below the cell only
+   * where the bottom is open; with leaves below, the cell under it hangs its own.
+   */
+  private static void curtain(List<TreeLogGeometry.Quad> quads, Random rng, int open) {
+    boolean openBelow = (open >> EnumFacing.DOWN.getIndex() & 1) != 0;
+    for (EnumFacing f : EnumFacing.HORIZONTALS) {
+      if ((open >> f.getIndex() & 1) == 0) {
+        continue;
+      }
+      double nx = f.getXOffset();
+      double nz = f.getZOffset();
+      // Along the face: a strand's width runs this way, so the strands read as one curtain.
+      double tx = -nz;
+      double tz = nx;
+      double yaw = Math.atan2(tz, tx);
+      for (int i = 0; i < 4; i++) {
+        double along = (i + 0.2 + rng.nextDouble() * 0.6) * 4 - 8;
+        double out = 8.3 + rng.nextDouble() * 1.8;
+        double top = 12 + rng.nextDouble() * 3.5;
+        double bottom = openBelow ? -4 - rng.nextDouble() * 10 : 0.5 + rng.nextDouble() * 3;
+        strand(quads, rng, 8 + nx * out + tx * along, 8 + nz * out + tz * along, top, bottom,
+            3 + rng.nextDouble() * 2.5, yaw);
+      }
+    }
+    if (openBelow) {
+      for (int i = 0; i < 5; i++) {
+        strand(quads, rng, 2 + rng.nextDouble() * 12, 2 + rng.nextDouble() * 12,
+            4 + rng.nextDouble() * 3, -8 - rng.nextDouble() * 12, 3 + rng.nextDouble() * 3,
+            rng.nextDouble() * Math.PI);
+      }
+    }
+  }
+
+  /** One hanging strand: an upright double-sided card from {@code top} down to {@code bottom}. */
+  private static void strand(List<TreeLogGeometry.Quad> quads, Random rng, double x, double z,
+      double top, double bottom, double width, double yaw) {
+    addCard(quads, new double[]{x, (top + bottom) / 2, z}, width / 2, (top - bottom) / 2,
+        yaw + (rng.nextDouble() - 0.5) * 0.5, (rng.nextDouble() - 0.5) * 0.12);
   }
 
   /** A sheet of leaves over one face of the cell, 0.3 inside it, facing out. */
@@ -176,14 +215,6 @@ public final class TreeLeavesGeometry {
       hw = size * 0.35;
     }
     addCard(quads, c, hw, hh, yaw, tilt);
-  }
-
-  /** A weeping curtain card: tall, upright, hanging from above its centre. */
-  private static void hangingCard(List<TreeLogGeometry.Quad> quads, Random rng, double[] c,
-      double size) {
-    double yaw = rng.nextDouble() * Math.PI;
-    addCard(quads, new double[]{c[0], c[1] - size * 0.4, c[2]}, size * 0.35, size * 0.9, yaw,
-        (rng.nextDouble() * 2 - 1) * 0.15);
   }
 
   private static void addCard(List<TreeLogGeometry.Quad> quads, double[] c, double hw, double hh,
