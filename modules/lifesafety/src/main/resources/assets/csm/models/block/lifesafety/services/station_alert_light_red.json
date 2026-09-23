@@ -1,0 +1,146 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/lifesafety/services/dark_steel",
+    "lens": "csm:blocks/lifesafety/services/alert_red",
+    "particle": "csm:blocks/lifesafety/services/dark_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        5,
+        14
+      ],
+      "to": [
+        14,
+        11,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            5,
+            14,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            5,
+            14,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            5,
+            2,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            14,
+            5,
+            16,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            0,
+            14,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        5.5,
+        12.5
+      ],
+      "to": [
+        13.5,
+        10.5,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lens",
+          "uv": [
+            2.5,
+            5.5,
+            13.5,
+            10.5
+          ]
+        },
+        "south": {
+          "texture": "#lens",
+          "uv": [
+            2.5,
+            5.5,
+            13.5,
+            10.5
+          ]
+        },
+        "east": {
+          "texture": "#lens",
+          "uv": [
+            2,
+            5.5,
+            3.5,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#lens",
+          "uv": [
+            12.5,
+            5.5,
+            14,
+            10.5
+          ]
+        },
+        "up": {
+          "texture": "#lens",
+          "uv": [
+            2.5,
+            12.5,
+            13.5,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#lens",
+          "uv": [
+            2.5,
+            2,
+            13.5,
+            3.5
+          ]
+        }
+      }
+    }
+  ]
+}

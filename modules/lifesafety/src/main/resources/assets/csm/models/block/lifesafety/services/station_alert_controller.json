@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/lifesafety/services/dark_steel",
+    "front": "csm:blocks/lifesafety/services/alert_panel",
+    "particle": "csm:blocks/lifesafety/services/dark_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        1,
+        11
+      ],
+      "to": [
+        14,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            2,
+            1,
+            14,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            1,
+            14,
+            15
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            1,
+            5,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            11,
+            1,
+            16,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            11,
+            14,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            0,
+            14,
+            5
+          ]
+        }
+      }
+    }
+  ]
+}

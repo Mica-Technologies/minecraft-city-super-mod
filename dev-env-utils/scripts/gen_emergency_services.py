@@ -516,5 +516,150 @@ def number_plaque():
 number_plaque()
 
 
+
+# ==========================================================================================
+# Station alerting (BlockStationAlertController and its devices)
+# ==========================================================================================
+@C.texture("alert_panel")
+def _alert_panel():
+    return alert_panel(False)
+
+
+@C.texture("alert_panel_active")
+def _alert_panel_active():
+    return alert_panel(True)
+
+
+def alert_panel(active):
+    img = fill((60, 64, 70), size=64, grain=2, seed=301)
+    x0, y0, x1, y1 = north_region((2, 1), (14, 15), 64)
+    bevel(img, x0, y0, x1, y1, (60, 64, 70))
+    draw_text_centred(img, "STATION", 32, y0 + 4, (220, 220, 220))
+    draw_text_centred(img, "ALERTING", 32, y0 + 11, (220, 220, 220))
+    disc(img, 32, y0 + 26, 5, (255, 60, 50) if active else (90, 30, 26))
+    draw_text_centred(img, "ALERT", 32, y0 + 34, (255, 120, 110) if active else (140, 140, 140))
+    # zone keys
+    for i in range(5):
+        bx = x0 + 5 + i * 8
+        rect(img, bx, y1 - 14, bx + 6, y1 - 8, (200, 200, 196))
+        rect(img, bx, y1 - 9, bx + 6, y1 - 8, (120, 120, 116))
+    return img
+
+
+@C.texture("speaker_grille")
+def _speaker_grille():
+    img = fill((220, 220, 216), grain=2, seed=302)
+    for y in range(4, 13):
+        for x in range(4, 13):
+            if (x + y) % 2 == 0 and math.hypot(x + 0.5 - 8.5, y + 0.5 - 8.5) < 4.8:
+                img.load()[x, y] = (70, 70, 72, 255)
+    return img
+
+
+def alert_lens(colour, lit):
+    def draw():
+        base = colour if lit else shade(colour, 0.35)
+        img = fill(base, grain=3, seed=303 + lit)
+        for x in range(0, 16, 3):
+            rect(img, x, 0, x + 1, 16, shade(base, 0.85))
+        if lit:
+            rect(img, 4, 6, 12, 10, shade(colour, 1.3))
+        return img
+    return draw
+
+
+C.textures["alert_red"] = alert_lens((240, 40, 36), False)
+C.textures["alert_red_on"] = alert_lens((240, 40, 36), True)
+C.textures["alert_white"] = alert_lens((240, 240, 232), False)
+C.textures["alert_white_on"] = alert_lens((240, 240, 232), True)
+
+
+def clearance(green):
+    def draw():
+        img = fill((34, 34, 36), grain=2, seed=305)
+        disc(img, 8, 4.5, 3.2, (255, 40, 30) if not green else (80, 20, 16))
+        disc(img, 8, 11.5, 3.2, (40, 230, 90) if green else (16, 60, 26))
+        return img
+    return draw
+
+
+C.textures["clearance_stop"] = clearance(False)
+C.textures["clearance_go"] = clearance(True)
+
+
+@C.texture("relay_front")
+def _relay_front():
+    img = fill((150, 152, 156), grain=2, seed=306)
+    draw_text_centred(img, "K1", 8, 3, (40, 40, 40))
+    return img
+
+
+@C.texture("relay_front_on")
+def _relay_front_on():
+    img = _relay_front()
+    disc(img, 8, 11, 1.6, (255, 70, 50))
+    return img
+
+
+def device(reg, kind, box6, names, textures, elements, on_textures):
+    state = facing_state(M(reg), {"active": {"false": {}, "true": {"textures": on_textures}}})
+    C.add(reg, 'new BlockStationAlertDevice("%s", BlockStationAlertDevice.Kind.%s, %s)'
+          % (reg, kind, B(*box6)), names, {reg: model(textures, elements)}, state, tab=ES)
+
+
+C.add("station_alert_controller",
+      'new BlockStationAlertController("station_alert_controller", %s)' % B(2, 1, 11, 14, 15, 16),
+      ("Station Alerting Controller", "Alarmierungszentrale der Wache",
+       "Controlador de alerta de estación", "Larmcentral för stationslarm"),
+      {"station_alert_controller": model(
+          {"steel": T("dark_steel"), "front": T("alert_panel"), "particle": T("dark_steel")},
+          [box([2, 1, 11], [14, 15, 16], "steel", per={"north": "front"})])},
+      facing_state(M("station_alert_controller"),
+                   {"active": {"false": {}, "true": {"textures": {"front": T("alert_panel_active")}}},
+                    "powered": {"false": {}, "true": {}}}), tab=ES)
+device("station_alert_speaker", "SPEAKER", (3, 3, 13, 13, 13, 16),
+       ("Station Alerting Speaker", "Alarmierungslautsprecher", "Altavoz de alerta de estación",
+        "Högtalare för stationslarm"),
+       {"white": T("silver"), "grille": T("speaker_grille"), "particle": T("silver")},
+       [box([3, 3, 14], [13, 13, 16], "white", per={"north": "grille"})], {})
+for colour, cn in (("red", ("Red", "rot", "roja", "röd")), ("white", ("White", "weiß", "blanca", "vit"))):
+    device("station_alert_light_" + colour, "LIGHT", (2, 5, 12, 14, 11, 16),
+           ("Station Alert Light (%s)" % cn[0], "Alarmierungsleuchte (%s)" % cn[1],
+            "Luz de alerta de estación (%s)" % cn[2], "Larmlampa för station (%s)" % cn[3]),
+           {"steel": T("dark_steel"), "lens": T("alert_" + colour), "particle": T("dark_steel")},
+           [box([2, 5, 14], [14, 11, 16], "steel"),
+            box([2.5, 5.5, 12.5], [13.5, 10.5, 14], "lens")],
+           {"lens": T("alert_%s_on" % colour)})
+device("station_alert_relay", "RELAY", (5, 4, 13, 11, 12, 16),
+       ("Station Alerting Relay", "Alarmierungsrelais", "Relé de alerta de estación",
+        "Relä för stationslarm"),
+       {"box": T("steel"), "front": T("relay_front"), "particle": T("steel")},
+       [box([5, 4, 13], [11, 12, 16], "box", per={"north": "front"})],
+       {"front": T("relay_front_on")})
+device("bay_clearance_light", "CLEARANCE", (4, 1, 12, 12, 15, 16),
+       ("Bay Door Clearance Light", "Hallentor-Ausfahrtampel", "Semáforo de salida de la cochera",
+        "Utfartssignal för vagnhallen"),
+       {"black": T("black"), "face": T("clearance_stop"), "particle": T("black")},
+       [box([4, 1, 13], [12, 15, 16], "black", per={"north": "face"}),
+        box([4, 7.5, 11.5], [12, 8, 13], "black"), box([4, 14.5, 11.5], [12, 15, 13], "black")],
+       {"face": T("clearance_go")})
+
+for key, names in (
+        ("zone", ("[Station alerting] Zone: %s (%s devices linked). Sneak and click to dispatch.",
+                  "[Alarmierung] Zone: %s (%s Geräte verbunden). Schleichen und klicken zum Alarmieren.",
+                  "[Alerta] Zona: %s (%s dispositivos vinculados). Agáchate y haz clic para despachar.",
+                  "[Stationslarm] Zon: %s (%s enheter kopplade). Smyg och klicka för att larma.")),
+        ("dispatch", ("[Station alerting] Dispatching %s.", "[Alarmierung] Alarmiere %s.",
+                      "[Alerta] Despachando %s.", "[Stationslarm] Larmar %s.")),
+        ("reset", ("[Station alerting] Alert reset.", "[Alarmierung] Alarm zurückgesetzt.",
+                   "[Alerta] Alerta restablecida.", "[Stationslarm] Larmet återställt.")),
+        ("zone.engine", ("Engine", "Löschfahrzeug", "Autobomba", "Släckbil")),
+        ("zone.ladder", ("Ladder", "Drehleiter", "Escalera", "Stegbil")),
+        ("zone.medic", ("Medic", "Rettungswagen", "Ambulancia", "Ambulans")),
+        ("zone.battalion", ("Battalion", "Einsatzleitung", "Jefatura de batallón", "Insatsledare")),
+        ("zone.all_call", ("All call", "Vollalarm", "Llamada general", "Allmänt larm"))):
+    C.add_lang("csm.lifesafety.station." + key, names)
+
+
 if __name__ == "__main__":
     sys.exit(C.main())
