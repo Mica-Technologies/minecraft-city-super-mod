@@ -59,6 +59,7 @@ MODULE_OF_TAB = {
     "tablifesafety": "lifesafety",
     "tabexitsemergency": "lifesafety",
     "tabfireprotection": "lifesafety",
+    "tabemergencyservices": "lifesafety",
     "tablighting": "lighting",
     "tablightinghidden": "lighting",
     "tabnovelties": "furnishings",

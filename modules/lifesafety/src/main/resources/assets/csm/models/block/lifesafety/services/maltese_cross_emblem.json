@@ -1,0 +1,41 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cross": "csm:blocks/lifesafety/services/maltese",
+    "particle": "csm:blocks/lifesafety/services/maltese"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        1,
+        15.5
+      ],
+      "to": [
+        15,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cross",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cross",
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

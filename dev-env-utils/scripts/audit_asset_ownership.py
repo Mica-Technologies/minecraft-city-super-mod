@@ -17,7 +17,7 @@ import csm_layout as layout
 REPO = layout.REPO_ROOT
 BS_DIRS=layout.asset_dirs("blockstates"); MB_DIRS=layout.asset_dirs("models/block"); TB_DIRS=layout.asset_dirs("textures/blocks")
 index,tabs,classes=cbi.build_index()
-TABMOD={"tabbuildingmaterials":"buildingmaterials","tabhvac":"hvac","tablifesafety":"lifesafety","tabexitsemergency":"lifesafety","tabfireprotection":"lifesafety","tablighting":"lighting","tabnovelties":"novelties","tabpowergrid":"powergrid","tabroadsigns":"trafficsigns","tabtechnology":"technology","tabtrafficaccessories":"trafficaccessories","tabtrafficsignals":"trafficsignals","tabfurniture":"furniture","tabgaming":"novelties","tabmaterials":"materials","none":"(hidden)","tabroadshidden":"(hidden)","tablightinghidden":"(hidden)",None:"(hidden)"}
+TABMOD={"tabbuildingmaterials":"buildingmaterials","tabhvac":"hvac","tablifesafety":"lifesafety","tabexitsemergency":"lifesafety","tabfireprotection":"lifesafety","tabemergencyservices":"lifesafety","tablighting":"lighting","tabnovelties":"novelties","tabpowergrid":"powergrid","tabroadsigns":"trafficsigns","tabtechnology":"technology","tabtrafficaccessories":"trafficaccessories","tabtrafficsignals":"trafficsignals","tabfurniture":"furniture","tabgaming":"novelties","tabmaterials":"materials","none":"(hidden)","tabroadshidden":"(hidden)","tablightinghidden":"(hidden)",None:"(hidden)"}
 def load(p):
     try: return json.load(open(p,encoding="utf-8"))
     except Exception: return None

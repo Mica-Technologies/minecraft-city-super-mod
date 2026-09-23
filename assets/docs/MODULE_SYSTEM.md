@@ -22,7 +22,7 @@ world ever sees is namespaced with them.
 |---|---|---|---|---|---|---|
 | Core | `csm` | CSM: Core | `minecraft-city-super-mod-core-<version>.jar` | root, `codeutils`, `api`, `materials`, `tabs/CsmTabMaterials` | Materials (13) | 1 block + 15 items |
 | Roads & Traffic | `csm_roads` | CSM: Roads & Traffic | `…-roads-<version>.jar` | `trafficsignals`, `trafficaccessories`, `trafficsigns` | Road Signs (7), Traffic Accessories (9), Traffic Signals (10), hidden (−10) | 1,027 |
-| Life Safety | `csm_lifesafety` | CSM: Life Safety | `…-lifesafety-<version>.jar` | `lifesafety`, `api/firealarm` | Fire Alarm & Detection (3), Exits & Emergency Lighting (20), Fire Protection (21) | 155 |
+| Life Safety | `csm_lifesafety` | CSM: Life Safety | `…-lifesafety-<version>.jar` | `lifesafety`, `api/firealarm` | Fire Alarm & Detection (3), Exits & Emergency Lighting (20), Fire Protection (21), Emergency Services (22) | 155 |
 | HVAC | `csm_hvac` | CSM: HVAC | `…-hvac-<version>.jar` | `hvac` | HVAC (2) | 45 |
 | Lighting | `csm_lighting` | CSM: Lighting | `…-lighting-<version>.jar` | `lighting` | Lighting (4), hidden (−9) | 140 |
 | Power Grid | `csm_powergrid` | CSM: Power Grid | `…-powergrid-<version>.jar` | `powergrid` | Power Grid (6) | 46 |

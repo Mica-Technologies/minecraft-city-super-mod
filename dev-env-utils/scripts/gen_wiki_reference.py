@@ -111,6 +111,9 @@ TABS = {
     "tabexitsemergency": ("exits-and-emergency-lighting", "Exits & Emergency Lighting",
                           "Exit and stair signs, and the emergency lights that take over when "
                           "the power fails."),
+    "tabemergencyservices": ("emergency-services", "Emergency Services",
+                             "Fire, police and ambulance station fittings, community warning "
+                             "sirens and dispatch."),
     "tabfireprotection": ("fire-protection", "Fire Protection",
                           "Sprinklers and the rest of what a building fights a fire with "
                           "besides its alarm."),
@@ -151,7 +154,7 @@ TABS = {
 }
 
 PAGE_ORDER = ["tabbuildingmaterials", "tabconstructionsite", "tabfurniture", "tabgaming",
-              "tabexitsemergency", "tabfireprotection",
+              "tabemergencyservices", "tabexitsemergency", "tabfireprotection",
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabroadsigns", "tabsignage", "tabstructureframing",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtreesplants",

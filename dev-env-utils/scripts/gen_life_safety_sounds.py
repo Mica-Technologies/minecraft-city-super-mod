@@ -74,8 +74,38 @@ def aed_cabinet_alarm():
     return np.concatenate(parts)
 
 
+def gong_strike(seconds, fundamental=620.0, seed=3):
+    """One strike of a heavy brass gong: inharmonic partials, the high ones dying first, and the
+    clank of the hammer at the front."""
+    t = t_of(seconds)
+    out = np.zeros_like(t)
+    for ratio, level, decay in ((1.0, 1.0, 1.6), (2.32, 0.6, 0.9), (4.25, 0.35, 0.45),
+                                (6.63, 0.18, 0.25), (0.5, 0.25, 2.2)):
+        out += level * np.sin(2 * np.pi * fundamental * ratio * t) * np.exp(-t / decay)
+    n = int(RATE * 0.005)
+    out[:n] += np.random.RandomState(seed).uniform(-0.7, 0.7, n) * np.linspace(1, 0, n)
+    return out
+
+
+def station_bell():
+    """The firehouse gong's signal: three rounds of three strikes, the rounds a second apart, the
+    last strike left to ring out. About 6 s."""
+    total = np.zeros(int(RATE * 6.2))
+    strike = gong_strike(2.4)
+    at = 0.0
+    for _ in range(3):
+        for _ in range(3):
+            i = int(RATE * at)
+            seg = strike[:len(total) - i]
+            total[i:i + len(seg)] += seg
+            at += 0.42
+        at += 0.75
+    return total
+
+
 SOUNDS = {
     'aed_cabinet_alarm': (aed_cabinet_alarm, 7000),
+    'station_bell': (station_bell, 6500),
 }
 
 

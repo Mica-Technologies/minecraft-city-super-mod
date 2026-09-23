@@ -2,10 +2,12 @@ package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
-import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirePole;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -66,6 +68,8 @@ public class CsmLifeSafety {
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
 
     CsmGuiRegistry.register(new LifeSafetyGuiProvider());
+    // The fire pole's slide cancels the fall at the bottom (see BlockFirePole.FallHandler).
+    MinecraftForge.EVENT_BUS.register(new BlockFirePole.FallHandler());
 
     // Safe here: Fabricator costs are first read at post-initialization and thereafter only
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.
@@ -75,6 +79,8 @@ public class CsmLifeSafety {
         LifeSafetyFabricatorRules::priceExits);
     CsmFabricatorCosts.registerRule(LifeSafetyFabricatorRules.FIRE_PROTECTION_TAB_ID,
         LifeSafetyFabricatorRules::priceFireProtection);
+    CsmFabricatorCosts.registerRule(LifeSafetyFabricatorRules.EMERGENCY_SERVICES_TAB_ID,
+        LifeSafetyFabricatorRules::priceEmergencyServices);
 
     // Also clears ActiveStrobeRegistry. A lambda, not
     // FireAlarmSoundPacketHandler::stopAllSounds: that method is @SideOnly(CLIENT), so it is

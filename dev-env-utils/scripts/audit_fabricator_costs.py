@@ -319,6 +319,20 @@ def cost_for(registry, info, ancestors):
         if has_any(registry, ("valve", "connection", "riser", "preventer", "box")):
             return ("SHEET_METAL", "FASTENER_KIT")
         return ("SHEET_METAL", "WIRING_HARNESS")
+    if tab == "tabemergencyservices":
+        if has_any(registry, ("sign", "plaque", "emblem")):
+            return ("SIGN_BLANK",)
+        if has_word(registry, "hose"):
+            return ("wool x2",)
+        if has_any(registry, ("gong", "bell")):
+            return ("SHEET_METAL", "SOUNDER_DRIVER")
+        if has_any(registry, ("compressor", "extractor", "fill", "console", "siren", "controller",
+                              "detector", "call", "radio", "monitor", "alerting", "speaker",
+                              "light", "lamp", "scanner")):
+            return ("SHEET_METAL", "CONTROL_BOARD", "WIRING_HARNESS")
+        if has_any(registry, ("cylinder", "scba")):
+            return ("SHEET_METAL x2",)
+        return ("SHEET_METAL", "FASTENER_KIT")
     if tab == "tablighting":
         return ("LED_MODULE", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabnovelties":
