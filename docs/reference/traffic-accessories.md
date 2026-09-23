@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "389 blocks in this tab"
+!!! info "386 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -55,8 +55,6 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Concrete Thin Traffic Pole | `csm:trafficpolehorizontalconcrete` | 2 | 10 | pickaxe | 1 |
 | Crash Cushion (Bay) | `csm:crash_cushion_bay` | 1.2 | 6 | pickaxe | 0 |
 | Crash Cushion (Nose) | `csm:crash_cushion_nose` | 1.2 | 6 | pickaxe | 0 |
-| Delineator Post | `csm:delineator_post` | 0.6 | 3 | pickaxe | 0 |
-| Delineator Post (Yellow) | `csm:delineator_post_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Doghouse Signal Border (Black/Black) | `csm:tldoghouseborderblackblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Black/Blue) | `csm:tldoghouseborderblackblue` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Black/Green) | `csm:tldoghouseborderblackgreen` | 2 | 10 | pickaxe | 1 |
@@ -399,6 +397,5 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Wire Mount (Horizontal Signal) | `csm:tlitehorzwiremount` |  | 10 | pickaxe | 1 |
 | Wire Mount (Signal Cluster) | `csm:spanwireclustermount` |  | 10 | pickaxe | 1 |
 | Wire Mount (Vertical Signal) | `csm:tlitevertwiremount` |  | 10 | pickaxe | 1 |
-| Zebra Delineator | `csm:delineator_zebra` | 0.6 | 3 | pickaxe | 0 |
 
 </div>

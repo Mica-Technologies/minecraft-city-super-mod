@@ -135,6 +135,9 @@ TABS = {
                      "The MUTCD sign set, grouped the way the manual groups it."),
     "tabsignage": ("signage", "Signage & Advertising",
                    "Street ad kiosks, wall poster boards and billboards built to size."),
+    "tabstreetscape": ("streetscape", "Streetscape",
+                       "Street fixtures between the curb and the building line: fire hydrants "
+                       "and delineators."),
     "tabstructureframing": ("structure-framing", "Structure & Framing",
                             "Steel and wood stud walls, the structure that spans between "
                             "them, and structural steel."),
@@ -156,7 +159,7 @@ TABS = {
 PAGE_ORDER = ["tabbuildingmaterials", "tabconstructionsite", "tabfurniture", "tabgaming",
               "tabemergencyservices", "tabexitsemergency", "tabfireprotection",
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
-              "tabnovelties", "tabparks", "tabpowergrid", "tabroadsigns", "tabsignage", "tabstructureframing",
+              "tabnovelties", "tabparks", "tabpowergrid", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtreesplants",
               "tabnone"]
 

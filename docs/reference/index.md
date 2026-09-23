@@ -11,7 +11,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 |---|---|---|
 | [Building Materials](building-materials.md) | 203 | Bulk material sets, with matching stairs, slabs and fences. |
 | [Construction Site](construction-site.md) | 42 | What stands around a building while it goes up: scaffolding, formwork, earthworks, site logistics and facilities. |
-| [Furniture](furniture.md) | 55 | Interior fittings: seating, counters, appliances and fixtures. |
+| [Furniture](furniture.md) | 54 | Interior fittings: seating, counters, appliances and fixtures. |
 | [Gaming](gaming.md) | 19 | Arcade cabinets and the playable machines that go with them. |
 | [Emergency Services](emergency-services.md) | 62 | Fire, police and ambulance station fittings, community warning sirens and dispatch. |
 | [Exits & Emergency Lighting](exits-and-emergency-lighting.md) | 38 | Exit and stair signs, and the emergency lights that take over when the power fails. |
@@ -26,9 +26,10 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Power Grid](power-grid.md) | 46 | Utility poles, transformers and the Forge Energy that runs through them. |
 | [Road Signs](road-signs.md) | 677 | The MUTCD sign set, grouped the way the manual groups it. |
 | [Signage & Advertising](signage.md) | 5 | Street ad kiosks, wall poster boards and billboards built to size. |
+| [Streetscape](streetscape.md) | 4 | Street fixtures between the curb and the building line: fire hydrants and delineators. |
 | [Structure & Framing](structure-framing.md) | 32 | Steel and wood stud walls, the structure that spans between them, and structural steel. |
 | [Technology](technology.md) | 37 | Servers, routers, screens and consumer electronics. |
-| [Traffic Accessories](traffic-accessories.md) | 389 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
+| [Traffic Accessories](traffic-accessories.md) | 386 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Trees & Plants](trees-and-plants.md) | 134 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Unlisted](unlisted.md) | 127 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |

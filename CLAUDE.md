@@ -83,7 +83,7 @@ container per jar.
 | Module tree | Mod id | Display name | Contents |
 |---|---|---|---|
 | `src/main` | `csm` | CSM: Core | base classes, registration, tabs machinery, config, parts + Fabricator, shared assets |
-| `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns` |
+| `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` (the Streetscape tab: hydrants, delineators and street fixtures external road mods lack) |
 | `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; four tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection, Emergency Services |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
@@ -124,6 +124,7 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    generators), landscape/ (plantings), amenities/ (the Parks tab)
 ├── technology/       # Modern tech: servers, routers, TVs
 ├── tts/              (modules/tts)
+├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
 ├── trafficaccessories/
 ├── trafficsignals/   # Crosswalk/pedestrian signals with redstone support
 └── trafficsigns/     # Largest: 472 road sign blocks

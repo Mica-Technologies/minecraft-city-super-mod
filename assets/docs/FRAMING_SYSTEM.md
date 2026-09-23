@@ -35,7 +35,7 @@ from steel to wood, without ever stopping being one wall.
 | `…/BlockFramingSpan.java` | joists, deck and structural steel: one axis, two states |
 | `…/BlockWoodRafter.java` | the 45° rafter, which needs four facings rather than two axes |
 | `…/AbstractBlockSteelFraming`, `…WoodFraming`, `AbstractBlockSteel*` | material properties per family, so each member is a registry name and its own quirks |
-| `modules/building/.../tabs/CsmTabStructureFraming.java` | the tab, `@CsmTab.Load(order = 14)` |
+| `modules/building/.../tabs/CsmTabStructureFraming.java` | the tab, `@CsmTab.Load(order = 15)` |
 
 Nothing under `models/block/buildingmaterials/shared_models/framing/`, nothing named
 `steel_*`/`wood_*` under `blockstates/`, and neither framing texture folder is hand edited. Change

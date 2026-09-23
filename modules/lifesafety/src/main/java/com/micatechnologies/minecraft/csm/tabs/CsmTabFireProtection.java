@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @since 2026.9
  */
-@CsmTab.Load(order = 21)
+@CsmTab.Load(order = 22)
 public class CsmTabFireProtection extends CsmTab {
 
   @Override

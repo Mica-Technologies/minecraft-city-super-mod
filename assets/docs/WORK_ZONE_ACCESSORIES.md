@@ -1,9 +1,11 @@
 # Work Zone Accessories
 
 The channelizing devices a road crew puts out: cones, drums, channelizers, barricades, delineator
-posts, temporary pavement markers, barrier walls, sand barrels and the arrow board. Thirty-seven blocks in the Traffic Accessories tab, all
-generated from one script, and all sharing one behaviour that nothing else in the mod has — they
-**settle onto the surface underneath them** instead of floating a cell above it.
+posts, temporary pavement markers, barrier walls, sand barrels and the arrow board. Thirty-seven
+blocks, all generated from one script, and all sharing one behaviour — they **settle onto the
+surface underneath them** instead of floating a cell above it. Thirty-four are in the Traffic
+Accessories tab; the three delineators are in the Streetscape tab, with the other street fixtures
+that settle the same way (the fire hydrant among them).
 
 This document covers that settling mechanism, the barricade connection and customization systems,
 and the arrow board's animated display. It does not cover the traffic signs that can be mounted
@@ -22,8 +24,8 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `barricade_type_1_left`, `_right` | `BlockWorkZoneBarricade` | one rail, joins into runs |
 | `barricade_type_2_left`, `_right` | `BlockWorkZoneBarricadeFolding` | two rails on a folding A-frame, stands alone |
 | `barricade_type_3_left`, `_right` | `BlockWorkZoneBarricade` | three rails, joins into runs |
-| `delineator_post`, `delineator_post_yellow` | `BlockWorkZoneDevice` | |
-| `delineator_zebra` | `BlockWorkZoneDeviceDiagonal` | the low rubber lane separator; runs the length of its cell so a line of them is continuous, and takes all eight facings |
+| `delineator_post`, `delineator_post_yellow` | `BlockWorkZoneDeviceDiagonal` | Streetscape tab |
+| `delineator_zebra` | `BlockWorkZoneDeviceDiagonal` | Streetscape tab; the low rubber lane separator; runs the length of its cell so a line of them is continuous, and takes all eight facings |
 | `pavement_marker_white`, `_yellow`, `_orange`, `_red`, `_blue`, `_green` | `BlockWorkZoneDeviceDiagonal` | the small folded tabs taped down a lane line |
 | `channelizing_wall_orange`, `_white` | `BlockWorkZoneWall` | the plastic wall filled with water on site |
 | `concrete_barrier` | `BlockWorkZoneWall` | precast, in the New Jersey profile |

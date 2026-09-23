@@ -1,7 +1,7 @@
 # Parks & Greenery
 
 **CSM: Parks & Greenery** (`csm_parks`, tree `modules/parks`) is street trees, plantings and park
-amenities. It has two creative tabs: **Trees & Plants** (order 18) and **Parks** (order 19).
+amenities. It has two creative tabs: **Trees & Plants** (order 19) and **Parks** (order 20).
 
 This document is the design record: how a tree is built, why the blocks are drawn the way they are,
 what the planting tool does, and the traps.

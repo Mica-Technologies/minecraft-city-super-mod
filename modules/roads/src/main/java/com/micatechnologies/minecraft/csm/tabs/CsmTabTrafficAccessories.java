@@ -727,12 +727,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
         new AxisAlignedBB(-0.257075, 0.000000, 0.204250, 1.257075, 1.501500, 0.795750)));
     initTabBlock(new BlockWorkZoneBarricade("barricade_type_3_right", BarricadeGeometry.TYPE3_TOP,
         new AxisAlignedBB(-0.257075, 0.000000, 0.204250, 1.257075, 1.501500, 0.795750)));
-    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_post",
-        new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
-    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_post_yellow",
-        new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
-    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_zebra",
-        new AxisAlignedBB(0.068750, 0.000000, 0.340625, 0.931250, 0.190625, 0.659375)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("pavement_marker_white",
         new AxisAlignedBB(0.342500, 0.000000, 0.395000, 0.657500, 0.137812, 0.552500)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("pavement_marker_yellow",

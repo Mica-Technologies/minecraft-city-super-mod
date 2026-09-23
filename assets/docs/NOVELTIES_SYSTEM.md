@@ -14,7 +14,7 @@ Blocks are registered across two creative tabs:
 
 - **CsmTabNovelties** (order 5) -- seasonal, collectible, and decorative blocks plus
   interactive utilities (hand dryer, water dispensers, xylophone, record player)
-- **CsmTabGaming** (order 12) -- arcade cabinets, game tables (air hockey, ping pong)
+- **CsmTabGaming** (order 13) -- arcade cabinets, game tables (air hockey, ping pong)
 
 Every block in this package extends `AbstractBlockRotatableNSEWUD` (full NSEW+UD rotation).
 There are **no tile entities** in the novelties system. All logic is handled through

@@ -23,7 +23,6 @@ import com.micatechnologies.minecraft.csm.furniture.BlockCsmJukebox;
 import com.micatechnologies.minecraft.csm.furniture.BlockCsmRadiator;
 import com.micatechnologies.minecraft.csm.furniture.BlockCuttingBoard;
 import com.micatechnologies.minecraft.csm.furniture.BlockDoghouse;
-import com.micatechnologies.minecraft.csm.furniture.BlockFireHydrant;
 import com.micatechnologies.minecraft.csm.furniture.BlockFoodProcessor;
 import com.micatechnologies.minecraft.csm.furniture.BlockGoldenApples;
 import com.micatechnologies.minecraft.csm.furniture.BlockGrandPiano;
@@ -65,7 +64,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load(order = 11)
+@CsmTab.Load(order = 12)
 public class CsmTabFurniture extends CsmTab {
 
   @Override
@@ -120,7 +119,6 @@ public class CsmTabFurniture extends CsmTab {
     initTabBlock(BlockBarbedWire.class, fmlPreInitializationEvent); // Barbed Wire
     initTabBlock(BlockBirdhouse.class, fmlPreInitializationEvent); // Birdhouse
     initTabBlock(BlockDoghouse.class, fmlPreInitializationEvent); // Doghouse
-    initTabBlock(BlockFireHydrant.class, fmlPreInitializationEvent); // Fire Hydrant
     initTabBlock(BlockHummingbirdFeeder.class, fmlPreInitializationEvent); // Hummingbird Feeder
     initTabBlock(BlockTikiTorch.class, fmlPreInitializationEvent); // Tiki Torch
     initTabBlock(BlockWaterBucket.class, fmlPreInitializationEvent); // Water Bucket

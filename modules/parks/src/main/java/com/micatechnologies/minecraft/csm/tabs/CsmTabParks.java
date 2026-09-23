@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @since 2026.9
  */
-@CsmTab.Load(order = 19)
+@CsmTab.Load(order = 20)
 public class CsmTabParks extends CsmTab {
 
   @Override

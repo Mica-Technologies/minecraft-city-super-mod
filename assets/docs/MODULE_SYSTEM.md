@@ -20,18 +20,18 @@ world ever sees is namespaced with them.
 
 | Module | Mod id | Display name | Release jar | Java packages | Creative tabs (load order) | Blocks |
 |---|---|---|---|---|---|---|
-| Core | `csm` | CSM: Core | `minecraft-city-super-mod-core-<version>.jar` | root, `codeutils`, `api`, `materials`, `tabs/CsmTabMaterials` | Materials (13) | 1 block + 15 items |
-| Roads & Traffic | `csm_roads` | CSM: Roads & Traffic | `…-roads-<version>.jar` | `trafficsignals`, `trafficaccessories`, `trafficsigns` | Road Signs (7), Traffic Accessories (9), Traffic Signals (10), hidden (−10) | 1,027 |
-| Life Safety | `csm_lifesafety` | CSM: Life Safety | `…-lifesafety-<version>.jar` | `lifesafety`, `api/firealarm` | Fire Alarm & Detection (3), Exits & Emergency Lighting (20), Fire Protection (21), Emergency Services (22) | 155 |
+| Core | `csm` | CSM: Core | `minecraft-city-super-mod-core-<version>.jar` | root, `codeutils`, `api`, `materials`, `tabs/CsmTabMaterials` | Materials (14) | 1 block + 15 items |
+| Roads & Traffic | `csm_roads` | CSM: Roads & Traffic | `…-roads-<version>.jar` | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` | Road Signs (7), Traffic Accessories (9), Traffic Signals (10), Streetscape (11), hidden (−10) | 1,028 |
+| Life Safety | `csm_lifesafety` | CSM: Life Safety | `…-lifesafety-<version>.jar` | `lifesafety`, `api/firealarm` | Fire Alarm & Detection (3), Exits & Emergency Lighting (21), Fire Protection (22), Emergency Services (23) | 155 |
 | HVAC | `csm_hvac` | CSM: HVAC | `…-hvac-<version>.jar` | `hvac` | HVAC (2) | 45 |
 | Lighting | `csm_lighting` | CSM: Lighting | `…-lighting-<version>.jar` | `lighting` | Lighting (4), hidden (−9) | 140 |
 | Power Grid | `csm_powergrid` | CSM: Power Grid | `…-powergrid-<version>.jar` | `powergrid` | Power Grid (6) | 46 |
 | Technology | `csm_technology` | CSM: Technology | `…-technology-<version>.jar` | `technology` | Technology (8) | 36 |
-| Furniture & Novelties | `csm_furnishings` | CSM: Furniture & Novelties | `…-furnishings-<version>.jar` | `furniture`, `novelties` | Novelties (5), Furniture (11), Gaming (12) | 116 |
+| Furniture & Novelties | `csm_furnishings` | CSM: Furniture & Novelties | `…-furnishings-<version>.jar` | `furniture`, `novelties` | Novelties (5), Furniture (12), Gaming (13) | 115 |
 | Building Materials | `csm_building` | CSM: Building Materials | `…-building-<version>.jar` | `buildingmaterials` | Building Materials (1) | 87 |
 | Text to Speech | `csm_tts` | CSM: Text to Speech | `…-tts-<version>.jar` | `tts` | none — its blocks appear in Technology | 1 block + 1 item |
-| Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage`, hidden (−8) | Signage & Advertising (17) | 13 |
-| Parks & Greenery | `csm_parks` | CSM: Parks & Greenery | `…-parks-<version>.jar` | `parks` | Trees & Plants (18), Parks (19) | 160 + 1 item |
+| Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage`, hidden (−8) | Signage & Advertising (18) | 13 |
+| Parks & Greenery | `csm_parks` | CSM: Parks & Greenery | `…-parks-<version>.jar` | `parks` | Trees & Plants (19), Parks (20) | 160 + 1 item |
 
 Block counts are blockstates shipped in that tree, so they include hidden (retiring) blocks and the
 itemless `*_slab_double` states.

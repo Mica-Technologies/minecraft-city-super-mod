@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * @version 1.0
  * @since 2026.7
  */
-@CsmTab.Load(order = 13)
+@CsmTab.Load(order = 14)
 public class CsmTabMaterials extends CsmTab {
 
   /**

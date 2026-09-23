@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load(order = 17)
+@CsmTab.Load(order = 18)
 public class CsmTabSignage extends CsmTab {
 
   /**

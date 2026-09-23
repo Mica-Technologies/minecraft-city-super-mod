@@ -29,7 +29,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load(order = 12)
+@CsmTab.Load(order = 13)
 public class CsmTabGaming extends CsmTab {
 
   @Override

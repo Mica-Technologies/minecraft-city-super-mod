@@ -34,7 +34,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load(order = 15)
+@CsmTab.Load(order = 16)
 public class CsmTabInteriorFinishes extends CsmTab {
 
   /**

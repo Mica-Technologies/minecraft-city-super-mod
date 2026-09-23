@@ -46,7 +46,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load(order = 14)
+@CsmTab.Load(order = 15)
 public class CsmTabStructureFraming extends CsmTab {
 
   /**

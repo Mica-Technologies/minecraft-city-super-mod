@@ -2,7 +2,7 @@
 
 Interior fittings: seating, counters, appliances and fixtures.
 
-!!! info "55 blocks in this tab"
+!!! info "54 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -29,7 +29,6 @@ Interior fittings: seating, counters, appliances and fixtures.
 | Cuckoo Clock | `csm:cookooclock` | 2 | 10 | pickaxe | 1 |
 | Cutting Board | `csm:cuttingboard` | 2 | 10 | pickaxe | 1 |
 | Doghouse | `csm:doghouse` | 2 | 10 | pickaxe | 1 |
-| Fire Hydrant | `csm:firehydrant` | 2 | 10 | pickaxe | 1 |
 | Food Processor | `csm:foodprocessor` | 2 | 10 | pickaxe | 1 |
 | Golden Apples | `csm:goldenapples` | 2 | 10 | pickaxe | 1 |
 | Grand Piano | `csm:grandpiano` | 2 | 10 | pickaxe | 1 |
