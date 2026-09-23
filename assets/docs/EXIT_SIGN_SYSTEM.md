@@ -8,13 +8,13 @@ and are not part of this system.
 
 | Block | Registry | Housings | Mounts | Heads | States |
 |---|---|---|---|---|---|
-| Traditional Exit Sign | `exit_sign_traditional_flat` | white, black | wall, ceiling, end (either side) | none, square LED, round | 3,072 |
-| Traditional Exit Sign (Rounded) | `exit_sign_traditional_rounded` | white, black | all four | none, square, round | 3,072 |
-| Exit Sign / Emergency Light Combo | `exit_sign_combo_compact` | white, black | all four | square, round (always fitted, above the top corners) | 2,048 |
-| Die-Cast Exit Sign | `exit_sign_diecast` | brushed aluminium, black, white | all four | none | 768 |
-| Vandal-Resistant Exit Sign | `exit_sign_vandal_resistant` | white, black | wall, ceiling | none | 256 |
-| Photoluminescent Exit Sign | `exit_sign_photoluminescent` | white, black | wall, ceiling | none | 256 |
-| Explosion-Proof Exit Sign | `exit_sign_explosion_proof` | brushed aluminium | wall, ceiling | none | 128 |
+| Traditional Exit Sign | `exit_sign_traditional_flat` | white, black | wall, ceiling, end (either side); hung ones single- or double-faced | none, square LED, round | 5,376 |
+| Traditional Exit Sign (Rounded) | `exit_sign_traditional_rounded` | white, black | all seven | none, square, round | 5,376 |
+| Exit Sign / Emergency Light Combo | `exit_sign_combo_compact` | white, black | all seven | square, round (always fitted, above the top corners) | 3,584 |
+| Die-Cast Exit Sign | `exit_sign_diecast` | brushed aluminium, black, white | all seven | none | 1,344 |
+| Vandal-Resistant Exit Sign | `exit_sign_vandal_resistant` | white, black | wall, ceiling (single- or double-faced) | none | 384 |
+| Photoluminescent Exit Sign | `exit_sign_photoluminescent` | white, black | wall, ceiling (single- or double-faced) | none | 384 |
+| Explosion-Proof Exit Sign | `exit_sign_explosion_proof` | brushed aluminium | wall, ceiling (single- or double-faced) | none | 192 |
 
 Every sign offers four arrows (none, left, right, both), red or green letters (the
 photoluminescent sign defaults to green) and the legend EXIT or SALIDA. All of it lives in
@@ -48,11 +48,22 @@ wall mount (`ItemBlockExitSign.placeBlockAt`). End mounts are only chosen in the
 mount's name is the wall's side seen from the front: `end_left` has the wall on the viewer's
 left, which for a north-facing model is east.
 
+**Single-faced is a mount.** A hung sign shows the legend on both faces, or on its front only
+with bare housing behind: `CEILING_SINGLE`, `END_LEFT_SINGLE` and `END_RIGHT_SINGLE`, appended to
+`Mount` after the four places. It is not an option of its own because it means nothing on a wall:
+as its own property it would double every sign's states (the traditional signs to 6,144), and as
+mounts it adds only the three that exist (to 5,376, now the largest blocks in the mod).
+`Mount.getPlace()` is where a sign hangs whatever it shows, and `ExitSignSpec.mountAt(place,
+faces)` the mount a block offers there, so nothing that asks where a sign hangs -- heads, bulbs,
+the outline, placement -- needs to know about faces. A stack set up single-faced places
+single-faced.
+
 ## The setup screen
 
 Right-click opens `GuiExitSign` (GUI id 31, `LifeSafetyGuiProvider.EXIT_SIGN_GUI_ID`): a row per
 option the spec offers, left-click the next value, right-click the previous, with the sign's item
-icon drawn large as a preview. Every change is sent at once as `ExitSignConfigPacket` -- the
+icon drawn large as a preview. The mount is shown as two rows: **Mount** steps through the places
+and keeps the faces chosen, and **Faces** (double or single) switches them, greyed out on a wall. Every change is sent at once as `ExitSignConfigPacket` -- the
 position and `ExitSignConfig.pack()`, eighteen bits in one int -- so the sign changes behind the
 screen as the player clicks. The server checks reach only (as every other config screen does),
 that the block and tile entity are an exit sign's, rejects any out-of-range ordinal
@@ -83,7 +94,9 @@ companion carries only the lit parts, for OptiFine's emissive rendering.
 **Wall and hung.** A wall-mounted sign sits against the block's south face (the models are drawn
 facing north), single-faced. A ceiling or end-mounted sign hangs down the middle and shows the
 legend on both faces; its **arrow keeps pointing the same way in the world**, so a left arrow
-from the front is a right arrow from behind, as a real double-faced sign's knockout is.
+from the front is a right arrow from behind, as a real double-faced sign's knockout is. A
+single-faced hung sign's legend and arrow cells are a third set of face parts (`_single`), the
+hung ones with bare housing on the back; its heads, extras and hardware are the hung ones.
 
 **Housings** are picked by the generator's `kind`: plastic (flat; rounded, whose end cells step
 in under an alpha-cut 1.5 px corner; combo), die-cast (a quarter-pixel lip round the face),
@@ -118,7 +131,8 @@ other exit sign costs nothing per frame.
 `ExitSignConfig` -- never reorder or remove one, the ordinal is what every placed sign saved --
 teach the generator to draw it, add it to the specs that should offer it and to `STYLES`, add its
 lang keys (`csm.exitsign.<option>.<value>`), and run the generator. Check the state count first:
-`ExitSignSpecTest` holds every sign under 5,184, the largest block in the mod.
+`ExitSignSpecTest` holds every sign to 5,376, the traditional signs' own count and the largest
+in the mod.
 
 **A new sign:** a block class extending `AbstractBlockExitSign` with a static `SPEC`, an entry in
 the generator's `STYLES` (plus a `kind` if its housing is new), a line in

@@ -47,8 +47,10 @@ public class ItemBlockExitSign extends ItemBlock {
     }
     TileEntity te = world.getTileEntity(pos);
     if (te instanceof TileEntityExitSign) {
-      ExitSignConfig config = sign.configOf(stack)
-          .withMount(AbstractBlockExitSign.mountForPlacement(side));
+      // Placed where it hangs, keeping the faces the stack was set up with.
+      ExitSignConfig config = sign.configOf(stack);
+      config = config.withMount(sign.getSpec().mountAt(
+          AbstractBlockExitSign.mountForPlacement(side), config.getMount().getFaces()));
       ((TileEntityExitSign) te).setConfig(sign.getSpec().clamp(config));
     }
     return true;

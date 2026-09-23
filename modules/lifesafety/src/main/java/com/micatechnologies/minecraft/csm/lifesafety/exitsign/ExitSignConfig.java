@@ -57,10 +57,68 @@ public final class ExitSignConfig {
 
   /**
    * How the sign is hung: flat against a wall (back mount), from a canopy on the ceiling (top
-   * mount), or end-on from a wall to its left or right (end mount), which shows both faces.
+   * mount), or end-on from a wall to its left or right (end mount). A hung sign shows the legend
+   * on both faces, or, as a {@code _SINGLE} mount, on its front only with bare housing behind.
+   *
+   * <p>Single-faced is a mount rather than an option of its own because it means nothing on a
+   * wall: as its own block state property it would double every sign's states, and as mounts it
+   * adds only the three that exist. The screen still shows it as a separate row
+   * ({@link Faces}).</p>
    */
   public enum Mount implements IStringSerializable {
-    WALL, CEILING, END_LEFT, END_RIGHT;
+    WALL, CEILING, END_LEFT, END_RIGHT, CEILING_SINGLE, END_LEFT_SINGLE, END_RIGHT_SINGLE;
+
+    @Override
+    @Nonnull
+    public String getName() {
+      return name().toLowerCase(Locale.ROOT);
+    }
+
+    /** Whether the sign hangs clear of any wall behind it, so has a back to show. */
+    public boolean isHung() {
+      return this != WALL;
+    }
+
+    /** Whether a hung sign shows its legend on the front only. */
+    public boolean isSingleFaced() {
+      return this == CEILING_SINGLE || this == END_LEFT_SINGLE || this == END_RIGHT_SINGLE;
+    }
+
+    /** Where the sign hangs, whatever it shows: the double-faced mount of the same place. */
+    public Mount getPlace() {
+      switch (this) {
+        case CEILING_SINGLE:
+          return CEILING;
+        case END_LEFT_SINGLE:
+          return END_LEFT;
+        case END_RIGHT_SINGLE:
+          return END_RIGHT;
+        default:
+          return this;
+      }
+    }
+
+    /** The mount hanging in this one's place and showing {@code faces} (a wall has one). */
+    public Mount withFaces(Faces faces) {
+      Mount place = getPlace();
+      if (faces == Faces.DOUBLE || place == WALL) {
+        return place;
+      }
+      return place == CEILING ? CEILING_SINGLE : place == END_LEFT ? END_LEFT_SINGLE
+          : END_RIGHT_SINGLE;
+    }
+
+    public Faces getFaces() {
+      return isSingleFaced() ? Faces.SINGLE : Faces.DOUBLE;
+    }
+  }
+
+  /**
+   * Which faces of a hung sign carry the legend. Not saved on its own: it is read from and
+   * written into the {@link Mount}.
+   */
+  public enum Faces implements IStringSerializable {
+    DOUBLE, SINGLE;
 
     @Override
     @Nonnull

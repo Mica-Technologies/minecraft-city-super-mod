@@ -20,7 +20,7 @@ public class BlockExitSignExplosionProof extends AbstractBlockExitSign {
   /** Package-private so {@code ExitSignSpecTest} can check its state count. */
   static final ExitSignSpec SPEC = ExitSignSpec.builder()
       .housings(Housing.BRUSHED)
-      .mounts(Mount.WALL, Mount.CEILING)
+      .mounts(Mount.WALL, Mount.CEILING, Mount.CEILING_SINGLE)
       .heads(Heads.NONE)
       .preset(Letters.RED, Housing.BRUSHED)
       .preset(Letters.GREEN, Housing.BRUSHED)

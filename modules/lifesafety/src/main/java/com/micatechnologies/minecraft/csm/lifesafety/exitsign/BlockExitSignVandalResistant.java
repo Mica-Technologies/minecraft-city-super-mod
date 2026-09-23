@@ -15,7 +15,7 @@ public class BlockExitSignVandalResistant extends AbstractBlockExitSign {
 
   /** Package-private so {@code ExitSignSpecTest} can check its state count. */
   static final ExitSignSpec SPEC = ExitSignSpec.builder()
-      .mounts(Mount.WALL, Mount.CEILING)
+      .mounts(Mount.WALL, Mount.CEILING, Mount.CEILING_SINGLE)
       .heads(Heads.NONE)
       .preset(Letters.RED, Housing.WHITE)
       .preset(Letters.GREEN, Housing.BLACK)

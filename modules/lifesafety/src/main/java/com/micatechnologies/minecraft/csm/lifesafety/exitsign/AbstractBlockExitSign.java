@@ -257,7 +257,7 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
       return new float[0][];
     }
     boolean square = config.getHeads() == Heads.SQUARE;
-    float front = config.getMount() == Mount.WALL ? 14 : 7;
+    float front = config.getMount().isHung() ? 7 : 14;
     float lens = front - (square ? 0.75f : 0.5f);
     float r = square ? 1.5f : 1.1f;
     float bottom = (float) getFaceBottom();
@@ -266,10 +266,10 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
     float cx = onTop ? 14 : 18.25f;
     float cy = onTop ? top + 2 : bottom + (float) FACE_HEIGHT / 2;
     List<float[]> bulbs = new ArrayList<>();
-    if (onTop || config.getMount() != Mount.END_LEFT) {
+    if (onTop || config.getMount().getPlace() != Mount.END_LEFT) {
       bulbs.add(new float[]{cx - r, cy - r, lens, cx + r, cy + r, front});
     }
-    if (onTop || config.getMount() != Mount.END_RIGHT) {
+    if (onTop || config.getMount().getPlace() != Mount.END_RIGHT) {
       bulbs.add(new float[]{16 - cx - r, cy - r, lens, 16 - cx + r, cy + r, front});
     }
     return bulbs.toArray(new float[0][]);
@@ -383,7 +383,7 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     ExitSignConfig config = getConfig(source, pos);
-    boolean wall = config.getMount() == Mount.WALL;
+    boolean wall = !config.getMount().isHung();
     double margin = getHousingMargin();
     double bottom = getFaceBottom() - margin;
     double top = getFaceBottom() + FACE_HEIGHT + margin;
@@ -398,7 +398,7 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
         maxX += HEAD_SIZE;
       }
     }
-    if (config.getMount() == Mount.CEILING) {
+    if (config.getMount().getPlace() == Mount.CEILING) {
       top = 16;
     }
     return new AxisAlignedBB(minX / 16, bottom / 16, depth[0] / 16, maxX / 16, top / 16,

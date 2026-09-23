@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.lifesafety.exitsign;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Faces;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Heads;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Housing;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Mount;
@@ -11,8 +12,11 @@ import org.junit.jupiter.api.Test;
 
 class ExitSignSpecTest {
 
-  /** The most states any block in the mod has (the frame scaffold). */
-  private static final int STATE_BUDGET = 5184;
+  /**
+   * The most states an exit sign may have: the traditional signs' own count since they gained
+   * single-faced hung mounts, a little past the frame scaffold's 5,184.
+   */
+  private static final int STATE_BUDGET = 5376;
 
   private static final List<ExitSignSpec> ALL = Arrays.asList(
       BlockExitSignTraditionalFlat.SPEC, BlockExitSignTraditionalRounded.SPEC,
@@ -25,7 +29,7 @@ class ExitSignSpecTest {
       assertTrue(spec.stateCount() <= STATE_BUDGET,
           "an exit sign has " + spec.stateCount() + " states");
     }
-    assertEquals(3072, BlockExitSignTraditionalFlat.SPEC.stateCount());
+    assertEquals(5376, BlockExitSignTraditionalFlat.SPEC.stateCount());
   }
 
   @Test
@@ -67,7 +71,42 @@ class ExitSignSpecTest {
     assertFalse(BlockExitSignDieCast.SPEC.isMainsPowered());
     assertFalse(BlockExitSignVandalResistant.SPEC.isMainsPowered());
     assertFalse(BlockExitSignExplosionProof.SPEC.isMainsPowered());
-    assertEquals(768, BlockExitSignDieCast.SPEC.stateCount());
-    assertEquals(128, BlockExitSignExplosionProof.SPEC.stateCount());
+    assertEquals(1344, BlockExitSignDieCast.SPEC.stateCount());
+    assertEquals(192, BlockExitSignExplosionProof.SPEC.stateCount());
+  }
+
+  @Test
+  void aHungSignCanShowOneFaceWhereverItHangs() {
+    for (ExitSignSpec spec : ALL) {
+      assertTrue(spec.offersSingleFaced(), "every sign can hang single-faced from the ceiling");
+      for (Mount place : spec.getMountPlaces()) {
+        assertFalse(place.isSingleFaced());
+        Mount single = spec.mountAt(place, Faces.SINGLE);
+        assertEquals(place, single.getPlace(), "faces never move a sign");
+        assertEquals(place.isHung(), single.isSingleFaced(),
+            place + ": single-faced only where it hangs");
+        assertEquals(place, spec.mountAt(single.getPlace(), Faces.DOUBLE));
+      }
+    }
+    assertEquals(Arrays.asList(Mount.WALL, Mount.CEILING),
+        BlockExitSignVandalResistant.SPEC.getMountPlaces());
+  }
+
+  @Test
+  void facesAreReadFromTheMount() {
+    assertEquals(Faces.SINGLE, Mount.END_RIGHT_SINGLE.getFaces());
+    assertEquals(Mount.END_RIGHT, Mount.END_RIGHT_SINGLE.getPlace());
+    assertEquals(Mount.CEILING_SINGLE, Mount.CEILING.withFaces(Faces.SINGLE));
+    assertEquals(Mount.WALL, Mount.WALL.withFaces(Faces.SINGLE), "a wall already has one face");
+    // Appended, never reordered: these ordinals are what every placed sign saved.
+    assertEquals(3, Mount.END_RIGHT.ordinal());
+    assertEquals(6, Mount.END_RIGHT_SINGLE.ordinal());
+  }
+
+  @Test
+  void aSingleFacedSetupSurvivesThePacket() {
+    ExitSignConfig config = BlockExitSignTraditionalFlat.SPEC.getDefaults()
+        .withMount(Mount.END_LEFT_SINGLE);
+    assertEquals(config, ExitSignConfig.unpack(config.pack()));
   }
 }

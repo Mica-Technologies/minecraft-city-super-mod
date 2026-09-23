@@ -15,7 +15,7 @@ public class BlockExitSignPhotoluminescent extends AbstractBlockExitSign {
 
   /** Package-private so {@code ExitSignSpecTest} can check its state count. */
   static final ExitSignSpec SPEC = ExitSignSpec.builder()
-      .mounts(Mount.WALL, Mount.CEILING)
+      .mounts(Mount.WALL, Mount.CEILING, Mount.CEILING_SINGLE)
       .heads(Heads.NONE)
       .letters(Letters.GREEN, Letters.RED)
       .unpowered()

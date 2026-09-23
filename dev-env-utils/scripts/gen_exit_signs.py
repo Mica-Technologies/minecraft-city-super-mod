@@ -493,7 +493,8 @@ def head_sheets():
 #
 # Every model is drawn facing north, the face at the low-z side, and the blockstate turns it to
 # the sign's facing. A wall-mounted sign sits against the block's south face; a hung one (ceiling
-# or end mount) down the middle of the block, with the legend on both faces. The face is 16 px
+# or end mount) down the middle of the block, with the legend on both faces, or only on the front
+# with bare housing behind for a single-faced (``_single``) mount. The face is 16 px
 # wide and 10.5 tall, and is built from the sheet's cells: an arrow cell each end and the legend
 # between. The east cell is the viewer's left from the front, so it holds the left arrow, and
 # from the back it is the viewer's right: an arrow keeps pointing the same way in the world,
@@ -512,7 +513,14 @@ FACE_PX = FACE_H / TEXELS_PER_PX  # 10.5
 DEPTH = {"wall": (14.0, 16.0), "hung": (7.0, 9.0)}
 FACING_Y = {"north": 0, "east": 90, "south": 180, "west": 270}
 ARROWS = ["none", "left", "right", "both"]
-MOUNTS = ["wall", "ceiling", "end_left", "end_right"]
+# In ExitSignConfig.Mount order: the single-faced mounts were appended, since ordinals are saved.
+MOUNTS = ["wall", "ceiling", "end_left", "end_right", "ceiling_single", "end_left_single",
+          "end_right_single"]
+# The face parts are drawn three ways: against a wall, hung with the legend both sides, and hung
+# with bare housing behind. Everything else a hung sign has (heads, extras, hardware) is the same
+# whichever faces it shows, so it is drawn for "hung" only and applied to the single-faced mounts
+# too.
+FACE_BODIES = ["wall", "hung", "single"]
 # Which arrow values light each end cell. "left" is the viewer's left from the front: east.
 LIT_ON = {"east": ("left", "both"), "west": ("right", "both")}
 
@@ -540,21 +548,29 @@ STYLES = [
          finishes=["brushed", "black", "white"], heads=["none"], mounts=MOUNTS,
          letters=["red", "green"], legends=["exit", "salida"]),
     dict(name="vandal", block="exit_sign_vandal_resistant", kind="vandal", rounded=False, y0=4.5,
-         finishes=["white", "black"], heads=["none"], mounts=["wall", "ceiling"],
-         letters=["red", "green"], legends=["exit", "salida"]),
+         finishes=["white", "black"], heads=["none"],
+         mounts=["wall", "ceiling", "ceiling_single"], letters=["red", "green"],
+         legends=["exit", "salida"]),
     dict(name="panel", block="exit_sign_photoluminescent", kind="panel", rounded=False, y0=4.5,
          depth={"wall": (15.5, 16.0), "hung": (7.75, 8.25)},
-         finishes=["white", "black"], heads=["none"], mounts=["wall", "ceiling"],
-         letters=["green", "red"], legends=["exit", "salida"]),
+         finishes=["white", "black"], heads=["none"],
+         mounts=["wall", "ceiling", "ceiling_single"], letters=["green", "red"],
+         legends=["exit", "salida"]),
     dict(name="xp", block="exit_sign_explosion_proof", kind="xp", rounded=False, y0=3.5,
          depth={"wall": (12.0, 16.0), "hung": (6.0, 10.0)},
-         finishes=["brushed"], heads=["none"], mounts=["wall", "ceiling"],
+         finishes=["brushed"], heads=["none"], mounts=["wall", "ceiling", "ceiling_single"],
          letters=["red", "green"], legends=["exit", "salida"]),
 ]
 
 
 def _depth(style, mc):
-    return style.get("depth", DEPTH)[mc]
+    # a single-faced sign hangs just where a double-faced one does
+    return style.get("depth", DEPTH)["hung" if mc == "single" else mc]
+
+
+def _place(mount):
+    """Where a mount hangs, whatever faces it shows: ``ceiling_single`` hangs at ``ceiling``."""
+    return mount[:-len("_single")] if mount.endswith("_single") else mount
 
 
 def _kind(style):
@@ -593,10 +609,12 @@ def _housing_faces(names, cull=None):
 
 
 def _back(mc, faces, back_uv):
-    """The face's back: the legend or cell again on a hung sign, bare housing culled against
-    the wall on a wall-mounted one."""
+    """The face's back: the legend or cell again on a double-faced hung sign, bare housing on a
+    single-faced one, and bare housing culled against the wall on a wall-mounted one."""
     if mc == "hung":
         faces["south"] = _face(back_uv)
+    elif mc == "single":
+        faces["south"] = _face(HOUSING_UV)
     else:
         faces["south"] = _face(HOUSING_UV, cull="south")
     return faces
@@ -809,7 +827,9 @@ def part_models(style):
     out = {}
     for finish in style["finishes"]:
         p = "%s_%s_" % (style["name"], finish)
-        for mc in DEPTH:
+        for mc in FACE_BODIES:
+            if mc == "single" and not _single(style):
+                continue
             for legend in style["legends"]:
                 for letters in style["letters"]:
                     out[p + "legend_%s_%s_%s" % (legend, letters, mc)] = _model(
@@ -818,6 +838,7 @@ def part_models(style):
                     for side in ("east", "west"):
                         out[p + "cell_%s_%s_%s_%s" % (legend, kind, side, mc)] = _model(
                             cell_elements(style, legend, kind, side, mc), finish)
+        for mc in DEPTH:
             for head in style["heads"]:
                 if head == "none":
                     continue
@@ -831,10 +852,24 @@ def part_models(style):
             extras, trim = extra_elements(style, mc)
             if extras:
                 out[p + "extras_%s" % mc] = _model(extras, finish, trim=trim)
-        for mount in style["mounts"]:
+        for mount in _places(style):
             hardware = hardware_elements(style, mount) if mount != "wall" else []
             if hardware:
                 out[p + "mount_%s" % mount] = _model(hardware, finish, trim=_kind(style) == "panel")
+    return out
+
+
+def _single(style):
+    """The single-faced mounts ``style`` offers."""
+    return [m for m in style["mounts"] if m.endswith("_single")]
+
+
+def _places(style):
+    """Where ``style`` can hang, each place once."""
+    out = []
+    for m in style["mounts"]:
+        if _place(m) not in out:
+            out.append(_place(m))
     return out
 
 
@@ -866,9 +901,13 @@ def blockstate(style):
             parts.append({"when": _when(style, facing=facing, **when), "apply": apply})
 
     hung = [m for m in style["mounts"] if m != "wall"]
+    double = [m for m in hung if m not in _single(style)]
     for finish in style["finishes"]:
         p = "%s_%s_" % (style["name"], finish)
-        for mc, mounts in (("wall", ["wall"]), ("hung", hung)):
+        # the face: wall, double-faced and single-faced each have their own parts
+        for mc, mounts in (("wall", ["wall"]), ("hung", double), ("single", _single(style))):
+            if not mounts:
+                continue
             for legend in style["legends"]:
                 for letters in style["letters"]:
                     add(p + "legend_%s_%s_%s" % (legend, letters, mc), housing=finish,
@@ -882,21 +921,24 @@ def blockstate(style):
                             arrow=lit)
                     add(p + "cell_%s_unlit_%s_%s" % (legend, side, mc), housing=finish,
                         mount=mounts, legend=legend, arrow=dark)
+        # everything else: the hung parts serve every hung mount, however many faces it shows
+        for mc, mounts in (("wall", ["wall"]), ("hung", hung)):
             for head in style["heads"]:
                 if head == "none":
                     continue
                 for side in ("east", "west"):
                     # an end head on the wall side of an end mount would be inside the wall
                     blocked = {"east": "end_left", "west": "end_right"}[side]
-                    ok = [m for m in mounts if style["heads_at"] != "ends" or m != blocked]
+                    ok = [m for m in mounts if style["heads_at"] != "ends" or _place(m) != blocked]
                     for lit, powered in ((True, "false"), (False, "true")):
                         add(p + "head_%s_%s_%s_%s" % (head, "lit" if lit else "dark", side, mc),
                             housing=finish, mount=ok, heads=head, powered=powered)
             if extra_elements(style, mc)[0]:
                 add(p + "extras_%s" % mc, housing=finish, mount=mounts)
-        for mount in hung:
-            if hardware_elements(style, mount):
-                add(p + "mount_%s" % mount, housing=finish, mount=mount)
+        for place in _places(style):
+            if place != "wall" and hardware_elements(style, place):
+                add(p + "mount_%s" % place, housing=finish,
+                    mount=[m for m in hung if _place(m) == place])
     return {"multipart": parts}
 
 

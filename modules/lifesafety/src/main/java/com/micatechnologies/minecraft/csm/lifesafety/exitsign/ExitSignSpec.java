@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety.exitsign;
 
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Arrow;
+import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Faces;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Heads;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Housing;
 import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Legend;
@@ -24,7 +25,8 @@ import net.minecraft.block.state.IBlockState;
  * only those values, so the multipart model needs parts for nothing the block cannot show and
  * the state count stays as small as the block allows. An option with a single value has no
  * property at all. The state count is the product of every property's size; check
- * {@link #stateCount()} before offering another value (the largest block in the mod has 5,184).
+ * {@link #stateCount()} before offering another value (the traditional exit signs, at 5,376, are
+ * the largest blocks in the mod).
  *
  * <p>A spec is built once, in a static field of its block class, because the block state
  * container is created inside the {@code Block} constructor, before any instance field is set.
@@ -184,6 +186,35 @@ public final class ExitSignSpec {
 
   public List<Mount> getMounts() {
     return mounts;
+  }
+
+  /** The places the sign can hang, each once however many faces it offers there. */
+  public List<Mount> getMountPlaces() {
+    List<Mount> places = new ArrayList<>();
+    for (Mount m : mounts) {
+      if (!places.contains(m.getPlace())) {
+        places.add(m.getPlace());
+      }
+    }
+    return places;
+  }
+
+  /** Whether the sign can hang single-faced anywhere. */
+  public boolean offersSingleFaced() {
+    return mounts.stream().anyMatch(Mount::isSingleFaced);
+  }
+
+  /**
+   * The mount this sign offers that hangs at {@code place} showing {@code faces}, or showing
+   * whatever faces it offers there if not those, or its default mount if it cannot hang there.
+   */
+  public Mount mountAt(Mount place, Faces faces) {
+    Mount wanted = place.withFaces(faces);
+    if (mounts.contains(wanted)) {
+      return wanted;
+    }
+    Mount other = place.withFaces(faces == Faces.SINGLE ? Faces.DOUBLE : Faces.SINGLE);
+    return mounts.contains(other) ? other : mounts.get(0);
   }
 
   public List<Heads> getHeadTypes() {

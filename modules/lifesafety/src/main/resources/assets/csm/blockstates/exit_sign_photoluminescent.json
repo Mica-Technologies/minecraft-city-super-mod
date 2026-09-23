@@ -852,49 +852,6 @@
       "when": {
         "facing": "north",
         "housing": "white",
-        "mount": "wall"
-      },
-      "apply": {
-        "model": "csm:lifesafety/exit_signs/panel_white_extras_wall"
-      }
-    },
-    {
-      "when": {
-        "facing": "east",
-        "housing": "white",
-        "mount": "wall"
-      },
-      "apply": {
-        "model": "csm:lifesafety/exit_signs/panel_white_extras_wall",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "facing": "south",
-        "housing": "white",
-        "mount": "wall"
-      },
-      "apply": {
-        "model": "csm:lifesafety/exit_signs/panel_white_extras_wall",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "facing": "west",
-        "housing": "white",
-        "mount": "wall"
-      },
-      "apply": {
-        "model": "csm:lifesafety/exit_signs/panel_white_extras_wall",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "facing": "north",
-        "housing": "white",
         "mount": "ceiling",
         "legend": "exit",
         "letters": "green"
@@ -1743,7 +1700,898 @@
       "when": {
         "facing": "north",
         "housing": "white",
-        "mount": "ceiling"
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_exit_green_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_exit_green_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_exit_green_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_exit_green_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_exit_red_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_exit_red_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_exit_red_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_exit_red_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_green_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_green_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_green_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_green_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_red_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_red_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_red_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_red_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_unlit_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_unlit_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_unlit_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_unlit_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_green_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_green_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_green_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_green_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_red_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_red_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_red_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_red_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_unlit_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_unlit_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_unlit_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_exit_unlit_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_salida_green_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_salida_green_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_salida_green_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_salida_green_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_salida_red_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_salida_red_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_salida_red_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_legend_salida_red_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_green_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_green_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_green_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_green_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_red_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_red_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_red_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_red_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_unlit_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_unlit_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_unlit_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_unlit_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_green_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_green_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_green_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_green_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_red_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_red_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_red_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_red_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_unlit_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_unlit_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_unlit_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_cell_salida_unlit_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_extras_wall"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "white",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_extras_wall",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "white",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_extras_wall",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "white",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_white_extras_wall",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "white",
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_white_extras_hung"
@@ -1753,7 +2601,7 @@
       "when": {
         "facing": "east",
         "housing": "white",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_white_extras_hung",
@@ -1764,7 +2612,7 @@
       "when": {
         "facing": "south",
         "housing": "white",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_white_extras_hung",
@@ -1775,7 +2623,7 @@
       "when": {
         "facing": "west",
         "housing": "white",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_white_extras_hung",
@@ -1786,7 +2634,7 @@
       "when": {
         "facing": "north",
         "housing": "white",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_white_mount_ceiling"
@@ -1796,7 +2644,7 @@
       "when": {
         "facing": "east",
         "housing": "white",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_white_mount_ceiling",
@@ -1807,7 +2655,7 @@
       "when": {
         "facing": "south",
         "housing": "white",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_white_mount_ceiling",
@@ -1818,7 +2666,7 @@
       "when": {
         "facing": "west",
         "housing": "white",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_white_mount_ceiling",
@@ -2677,49 +3525,6 @@
       "when": {
         "facing": "north",
         "housing": "black",
-        "mount": "wall"
-      },
-      "apply": {
-        "model": "csm:lifesafety/exit_signs/panel_black_extras_wall"
-      }
-    },
-    {
-      "when": {
-        "facing": "east",
-        "housing": "black",
-        "mount": "wall"
-      },
-      "apply": {
-        "model": "csm:lifesafety/exit_signs/panel_black_extras_wall",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "facing": "south",
-        "housing": "black",
-        "mount": "wall"
-      },
-      "apply": {
-        "model": "csm:lifesafety/exit_signs/panel_black_extras_wall",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "facing": "west",
-        "housing": "black",
-        "mount": "wall"
-      },
-      "apply": {
-        "model": "csm:lifesafety/exit_signs/panel_black_extras_wall",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "facing": "north",
-        "housing": "black",
         "mount": "ceiling",
         "legend": "exit",
         "letters": "green"
@@ -3568,7 +4373,898 @@
       "when": {
         "facing": "north",
         "housing": "black",
-        "mount": "ceiling"
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_exit_green_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_exit_green_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_exit_green_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_exit_green_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_exit_red_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_exit_red_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_exit_red_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_exit_red_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_green_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_green_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_green_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_green_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_red_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_red_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_red_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_red_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_unlit_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_unlit_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_unlit_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_unlit_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_green_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_green_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_green_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_green_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_red_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_red_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_red_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_red_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_unlit_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_unlit_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_unlit_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "exit",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_exit_unlit_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_salida_green_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_salida_green_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_salida_green_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_salida_green_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_salida_red_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_salida_red_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_salida_red_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_legend_salida_red_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_green_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_green_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_green_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_green_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_red_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_red_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_red_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "left|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_red_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_unlit_east_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_unlit_east_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_unlit_east_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_unlit_east_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_green_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_green_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_green_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "green",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_green_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_red_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_red_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_red_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "letters": "red",
+        "arrow": "right|both"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_red_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_unlit_west_single"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_unlit_west_single",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_unlit_west_single",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "ceiling_single",
+        "legend": "salida",
+        "arrow": "none|left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_cell_salida_unlit_west_single",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_extras_wall"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "housing": "black",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_extras_wall",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "housing": "black",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_extras_wall",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "housing": "black",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:lifesafety/exit_signs/panel_black_extras_wall",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "housing": "black",
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_black_extras_hung"
@@ -3578,7 +5274,7 @@
       "when": {
         "facing": "east",
         "housing": "black",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_black_extras_hung",
@@ -3589,7 +5285,7 @@
       "when": {
         "facing": "south",
         "housing": "black",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_black_extras_hung",
@@ -3600,7 +5296,7 @@
       "when": {
         "facing": "west",
         "housing": "black",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_black_extras_hung",
@@ -3611,7 +5307,7 @@
       "when": {
         "facing": "north",
         "housing": "black",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_black_mount_ceiling"
@@ -3621,7 +5317,7 @@
       "when": {
         "facing": "east",
         "housing": "black",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_black_mount_ceiling",
@@ -3632,7 +5328,7 @@
       "when": {
         "facing": "south",
         "housing": "black",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_black_mount_ceiling",
@@ -3643,7 +5339,7 @@
       "when": {
         "facing": "west",
         "housing": "black",
-        "mount": "ceiling"
+        "mount": "ceiling|ceiling_single"
       },
       "apply": {
         "model": "csm:lifesafety/exit_signs/panel_black_mount_ceiling",

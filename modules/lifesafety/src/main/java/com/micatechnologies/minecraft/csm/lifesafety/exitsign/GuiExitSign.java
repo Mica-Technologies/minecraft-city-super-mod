@@ -2,10 +2,13 @@ package com.micatechnologies.minecraft.csm.lifesafety.exitsign;
 
 import com.micatechnologies.minecraft.csm.lifesafety.CsmLifeSafety;
 import java.io.IOException;
+import com.micatechnologies.minecraft.csm.lifesafety.exitsign.ExitSignConfig.Faces;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -54,7 +57,15 @@ public class GuiExitSign extends GuiScreen {
     addRow("housing", spec.getHousings(), ExitSignConfig::getHousing,
         ExitSignConfig::withHousing);
     addRow("arrow", spec.getArrows(), ExitSignConfig::getArrow, ExitSignConfig::withArrow);
-    addRow("mount", spec.getMounts(), ExitSignConfig::getMount, ExitSignConfig::withMount);
+    // Where it hangs and which faces it shows are one saved mount, shown as two rows; moving it
+    // keeps the faces where the new place offers them.
+    addRow("mount", spec.getMountPlaces(), c -> c.getMount().getPlace(),
+        (c, place) -> c.withMount(spec.mountAt(place, c.getMount().getFaces())));
+    if (spec.offersSingleFaced()) {
+      rows.add(new Row<>("faces", Arrays.asList(Faces.values()), c -> c.getMount().getFaces(),
+          (c, faces) -> c.withMount(spec.mountAt(c.getMount().getPlace(), faces)),
+          c -> c.getMount().isHung()));
+    }
     addRow("heads", spec.getHeadTypes(), ExitSignConfig::getHeads, ExitSignConfig::withHeads);
   }
 
@@ -62,7 +73,7 @@ public class GuiExitSign extends GuiScreen {
   private <E extends IStringSerializable> void addRow(String option, List<E> values,
       Function<ExitSignConfig, E> get, BiFunction<ExitSignConfig, E, ExitSignConfig> set) {
     if (values.size() > 1) {
-      rows.add(new Row<>(option, values, get, set));
+      rows.add(new Row<>(option, values, get, set, c -> true));
     }
   }
 
@@ -84,7 +95,11 @@ public class GuiExitSign extends GuiScreen {
   private void refreshLabels() {
     for (GuiButton button : buttonList) {
       if (button.id < rows.size()) {
-        button.displayString = rows.get(button.id).valueName(config);
+        Row<?> row = rows.get(button.id);
+        button.enabled = row.active.test(config);
+        // A wall-mounted sign has one face; the row says so, greyed out.
+        button.displayString = button.enabled ? row.valueName(config)
+            : I18n.format("csm.exitsign.faces.single");
       }
     }
   }
@@ -106,7 +121,7 @@ public class GuiExitSign extends GuiScreen {
       return;
     }
     for (GuiButton button : buttonList) {
-      if (button.id < rows.size() && button.mousePressed(mc, mouseX, mouseY)) {
+      if (button.id < rows.size() && button.enabled && button.mousePressed(mc, mouseX, mouseY)) {
         button.playPressSound(mc.getSoundHandler());
         step(rows.get(button.id), -1);
         return;
@@ -175,13 +190,16 @@ public class GuiExitSign extends GuiScreen {
     final List<E> values;
     final Function<ExitSignConfig, E> get;
     final BiFunction<ExitSignConfig, E, ExitSignConfig> set;
+    /** Whether the option means anything for the sign as it is set up now. */
+    final Predicate<ExitSignConfig> active;
 
     Row(String option, List<E> values, Function<ExitSignConfig, E> get,
-        BiFunction<ExitSignConfig, E, ExitSignConfig> set) {
+        BiFunction<ExitSignConfig, E, ExitSignConfig> set, Predicate<ExitSignConfig> active) {
       this.option = option;
       this.values = values;
       this.get = get;
       this.set = set;
+      this.active = active;
     }
 
     ExitSignConfig step(ExitSignConfig config, int direction) {
