@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "white": "csm:blocks/lifesafety/services/white_paint",
+    "front": "csm:blocks/lifesafety/services/first_aid_cabinet_front",
+    "particle": "csm:blocks/lifesafety/services/white_paint"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        2,
+        11
+      ],
+      "to": [
+        13,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#white",
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#white",
+          "uv": [
+            0,
+            2,
+            5,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#white",
+          "uv": [
+            11,
+            2,
+            16,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#white",
+          "uv": [
+            3,
+            11,
+            13,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#white",
+          "uv": [
+            3,
+            0,
+            13,
+            5
+          ]
+        }
+      }
+    }
+  ]
+}

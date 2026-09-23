@@ -7,8 +7,10 @@ import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockCallBox;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockCellDoor;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirePole;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirePoleHole;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirstAidCabinet;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockLitProp;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockMetalDetector;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockScbaFillStation;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockSceneTape;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockSirenController;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertController;
@@ -17,6 +19,8 @@ import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationBell;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationNumberPlaque;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockTapeStanchion;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockWarningSiren;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.ItemFireExtinguisher;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.ItemFirstAidKit;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -57,7 +61,7 @@ public class CsmTabEmergencyServices extends CsmTab {
     initTabBlock(new BlockFireProtectionProp("turnout_gear_locker_empty", new int[]{0, 0, 2, 16, 16, 16}, true));
     initTabBlock(new BlockFireProtectionProp("scba_wall_rack", new int[]{1, 1, 9, 15, 15, 16}, true));
     initTabBlock(new BlockFireProtectionProp("scba_cylinder_cascade", new int[]{0, 0, 3, 16, 16, 13}, true));
-    initTabBlock(new BlockFireProtectionProp("scba_fill_station", new int[]{1, 0, 3, 15, 16, 16}, true));
+    initTabBlock(new BlockScbaFillStation("scba_fill_station", new int[]{1, 0, 3, 15, 16, 16}));
     initTabBlock(new BlockFireProtectionProp("hose_rack_wall", new int[]{2, 2, 9, 14, 14, 16}, false));
     initTabBlock(new BlockFireProtectionProp("hose_rolls", new int[]{1, 0, 3, 15, 9, 13}, true));
     initTabBlock(new BlockFireProtectionProp("hose_drying_rack", new int[]{0, 0, 5, 16, 16, 11}, true));
@@ -114,5 +118,8 @@ public class CsmTabEmergencyServices extends CsmTab {
     initTabBlock(new BlockFireProtectionProp("fallout_shelter_sign", new int[]{2, 1, 15, 14, 15, 16}, false));
     initTabBlock(new BlockFireProtectionProp("storm_shelter_sign", new int[]{2, 1, 15, 14, 15, 16}, false));
     initTabBlock(new BlockFireProtectionProp("assembly_point_sign", new int[]{2, 1, 15, 14, 15, 16}, false));
+    initTabBlock(new BlockFirstAidCabinet("first_aid_cabinet", new int[]{3, 2, 11, 13, 14, 16}));
+    initTabItem(new ItemFireExtinguisher());
+    initTabItem(new ItemFirstAidKit());
   }
 }

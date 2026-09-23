@@ -1,0 +1,30 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_lifesafety"
+    }
+  ],
+  "pattern": [
+    " F ",
+    "SRS",
+    " S "
+  ],
+  "key": {
+    "F": {
+      "item": "csm:part_fastener_kit"
+    },
+    "S": {
+      "item": "csm:part_sheet_metal"
+    },
+    "R": {
+      "item": "minecraft:dye",
+      "data": 1
+    }
+  },
+  "result": {
+    "item": "csm:fire_extinguisher_item",
+    "count": 1
+  }
+}
