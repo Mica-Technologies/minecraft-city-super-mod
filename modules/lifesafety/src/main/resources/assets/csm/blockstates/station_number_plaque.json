@@ -1,0 +1,127 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lifesafety/services/station_number_plaque"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "tens": {
+      "0": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_0"
+        }
+      },
+      "1": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_1"
+        }
+      },
+      "2": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_2"
+        }
+      },
+      "3": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_3"
+        }
+      },
+      "4": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_4"
+        }
+      },
+      "5": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_5"
+        }
+      },
+      "6": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_6"
+        }
+      },
+      "7": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_7"
+        }
+      },
+      "8": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_8"
+        }
+      },
+      "9": {
+        "textures": {
+          "tens": "csm:blocks/lifesafety/services/digit_9"
+        }
+      }
+    },
+    "ones": {
+      "0": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_0"
+        }
+      },
+      "1": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_1"
+        }
+      },
+      "2": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_2"
+        }
+      },
+      "3": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_3"
+        }
+      },
+      "4": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_4"
+        }
+      },
+      "5": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_5"
+        }
+      },
+      "6": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_6"
+        }
+      },
+      "7": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_7"
+        }
+      },
+      "8": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_8"
+        }
+      },
+      "9": {
+        "textures": {
+          "ones": "csm:blocks/lifesafety/services/digit_9"
+        }
+      }
+    }
+  }
+}

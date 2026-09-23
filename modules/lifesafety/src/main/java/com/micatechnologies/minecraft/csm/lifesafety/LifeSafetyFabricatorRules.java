@@ -36,6 +36,14 @@ public final class LifeSafetyFabricatorRules {
   /** The Fire Protection tab, priced by {@link #priceFireProtection}. */
   public static final String FIRE_PROTECTION_TAB_ID = "tabfireprotection";
 
+  /** The Emergency Services tab, priced by {@link #priceEmergencyServices}. */
+  public static final String EMERGENCY_SERVICES_TAB_ID = "tabemergencyservices";
+
+  /** Words in an Emergency Services name that mean it has electronics in it. */
+  private static final String[] POWERED_EQUIPMENT_WORDS = {"compressor", "extractor", "fill",
+      "console", "siren", "controller", "detector", "call", "radio", "monitor", "alerting",
+      "speaker", "light", "lamp", "scanner"};
+
   /**
    * Private constructor: this class is a static rule holder and is never instantiated.
    *
@@ -145,5 +153,46 @@ public final class LifeSafetyFabricatorRules {
     }
     return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
         FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+  }
+
+  /**
+   * Prices the Emergency Services tab, by name: sign plates and emblems a sign blank, hose
+   * fabric (wool), cylinders two sheets of steel, a gong or bell a sounder, anything with
+   * electronics in it ({@link #POWERED_EQUIPMENT_WORDS}) steel, a control board and wiring, and
+   * the fittings -- lockers, racks, shelving, furniture -- steel and fixings.
+   *
+   * @param block        the block to price
+   * @param registryName the block's registry name
+   *
+   * @return the ingredients
+   */
+  public static List<FabricatorIngredient> priceEmergencyServices(Block block,
+      String registryName) {
+    if (CsmBlockDisplayNames.hasWord(registryName, "sign")
+        || CsmBlockDisplayNames.hasWord(registryName, "plaque")
+        || CsmBlockDisplayNames.hasWord(registryName, "emblem")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "hose")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 2));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "gong")
+        || CsmBlockDisplayNames.hasWord(registryName, "bell")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1));
+    }
+    for (String word : POWERED_EQUIPMENT_WORDS) {
+      if (CsmBlockDisplayNames.hasWord(registryName, word)) {
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      }
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "cylinder")
+        || CsmBlockDisplayNames.hasWord(registryName, "scba")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+    }
+    return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+        FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
   }
 }

@@ -682,5 +682,14 @@
         "stream": false
       }
     ]
+  },
+  "station_bell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:station_bell",
+        "stream": false
+      }
+    ]
   }
 }

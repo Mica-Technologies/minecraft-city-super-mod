@@ -84,7 +84,7 @@ container per jar.
 |---|---|---|---|
 | `src/main` | `csm` | CSM: Core | base classes, registration, tabs machinery, config, parts + Fabricator, shared assets |
 | `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns` |
-| `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; three tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection |
+| `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; four tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection, Emergency Services |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
 | `modules/powergrid` | `csm_powergrid` | CSM: Power Grid | `powergrid` |
@@ -574,6 +574,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   (twin-head units, LED bar, remote heads, wall pack, recessed downlight), all one factory class;
   the lamp boxes in its tab lines are the model's lamps, so the renderer's glow sits on them;
   `--check`, `--fragments`
+- `gen_emergency_services.py` -- the Emergency Services tab: fire, police and ambulance station
+  fittings and community warning, grown a station at a time; `--check`, `--fragments`
 - `gen_life_safety_sounds.py` -- the Life Safety module's own sounds, synthesised (numpy to
   ffmpeg to OGG) so nothing recorded is shipped; adds a `sounds.json` entry for each. No
   `--check` (Vorbis output is not byte-stable): listen, then commit the OGG

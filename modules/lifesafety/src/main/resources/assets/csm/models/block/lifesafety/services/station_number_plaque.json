@@ -1,0 +1,126 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "plaque": "csm:blocks/lifesafety/services/plaque",
+    "tens": "csm:blocks/lifesafety/services/digit_0",
+    "ones": "csm:blocks/lifesafety/services/digit_1",
+    "red": "csm:blocks/lifesafety/services/red",
+    "particle": "csm:blocks/lifesafety/services/plaque"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        2,
+        15.3
+      ],
+      "to": [
+        14,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plaque",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#red",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#red",
+          "uv": [
+            0,
+            2,
+            0.7,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#red",
+          "uv": [
+            15.3,
+            2,
+            16,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#red",
+          "uv": [
+            2,
+            15.3,
+            14,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#red",
+          "uv": [
+            2,
+            0,
+            14,
+            0.7
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8.2,
+        3.5,
+        15.2
+      ],
+      "to": [
+        12.2,
+        10.5,
+        15.3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tens",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.8,
+        3.5,
+        15.2
+      ],
+      "to": [
+        7.8,
+        10.5,
+        15.3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#ones",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

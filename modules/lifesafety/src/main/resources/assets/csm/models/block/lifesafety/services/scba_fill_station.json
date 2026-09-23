@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "y": "csm:blocks/lifesafety/services/yellow",
+    "front": "csm:blocks/lifesafety/services/fill_front",
+    "particle": "csm:blocks/lifesafety/services/yellow"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        3
+      ],
+      "to": [
+        15,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            1,
+            0,
+            15,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#y",
+          "uv": [
+            1,
+            0,
+            15,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#y",
+          "uv": [
+            0,
+            0,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#y",
+          "uv": [
+            3,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#y",
+          "uv": [
+            1,
+            3,
+            15,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#y",
+          "uv": [
+            1,
+            0,
+            15,
+            13
+          ]
+        }
+      }
+    }
+  ]
+}
