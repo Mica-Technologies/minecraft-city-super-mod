@@ -217,7 +217,7 @@ devices = [(FX + 6, 8, Z0 + 16), (FX + 16, 7, Z0 + 1),               # speakers
            (FX + 21, 6, Z0 + 1),                                     # relay
            (FX + 1, 6, Z0 + 16), (FX + 12, 6, Z0 + 16)]              # bay clearance lights
 put(*ALERT, block='station_alert_controller', meta=S,
-    nbt='{z:0,t:-1,d:%s}' % packed(devices))
+    nbt='{zn:0,t:-1,d:%s}' % packed(devices))
 put(*devices[0], block='station_alert_speaker', meta=N)
 put(*devices[1], block='station_alert_speaker', meta=S)
 put(*devices[2], block='station_alert_light_red', meta=N)

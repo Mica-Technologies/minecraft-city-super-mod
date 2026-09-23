@@ -48,7 +48,7 @@ public class TileEntityStationAlertController extends AbstractTickableTileEntity
   /** How long an alert holds before it resets itself. */
   public static final int HOLD_TICKS = 1200;
 
-  private static final String ZONE_KEY = "z";
+  private static final String ZONE_KEY = "zn";
   private static final String DEVICES_KEY = "d";
   private static final String ELAPSED_KEY = "t";
 

@@ -53,8 +53,8 @@ power: take it away and they light.
 - **Walk-through metal detector.** Leave the block above it clear. Walk through carrying a weapon,
   a tool, metal armour or anything metal, and it beeps, turns red and gives a redstone pulse.
 - **Holding cells.** The **cell door** is a block high; stack two. Click either one to slide the
-  whole door open or shut, or hold it open with redstone. Also a bench, and a steel toilet and
-  sink.
+  whole door open or shut, or hold it open with redstone. Iron bars beside it join its edges.
+  Also a bench, and a steel toilet and sink.
 - Booking: the height chart, fingerprint scanner, camera and property bins. Evidence and equipment
   lockers, and a K-9 kennel.
 - The **blue police lamp**, lit, and a police star.
@@ -63,7 +63,7 @@ power: take it away and they light.
 
 ## Ambulance station
 
-Stretchers (raised and lowered), a stair chair, backboards, supply shelving, oxygen cylinders, a
+Stretchers (raised and lowered, two blocks long: leave the block in front of one clear), a stair chair, backboards, supply shelving, oxygen cylinders, a
 medication safe, a decontamination sink, an eyewash station and the Star of Life. The **first aid
 cabinet** gives each player one first aid kit a day.
 

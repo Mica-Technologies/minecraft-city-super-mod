@@ -86,7 +86,7 @@ public class CsmTabEmergencyServices extends CsmTab {
     initTabBlock(new BlockMetalDetector("metal_detector", new int[]{0, 0, 5, 16, 16, 11}));
     initTabBlock(new BlockCellDoor("holding_cell_door", new int[]{0, 0, 7, 16, 16, 9}));
     initTabBlock(new BlockFireProtectionProp("holding_cell_bench", new int[]{0, 5, 8, 16, 8, 16}, true));
-    initTabBlock(new BlockFireProtectionProp("holding_cell_toilet", new int[]{3, 0, 8, 13, 15, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("holding_cell_toilet", new int[]{3, 0, 2, 13, 15, 16}, true));
     initTabBlock(new BlockFireProtectionProp("height_chart", new int[]{0, 0, 15, 16, 16, 16}, false));
     initTabBlock(new BlockFireProtectionProp("fingerprint_scanner", new int[]{4, 0, 5, 12, 4, 12}, false));
     initTabBlock(new BlockFireProtectionProp("booking_camera", new int[]{5, 0, 5, 11, 16, 11}, true));
@@ -99,8 +99,8 @@ public class CsmTabEmergencyServices extends CsmTab {
     initTabBlock(new BlockSceneTape("police_line_tape"));
     initTabBlock(new BlockSceneTape("fire_line_tape"));
     initTabBlock(new BlockTapeStanchion("tape_stanchion", new int[]{5, 0, 5, 11, 14, 11}));
-    initTabBlock(new BlockFireProtectionProp("ems_stretcher", new int[]{1, 0, 1, 15, 14, 15}, true));
-    initTabBlock(new BlockFireProtectionProp("ems_stretcher_lowered", new int[]{1, 0, 1, 15, 9, 15}, true));
+    initTabBlock(new BlockFireProtectionProp("ems_stretcher", new int[]{1, 0, -15, 15, 14, 15}, true));
+    initTabBlock(new BlockFireProtectionProp("ems_stretcher_lowered", new int[]{1, 0, -15, 15, 9, 15}, true));
     initTabBlock(new BlockFireProtectionProp("ems_stair_chair", new int[]{4, 0, 4, 12, 16, 14}, true));
     initTabBlock(new BlockFireProtectionProp("ems_backboard_rack", new int[]{1, 0, 10, 15, 16, 16}, true));
     initTabBlock(new BlockFireProtectionProp("ems_supply_shelving", new int[]{0, 0, 6, 16, 16, 16}, true));
