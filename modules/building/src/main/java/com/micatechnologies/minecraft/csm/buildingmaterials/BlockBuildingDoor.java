@@ -845,4 +845,19 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   public BlockRenderLayer getBlockRenderLayer() {
     return glazed() ? BlockRenderLayer.TRANSLUCENT : BlockRenderLayer.CUTOUT;
   }
+
+  /**
+   * A glazed door draws in two passes: its glass in the translucent pass and everything solid --
+   * edges, handles, push bar, a fitted closer -- in the cutout pass, where it writes depth
+   * ({@link DoorLayerModel}). Drawn whole in the translucent pass, which writes none, the hardware
+   * came out in whatever order that pass's sort left it: a closer's body painted over by the frame
+   * behind it from some angles.
+   *
+   * @since 1.1
+   */
+  @Override
+  public boolean canRenderInLayer(@Nonnull IBlockState state, @Nonnull BlockRenderLayer layer) {
+    return layer == BlockRenderLayer.CUTOUT
+        || glazed() && layer == BlockRenderLayer.TRANSLUCENT;
+  }
 }

@@ -173,8 +173,13 @@ it does under the hand that unlatches a real one. Closing, it stays out: a door 
 closer latches without the bar moving. This is the renderer's alone -- at rest the models draw the
 bar out, as they always did, so a door with no swing in progress costs nothing more.
 
-Glazed doors (the lites, the fire door, storefront, half-glass back door) are on the translucent
-layer; the rest are cutout.
+Glazed doors (the lites, the fire door, storefront, half-glass back door, job trailer door) draw
+in **two passes**: the faces that wear the door's own face textures (`_upper`, `_lower`, where every
+lite and pane is drawn) in the translucent pass, and everything else -- the leaf's edges, handles,
+push bar and a fitted closer -- in the cutout pass (`DoorLayerModel`, which wraps each glazed door's
+baked model and sorts its quads by the pass being drawn). The rest are cutout only. Drawn whole in
+the translucent pass, a glazed door's closer lost its body to the frame behind it from some angles
+and its arm looked folded the wrong way (issues #235 and #236): see the traps.
 
 ## Cost
 
@@ -201,6 +206,11 @@ Door Swing Tool are items, so they have crafting recipes (`recipes/door_closer.j
   evenly on every face. The swing renderer writes each quad itself and shades it by where it faces.
 - **A closer on the pull face cannot work here** (see the closer's arm): the open leaf lies along
   the jamb inside the wall, and the pull face ends against the jamb block.
+- **The translucent pass writes no depth.** `EntityRenderer` draws it under `depthMask(false)`, in
+  the order of a per-face distance sort that is redone only as the camera moves. That is right for
+  glass and wrong for anything solid: solid parts in that pass are drawn in whatever order the sort
+  left them, so a nearer box can be painted over by a farther face. Anything solid on a glazed
+  block belongs in the cutout pass.
 - **1.12's long array tag cannot be read back** (no getter), so `DoorLocks` stores positions as
   pairs of ints.
 

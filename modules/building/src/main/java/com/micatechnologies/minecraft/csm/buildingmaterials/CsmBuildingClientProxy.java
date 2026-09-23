@@ -5,13 +5,14 @@ import com.micatechnologies.minecraft.csm.constructionsite.JobTrailerRenderUpdat
 import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldClimbHandler;
 import com.micatechnologies.minecraft.csm.constructionsite.TileEntityCraneHead;
 import com.micatechnologies.minecraft.csm.constructionsite.TileEntityCraneHeadRenderer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The building module's proxy on the client: the site climb handler, and the crane head's and
- * the moving garage door's and the swinging door's renderers.
+ * the moving garage door's and the swinging door's renderers, and the glazed doors' split model.
  *
  * @version 1.0
  * @since 2026.9
@@ -33,6 +34,8 @@ public class CsmBuildingClientProxy extends CsmBuildingCommonProxy {
     if (BlockCustomDoor.instance() != null) {
       CustomDoorRenderer.register(BlockCustomDoor.instance());
     }
+    // A glazed door's glass in the translucent pass and its hardware in the cutout pass.
+    MinecraftForge.EVENT_BUS.register(new DoorLayerModel.Events());
   }
 
   @Override
