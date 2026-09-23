@@ -596,6 +596,7 @@ and measure with the mode off.
 | GPU headroom | The heavy-model test on a slower GPU, or with `gl_finish`, from a camera that sees them all. |
 | Direct-buffer OOM | Reproduce from a cold JVM with one heavy section and the sync flood, to say whether repeated rebuilds or one big section is the trigger. |
 | The cliff's real-world reach | Fly a 100-intersection scene at a wide field of view (110) and count heads rendered; `/csm displaylists` while doing it. |
+| Warning siren horn while sounding | `TileEntityWarningSirenRenderer` draws only while a rotating siren sounds (idle ones are baked); a few dozen quads a siren through the Tessellator each frame, unmeasured. Worth a figure if towns place dozens. |
 | A fix's effect | Every Tier 0/1 item needs its A/B/A once written. The harness already measures all of these blocks. |
 
 ## Measurement traps

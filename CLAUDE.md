@@ -347,6 +347,12 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   three cells, why a hung sign's arrow reverses from behind, the heads' glow through the
   emergency lights' renderer, the setup screen, and the traps (ordinals are saved, the generator
   repeats the specs)
+- `assets/docs/EMERGENCY_SERVICES.md` -- Life Safety's four tabs and why the fire alarm tab kept
+  its id, the fire protection, emergency lighting and fire/police/EMS station families and how
+  they are generated, round parts as exact octagons, synthesised sounds, generic emblems, every
+  block that does something, why cross-module effects go by redstone, the fire pole's fall, the
+  outdoor warning sirens (horn baked at rest, drawn only while sounding, volume from the horn's
+  bearing), and the traps
 - `assets/docs/STATION_ALERTING_SYSTEM.md` -- A fire station's alerting: the controller, its
   linked speakers, alert lights, relays and bay clearance lights, the dispatch sequence, and why
   the relay's redstone is how it opens bay doors, strikes the gong and preempts traffic signals
@@ -582,6 +588,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_life_safety_sounds.py` -- the Life Safety module's own sounds, synthesised (numpy to
   ffmpeg to OGG) so nothing recorded is shipped; adds a `sounds.json` entry for each. No
   `--check` (Vorbis output is not byte-stable): listen, then commit the OGG
+- `build_life_safety_demo.py` -- builds the Life Safety demo world in a flat creative world loaded
+  in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street with a fire station
+  (alerting, pole, fire alarm with door holder and annunciator, riser room), a police station, an
+  EMS station and a dispatch office with sirens, every device linked through its saved data
 - `gen_crane.py` -- the tower crane mast in three liveries: 3D corner chords, and the lacing drawn
   into a cutout texture on a plane per face -- a 1x1 face's chord-to-chord diagonal is not an angle
   an element can be turned to, and a texture diagonal can be any angle and meets the chord at the

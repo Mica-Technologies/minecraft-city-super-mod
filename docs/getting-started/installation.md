@@ -18,7 +18,7 @@ every module requires it. Beyond that, install only the subsystems you actually 
 |---|---|
 | **CSM: Core** | Required. The crafting parts, the CSM Fabricator, and everything the modules build on. On its own it adds almost no blocks |
 | **CSM: Roads & Traffic** | Traffic signals and controllers, span wire, mast arms, crosswalks, road signs and highway guide signs |
-| **CSM: Life Safety** | Fire alarm appliances, control panels, emergency lighting, exit signs |
+| **CSM: Life Safety** | Fire alarms, exit signs and emergency lighting, fire protection, and fire, police and EMS station fittings with sirens and dispatch |
 | **CSM: HVAC** | Thermostats, air handlers, ducting and vents |
 | **CSM: Lighting** | Street and area luminaires, pendants and wall sconces |
 | **CSM: Power Grid** | Utility poles, cross arms, insulators, transformers and other electrical infrastructure |
@@ -83,10 +83,9 @@ every module requires it. Beyond that, install only the subsystems you actually 
 Open the mod list on the title screen: **CSM: Core** and each module you installed should be listed
 by name.
 
-Then open the creative inventory. With every module installed the mod adds **fourteen tabs** —
-Building Materials, Furniture, Gaming, HVAC, Life Safety, Lighting, Materials, Novelties, Power
-Grid, Road Signs, Technology, Traffic Accessories and Traffic Signals. With a subset, you get the
-tabs belonging to the modules you installed, plus Materials from Core.
+Then open the creative inventory. Each module adds one or more tabs -- Life Safety, for example,
+adds Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection and Emergency Services.
+With a subset, you get the tabs belonging to the modules you installed, plus Materials from Core.
 
 If a tab is missing, check the Forge log for a load error: `logs/latest.log` in your Minecraft
 folder, searched for `csm`.
