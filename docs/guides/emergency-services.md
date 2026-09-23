@@ -14,8 +14,8 @@ The **Fire Protection** tab has what a building fights a fire with besides its a
 - The **standpipe** (hose valve and riser), and **fire department connections**: brass and chrome
   wall connections, a freestanding one and a Storz inlet.
 - The **riser room**: the sprinkler alarm valve, an OS&Y valve, the post indicator valve outside,
-  a backflow preventer, and the **water motor gong** on the outside wall, which rings with the fire
-  alarm's horns.
+  a backflow preventer, and the **water motor gong** on the outside wall. Link it to a fire alarm
+  panel with the fire alarm linker, like a horn, and it clangs whenever the alarm sounds.
 - The **Knox box**, **sprinkler heads**, and **sign plates** for all of them.
 - **Magnetic door holders.** Put one beside a door, on the wall or the floor. It holds the door open
   until the fire alarm goes off, then lets it shut. Link it to a panel with the fire alarm linker,

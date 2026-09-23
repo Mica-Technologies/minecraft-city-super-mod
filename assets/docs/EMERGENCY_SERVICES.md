@@ -81,14 +81,14 @@ shows only a number.
 | Cabinets (extinguisher, hose, AED, Knox box) | Click opens and shuts the door; the AED cabinet chirps when opened | `BlockFireProtectionCabinet` |
 | Magnetic door holder | Holds the door beside it open with redstone until its panel alarms | `BlockMagneticDoorHolder`, `FIRE_ALARM_SYSTEM.md` |
 | Remote annunciator | Lights with its panel; click reads out status and first alarm | `BlockRemoteAnnunciator` |
-| Water motor gong | Rings with the panel's horns (an ordinary sounder) | `BlockFireAlarmSounderFactory` |
+| Water motor gong | Linked to a panel like any sounder, clangs with its horns (its own struck-gong sound) | `BlockFireAlarmSounderFactory` |
 | Fire pole and floor opening | Right-click to grab (a flying player stops flying) and slide down, held to the pole; stepping into it does the same; sneak to grip; no fall damage | `BlockFirePole`, `BlockFirePoleHole` |
 | Firehouse gong | Strikes three-three-three on a redstone signal or a click | `BlockStationBell` |
 | Station number plaque | Any number 0-99: click the units, sneak-click the tens | `BlockStationNumberPlaque` |
 | Station alerting | Controller, speakers, alert lights, relays, bay clearance lights | `STATION_ALERTING_SYSTEM.md` |
 | Metal detector | Beeps, goes red and pulses redstone when a player carrying metal walks through | `BlockMetalDetector` |
 | Holding cell door | Slides open or shut, the whole stack at once; redstone holds it open; iron bars and panes join its edges | `BlockCellDoor` |
-| Police and fire line tape | Laid like a fence; joins tape, its stanchion or any solid side | `BlockSceneTape` |
+| Police and fire line tape | Laid like a fence; joins tape, its stanchion (running on to the post) or any solid side | `BlockSceneTape` |
 | Warning sirens and controller | See below | `BlockWarningSiren`, `BlockSirenController` |
 | Blue-light call box | Rings through when pressed | `BlockCallBox` |
 | First aid cabinet | One first aid kit a day for each player | `BlockFirstAidCabinet` |
@@ -154,6 +154,9 @@ never runs twice. The signal ordinals are saved (`SirenSignal`): append, never r
   block in front, which must be left clear. `box()` clamps UVs to the cell, so `zbox()` splits a
   part at the cell edge and textures the half past it a whole block along instead of stretching
   it; the blockstate's inventory transform shrinks the icon to fit the slot.
+- **An open octagon shows its inside.** `pipe_z(..., front=False)` draws no end caps at all, so
+  the first water motor gong, a ring with a smaller plate in front, was a hollow box. A round
+  part seen end on needs its caps; the gong's dome is stepped rings, each capped.
 - **A synthesised sound needs the horns' level.** The alerting tones were first made at 6,000 RMS
   and were too soft to carry through a station; they are at the fire alarm horns' 10,000.
 - **An item texture is not a block texture.** The catalogue writes an item's texture under

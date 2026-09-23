@@ -979,16 +979,24 @@ def tape(reg, tex, names):
     single = model({"tape": T(tex), "particle": T(tex)},
                    [box([0, 9, 7.9], [16, 10.5, 8.1], "tape", faces=("north", "south"))],
                    ao=False)
-    parts = [{"when": {"north": "false", "east": "false", "south": "false", "west": "false"},
+    # Toward a stanchion the tape runs on into its block, to the post's 0.8 px radius; textured
+    # as the block beyond, since box() clamps UVs to the cell.
+    stub = box([7.9, 9, 8.8], [8.1, 10.5, 16], "tape", faces=("east", "west"))
+    stub["from"][2] -= 16
+    stub["to"][2] -= 16
+    to_post = model({"tape": T(tex), "particle": T(tex)}, [stub], ao=False)
+    parts = [{"when": {"north": "none", "east": "none", "south": "none", "west": "none"},
               "apply": {"model": M(reg + "_single")}}]
     for d, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
-        apply = {"model": M(reg + "_arm")}
-        if rot:
-            apply["y"] = rot
-        parts.append({"when": {d: "true"}, "apply": apply})
+        for when, part in (("tape|post", "_arm"), ("post", "_to_post")):
+            apply = {"model": M(reg + part)}
+            if rot:
+                apply["y"] = rot
+            parts.append({"when": {d: when}, "apply": apply})
     item = {"parent": "item/generated", "textures": {"layer0": T(tex + "_item")}}
     C.add(reg, 'new BlockSceneTape("%s")' % reg, names,
-          {reg + "_arm": arm, reg + "_single": single}, {"multipart": parts}, item=item, tab=ES)
+          {reg + "_arm": arm, reg + "_single": single, reg + "_to_post": to_post},
+          {"multipart": parts}, item=item, tab=ES)
 
 
 tape("police_line_tape", "tape_police",
@@ -1287,8 +1295,16 @@ def rotating_head():
     """The chopper drum on its motor, and the horn out of it pointing north."""
     return (post(8, 8, 3, 10, 14, "gray")
             + pipe_z(8, 12, 2.4, -2, 5, "gray", front=False)
-            + pipe_z(8, 12, 3.6, -4, -2, "gray", front=False)
-            + [box([4.8, 8.8, -4.01], [11.2, 15.2, -4], "mouth", faces=("north",))])
+            + mouth(pipe_z(8, 12, 3.6, -4, -2, "gray")))
+
+
+def mouth(els):
+    """The horn's bell, its front cap drawn as the mouth: a square plate in front of it left the
+    bell's open edge showing along each flat."""
+    for el in els:
+        if "north" in el["faces"]:
+            el["faces"]["north"]["texture"] = "#mouth"
+    return els
 
 
 def siren_base_elements():
