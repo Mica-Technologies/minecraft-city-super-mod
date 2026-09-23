@@ -673,5 +673,14 @@
         "stream": false
       }
     ]
+  },
+  "aed_cabinet_alarm": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:aed_cabinet_alarm",
+        "stream": false
+      }
+    ]
   }
 }

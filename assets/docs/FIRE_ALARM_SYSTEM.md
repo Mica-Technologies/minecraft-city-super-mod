@@ -243,6 +243,35 @@ Invalid appliances are pruned every ~5 minutes (`PRUNE_INTERVAL_TICKS = 6000`) b
 if the block at each stored position is still an `AbstractBlockFireAlarmSounder` instance.
 Only one invalid entry is pruned per cycle to stay lightweight.
 
+### Devices that follow a panel (door holders, annunciators)
+
+The magnetic door holders and the remote annunciator (`IFireAlarmPanelFollower`, base
+`AbstractBlockPanelFollower`) are neither appliances nor initiating devices: the panel has
+nothing to send them, so they look. The linker stores the panel on the device's
+`TileEntityFireAlarmSensor` (`lp`), as it does for a pull station, but adds it to none of the
+panel's lists. Once a second (a scheduled tick) the device asks `FireAlarmPanelRegistry` whether
+its panel is in alarm, and keeps the answer as its `alarm` block state, in metadata, so the model
+and redstone read it without a tile entity lookup. Through the registry a panel in an unloaded
+chunk still answers. An unlinked device follows any fire alarm sounding near it
+(`CsmFireAlarmQuery.isFireAlarmActiveNear`).
+
+**A door holder holds the door with redstone.** It gives weak power on every side until its
+panel alarms, and every door in the game is held open by power, so it needs to know nothing
+about doors and works with CSM's and vanilla's alike. That keeps the Building Materials doors
+out of this module's code (a module may only reference Core).
+
+The annunciator's lamp and display follow the `alarm` state; right-click reads out the panel's
+status and the first alarm's device and position, from the panel's own fields
+(`getAlarmOriginPos` / `getAlarmOriginName`).
+
+### New detectors
+
+`BlockFireAlarmDetectorFactory` builds detectors that differ only in name and box: the
+photoelectric smoke detector, the duct detector and the beam detector. They scan exactly as the
+heat detector does and only report. The water motor gong in the Fire Protection tab is an
+ordinary sounder (`BlockFireAlarmSounderFactory` with the `bell` sound), so it rings with the
+panel's horns; a real one rings on sprinkler water flow, which the mod does not model separately.
+
 ## Sound Selection Patterns
 
 ### Block Meta (max 2 options)

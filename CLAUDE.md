@@ -562,6 +562,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on
   plinths. Every tree is planted with the real Tree Planting Tool, aimed with `client_look` (a
   teleport's yaw and pitch can leave the camera pointing anywhere, and a click then plants there)
+- `life_safety_gen_common.py` -- what the Life Safety generators share: a block catalogue with
+  its writing, `--check` and `--fragments`, a 3 x 5 pixel font drawn in the script (so a
+  lettered texture is the same on every machine), and round parts as exact octagons -- four
+  rectangles, two turned 45 degrees, since a square plus the same square turned 45 is a star
+- `gen_fire_protection.py` -- the Fire Protection tab (extinguishers, cabinets with doors that
+  open, standpipe, fire department connections, riser room valves, the water motor gong, door
+  holders, sign plates) and the new detectors and remote annunciator in Fire Alarm & Detection;
+  `--check`, `--fragments`
+- `gen_life_safety_sounds.py` -- the Life Safety module's own sounds, synthesised (numpy to
+  ffmpeg to OGG) so nothing recorded is shipped; adds a `sounds.json` entry for each. No
+  `--check` (Vorbis output is not byte-stable): listen, then commit the OGG
 - `gen_crane.py` -- the tower crane mast in three liveries: 3D corner chords, and the lacing drawn
   into a cutout texture on a plane per face -- a 1x1 face's chord-to-chord diagonal is not an angle
   an element can be turned to, and a texture diagonal can be any angle and meets the chord at the

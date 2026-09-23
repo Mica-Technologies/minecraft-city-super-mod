@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "gray": "csm:blocks/lifesafety/fireprotection/steel",
+    "front": "csm:blocks/lifesafety/fireprotection/duct_front",
+    "particle": "csm:blocks/lifesafety/fireprotection/steel"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        3,
+        12.5
+      ],
+      "to": [
+        14,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            2,
+            3,
+            14,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#gray",
+          "uv": [
+            2,
+            3,
+            14,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#gray",
+          "uv": [
+            0,
+            3,
+            3.5,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#gray",
+          "uv": [
+            12.5,
+            3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#gray",
+          "uv": [
+            2,
+            12.5,
+            14,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#gray",
+          "uv": [
+            2,
+            0,
+            14,
+            3.5
+          ]
+        }
+      }
+    }
+  ]
+}

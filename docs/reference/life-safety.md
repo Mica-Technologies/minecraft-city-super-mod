@@ -2,7 +2,7 @@
 
 Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
-!!! info "123 blocks in this tab"
+!!! info "127 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,8 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Beam Smoke Detector | `csm:beam_smoke_detector` | 2 | 10 | pickaxe | 1 |
+| Duct Smoke Detector | `csm:duct_smoke_detector` | 2 | 10 | pickaxe | 1 |
 | Edwards Emergency Phone | `csm:eep` |  |  |  |  |
 | Edwards EST 202-8A-T Wall Mount Strobe (Red) | `csm:firealarmest2028atstrobered` | 2 | 10 | pickaxe | 1 |
 | Edwards EST 202-8A-TW Wall Mount Strobe (White) | `csm:firealarmest2028atwstrobewhite` | 2 | 10 | pickaxe | 1 |
@@ -48,6 +50,8 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | KAC Sounder Red (Horn) | `csm:firealarmkacsounderred` | 2 | 10 | pickaxe | 1 |
 | Kidde Smoke Alarm | `csm:kiddesmoke` |  |  |  |  |
 | Nest Protect 2nd Generation | `csm:nestprotect` |  |  |  |  |
+| Photoelectric Smoke Detector | `csm:smoke_detector_photoelectric` | 2 | 10 | pickaxe | 1 |
+| Remote Fire Alarm Annunciator | `csm:remote_annunciator` | 2.0 | 6.0 | pickaxe | 0 |
 | Simplex 2901 Red (Horn Strobe) | `csm:firealarmsimplex2901hornstrobered` | 2 | 10 | pickaxe | 1 |
 | Simplex 2901 Red (Horn) | `csm:firealarmsimplex2901hornred` | 2 | 10 | pickaxe | 1 |
 | Simplex 4050 Red (Horn) | `csm:firealarmsimplex4050red` | 2 | 10 | pickaxe | 1 |
