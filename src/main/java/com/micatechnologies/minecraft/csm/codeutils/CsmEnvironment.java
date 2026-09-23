@@ -63,18 +63,21 @@ public class CsmEnvironment {
   private static final long EVICTION_MAX_AGE_TICKS = 1200L;
 
   /**
-   * World tick at which the last eviction sweep was performed. Used to throttle sweeps to
-   * once per {@link #EVICTION_INTERVAL_TICKS}.
+   * Per-world cache of chunk baseline temperatures. Keyed by the world itself, not its dimension
+   * number: every singleplayer world's overworld is dimension 0, and the client and the integrated
+   * server each have their own world object, so a dimension key let a world loaded later in the
+   * same session read the biomes of one loaded earlier. Weak, so an unloaded world's cache goes
+   * with it. Each inner map is a {@code ConcurrentHashMap} so the server tick thread and the
+   * client render thread can query without external synchronization.
    */
-  private static long lastEvictionTick = 0L;
+  private static final Map<World, WorldCache> worldCaches =
+      java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
 
-  /**
-   * Per-dimension cache of chunk baseline temperatures, keyed by the dimension ID of the world.
-   * A {@code ConcurrentHashMap} so the server tick thread and the client render thread can both
-   * query without external synchronization.
-   */
-  private static final Map<Integer, Map<Long, ChunkTempData>> dimensionCaches =
-      new ConcurrentHashMap<>();
+  /** One world's chunk baselines and the tick of its last eviction sweep. */
+  private static final class WorldCache {
+    final Map<Long, ChunkTempData> chunks = new ConcurrentHashMap<>();
+    volatile long lastEvictionTick;
+  }
 
   /**
    * The installed temperature provider. Volatile because a module installs it on the main
@@ -126,19 +129,28 @@ public class CsmEnvironment {
    * @since 1.0
    */
   public static float getBaselineTemperatureAt(World world, BlockPos pos) {
-    Map<Long, ChunkTempData> cache = getOrCreateCache(world);
+    WorldCache worldCache = getOrCreateCache(world);
+    Map<Long, ChunkTempData> cache = worldCache.chunks;
     long chunkKey = chunkKey(pos);
     long currentTick = world.getTotalWorldTime();
 
-    // Periodic eviction of stale entries to prevent unbounded cache growth
-    if (currentTick - lastEvictionTick >= EVICTION_INTERVAL_TICKS) {
-      lastEvictionTick = currentTick;
-      cache.values().removeIf(d -> (currentTick - d.timestamp) >= EVICTION_MAX_AGE_TICKS);
+    // Periodic eviction of stale entries to prevent unbounded cache growth. An age below zero
+    // (the clock was set back) is as stale as an old one.
+    long sinceSweep = currentTick - worldCache.lastEvictionTick;
+    if (sinceSweep >= EVICTION_INTERVAL_TICKS || sinceSweep < 0) {
+      worldCache.lastEvictionTick = currentTick;
+      cache.values().removeIf(d -> {
+        long age = currentTick - d.timestamp;
+        return age >= EVICTION_MAX_AGE_TICKS || age < 0;
+      });
     }
 
     ChunkTempData data = cache.get(chunkKey);
-    if (data != null && (currentTick - data.timestamp) < CACHE_LIFETIME_TICKS) {
-      return data.temperature;
+    if (data != null) {
+      long age = currentTick - data.timestamp;
+      if (age >= 0 && age < CACHE_LIFETIME_TICKS) {
+        return data.temperature;
+      }
     }
 
     float biomeTemp = world.getBiome(pos).getTemperature(pos);
@@ -167,20 +179,20 @@ public class CsmEnvironment {
    * @since 1.0
    */
   public static void invalidateBaselineChunk(World world, int chunkX, int chunkZ) {
-    Map<Long, ChunkTempData> cache = getOrCreateCache(world);
-    cache.remove(chunkKeyFromCoords(chunkX, chunkZ));
+    getOrCreateCache(world).chunks.remove(chunkKeyFromCoords(chunkX, chunkZ));
   }
 
   /**
-   * Retrieves or creates the chunk baseline cache for the given world's dimension.
+   * Retrieves or creates the chunk baseline cache for the given world.
    *
    * @param world the world instance
    *
-   * @return the chunk baseline cache map for this dimension
+   * @return the world's cache
    */
-  private static Map<Long, ChunkTempData> getOrCreateCache(World world) {
-    int dimensionId = world.provider.getDimension();
-    return dimensionCaches.computeIfAbsent(dimensionId, k -> new ConcurrentHashMap<>());
+  private static WorldCache getOrCreateCache(World world) {
+    synchronized (worldCaches) {
+      return worldCaches.computeIfAbsent(world, k -> new WorldCache());
+    }
   }
 
   /**
