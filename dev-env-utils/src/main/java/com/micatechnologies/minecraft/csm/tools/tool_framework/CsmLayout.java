@@ -82,6 +82,13 @@ public class CsmLayout
             "public\\s+String\\s+getBlockRegistryName\\(\\)\\s*\\{\\s*return\\s*\"([^\"]+)\"\\s*;");
     private static final Pattern ITEM_REGISTRY_NAME_RE = Pattern.compile(
             "public\\s+String\\s+getItemRegistryName\\(\\)\\s*\\{\\s*return\\s*\"([^\"]+)\"\\s*;");
+    /**
+     * A name getter that asks an accessor for the name instead of returning a literal:
+     * {@code getItemRegistryName() { return getAddon().getItemRegistryName(); }}.
+     */
+    private static final Pattern DELEGATED_NAME_RE = Pattern.compile(
+            "public\\s+String\\s+get(Block|Item)RegistryName\\(\\)\\s*\\{\\s*return\\s+(\\w+)\\(\\)"
+            + "\\.get(?:Block|Item)RegistryName\\(\\)\\s*;");
     private static final Pattern TAB_CLASS_RE
             = Pattern.compile("initTab(Block|Item)\\(\\s*([\\w.]+)\\.class");
     private static final Pattern TAB_CTOR_RE
@@ -892,6 +899,7 @@ public class CsmLayout
     private Map< String, SourceClass > scanSources()
     {
         Map< String, SourceClass > found = new LinkedHashMap<>();
+        Map< String, String > texts = new LinkedHashMap<>();
         for ( File pkg : javaPackageRoots() ) {
             String module = moduleOfFile( pkg );
             List< File > sources = new ArrayList<>();
@@ -900,6 +908,7 @@ public class CsmLayout
                 String className
                         = source.getName().substring( 0, source.getName().length() - ".java".length() );
                 String text = normalize( readFileQuietly( source ) );
+                texts.putIfAbsent( className, text );
                 Matcher block = REGISTRY_NAME_RE.matcher( text );
                 Matcher item = ITEM_REGISTRY_NAME_RE.matcher( text );
                 Matcher extendsMatch = Pattern.compile( "class\\s+" + Pattern.quote( className )
@@ -921,7 +930,77 @@ public class CsmLayout
                                                     constants ) );
             }
         }
+        resolveDelegatedNames( found, texts );
         return found;
+    }
+
+    /**
+     * Names the classes whose registry name is not a literal in the class but an enum
+     * constant's, reached through an accessor: the scaffold add-on items return
+     * {@code getAddon().getItemRegistryName()}, each subclass's {@code getAddon()} returns a
+     * {@code ScaffoldAddon} constant, and that constant is declared with the name.
+     *
+     * <p>Deliberately narrow, so it cannot invent a name: the getter, found in the class or an
+     * ancestor, must be exactly {@code return accessor().getXRegistryName();}; the accessor, again
+     * in the class or an ancestor, must return {@code Enum.CONSTANT}; and that constant's
+     * declaration must hold exactly one string literal. Anything else stays unresolved, as before.
+     *
+     * @param found the scan result, updated in place
+     * @param texts simple class name to normalized source text
+     *
+     * @since 1.2
+     */
+    private static void resolveDelegatedNames( Map< String, SourceClass > found,
+                                               Map< String, String > texts )
+    {
+        for ( Map.Entry< String, SourceClass > entry : found.entrySet() ) {
+            SourceClass info = entry.getValue();
+            if ( info.blockRegistryName != null || info.itemRegistryName != null ) {
+                continue;
+            }
+            Matcher getter = null;
+            for ( String cls = entry.getKey(); cls != null && getter == null;
+                  cls = found.containsKey( cls ) ? found.get( cls ).superClass : null ) {
+                Matcher m = DELEGATED_NAME_RE.matcher( texts.getOrDefault( cls, "" ) );
+                if ( m.find() ) {
+                    getter = m;
+                }
+            }
+            if ( getter == null ) {
+                continue;
+            }
+            Pattern accessorRe = Pattern.compile( Pattern.quote( getter.group( 2 ) )
+                    + "\\(\\)\\s*\\{\\s*return\\s+(\\w+)\\.(\\w+)\\s*;" );
+            Matcher accessor = null;
+            for ( String cls = entry.getKey(); cls != null && accessor == null;
+                  cls = found.containsKey( cls ) ? found.get( cls ).superClass : null ) {
+                Matcher m = accessorRe.matcher( texts.getOrDefault( cls, "" ) );
+                if ( m.find() ) {
+                    accessor = m;
+                }
+            }
+            if ( accessor == null ) {
+                continue;
+            }
+            Matcher constant = Pattern.compile( "\\b" + Pattern.quote( accessor.group( 2 ) )
+                    + "\\s*\\(([^()]*)\\)\\s*[,;]" )
+                    .matcher( texts.getOrDefault( accessor.group( 1 ), "" ) );
+            if ( !constant.find() ) {
+                continue;
+            }
+            Matcher literal = Pattern.compile( "\"([^\"]+)\"" ).matcher( constant.group( 1 ) );
+            if ( !literal.find() ) {
+                continue;
+            }
+            String name = literal.group( 1 );
+            if ( literal.find() ) {
+                continue; // more than one string: which is the name is a guess, so do not guess
+            }
+            boolean item = "Item".equals( getter.group( 1 ) );
+            entry.setValue( new SourceClass( info.module, info.file, info.packageName,
+                                             item ? null : name, item ? name : null,
+                                             info.superClass, info.blockSet, info.constants ) );
+        }
     }
 
     /**

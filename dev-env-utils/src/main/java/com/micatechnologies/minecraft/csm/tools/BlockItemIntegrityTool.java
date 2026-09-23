@@ -388,6 +388,10 @@ public class BlockItemIntegrityTool {
       // Create common File objects
       AssetFolder langFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), LANG_FOLDER);
 
+      // What the sources name beyond block, item and tab names: screen, chat and tooltip keys,
+      // literal or built by concatenation, and per-stack names. See LangKeyUsage.
+      LangKeyUsage sourceUsage = new LangKeyUsage(layout(devEnvironmentPath));
+
       // Go line by line in each lang file and check for unused entries
       for (File langFile : langFolder.list()) {
         if (langFile.getName().endsWith(LANG_FILE_EXTENSION)) {
@@ -439,6 +443,12 @@ public class BlockItemIntegrityTool {
               if (knownTabIds.contains(tabId)) {
                 unused = false;
               }
+            }
+
+            // Check if named by the sources in any other way
+            if (unused && sourceUsage.isUsed(trimmedLine.substring(0, trimmedLine.indexOf('='))
+                .trim())) {
+              unused = false;
             }
 
             if (unused) {
