@@ -1148,5 +1148,306 @@ C.blocks[-1]["models"]["star_of_life_emblem"]["elements"][0]["faces"]["north"]["
 C.blocks[-1]["models"]["star_of_life_emblem"]["elements"][0]["faces"]["south"]["uv"] = [16, 0, 0, 16]
 
 
+# ==========================================================================================
+# Community warning and dispatch
+# ==========================================================================================
+SIREN_GRAY = (170, 174, 178)
+flat("siren_gray", SIREN_GRAY, grain=5, seed=600)
+flat("siren_dark", (70, 72, 76), grain=4, seed=601)
+flat("callbox_blue", (30, 70, 150), grain=3, seed=602)
+
+
+@C.texture("horn_mouth")
+def _horn_mouth():
+    img = fill((40, 42, 46), grain=3, seed=603)
+    for i in range(0, 16, 3):
+        rect(img, i, 0, i + 1, 16, (80, 82, 88))
+    return img
+
+
+@C.texture("array_front")
+def _array_front():
+    img = fill(SIREN_GRAY, grain=3, seed=604)
+    rect(img, 2, 2, 14, 14, (60, 62, 66))
+    for y in range(3, 14, 2):
+        rect(img, 3, y, 13, y + 1, (100, 102, 108))
+    return img
+
+
+@C.texture("siren_panel")
+def _siren_panel():
+    img = fill((150, 154, 160), size=64, grain=2, seed=605)
+    x0, y0, x1, y1 = north_region((2, 1), (14, 15), 64)
+    bevel(img, x0, y0, x1, y1, (150, 154, 160))
+    draw_text_centred(img, "OUTDOOR", 32, y0 + 4, (30, 30, 34))
+    draw_text_centred(img, "WARNING", 32, y0 + 11, (30, 30, 34))
+    labels = (("ALERT", (230, 180, 30)), ("ATTACK", (210, 40, 40)), ("FIRE", (230, 110, 30)),
+              ("TEST", (60, 150, 220)), ("CANCEL", (60, 60, 64)))
+    for i, (label, c) in enumerate(labels):
+        yy = y0 + 20 + i * 7
+        rect(img, x0 + 5, yy, x0 + 11, yy + 5, c)
+        draw_text(img, label, x0 + 14, yy, (30, 30, 34))
+    return img
+
+
+@C.texture("callbox_panel")
+def _callbox_panel():
+    img = fill((30, 70, 150), size=64, grain=2, seed=606)
+    draw_text_centred(img, "EMERGENCY", 32, 6, WHITE)
+    disc(img, 32, 30, 9, (200, 30, 30))
+    disc(img, 32, 30, 7, (240, 50, 40))
+    for i in range(0, 12, 2):
+        rect(img, 24, 46 + i, 40, 47 + i, (20, 30, 60))
+    return img
+
+
+@C.texture("callbox_lamp")
+def _callbox_lamp():
+    img = fill((80, 150, 255), grain=4, seed=607)
+    rect(img, 0, 7, 16, 9, (200, 230, 255))
+    return img
+
+
+def screen(kind):
+    def draw():
+        img = fill((20, 22, 28), size=32, grain=2, seed=610 + len(kind))
+        px = img.load()
+        rng = random.Random(len(kind) * 17)
+        if kind == "map":
+            for _ in range(14):
+                x = rng.randrange(2, 30)
+                rect(img, x, 2, x + 1, 30, (60, 70, 80))
+                y = rng.randrange(2, 30)
+                rect(img, 2, y, 30, y + 1, (60, 70, 80))
+            for _ in range(6):
+                disc(img, rng.randrange(4, 28), rng.randrange(4, 28), 1.2,
+                     (230, 60, 60) if rng.random() < 0.5 else (60, 200, 90))
+        elif kind == "cad":
+            for y in range(3, 29, 3):
+                w = rng.randrange(8, 26)
+                c = (230, 200, 60) if y == 6 else (140, 220, 140)
+                rect(img, 3, y, 3 + w, y + 1, c)
+        else:
+            for i in range(6):
+                bx = 3 + (i % 3) * 9
+                by = 4 + (i // 3) * 12
+                rect(img, bx, by, bx + 7, by + 9, (40, 90, 150) if i != 1 else (200, 60, 50))
+        return img
+    return draw
+
+
+for kind in ("map", "cad", "radio"):
+    C.textures["screen_" + kind] = screen(kind)
+
+
+def rotating_head():
+    """The chopper drum on its motor, and the horn out of it pointing north."""
+    return (post(8, 8, 3, 10, 14, "gray")
+            + pipe_z(8, 12, 2.4, -2, 5, "gray", front=False)
+            + pipe_z(8, 12, 3.6, -4, -2, "gray", front=False)
+            + [box([4.8, 8.8, -4.01], [11.2, 15.2, -4], "mouth", faces=("north",))])
+
+
+def siren_base_elements():
+    return (post(8, 8, 1.6, 0, 5, "dark", top=False)
+            + [box([4.5, 5, 4.5], [11.5, 10, 11.5], "dark")])
+
+
+SIREN_TEX = {"gray": T("siren_gray"), "dark": T("siren_dark"), "mouth": T("horn_mouth"),
+             "front": T("array_front"), "particle": T("siren_gray")}
+
+
+def siren_state(reg):
+    parts = []
+    for f, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        base = {"model": M(reg + "_base")}
+        head = {"model": M(reg + "_head")}
+        if rot:
+            base["y"] = rot
+            head["y"] = rot
+        parts.append({"when": {"facing": f, "head": "false"}, "apply": base})
+        parts.append({"when": {"OR": [{"facing": f, "active": "false", "head": "false"},
+                                      {"facing": f, "head": "true"}]}, "apply": head})
+    return {"multipart": parts}
+
+
+C.add("warning_siren_rotating",
+      'new BlockWarningSiren("warning_siren_rotating", %s, true)' % B(3, 0, 3, 13, 16, 13),
+      ("Rotating Outdoor Warning Siren", "Drehende Motorsirene", "Sirena rotativa de alerta",
+       "Roterande tyfon (varningssiren)"),
+      {"warning_siren_rotating_base": model(SIREN_TEX, siren_base_elements()),
+       "warning_siren_rotating_head": model(SIREN_TEX, rotating_head()),
+       "warning_siren_rotating_item": dict(model(SIREN_TEX,
+                                                 siren_base_elements() + rotating_head()),
+                                           display={"gui": {"rotation": [30, 225, 0],
+                                                            "translation": [0, 0, 0],
+                                                            "scale": [0.55, 0.55, 0.55]}})},
+      siren_state("warning_siren_rotating"),
+      item={"parent": "csm:block/" + "lifesafety/services/warning_siren_rotating_item"}, tab=ES)
+
+
+def array_elements():
+    els = siren_base_elements()
+    for y0 in (10, 13):
+        els.append(box([4, y0, 4], [12, y0 + 3, 12], "gray",
+                       per={f: "front" for f in ("north", "south", "east", "west")}))
+    return els
+
+
+C.add("warning_siren_electronic",
+      'new BlockWarningSiren("warning_siren_electronic", %s, false)' % B(4, 0, 4, 12, 16, 12),
+      ("Electronic Outdoor Warning Siren", "Elektronische Sirene", "Sirena electrónica de alerta",
+       "Elektronisk varningssiren"),
+      {"warning_siren_electronic": model(SIREN_TEX, array_elements())},
+      {"multipart": [{"when": {"facing": f, "head": "false"},
+                      "apply": dict({"model": M("warning_siren_electronic")},
+                                    **({"y": r} if r else {}))}
+                     for f, r in (("north", 0), ("east", 90), ("south", 180), ("west", 270))]},
+      item={"parent": "csm:block/lifesafety/services/warning_siren_electronic"}, tab=ES)
+
+C.add("warning_siren_controller",
+      'new BlockSirenController("warning_siren_controller", %s)' % B(2, 1, 11, 14, 15, 16),
+      ("Warning Siren Controller", "Sirenensteuergerät", "Controlador de sirenas de alerta",
+       "Styrenhet för varningssirener"),
+      {"warning_siren_controller": model(
+          {"steel": T("steel"), "front": T("siren_panel"), "particle": T("steel")},
+          [box([2, 1, 11], [14, 15, 16], "steel", per={"north": "front"})])},
+      facing_state(M("warning_siren_controller"), {"powered": {"false": {}, "true": {}}}), tab=ES)
+
+C.add("blue_light_call_box", 'new BlockCallBox("blue_light_call_box", %s, 12)'
+      % B(4, 0, 4, 12, 16, 12),
+      ("Blue Light Emergency Call Box", "Notrufsäule mit Blaulicht",
+       "Poste de llamada de emergencia con luz azul", "Nödtelefonstolpe med blått ljus"),
+      {"blue_light_call_box": model(
+          {"blue": T("callbox_blue"), "panel": T("callbox_panel"), "lamp": T("callbox_lamp"),
+           "dark": T("siren_dark"), "particle": T("callbox_blue")},
+          [box([4.5, 0, 4.5], [11.5, 26, 11.5], "blue", per={"north": "panel"}),
+           box([4, 26, 4], [12, 30, 12], "lamp"), box([4.5, 30, 4.5], [11.5, 31, 11.5], "dark")])},
+      facing_state(M("blue_light_call_box")), tab=ES)
+el = C.blocks[-1]["models"]["blue_light_call_box"]["elements"][0]
+el["faces"]["north"]["uv"] = [0, 0, 16, 16]
+for f in ("south", "east", "west"):
+    el["faces"][f]["uv"] = [4.5, 0, 11.5, 16]
+
+C.add("dispatch_console", 'new BlockFireProtectionProp("dispatch_console", %s, true)'
+      % B(0, 0, 2, 16, 16, 16),
+      ("911 Dispatch Console", "Leitstellen-Arbeitsplatz", "Consola de despacho 911",
+       "Larmoperatörsbord"),
+      {"dispatch_console": model(
+          {"desk": T("laminate"), "dark": T("siren_dark"), "black": T("black"),
+           "map": T("screen_map"), "cad": T("screen_cad"), "radio": T("screen_radio"),
+           "particle": T("laminate")},
+          [box([0, 11, 2], [16, 12, 16], "desk"), box([0, 0, 14], [16, 11, 16], "dark"),
+           box([0, 0, 2], [1, 11, 16], "dark"), box([15, 0, 2], [16, 11, 16], "dark"),
+           box([3, 12, 5], [13, 12.5, 8], "black"),
+           box([0.5, 13, 12], [5.5, 18, 13], "black", per={"north": "radio"}),
+           box([5.5, 13, 12], [10.5, 18, 13], "black", per={"north": "map"}),
+           box([10.5, 13, 12], [15.5, 18, 13], "black", per={"north": "cad"}),
+           box([7.5, 12, 13], [8.5, 13, 14], "black")])},
+      facing_state(M("dispatch_console")), tab=ES)
+for i in (5, 6, 7):
+    C.blocks[-1]["models"]["dispatch_console"]["elements"][i]["faces"]["north"]["uv"] = [0, 0, 16, 16]
+
+prop("radio_console_speaker", (4, 0, 6, 12, 7, 12), False,
+     ("Radio Console Speaker", "Funklautsprecher", "Altavoz de consola de radio",
+      "Radiohögtalare"),
+     {"dark": T("siren_dark"), "grille": T("speaker_grille"), "particle": T("siren_dark")},
+     [box([4, 0, 6], [12, 7, 12], "dark", per={"north": "grille"})])
+
+
+def picto_trefoil(img, r, fg):
+    """The shelter symbol: three triangles pointing in, in a circle."""
+    x0, y0, x1, y1 = r
+    cx, cy = (x0 + x1) / 2.0, y0 + 15
+    disc(img, cx, cy, 13, fg)
+    disc(img, cx, cy, 11, (250, 214, 30))
+    px = img.load()
+    for y in range(int(cy - 11), int(cy + 11)):
+        for x in range(int(cx - 11), int(cx + 11)):
+            a = math.atan2(y + 0.5 - cy, x + 0.5 - cx)
+            d = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
+            k = ((a + math.pi / 2) / (2 * math.pi / 3)) % 1
+            if 2 < d < 11 and abs(k - 0.5) < 0.23 * (d / 11):
+                px[x, y] = clamp(fg) + (255,)
+
+
+def picto_tornado(img, r, fg):
+    x0, y0, x1, y1 = r
+    cx = (x0 + x1) / 2.0
+    for i in range(12):
+        w = 16 - i * 1.2
+        rect(img, int(cx - w / 2 + i * 0.4), y0 + 4 + i * 2, int(cx + w / 2 + i * 0.4),
+             y0 + 5 + i * 2, fg)
+
+
+def picto_people(img, r, fg):
+    x0, y0, x1, y1 = r
+    cx = (x0 + x1) // 2
+    for dx in (-10, 0, 10):
+        disc(img, cx + dx, y0 + 8, 2.5, fg)
+        rect(img, cx + dx - 2, y0 + 11, cx + dx + 2, y0 + 20, fg)
+        rect(img, cx + dx - 2, y0 + 20, cx + dx - 1, y0 + 27, fg)
+        rect(img, cx + dx + 1, y0 + 20, cx + dx + 2, y0 + 27, fg)
+
+
+def shelter_sign(bg, fg, lines, picto):
+    def draw():
+        img = fill(bg, size=64, grain=2, seed=620)
+        x0, y0, x1, y1 = north_region((2, 1), (14, 15), 64)
+        frame(img, x0, y0, x1, y1, shade(bg, 0.7), 1)
+        picto(img, (x0, y0, x1, y1), fg)
+        yy = y0 + 32
+        for text, scale in lines:
+            draw_text_centred(img, text, (x0 + x1) / 2.0, yy, fg, scale)
+            yy += 6 * scale + 1
+        return img
+    return draw
+
+
+C.textures["sign_fallout"] = shelter_sign((250, 214, 30), (20, 20, 20),
+                                          [("FALLOUT", 1), ("SHELTER", 1)], picto_trefoil)
+C.textures["sign_storm"] = shelter_sign((30, 70, 150), WHITE, [("STORM", 1), ("SHELTER", 1)],
+                                        picto_tornado)
+C.textures["sign_assembly"] = shelter_sign((0, 130, 70), WHITE, [("ASSEMBLY", 1), ("POINT", 1)],
+                                           picto_people)
+flat("sign_back", (170, 172, 176), grain=2, seed=621)
+for tex, reg, names in (
+        ("sign_fallout", "fallout_shelter_sign",
+         ("Fallout Shelter Sign", "Schild Schutzraum", "Señal de refugio nuclear",
+          "Skylt skyddsrum")),
+        ("sign_storm", "storm_shelter_sign",
+         ("Storm Shelter Sign", "Schild Sturmschutzraum", "Señal de refugio contra tormentas",
+          "Skylt stormskydd")),
+        ("sign_assembly", "assembly_point_sign",
+         ("Evacuation Assembly Point Sign", "Schild Sammelplatz",
+          "Señal de punto de encuentro", "Skylt återsamlingsplats"))):
+    prop(reg, (2, 1, 15, 14, 15, 16), False, names,
+         {"face": T(tex), "back": T("sign_back"), "particle": T(tex)},
+         [box([2, 1, 15.5], [14, 15, 16], "back", per={"north": "face"})])
+
+for key, names in (
+        ("choice", ("[Sirens] Set to %s (%s sirens linked). Sneak and click to carry it out.",
+                    "[Sirenen] Eingestellt: %s (%s Sirenen verbunden). Schleichen und klicken zum Auslösen.",
+                    "[Sirenas] Seleccionado: %s (%s sirenas vinculadas). Agáchate y haz clic para activar.",
+                    "[Sirener] Vald: %s (%s sirener kopplade). Smyg och klicka för att utlösa.")),
+        ("done", ("[Sirens] %s sent to %s sirens.", "[Sirenen] %s an %s Sirenen gesendet.",
+                  "[Sirenas] %s enviado a %s sirenas.", "[Sirener] %s skickat till %s sirener.")),
+        ("weekly_on", ("[Sirens] Weekly noon test on.", "[Sirenen] Wöchentlicher Probealarm an.",
+                       "[Sirenas] Prueba semanal activada.", "[Sirener] Veckotest på.")),
+        ("weekly_off", ("[Sirens] Weekly noon test off.", "[Sirenen] Wöchentlicher Probealarm aus.",
+                        "[Sirenas] Prueba semanal desactivada.", "[Sirener] Veckotest av.")),
+        ("choice.alert", ("Alert (steady)", "Warnung (Dauerton)", "Alerta (continuo)",
+                          "Viktigt meddelande (ton)")),
+        ("choice.attack", ("Attack (wail)", "Angriff (auf- und abschwellend)", "Ataque (ondulante)",
+                           "Flyglarm (stigande och fallande)")),
+        ("choice.fire", ("Fire (hi-lo)", "Feuer (hoch-tief)", "Incendio (alto-bajo)",
+                         "Brand (hög-låg)")),
+        ("choice.test", ("Test", "Probe", "Prueba", "Prov")),
+        ("choice.cancel", ("Cancel", "Entwarnung", "Cancelar", "Avbryt")),
+        ("choice.weekly_test", ("Weekly test switch", "Wöchentlicher Probealarm (Schalter)",
+                                "Interruptor de prueba semanal", "Omkopplare för veckotest"))):
+    C.add_lang("csm.lifesafety.siren." + key, names)
+
+
 if __name__ == "__main__":
     sys.exit(C.main())

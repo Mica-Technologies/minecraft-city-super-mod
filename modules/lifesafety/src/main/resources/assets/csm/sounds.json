@@ -754,5 +754,50 @@
         "stream": false
       }
     ]
+  },
+  "siren_steady": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:siren_steady",
+        "stream": false
+      }
+    ]
+  },
+  "siren_wail": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:siren_wail",
+        "stream": false
+      }
+    ]
+  },
+  "siren_hilo": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:siren_hilo",
+        "stream": false
+      }
+    ]
+  },
+  "siren_growl": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:siren_growl",
+        "stream": false
+      }
+    ]
+  },
+  "call_box_ring": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:call_box_ring",
+        "stream": false
+      }
+    ]
   }
 }

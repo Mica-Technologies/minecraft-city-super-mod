@@ -1,0 +1,118 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "head": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_rotating_base"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "north",
+            "active": "false",
+            "head": "false"
+          },
+          {
+            "facing": "north",
+            "head": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_rotating_head"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "head": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_rotating_base",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "east",
+            "active": "false",
+            "head": "false"
+          },
+          {
+            "facing": "east",
+            "head": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_rotating_head",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "head": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_rotating_base",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "south",
+            "active": "false",
+            "head": "false"
+          },
+          {
+            "facing": "south",
+            "head": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_rotating_head",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "head": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_rotating_base",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "west",
+            "active": "false",
+            "head": "false"
+          },
+          {
+            "facing": "west",
+            "head": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_rotating_head",
+        "y": 270
+      }
+    }
+  ]
+}

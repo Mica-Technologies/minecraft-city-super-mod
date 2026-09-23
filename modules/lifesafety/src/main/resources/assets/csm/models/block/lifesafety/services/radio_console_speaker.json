@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "dark": "csm:blocks/lifesafety/services/siren_dark",
+    "grille": "csm:blocks/lifesafety/services/speaker_grille",
+    "particle": "csm:blocks/lifesafety/services/siren_dark"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        6
+      ],
+      "to": [
+        12,
+        7,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grille",
+          "uv": [
+            4,
+            9,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#dark",
+          "uv": [
+            4,
+            9,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#dark",
+          "uv": [
+            4,
+            9,
+            10,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#dark",
+          "uv": [
+            6,
+            9,
+            12,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#dark",
+          "uv": [
+            4,
+            6,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#dark",
+          "uv": [
+            4,
+            4,
+            12,
+            10
+          ]
+        }
+      }
+    }
+  ]
+}

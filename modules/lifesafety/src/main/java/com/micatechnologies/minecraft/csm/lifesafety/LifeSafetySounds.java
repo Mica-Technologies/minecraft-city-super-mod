@@ -99,7 +99,12 @@ public enum LifeSafetySounds implements ICsmSound {
   STATION_TONE_MEDIC("station_tone_medic"),
   STATION_TONE_BATTALION("station_tone_battalion"),
   STATION_TONE_ALL_CALL("station_tone_all_call"),
-  METAL_DETECTOR_ALARM("metal_detector_alarm");
+  METAL_DETECTOR_ALARM("metal_detector_alarm"),
+  SIREN_STEADY("siren_steady"),
+  SIREN_WAIL("siren_wail"),
+  SIREN_HILO("siren_hilo"),
+  SIREN_GROWL("siren_growl"),
+  CALL_BOX_RING("call_box_ring");
 
   /**
    * The name of the sound.

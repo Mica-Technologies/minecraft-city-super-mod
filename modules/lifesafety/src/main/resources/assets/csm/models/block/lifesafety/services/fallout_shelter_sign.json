@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "face": "csm:blocks/lifesafety/services/sign_fallout",
+    "back": "csm:blocks/lifesafety/services/sign_back",
+    "particle": "csm:blocks/lifesafety/services/sign_fallout"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        1,
+        15.5
+      ],
+      "to": [
+        14,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            2,
+            1,
+            14,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#back",
+          "uv": [
+            2,
+            1,
+            14,
+            15
+          ]
+        },
+        "east": {
+          "texture": "#back",
+          "uv": [
+            0,
+            1,
+            0.5,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#back",
+          "uv": [
+            15.5,
+            1,
+            16,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#back",
+          "uv": [
+            2,
+            15.5,
+            14,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#back",
+          "uv": [
+            2,
+            0,
+            14,
+            0.5
+          ]
+        }
+      }
+    }
+  ]
+}

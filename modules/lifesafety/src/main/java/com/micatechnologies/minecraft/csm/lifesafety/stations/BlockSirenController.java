@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.lifesafety.stations;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmLinker;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
+import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -19,47 +20,41 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
- * The station alerting controller, the cabinet by the watch desk that sounds a call through the
- * station. Right-click chooses the zone (engine, ladder, medic, battalion, all call);
- * sneak-right-click dispatches it, or resets an alert in progress; a redstone signal coming on
- * dispatches too, so a button, a daylight sensor or another mod's dispatch can start a call. Link
- * its speakers, lights, relays and bay clearance lights to it with the fire alarm linker: click the
- * controller, then each device. See {@link TileEntityStationAlertController} for the sequence.
+ * The outdoor warning siren controller. Right-click chooses: alert, attack, fire, test, cancel,
+ * or the weekly test switch; sneak-right-click carries the choice out on every linked siren. A
+ * redstone signal coming on does the same, so a weather station, a button in the dispatch centre
+ * or another mod can sound the sirens. Link sirens to it with the fire alarm linker.
  *
- * <p>Stored in metadata: the facing, {@link #ACTIVE} (the cabinet's ALERT lamp) and
- * {@link #POWERED} (so only the rising edge of a signal dispatches).</p>
+ * <p>Stored in metadata: the facing and {@link #POWERED}.</p>
  *
  * @since 2026.9
  */
-public class BlockStationAlertController extends BlockFireProtectionProp implements
+public class BlockSirenController extends BlockFireProtectionProp implements
     ICsmTileEntityProvider, ILinkedDeviceController.ControllerBlock {
 
-  public static final PropertyBool ACTIVE = PropertyBool.create("active");
   public static final PropertyBool POWERED = PropertyBool.create("powered");
 
-  public BlockStationAlertController(String registryName, int[] box) {
+  public BlockSirenController(String registryName, int[] box) {
     super(registryName, box, true);
     setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
-        .withProperty(ACTIVE, false).withProperty(POWERED, false));
+        .withProperty(POWERED, false));
   }
 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, ACTIVE, POWERED);
+    return new BlockStateContainer(this, FACING, POWERED);
   }
 
   @Override
   public int getMetaFromState(IBlockState state) {
-    return super.getMetaFromState(state) | (state.getValue(ACTIVE) ? 4 : 0)
-        | (state.getValue(POWERED) ? 8 : 0);
+    return super.getMetaFromState(state) | (state.getValue(POWERED) ? 4 : 0);
   }
 
   @Override
   @Nonnull
   public IBlockState getStateFromMeta(int meta) {
-    return super.getStateFromMeta(meta & 3).withProperty(ACTIVE, (meta & 4) != 0)
-        .withProperty(POWERED, (meta & 8) != 0);
+    return super.getStateFromMeta(meta & 3).withProperty(POWERED, (meta & 4) != 0);
   }
 
   @Override
@@ -68,7 +63,6 @@ public class BlockStationAlertController extends BlockFireProtectionProp impleme
     if (hand != EnumHand.MAIN_HAND) {
       return true;
     }
-    // The linker selects the controller itself; leave the click to it.
     if (player.getHeldItemMainhand().getItem() instanceof ItemFireAlarmLinker) {
       return false;
     }
@@ -76,34 +70,30 @@ public class BlockStationAlertController extends BlockFireProtectionProp impleme
       return true;
     }
     TileEntity te = world.getTileEntity(pos);
-    if (!(te instanceof TileEntityStationAlertController)) {
+    if (!(te instanceof TileEntitySirenController)) {
       return true;
     }
-    TileEntityStationAlertController controller = (TileEntityStationAlertController) te;
+    TileEntitySirenController controller = (TileEntitySirenController) te;
     if (player.isSneaking()) {
-      if (controller.isAlerting()) {
-        controller.reset();
-        player.sendMessage(new TextComponentTranslation("csm.lifesafety.station.reset"));
+      controller.activate();
+      if (controller.getChoice() == TileEntitySirenController.Choice.WEEKLY_TEST) {
+        player.sendMessage(new TextComponentTranslation(controller.isWeekly()
+            ? "csm.lifesafety.siren.weekly_on" : "csm.lifesafety.siren.weekly_off"));
       } else {
-        dispatch(controller, player);
+        player.sendMessage(new TextComponentTranslation("csm.lifesafety.siren.done",
+            choiceName(controller.getChoice()), controller.getSirenCount()));
       }
     } else {
-      TileEntityStationAlertController.Zone zone = controller.cycleZone();
-      player.sendMessage(new TextComponentTranslation("csm.lifesafety.station.zone",
-          new TextComponentTranslation("csm.lifesafety.station.zone." + zone.name().toLowerCase()),
-          controller.getDeviceCount()));
+      TileEntitySirenController.Choice choice = controller.cycle();
+      player.sendMessage(new TextComponentTranslation("csm.lifesafety.siren.choice",
+          choiceName(choice), controller.getSirenCount()));
     }
     return true;
   }
 
-  private static void dispatch(TileEntityStationAlertController controller,
-      @Nullable EntityPlayer player) {
-    controller.dispatch();
-    if (player != null) {
-      player.sendMessage(new TextComponentTranslation("csm.lifesafety.station.dispatch",
-          new TextComponentTranslation(
-              "csm.lifesafety.station.zone." + controller.getZone().name().toLowerCase())));
-    }
+  private static TextComponentTranslation choiceName(TileEntitySirenController.Choice choice) {
+    return new TextComponentTranslation(
+        "csm.lifesafety.siren.choice." + choice.name().toLowerCase(Locale.ROOT));
   }
 
   @Override
@@ -117,8 +107,8 @@ public class BlockStationAlertController extends BlockFireProtectionProp impleme
     if (powered != state.getValue(POWERED)) {
       world.setBlockState(pos, state.withProperty(POWERED, powered), 2);
       TileEntity te = world.getTileEntity(pos);
-      if (powered && te instanceof TileEntityStationAlertController) {
-        dispatch((TileEntityStationAlertController) te, null);
+      if (powered && te instanceof TileEntitySirenController) {
+        ((TileEntitySirenController) te).activate();
       }
     }
   }
@@ -131,17 +121,17 @@ public class BlockStationAlertController extends BlockFireProtectionProp impleme
 
   @Override
   public Class<? extends TileEntity> getTileEntityClass() {
-    return TileEntityStationAlertController.class;
+    return TileEntitySirenController.class;
   }
 
   @Override
   public String getTileEntityName() {
-    return "tileentitystationalertcontroller";
+    return "tileentitysirencontroller";
   }
 
   @Nullable
   @Override
   public TileEntity createNewTileEntity(@Nonnull World world, int meta) {
-    return new TileEntityStationAlertController();
+    return new TileEntitySirenController();
   }
 }
