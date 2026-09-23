@@ -2,7 +2,7 @@
 
 Fire, police and ambulance station fittings, community warning sirens and dispatch.
 
-!!! info "42 blocks in this tab"
+!!! info "52 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -12,9 +12,15 @@ Fire, police and ambulance station fittings, community warning sirens and dispat
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Air Compressor | `csm:air_compressor` | 2.0 | 6.0 | pickaxe | 0 |
+| Ambulance Stretcher | `csm:ems_stretcher` | 2.0 | 6.0 | pickaxe | 0 |
+| Ambulance Stretcher (Lowered) | `csm:ems_stretcher_lowered` | 2.0 | 6.0 | pickaxe | 0 |
+| Backboard Wall Rack | `csm:ems_backboard_rack` | 2.0 | 6.0 | pickaxe | 0 |
 | Bay Door Clearance Light | `csm:bay_clearance_light` | 2.0 | 6.0 | pickaxe | 0 |
 | Booking Camera | `csm:booking_camera` | 2.0 | 6.0 | pickaxe | 0 |
 | Booking Height Chart | `csm:height_chart` | 2.0 | 6.0 | pickaxe | 0 |
+| Controlled Medication Safe | `csm:medication_safe` | 2.0 | 6.0 | pickaxe | 0 |
+| Decontamination Sink | `csm:decon_sink` | 2.0 | 6.0 | pickaxe | 0 |
+| Emergency Eyewash Station | `csm:eyewash_station` | 2.0 | 6.0 | pickaxe | 0 |
 | Equipment Locker | `csm:equipment_locker` | 2.0 | 6.0 | pickaxe | 0 |
 | Evidence Locker | `csm:evidence_locker` | 2.0 | 6.0 | pickaxe | 0 |
 | Fingerprint Scanner | `csm:fingerprint_scanner` | 2.0 | 6.0 | pickaxe | 0 |
@@ -31,7 +37,9 @@ Fire, police and ambulance station fittings, community warning sirens and dispat
 | K-9 Kennel | `csm:k9_kennel` | 2.0 | 6.0 | pickaxe | 0 |
 | Lobby Courtesy Phone | `csm:lobby_phone` | 2.0 | 6.0 | pickaxe | 0 |
 | Maltese Cross Emblem | `csm:maltese_cross_emblem` | 2.0 | 6.0 | pickaxe | 0 |
+| Medical Supply Shelving | `csm:ems_supply_shelving` | 2.0 | 6.0 | pickaxe | 0 |
 | Nozzle Rack | `csm:nozzle_rack` | 2.0 | 6.0 | pickaxe | 0 |
+| Oxygen Cylinder Rack | `csm:oxygen_cylinder_rack` | 2.0 | 6.0 | pickaxe | 0 |
 | Pass-Through Deal Tray | `csm:pass_through_tray` | 2.0 | 6.0 | pickaxe | 0 |
 | Police Line Tape | `csm:police_line_tape` | 0.2 | 0.2 | shears | 0 |
 | Police Star Emblem | `csm:police_star_emblem` | 2.0 | 6.0 | pickaxe | 0 |
@@ -41,6 +49,8 @@ Fire, police and ambulance station fittings, community warning sirens and dispat
 | SCBA Cylinder Cascade | `csm:scba_cylinder_cascade` | 2.0 | 6.0 | pickaxe | 0 |
 | SCBA Fill Station | `csm:scba_fill_station` | 2.0 | 6.0 | pickaxe | 0 |
 | SCBA Wall Rack | `csm:scba_wall_rack` | 2.0 | 6.0 | pickaxe | 0 |
+| Stair Chair | `csm:ems_stair_chair` | 2.0 | 6.0 | pickaxe | 0 |
+| Star of Life Emblem | `csm:star_of_life_emblem` | 2.0 | 6.0 | pickaxe | 0 |
 | Station Alert Light (Red) | `csm:station_alert_light_red` | 2.0 | 6.0 | pickaxe | 0 |
 | Station Alert Light (White) | `csm:station_alert_light_white` | 2.0 | 6.0 | pickaxe | 0 |
 | Station Alerting Controller | `csm:station_alert_controller` | 2.0 | 6.0 | pickaxe | 0 |

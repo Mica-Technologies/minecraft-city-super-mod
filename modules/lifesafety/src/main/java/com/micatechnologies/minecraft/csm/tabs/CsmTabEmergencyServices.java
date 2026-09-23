@@ -92,5 +92,15 @@ public class CsmTabEmergencyServices extends CsmTab {
     initTabBlock(new BlockSceneTape("police_line_tape"));
     initTabBlock(new BlockSceneTape("fire_line_tape"));
     initTabBlock(new BlockTapeStanchion("tape_stanchion", new int[]{5, 0, 5, 11, 14, 11}));
+    initTabBlock(new BlockFireProtectionProp("ems_stretcher", new int[]{1, 0, 1, 15, 14, 15}, true));
+    initTabBlock(new BlockFireProtectionProp("ems_stretcher_lowered", new int[]{1, 0, 1, 15, 9, 15}, true));
+    initTabBlock(new BlockFireProtectionProp("ems_stair_chair", new int[]{4, 0, 4, 12, 16, 14}, true));
+    initTabBlock(new BlockFireProtectionProp("ems_backboard_rack", new int[]{1, 0, 10, 15, 16, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("ems_supply_shelving", new int[]{0, 0, 6, 16, 16, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("oxygen_cylinder_rack", new int[]{1, 0, 4, 15, 15, 14}, true));
+    initTabBlock(new BlockFireProtectionProp("medication_safe", new int[]{3, 2, 9, 13, 13, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("decon_sink", new int[]{1, 0, 5, 15, 16, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("eyewash_station", new int[]{2, 1, 9, 14, 15, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("star_of_life_emblem", new int[]{1, 1, 15, 15, 15, 16}, false));
   }
 }

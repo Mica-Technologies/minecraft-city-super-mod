@@ -997,5 +997,156 @@ C.add("tape_stanchion", 'new BlockTapeStanchion("tape_stanchion", %s)' % B(5, 0,
       facing_state(M("tape_stanchion")), tab=ES)
 
 
+# ==========================================================================================
+# Ambulance (EMS) station
+# ==========================================================================================
+STAR_BLUE = (0, 90, 180)
+flat("stretcher_yellow", (236, 190, 30), seed=500)
+flat("mattress", (40, 42, 46), seed=501)
+flat("backboard", (236, 110, 30), seed=502)
+flat("o2_green", (30, 140, 70), seed=503)
+flat("wire", (170, 174, 180), grain=3, seed=504)
+
+
+@C.texture("supply_boxes")
+def _supply_boxes():
+    img = fill((230, 230, 224), grain=2, seed=505)
+    for i, c in enumerate(((60, 120, 200), (230, 230, 230), (200, 60, 60), (80, 170, 90))):
+        rect(img, i * 4, 2, i * 4 + 3, 14, c)
+        rect(img, i * 4, 6, i * 4 + 3, 8, shade(c, 0.6))
+    return img
+
+
+@C.texture("safe_front")
+def _safe_front():
+    img = fill((110, 114, 120), grain=3, seed=506)
+    x0, y0, x1, y1 = north_region((4, 3), (12, 12), 16)
+    bevel(img, x0, y0, x1, y1, (110, 114, 120))
+    rect(img, x0 + 1, y0 + 1, x0 + 4, y0 + 5, (30, 30, 32))
+    for r in range(3):
+        for c in range(2):
+            img.load()[x0 + 1 + c * 2, y0 + 1 + r] = (200, 200, 196, 255)
+    rect(img, x1 - 2, y0 + 3, x1 - 1, y0 + 6, (190, 194, 200))
+    return img
+
+
+@C.texture("eyewash_sign")
+def _eyewash_sign():
+    img = fill((0, 140, 70), size=64, grain=2, seed=507)
+    draw_text_centred(img, "EYE", 32, 6, WHITE, scale=2)
+    draw_text_centred(img, "WASH", 32, 20, WHITE, scale=2)
+    draw_text_centred(img, "EMERGENCY", 32, 36, WHITE)
+    return img
+
+
+@C.texture("star_of_life")
+def _star_of_life():
+    """The Star of Life: a blue six-armed cross with the rod and serpent in white. The symbol is
+    a public emergency medical services emblem; nothing here names a service."""
+    size = 64
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    px = img.load()
+    c = size / 2.0
+    for y in range(size):
+        for x in range(size):
+            u, v = x + 0.5 - c, y + 0.5 - c
+            inside = False
+            for k in range(3):
+                a = k * math.pi / 3
+                along = u * math.sin(a) - v * math.cos(a)
+                across = u * math.cos(a) + v * math.sin(a)
+                if abs(along) < 29 and abs(across) < 7.5:
+                    inside = True
+            if inside:
+                px[x, y] = STAR_BLUE + (255,)
+    # the rod, and the serpent wound round it
+    rect(img, 31, 12, 33, 52, (250, 250, 250))
+    for i in range(36):
+        yy = 14 + i
+        xx = int(round(32 + 4.5 * math.sin(i * 0.45)))
+        rect(img, xx - 1, yy, xx + 1, yy + 1, (250, 250, 250))
+    return img
+
+
+def cot(lowered):
+    y = 3 if lowered else 8
+    els = [box([2, y, 2], [14, y + 1, 14], "frame"),
+           box([2.5, y + 1, 2.5], [13.5, y + 2.5, 13.5], "mattress"),
+           box([2.5, y + 2.5, 9.5], [13.5, y + 5, 13.5], "mattress"),
+           box([1.5, y + 1.5, 2], [2, y + 3, 14], "frame"),
+           box([14, y + 1.5, 2], [14.5, y + 3, 14], "frame")]
+    for x in (3, 12):
+        for z in (3, 12):
+            els.append(box([x, 1, z], [x + 1, y, z + 1], "frame"))
+            els += post(x + 0.5, z + 0.5, 0.9, 0, 1, "mattress")
+    return els
+
+
+STRETCHER_TEX = {"frame": T("stretcher_yellow"), "mattress": T("mattress"),
+                 "particle": T("stretcher_yellow")}
+prop("ems_stretcher", (1, 0, 1, 15, 14, 15), True,
+     ("Ambulance Stretcher", "Krankentrage (Fahrtrage)", "Camilla de ambulancia",
+      "Ambulansbår"), STRETCHER_TEX, cot(False))
+prop("ems_stretcher_lowered", (1, 0, 1, 15, 9, 15), True,
+     ("Ambulance Stretcher (Lowered)", "Krankentrage (abgesenkt)", "Camilla de ambulancia (bajada)",
+      "Ambulansbår (sänkt)"), STRETCHER_TEX, cot(True))
+prop("ems_stair_chair", (4, 0, 4, 12, 16, 14), True,
+     ("Stair Chair", "Tragestuhl", "Silla de evacuación", "Trappstol"),
+     {"frame": T("stretcher_yellow"), "seat": T("mattress"), "particle": T("stretcher_yellow")},
+     [box([4.5, 0, 12], [5.5, 16, 13], "frame"), box([10.5, 0, 12], [11.5, 16, 13], "frame"),
+      box([4.5, 6, 5], [11.5, 7, 12], "seat"), box([5, 7, 11.5], [11, 15, 12.5], "seat"),
+      box([4.5, 0, 5], [5.5, 6, 6], "frame"), box([10.5, 0, 5], [11.5, 6, 6], "frame")]
+     + pipe_x(1, 13, 1, 4, 12, "seat"))
+prop("ems_backboard_rack", (1, 0, 10, 15, 16, 16), True,
+     ("Backboard Wall Rack", "Spineboard-Halterung", "Soporte de tablas espinales",
+      "Väggställ för spineboards"),
+     {"board": T("backboard"), "steel": T("steel"), "particle": T("backboard")},
+     [box([2, 1, 14], [14, 2, 16], "steel"), box([2, 14, 14], [14, 15, 16], "steel"),
+      box([3, 0.5, 13], [7, 16, 14], "board"), box([9, 0.5, 12], [13, 16, 13], "board")])
+prop("ems_supply_shelving", (0, 0, 6, 16, 16, 16), True,
+     ("Medical Supply Shelving", "Sanitätsmaterial-Regal", "Estantería de material sanitario",
+      "Hylla för sjukvårdsmaterial"),
+     {"wire": T("wire"), "boxes": T("supply_boxes"), "particle": T("wire")},
+     [box([0, y, 6], [16, y + 0.5, 16], "wire") for y in (0.5, 5.5, 10.5, 15.5)]
+     + [box([x, 0, z], [x + 0.6, 16, z + 0.6], "wire") for x in (0.2, 15.2) for z in (6.2, 15.2)]
+     + [box([1, y + 0.5, 7], [15, y + 4.5, 15], "boxes") for y in (0.5, 5.5, 10.5)])
+prop("oxygen_cylinder_rack", (1, 0, 4, 15, 15, 14), True,
+     ("Oxygen Cylinder Rack", "Sauerstoffflaschen-Gestell", "Soporte de botellas de oxígeno",
+      "Ställ för syrgasflaskor"),
+     {"o2": T("o2_green"), "steel": T("steel"), "white": T("silver"), "particle": T("o2_green")},
+     [box([1, 0, 4], [15, 1, 14], "steel"), box([1, 8, 12], [15, 9, 14], "steel")]
+     + post(4, 9, 2.2, 1, 13, "o2") + post(4, 9, 0.6, 13, 15, "white", bottom=False)
+     + post(9, 9, 1.5, 1, 9, "o2") + post(9, 9, 0.5, 9, 10.5, "white", bottom=False)
+     + post(12.5, 9, 1.5, 1, 9, "o2") + post(12.5, 9, 0.5, 9, 10.5, "white", bottom=False))
+prop("medication_safe", (3, 2, 9, 13, 13, 16), True,
+     ("Controlled Medication Safe", "Betäubungsmittel-Tresor", "Caja fuerte de medicamentos",
+      "Läkemedelskassaskåp"),
+     {"steel": T("dark_steel"), "front": T("safe_front"), "particle": T("dark_steel")},
+     [box([4, 3, 10], [12, 12, 16], "steel", per={"north": "front"})])
+prop("decon_sink", (1, 0, 5, 15, 16, 16), True,
+     ("Decontamination Sink", "Dekontaminationsbecken", "Fregadero de descontaminación",
+      "Saneringsdiskho"),
+     {"s": T("stainless"), "black": T("black"), "particle": T("stainless")},
+     [box([1, 0, 6], [15, 10, 16], "s"), box([2, 9.9, 7], [14, 10, 15], "black", faces=("up",)),
+      box([1, 10, 15], [15, 13, 16], "s"), box([7.5, 10, 13.5], [8.5, 16, 14.5], "s"),
+      box([7.5, 15, 10], [8.5, 16, 14], "s")])
+prop("eyewash_station", (2, 1, 9, 14, 15, 16), True,
+     ("Emergency Eyewash Station", "Augendusche", "Estación lavaojos", "Ögondusch"),
+     {"sign": T("eyewash_sign"), "s": T("stainless"), "yellow": T("yellow"),
+      "green": T("o2_green"), "particle": T("eyewash_sign")},
+     [box([3, 9, 15.5], [13, 15, 16], "green", per={"north": "sign"}),
+      box([7.5, 1, 14], [8.5, 7, 15], "s")]
+     + post(8, 11, 3, 6, 7.5, "s")
+     + [box([3, 5, 10], [4, 6, 12], "yellow"), box([3, 1, 9.5], [4, 6, 10.5], "yellow")])
+C.blocks[-1]["models"]["eyewash_station"]["elements"][0]["faces"]["north"]["uv"] = [0, 0, 16, 16]
+prop("star_of_life_emblem", (1, 1, 15, 15, 15, 16), False,
+     ("Star of Life Emblem", "Star-of-Life-Emblem", "Emblema de la Estrella de la Vida",
+      "Star of Life-emblem"),
+     {"star": T("star_of_life"), "particle": T("star_of_life")},
+     [box([1, 1, 15.5], [15, 15, 16], "star", faces=("north", "south"))])
+C.blocks[-1]["models"]["star_of_life_emblem"]["elements"][0]["faces"]["north"]["uv"] = [0, 0, 16, 16]
+C.blocks[-1]["models"]["star_of_life_emblem"]["elements"][0]["faces"]["south"]["uv"] = [16, 0, 0, 16]
+
+
 if __name__ == "__main__":
     sys.exit(C.main())
