@@ -83,6 +83,13 @@ How each system works, and how to build with it.
     Panels, initiating devices, notification appliances, and sound that follows you through a
     building.
 
+-   :material-fire-truck:{ .lg .middle } **[Emergency Services & Fire Protection](emergency-services.md)**
+
+    ---
+
+    Extinguishers and standpipes, fire, police and ambulance stations, station alerting, a fire
+    pole that works, and warning sirens heard across town.
+
 -   :material-lightbulb-on:{ .lg .middle } **[Lighting](lighting.md)**
 
     ---
