@@ -133,6 +133,10 @@ COLORS = [
     ("tan", "csm:blocks/trafficaccessories/shared_textures/metal_mattetan", "Tan"),
     ("white", "csm:blocks/trafficsignals/shared_textures/metal_mattewhite", "White"),
     ("unpainted", "csm:blocks/trafficsignals/shared_textures/metal_white", "Unpainted"),
+    # Appended last so every existing curve's blockstate and tab line stay where they are. A
+    # concrete arm is not a thing a real street has (the arm on a concrete pole is steel); it is
+    # here for parity with the rest of the pole family, which offers every piece in concrete.
+    ("concrete", "csm:blocks/trafficsignals/shared_textures/concrete_light_pole", "Concrete"),
 ]
 
 SIDES = 16           # cross-section is a hexadecagon, matching the pole family's silhouette

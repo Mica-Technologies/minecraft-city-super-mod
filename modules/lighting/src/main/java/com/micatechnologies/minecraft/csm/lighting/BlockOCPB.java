@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -12,7 +13,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockOCPB extends AbstractBlockRotatableNSEWUD {
+/**
+ * A legacy piece of the octagon concrete pole, from before the concrete poles joined the traffic pole
+ * family. It retires into {@code trafficpoleverticalconcreteoctagon}, the one block that now draws the
+ * base, shaft and top for itself (see {@code BlockTrafficPoleConcrete}); the facing carries over.
+ * Registered in the hidden tab so worlds that have it keep it until it converts.
+ */
+public class BlockOCPB extends AbstractBlockRotatableNSEWUD implements ICsmRetiringBlock {
 
   public BlockOCPB() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0);
@@ -106,5 +113,17 @@ public class BlockOCPB extends AbstractBlockRotatableNSEWUD {
   @Override
   public BlockRenderLayer getBlockRenderLayer() {
     return BlockRenderLayer.SOLID;
+  }
+
+  /**
+   * Retrieves the replacement block ID.
+   *
+   * @return The replacement block ID.
+   *
+   * @since 2026.9
+   */
+  @Override
+  public String getReplacementBlockId() {
+    return "trafficpoleverticalconcreteoctagon";
   }
 }

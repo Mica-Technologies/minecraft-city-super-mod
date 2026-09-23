@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmPostTopFixture;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -9,9 +10,13 @@ import net.minecraft.world.IBlockAccess;
  * Factory for creating {@link AbstractBrightLightPoleColored} blocks that only differ in registry
  * name, bounding box, and X offset. Eliminates the need for a separate class file per post light.
  *
+ * <p>Every post light sits on a pole top, so every one is an {@link ICsmPostTopFixture}: a
+ * concrete pole under it shows its collar and tenon.
+ *
  * @since 2026.4
  */
-public class BlockBrightLightPoleColoredFactory extends AbstractBrightLightPoleColored {
+public class BlockBrightLightPoleColoredFactory extends AbstractBrightLightPoleColored
+    implements ICsmPostTopFixture {
 
   /**
    * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock

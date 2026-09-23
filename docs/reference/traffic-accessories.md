@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "355 blocks in this tab"
+!!! info "379 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Angled Thin Traffic Pole (Concrete) | `csm:trafficpolehorizontalangleconcrete` | 2 | 10 | pickaxe | 1 |
 | Arrow Board | `csm:arrow_board` | 0.6 | 3 | pickaxe | 0 |
 | Black Angled Thin Traffic Pole | `csm:trafficpolehorizontalangleblack` | 2 | 10 | pickaxe | 1 |
 | Black Double Horizontal Traffic Pole | `csm:trafficpolehorzdblblack` |  | 10 | pickaxe | 1 |
@@ -45,6 +46,13 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Channelizer-Cade (Keep Right) | `csm:channelizer_cade_right` | 0.6 | 3 | pickaxe | 0 |
 | Concrete Double Horizontal Traffic Pole | `csm:trafficpolehorzdblconcrete` |  | 10 | pickaxe | 1 |
 | Concrete Double Vertical Traffic Pole | `csm:trafficpolevertdblconcrete` |  | 10 | pickaxe | 1 |
+| Concrete Mast Arm Curve 10x2 (Wide Arterial) | `csm:trafficpolemastarmcurve10x2concrete` | 2 | 10 | pickaxe | 1 |
+| Concrete Mast Arm Curve 4x1 (Local Street) | `csm:trafficpolemastarmcurve4x1concrete` | 2 | 10 | pickaxe | 1 |
+| Concrete Mast Arm Curve 5x1 (Collector) | `csm:trafficpolemastarmcurve5x1concrete` | 2 | 10 | pickaxe | 1 |
+| Concrete Mast Arm Curve 6x2 (Arterial) | `csm:trafficpolemastarmcurve6x2concrete` | 2 | 10 | pickaxe | 1 |
+| Concrete Mast Arm Curve 8x2 (Major Intersection) | `csm:trafficpolemastarmcurve8x2concrete` | 2 | 10 | pickaxe | 1 |
+| Concrete Thick Traffic Pole | `csm:trafficpoleverticalconcrete` | 2 | 10 | pickaxe | 1 |
+| Concrete Thin Traffic Pole | `csm:trafficpolehorizontalconcrete` | 2 | 10 | pickaxe | 1 |
 | Crash Cushion (Bay) | `csm:crash_cushion_bay` | 1.2 | 6 | pickaxe | 0 |
 | Crash Cushion (Nose) | `csm:crash_cushion_nose` | 1.2 | 6 | pickaxe | 0 |
 | Delineator Post | `csm:delineator_post` | 0.6 | 3 | pickaxe | 0 |
@@ -63,6 +71,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Doghouse Signal Border (Yellow/Black) | `csm:tldoghouseborderyellowblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Yellow/Yellow) | `csm:tldoghouseborderyellowyellow` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Cover | `csm:tldcover` |  | 10 | pickaxe | 1 |
+| Double Vertical Traffic Pole (Octagon Concrete) | `csm:trafficpolevertdblconcreteoctagon` |  | 10 | pickaxe | 1 |
 | Dynamic Highway Guide Sign | `csm:dynamic_guide_sign` | 2 | 10 | pickaxe | 1 |
 | Dynamic Signal Cover | `csm:tlvcover` | 2.0 | 10.0 | pickaxe | 1 |
 | Dynamic Signal Mount Kit | `csm:trafficlightmountkit` | 2.0 | 10.0 | pickaxe | 1 |
@@ -84,6 +93,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Hawk Signal Border (Yellow/Black) | `csm:tlhawkborderyellowblack` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Yellow/Yellow) | `csm:tlhawkborderyellowyellow` | 2 | 10 | pickaxe | 1 |
 | Horizontal Signal Mount Kit | `csm:tlhmountkit` |  | 10 | pickaxe | 1 |
+| Horizontal Traffic Pole Sign Mount (Concrete) | `csm:trafficpolehorizsignmountconcrete` |  | 10 | pickaxe | 1 |
 | Horizontal Traffic Pole with Double Mount (Unpainted) | `csm:trafficpolehorzdoublemountunpainted` | 2 | 10 | pickaxe | 1 |
 | Horizontal Traffic Pole with Single Mount (Unpainted) | `csm:trafficpolehorzsinglemountunpainted` | 2 | 10 | pickaxe | 1 |
 | Lane Control Controller | `csm:lane_control_controller` | 2 | 10 | pickaxe | 1 |
@@ -98,6 +108,8 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | NOV Decorative Metal Pole Top (Tan) | `csm:dmpttan` |  | 10 | pickaxe | 1 |
 | NOV Decorative Metal Pole Top (Unpainted) | `csm:dmptunpainted` |  | 10 | pickaxe | 1 |
 | NOV Decorative Metal Pole Top (White) | `csm:dmptwhite` |  | 10 | pickaxe | 1 |
+| Octagon Concrete Thick Traffic Pole | `csm:trafficpoleverticalconcreteoctagon` | 2 | 10 | pickaxe | 1 |
+| Octagon Concrete Thin Traffic Pole | `csm:trafficpolehorizontalconcreteoctagon` | 2 | 10 | pickaxe | 1 |
 | Overhead Message Sign | `csm:overhead_message_sign` | 2 | 10 | pickaxe | 1 |
 | Overhead Variable Speed Limit Sign | `csm:overhead_speed_limit_sign` | 2 | 10 | pickaxe | 1 |
 | Plumbizer Signal Mount | `csm:plumbizer_signal_mount` |  | 10 | pickaxe | 1 |
@@ -216,6 +228,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Traffic Pole Base (Unpainted) | `csm:trafficpolebaseunpainted` |  | 10 | pickaxe | 1 |
 | Traffic Pole Base (White) | `csm:trafficpolebasewhite` |  | 10 | pickaxe | 1 |
 | Traffic Pole Curved Double Guy Connector (Black) | `csm:trafficpoleverticalcurveconnectordoubleguyblack` |  | 10 | pickaxe | 1 |
+| Traffic Pole Curved Double Guy Connector (Concrete) | `csm:trafficpoleverticalcurveconnectordoubleguyconcrete` |  | 10 | pickaxe | 1 |
 | Traffic Pole Curved Double Guy Connector (Silver) | `csm:trafficpoleverticalcurveconnectordoubleguysilver` |  | 10 | pickaxe | 1 |
 | Traffic Pole Curved Double Guy Connector (Tan) | `csm:trafficpoleverticalcurveconnectordoubleguytan` |  | 10 | pickaxe | 1 |
 | Traffic Pole Curved Double Guy Connector (Unpainted) | `csm:trafficpoleverticalcurveconnectordoubleguyunpainted` |  | 10 | pickaxe | 1 |
@@ -310,27 +323,38 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Vertical Tall Signal (90 Deg Right) Mount Kit | `csm:tlvtall90rmountkit` |  | 10 | pickaxe | 1 |
 | Vertical Tall Signal Mount Kit | `csm:tlvtallmountkit` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Angled Connector (Black) | `csm:trafficpoleverticalconnectorangledblack` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Angled Connector (Concrete) | `csm:trafficpoleverticalconnectorangledconcrete` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Angled Connector (Octagon Concrete) | `csm:trafficpoleverticalconnectorangledconcreteoctagon` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Angled Connector (Silver) | `csm:trafficpoleverticalconnectorangledsilver` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Angled Connector (Tan) | `csm:trafficpoleverticalconnectorangledtan` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Angled Connector (Unpainted) | `csm:trafficpoleverticalconnectorangledunpainted` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Angled Connector (White) | `csm:trafficpoleverticalconnectorangledwhite` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Connector | `csm:trafficpoleverticalconnector` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Connector (Concrete) | `csm:trafficpoleverticalconnectorconcrete` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Connector (Octagon Concrete) | `csm:trafficpoleverticalconnectorconcreteoctagon` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Connector (Unpainted) | `csm:trafficpoleverticalconnectorunpainted` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Curve Connector | `csm:trafficpoleverticalcurveconnector` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Curve Connector (Concrete) | `csm:trafficpoleverticalcurveconnectorconcrete` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Curve Connector (Unpainted) | `csm:trafficpoleverticalcurveconnectorunpainted` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Double Connector (Concrete) | `csm:trafficpoleverticalconnectordoubleconcrete` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Double Connector (Octagon Concrete) | `csm:trafficpoleverticalconnectordoubleconcreteoctagon` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Double Guy Mount (Black) | `csm:trafficpoleverticaldoubleguymountblack` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Double Guy Mount (Concrete) | `csm:trafficpoleverticaldoubleguymountconcrete` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Double Guy Mount (Octagon Concrete) | `csm:trafficpoleverticaldoubleguymountconcreteoctagon` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Double Guy Mount (Silver) | `csm:trafficpoleverticaldoubleguymountsilver` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Double Guy Mount (Tan) | `csm:trafficpoleverticaldoubleguymounttan` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Double Guy Mount (Unpainted) | `csm:trafficpoleverticaldoubleguymountunpainted` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Double Guy Mount (White) | `csm:trafficpoleverticaldoubleguymountwhite` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Light Mount | `csm:trafficpoleverticallightmount` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Light Mount (Concrete) | `csm:trafficpoleverticallightmountconcrete` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Light Mount (Unpainted) | `csm:trafficpoleverticallightmountunpainted` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Quad Mount | `csm:trafficpoleverticalquadmount` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Quad Mount (Concrete) | `csm:trafficpoleverticalquadmountconcrete` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Quad Mount (Octagon Concrete) | `csm:trafficpoleverticalquadmountconcreteoctagon` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Quad Mount (Unpainted) | `csm:trafficpoleverticalquadmountunpainted` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Signal Mount | `csm:trafficpoleverticalsignalmount` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Signal Mount (Concrete) | `csm:trafficpoleverticalsignalmountconcrete` |  | 10 | pickaxe | 1 |
+| Vertical Traffic Pole with Signal Mount (Octagon Concrete) | `csm:trafficpoleverticalsignalmountconcreteoctagon` |  | 10 | pickaxe | 1 |
 | Vertical Traffic Pole with Signal Mount (Unpainted) | `csm:trafficpoleverticalsignalmountunpainted` |  | 10 | pickaxe | 1 |
 | W-Beam Guardrail | `csm:w_beam_guardrail` | 1.2 | 6 | pickaxe | 0 |
 | W-Beam Guardrail (Double Sided) | `csm:w_beam_guardrail_double` | 1.2 | 6 | pickaxe | 0 |

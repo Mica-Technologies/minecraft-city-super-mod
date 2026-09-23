@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/trafficpoleverticaldoubleguymount_concrete",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+      "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+      "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

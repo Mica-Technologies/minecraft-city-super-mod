@@ -360,6 +360,11 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/MAST_ARM_CURVE_SYSTEM.md` -- Realistically scaled signal mast arm upsweeps: why they are multi-block, the parabolic sweep, oblique end clipping
 - `assets/docs/WORK_ZONE_ACCESSORIES.md` -- Cones, drums, channelizers, barricades and the arrow board: how a device settles onto the road below it with no dependency on whatever built that road, barricade runs and their mounted signs, the animated arrow board
 - `assets/docs/GUARDRAIL_SYSTEM.md` -- Four rail families, their end treatments, the W-to-thrie transition and the crash cushion: why a run joins on the RAIL rather than on block identity, why the slope is read off where the rails actually are rather than off block positions, and why the end treatments are chiral
+- `assets/docs/CONCRETE_POLE_SYSTEM.md` -- The concrete poles (round and octagon, thick and thin)
+  in the traffic pole family: one stackable block that shows plinth, cap, tenon (under an
+  `ICsmPostTopFixture`) or seamless joint per end, why each end model carries half the shaft,
+  the concrete and octagon accessories and why their bodies are redrawn, what was left out
+  (retiring families, the pole base), and the legacy `rcp*`/`ocp*` pieces retiring into it
 - `assets/docs/PEDESTAL_POLE_SYSTEM.md` -- The pedestrian pedestal pole: one stackable block that decides base, cap or seamless joint per end from its neighbours, why the end properties are named in model space, and the six-style finial block a pole wears on top, cycled with the Street Light Configuration Tool
 - `assets/docs/RAILROAD_CROSSING_SYSTEM.md` -- The grade crossing: crossbuck and signs, the
   redstone-driven flasher mast (wig-wag in the texture, bell from the tile entity) and the gate
@@ -561,8 +566,14 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   winding (a surface that culls from the side you are looking at), and open boundary edges
 - `gen_mast_arm_curves.py` -- the realistically scaled mast arm upsweeps: sweeps a tapered
   parabolic tube, splits it across the block cells it passes through, and emits one OBJ per
-  cell plus all 25 blockstates AND the Java enum holding the cell layout, so the placement code
-  cannot disagree with the geometry it was split on
+  cell plus all 30 blockstates AND the Java enum holding the cell layout, so the placement code
+  cannot disagree with the geometry it was split on. It has no `--check`: running it rewrites
+  the tree, so `git status` afterwards is the check
+- `gen_concrete_poles.py` -- the concrete traffic poles (round and octagon, thick and thin):
+  each end's model carrying its own half of the shaft (plinth, cap, tenon, plain), the four
+  blockstates, the concrete accessories (silver blockstates retextured, their 16-gon body
+  redrawn with UVs that suit concrete, and again as an octagon for the straight vertical
+  sections) and the `concrete_light_pole` texture itself; `--check` fails on drift
 - `gen_pedestal_pole.py` -- the pedestal (pedestrian) traffic pole: lathes the tube, domed cap,
   tapered base with its access door and the clamp bracket as OBJ, and emits the five
   blockstates plus lang/tab fragments; `--check` fails if the tree has drifted from the script

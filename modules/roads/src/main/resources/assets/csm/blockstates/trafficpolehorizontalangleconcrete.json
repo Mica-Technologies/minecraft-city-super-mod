@@ -1,0 +1,211 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/black_angled_thin_traffic_pole",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+      "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+      "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ],
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    },
+    "mounteast": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mounte": {
+            "uvlock": true,
+            "model": "csm:trafficaccessories/shared_models/small_mount",
+            "textures": {
+              "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 90
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountwest": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountw": {
+            "uvlock": true,
+            "model": "csm:trafficaccessories/shared_models/small_mount",
+            "textures": {
+              "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 270
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountup": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountu": {
+            "uvlock": true,
+            "model": "csm:trafficaccessories/shared_models/small_mount",
+            "textures": {
+              "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 270
+                },
+                {
+                  "y": 0
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountdown": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountd": {
+            "uvlock": true,
+            "model": "csm:trafficaccessories/shared_models/small_mount",
+            "textures": {
+              "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 90
+                },
+                {
+                  "y": 0
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountnorth": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountn": {
+            "uvlock": true,
+            "model": "csm:trafficaccessories/shared_models/small_mount",
+            "textures": {
+              "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 180
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountsouth": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mounts": {
+            "uvlock": true,
+            "model": "csm:trafficaccessories/shared_models/small_mount",
+            "textures": {
+              "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 0
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "normal": [
+      {}
+    ]
+  }
+}

@@ -16,7 +16,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [HVAC](hvac.md) | 45 | Heating and cooling that actually simulates room temperature. |
 | [Interior Finishes](interior-finishes.md) | 60 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
 | [Life Safety](life-safety.md) | 162 | Fire alarm horns, strobes, pull stations, panels and exit signage. |
-| [Lighting](lighting.md) | 139 | Street lights, floodlights, pendants and sconces, all switchable. |
+| [Lighting](lighting.md) | 132 | Street lights, floodlights, pendants and sconces, all switchable. |
 | [Materials](materials.md) | 1 | The CSM Fabricator, which turns vanilla ingots into CSM blocks. |
 | [Novelties](novelties.md) | 35 | Decorative oddities that did not belong anywhere else. |
 | [Power Grid](power-grid.md) | 46 | Utility poles, transformers and the Forge Energy that runs through them. |
@@ -24,10 +24,10 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Signage & Advertising](signage.md) | 5 | Street ad kiosks, wall poster boards and billboards built to size. |
 | [Structure & Framing](structure-framing.md) | 32 | Steel and wood stud walls, the structure that spans between them, and structural steel. |
 | [Technology](technology.md) | 37 | Servers, routers, screens and consumer electronics. |
-| [Traffic Accessories](traffic-accessories.md) | 355 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
+| [Traffic Accessories](traffic-accessories.md) | 379 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
-| [Unlisted](unlisted.md) | 120 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **2127** | |
+| [Unlisted](unlisted.md) | 127 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
+| **Total** | **2151** | |
 
 ## How to read the table
 
