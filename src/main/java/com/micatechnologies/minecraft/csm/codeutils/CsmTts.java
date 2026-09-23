@@ -2,6 +2,9 @@ package com.micatechnologies.minecraft.csm.codeutils;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -45,6 +48,28 @@ public class CsmTts {
    */
   public static void setEngine(ICsmTtsEngine ttsEngine) {
     engine = ttsEngine;
+  }
+
+  /**
+   * How loud speech should be, from the player's sound settings: the Master slider times the
+   * Voice/Speech slider, 0 to 1.
+   *
+   * <p>Speech is not played through Minecraft's sound system -- the synthesizer writes its own
+   * audio line -- so no slider applied to it until an engine asked for this. Voice/Speech is the
+   * category vanilla added for narration, and the one a player expects to turn this down.
+   * Cheap enough to read per audio buffer, so a slider moved mid-sentence takes effect at once.</p>
+   *
+   * @return the playback gain, 0 to 1
+   *
+   * @since 2026.9
+   */
+  public static float getVolume() {
+    GameSettings settings = Minecraft.getMinecraft().gameSettings;
+    if (settings == null) {
+      return 1.0F;
+    }
+    return settings.getSoundLevel(SoundCategory.MASTER)
+        * settings.getSoundLevel(SoundCategory.VOICE);
   }
 
   /**
@@ -124,6 +149,12 @@ public class CsmTts {
    * @param voice   the id of the voice to speak it in
    */
   public static void say(String message, String voice) {
+    // Silenced by the player's sound settings: say nothing. This is the only volume the system
+    // narrator can honour -- Mojang's text2speech has no volume of its own -- so without it a
+    // muted game would still talk. The engine applies the level itself, sample by sample.
+    if (getVolume() <= 0.0F) {
+      return;
+    }
     ICsmTtsEngine ttsEngine = engine;
     if (ttsEngine == null) {
       CsmNarrator.say(message);
