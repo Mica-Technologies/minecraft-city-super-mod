@@ -899,14 +899,19 @@ prop("holding_cell_bench", (0, 5, 8, 16, 8, 16), True,
      {"s": T("stainless"), "particle": T("stainless")},
      [box([0, 6.5, 8], [16, 7.5, 16], "s"), box([1, 4, 14], [2, 6.5, 16], "s"),
       box([14, 4, 14], [15, 6.5, 16], "s")])
-prop("holding_cell_toilet", (3, 0, 8, 13, 15, 16), True,
+# The combination unit is one steel cabinet as deep as the bowl is long, with the bowl out
+# front and the basin let into the cabinet's top, whose floor is the
+# cabinet's own top face drawn dark.
+prop("holding_cell_toilet", (3, 0, 2, 13, 15, 16), True,
      ("Holding Cell Toilet and Sink", "Zellen-WC mit Waschbecken", "Inodoro y lavabo de celda",
       "Celltoalett med tvättställ"),
      {"s": T("stainless"), "black": T("black"), "particle": T("stainless")},
-     [box([4, 0, 11], [12, 5, 16], "s"), box([3.5, 5, 8.5], [12.5, 6, 16], "s"),
-      box([4.5, 6, 9.5], [11.5, 6.01, 14], "black", faces=("up",)),
-      box([3, 6, 13], [13, 15, 16], "s"), box([4.5, 11, 11], [11.5, 12, 13], "s"),
-      box([7.5, 12, 12], [8.5, 13, 13], "s")])
+     [box([4, 0, 4], [12, 5, 9], "s"), box([3.5, 5, 2.5], [12.5, 6, 9], "s"),
+      box([4.5, 6, 3.5], [11.5, 6.01, 8], "black", faces=("up",)),
+      box([3, 0, 9], [13, 13, 16], "s", per={"up": "black"}),
+      box([3, 13, 9], [13, 15, 10], "s"), box([3, 13, 15], [13, 15, 16], "s"),
+      box([3, 13, 10], [4, 15, 15], "s"), box([12, 13, 10], [13, 15, 15], "s"),
+      box([7.5, 15, 13], [8.5, 16, 15], "s"), box([7.5, 15, 11.5], [8.5, 16, 13], "s")])
 prop("height_chart", (0, 0, 15, 16, 16, 16), False,
      ("Booking Height Chart", "Messlatte für Erkennungsdienst", "Tabla de estatura para fichaje",
       "Längdskala för registrering"),
@@ -1072,28 +1077,58 @@ def _star_of_life():
     return img
 
 
+def zbox(frm, to, tex, faces=("north", "south", "east", "west", "up", "down"), per=None):
+    """A box that may reach north past the cell (z below 0): split at the cell edge, the part
+    past it textured a whole block along, since box() clamps UVs to the cell and would stretch
+    it."""
+    if frm[2] >= 0:
+        return [box(frm, to, tex, faces, per)]
+    out = []
+    if to[2] > 0:
+        out.append(box([frm[0], frm[1], 0], to, tex,
+                       tuple(f for f in faces if f != "north"), per))
+    z1 = min(to[2], 0)
+    b = box([frm[0], frm[1], frm[2] + 16], [to[0], to[1], z1 + 16], tex,
+            tuple(f for f in faces if f != "south" or z1 == to[2]), per)
+    b["from"][2] -= 16
+    b["to"][2] -= 16
+    out.append(b)
+    return out
+
+
+# A stretcher is two metres long, so two blocks: it lies north-south with its foot in the block
+# in front, which should be left clear, and its raised head over the placed block.
 def cot(lowered):
     y = 3 if lowered else 8
-    els = [box([2, y, 2], [14, y + 1, 14], "frame"),
-           box([2.5, y + 1, 2.5], [13.5, y + 2.5, 13.5], "mattress"),
-           box([2.5, y + 2.5, 9.5], [13.5, y + 5, 13.5], "mattress"),
-           box([1.5, y + 1.5, 2], [2, y + 3, 14], "frame"),
-           box([14, y + 1.5, 2], [14.5, y + 3, 14], "frame")]
+    els = (zbox([2, y, -15], [14, y + 1, 15], "frame")
+           + zbox([2.5, y + 1, -14.5], [13.5, y + 2.5, 14.5], "mattress")
+           + zbox([2.5, y + 2.5, 8.5], [13.5, y + 5, 14.5], "mattress")
+           + zbox([1.5, y + 1.5, -13], [2, y + 3, 13], "frame")
+           + zbox([14, y + 1.5, -13], [14.5, y + 3, 13], "frame"))
     for x in (3, 12):
-        for z in (3, 12):
-            els.append(box([x, 1, z], [x + 1, y, z + 1], "frame"))
+        for z in (-14, 13):
+            els += zbox([x, 1, z], [x + 1, y, z + 1], "frame")
             els += post(x + 0.5, z + 0.5, 0.9, 0, 1, "mattress")
     return els
 
 
+def cot_state(model_path):
+    """The stretcher's blockstate, its icon shrunk and brought back over the slot's centre."""
+    st = facing_state(model_path)
+    st["variants"]["inventory"] = [{"transform": {"gui": {
+        "rotation": [{"x": 30}, {"y": 225}], "translation": [0, 0, 0], "scale": 0.4}}}]
+    return st
+
+
 STRETCHER_TEX = {"frame": T("stretcher_yellow"), "mattress": T("mattress"),
                  "particle": T("stretcher_yellow")}
-prop("ems_stretcher", (1, 0, 1, 15, 14, 15), True,
+prop("ems_stretcher", (1, 0, -15, 15, 14, 15), True,
      ("Ambulance Stretcher", "Krankentrage (Fahrtrage)", "Camilla de ambulancia",
-      "Ambulansbår"), STRETCHER_TEX, cot(False))
-prop("ems_stretcher_lowered", (1, 0, 1, 15, 9, 15), True,
+      "Ambulansbår"), STRETCHER_TEX, cot(False), state=cot_state(M("ems_stretcher")))
+prop("ems_stretcher_lowered", (1, 0, -15, 15, 9, 15), True,
      ("Ambulance Stretcher (Lowered)", "Krankentrage (abgesenkt)", "Camilla de ambulancia (bajada)",
-      "Ambulansbår (sänkt)"), STRETCHER_TEX, cot(True))
+      "Ambulansbår (sänkt)"), STRETCHER_TEX, cot(True),
+     state=cot_state(M("ems_stretcher_lowered")))
 prop("ems_stair_chair", (4, 0, 4, 12, 16, 14), True,
      ("Stair Chair", "Tragestuhl", "Silla de evacuación", "Trappstol"),
      {"frame": T("stretcher_yellow"), "seat": T("mattress"), "particle": T("stretcher_yellow")},
@@ -1131,9 +1166,13 @@ prop("decon_sink", (1, 0, 5, 15, 16, 16), True,
      ("Decontamination Sink", "Dekontaminationsbecken", "Fregadero de descontaminación",
       "Saneringsdiskho"),
      {"s": T("stainless"), "black": T("black"), "particle": T("stainless")},
-     [box([1, 0, 6], [15, 10, 16], "s"), box([2, 9.9, 7], [14, 10, 15], "black", faces=("up",)),
+     # The basin is let into the top: its floor is the cabinet's own top face, drawn dark, and
+     # its rim stands round it. (A dark face laid on the steel top z-fought with it.)
+     [box([1, 0, 6], [15, 8, 16], "s", per={"up": "black"}),
+      box([1, 8, 6], [15, 10, 7], "s"), box([1, 8, 15], [15, 10, 16], "s"),
+      box([1, 8, 7], [2, 10, 15], "s"), box([14, 8, 7], [15, 10, 15], "s"),
       box([1, 10, 15], [15, 13, 16], "s"), box([7.5, 10, 13.5], [8.5, 16, 14.5], "s"),
-      box([7.5, 15, 10], [8.5, 16, 14], "s")])
+      box([7.5, 15, 10], [8.5, 16, 13.5], "s")])
 prop("eyewash_station", (2, 1, 9, 14, 15, 16), True,
      ("Emergency Eyewash Station", "Augendusche", "Estación lavaojos", "Ögondusch"),
      {"sign": T("eyewash_sign"), "s": T("stainless"), "yellow": T("yellow"),

@@ -17,7 +17,26 @@
       }
     },
     "inventory": [
-      {}
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              {
+                "x": 30
+              },
+              {
+                "y": 225
+              }
+            ],
+            "translation": [
+              0,
+              0,
+              0
+            ],
+            "scale": 0.4
+          }
+        }
+      }
     ]
   }
 }

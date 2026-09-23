@@ -123,6 +123,16 @@ public class BlockStationAlertController extends BlockFireProtectionProp impleme
     }
   }
 
+  /** A controller broken mid-call turns its devices off first, or they would stay on for good. */
+  @Override
+  public void breakBlock(World world, BlockPos pos, IBlockState state) {
+    TileEntity te = world.getTileEntity(pos);
+    if (te instanceof TileEntityStationAlertController) {
+      ((TileEntityStationAlertController) te).reset();
+    }
+    super.breakBlock(world, pos, state);
+  }
+
   @Override
   public boolean getBlockConnectsRedstone(IBlockState state, IBlockAccess access, BlockPos pos,
       @Nullable EnumFacing facing) {

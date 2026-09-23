@@ -87,7 +87,7 @@ shows only a number.
 | Station number plaque | Any number 0-99: click the units, sneak-click the tens | `BlockStationNumberPlaque` |
 | Station alerting | Controller, speakers, alert lights, relays, bay clearance lights | `STATION_ALERTING_SYSTEM.md` |
 | Metal detector | Beeps, goes red and pulses redstone when a player carrying metal walks through | `BlockMetalDetector` |
-| Holding cell door | Slides open or shut, the whole stack at once; redstone holds it open | `BlockCellDoor` |
+| Holding cell door | Slides open or shut, the whole stack at once; redstone holds it open; iron bars and panes join its edges | `BlockCellDoor` |
 | Police and fire line tape | Laid like a fence; joins tape, its stanchion or any solid side | `BlockSceneTape` |
 | Warning sirens and controller | See below | `BlockWarningSiren`, `BlockSirenController` |
 | Blue-light call box | Rings through when pressed | `BlockCallBox` |
@@ -144,6 +144,16 @@ never runs twice. The signal ordinals are saved (`SirenSignal`): append, never r
   controller.
 - **A flat test world spawns slimes.** Their hits read like fall damage in a fire pole test. Set a
   test world to peaceful first.
+- **A tile entity's own keys are `x`, `y`, `z` and `id`.** The alerting controller first saved its
+  zone as `z`, which the position overwrote on every save, so after a reload every controller
+  dispatched the zone its z coordinate picked. It is `zn` now.
+- **A dark face laid on a steel top z-fights with it.** A basin (the decon sink, the cell toilet's
+  sink) is the cabinet's own top face drawn dark, with a rim standing round it, never a second
+  face on the same plane.
+- **A two-block prop reaches past its cell.** The stretchers lie two blocks long, their foot in the
+  block in front, which must be left clear. `box()` clamps UVs to the cell, so `zbox()` splits a
+  part at the cell edge and textures the half past it a whole block along instead of stretching
+  it; the blockstate's inventory transform shrinks the icon to fit the slot.
 - **A synthesised sound needs the horns' level.** The alerting tones were first made at 6,000 RMS
   and were too soft to carry through a station; they are at the fire alarm horns' 10,000.
 - **An item texture is not a block texture.** The catalogue writes an item's texture under

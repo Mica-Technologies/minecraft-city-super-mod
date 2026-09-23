@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -52,6 +53,20 @@ public class BlockCellDoor extends BlockFireProtectionProp {
   public int getMetaFromState(IBlockState state) {
     return super.getMetaFromState(state) | (state.getValue(OPEN) ? 4 : 0)
         | (state.getValue(POWERED) ? 8 : 0);
+  }
+
+  /**
+   * The door's two edges are a pane's edge, so iron bars and glass panes beside it join it the way
+   * they join each other; anything else left a half-block gap each side of the door.
+   */
+  @Override
+  @Nonnull
+  @SuppressWarnings("deprecation")
+  public BlockFaceShape getBlockFaceShape(@Nonnull IBlockAccess world, @Nonnull IBlockState state,
+      @Nonnull BlockPos pos, @Nonnull EnumFacing face) {
+    return face.getAxis() != EnumFacing.Axis.Y
+        && face.getAxis() != state.getValue(FACING).getAxis()
+        ? BlockFaceShape.MIDDLE_POLE_THIN : BlockFaceShape.UNDEFINED;
   }
 
   @Override
