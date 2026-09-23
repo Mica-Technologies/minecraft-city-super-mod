@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/amenities/sprinkler_down"
+  },
+  "variants": {
+    "powered": {
+      "false": {},
+      "true": {
+        "model": "csm:parks/amenities/sprinkler_up"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:parks/amenities/sprinkler_up"
+      }
+    ]
+  }
+}

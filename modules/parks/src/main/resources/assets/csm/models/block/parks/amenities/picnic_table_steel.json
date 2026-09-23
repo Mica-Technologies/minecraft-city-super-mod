@@ -1,0 +1,214 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "top": "csm:blocks/parks/amenities/perforated_green",
+    "frame": "csm:blocks/parks/amenities/green_steel",
+    "particle": "csm:blocks/parks/amenities/perforated_green"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        11,
+        4
+      ],
+      "to": [
+        16,
+        12,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#top",
+          "uv": [
+            0,
+            4,
+            16,
+            5
+          ]
+        },
+        "south": {
+          "texture": "#top",
+          "uv": [
+            0,
+            4,
+            16,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#top",
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#top",
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            0,
+            4,
+            16,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#top",
+          "uv": [
+            0,
+            4,
+            16,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        6.5,
+        0.5
+      ],
+      "to": [
+        16,
+        7.5,
+        3.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#top",
+          "uv": [
+            0,
+            8.5,
+            16,
+            9.5
+          ]
+        },
+        "south": {
+          "texture": "#top",
+          "uv": [
+            0,
+            8.5,
+            16,
+            9.5
+          ]
+        },
+        "east": {
+          "texture": "#top",
+          "uv": [
+            12.5,
+            8.5,
+            15.5,
+            9.5
+          ]
+        },
+        "west": {
+          "texture": "#top",
+          "uv": [
+            0.5,
+            8.5,
+            3.5,
+            9.5
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            0,
+            0.5,
+            16,
+            3.5
+          ]
+        },
+        "down": {
+          "texture": "#top",
+          "uv": [
+            0,
+            12.5,
+            16,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        6.5,
+        12.5
+      ],
+      "to": [
+        16,
+        7.5,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#top",
+          "uv": [
+            0,
+            8.5,
+            16,
+            9.5
+          ]
+        },
+        "south": {
+          "texture": "#top",
+          "uv": [
+            0,
+            8.5,
+            16,
+            9.5
+          ]
+        },
+        "east": {
+          "texture": "#top",
+          "uv": [
+            0.5,
+            8.5,
+            3.5,
+            9.5
+          ]
+        },
+        "west": {
+          "texture": "#top",
+          "uv": [
+            12.5,
+            8.5,
+            15.5,
+            9.5
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            0,
+            12.5,
+            16,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#top",
+          "uv": [
+            0,
+            0.5,
+            16,
+            3.5
+          ]
+        }
+      }
+    }
+  ]
+}

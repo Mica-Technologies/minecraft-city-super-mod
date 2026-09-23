@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks;
 
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
+import com.micatechnologies.minecraft.csm.materials.CsmParts;
 import com.micatechnologies.minecraft.csm.materials.FabricatorIngredient;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockHangingMoss;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
@@ -125,8 +126,10 @@ public final class ParksFabricatorRules {
   }
 
   /**
-   * Prices a block in the Parks tab. Planters are fired clay and a bird bath is cast stone; the
-   * playground, trash can and drinking fountains are steel, the generic cost.
+   * Prices a block in the Parks tab. Planters are fired clay, a bird bath and the fountains cast
+   * stone, wooden benches, tables and the pergola timber, the irrigation controller a control
+   * board; the playground, bins, steel furniture and drinking fountains are steel, the generic
+   * cost.
    *
    * @param block        the block
    * @param registryName its registry name
@@ -138,8 +141,18 @@ public final class ParksFabricatorRules {
     if (registryName.endsWith("flowerpot")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY_BALL, 3));
     }
-    if (registryName.equals("birdbath")) {
-      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 2));
+    if (registryName.equals("birdbath") || registryName.startsWith("fountain_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 3));
+    }
+    if (registryName.endsWith("_wood") || registryName.startsWith("pergola_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3));
+    }
+    if (registryName.equals("irrigation_controller")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.equals("ground_rubber_safety")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY_BALL, 1));
     }
     return null;
   }

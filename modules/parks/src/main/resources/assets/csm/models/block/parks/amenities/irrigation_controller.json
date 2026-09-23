@@ -1,0 +1,138 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "face": "csm:blocks/parks/amenities/controller",
+    "side": "csm:blocks/parks/amenities/controller_side",
+    "lamp": "csm:blocks/parks/amenities/lamp_off",
+    "particle": "csm:blocks/parks/amenities/controller_side"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        3,
+        13
+      ],
+      "to": [
+        12,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            4,
+            3,
+            12,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#side",
+          "uv": [
+            4,
+            3,
+            12,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#side",
+          "uv": [
+            0,
+            3,
+            3,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#side",
+          "uv": [
+            13,
+            3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#side",
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#side",
+          "uv": [
+            4,
+            0,
+            12,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        10,
+        11,
+        12.75
+      ],
+      "to": [
+        11,
+        12,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lamp",
+          "uv": [
+            5,
+            4,
+            6,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#lamp",
+          "uv": [
+            3,
+            4,
+            3.25,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#lamp",
+          "uv": [
+            12.75,
+            4,
+            13,
+            5
+          ]
+        },
+        "up": {
+          "texture": "#lamp",
+          "uv": [
+            10,
+            12.75,
+            11,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            10,
+            3,
+            11,
+            3.25
+          ]
+        }
+      }
+    }
+  ]
+}

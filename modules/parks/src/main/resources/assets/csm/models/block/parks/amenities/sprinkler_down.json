@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cap": "csm:blocks/parks/amenities/sprinkler_cap",
+    "riser": "csm:blocks/parks/amenities/iron",
+    "particle": "csm:blocks/parks/amenities/sprinkler_cap"
+  },
+  "elements": [
+    {
+      "from": [
+        6.5,
+        0,
+        6.5
+      ],
+      "to": [
+        9.5,
+        1,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            15,
+            9.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            15,
+            9.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            15,
+            9.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            15,
+            9.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ]
+        }
+      }
+    }
+  ]
+}

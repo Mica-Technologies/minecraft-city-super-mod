@@ -1,0 +1,44 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:parks/amenities/fountain_basin_post"
+      }
+    },
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:parks/amenities/fountain_basin_side"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:parks/amenities/fountain_basin_side",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:parks/amenities/fountain_basin_side",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:parks/amenities/fountain_basin_side",
+        "y": 270
+      }
+    }
+  ]
+}
