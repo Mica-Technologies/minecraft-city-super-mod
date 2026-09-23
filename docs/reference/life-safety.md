@@ -1,8 +1,8 @@
-# Life Safety
+# Fire Alarm & Detection
 
-Fire alarm horns, strobes, pull stations, panels and exit signage.
+Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
-!!! info "162 blocks in this tab"
+!!! info "123 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,28 +11,10 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
-| Die-Cast Exit Sign | `csm:exit_sign_diecast` | 2 | 10 | pickaxe | 1 |
-| Edge Lit Exit Sign (Bi, Double-Sided) | `csm:mclacodeapprovedexitsigndual` |  |  |  |  |
-| Edge Lit Exit Sign (Double-Sided) | `csm:mclacodeapprovedexitsign` |  |  |  |  |
-| Edge Lit Exit Sign (Left, Double-Sided) | `csm:mclacodeapprovedexitsignleft` |  |  |  |  |
-| Edge Lit Exit Sign (Right, Double-Sided) | `csm:mclacodeapprovedexitsignright` |  |  |  |  |
-| Edge Lit Exit Sign (Single-Sided) | `csm:exitsignsinglesided` |  |  |  |  |
-| Edge Lit ISA Exit Sign (Bi, Double-Sided) | `csm:mclacodeapprovedexitsigndualisa` |  |  |  |  |
-| Edge Lit ISA Exit Sign (Double-Sided) | `csm:mclacodeapprovedexitsignisa` |  |  |  |  |
-| Edge Lit ISA Exit Sign (Left, Double-Sided) | `csm:mclacodeapprovedexitsignleftisa` |  |  |  |  |
-| Edge Lit ISA Exit Sign (Right, Double-Sided) | `csm:mclacodeapprovedexitsignrightisa` |  |  |  |  |
-| Edge Lit ISA Exit Sign (Single-Sided) | `csm:mclacodeapprovedexitsignisasinglesided` |  |  |  |  |
-| Edge Lit Stairs Sign (Bi, Double-Sided) | `csm:mclacodeapprovedstairssigndual` |  |  |  |  |
-| Edge Lit Stairs Sign (Double-Sided) | `csm:mclacodeapprovedstairssign` |  |  |  |  |
-| Edge Lit Stairs Sign (Left, Double-Sided) | `csm:mclacodeapprovedstairssignleft` |  |  |  |  |
-| Edge Lit Stairs Sign (Right, Double-Sided) | `csm:mclacodeapprovedstairssignright` |  |  |  |  |
-| Edge Lit Stairs Sign (Single-Sided) | `csm:stairssignonesided` |  |  |  |  |
 | Edwards Emergency Phone | `csm:eep` |  |  |  |  |
 | Edwards EST 202-8A-T Wall Mount Strobe (Red) | `csm:firealarmest2028atstrobered` | 2 | 10 | pickaxe | 1 |
 | Edwards EST 202-8A-TW Wall Mount Strobe (White) | `csm:firealarmest2028atwstrobewhite` | 2 | 10 | pickaxe | 1 |
 | Edwards Glass Rod Pull Station | `csm:firealarmedwardsglassrodpullstation` | 2 | 10 | pickaxe | 1 |
-| Emergency Light (Black) | `csm:elightblack` | 2 | 10 | pickaxe | 1 |
-| Emergency Light (White) | `csm:elight` | 2 | 10 | pickaxe | 1 |
 | EST Adaptahorn Gray (Horn) | `csm:firealarmestadaptahorngray` | 2 | 10 | pickaxe | 1 |
 | EST Adaptahorn Red (Horn) | `csm:firealarmestadaptahornred` | 2 | 10 | pickaxe | 1 |
 | EST Genesis Red (Horn Strobe) | `csm:firealarmestgenesisred` | 2 | 10 | pickaxe | 1 |
@@ -42,14 +24,6 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 | EST Integrity White (Horn Strobe) | `csm:firealarmestintegrityhornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | EST Integrity White (Speaker Strobe) | `csm:firealarmestintegrityspeakerstrobewhite` | 2 | 10 | pickaxe | 1 |
 | EST Pull Station | `csm:firealarmestpull` | 2 | 10 | pickaxe | 1 |
-| Exit Sign (Green Man, Down Arrow) | `csm:greenmanexitsigndownarrow` |  |  |  |  |
-| Exit Sign (Green Man, Down Arrow, Single Sided) | `csm:greenmanexitsigndownarrowsinglesided` |  |  |  |  |
-| Exit Sign (Green Man, Left Arrow) | `csm:greenmanexitsignleftarrow` |  |  |  |  |
-| Exit Sign (Green Man, Right Arrow) | `csm:greenmanexitsignrightarrow` |  |  |  |  |
-| Exit Sign (Green Man, Up Left Arrow) | `csm:greenmanexitsignupleftarrow` |  |  |  |  |
-| Exit Sign (Green Man, Up Right Arrow) | `csm:greenmanexitsignuprightarrow` |  |  |  |  |
-| Exit Sign / Emergency Light Combo | `csm:exit_sign_combo_compact` | 2 | 10 | pickaxe | 1 |
-| Explosion-Proof Exit Sign | `csm:exit_sign_explosion_proof` | 2 | 10 | pickaxe | 1 |
 | FCI Pull Station | `csm:firealarmfcipull` | 2 | 10 | pickaxe | 1 |
 | Fire Alarm Beacon (Blue Lens) | `csm:firealarmbeaconblue` | 2 | 10 | pickaxe | 1 |
 | Fire Alarm Beacon (Clear Lens) | `csm:firealarmbeaconclear` | 2 | 10 | pickaxe | 1 |
@@ -73,17 +47,7 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 | KAC Call Point | `csm:firealarmkaccallpoint` | 2 | 10 | pickaxe | 1 |
 | KAC Sounder Red (Horn) | `csm:firealarmkacsounderred` | 2 | 10 | pickaxe | 1 |
 | Kidde Smoke Alarm | `csm:kiddesmoke` |  |  |  |  |
-| Modern Fire Sprinkler (Black) | `csm:firealarmsprinklerblack` | 2 | 10 | pickaxe | 1 |
-| Modern Fire Sprinkler (Silver) | `csm:firealarmsprinklersilver` | 2 | 10 | pickaxe | 1 |
-| Modern Fire Sprinkler (White) | `csm:firealarmsprinklerwhite` | 2 | 10 | pickaxe | 1 |
 | Nest Protect 2nd Generation | `csm:nestprotect` |  |  |  |  |
-| Old Fire Sprinkler 1 | `csm:oldfiresprinkler` | 2 | 10 | pickaxe | 1 |
-| Old Fire Sprinkler 2 | `csm:oldfiresprinkler2` | 2 | 10 | pickaxe | 1 |
-| Old Fire Sprinkler 3 | `csm:oldfiresprinkler3` | 2 | 10 | pickaxe | 1 |
-| Old Fire Sprinkler 4 | `csm:oldfiresprinkler4` | 2 | 10 | pickaxe | 1 |
-| Old Fire Sprinkler 5 | `csm:oldfiresprinkler5` | 2 | 10 | pickaxe | 1 |
-| Old Fire Sprinkler 6 | `csm:oldfiresprinkler6` | 2 | 10 | pickaxe | 1 |
-| Photoluminescent Exit Sign | `csm:exit_sign_photoluminescent` | 2 | 10 | pickaxe | 1 |
 | Simplex 2901 Red (Horn Strobe) | `csm:firealarmsimplex2901hornstrobered` | 2 | 10 | pickaxe | 1 |
 | Simplex 2901 Red (Horn) | `csm:firealarmsimplex2901hornred` | 2 | 10 | pickaxe | 1 |
 | Simplex 4050 Red (Horn) | `csm:firealarmsimplex4050red` | 2 | 10 | pickaxe | 1 |
@@ -144,9 +108,6 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 | System Sensor SpectrAlert Advance White/Ceiling (Horn Strobe) | `csm:firealarmsystemsensoradvanceceilinghornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Classic Red (Horn Strobe) | `csm:firealarmsystemsensorclassichornstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Classic White (Horn Strobe) | `csm:firealarmsystemsensorclassichornstrobewhite` | 2 | 10 | pickaxe | 1 |
-| Traditional Exit Sign | `csm:exit_sign_traditional_flat` | 2 | 10 | pickaxe | 1 |
-| Traditional Exit Sign (Rounded) | `csm:exit_sign_traditional_rounded` | 2 | 10 | pickaxe | 1 |
-| Vandal-Resistant Exit Sign | `csm:exit_sign_vandal_resistant` | 2 | 10 | pickaxe | 1 |
 | Wheelock 7002T Red (Horn Strobe) | `csm:firealarmwheelock7002tred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS Red (Horn Strobe) | `csm:firealarmwheelockasred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS White (Horn Strobe) | `csm:firealarmwheelockaswhite` | 2 | 10 | pickaxe | 1 |

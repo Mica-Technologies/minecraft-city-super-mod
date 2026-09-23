@@ -9,8 +9,10 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 
 /**
- * The Fabricator cost rule for the Life Safety tab, registered with
- * {@link CsmFabricatorCosts} from {@link CsmLifeSafety}'s pre-initialization.
+ * The Fabricator cost rules for the Life Safety tabs, registered with
+ * {@link CsmFabricatorCosts} from {@link CsmLifeSafety}'s pre-initialization: {@link #price} for
+ * the fire alarm tab, {@link #priceExits} and {@link #priceFireProtection} for the two tabs split
+ * out of it.
  *
  * <p>The rule lives here rather than in Core because it is decided from this subsystem's own
  * class hierarchy. With this module absent, its blocks are absent too, and any block that somehow
@@ -27,6 +29,12 @@ public final class LifeSafetyFabricatorRules {
    * @since 2026.9
    */
   public static final String TAB_ID = "tablifesafety";
+
+  /** The Exits &amp; Emergency Lighting tab, priced by {@link #priceExits}. */
+  public static final String EXITS_TAB_ID = "tabexitsemergency";
+
+  /** The Fire Protection tab, priced by {@link #priceFireProtection}. */
+  public static final String FIRE_PROTECTION_TAB_ID = "tabfireprotection";
 
   /**
    * Private constructor: this class is a static rule holder and is never instantiated.
@@ -79,5 +87,37 @@ public final class LifeSafetyFabricatorRules {
     // Panels, exit signs and the rest: Core's generic equipment cost, which is what this branch
     // returned directly before the rule moved out of Core.
     return null;
+  }
+
+  /**
+   * Prices the Exits &amp; Emergency Lighting tab. Exit signs and emergency lights cost what they
+   * did in the one Life Safety tab: steel and a wiring harness, Core's equipment cost.
+   *
+   * @param block        the block to price
+   * @param registryName the block's registry name
+   *
+   * @return the ingredients
+   */
+  public static List<FabricatorIngredient> priceExits(Block block, String registryName) {
+    return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+        FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+  }
+
+  /**
+   * Prices the Fire Protection tab. Sprinklers keep their price from {@link #price}; anything
+   * else takes steel and a wiring harness, as it would have in the one Life Safety tab.
+   *
+   * @param block        the block to price
+   * @param registryName the block's registry name
+   *
+   * @return the ingredients
+   */
+  public static List<FabricatorIngredient> priceFireProtection(Block block, String registryName) {
+    List<FabricatorIngredient> priced = price(block, registryName);
+    if (priced != null) {
+      return priced;
+    }
+    return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+        FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
   }
 }

@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
  *   Order  -8 = CsmTabSignageHidden     (hidden: advertising board parts)
  *   Order  1 = CsmTabBuildingMaterials
  *   Order  2 = CsmTabHvac
- *   Order  3 = CsmTabLifeSafety
+ *   Order  3 = CsmTabLifeSafety       (Fire Alarm & Detection)
  *   Order  4 = CsmTabLighting
  *   Order  5 = CsmTabNovelties
  *   Order  6 = CsmTabPowerGrid
@@ -51,6 +51,8 @@ import org.apache.logging.log4j.Logger;
  *   Order 17 = CsmTabSignage
  *   Order 18 = CsmTabTreesPlants
  *   Order 19 = CsmTabParks
+ *   Order 20 = CsmTabExitsEmergency
+ *   Order 21 = CsmTabFireProtection
  * </pre>
  * <p>When adding a new tab, choose the next available order value and update this list. A
  * module that owns retiring blocks ships its own hidden tab at a negative order; hidden tabs

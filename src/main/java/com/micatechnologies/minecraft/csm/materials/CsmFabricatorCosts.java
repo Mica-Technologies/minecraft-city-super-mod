@@ -325,8 +325,17 @@ public final class CsmFabricatorCosts {
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
 
       default:
-        // An unrecognised tab means a tab was added without pricing its contents. Fall back to a
-        // sane generic cost rather than silently making the whole tab unfabricable.
+        // A tab Core has no branch for: a module's own tab, priced by the rule the module
+        // registered for it. Without a rule, or for a block the rule does not know, fall back to
+        // a sane generic cost rather than silently making the whole tab unfabricable. (Only the
+        // two tabs above asked their rules once; a module tab's rule was never consulted.)
+        ICsmFabricatorCostRule rule = RULES.get(tabId);
+        if (rule != null) {
+          List<FabricatorIngredient> priced = rule.price(block, registryName);
+          if (priced != null) {
+            return priced;
+          }
+        }
         return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }

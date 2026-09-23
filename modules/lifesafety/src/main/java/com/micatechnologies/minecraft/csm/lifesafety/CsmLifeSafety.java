@@ -71,6 +71,10 @@ public class CsmLifeSafety {
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.
     CsmFabricatorCosts.registerRule(LifeSafetyFabricatorRules.TAB_ID,
         LifeSafetyFabricatorRules::price);
+    CsmFabricatorCosts.registerRule(LifeSafetyFabricatorRules.EXITS_TAB_ID,
+        LifeSafetyFabricatorRules::priceExits);
+    CsmFabricatorCosts.registerRule(LifeSafetyFabricatorRules.FIRE_PROTECTION_TAB_ID,
+        LifeSafetyFabricatorRules::priceFireProtection);
 
     // Also clears ActiveStrobeRegistry. A lambda, not
     // FireAlarmSoundPacketHandler::stopAllSounds: that method is @SideOnly(CLIENT), so it is

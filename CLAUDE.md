@@ -84,7 +84,7 @@ container per jar.
 |---|---|---|---|
 | `src/main` | `csm` | CSM: Core | base classes, registration, tabs machinery, config, parts + Fabricator, shared assets |
 | `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns` |
-| `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm` |
+| `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; three tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
 | `modules/powergrid` | `csm_powergrid` | CSM: Power Grid | `powergrid` |
