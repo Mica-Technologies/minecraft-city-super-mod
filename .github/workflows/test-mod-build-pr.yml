@@ -44,6 +44,35 @@ jobs:
           path: build/reports/tests/test/
           retention-days: 7
 
+  # The asset/registration check: every discovered block and item has its blockstate, models,
+  # textures and lang name, no model parent chain loops, and so on. It exits 1 on an error and a
+  # clean tree has none, so a new one fails the pull request. Unused files and unused lang entries
+  # are printed but never fail it: whether to delete a leftover is a human call. See
+  # dev-env-utils/docs/BlockItemIntegrityTool.md.
+  integrity:
+    name: Block/Item Integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set Up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+          cache: 'maven'
+          cache-dependency-path: dev-env-utils/pom.xml
+
+      # clean compile first, always: exec:java alone runs whatever was compiled last.
+      - name: Run the integrity tool
+        working-directory: dev-env-utils
+        run: >-
+          mvn -B -q clean compile exec:java
+          -Dexec.mainClass=com.micatechnologies.minecraft.csm.tools.BlockItemIntegrityTool
+          -Dexec.args="${{ github.workspace }}"
+
   server_smoke_test:
     # The all-modules leg keeps the exact name the branch protection rule requires; only the
     # Core-only leg carries a suffix.
