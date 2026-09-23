@@ -131,6 +131,7 @@ nav:
       - Lighting: reference/lighting.md
       - Materials: reference/materials.md
       - Novelties: reference/novelties.md
+      - Parks: reference/parks.md
       - Power Grid: reference/power-grid.md
       - Road Signs: reference/road-signs.md
       - Signage & Advertising: reference/signage.md
@@ -138,6 +139,7 @@ nav:
       - Technology: reference/technology.md
       - Traffic Accessories: reference/traffic-accessories.md
       - Traffic Signals: reference/traffic-signals.md
+      - Trees & Plants: reference/trees-and-plants.md
       - Unlisted: reference/unlisted.md
   - Developer:
       - developer/index.md

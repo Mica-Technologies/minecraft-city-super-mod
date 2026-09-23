@@ -116,6 +116,9 @@ TABS = {
                      "The CSM Fabricator, which turns vanilla ingots into CSM blocks."),
     "tabnovelties": ("novelties", "Novelties",
                      "Decorative oddities that did not belong anywhere else."),
+    "tabparks": ("parks", "Parks",
+                 "Park amenities: benches, tables, bins, playground pieces, fountains and "
+                 "irrigation."),
     "tabpowergrid": ("power-grid", "Power Grid",
                      "Utility poles, transformers and the Forge Energy that runs through them."),
     "tabroadsigns": ("road-signs", "Road Signs",
@@ -132,6 +135,9 @@ TABS = {
                               "cameras."),
     "tabtrafficsignals": ("traffic-signals", "Traffic Signals",
                           "Signal heads, crosswalk signals and the controllers that drive them."),
+    "tabtreesplants": ("trees-and-plants", "Trees & Plants",
+                       "Street trees built block by block from thin, leaning logs and leaves, "
+                       "the Tree Planting Tool, and plantings."),
     "tabnone": ("unlisted", "Unlisted",
                 "Blocks that appear in no creative tab: retired ones kept so old worlds still "
                 "load, and the hidden pieces other blocks place for themselves."),
@@ -139,8 +145,9 @@ TABS = {
 
 PAGE_ORDER = ["tabbuildingmaterials", "tabconstructionsite", "tabfurniture", "tabgaming",
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
-              "tabnovelties", "tabpowergrid", "tabroadsigns", "tabsignage", "tabstructureframing",
-              "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabnone"]
+              "tabnovelties", "tabparks", "tabpowergrid", "tabroadsigns", "tabsignage", "tabstructureframing",
+              "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtreesplants",
+              "tabnone"]
 
 
 def page_tab(tab_id):
