@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.parks.planting.ItemTreePlantingTool;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockHangingMoss;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
@@ -42,6 +43,8 @@ public class CsmTabTreesPlants extends CsmTab {
 
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
+    initTabItem(ItemTreePlantingTool.class, fmlPreInitializationEvent);
+
     // Logs: every wood in every width, a wood's widths together. Written by gen_trees.py
     // (--fragments); one line a block, so the tools that read tab sources find each one.
     initTabBlock(new BlockTreeLog("tree_log_liveoak_twig", TreeWood.LIVE_OAK, TreeLogWidth.TWIG));

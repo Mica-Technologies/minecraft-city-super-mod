@@ -1,0 +1,26 @@
+{
+  "type": "forge:ore_shapeless",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_parks"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "minecraft:iron_shovel"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "treeSapling"
+    },
+    {
+      "item": "minecraft:dye",
+      "data": 15
+    }
+  ],
+  "result": {
+    "item": "csm:tree_planting_tool",
+    "count": 1
+  }
+}

@@ -17,6 +17,7 @@ surrounds them, so what this script writes is only what the game needs from file
                                               boot (TreePalmGeometry), plus a _icon for the item
   * textures/blocks/parks/<moss>[_tip].png     the hanging moss strands and a curtain's ragged tip
   * blockstates for every log, leaves, crown and moss block
+  * textures/items/parks/tree_planting_tool.png and its item model
   * lang lines (tile.tree_log_* / tile.tree_leaves_*) in all four languages, kept in place by key
 
 The woods, widths and leaves must match TreeWood, TreeLogWidth and the tab registrations, in the
@@ -121,6 +122,46 @@ PALMS = [
      ("Feather Palm Crown", "Fiederpalmen-Krone", "Copa de palmera de pluma", "Fjäderpalmkrona")),
 ]
 PALM_SHEETS = ["fan", "feather"]
+
+# Tree Planting Tool presets: TreePreset id -> names en/de/es/sv. Order = TreePreset order.
+PRESETS = [
+    ("liveoak", ("Southern Live Oak", "Virginia-Eiche", "Roble de Virginia", "Virginiaek")),
+    ("elm", ("American Elm", "Amerikanische Ulme", "Olmo americano", "Amerikansk alm")),
+    ("plane", ("London Plane", "Ahornblättrige Platane", "Plátano de sombra", "Londonplatan")),
+    ("honeylocust", ("Honey Locust", "Gleditschie", "Acacia de tres espinas", "Korstörne")),
+    ("cypress", ("Italian Cypress", "Säulenzypresse", "Ciprés italiano", "Pelarcypress")),
+    ("ginkgo", ("Ginkgo", "Ginkgo", "Ginkgo", "Ginkgo")),
+    ("fanpalm", ("Mexican Fan Palm", "Mexikanische Washingtonpalme", "Palmera mexicana de abanico",
+                 "Mexikansk solfjäderspalm")),
+    ("leaningpalm", ("Leaning Feather Palm", "Geneigte Fiederpalme",
+                     "Palmera de pluma inclinada", "Lutande fjäderpalm")),
+    ("lollipopplane", ("Clipped Ball-Head Plane", "Kugelplatane", "Plátano de copa esférica",
+                       "Klotformad platan")),
+]
+
+# The tool's own lines: key -> en/de/es/sv.
+TOOL_LANG = {
+    "item.tree_planting_tool.name": (
+        "Tree Planting Tool", "Baumpflanzwerkzeug", "Herramienta para plantar árboles",
+        "Trädplanteringsverktyg"),
+    "csm.parks.planting.mode": (
+        "Planting: %s", "Pflanzen: %s", "Plantar: %s", "Planterar: %s"),
+    "csm.parks.planting.blocked": (
+        "Can't plant %s here: %s blocks in the way",
+        "%s kann hier nicht gepflanzt werden: %s Blöcke im Weg",
+        "No se puede plantar %s aquí: %s bloques estorban",
+        "Kan inte plantera %s här: %s block i vägen"),
+    "csm.parks.planting.tooltip.use": (
+        "Right-click a block to plant a tree, leaning the way you face",
+        "Rechtsklick auf einen Block pflanzt einen Baum, der sich in Blickrichtung neigt",
+        "Clic derecho en un bloque para plantar un árbol inclinado hacia donde miras",
+        "Högerklicka på ett block för att plantera ett träd som lutar åt det håll du tittar"),
+    "csm.parks.planting.tooltip.cycle": (
+        "Sneak + right-click to change species", "Schleichen + Rechtsklick wechselt die Art",
+        "Agáchate + clic derecho para cambiar de especie", "Smyg + högerklicka för att byta art"),
+    "csm.parks.planting.tooltip.current": (
+        "Species: %s", "Art: %s", "Especie: %s", "Art: %s"),
+}
 
 # Hanging moss: (id, names en/de/es/sv).
 MOSSES = [
@@ -439,6 +480,37 @@ def moss(tip, seed):
 
 
 # ------------------------------------------------------------------------------------------
+# The Tree Planting Tool's icon: a spade and a sapling
+# ------------------------------------------------------------------------------------------
+def planting_tool_icon():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = img.load()
+    handle = [(122, 88, 52), (98, 70, 40)]
+    for i in range(8):  # handle, top right down toward the blade
+        x, y = 13 - i, 2 + i
+        px[x, y] = handle[0] + (255,)
+        px[x + 1, y] = handle[1] + (255,)
+    px[14, 1] = (70, 70, 70, 255)
+    px[13, 1] = (70, 70, 70, 255)
+    px[14, 2] = (70, 70, 70, 255)
+    blade = [(196, 200, 204), (160, 164, 170), (120, 124, 130)]
+    for y in range(9, 15):
+        for x in range(1, 8):
+            # A rounded spade blade, point at the bottom left.
+            u, v = x - 4.5, y - 11
+            if u * u / 9 + v * v / 11 <= 1 and x + (14 - y) >= 3:
+                shade = 0 if x < 4 else 1 if x < 6 else 2
+                px[x, y] = blade[shade] + (255,)
+    leaf = [(96, 150, 58), (70, 120, 44)]
+    for y in range(3, 9):
+        px[3, y] = (110, 84, 52, 255)
+    for x, y, c in [(2, 3, 0), (1, 2, 1), (4, 3, 0), (5, 2, 1), (2, 5, 1), (4, 5, 0), (5, 4, 0),
+                    (1, 4, 0), (3, 2, 0), (3, 1, 1)]:
+        px[x, y] = leaf[c] + (255,)
+    return img
+
+
+# ------------------------------------------------------------------------------------------
 # Models and blockstates
 # ------------------------------------------------------------------------------------------
 def log_model(pixels):
@@ -544,6 +616,12 @@ def lang_entries():
     for moss_id, names in MOSSES:
         for i, loc in enumerate(LOCALES):
             out[loc]["tile.%s.name" % moss_id] = names[i]
+    for key, names in TOOL_LANG.items():
+        for i, loc in enumerate(LOCALES):
+            out[loc][key] = names[i]
+    for preset_id, names in PRESETS:
+        for i, loc in enumerate(LOCALES):
+            out[loc]["csm.parks.preset.%s" % preset_id] = names[i]
     return out
 
 
@@ -648,6 +726,12 @@ def generate(assets):
         rel = "blockstates/%s.json" % moss_id
         dump(os.path.join(assets, rel), moss_blockstate(moss_id))
         written.append(rel)
+    rel = "textures/items/parks/tree_planting_tool.png"
+    save_png(os.path.join(assets, rel), planting_tool_icon())
+    written.append(rel)
+    rel = "models/item/tree_planting_tool.json"
+    dump(os.path.join(assets, rel), flat_item_model("csm:items/parks/tree_planting_tool"))
+    written.append(rel)
     write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in LOCALES]
     return written
