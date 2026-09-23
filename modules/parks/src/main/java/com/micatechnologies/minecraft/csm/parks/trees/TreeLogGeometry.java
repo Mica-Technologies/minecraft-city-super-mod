@@ -27,8 +27,24 @@ import net.minecraft.util.math.AxisAlignedBB;
  */
 public final class TreeLogGeometry {
 
-  /** Sides of a log's cross-section. */
+  /** Sides of a log's cross-section, for the widths that get the most. */
   static final int SIDES = 8;
+
+  /**
+   * Sides of a log's cross-section at a width: a 2 px twig reads as round with four, a 4 px thin
+   * log with six, and only the wider ones need eight. Every side is a quad per arm, and most of
+   * a tree's logs are its thin limbs.
+   */
+  static int sides(TreeLogWidth width) {
+    switch (width) {
+      case TWIG:
+        return 4;
+      case THIN:
+        return 6;
+      default:
+        return SIDES;
+    }
+  }
   /** How much wider than the log a flare is where it meets the ground. */
   static final double FLARE = 1.4;
   /** A limb's radius where it enters leaves, as a fraction of its own. */
@@ -158,16 +174,48 @@ public final class TreeLogGeometry {
       cube(quads);
       return quads;
     }
+    int n = sides(width);
     List<Arm> arms = arms(width, mask);
+    Arm straight = straightThrough(arms);
+    if (straight != null) {
+      // Two arms in one straight line with one radius: one tube through the cell, half the
+      // quads of two, and nothing to see at the join.
+      tube(quads, straight, n);
+      return quads;
+    }
     for (Arm arm : arms) {
-      tube(quads, arm);
+      tube(quads, arm, n);
     }
     if (bent(arms)) {
       double r = width.getPixels() / 2.0 * KNUCKLE;
-      tube(quads, new Arm(new double[]{8, 8 - r, 8}, new double[]{8, 8 + r, 8}, r, r, true));
-      capStart(quads, new Arm(new double[]{8, 8 - r, 8}, new double[]{8, 8 + r, 8}, r, r, true));
+      tube(quads, new Arm(new double[]{8, 8 - r, 8}, new double[]{8, 8 + r, 8}, r, r, true), n);
+      capStart(quads, new Arm(new double[]{8, 8 - r, 8}, new double[]{8, 8 + r, 8}, r, r, true),
+          n);
     }
     return quads;
+  }
+
+  /**
+   * The one tube two arms make when they run in a straight line through the centre at one radius
+   * (a trunk between two logs of its width), or null.
+   */
+  static Arm straightThrough(List<Arm> arms) {
+    if (arms.size() != 2) {
+      return null;
+    }
+    Arm a = arms.get(0);
+    Arm b = arms.get(1);
+    if (a.from != CENTRE || b.from != CENTRE || a.capEnd || b.capEnd) {
+      return null;
+    }
+    if (dot(a.dir(), b.dir()) > -0.999) {
+      return null;
+    }
+    double r = a.r0;
+    if (Math.abs(a.r1 - r) > 1e-6 || Math.abs(b.r0 - r) > 1e-6 || Math.abs(b.r1 - r) > 1e-6) {
+      return null;
+    }
+    return new Arm(b.to, a.to, r, r, false);
   }
 
   /**
@@ -202,14 +250,14 @@ public final class TreeLogGeometry {
 
   // --- shapes ---
 
-  private static void tube(List<Quad> quads, Arm arm) {
+  private static void tube(List<Quad> quads, Arm arm, int sides) {
     double[] axis = arm.dir();
     double[][] basis = basis(axis);
     double length = len(sub(arm.to, arm.from));
-    double seg = 2 * Math.PI * Math.max(arm.r0, arm.r1) / SIDES;
-    for (int i = 0; i < SIDES; i++) {
-      double t0 = 2 * Math.PI * i / SIDES + Math.PI / SIDES;
-      double t1 = 2 * Math.PI * (i + 1) / SIDES + Math.PI / SIDES;
+    double seg = 2 * Math.PI * Math.max(arm.r0, arm.r1) / sides;
+    for (int i = 0; i < sides; i++) {
+      double t0 = 2 * Math.PI * i / sides + Math.PI / sides;
+      double t1 = 2 * Math.PI * (i + 1) / sides + Math.PI / sides;
       double[] n0 = radial(basis, t0);
       double[] n1 = radial(basis, t1);
       double u0 = (i * seg) % 16;
@@ -236,24 +284,24 @@ public final class TreeLogGeometry {
       quads.add(q);
     }
     if (arm.capEnd) {
-      cap(quads, arm.to, axis, basis, arm.r1, false);
+      cap(quads, arm.to, axis, basis, arm.r1, false, sides);
     }
   }
 
-  private static void capStart(List<Quad> quads, Arm arm) {
+  private static void capStart(List<Quad> quads, Arm arm, int sides) {
     double[] axis = arm.dir();
-    cap(quads, arm.from, axis, basis(axis), arm.r0, true);
+    cap(quads, arm.from, axis, basis(axis), arm.r0, true, sides);
   }
 
-  /** An eight-sided end cap, as three quads fanned from one corner. */
+  /** An end cap with the tube's sides, as quads fanned from one corner ((sides - 2) / 2). */
   private static void cap(List<Quad> quads, double[] centre, double[] axis, double[][] basis,
-      double r, boolean facingBack) {
-    double[][] ring = new double[SIDES][];
-    for (int i = 0; i < SIDES; i++) {
-      ring[i] = add(centre, scale(radial(basis, 2 * Math.PI * i / SIDES + Math.PI / SIDES), r));
+      double r, boolean facingBack, int sides) {
+    double[][] ring = new double[sides][];
+    for (int i = 0; i < sides; i++) {
+      ring[i] = add(centre, scale(radial(basis, 2 * Math.PI * i / sides + Math.PI / sides), r));
     }
     double[] outward = facingBack ? neg(axis) : axis;
-    for (int k = 0; k < 3; k++) {
+    for (int k = 0; k < (sides - 2) / 2; k++) {
       Quad q = new Quad();
       int[] idx = {0, 1 + 2 * k, 2 + 2 * k, 3 + 2 * k};
       for (int c = 0; c < 4; c++) {
