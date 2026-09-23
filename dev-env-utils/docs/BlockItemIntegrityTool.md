@@ -12,7 +12,10 @@ For each block class found in any source tree (Core plus every module):
 1. **Class eligibility** — Scans for classes extending `AbstractBlock` (or its descendants) that
    are not themselves abstract
 2. **Registry name extraction** — Parses `getBlockRegistryName()` return value via regex
-3. **Blockstate file** — Verifies `blockstates/<registry_name>.json` exists
+3. **Blockstate file** — Verifies `blockstates/<registry_name>.json` exists, and that the block
+   has something to draw in the inventory: a `models/item/<registry_name>.json`, an `inventory`
+   variant, or `inventory_<name>` variants (one item per metadata value, bound from the block's
+   `registerModels`, as the crane masts do for their liveries)
 4. **Model files** — Parses blockstate JSON to find all referenced models, then:
    - Verifies each model file exists (JSON or OBJ format)
    - Recursively traces `parent` references to validate the full model chain
@@ -36,6 +39,9 @@ For each creative tab:
 
 1. **Tab ID extraction** — Parses `CsmTab` subclass constructors
 2. **Lang entries** — Verifies `itemGroup.<tab_id>` exists
+
+A module's hidden tab (`getTabId()` returns `null`) has no name to check and is skipped. It is
+recognised by that null id, not by file name, so a new module's hidden tab needs no config entry.
 
 ### Sound Verification
 1. **Sound ID extraction** — Parses the per-module sound enums (`RoadsSounds`, `LifeSafetySounds`, `FurnishingsSounds`, `TechnologySounds`, `HvacSounds`) via regex, finding each in whichever source tree ships it

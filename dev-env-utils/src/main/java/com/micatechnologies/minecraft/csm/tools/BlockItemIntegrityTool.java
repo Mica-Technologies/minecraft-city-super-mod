@@ -155,6 +155,10 @@ public class BlockItemIntegrityTool {
 
   private static final boolean DEBUG = false;
   private static final boolean DISABLE_UNUSED_CHECK = false;
+
+  /** A tab whose {@code getTabId()} returns null: a module's hidden tab. */
+  private static final Pattern HIDDEN_TAB_ID =
+      Pattern.compile("getTabId\\(\\)\\s*\\{\\s*return\\s+null\\s*;");
   private static final AtomicInteger validationsCount = new AtomicInteger(0);
   private static final AtomicInteger checkCount = new AtomicInteger(0);
   private static final AtomicInteger errorCount = new AtomicInteger(0);
@@ -295,6 +299,13 @@ public class BlockItemIntegrityTool {
     try {
       // Read file contents
       String fileContents = Files.readString(tabSourceFile.toPath());
+
+      // A hidden tab (a module's retiring and internal blocks) has no id and no creative-inventory
+      // presence, so there is no tab name to look up. Recognised by its null id rather than by a
+      // list of file names, so each new module's hidden tab does not need adding to the config.
+      if (HIDDEN_TAB_ID.matcher(fileContents).find()) {
+        return;
+      }
 
       // Get tab ID
       String tabId = getTabIdFromSourceFileContents(tabSourceFile, fileContents);
@@ -1047,6 +1058,14 @@ public class BlockItemIntegrityTool {
         JsonObject variants = blockstateJson.getAsJsonObject("variants");
         if (variants.has("inventory")) {
           hasInventoryVariant = true;
+        }
+        // A block with one item per metadata value (the crane masts' liveries) binds each to
+        // its own variant from registerModels, named "inventory_<name>" by convention.
+        for (String variantName : variants.keySet()) {
+          if (variantName.startsWith("inventory_")) {
+            hasInventoryVariant = true;
+            break;
+          }
         }
       }
       hasInventoryItemModel = itemModelFileJson.exists();
