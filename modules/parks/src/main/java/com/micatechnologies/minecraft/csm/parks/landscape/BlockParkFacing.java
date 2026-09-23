@@ -2,17 +2,22 @@ package com.micatechnologies.minecraft.csm.parks.landscape;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPoleFitted;
+import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLog;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 /**
  * A landscape block that faces something behind it: a tree stake, whose tie reaches back to the
@@ -102,6 +107,44 @@ public class BlockParkFacing extends AbstractBlockRotatableNSEW {
   @Nonnull
   public BlockRenderLayer getBlockRenderLayer() {
     return BlockRenderLayer.CUTOUT;
+  }
+
+  /**
+   * A tree stake: its tie reaches back (+Z in the model) to the trunk in the next cell, so it
+   * turns to face away from a neighbouring log when it is placed, whichever way the player is
+   * looking. With no log beside it, it faces the player like any other facing prop.
+   */
+  public static class TreeStake extends BlockParkFacing {
+
+    public TreeStake(String registryName, int[] box, boolean collides) {
+      super(registryName, box, collides);
+    }
+
+    @Override
+    @Nonnull
+    @SuppressWarnings("deprecation")
+    public IBlockState getStateForPlacement(@Nonnull World world, @Nonnull BlockPos pos,
+        @Nonnull EnumFacing side, float hitX, float hitY, float hitZ, int meta,
+        @Nonnull EntityLivingBase placer) {
+      IBlockState state = super.getStateForPlacement(world, pos, side, hitX, hitY, hitZ, meta,
+          placer);
+      // Prefer the trunk the player is looking toward, then any trunk beside it.
+      EnumFacing look = placer.getHorizontalFacing();
+      if (isTrunk(world, pos.offset(look))) {
+        return state.withProperty(FACING, look.getOpposite());
+      }
+      for (EnumFacing f : EnumFacing.HORIZONTALS) {
+        if (isTrunk(world, pos.offset(f))) {
+          return state.withProperty(FACING, f.getOpposite());
+        }
+      }
+      return state;
+    }
+
+    private static boolean isTrunk(World world, BlockPos pos) {
+      Block block = world.getBlockState(pos).getBlock();
+      return block instanceof BlockTreeLog || block instanceof BlockLog;
+    }
   }
 
   /**

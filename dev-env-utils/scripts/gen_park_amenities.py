@@ -382,11 +382,11 @@ facing_block("dog_waste_station", [4, 0, 4, 12, 16, 13],
 # --- playground ---
 chute_len = 26.5
 chute = box([3, 9.75, 0.5 - chute_len / 2], [13, 10.75, 0.5 + chute_len / 2], "chute")
-chute["rotation"] = {"origin": [8, 10.25, 0.5], "axis": "x", "angle": 45}
+chute["rotation"] = {"origin": [8, 10.25, 0.5], "axis": "x", "angle": -45}
 rails = []
 for x0 in (2.5, 12.5):
     r = box([x0, 10.25, 0.5 - chute_len / 2], [x0 + 1, 12.25, 0.5 + chute_len / 2], "frame")
-    r["rotation"] = {"origin": [8, 10.25, 0.5], "axis": "x", "angle": 45}
+    r["rotation"] = {"origin": [8, 10.25, 0.5], "axis": "x", "angle": -45}
     rails.append(r)
 facing_block("playground_slide", [2, 0, 0, 14, 16, 16],
              ("Playground Slide", "Spielplatzrutsche", "Tobogán", "Lekplatsrutschkana"),
@@ -419,13 +419,19 @@ add("pergola_post", 'new BlockParkProp("pergola_post", BlockParkProp.Kind.POST, 
      "variants": {"normal": [{}], "inventory": [{}]}})
 
 
-def joining_block(registry, kind, height, width, names, post, side, item_extra, side_when):
+def joining_block(registry, kind, height, width, names, post, side, item_extra, side_when,
+                  uvlock=False):
+    """uvlock keeps a turned side's texture where the unturned one's is, for sides that overlap
+    at a corner (the pergola's beams cross there): identical pixels on the shared faces, so
+    they cannot z-fight."""
     models = {registry + "_post": post, registry + "_side": side}
     parts = [{"apply": {"model": MODEL + registry + "_post"}}]
     for direction, rot in ROT.items():
         apply = {"model": MODEL + registry + "_side"}
         if rot:
             apply["y"] = rot
+            if uvlock:
+                apply["uvlock"] = True
         parts.append({"when": {direction: side_when}, "apply": apply})
     models[registry + "_item"] = {
         "parent": "block/block", "textures": post["textures"],
@@ -438,13 +444,15 @@ def joining_block(registry, kind, height, width, names, post, side, item_extra, 
         {"parent": "csm:block/parks/amenities/%s_item" % registry})
 
 
+# The roof sits straight on the posts: a beam along each outer row, centred over the post
+# line (the posts are 6 across at the middle of their cells), and rafters across on top.
 wood = {"wood": T("cedar"), "particle": T("cedar")}
-beam_n = box([0, 10, 0.5], [16, 14, 2.5], "wood")
-joining_block("pergola_top", "PERGOLA", 16, 16,
+beam_n = box([0, 0, 6], [16, 4, 10], "wood")
+joining_block("pergola_top", "PERGOLA", 6, 16,
               ("Pergola Beams", "Pergolabalken", "Vigas de pérgola", "Pergolabjälkar"),
-              model(wood, [box([0, 14, z], [16, 16, z + 2], "wood") for z in (3, 11)]),
+              model(wood, [box([0, 4, z], [16, 6, z + 2], "wood") for z in (2, 12)]),
               model(wood, [beam_n]),
-              [beam_n, box([0, 10, 13.5], [16, 14, 15.5], "wood")], "false")
+              [beam_n, box([6, 0, 0], [10, 4, 16], "wood")], "false", uvlock=True)
 
 # --- fountains ---
 stone_water = {"stone": T("limestone"), "water": T("water"), "particle": T("limestone")}

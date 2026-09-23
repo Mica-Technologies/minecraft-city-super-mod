@@ -76,7 +76,7 @@ public class CsmTabParks extends CsmTab {
     initTabBlock(new BlockParkFacing("playground_slide", new int[]{2, 0, 0, 14, 16, 16}, true));
     initTabBlock(new BlockParkFacing("spring_rider", new int[]{4, 0, 2, 12, 14, 14}, true));
     initTabBlock(new BlockParkProp("pergola_post", BlockParkProp.Kind.POST, 16, 5));
-    initTabBlock(new BlockParkJoining("pergola_top", BlockParkJoining.Kind.PERGOLA, 16, 16));
+    initTabBlock(new BlockParkJoining("pergola_top", BlockParkJoining.Kind.PERGOLA, 6, 16));
     initTabBlock(new BlockParkJoining("fountain_basin", BlockParkJoining.Kind.BED, 11, 16));
     initTabBlock(new BlockParkProp("fountain_tiered", BlockParkProp.Kind.PLANTER, 16, 2));
     initTabBlock(BlockSprinkler.class, fmlPreInitializationEvent);

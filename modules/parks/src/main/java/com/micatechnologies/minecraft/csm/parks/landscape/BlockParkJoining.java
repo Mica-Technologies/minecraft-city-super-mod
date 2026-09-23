@@ -43,7 +43,7 @@ public class BlockParkJoining extends AbstractBlock {
     FENCE(Material.IRON, SoundType.METAL, "pickaxe", 2.0F, BlockRenderLayer.CUTOUT),
     /** A raised bed or fountain basin, joins its own block only. */
     BED(Material.ROCK, SoundType.STONE, "pickaxe", 1.5F, BlockRenderLayer.CUTOUT),
-    /** A pergola's roof of beams and rafters: above head height, joins its own block only. */
+    /** A pergola's roof of beams and rafters, sitting on its posts; joins its own block only. */
     PERGOLA(Material.WOOD, SoundType.WOOD, "axe", 2.0F, BlockRenderLayer.CUTOUT);
 
     final Material material;
@@ -153,13 +153,8 @@ public class BlockParkJoining extends AbstractBlock {
 
   // --- shape ---
 
-  /** Where it starts: a pergola roof sits on its posts, clear of the heads beneath it. */
-  private double bottom() {
-    return kind == Kind.PERGOLA ? 0.625 : 0;
-  }
-
   private AxisAlignedBB post() {
-    return new AxisAlignedBB(0.5 - half, bottom(), 0.5 - half, 0.5 + half, height, 0.5 + half);
+    return new AxisAlignedBB(0.5 - half, 0, 0.5 - half, 0.5 + half, height, 0.5 + half);
   }
 
   @Override
@@ -176,7 +171,7 @@ public class BlockParkJoining extends AbstractBlock {
     double x1 = s.getValue(EAST) ? 1 : 0.5 + half;
     double z0 = s.getValue(NORTH) ? 0 : 0.5 - half;
     double z1 = s.getValue(SOUTH) ? 1 : 0.5 + half;
-    return new AxisAlignedBB(x0, bottom(), z0, x1, height, z1);
+    return new AxisAlignedBB(x0, 0, z0, x1, height, z1);
   }
 
   @Override
@@ -187,7 +182,7 @@ public class BlockParkJoining extends AbstractBlock {
     IBlockState s = isActualState ? state : getActualState(state, world, pos);
     // A fence is jumped like a fence; a bed or hedge is climbed on like a slab or a wall.
     double top = kind == Kind.FENCE ? 1.5 : height;
-    double b = bottom();
+    double b = 0;
     addCollisionBoxToList(pos, entityBox, boxes,
         new AxisAlignedBB(0.5 - half, b, 0.5 - half, 0.5 + half, top, 0.5 + half));
     if (s.getValue(NORTH)) {
