@@ -1,0 +1,43 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "head": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_electronic"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "head": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_electronic",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "head": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_electronic",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "head": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/services/warning_siren_electronic",
+        "y": 270
+      }
+    }
+  ]
+}

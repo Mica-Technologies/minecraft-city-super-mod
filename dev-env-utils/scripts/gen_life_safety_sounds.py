@@ -138,7 +138,86 @@ def metal_detector_alarm():
     return np.concatenate(parts)
 
 
+def siren(freqs, amp=None):
+    """A mechanical rotating siren from the pitch it is making at each sample (Hz, the lower of
+    its two rotor tones): two chopped tones a minor third apart, each a buzz of odd harmonics, the
+    air rushing under them. The phase is integrated from the pitch, so a sweep glides."""
+    freqs = np.asarray(freqs, dtype=float)
+    out = np.zeros_like(freqs)
+    for ratio, level in ((1.0, 1.0), (1.2, 0.8)):
+        phase = 2 * np.pi * np.cumsum(freqs * ratio) / RATE
+        for h, hl in ((1, 1.0), (3, 0.33), (5, 0.16), (7, 0.08)):
+            out += level * hl * np.sin(h * phase)
+    out += np.random.RandomState(11).uniform(-0.12, 0.12, len(out))
+    if amp is not None:
+        out *= amp
+    return out
+
+
+def seamless(freqs):
+    """Scales a looping pitch curve so it ends on a whole number of cycles of its lower tone and
+    the loop has no click. The upper tone is 6/5 of it, so five whole cycles of the lower make six
+    of the upper."""
+    freqs = np.asarray(freqs, dtype=float)
+    cycles = np.sum(freqs) / RATE
+    target = max(5.0, round(cycles / 5.0) * 5.0)
+    return freqs * (target / cycles)
+
+
+def siren_steady():
+    """Alert: the siren at full speed, a steady chord. Two seconds, looped."""
+    return siren(seamless(np.full(int(RATE * 2.0), 540.0)))
+
+
+def siren_wail():
+    """Attack: winding up from low to full, holding, and running down, over and over. Twelve
+    seconds, looped at the bottom of the run-down, where the siren is quietest."""
+    up = np.linspace(180, 560, int(RATE * 4.0))
+    hold = np.full(int(RATE * 2.0), 560.0)
+    down = np.linspace(560, 180, int(RATE * 6.0))
+    f = seamless(np.concatenate([up, hold, down]))
+    amp = 0.25 + 0.75 * (f - f.min()) / (f.max() - f.min())
+    return siren(f, amp)
+
+
+def siren_hilo():
+    """Fire: alternating high and low, the European-style call for volunteers. Two seconds,
+    looped."""
+    half = int(RATE * 0.5)
+    f = np.concatenate([np.full(half, 560.0), np.full(half, 420.0)] * 2)
+    # soften each step over 20 ms so it slides rather than clicks
+    k = int(RATE * 0.02)
+    kernel = np.ones(k) / k
+    f = np.convolve(np.concatenate([f[-k:], f, f[:k]]), kernel, mode='same')[k:-k]
+    return siren(seamless(f))
+
+
+def siren_growl():
+    """The test: one short wind-up to a third of full speed and back down, about twelve
+    seconds."""
+    up = np.linspace(60, 330, int(RATE * 5.0))
+    down = np.linspace(330, 40, int(RATE * 7.0))
+    f = np.concatenate([up, down])
+    amp = (f - f.min()) / (f.max() - f.min())
+    return siren(f, amp)
+
+
+def call_box_ring():
+    """A call box connecting: the button's click, two ring-back tones (440 and 480 Hz together,
+    as a line rings), and the click of the line picking up."""
+    click = np.random.RandomState(5).uniform(-1, 1, int(RATE * 0.01)) * np.linspace(1, 0,
+                                                                                int(RATE * 0.01))
+    ring = tone(440, 1.2) + tone(480, 1.2)
+    return np.concatenate([click, silence(0.3), ring, silence(1.0), ring, silence(0.6),
+                           click * 0.8, silence(0.2)])
+
+
 SOUNDS = {
+    'siren_steady': (siren_steady, 7000),
+    'siren_wail': (siren_wail, 7000),
+    'siren_hilo': (siren_hilo, 7000),
+    'siren_growl': (siren_growl, 6000),
+    'call_box_ring': (call_box_ring, 5000),
     'metal_detector_alarm': (metal_detector_alarm, 6500),
     'station_prealert': (station_prealert, 6000),
     'station_tone_engine': (two_tone(630, 1010), 6000),

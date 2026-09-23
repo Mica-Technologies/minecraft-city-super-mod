@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import com.micatechnologies.minecraft.csm.lifesafety.LifeSafetySounds;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
@@ -22,7 +23,8 @@ import net.minecraft.util.math.BlockPos;
  *
  * @since 2026.9
  */
-public class TileEntityStationAlertController extends AbstractTickableTileEntity {
+public class TileEntityStationAlertController extends AbstractTickableTileEntity
+    implements ILinkedDeviceController {
 
   /** The zones, in the order a click cycles them. Their tones are the sounds named here. */
   public enum Zone {
@@ -81,6 +83,19 @@ public class TileEntityStationAlertController extends AbstractTickableTileEntity
     devices.add(pos.toImmutable());
     markDirty();
     return true;
+  }
+
+  @Override
+  public LinkResult link(Block block, BlockPos pos) {
+    if (!(block instanceof BlockStationAlertDevice)) {
+      return LinkResult.NOT_MINE;
+    }
+    return addDevice(pos) ? LinkResult.LINKED : LinkResult.ALREADY_LINKED;
+  }
+
+  @Override
+  public String describe() {
+    return "station alerting controller";
   }
 
   public int getDeviceCount() {

@@ -1,9 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
-import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertController;
-import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertDevice;
-import com.micatechnologies.minecraft.csm.lifesafety.stations.TileEntityStationAlertController;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.ILinkedDeviceController;
 import java.util.List;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -119,25 +117,31 @@ public class ItemFireAlarmLinker extends AbstractItem {
     ItemStack heldStack = player.getHeldItem(hand);
     BlockPos alarmPanelPos = getSelectedPanel(heldStack);
 
-    // A station alerting controller is selected the way a panel is, and its devices link to it.
-    if (state.getBlock() instanceof BlockStationAlertController) {
+    // Emergency Services controllers (station alerting, warning sirens) are selected the way a
+    // panel is, and offered each device clicked after.
+    if (state.getBlock() instanceof ILinkedDeviceController.ControllerBlock
+        && worldIn.getTileEntity(pos) instanceof ILinkedDeviceController) {
       setSelectedPanel(heldStack, pos);
       if (!worldIn.isRemote) {
-        player.sendMessage(new TextComponentString("Linking to station alerting controller at ("
+        player.sendMessage(new TextComponentString("Linking to the "
+            + ((ILinkedDeviceController) worldIn.getTileEntity(pos)).describe() + " at ("
             + pos.getX() + "," + pos.getY() + "," + pos.getZ() + ")"));
       }
       return EnumActionResult.SUCCESS;
     }
-    if (alarmPanelPos != null && state.getBlock() instanceof BlockStationAlertDevice
-        && worldIn.getTileEntity(alarmPanelPos) instanceof TileEntityStationAlertController) {
-      TileEntityStationAlertController controller =
-          (TileEntityStationAlertController) worldIn.getTileEntity(alarmPanelPos);
-      boolean added = controller.addDevice(pos);
+    if (alarmPanelPos != null
+        && worldIn.getTileEntity(alarmPanelPos) instanceof ILinkedDeviceController) {
+      ILinkedDeviceController controller =
+          (ILinkedDeviceController) worldIn.getTileEntity(alarmPanelPos);
+      ILinkedDeviceController.LinkResult result = controller.link(state.getBlock(), pos);
       if (!worldIn.isRemote) {
-        player.sendMessage(new TextComponentString(added
-            ? "Linked to the station alerting controller at (" + alarmPanelPos.getX() + ","
-            + alarmPanelPos.getY() + "," + alarmPanelPos.getZ() + ")"
-            : "Already linked to that station alerting controller"));
+        String where = controller.describe() + " at (" + alarmPanelPos.getX() + ","
+            + alarmPanelPos.getY() + "," + alarmPanelPos.getZ() + ")";
+        player.sendMessage(new TextComponentString(
+            result == ILinkedDeviceController.LinkResult.LINKED ? "Linked to the " + where
+                : result == ILinkedDeviceController.LinkResult.ALREADY_LINKED
+                    ? "Already linked to the " + where
+                    : "That is not something the " + where + " drives"));
       }
       return EnumActionResult.SUCCESS;
     }

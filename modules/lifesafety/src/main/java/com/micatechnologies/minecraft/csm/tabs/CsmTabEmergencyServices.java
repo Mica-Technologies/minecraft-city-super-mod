@@ -3,17 +3,20 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockCallBox;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockCellDoor;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirePole;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockFirePoleHole;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockLitProp;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockMetalDetector;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockSceneTape;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockSirenController;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertController;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationAlertDevice;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationBell;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockStationNumberPlaque;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockTapeStanchion;
+import com.micatechnologies.minecraft.csm.lifesafety.stations.BlockWarningSiren;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -102,5 +105,14 @@ public class CsmTabEmergencyServices extends CsmTab {
     initTabBlock(new BlockFireProtectionProp("decon_sink", new int[]{1, 0, 5, 15, 16, 16}, true));
     initTabBlock(new BlockFireProtectionProp("eyewash_station", new int[]{2, 1, 9, 14, 15, 16}, true));
     initTabBlock(new BlockFireProtectionProp("star_of_life_emblem", new int[]{1, 1, 15, 15, 15, 16}, false));
+    initTabBlock(new BlockWarningSiren("warning_siren_rotating", new int[]{3, 0, 3, 13, 16, 13}, true));
+    initTabBlock(new BlockWarningSiren("warning_siren_electronic", new int[]{4, 0, 4, 12, 16, 12}, false));
+    initTabBlock(new BlockSirenController("warning_siren_controller", new int[]{2, 1, 11, 14, 15, 16}));
+    initTabBlock(new BlockCallBox("blue_light_call_box", new int[]{4, 0, 4, 12, 16, 12}, 12));
+    initTabBlock(new BlockFireProtectionProp("dispatch_console", new int[]{0, 0, 2, 16, 16, 16}, true));
+    initTabBlock(new BlockFireProtectionProp("radio_console_speaker", new int[]{4, 0, 6, 12, 7, 12}, false));
+    initTabBlock(new BlockFireProtectionProp("fallout_shelter_sign", new int[]{2, 1, 15, 14, 15, 16}, false));
+    initTabBlock(new BlockFireProtectionProp("storm_shelter_sign", new int[]{2, 1, 15, 14, 15, 16}, false));
+    initTabBlock(new BlockFireProtectionProp("assembly_point_sign", new int[]{2, 1, 15, 14, 15, 16}, false));
   }
 }
