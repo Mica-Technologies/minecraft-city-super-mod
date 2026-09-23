@@ -108,8 +108,15 @@ TABS = {
     "tabinteriorfinishes": ("interior-finishes", "Interior Finishes",
                             "The surfaces that go on last: ceiling finishes, and the floor "
                             "and wall finishes that join them."),
-    "tablifesafety": ("life-safety", "Life Safety",
-                      "Fire alarm horns, strobes, pull stations, panels and exit signage."),
+    "tabexitsemergency": ("exits-and-emergency-lighting", "Exits & Emergency Lighting",
+                          "Exit and stair signs, and the emergency lights that take over when "
+                          "the power fails."),
+    "tabfireprotection": ("fire-protection", "Fire Protection",
+                          "Sprinklers and the rest of what a building fights a fire with "
+                          "besides its alarm."),
+    "tablifesafety": ("life-safety", "Fire Alarm & Detection",
+                      "Fire alarm panels, pull stations, horns, strobes, speakers and "
+                      "detectors."),
     "tablighting": ("lighting", "Lighting",
                     "Street lights, floodlights, pendants and sconces, all switchable."),
     "tabmaterials": ("materials", "Materials",
@@ -144,6 +151,7 @@ TABS = {
 }
 
 PAGE_ORDER = ["tabbuildingmaterials", "tabconstructionsite", "tabfurniture", "tabgaming",
+              "tabexitsemergency", "tabfireprotection",
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabroadsigns", "tabsignage", "tabstructureframing",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtreesplants",

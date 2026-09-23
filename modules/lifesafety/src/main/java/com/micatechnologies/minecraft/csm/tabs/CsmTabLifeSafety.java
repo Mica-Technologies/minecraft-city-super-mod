@@ -3,15 +3,6 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockEmergencyLightBlack;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockEmergencyLightWhite;
-import com.micatechnologies.minecraft.csm.lifesafety.exitsign.BlockExitSignCombo;
-import com.micatechnologies.minecraft.csm.lifesafety.exitsign.BlockExitSignDieCast;
-import com.micatechnologies.minecraft.csm.lifesafety.exitsign.BlockExitSignExplosionProof;
-import com.micatechnologies.minecraft.csm.lifesafety.exitsign.BlockExitSignPhotoluminescent;
-import com.micatechnologies.minecraft.csm.lifesafety.exitsign.BlockExitSignTraditionalFlat;
-import com.micatechnologies.minecraft.csm.lifesafety.exitsign.BlockExitSignTraditionalRounded;
-import com.micatechnologies.minecraft.csm.lifesafety.exitsign.BlockExitSignVandalResistant;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmBeaconFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.IStrobeBlock;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmControlPanel;
@@ -37,9 +28,6 @@ import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundSets;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSoundIndexStrobeFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSounderStrobeMetaSoundFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSounderStrobeFactory;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSprinklerBlack;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSprinklerSilver;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSprinklerWhite;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmVoiceEvacFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmVoiceEvacStrobeFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelock7002TRed;
@@ -53,12 +41,6 @@ import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHor
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHornStrobeWhite;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHornStrobeWhiteBlue;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHornWhite;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockOldFireSprinkler2;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockOldFireSprinkler3;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockOldFireSprinkler4;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockOldFireSprinkler5;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockOldFireSprinkler6;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockOldFireSprinkler;
 import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmConfigTool;
 import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmLinker;
 import net.minecraft.block.Block;
@@ -69,7 +51,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
- * The tab for life safety blocks.
+ * The Fire Alarm &amp; Detection tab of the Life Safety module: the control panel, pull stations,
+ * notification appliances, detectors and the tools that link them. Exit signs and emergency
+ * lighting are in {@link CsmTabExitsEmergency}, sprinklers and the rest of a building's fire
+ * protection in {@link CsmTabFireProtection}.
  *
  * @version 1.0
  */
@@ -97,7 +82,7 @@ public class CsmTabLifeSafety extends CsmTab {
    */
   @Override
   public Block getTabIcon() {
-    return CsmRegistry.getBlock("mclacodeapprovedexitsignisa");
+    return CsmRegistry.getBlock("firealarmgenericpullstation");
   }
 
   /**
@@ -134,9 +119,6 @@ public class CsmTabLifeSafety extends CsmTab {
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(new BlockRotatableNSEWUDFactory("eep", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.125000, 0.062500, 0.937500, 0.875000, 0.937500, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));
-    initTabBlock(BlockEmergencyLightWhite.class, fmlPreInitializationEvent);
-    initTabBlock(BlockEmergencyLightBlack.class, fmlPreInitializationEvent);
-    initTabBlock(new BlockRotatableNSEWUDFactory("exitsignsinglesided", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
     initTabBlock(new BlockFireAlarmBeaconFactory("firealarmbeaconred", new AxisAlignedBB(0.187500, 0.187500, 0.500000, 0.812500, 0.812500, 1.000000), new float[]{5.4f, 5.4f, 8f}, new float[]{10.6f, 10.6f, 9f}, new float[]{1.0f, 0.12f, 0.1f}));
     initTabBlock(new BlockFireAlarmBeaconFactory("firealarmbeacongreen", new AxisAlignedBB(0.187500, 0.187500, 0.500000, 0.812500, 0.812500, 1.000000), new float[]{5.4f, 5.4f, 8f}, new float[]{10.6f, 10.6f, 9f}, new float[]{0.2f, 1.0f, 0.32f}));
     initTabBlock(new BlockFireAlarmBeaconFactory("firealarmbeaconblue", new AxisAlignedBB(0.187500, 0.187500, 0.500000, 0.812500, 0.812500, 1.000000), new float[]{5.4f, 5.4f, 8f}, new float[]{10.6f, 10.6f, 9f}, new float[]{0.28f, 0.5f, 1.0f}));
@@ -196,9 +178,6 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsimplextruealertspeakerstrobewhite", new AxisAlignedBB(0.100000, -0.200000, 0.806250, 0.900000, 1.000000, 1.000000), new float[]{2.18f, 0.22f, 12.9f}, new float[]{13.74f, 3.92f, 14f}));
     initTabBlock(new BlockFireAlarmVoiceEvacFactory("firealarmsimplextruealertspeakerwhite", new AxisAlignedBB(0.125000, 0.218750, 0.875000, 0.875000, 1.000000, 1.000000)));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmspaceageav32red", "csm:sae_marchtime", new AxisAlignedBB(0.125000, 0.062500, 0.875000, 0.875000, 0.937500, 1.000000), new float[]{4.8f, 2.1f, 13.5f}, new float[]{11.4f, 5.4f, 14f}, true));
-    initTabBlock(BlockFireAlarmSprinklerBlack.class, fmlPreInitializationEvent);
-    initTabBlock(BlockFireAlarmSprinklerSilver.class, fmlPreInitializationEvent);
-    initTabBlock(BlockFireAlarmSprinklerWhite.class, fmlPreInitializationEvent);
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensoradvanceceilinghornstrobered", "csm:spectralert", new AxisAlignedBB(0.062500, 0.062500, 0.937500, 0.937500, 0.937500, 1.000000), new float[]{6f, 6f, 15f}, new float[]{10f, 10f, 16f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensoradvanceceilinghornstrobewhite", "csm:spectralert", new AxisAlignedBB(0.062500, 0.062500, 0.937500, 0.937500, 0.937500, 1.000000), new float[]{6f, 6f, 15f}, new float[]{10f, 10f, 16f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensoradvancehornstrobeoutdoorred", "csm:spectralert", new AxisAlignedBB(0.000000, 0.125000, 0.812500, 1.000000, 1.000000, 1.000000), new float[]{6f, 6.7f, 13f}, new float[]{10f, 11.2f, 14f}));
@@ -261,40 +240,7 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(BlockFireAlarmWheelockMTHornWhite.class, fmlPreInitializationEvent);
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("rssstrobe", null, new AxisAlignedBB(0.187500, 0.375000, 0.750000, 0.812500, 1.000000, 1.000000), new float[]{3.4f, 9.7f, 12f}, new float[]{12.9f, 12.2f, 14f}));
     initTabBlock(new BlockRotatableNSEWUDFactory("gamewellfirebox", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("greenmanexitsigndownarrow", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("greenmanexitsigndownarrowsinglesided", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("greenmanexitsignleftarrow", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("greenmanexitsignrightarrow", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("greenmanexitsignupleftarrow", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("greenmanexitsignuprightarrow", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedexitsign", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedexitsigndual", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedexitsigndualisa", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(-0.187500, 0.250000, 0.800000, 1.187500, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedexitsignisa", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(-0.187500, 0.250000, 0.800000, 1.187500, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedexitsignisasinglesided", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(-0.187500, 0.250000, 0.800000, 1.187500, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedexitsignleft", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedexitsignleftisa", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(-0.187500, 0.250000, 0.800000, 1.187500, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedexitsignright", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedexitsignrightisa", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(-0.187500, 0.250000, 0.800000, 1.187500, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(BlockExitSignTraditionalFlat.class, fmlPreInitializationEvent);
-    initTabBlock(BlockExitSignTraditionalRounded.class, fmlPreInitializationEvent);
-    initTabBlock(BlockExitSignCombo.class, fmlPreInitializationEvent);
-    initTabBlock(BlockExitSignDieCast.class, fmlPreInitializationEvent);
-    initTabBlock(BlockExitSignVandalResistant.class, fmlPreInitializationEvent);
-    initTabBlock(BlockExitSignPhotoluminescent.class, fmlPreInitializationEvent);
-    initTabBlock(BlockExitSignExplosionProof.class, fmlPreInitializationEvent);
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedstairssign", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedstairssigndual", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedstairssignleft", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("mclacodeapprovedstairssignright", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
-    initTabBlock(BlockOldFireSprinkler.class, fmlPreInitializationEvent);
-    initTabBlock(BlockOldFireSprinkler2.class, fmlPreInitializationEvent);
-    initTabBlock(BlockOldFireSprinkler3.class, fmlPreInitializationEvent);
-    initTabBlock(BlockOldFireSprinkler4.class, fmlPreInitializationEvent);
-    initTabBlock(BlockOldFireSprinkler5.class, fmlPreInitializationEvent);
-    initTabBlock(BlockOldFireSprinkler6.class, fmlPreInitializationEvent);
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("sslstrobe", null, new AxisAlignedBB(0.187500, 0.187500, 0.812500, 0.812500, 1.000000, 1.000000), new float[]{5.5f, 4.86f, 13f}, new float[]{10.25f, 9.63f, 14f}));
-    initTabBlock(new BlockRotatableNSEWUDFactory("stairssignonesided", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
     initTabItem(ItemFireAlarmLinker.class, fmlPreInitializationEvent);
     initTabItem(ItemFireAlarmConfigTool.class, fmlPreInitializationEvent);
   }

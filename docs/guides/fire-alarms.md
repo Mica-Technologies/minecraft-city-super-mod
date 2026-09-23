@@ -82,8 +82,9 @@ can produce a signal — a tripwire, a pressure plate, or a circuit of your own.
 
 ## Exit signage
 
-The Life Safety tab also carries exit signs and emergency lighting. They are not part of the
-panel system, and are listed in the [Life Safety reference](../reference/life-safety.md).
+Exit signs and emergency lighting have a tab of their own, Exits & Emergency Lighting. They are
+not part of the panel system, and are listed in the
+[Exits & Emergency Lighting reference](../reference/exits-and-emergency-lighting.md).
 
 ### Traditional and specialty exit signs
 

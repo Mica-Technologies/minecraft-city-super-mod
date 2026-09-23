@@ -13,9 +13,11 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Construction Site](construction-site.md) | 42 | What stands around a building while it goes up: scaffolding, formwork, earthworks, site logistics and facilities. |
 | [Furniture](furniture.md) | 55 | Interior fittings: seating, counters, appliances and fixtures. |
 | [Gaming](gaming.md) | 19 | Arcade cabinets and the playable machines that go with them. |
+| [Exits & Emergency Lighting](exits-and-emergency-lighting.md) | 30 | Exit and stair signs, and the emergency lights that take over when the power fails. |
+| [Fire Protection](fire-protection.md) | 9 | Sprinklers and the rest of what a building fights a fire with besides its alarm. |
 | [HVAC](hvac.md) | 45 | Heating and cooling that actually simulates room temperature. |
 | [Interior Finishes](interior-finishes.md) | 60 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
-| [Life Safety](life-safety.md) | 162 | Fire alarm horns, strobes, pull stations, panels and exit signage. |
+| [Fire Alarm & Detection](life-safety.md) | 123 | Fire alarm panels, pull stations, horns, strobes, speakers and detectors. |
 | [Lighting](lighting.md) | 132 | Street lights, floodlights, pendants and sconces, all switchable. |
 | [Materials](materials.md) | 1 | The CSM Fabricator, which turns vanilla ingots into CSM blocks. |
 | [Novelties](novelties.md) | 33 | Decorative oddities that did not belong anywhere else. |

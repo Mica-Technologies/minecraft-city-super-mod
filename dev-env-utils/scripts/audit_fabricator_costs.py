@@ -295,6 +295,20 @@ def cost_for(registry, info, ancestors):
         if has("AbstractBlockFireAlarmSounder"):
             return ("SOUNDER_DRIVER", "ENCLOSURE_SHELL")
         return ("SHEET_METAL", "WIRING_HARNESS")
+    # The two tabs split out of Life Safety (LifeSafetyFabricatorRules.priceExits and
+    # priceFireProtection): what they cost in the one tab.
+    if tab == "tabexitsemergency":
+        return ("SHEET_METAL", "WIRING_HARNESS")
+    if tab == "tabfireprotection":
+        if has_word(registry, "sprinkler"):
+            return ("SHEET_METAL", "LENS_ASSEMBLY")
+        if has("AbstractBlockFireAlarmDetector"):
+            return ("OPTICAL_SENSOR", "CONTROL_BOARD")
+        if has("AbstractBlockFireAlarmActivator"):
+            return ("CONTROL_BOARD", "SHEET_METAL")
+        if has("AbstractBlockFireAlarmSounder"):
+            return ("SOUNDER_DRIVER", "ENCLOSURE_SHELL")
+        return ("SHEET_METAL", "WIRING_HARNESS")
     if tab == "tablighting":
         return ("LED_MODULE", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabnovelties":
@@ -333,6 +347,9 @@ def cost_for(registry, info, ancestors):
         if has_any(registry, METAL_FURNITURE_WORDS):
             return ("SHEET_METAL", "FASTENER_KIT")
         return ("planks x2", "FASTENER_KIT")
+    # Any other tab is a module's own, priced by the rule the module registers
+    # (e.g. ParksFabricatorRules), which this audit does not mirror; this is the generic cost
+    # such a rule falls back to.
     return ("SHEET_METAL", "FASTENER_KIT")
 
 
