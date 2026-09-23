@@ -49,6 +49,8 @@ import org.apache.logging.log4j.Logger;
  *   Order 15 = CsmTabInteriorFinishes
  *   Order 16 = CsmTabConstructionSite
  *   Order 17 = CsmTabSignage
+ *   Order 18 = CsmTabTreesPlants
+ *   Order 19 = CsmTabParks
  * </pre>
  * <p>When adding a new tab, choose the next available order value and update this list. A
  * module that owns retiring blocks ships its own hidden tab at a negative order; hidden tabs
