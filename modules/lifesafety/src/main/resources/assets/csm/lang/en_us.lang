@@ -366,3 +366,4 @@ tile.standpipe_drain_valve_silver.name=Standpipe Drain Valve (Silver)
 tile.simplex_4090_bell.name=Simplex 4090 Fire Alarm Bell
 tile.system_sensor_bell_grey.name=System Sensor Fire Alarm Bell (Grey)
 tile.system_sensor_bell_red.name=System Sensor Fire Alarm Bell (Red)
+tile.in_case_of_fire_sign.name=What To Do in Case of Fire Sign

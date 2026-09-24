@@ -942,6 +942,83 @@ for tex_name, names in SIGNS:
             facing_state(M(reg)))
 
 
+# --- the "What to do in case of fire" placard ----------------------------------------------
+# The framed notice hung beside a local alarm's pull station in older buildings, whose alarm
+# rang in the building and nowhere else. Too much to say for a sign plate, so it is its own
+# landscape board: 15 x 10 units, x 0.5..15.5 and y 3..13, on a 128 px texture (8 px a unit).
+PLACARD = ((0.5, 3, 15.25), (15.5, 13, 16))
+WOOD = (112, 78, 46)
+PAPER = (226, 218, 192)
+INK = (38, 34, 30)
+PLACARD_LINES = [
+    # (text, colour, gap above in px)
+    ("WHAT TO DO IN CASE OF FIRE", RED_DARK, 0),
+    ("1 PULL THE NEAREST ALARM", INK, 7),
+    ("2 LEAVE BY THE NEAREST EXIT", INK, 4),
+    ("3 CALL THE FIRE DEPARTMENT", INK, 4),
+    ("  FROM A SAFE PLACE", INK, 1),
+    ("THIS ALARM DOES NOT CALL", RED_DARK, 6),
+    ("THE FIRE DEPARTMENT", RED_DARK, 1),
+]
+
+
+@C.texture("placard_wood")
+def _placard_wood():
+    img = fill(WOOD, size=16, grain=4, seed=181)
+    px = img.load()
+    for y in (3, 9, 13):
+        for x in range(16):
+            px[x, y] = clamp(shade(WOOD, 0.82)) + (255,)
+    return img
+
+
+@C.texture("placard_fire")
+def _placard_fire():
+    img = fill(WOOD, size=128, grain=4, seed=182)
+    x0, y0, x1, y1 = north_region(PLACARD[0], PLACARD[1], 128)
+    # the frame: lit on its top and left, shaded on its bottom and right, with grain along it
+    bevel(img, x0, y0, x1, y1, WOOD, light=1.25, dark=0.7)
+    px = img.load()
+    rng = random.Random(183)
+    for y in range(y0 + 1, y1 - 1):
+        for x in range(x0 + 1, x1 - 1):
+            if rng.random() < 0.08:
+                px[x, y] = clamp(shade(WOOD, 0.85)) + (255,)
+    # the card, set 4 px in, with a shadow line under the frame's inner edge
+    p0, q0, p1, q1 = x0 + 4, y0 + 4, x1 - 4, y1 - 4
+    rect(img, p0 - 1, q0 - 1, p1 + 1, q1 + 1, shade(WOOD, 0.55))
+    paper = fill(PAPER, size=128, grain=3, seed=184)
+    img.paste(paper.crop((p0, q0, p1, q1)), (p0, q0))
+    # four brass screws in the frame's corners
+    for sx, sy in ((x0 + 2, y0 + 2), (x1 - 3, y0 + 2), (x0 + 2, y1 - 3), (x1 - 3, y1 - 3)):
+        rect(img, sx, sy, sx + 1, sy + 1, BRASS)
+    cx = (p0 + p1) / 2.0
+    y = q0 + 4
+    for i, (text, colour, gap) in enumerate(PLACARD_LINES):
+        y += gap
+        if text_width(text) > (p1 - p0 - 4):
+            raise ValueError("placard line too wide: %r" % text)
+        if text.startswith(("1", "2", "3", " ")):
+            draw_text(img, text, p0 + 3, y, colour)
+        else:
+            draw_text_centred(img, text, cx, y, colour)
+        y += 6
+        if i == 0:
+            rect(img, p0 + 6, y + 1, p1 - 6, y + 2, RED_DARK)
+        if i == 4:
+            rect(img, p0 + 6, y + 2, p1 - 6, y + 3, shade(INK, 1.6))
+    return img
+
+
+fp_prop("in_case_of_fire_sign", (1, 3, 15, 15, 13, 16), False,
+        ("What To Do in Case of Fire Sign", "Schild Verhalten im Brandfall",
+         "Señal de qué hacer en caso de incendio", "Skylt vid brand"),
+        {"in_case_of_fire_sign": model(
+            {"face": T("placard_fire"), "wood": T("placard_wood"),
+             "particle": T("placard_wood")},
+            [box(list(PLACARD[0]), list(PLACARD[1]), "wood", per={"north": "face"})])},
+        facing_state(M("in_case_of_fire_sign")))
+
 # --- detection (Fire Alarm & Detection tab) --------------------------------------------------
 def detector(reg, bbox, names, textures, elements):
     C.add(reg, 'new BlockFireAlarmDetectorFactory("%s", %s)' % (reg, aabb(*bbox)), names,

@@ -2,7 +2,7 @@
 
 Sprinklers and the rest of what a building fights a fire with besides its alarm.
 
-!!! info "52 blocks in this tab"
+!!! info "53 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -63,5 +63,6 @@ Sprinklers and the rest of what a building fights a fire with besides its alarm.
 | Storz Fire Department Connection | `csm:fdc_storz` | 2.0 | 6.0 | pickaxe | 0 |
 | Water Fire Extinguisher | `csm:fire_extinguisher_water` | 2.0 | 6.0 | pickaxe | 0 |
 | Water Motor Gong | `csm:water_motor_gong` | 2 | 10 | pickaxe | 1 |
+| What To Do in Case of Fire Sign | `csm:in_case_of_fire_sign` | 2.0 | 6.0 | pickaxe | 0 |
 
 </div>

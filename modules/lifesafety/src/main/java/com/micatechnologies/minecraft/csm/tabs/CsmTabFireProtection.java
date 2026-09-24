@@ -119,6 +119,7 @@ public class CsmTabFireProtection extends CsmTab {
     initTabBlock(new BlockFireProtectionProp("riser_sign", new int[]{2, 1, 15, 14, 15, 16}, false));
     initTabBlock(new BlockFireProtectionProp("fire_door_sign", new int[]{2, 1, 15, 14, 15, 16}, false));
     initTabBlock(new BlockFireProtectionProp("aed_sign", new int[]{2, 1, 15, 14, 15, 16}, false));
+    initTabBlock(new BlockFireProtectionProp("in_case_of_fire_sign", new int[]{1, 3, 15, 15, 13, 16}, false));
     // --- Sprinklers, moved here from the one Life Safety tab ---
     initTabBlock(BlockFireAlarmSprinklerBlack.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmSprinklerSilver.class, fmlPreInitializationEvent);

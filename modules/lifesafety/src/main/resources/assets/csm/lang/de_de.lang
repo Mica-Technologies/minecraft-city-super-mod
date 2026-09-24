@@ -366,3 +366,4 @@ tile.standpipe_drain_valve_silver.name=Steigleitungs-Entleerungsventil (Silber)
 tile.simplex_4090_bell.name=Simplex 4090 Feueralarmglocke
 tile.system_sensor_bell_grey.name=System Sensor Feueralarmglocke (grau)
 tile.system_sensor_bell_red.name=System Sensor Feueralarmglocke (rot)
+tile.in_case_of_fire_sign.name=Schild Verhalten im Brandfall

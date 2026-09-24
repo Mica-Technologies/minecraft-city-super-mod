@@ -366,3 +366,4 @@ tile.standpipe_drain_valve_silver.name=Válvula de drenaje de columna seca (Plat
 tile.simplex_4090_bell.name=Campana de alarma de incendio Simplex 4090
 tile.system_sensor_bell_grey.name=Campana de alarma de incendio System Sensor (gris)
 tile.system_sensor_bell_red.name=Campana de alarma de incendio System Sensor (roja)
+tile.in_case_of_fire_sign.name=Señal de qué hacer en caso de incendio

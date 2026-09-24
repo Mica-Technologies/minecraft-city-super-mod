@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "face": "csm:blocks/lifesafety/fireprotection/placard_fire",
+    "wood": "csm:blocks/lifesafety/fireprotection/placard_wood",
+    "particle": "csm:blocks/lifesafety/fireprotection/placard_wood"
+  },
+  "elements": [
+    {
+      "from": [
+        0.5,
+        3,
+        15.25
+      ],
+      "to": [
+        15.5,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0.5,
+            3,
+            15.5,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0.5,
+            3,
+            15.5,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            3,
+            0.75,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            15.25,
+            3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0.5,
+            15.25,
+            15.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0.5,
+            0,
+            15.5,
+            0.75
+          ]
+        }
+      }
+    }
+  ]
+}
