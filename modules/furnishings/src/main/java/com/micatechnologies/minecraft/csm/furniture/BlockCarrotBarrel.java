@@ -25,7 +25,7 @@ public class BlockCarrotBarrel extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.484375, 0.000000, -0.500000, 0.500000, 1.197824, 0.500000);
+    return new AxisAlignedBB(0.125, 0.0, 0.125, 0.875, 0.8125, 0.875);
   }
 
   @Override

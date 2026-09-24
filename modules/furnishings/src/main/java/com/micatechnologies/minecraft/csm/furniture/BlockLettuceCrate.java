@@ -25,7 +25,7 @@ public class BlockLettuceCrate extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.482894, 0.000000, -0.521054, 0.498107, 0.938808, 0.603830);
+    return new AxisAlignedBB(0.0625, 0.0, 0.15625, 0.9375, 0.5625, 0.84375);
   }
 
   @Override

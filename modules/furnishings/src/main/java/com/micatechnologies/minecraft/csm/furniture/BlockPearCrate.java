@@ -25,7 +25,7 @@ public class BlockPearCrate extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.437500, 0.000000, -0.521054, 0.437500, 0.728464, 0.557585);
+    return new AxisAlignedBB(0.0625, 0.0, 0.15625, 0.9375, 0.75, 0.84375);
   }
 
   @Override
