@@ -53,15 +53,6 @@
       }
     ]
   },
-  "campbell_phil_wait_to_cross": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:campbell_phil_wait_to_cross",
-        "stream": false
-      }
-    ]
-  },
   "campbell_phil_walk_exclusive": {
     "category": "block",
     "sounds": [
@@ -76,15 +67,6 @@
     "sounds": [
       {
         "name": "csm:campbell_phil_walk_on",
-        "stream": false
-      }
-    ]
-  },
-  "campbell_phil_walk_on_to_cross": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:campbell_phil_walk_on_to_cross",
         "stream": false
       }
     ]
