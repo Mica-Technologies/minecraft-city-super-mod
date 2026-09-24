@@ -29,6 +29,7 @@ import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSimplexChevro
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSimplexTBarPull;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSounderFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundSets;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSoundIndexFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSoundIndexStrobeFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSounderStrobeMetaSoundFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSounderStrobeFactory;
@@ -136,6 +137,9 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmest2028atwstrobewhite", null, new AxisAlignedBB(0.187500, 0.087500, 0.675000, 0.812500, 1.000000, 1.000000), new float[]{5.63f, 2.78f, 10.8f}, new float[]{10.55f, 14.38f, 12.6f}));
     initTabBlock(new BlockFireAlarmSounderFactory("firealarmestadaptahorngray", "csm:edwards_adaptahorn_code44", new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000)));
     initTabBlock(new BlockFireAlarmSounderFactory("firealarmestadaptahornred", "csm:edwards_adaptahorn_code44", new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000)));
+    initTabBlock(new BlockFireAlarmSoundIndexFactory("simplex_4090_bell", new AxisAlignedBB(0.062500, 0.031250, 0.590625, 0.937500, 1.000000, 1.000000), FireAlarmSoundSets.BELL, FireAlarmSoundSets.BELL_NAMES));
+    initTabBlock(new BlockFireAlarmSoundIndexFactory("system_sensor_bell_grey", new AxisAlignedBB(0.062500, 0.062500, 0.590625, 0.937500, 0.937500, 1.000000), FireAlarmSoundSets.BELL, FireAlarmSoundSets.BELL_NAMES));
+    initTabBlock(new BlockFireAlarmSoundIndexFactory("system_sensor_bell_red", new AxisAlignedBB(0.062500, 0.062500, 0.590625, 0.937500, 0.937500, 1.000000), FireAlarmSoundSets.BELL, FireAlarmSoundSets.BELL_NAMES));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmestgenesisred", "csm:est_genesis", new AxisAlignedBB(0.312500, 0.375000, 0.937500, 0.687500, 1.000000, 1.000000), new float[]{5f, 7f, 14.25f}, new float[]{11f, 9f, 15f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmestgenesiswhite", "csm:est_genesis", new AxisAlignedBB(0.312500, 0.375000, 0.937500, 0.687500, 1.000000, 1.000000), new float[]{5f, 7f, 14.25f}, new float[]{11f, 9f, 15f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmestintegrityhornstrobered", "csm:est_integrity", new AxisAlignedBB(0.187500, 0.312500, 0.687500, 0.875000, 1.000000, 1.000000), new float[]{7f, 6f, 11f}, new float[]{10f, 15f, 14f}));

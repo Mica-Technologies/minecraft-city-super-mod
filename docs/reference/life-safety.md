@@ -2,7 +2,7 @@
 
 Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
-!!! info "143 blocks in this tab"
+!!! info "146 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -65,6 +65,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Simplex 2901 Red (Horn) | `csm:firealarmsimplex2901hornred` | 2 | 10 | pickaxe | 1 |
 | Simplex 4050 Red (Horn) | `csm:firealarmsimplex4050red` | 2 | 10 | pickaxe | 1 |
 | Simplex 4051 Red (Horn Strobe) | `csm:firealarmsimplex4051red` | 2 | 10 | pickaxe | 1 |
+| Simplex 4090 Fire Alarm Bell | `csm:simplex_4090_bell` | 2 | 10 | pickaxe | 1 |
 | Simplex 4903 Red (Horn Strobe) | `csm:firealarmsimplex4903hornstrobered` | 2 | 10 | pickaxe | 1 |
 | Simplex 4903 Red (Speaker Strobe) | `csm:firealarmsimplex4903speakerstrobered` | 2 | 10 | pickaxe | 1 |
 | Simplex 4903 Red/Vertical (Horn Strobe) | `csm:firealarmsimplex4903verticalhornstrobered` | 2 | 10 | pickaxe | 1 |
@@ -87,6 +88,8 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Space Age Elec. AV32 Red (Horn Strobe) | `csm:firealarmspaceageav32red` | 2 | 10 | pickaxe | 1 |
 | System Sensor 5251 Heat Detector | `csm:systemsensor_5251_heat_detector` | 2 | 10 | pickaxe | 1 |
 | System Sensor 5601 Heat Detector | `csm:systemsensor_5601_heat_detector` | 2 | 10 | pickaxe | 1 |
+| System Sensor Fire Alarm Bell (Grey) | `csm:system_sensor_bell_grey` | 2 | 10 | pickaxe | 1 |
+| System Sensor Fire Alarm Bell (Red) | `csm:system_sensor_bell_red` | 2 | 10 | pickaxe | 1 |
 | System Sensor i3 Smoke Detector | `csm:systemsensor_i3_smoke_detector` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED Black (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledspeakerstrobeblack` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED Black/Ceiling (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledceilingspeakerstrobeblack` | 2 | 10 | pickaxe | 1 |

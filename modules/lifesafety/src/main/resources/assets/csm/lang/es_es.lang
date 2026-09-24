@@ -363,3 +363,6 @@ tile.standpipe_air_valve_red.name=Válvula de purga de aire de columna seca (Roj
 tile.standpipe_air_valve_silver.name=Válvula de purga de aire de columna seca (Plateada)
 tile.standpipe_drain_valve_red.name=Válvula de drenaje de columna seca (Roja)
 tile.standpipe_drain_valve_silver.name=Válvula de drenaje de columna seca (Plateada)
+tile.simplex_4090_bell.name=Campana de alarma de incendio Simplex 4090
+tile.system_sensor_bell_grey.name=Campana de alarma de incendio System Sensor (gris)
+tile.system_sensor_bell_red.name=Campana de alarma de incendio System Sensor (roja)

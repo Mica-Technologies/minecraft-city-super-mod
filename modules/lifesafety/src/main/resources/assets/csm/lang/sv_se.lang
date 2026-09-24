@@ -363,3 +363,6 @@ tile.standpipe_air_valve_red.name=Stigarledningens avluftningsventil (Röd)
 tile.standpipe_air_valve_silver.name=Stigarledningens avluftningsventil (Silverfärgad)
 tile.standpipe_drain_valve_red.name=Stigarledningens tömningsventil (Röd)
 tile.standpipe_drain_valve_silver.name=Stigarledningens tömningsventil (Silverfärgad)
+tile.simplex_4090_bell.name=Simplex 4090 brandlarmklocka
+tile.system_sensor_bell_grey.name=System Sensor brandlarmklocka (grå)
+tile.system_sensor_bell_red.name=System Sensor brandlarmklocka (röd)

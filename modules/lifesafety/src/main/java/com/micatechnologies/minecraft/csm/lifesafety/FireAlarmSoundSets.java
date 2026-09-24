@@ -54,6 +54,22 @@ public final class FireAlarmSoundSets {
       "Wheelock AS"
   };
 
+  /** The fire alarm bell's four ring patterns, in the order a bell cycles through them. */
+  public static final String[] BELL = {
+      "csm:code3_bell",
+      "csm:code44_bell",
+      "csm:continuous_bell",
+      "csm:marchtime_bell"
+  };
+
+  /** Human-readable names for {@link #BELL}, in the same order. */
+  public static final String[] BELL_NAMES = {
+      "Code 3",
+      "Code 4-4",
+      "Continuous",
+      "March Time"
+  };
+
   private FireAlarmSoundSets() {
   }
 }

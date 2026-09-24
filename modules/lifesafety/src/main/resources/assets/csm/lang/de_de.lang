@@ -363,3 +363,6 @@ tile.standpipe_air_valve_red.name=Steigleitungs-Entlüftungsventil (Rot)
 tile.standpipe_air_valve_silver.name=Steigleitungs-Entlüftungsventil (Silber)
 tile.standpipe_drain_valve_red.name=Steigleitungs-Entleerungsventil (Rot)
 tile.standpipe_drain_valve_silver.name=Steigleitungs-Entleerungsventil (Silber)
+tile.simplex_4090_bell.name=Simplex 4090 Feueralarmglocke
+tile.system_sensor_bell_grey.name=System Sensor Feueralarmglocke (grau)
+tile.system_sensor_bell_red.name=System Sensor Feueralarmglocke (rot)

@@ -363,3 +363,6 @@ tile.standpipe_air_valve_red.name=Standpipe Air Release Valve (Red)
 tile.standpipe_air_valve_silver.name=Standpipe Air Release Valve (Silver)
 tile.standpipe_drain_valve_red.name=Standpipe Drain Valve (Red)
 tile.standpipe_drain_valve_silver.name=Standpipe Drain Valve (Silver)
+tile.simplex_4090_bell.name=Simplex 4090 Fire Alarm Bell
+tile.system_sensor_bell_grey.name=System Sensor Fire Alarm Bell (Grey)
+tile.system_sensor_bell_red.name=System Sensor Fire Alarm Bell (Red)

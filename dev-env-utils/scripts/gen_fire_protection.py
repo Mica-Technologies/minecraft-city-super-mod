@@ -770,6 +770,124 @@ C.add("water_motor_gong",
       nsewud_state(M("water_motor_gong")), tab=FP)
 
 
+# --- fire alarm bells ----------------------------------------------------------------------
+# Three vibrating bells, the notification appliance before horns: a Simplex 4090 on its tan
+# base and System Sensor's grey and red. They ring with the panel's horns and a sneak-click
+# cycles the four patterns a bell circuit could ring (FireAlarmSoundSets.BELL).
+BELL_TAN = (165, 145, 120)
+BELL_GREY = (110, 116, 118)
+BELL_RED = (190, 30, 45)
+
+# The dome's stepped rings (radius, front z, back z), crown out, and the radius each ring's
+# band is painted to on the 32 px face texture (the model's units doubled).
+BELL_RINGS = ((7.0, 13.0, 16.0), (6.2, 11.4, 13.0), (4.8, 10.2, 11.4), (2.8, 9.6, 10.2))
+
+
+def bell_face(colour, seed, cy=16):
+    """A bell dome's face, seen from the front, its centre cy texels down: each ring's band a
+    little lighter toward the crown, where the dome faces the light. Everything is round about
+    the centre: half of each ring's octagon is turned 45 degrees and samples the texture turned
+    with it, so an off-centre highlight would show four times."""
+    def draw():
+        img = fill(colour, size=32, grain=3, seed=seed)
+        for (r, _, _), k in zip(BELL_RINGS, (0.94, 1.0, 1.08, 1.16)):
+            disc(img, 16, cy, r * 2, shade(colour, k))
+        return img
+    return draw
+
+
+# The Simplex dome sits a sixteenth higher than the others: its centre is 14 texels down.
+C.textures["bell_face_tan"] = bell_face(BELL_TAN, 121, cy=14)
+C.textures["bell_face_grey"] = bell_face(BELL_GREY, 122)
+C.textures["bell_face_red"] = bell_face(BELL_RED, 123)
+flat("bell_tan", BELL_TAN, seed=124, grain=3)
+flat("bell_tan_dark", shade(BELL_TAN, 0.85), seed=125, grain=3)
+flat("bell_grey", BELL_GREY, seed=126, grain=3)
+flat("bell_red", BELL_RED, seed=127, grain=3)
+
+
+@C.texture("bell_label_round")
+def _bell_label_round():
+    # System Sensor's round centre label: black, with a ring of fine white print. Drawn round
+    # about the centre, since the octagon it is painted on is partly turned 45 degrees.
+    img = fill(BLACK, size=32, grain=2, seed=128)
+    px = img.load()
+    for a in range(12):
+        ang = a * math.pi / 6
+        x, y = 16 + 3.2 * math.cos(ang), 16 + 3.2 * math.sin(ang)
+        px[int(x), int(y)] = (180, 180, 176, 255)
+    disc(img, 16, 16, 1.4, (70, 70, 72))
+    return img
+
+
+# The Simplex's label is square, so it is its own unturned element and can carry lines of
+# print: the maker's mark across the top and the rating below it.
+SIMPLEX_LABEL = ([6.0, 7.0, 9.4], [10.0, 11.0, 9.6])
+
+
+@C.texture("bell_label_simplex")
+def _bell_label_simplex():
+    img = fill(BELL_TAN, size=32, grain=3, seed=129)
+    x0, y0, x1, y1 = north_region(SIMPLEX_LABEL[0], SIMPLEX_LABEL[1], 32)
+    rect(img, x0, y0, x1, y1, BLACK)
+    px = img.load()
+    rect(img, x0 + 1, y0 + 1, x1 - 1, y0 + 2, (232, 232, 226))
+    for y in (y0 + 4, y0 + 6):
+        for x in range(x0 + 1, x1 - 1, 2):
+            px[x, y] = (200, 200, 196, 255)
+    return img
+
+
+def bell_dome(body, cy=8, label=None):
+    """A bell's dome, crown out, from the gong's stepped rings; the System Sensor bells carry a
+    round black label on the crown, the Simplex its square one (label=elements)."""
+    els = []
+    for r, z0, z1 in BELL_RINGS:
+        for el in pipe_z(8, cy, r, z0, z1, body):
+            if "north" in el["faces"]:
+                el["faces"]["north"]["texture"] = "#face"
+            els.append(el)
+    if label is None:
+        for el in pipe_z(8, cy, 1.9, 9.45, 9.6, "label"):
+            els.append(el)
+    else:
+        els.extend(label)
+    return els
+
+
+def add_bell(reg, names, face, body, bb, extra=(), cy=8, label=None):
+    textures = {"body": T(body), "face": T(face), "particle": T(body)}
+    if label is None:
+        textures["label"] = T("bell_label_round")
+    else:
+        textures["label"] = T("bell_label_simplex")
+    C.add(reg,
+          'new BlockFireAlarmSoundIndexFactory("%s", %s, FireAlarmSoundSets.BELL, '
+          'FireAlarmSoundSets.BELL_NAMES)' % (reg, bb),
+          names,
+          {reg: model(dict(textures, **{"base": T("bell_tan_dark")}) if extra else textures,
+                      list(extra) + bell_dome("body", cy, label))},
+          nsewud_state(M(reg)), tab=FA)
+
+
+# The Simplex's dome sits high on its base, whose foot shows below it.
+add_bell("simplex_4090_bell",
+         ("Simplex 4090 Fire Alarm Bell", "Simplex 4090 Feueralarmglocke",
+          "Campana de alarma de incendio Simplex 4090", "Simplex 4090 brandlarmklocka"),
+         "bell_face_tan", "bell_tan", aabb(1, 0.5, 9.45, 15, 16, 16),
+         extra=[box([3.5, 0.5, 14.0], [12.5, 8.0, 16.0], "base")], cy=9,
+         label=[box(SIMPLEX_LABEL[0], SIMPLEX_LABEL[1], "label", faces=("north",))])
+add_bell("system_sensor_bell_grey",
+         ("System Sensor Fire Alarm Bell (Grey)", "System Sensor Feueralarmglocke (grau)",
+          "Campana de alarma de incendio System Sensor (gris)",
+          "System Sensor brandlarmklocka (grå)"),
+         "bell_face_grey", "bell_grey", aabb(1, 1, 9.45, 15, 15, 16))
+add_bell("system_sensor_bell_red",
+         ("System Sensor Fire Alarm Bell (Red)", "System Sensor Feueralarmglocke (rot)",
+          "Campana de alarma de incendio System Sensor (roja)",
+          "System Sensor brandlarmklocka (röd)"),
+         "bell_face_red", "bell_red", aabb(1, 1, 9.45, 15, 15, 16))
+
 # --- magnetic door holders -----------------------------------------------------------------
 def holder_state(reg):
     return facing_state(M(reg), {"alarm": {"false": {}, "true": {"textures": {"led": T("led_off")}}}})
