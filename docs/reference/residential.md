@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room tables, chairs, bookcases, storage and sofas that join into runs.
 
-!!! info "318 blocks in this tab"
+!!! info "319 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -42,6 +42,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Bookshelf Speaker (Black) | `csm:bookshelf_speaker_black` | 1.5 | 3.0 | axe | 0 |
 | Bookshelf Speaker (Walnut) | `csm:bookshelf_speaker_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bounce Castle (Red) | `csm:bounce_castle_red` | 1.5 | 3.0 | axe | 0 |
+| Boxed Air Cooler (Delivery) | `csm:boxed_air_cooler` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (Light Oak) | `csm:bunk_bed_oak` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (Walnut) | `csm:bunk_bed_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (White) | `csm:bunk_bed_white` | 1.5 | 3.0 | axe | 0 |

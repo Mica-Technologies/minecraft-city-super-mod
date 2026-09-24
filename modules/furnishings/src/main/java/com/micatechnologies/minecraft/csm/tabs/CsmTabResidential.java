@@ -644,6 +644,7 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockResidentialStorage("storage_crate_oak", new int[]{0, 0, 0, 16, 14, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
     initTabBlock(new BlockResidentialStorage("storage_crate_walnut", new int[]{0, 0, 0, 16, 14, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
     initTabBlock(new BlockResidentialStorage("storage_crate_white", new int[]{0, 0, 0, 16, 14, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockResidentialFurniture("boxed_air_cooler", new int[]{3, 0, 4, 13, 10, 12}, false));
 
     // ---- Outdoor & Backyard: patio ----
     // Patio Table

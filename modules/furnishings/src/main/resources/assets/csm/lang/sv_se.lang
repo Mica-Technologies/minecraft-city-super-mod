@@ -425,6 +425,7 @@ tile.doorbell_white.name=Dörrklocka (vit)
 tile.storage_crate_oak.name=Förvaringslåda (ljus ek)
 tile.storage_crate_walnut.name=Förvaringslåda (valnöt)
 tile.storage_crate_white.name=Förvaringslåda (vit)
+tile.boxed_air_cooler.name=Förpackad luftkylare (leverans)
 tile.bounce_castle_part.name=Hoppborgsdel
 tile.patio_table_teak.name=Uteplatsbord (teak)
 tile.patio_table_black.name=Uteplatsbord (svart)

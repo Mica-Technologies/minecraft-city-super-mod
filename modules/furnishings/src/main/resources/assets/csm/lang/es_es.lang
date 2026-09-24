@@ -425,6 +425,7 @@ tile.doorbell_white.name=Timbre (blanco)
 tile.storage_crate_oak.name=Caja de almacenaje (roble claro)
 tile.storage_crate_walnut.name=Caja de almacenaje (nogal)
 tile.storage_crate_white.name=Caja de almacenaje (blanco)
+tile.boxed_air_cooler.name=Enfriador de aire en caja (entrega)
 tile.bounce_castle_part.name=Parte del castillo hinchable
 tile.patio_table_teak.name=Mesa de patio (teca)
 tile.patio_table_black.name=Mesa de patio (negro)

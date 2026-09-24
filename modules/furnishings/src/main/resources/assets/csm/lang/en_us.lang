@@ -425,6 +425,7 @@ tile.doorbell_white.name=Doorbell (White)
 tile.storage_crate_oak.name=Storage Crate (Light Oak)
 tile.storage_crate_walnut.name=Storage Crate (Walnut)
 tile.storage_crate_white.name=Storage Crate (White)
+tile.boxed_air_cooler.name=Boxed Air Cooler (Delivery)
 tile.bounce_castle_part.name=Bounce Castle Part
 tile.patio_table_teak.name=Patio Table (Teak)
 tile.patio_table_black.name=Patio Table (Black)
