@@ -7,6 +7,7 @@ import com.micatechnologies.minecraft.csm.codeutils.ItemDecorativeFactory;
 import com.micatechnologies.minecraft.csm.technology.BlockImac;
 import com.micatechnologies.minecraft.csm.technology.BlockImacPro;
 import com.micatechnologies.minecraft.csm.technology.BlockMacBookPro;
+import com.micatechnologies.minecraft.csm.technology.BlockDeskDeviceFactory;
 import com.micatechnologies.minecraft.csm.technology.BlockFareGate;
 import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda2;
 import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda3;
@@ -115,6 +116,9 @@ public class CsmTabTechnology extends CsmTab {
     initTabBlock(new BlockSpeakerFactory("jblc1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
     initTabBlock(new BlockSpeakerFactory("jblc2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
     initTabBlock(BlockMacBookPro.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockDeskDeviceFactory("macbook_air_closed", new double[]{2, 0, 3.75, 14, 1, 12.25}));
+    initTabBlock(new BlockDeskDeviceFactory("mac_studio", new double[]{3, 0, 3, 13, 5.25, 13}));
+    initTabBlock(new BlockDeskDeviceFactory("mac_keyboard", new double[]{1, 0, 6, 15, 0.6, 9.85}));
     initTabBlock(new BlockRotatableNSEWUDFactory("stbox", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.250000, 1.000000, 0.187500, 0.750000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("tvdish", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.187500, 0.000000, 0.250000, 0.812500, 1.000000, 0.812500), false, true, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("tvdishside", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.187500, 0.375000, 0.125000, 0.812500, 1.000000, 1.000000), false, true, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));

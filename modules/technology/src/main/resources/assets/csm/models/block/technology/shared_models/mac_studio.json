@@ -1,0 +1,136 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "t": "csm:blocks/technology/mac_studio",
+    "particle": "csm:blocks/technology/mac_studio"
+  },
+  "elements": [
+    {
+      "from": [
+        3.5,
+        0,
+        3.5
+      ],
+      "to": [
+        12.5,
+        0.5,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6.625,
+            16,
+            6.6875
+          ],
+          "texture": "#t"
+        },
+        "south": {
+          "uv": [
+            0,
+            6.625,
+            16,
+            6.6875
+          ],
+          "texture": "#t"
+        },
+        "east": {
+          "uv": [
+            0,
+            6.625,
+            16,
+            6.6875
+          ],
+          "texture": "#t"
+        },
+        "west": {
+          "uv": [
+            0,
+            6.625,
+            16,
+            6.6875
+          ],
+          "texture": "#t"
+        },
+        "down": {
+          "uv": [
+            0,
+            6.625,
+            16,
+            6.6875
+          ],
+          "texture": "#t"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        0.5,
+        3
+      ],
+      "to": [
+        13,
+        5.25,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0.0,
+            16,
+            6.6875
+          ],
+          "texture": "#t"
+        },
+        "south": {
+          "uv": [
+            0,
+            7.25,
+            16,
+            13.9375
+          ],
+          "texture": "#t"
+        },
+        "east": {
+          "uv": [
+            0,
+            0.5,
+            16,
+            1.5
+          ],
+          "texture": "#t"
+        },
+        "west": {
+          "uv": [
+            0,
+            0.5,
+            16,
+            1.5
+          ],
+          "texture": "#t"
+        },
+        "up": {
+          "uv": [
+            0,
+            0.5,
+            16,
+            1.5
+          ],
+          "texture": "#t"
+        },
+        "down": {
+          "uv": [
+            0,
+            0.5,
+            16,
+            1.5
+          ],
+          "texture": "#t"
+        }
+      }
+    }
+  ]
+}

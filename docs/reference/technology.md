@@ -2,7 +2,7 @@
 
 Servers, routers, screens and consumer electronics.
 
-!!! info "46 blocks in this tab"
+!!! info "49 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -15,6 +15,9 @@ Servers, routers, screens and consumer electronics.
 | Altec Lansing Speaker (White) | `csm:altec_lansing_speaker_white` |  |  |  |  |
 | Apple iMac | `csm:imac` | 2 | 10 | pickaxe | 1 |
 | Apple iMac Pro | `csm:imacpro` | 2 | 10 | pickaxe | 1 |
+| Apple Mac Keyboard | `csm:mac_keyboard` | 1 | 10 | pickaxe | 1 |
+| Apple Mac Studio | `csm:mac_studio` | 1 | 10 | pickaxe | 1 |
+| Apple MacBook Air (Closed) | `csm:macbook_air_closed` | 1 | 10 | pickaxe | 1 |
 | Apple MacBook Pro | `csm:mbp` | 2 | 10 | pickaxe | 1 |
 | Apple TV | `csm:appletv` |  |  |  |  |
 | Atlas Speaker 1 | `csm:atls1` |  |  |  |  |

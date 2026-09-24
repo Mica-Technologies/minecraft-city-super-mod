@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "t": "csm:blocks/technology/mac_keyboard",
+    "particle": "csm:blocks/technology/mac_keyboard"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        6
+      ],
+      "to": [
+        15,
+        0.6,
+        9.85
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0.0,
+            16,
+            4.375
+          ],
+          "texture": "#t",
+          "rotation": 180
+        },
+        "down": {
+          "uv": [
+            0,
+            6.25,
+            16,
+            6.75
+          ],
+          "texture": "#t"
+        },
+        "north": {
+          "uv": [
+            0,
+            6.25,
+            16,
+            6.75
+          ],
+          "texture": "#t"
+        },
+        "south": {
+          "uv": [
+            0,
+            6.25,
+            16,
+            6.75
+          ],
+          "texture": "#t"
+        },
+        "east": {
+          "uv": [
+            0,
+            6.25,
+            16,
+            6.75
+          ],
+          "texture": "#t"
+        },
+        "west": {
+          "uv": [
+            0,
+            6.25,
+            16,
+            6.75
+          ],
+          "texture": "#t"
+        }
+      }
+    }
+  ]
+}
