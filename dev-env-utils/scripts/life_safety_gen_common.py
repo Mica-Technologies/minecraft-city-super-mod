@@ -288,6 +288,7 @@ class Catalogue(object):
         self.textures = {}
         self.lang = {loc: {} for loc in LOCALES}
         self.items = []                 # (registry, java) item tab lines
+        self.extra = {}                 # other files (an OBJ, its MTL): path under assets -> text
 
     def T(self, name):
         return "csm:blocks/%s/%s" % (self.tex_dir, name)
@@ -353,6 +354,12 @@ class Catalogue(object):
                 rel = "models/item/%s.json" % b["registry"]
                 dump(os.path.join(assets, rel), b["item"])
                 written.append(rel)
+        for rel, text in sorted(self.extra.items()):
+            path = os.path.join(assets, rel)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", newline="\n", encoding="utf-8") as fh:
+                fh.write(text)
+            written.append(rel)
         for it in self.items:
             rel = "textures/items/%s/%s.png" % (self.tex_dir, it["texture"])
             path = os.path.join(assets, rel)

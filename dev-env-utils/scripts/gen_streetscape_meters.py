@@ -76,9 +76,9 @@ def pay_by_phone():
     lc.frame(img, 1, 1, 63, 63, WHITE, 2)
     lc.draw_text_centred(img, "PAY BY", 32, 6, WHITE, 2)
     lc.draw_text_centred(img, "PHONE", 32, 18, WHITE, 2)
-    lc.rect(img, 27, 29, 37, 41, WHITE)          # the phone
-    lc.rect(img, 29, 31, 35, 37, SIGN_GREEN)
-    lc.rect(img, 31, 38, 33, 40, SIGN_GREEN)
+    lc.rect(img, 27, 30, 37, 42, WHITE)          # the phone, a texel clear of PHONE above
+    lc.rect(img, 29, 32, 35, 38, SIGN_GREEN)
+    lc.rect(img, 31, 39, 33, 41, SIGN_GREEN)
     lc.draw_text_centred(img, "ZONE", 32, 44, WHITE, 1)  # clear of the number's backing below
     return img
 

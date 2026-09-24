@@ -1,8 +1,8 @@
 # Streetscape
 
-Street fixtures between the curb and the building line: fire hydrants, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals and parking meters.
+Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals and parking meters.
 
-!!! info "65 blocks in this tab"
+!!! info "73 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -14,14 +14,20 @@ Street fixtures between the curb and the building line: fire hydrants, delineato
 | Buried Utility Marker (Electric) | `csm:utility_marker_electric` | 3 | 12 | pickaxe | 1 |
 | Buried Utility Marker (Gas) | `csm:utility_marker_gas` | 3 | 12 | pickaxe | 1 |
 | Buried Utility Marker (Telecom) | `csm:utility_marker_telecom` | 3 | 12 | pickaxe | 1 |
+| Cast-Iron Bollard (Black) | `csm:bollard_cast_iron_black` | 3 | 12 | pickaxe | 1 |
+| Cast-Iron Bollard (Dark Green) | `csm:bollard_cast_iron_green` | 3 | 12 | pickaxe | 1 |
 | Catch Basin Grate | `csm:catch_basin_grate` | 1.5 | 10 | pickaxe | 0 |
 | Catch Basin Grate (Rusted) | `csm:catch_basin_grate_rusted` | 1.5 | 10 | pickaxe | 0 |
+| Concrete Sphere Bollard (Red) | `csm:bollard_sphere_red` | 3 | 12 | pickaxe | 1 |
+| Crash-Rated Bollard | `csm:bollard_crash_rated` | 3 | 12 | pickaxe | 1 |
 | Delineator Post | `csm:delineator_post` | 0.6 | 3 | pickaxe | 0 |
 | Delineator Post (Yellow) | `csm:delineator_post_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Electric Pull Box | `csm:vault_lid_electric` | 1.5 | 10 | pickaxe | 0 |
 | Electric Pull Box (Rusted) | `csm:vault_lid_electric_rusted` | 1.5 | 10 | pickaxe | 0 |
 | Fiber Optic Handhole | `csm:vault_lid_fiber_optic` | 1.5 | 10 | pickaxe | 0 |
 | Fire Hydrant | `csm:firehydrant` | 2 | 10 | pickaxe | 1 |
+| Flexible Delineator (White) | `csm:bollard_flexible_white` | 3 | 12 | pickaxe | 1 |
+| Flexible Delineator (Yellow) | `csm:bollard_flexible_yellow` | 3 | 12 | pickaxe | 1 |
 | Gas Valve Box | `csm:valve_box_gas` | 1.5 | 10 | pickaxe | 0 |
 | Gas Valve Box (Rusted) | `csm:valve_box_gas_rusted` | 1.5 | 10 | pickaxe | 0 |
 | Gutter Inlet Grate | `csm:gutter_inlet_grate` | 1.5 | 10 | pickaxe | 0 |
@@ -54,8 +60,10 @@ Street fixtures between the curb and the building line: fire hydrants, delineato
 | Parking Meter (Mechanical, Double) | `csm:parking_meter_mechanical_double` | 3 | 12 | pickaxe | 1 |
 | Parking Pay Station | `csm:parking_pay_station` | 3 | 12 | pickaxe | 1 |
 | Pay-by-Phone Parking Sign | `csm:parking_pay_by_phone_sign` | 3 | 12 | pickaxe | 1 |
+| Pipe Bollard (Yellow Sleeve) | `csm:bollard_pipe_sleeve` | 3 | 12 | pickaxe | 1 |
 | Sewer Cleanout | `csm:sewer_cleanout` | 1.5 | 10 | pickaxe | 0 |
 | Sewer Cleanout (Rusted) | `csm:sewer_cleanout_rusted` | 1.5 | 10 | pickaxe | 0 |
+| Stainless Steel Bollard | `csm:bollard_stainless` | 3 | 12 | pickaxe | 1 |
 | Storm Drain Marker | `csm:storm_drain_marker` | 1.5 | 10 | pickaxe | 0 |
 | Telecom Enclosure (Low Profile) | `csm:telecom_enclosure_low` | 3 | 12 | pickaxe | 1 |
 | Telecom Pedestal (Ribbed) | `csm:telecom_pedestal_ribbed` | 3 | 12 | pickaxe | 1 |

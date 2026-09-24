@@ -60,6 +60,10 @@ public final class StreetscapeFabricatorRules {
             FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
             FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
       }
+      // The concrete sphere is cast concrete through and through.
+      if (registryName.startsWith("bollard_sphere")) {
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 2));
+      }
       return null;
     }
     if (!(block instanceof BlockStreetCover)) {

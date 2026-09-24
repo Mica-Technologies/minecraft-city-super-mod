@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.streetscape.BlockBollardFlexible;
 import com.micatechnologies.minecraft.csm.streetscape.BlockFireHydrant;
 import com.micatechnologies.minecraft.csm.streetscape.BlockParkingMeter;
 import com.micatechnologies.minecraft.csm.streetscape.BlockStreetCover;
@@ -82,6 +83,32 @@ public class CsmTabStreetscape extends CsmTab {
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_zebra",
         new AxisAlignedBB(0.068750, 0.000000, 0.340625, 0.931250, 0.190625, 0.659375)));
+
+    // Bollards (gen_streetscape_bollards.py --fragments).
+    initTabBlock(new BlockUtilityBox("bollard_cast_iron_black", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.337498, 0.000000, 0.337498, 0.662502, 0.925750, 0.662502),
+        null)));
+    initTabBlock(new BlockUtilityBox("bollard_cast_iron_green", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.337498, 0.000000, 0.337498, 0.662502, 0.925750, 0.662502),
+        null)));
+    initTabBlock(new BlockUtilityBox("bollard_stainless", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.356236, 0.000000, 0.356236, 0.643764, 0.907000, 0.643764),
+        null)));
+    initTabBlock(new BlockUtilityBox("bollard_crash_rated", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.187500, 0.000000, 0.187500, 0.812500, 0.969500, 0.812500),
+        null)));
+    initTabBlock(new BlockUtilityBox("bollard_pipe_sleeve", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.321853, 0.000000, 0.321853, 0.678147, 0.938250, 0.678147),
+        null)));
+    initTabBlock(new BlockBollardFlexible("bollard_flexible_white", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.362500, 0.000000, 0.362500, 0.637500, 0.957000, 0.637500),
+        null)));
+    initTabBlock(new BlockBollardFlexible("bollard_flexible_yellow", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.362500, 0.000000, 0.362500, 0.637500, 0.957000, 0.637500),
+        null)));
+    initTabBlock(new BlockUtilityBox("bollard_sphere_red", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.075000, 0.000000, 0.075000, 0.925000, 0.837500, 0.925000),
+        null)));
 
     // Covers (gen_streetscape_covers.py --fragments).
     initTabBlock(new BlockStreetCover("manhole_sewer",

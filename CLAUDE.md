@@ -497,6 +497,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   multi-block code. Each head's window is written into its tab line so the meter renderer draws
   exactly on it. Payment is emeralds, or money through the optional SUM economy (reached by
   reflection in `ParkingPaymentSum`, never a build dependency); `--check`, `--fragments`
+- `gen_streetscape_bollards.py` -- the bollard styles external road mods lack: cast-iron
+  decorative, stainless, crash-rated, pipe with a cover sleeve, flexible delineators
+  (`BlockBollardFlexible`, no collision) and the red concrete sphere, a lathed OBJ written through
+  the Life Safety catalogue's `extra` files; `--check`, `--fragments`
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →

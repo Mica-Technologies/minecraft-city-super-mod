@@ -1,0 +1,32 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:streetscape/bollards/bollard_sphere.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#sphere": "csm:blocks/streetscape/bollards/sphere_red",
+      "particle": "csm:blocks/streetscape/bollards/sphere_red"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}
