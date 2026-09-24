@@ -25,7 +25,7 @@ public class BlockBeertap extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-1.500000, -0.000001, -1.500000, 1.500000, 3.000000, 1.968750);
+    return new AxisAlignedBB(0.218750, 0.000000, 0.312500, 0.781250, 0.637500, 0.625000);
   }
 
   @Override

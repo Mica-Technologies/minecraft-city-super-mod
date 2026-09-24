@@ -25,7 +25,7 @@ public class BlockChains extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.062500, 0.000000, -0.062504, 0.062500, 1.000000, 0.062504);
+    return new AxisAlignedBB(0.437500, 0.000000, 0.437500, 0.562500, 1.000000, 0.562500);
   }
 
   @Override

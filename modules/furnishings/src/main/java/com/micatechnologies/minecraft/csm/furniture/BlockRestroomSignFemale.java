@@ -25,7 +25,7 @@ public class BlockRestroomSignFemale extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.062504, 0.000000, -0.499391, 0.062504, 1.000000, 0.000625);
+    return new AxisAlignedBB(0.312500, 0.250000, 0.962500, 0.687500, 0.812500, 1.000000);
   }
 
   @Override

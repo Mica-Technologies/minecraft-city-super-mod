@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "restroom_female": "csm:blocks/furniture/gameroom/restroom_female",
+    "sign_edge": "csm:blocks/furniture/gameroom/sign_edge",
+    "particle": "csm:blocks/furniture/gameroom/restroom_female"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        4,
+        15.4
+      ],
+      "to": [
+        11,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#restroom_female",
+          "uv": [
+            5,
+            3,
+            11,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#sign_edge",
+          "uv": [
+            5,
+            3,
+            11,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#sign_edge",
+          "uv": [
+            0,
+            3,
+            0.6,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#sign_edge",
+          "uv": [
+            15.4,
+            3,
+            16,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#sign_edge",
+          "uv": [
+            5,
+            15.4,
+            11,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#sign_edge",
+          "uv": [
+            5,
+            0,
+            11,
+            0.6
+          ]
+        }
+      }
+    }
+  ]
+}

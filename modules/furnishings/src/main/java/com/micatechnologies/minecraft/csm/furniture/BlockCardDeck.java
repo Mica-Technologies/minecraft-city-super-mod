@@ -25,7 +25,7 @@ public class BlockCardDeck extends AbstractBlockRotatableNSEW {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.377908, 0.004688, -0.304688, 0.409158, 0.106250, 0.342488);
+    return new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.812500, 0.062500, 0.812500);
   }
 
   @Override

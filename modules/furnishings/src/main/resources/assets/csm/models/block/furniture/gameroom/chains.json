@@ -1,0 +1,265 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "chain_link": "csm:blocks/furniture/gameroom/chain_link",
+    "particle": "csm:blocks/furniture/gameroom/chain_link"
+  },
+  "elements": [
+    {
+      "from": [
+        7.2,
+        0.0,
+        7.92
+      ],
+      "to": [
+        8.8,
+        2.6,
+        8.08
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.92,
+        1.9,
+        7.2
+      ],
+      "to": [
+        8.08,
+        4.5,
+        8.8
+      ],
+      "faces": {
+        "east": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.2,
+        3.8,
+        7.92
+      ],
+      "to": [
+        8.8,
+        6.4,
+        8.08
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.92,
+        5.7,
+        7.2
+      ],
+      "to": [
+        8.08,
+        8.3,
+        8.8
+      ],
+      "faces": {
+        "east": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.2,
+        7.6,
+        7.92
+      ],
+      "to": [
+        8.8,
+        10.2,
+        8.08
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.92,
+        9.5,
+        7.2
+      ],
+      "to": [
+        8.08,
+        12.1,
+        8.8
+      ],
+      "faces": {
+        "east": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.2,
+        11.4,
+        7.92
+      ],
+      "to": [
+        8.8,
+        14.0,
+        8.08
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.92,
+        13.3,
+        7.2
+      ],
+      "to": [
+        8.08,
+        15.9,
+        8.8
+      ],
+      "faces": {
+        "east": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#chain_link",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

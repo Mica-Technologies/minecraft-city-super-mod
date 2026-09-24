@@ -25,7 +25,7 @@ public class BlockHottub extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-1.500131, -0.000000, -1.500245, 1.500147, 1.250000, 1.500245);
+    return new AxisAlignedBB(-0.606250, 0.000000, -0.606250, 1.606250, 0.912500, 1.606250);
   }
 
   @Override

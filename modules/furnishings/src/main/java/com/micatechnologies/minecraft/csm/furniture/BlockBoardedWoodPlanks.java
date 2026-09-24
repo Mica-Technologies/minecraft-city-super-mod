@@ -25,7 +25,7 @@ public class BlockBoardedWoodPlanks extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.703842, 0.000000, -0.500000, 0.695514, 1.943691, 0.000063);
+    return new AxisAlignedBB(-0.137500, 0.062500, 0.900000, 1.137500, 1.837500, 1.000000);
   }
 
   @Override

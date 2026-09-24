@@ -2,7 +2,7 @@
 
 Interior fittings: seating, counters, appliances and fixtures.
 
-!!! info "35 blocks in this tab"
+!!! info "36 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -46,5 +46,6 @@ Interior fittings: seating, counters, appliances and fixtures.
 | Tomato Crate | `csm:tomatoecrate` | 2 | 10 | pickaxe | 1 |
 | Water Pump | `csm:waterpump` | 2 | 10 | pickaxe | 1 |
 | Wine Rack | `csm:winerack` | 2 | 10 | pickaxe | 1 |
+| Wooden Barrel | `csm:woodenbarrel` |  |  |  |  |
 
 </div>

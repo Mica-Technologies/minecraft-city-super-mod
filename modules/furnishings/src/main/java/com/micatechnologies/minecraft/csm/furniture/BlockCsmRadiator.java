@@ -25,7 +25,7 @@ public class BlockCsmRadiator extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.953125, 0.000000, -0.450000, 0.953125, 0.992187, 0.075000);
+    return new AxisAlignedBB(0.050000, 0.000000, 0.750000, 0.995000, 0.675000, 0.950000);
   }
 
   @Override

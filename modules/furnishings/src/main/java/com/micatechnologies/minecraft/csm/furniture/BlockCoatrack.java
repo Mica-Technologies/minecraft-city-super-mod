@@ -25,7 +25,7 @@ public class BlockCoatrack extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.556849, 0.000000, -0.373474, 0.342224, 1.906122, 0.264225);
+    return new AxisAlignedBB(0.250000, 0.000000, 0.250000, 0.750000, 1.840000, 0.750000);
   }
 
   @Override

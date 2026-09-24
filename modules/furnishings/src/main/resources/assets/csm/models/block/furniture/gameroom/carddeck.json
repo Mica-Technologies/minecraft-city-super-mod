@@ -1,0 +1,184 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "card_edge": "csm:blocks/furniture/gameroom/card_edge",
+    "card_back": "csm:blocks/furniture/gameroom/card_back",
+    "card_face": "csm:blocks/furniture/gameroom/card_face",
+    "particle": "csm:blocks/furniture/gameroom/card_edge"
+  },
+  "elements": [
+    {
+      "from": [
+        5.6,
+        0,
+        6.2
+      ],
+      "to": [
+        7.8,
+        0.5,
+        9.3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#card_edge",
+          "uv": [
+            0,
+            0,
+            8,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#card_edge",
+          "uv": [
+            0,
+            0,
+            8,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#card_edge",
+          "uv": [
+            0,
+            0,
+            8,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#card_edge",
+          "uv": [
+            0,
+            0,
+            8,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#card_back",
+          "uv": [
+            0,
+            0,
+            11,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        9.1,
+        0.02,
+        5.85
+      ],
+      "to": [
+        11.3,
+        0.08,
+        8.95
+      ],
+      "faces": {
+        "up": {
+          "texture": "#card_back",
+          "uv": [
+            0,
+            0,
+            11,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#card_edge",
+          "uv": [
+            0,
+            0,
+            11,
+            15.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          10.2,
+          0.02,
+          7.4
+        ],
+        "axis": "y",
+        "angle": 22.5
+      }
+    },
+    {
+      "from": [
+        9.7,
+        0.12,
+        8.05
+      ],
+      "to": [
+        11.9,
+        0.18,
+        11.15
+      ],
+      "faces": {
+        "up": {
+          "texture": "#card_back",
+          "uv": [
+            0,
+            0,
+            11,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#card_edge",
+          "uv": [
+            0,
+            0,
+            11,
+            15.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          10.8,
+          0.12,
+          9.6
+        ],
+        "axis": "y",
+        "angle": -22.5
+      }
+    },
+    {
+      "from": [
+        7.5,
+        0.22,
+        9.45
+      ],
+      "to": [
+        9.7,
+        0.28,
+        12.55
+      ],
+      "faces": {
+        "up": {
+          "texture": "#card_face",
+          "uv": [
+            0,
+            0,
+            11,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#card_edge",
+          "uv": [
+            0,
+            0,
+            11,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}

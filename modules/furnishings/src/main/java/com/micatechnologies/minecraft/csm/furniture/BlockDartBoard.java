@@ -25,7 +25,7 @@ public class BlockDartBoard extends AbstractBlockRotatableNSEW {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.450000, 0.000000, -0.493695, 0.450000, 0.950000, 0.046938);
+    return new AxisAlignedBB(0.150000, 0.181250, 0.800000, 0.850000, 0.881250, 1.000000);
   }
 
   @Override

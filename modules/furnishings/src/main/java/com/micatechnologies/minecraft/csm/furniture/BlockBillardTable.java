@@ -25,7 +25,7 @@ public class BlockBillardTable extends AbstractBlockRotatableNSEW {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-1.437500, -0.000625, -0.937500, 1.562500, 0.999064, 1.062500);
+    return new AxisAlignedBB(-0.875000, 0.000000, -0.250000, 1.875000, 0.812500, 1.250000);
   }
 
   @Override

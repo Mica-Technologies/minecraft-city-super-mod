@@ -25,7 +25,7 @@ public class BlockWineRack extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.500000, -0.000000, -0.500000, 0.500000, 0.937500, 0.500000);
+    return new AxisAlignedBB(0.000000, 0.000000, 0.500000, 1.000000, 1.000000, 1.000000);
   }
 
   @Override

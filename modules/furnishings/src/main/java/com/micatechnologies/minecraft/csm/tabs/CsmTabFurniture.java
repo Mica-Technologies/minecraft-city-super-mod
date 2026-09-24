@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.furniture.BlockAppleCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockBananaCrate;
@@ -38,6 +39,10 @@ import com.micatechnologies.minecraft.csm.furniture.BlockTomatoeCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockWaterPump;
 import com.micatechnologies.minecraft.csm.furniture.BlockWineRack;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -84,6 +89,7 @@ public class CsmTabFurniture extends CsmTab {
     // Kitchen & Dining
     initTabBlock(BlockBeerRack.class, fmlPreInitializationEvent); // Beer Rack
     initTabBlock(BlockBeertap.class, fmlPreInitializationEvent); // Beer Tap
+    initTabBlock(new BlockRotatableNSEWUDFactory("woodenbarrel", Material.WOOD, SoundType.WOOD, "axe", 0, 2F, 5F, 0F, 0, new AxisAlignedBB(0.200000, 0.000000, 0.000000, 0.800000, 0.800000, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false)); // Wooden Barrel
     initTabBlock(BlockWineRack.class, fmlPreInitializationEvent); // Wine Rack
 
     // Outdoor & Garden
