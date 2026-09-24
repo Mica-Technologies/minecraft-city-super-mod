@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:swingchair.obj",
+    "model": "csm:furniture/swingchair.obj",
     "custom": {
       "flip-v": true
     }
@@ -35,11 +35,11 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              0.0,
+              -0.104,
+              -0.06
             ],
-            "scale": 0.227
+            "scale": 0.2258
           },
           "ground": {
             "rotation": [
@@ -48,11 +48,24 @@
               0
             ],
             "translation": [
+              0.0,
+              -0.048,
+              0.0
+            ],
+            "scale": 0.0903
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.227
+            "translation": [
+              0.0,
+              -0.0961,
+              0.0
+            ],
+            "scale": 0.1807
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,11 +74,11 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0,
+              0.1414,
+              -0.0696
             ],
-            "scale": 0.227
+            "scale": 0.1355
           },
           "thirdperson_lefthand": {
             "rotation": [
@@ -74,11 +87,11 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0,
+              0.1414,
+              -0.0696
             ],
-            "scale": 0.227
+            "scale": 0.1355
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +100,11 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0,
+              -0.0768,
+              0.0
             ],
-            "scale": 0.227
+            "scale": 0.1445
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +113,11 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0,
+              -0.0768,
+              0.0
             ],
-            "scale": 0.227
-          },
-          "fixed": {
-            "scale": 0.227
+            "scale": 0.1445
           }
         }
       }

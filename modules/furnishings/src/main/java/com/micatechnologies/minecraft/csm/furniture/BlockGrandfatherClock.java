@@ -25,7 +25,7 @@ public class BlockGrandfatherClock extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.669194, 0.002237, -0.500000, 0.669194, 2.903125, 0.294194);
+    return new AxisAlignedBB(0.225000, 0.000000, 0.587500, 0.775000, 2.168800, 0.987500);
   }
 
   @Override

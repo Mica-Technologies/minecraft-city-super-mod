@@ -25,7 +25,7 @@ public class BlockGrandPiano extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-1.078125, 0.000000, -1.912500, 1.078125, 2.140625, 0.387500);
+    return new AxisAlignedBB(-0.250000, 0.000000, -0.500000, 1.266500, 1.907600, 1.562500);
   }
 
   @Override

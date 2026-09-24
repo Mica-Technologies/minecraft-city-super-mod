@@ -25,7 +25,7 @@ public class BlockSwingchair extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-1.375000, -0.005072, -0.501059, 1.375000, 2.478654, 0.497318);
+    return new AxisAlignedBB(-0.883800, 0.000000, -0.241400, 1.883800, 2.062500, 1.241400);
   }
 
   @Override

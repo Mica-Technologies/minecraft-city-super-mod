@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:grandfather_clock.obj",
+    "model": "csm:furniture/grandfatherclock.obj",
     "custom": {
       "flip-v": true
     }
@@ -35,11 +35,11 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              0.0586,
+              -0.1754,
+              -0.0336
             ],
-            "scale": 0.215
+            "scale": 0.2884
           },
           "ground": {
             "rotation": [
@@ -48,11 +48,24 @@
               0
             ],
             "translation": [
+              0.0,
+              -0.0675,
+              -0.0331
+            ],
+            "scale": 0.1153
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.215
+            "translation": [
+              0.0,
+              -0.135,
+              -0.0663
+            ],
+            "scale": 0.2307
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,11 +74,11 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.0352,
+              0.1678,
+              -0.1069
             ],
-            "scale": 0.215
+            "scale": 0.173
           },
           "thirdperson_lefthand": {
             "rotation": [
@@ -74,11 +87,11 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0352,
+              0.0998,
+              -0.0887
             ],
-            "scale": 0.215
+            "scale": 0.173
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +100,11 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              -0.0375,
+              -0.1079,
+              -0.0375
             ],
-            "scale": 0.215
+            "scale": 0.1845
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +113,11 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0375,
+              -0.1079,
+              0.0375
             ],
-            "scale": 0.215
-          },
-          "fixed": {
-            "scale": 0.215
+            "scale": 0.1845
           }
         }
       }

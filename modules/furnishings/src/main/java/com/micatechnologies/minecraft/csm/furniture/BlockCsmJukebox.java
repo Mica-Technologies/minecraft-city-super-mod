@@ -25,7 +25,7 @@ public class BlockCsmJukebox extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.531250, 0.000000, -0.468750, 0.531250, 1.715625, 0.281250);
+    return new AxisAlignedBB(0.037500, 0.000000, 0.200000, 0.962500, 1.500000, 0.837500);
   }
 
   @Override

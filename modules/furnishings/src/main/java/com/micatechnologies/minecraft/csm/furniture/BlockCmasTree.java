@@ -25,7 +25,7 @@ public class BlockCmasTree extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-1.628285, 0.000000, -1.665665, 1.628285, 5.425000, 1.628285);
+    return new AxisAlignedBB(-0.283000, 0.000000, -0.283000, 1.283000, 2.250000, 1.283000);
   }
 
   @Override
