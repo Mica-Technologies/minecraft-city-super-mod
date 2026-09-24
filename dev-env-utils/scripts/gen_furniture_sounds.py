@@ -2,8 +2,9 @@
 
 The kitchen's cabinet doors, drawers and refrigerator door, and its appliances' beeps, timer ding,
 toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and jar lid, and the
-bathroom's toilet flush and shower spray and the laundry's washing machine, dryer and steam iron,
-made here from filtered noise, decaying sines and envelopes, never recorded or taken from a sound
+bathroom's toilet flush and shower spray, the laundry's washing machine, dryer and steam iron, and
+the office's copier and school locker door (which replace the locker sounds of unknown origin
+the mod shipped unused since its first version), made here from filtered noise, decaying sines and envelopes, never recorded or taken from a sound
 library. Each entry in SOUNDS names a function returning mono samples in -1..1 at RATE and the level
 (RMS, of 32767) it is normalised to; the script writes modules/furnishings/src/main/resources/assets/csm/sounds/<name>.ogg through
 ffmpeg and adds a "<name>" entry to that module's sounds.json if it has none. The event still
@@ -319,6 +320,42 @@ def iron_steam():
     return hiss * np.clip(t / 0.04, 0, 1) * np.exp(-np.clip(t - 0.12, 0, None) * 5.5)
 
 
+def locker_door_open():
+    """A steel locker door opening: the latch lifting with a hard click, then the thin door
+    swinging free with a tinny rattle of its louvres."""
+    latch = knock(0.12, [(1300, 1.0), (2600, 0.5), (3900, 0.25)], 60, 71, click=0.7)
+    rattle = knock(0.35, [(620, 1.0), (1480, 0.6), (2310, 0.35), (3350, 0.2)], 14, 72, click=0.2)
+    squeak = np.sin(2 * np.pi * (1800 + 500 * t_of(0.25)) * t_of(0.25))         * np.sin(np.pi * t_of(0.25) / 0.25) ** 2
+    return place(0.6, [(0.0, latch, 1.0), (0.07, rattle, 0.45), (0.12, squeak, 0.05)])
+
+
+def locker_door_close():
+    """A steel locker door slammed shut: a bright clang of thin sheet steel ringing, and the
+    latch snapping home."""
+    clang = knock(0.6, [(410, 1.0), (980, 0.8), (1720, 0.55), (2650, 0.35), (3900, 0.2)], 9, 73,
+                  click=0.6)
+    snap = knock(0.08, [(2200, 1.0), (3300, 0.4)], 80, 74, click=0.6)
+    return place(0.7, [(0.0, clang, 1.0), (0.05, snap, 0.5)])
+
+
+def printer_run():
+    """A copier making a copy: the drive motor's whine, the paper rushing through the rollers,
+    and the scanner carriage's clack at each end of its travel, over two seconds so that it
+    repeats as the copier works."""
+    total = 2.0
+    n = int(RATE * total)
+    t = t_of(total)
+    motor = (np.sin(2 * np.pi * 220 * t) + 0.5 * np.sin(2 * np.pi * 440 * t)
+             + 0.25 * np.sin(2 * np.pi * 660 * t)) * (0.85 + 0.15 * np.sin(2 * np.pi * 6 * t))
+    feed = band(noise(total, 75), 700, 5200)
+    feed /= max(1e-9, np.max(np.abs(feed)))
+    feed *= np.clip(np.sin(np.pi * np.clip((t - 0.45) / 1.1, 0, 1)), 0, 1) ** 1.5
+    parts = [(0.0, 0.18 * motor + 0.5 * feed, 1.0)]
+    for k, start in enumerate((0.1, 0.9, 1.7)):
+        parts.append((start, knock(0.1, [(900, 1.0), (1900, 0.5)], 55, 76 + k, click=0.6), 0.5))
+    return place(total, parts) * env_ad(n, 0.08, 0.12)
+
+
 SOUNDS = {
     'cabinet_open': (cabinet_open, 2600),
     'cabinet_close': (cabinet_close, 3600),
@@ -339,6 +376,9 @@ SOUNDS = {
     'washing_machine_run': (washing_machine_run, 2200),
     'dryer_tumble': (dryer_tumble, 2200),
     'iron_steam': (iron_steam, 2600),
+    'locker_door_open': (locker_door_open, 3000),
+    'locker_door_close': (locker_door_close, 3600),
+    'printer_run': (printer_run, 2200),
 }
 
 

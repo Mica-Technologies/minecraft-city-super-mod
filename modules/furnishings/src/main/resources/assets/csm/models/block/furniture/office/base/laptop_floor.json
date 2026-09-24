@@ -1,0 +1,156 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "glow": "csm:blocks/furniture/office/screen_off",
+    "keys": "csm:blocks/furniture/office/keys_black",
+    "shell": "csm:blocks/furniture/residential/stainless",
+    "particle": "#shell"
+  },
+  "elements": [
+    {
+      "from": [
+        3.5,
+        0,
+        3
+      ],
+      "to": [
+        12.5,
+        0.5,
+        9.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            3.5,
+            15.5,
+            12.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#shell",
+          "uv": [
+            3.5,
+            15.5,
+            12.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            6.25,
+            15.5,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            15.5,
+            9.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#keys",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            3.5,
+            6.25,
+            12.5,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.5,
+        0.5,
+        9.25
+      ],
+      "to": [
+        12.5,
+        7,
+        9.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glow",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#shell",
+          "uv": [
+            3.5,
+            9,
+            12.5,
+            15.5
+          ]
+        },
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            6.25,
+            9,
+            6.75,
+            15.5
+          ]
+        },
+        "west": {
+          "texture": "#shell",
+          "uv": [
+            9.25,
+            9,
+            9.75,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#shell",
+          "uv": [
+            3.5,
+            9.25,
+            12.5,
+            9.75
+          ]
+        },
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            3.5,
+            6.25,
+            12.5,
+            6.75
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0.5,
+          9.5
+        ],
+        "axis": "x",
+        "angle": 22.5
+      }
+    }
+  ]
+}

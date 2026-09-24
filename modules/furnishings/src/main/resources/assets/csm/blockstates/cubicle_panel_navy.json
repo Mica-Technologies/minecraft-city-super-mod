@@ -1,0 +1,212 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "north": "panel|end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_arm"
+      }
+    },
+    {
+      "when": {
+        "north": "panel|end",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_cap"
+      }
+    },
+    {
+      "when": {
+        "north": "panel|end",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_fill"
+      }
+    },
+    {
+      "when": {
+        "north": "end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_end"
+      }
+    },
+    {
+      "when": {
+        "shelf": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_shelf"
+      }
+    },
+    {
+      "when": {
+        "east": "panel|end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "panel|end",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_cap",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "panel|end",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_fill",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_end",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "shelf": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_shelf",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "panel|end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "panel|end",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_cap",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "panel|end",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_fill",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_end",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "shelf": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_shelf",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "panel|end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "panel|end",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_cap",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "panel|end",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_fill",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_end",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "shelf": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_shelf",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "panel",
+            "east": "panel"
+          },
+          {
+            "east": "panel",
+            "south": "panel"
+          },
+          {
+            "south": "panel",
+            "west": "panel"
+          },
+          {
+            "west": "panel",
+            "north": "panel"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_navy_post"
+      }
+    }
+  ]
+}

@@ -660,6 +660,16 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   and dryer (round door windows as cutouts, lit while running), iron, ironing board, baskets and
   laundry tub; `--check`, `--fragments`. `gen_furniture_sounds.py` synthesises the flush, shower,
   washer, dryer and iron sounds
+- `gen_furniture_office.py` -- the Commercial & Office tab, importing the residential, kitchen,
+  bedroom and appliance generators: office desks, pedestals and the L-desk corner (their own
+  `KitchenLine.DESK`, turned by `BlockKitchenCorner`), the reception desk (`RECEPTION`), filing
+  cabinet, office shelving (the bookcase's parts with binders), conference table, cubicle panels
+  (`BlockCubiclePanel`: arms and posts from the neighbours, stacking, a shelf per face), office
+  seating and the waiting bench, the whiteboard, chalkboard, cork board and projector screen, the
+  school desk, teacher's desk and lockers, the things on a desk (`BlockCounterLight` for the
+  screens and the desk lamp), the copier (`OfficeAppliances`, a supply slot on the appliance
+  framework) and a streamer's set; `--check`, `--fragments`. `gen_furniture_sounds.py`
+  synthesises the copier's run and the locker door
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

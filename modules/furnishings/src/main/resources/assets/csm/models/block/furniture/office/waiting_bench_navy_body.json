@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/office/base/waiting_bench_body",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/navy",
+    "fabric_dark": "csm:blocks/furniture/residential/navy_dark"
+  }
+}

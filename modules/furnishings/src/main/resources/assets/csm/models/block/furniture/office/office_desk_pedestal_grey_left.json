@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/office/base/office_desk_pedestal_left",
+  "textures": {
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "wood_v": "csm:blocks/furniture/office/laminate_grey",
+    "edge": "csm:blocks/furniture/office/laminate_grey_edge",
+    "frame": "csm:blocks/furniture/residential/metal_black"
+  }
+}

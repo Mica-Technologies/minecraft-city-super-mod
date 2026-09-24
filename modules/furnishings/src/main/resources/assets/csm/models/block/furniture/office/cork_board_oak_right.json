@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/office/base/cork_board_right",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "board": "csm:blocks/furniture/office/cork_notes"
+  }
+}

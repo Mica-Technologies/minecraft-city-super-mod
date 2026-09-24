@@ -2,7 +2,9 @@ package com.micatechnologies.minecraft.csm.furniture.appliance;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -27,6 +29,10 @@ import net.minecraft.world.World;
  * cycles' water. A water bucket fills it, a water bottle adds one cycle, and wherever
  * {@code plumbed} is true (next to a kitchen sink) it is kept full.</p>
  *
+ * <p><b>Supplies.</b> A spec made with {@link #supply(Predicate, String)} uses up one item from
+ * the third slot each cycle instead of fuel: the copier's blank book and quill for each copy.
+ * It works only while the slot holds one.</p>
+ *
  * @since 2026.9
  */
 public final class ApplianceSpec {
@@ -38,6 +44,10 @@ public final class ApplianceSpec {
   @Nullable
   private BiPredicate<World, BlockPos> plumbed;
   private boolean fuel;
+  @Nullable
+  private Predicate<ItemStack> supply;
+  @Nullable
+  private String supplyHint;
   @Nullable
   private ICsmSound runSound;
   private int runSoundEvery = 40;
@@ -102,6 +112,21 @@ public final class ApplianceSpec {
    */
   public ApplianceSpec fuel() {
     this.fuel = true;
+    return this;
+  }
+
+  /**
+   * Makes each cycle use up one item from a third slot, which takes only what {@code accepts}
+   * accepts: the copier's book and quill. Not for a spec that burns fuel.
+   *
+   * @param accepts which items the slot takes
+   * @param hint    the translation key of the screen's hint for the empty slot
+   *
+   * @return this spec
+   */
+  public ApplianceSpec supply(Predicate<ItemStack> accepts, String hint) {
+    this.supply = accepts;
+    this.supplyHint = hint;
     return this;
   }
 
@@ -188,6 +213,36 @@ public final class ApplianceSpec {
 
   public boolean usesFuel() {
     return fuel;
+  }
+
+  /**
+   * Whether each cycle uses up an item from the supply slot.
+   *
+   * @return true if it does
+   */
+  public boolean usesSupply() {
+    return supply != null;
+  }
+
+  /**
+   * Whether the supply slot takes {@code stack}.
+   *
+   * @param stack the stack
+   *
+   * @return true if it does
+   */
+  public boolean acceptsSupply(ItemStack stack) {
+    return supply != null && supply.test(stack);
+  }
+
+  /**
+   * The translation key of the hint shown over the empty supply slot.
+   *
+   * @return the key, or null
+   */
+  @Nullable
+  public String getSupplyHint() {
+    return supplyHint;
   }
 
   @Nullable

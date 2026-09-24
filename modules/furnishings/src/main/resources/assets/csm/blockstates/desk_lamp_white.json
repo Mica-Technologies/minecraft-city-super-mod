@@ -1,0 +1,65 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/desk_lamp_floor",
+    "textures": {
+      "plastic": "csm:blocks/furniture/residential/appliance_white",
+      "keys": "csm:blocks/furniture/office/keys_black",
+      "glow": "csm:blocks/furniture/residential/lens_on"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/office/base/desk_lamp_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/office/base/desk_lamp_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/office/base/desk_lamp_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/office/base/desk_lamp_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/office/base/desk_lamp_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/office/base/desk_lamp_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/office/base/desk_lamp_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/office/base/desk_lamp_item"
+      }
+    ],
+    "lit": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/lens_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/lens_off"
+        }
+      }
+    }
+  }
+}

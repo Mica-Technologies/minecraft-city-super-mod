@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/office/base/filing_cabinet_item",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/residential/white_v",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "frame": "csm:blocks/furniture/office/metal_white"
+  }
+}

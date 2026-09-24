@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/office/base/locker_left_upper",
+  "textures": {
+    "steel": "csm:blocks/furniture/office/locker_blue"
+  }
+}

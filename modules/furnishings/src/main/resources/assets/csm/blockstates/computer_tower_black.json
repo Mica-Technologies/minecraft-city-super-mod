@@ -1,0 +1,52 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/computer_tower_floor",
+    "textures": {
+      "plastic": "csm:blocks/furniture/residential/appliance_black",
+      "keys": "csm:blocks/furniture/office/keys_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/office/base/computer_tower_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/office/base/computer_tower_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/office/base/computer_tower_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/office/base/computer_tower_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/office/base/computer_tower_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/office/base/computer_tower_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/office/base/computer_tower_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/office/base/computer_tower_item"
+      }
+    ]
+  }
+}

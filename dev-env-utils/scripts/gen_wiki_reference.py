@@ -129,6 +129,10 @@ TABS = {
     "tabparks": ("parks", "Parks",
                  "Park amenities: benches, tables, bins, playground pieces, fountains and "
                  "irrigation."),
+    "tabcommercialoffice": ("commercial-office", "Commercial & Office",
+                            "The furniture of offices, schools and studios: desks that join "
+                            "into runs and L-shapes, cubicle panels, office seating, boards, "
+                            "lockers, the things on a desk and a copier that copies books."),
     "tabresidential": ("residential", "Residential",
                        "The furniture of homes: dining and living room tables, chairs, "
                        "bookcases, storage and sofas that join into runs."),
@@ -160,7 +164,7 @@ TABS = {
                 "load, and the hidden pieces other blocks place for themselves."),
 }
 
-PAGE_ORDER = ["tabbuildingmaterials", "tabconstructionsite", "tabfurniture", "tabgaming",
+PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsite", "tabfurniture", "tabgaming",
               "tabemergencyservices", "tabexitsemergency", "tabfireprotection",
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",

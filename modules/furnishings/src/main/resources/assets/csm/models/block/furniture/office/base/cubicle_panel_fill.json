@@ -1,0 +1,41 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/charcoal",
+    "particle": "#fabric"
+  },
+  "elements": [
+    {
+      "from": [
+        7.25,
+        15.25,
+        0
+      ],
+      "to": [
+        8.75,
+        16,
+        8
+      ],
+      "faces": {
+        "east": {
+          "texture": "#fabric",
+          "uv": [
+            8,
+            0,
+            16,
+            0.75
+          ]
+        },
+        "west": {
+          "texture": "#fabric",
+          "uv": [
+            0,
+            0,
+            8,
+            0.75
+          ]
+        }
+      }
+    }
+  ]
+}

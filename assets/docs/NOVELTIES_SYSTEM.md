@@ -324,6 +324,63 @@ Finishes are separate blocks (`_oak`, `_walnut`, `_white`; fabrics `_charcoal`, 
 quartz on walnut and white. The plan for the rest of the round-out (bedroom, kitchen, bath, office,
 outdoor, working appliances) aims at parity with other furniture mods.
 
+## Commercial & Office
+
+The Commercial & Office tab (`CsmTabCommercialOffice`, `tabcommercialoffice`) holds the furniture
+of offices, schools and studios, drawn by `gen_furniture_office.py` (textures and models under
+`furniture/office/`), in the `furniture.office` package and on the Residential classes:
+
+- **Desks.** Office desks and desks with a drawer pedestal are `BlockKitchenCabinet`s on a line of
+  their own, `KitchenLine.DESK`: desks of one laminate join into one desktop, a T-leg only where
+  the run stops (the pedestal holds 18 slots with drawer sounds, the plain desk none). The L-desk
+  corner is a `BlockKitchenCorner` on the same line (its new constructor takes the line, box,
+  slots and front): with runs on both open sides it is the L, a modesty panel along both backs
+  and a leg in the back corner. The reception desk is `KitchenLine.RECEPTION`: a transaction
+  counter a block high over the front panel, the work surface behind at desk height and a drawer
+  bank (9 slots) facing the receptionist, side panels only at the ends. The teacher's desk is a
+  double-pedestal `BlockResidentialStorage` (18). Desks, pedestals, corners and the teacher's desk
+  are a table's height in `SurfaceRest` (TABLE), so the things on a desk rest on them; the
+  reception counter is FLOOR (a block high).
+- The filing cabinet is a `BlockResidentialTall` (1.3 m, four drawers, 27 slots, drawer sounds).
+  The office shelving is a `BlockBookcase` whose part models are the living room's bookcase with
+  binders for books. The conference table is a `BlockDiningTable` with its own top and steel legs.
+- **Cubicle panels** (`BlockCubiclePanel`, full and half height, three fabrics) join like a fence
+  but thin: each side is `panel` (towards another panel or a solid wall), `end` (the panel runs to
+  the block's edge and stops in an end post) or `none`, all actual state. A post stands in the
+  middle only where two sides at right angles are `panel` (the multipart asks with an `OR`), so a
+  straight run has none and posts appear only at ends and corners; a run's last block is carried
+  to its edge. A lone panel stands across the way it was placed (`along_x`, stored). A full panel
+  with a panel on it drops its top cap (`up`), so a half on a full reads as one 1.5 m panel.
+  Right-clicking a panel's face with an empty hand hangs a shelf on it (`shelf`, stored: the
+  world side), again takes it down.
+- **Seating** on Core's `EntityCsmSeat`: the task, guest, conference and gaming chairs
+  (`BlockResidentialFurniture`) and the waiting-room bench (`BlockResidentialRun`, a seat in every
+  block on one beam, legs and arms at the ends); the school desk and chair sits too, facing its
+  desk top.
+- **Boards**: the whiteboard, chalkboard and cork board are `BlockResidentialRun`s that join into
+  one long board, the frame's ends only where it stops and the markers or chalk (a `tools` part)
+  on the tray at its right-hand end. The projector screen and the streamer's green screen are
+  `BlockFoldingFixture`s (click to let the screen down or pull it up). Lockers are `BlockCloset`s
+  (two blocks tall, joining into a row, 9 slots each) with the locker door sounds.
+- **On the desk**: `BlockCounterPiece`s (the computer tower, desk phone (beeps), fax (whirs),
+  pen holder, paper tray) and `BlockCounterLight`, a counter piece that switches on and off on a
+  click (`lit`, stored; the `glow` texture swapped, and light given while on): the desktop
+  computer's and the retro computer's screens, the laptop, the desk lamp. The ring light is a
+  `BlockKitchenLight`; the studio camera a plain fixture.
+- **The copier** (`BlockBuiltInAppliance` with `OfficeAppliances.COPIER`) copies written books on
+  the appliance framework. The framework gained a *supply* slot for it: `ApplianceSpec.supply`
+  names what the third slot takes (here a book and quill, with a hint shown over the empty slot)
+  and each cycle uses one up; and `ApplianceRecipe.consumesInput()` lets a recipe keep its input.
+  So the original stays in the input, each copy (the crafting table's rules: an original makes a
+  copy of the original, that a copy of a copy, which cannot be copied) goes to the output and uses
+  a book and quill, 5 s each. A written book does not stack, so it makes one copy and waits for it
+  to be taken; a hopper under it takes each as it comes.
+
+Laminates are separate blocks: `_white` (white laminate on a white frame), `_grey` (a light grey
+laminate on a dark frame) and `_walnut`; seating in `_charcoal`, `_navy` and `_red`; cubicle
+panels in `_charcoal`, `_navy` and `_oatmeal`. The tab is priced by `OfficeFabricatorRules`
+(registered by `CsmFurnishings.preInit`, mirrored in `audit_fabricator_costs.py`).
+
 ## Sound Assets
 
 All custom sounds are declared in `FurnishingsSounds.java` (handed to Core's registrar by `CsmFurnishings.preInit`) and defined in `sounds.json`. Every
@@ -351,6 +408,8 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:shower_spray` | `SHOWER_SPRAY` | shower and shower head while on (a 2 s loop replayed every 40 ticks), the bath's tap | synthesised |
 | `csm:washing_machine_run`, `csm:dryer_tumble` | `WASHING_MACHINE_RUN`, `DRYER_TUMBLE` | while running | synthesised |
 | `csm:iron_steam` | `IRON_STEAM` | steam iron click | synthesised |
+| `csm:printer_run` | `PRINTER_RUN` | the copier while it copies (a 2 s loop every 40 ticks), the fax's click | synthesised |
+| `csm:locker_door_open`, `csm:locker_door_close` | `LOCKER_DOOR_OPEN`, `LOCKER_DOOR_CLOSE` | lockers | synthesised (replacing the unused sounds of unknown origin the first version shipped under these names) |
 
 The xylophone, water dispensers/bubblers and the kitchen sink use only vanilla sounds (filling an
 appliance's tank with a bucket or bottle does too)

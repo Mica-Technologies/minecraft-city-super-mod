@@ -1,0 +1,279 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "face": "csm:blocks/furniture/office/tower_front",
+    "plastic": "csm:blocks/furniture/residential/appliance_black",
+    "rubber": "csm:blocks/furniture/residential/rubber_black",
+    "particle": "#plastic"
+  },
+  "elements": [
+    {
+      "from": [
+        5.5,
+        -8.75,
+        3.0
+      ],
+      "to": [
+        10.5,
+        1.5,
+        13.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#plastic",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            15.75
+          ]
+        },
+        "east": {
+          "texture": "#plastic",
+          "uv": [
+            3,
+            5.5,
+            13,
+            15.75
+          ]
+        },
+        "west": {
+          "texture": "#plastic",
+          "uv": [
+            3,
+            5.5,
+            13,
+            15.75
+          ]
+        },
+        "up": {
+          "texture": "#plastic",
+          "uv": [
+            5.5,
+            3,
+            10.5,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#plastic",
+          "uv": [
+            5.5,
+            3,
+            10.5,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.75,
+        -9.0,
+        3.5
+      ],
+      "to": [
+        6.75,
+        -8.75,
+        4.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rubber",
+          "uv": [
+            9.25,
+            15.75,
+            10.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#rubber",
+          "uv": [
+            5.75,
+            15.75,
+            6.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#rubber",
+          "uv": [
+            11.5,
+            15.75,
+            12.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#rubber",
+          "uv": [
+            3.5,
+            15.75,
+            4.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.75,
+        -9.0,
+        11.5
+      ],
+      "to": [
+        6.75,
+        -8.75,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rubber",
+          "uv": [
+            9.25,
+            15.75,
+            10.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#rubber",
+          "uv": [
+            5.75,
+            15.75,
+            6.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#rubber",
+          "uv": [
+            3.5,
+            15.75,
+            4.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#rubber",
+          "uv": [
+            11.5,
+            15.75,
+            12.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        9.25,
+        -9.0,
+        3.5
+      ],
+      "to": [
+        10.25,
+        -8.75,
+        4.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rubber",
+          "uv": [
+            5.75,
+            15.75,
+            6.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#rubber",
+          "uv": [
+            9.25,
+            15.75,
+            10.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#rubber",
+          "uv": [
+            11.5,
+            15.75,
+            12.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#rubber",
+          "uv": [
+            3.5,
+            15.75,
+            4.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        9.25,
+        -9.0,
+        11.5
+      ],
+      "to": [
+        10.25,
+        -8.75,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rubber",
+          "uv": [
+            5.75,
+            15.75,
+            6.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#rubber",
+          "uv": [
+            9.25,
+            15.75,
+            10.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#rubber",
+          "uv": [
+            3.5,
+            15.75,
+            4.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#rubber",
+          "uv": [
+            11.5,
+            15.75,
+            12.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

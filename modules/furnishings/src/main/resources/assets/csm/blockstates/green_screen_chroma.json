@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/green_screen_closed",
+    "textures": {
+      "chroma": "csm:blocks/furniture/office/chroma_green",
+      "case": "csm:blocks/furniture/office/case_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "open": {
+      "true": {
+        "model": "csm:furniture/office/base/green_screen_open"
+      },
+      "false": {
+        "model": "csm:furniture/office/base/green_screen_closed"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/office/base/green_screen_open"
+      }
+    ]
+  }
+}

@@ -26,7 +26,8 @@ import net.minecraftforge.items.ItemHandlerHelper;
  *
  * <p>Every tick on the server: if the input holds enough of something its recipe book takes,
  * there is room in the output for what that makes, and there is water (and fuel burning) if it
- * needs them, it works, advancing the cycle; when the cycle completes it takes the input, puts
+ * needs them (and its supply, for one that uses one up), it works, advancing the cycle; when the
+ * cycle completes it takes the input (unless its recipe keeps it) and one supply, puts
  * the result in the output (or back into the input, for a repair not yet finished), uses a unit
  * of water, and plays its done sound. Take the input away and the cycle starts again from
  * nothing. While it works its block's {@link IAppliance#RUNNING} is true.</p>
@@ -200,7 +201,9 @@ public class TileEntityAppliance extends AbstractTileEntity implements ITickable
     ItemStack in = items.getStackInSlot(ApplianceInventory.INPUT);
     boolean ready = recipe != null && !pending.isEmpty()
         && in.getCount() >= recipe.getInputCount(in) && fits(pending)
-        && (!spec.usesWater() || water > 0);
+        && (!spec.usesWater() || water > 0)
+        && (!spec.usesSupply()
+        || !items.getStackInSlot(ApplianceInventory.FUEL).isEmpty());
     if (burn > 0) {
       burn--;
       if (burn == 0) {
@@ -271,7 +274,13 @@ public class TileEntityAppliance extends AbstractTileEntity implements ITickable
       markDirty();
       return;
     }
-    items.extractItem(ApplianceInventory.INPUT, done == null ? 1 : done.getInputCount(in), false);
+    if (spec.usesSupply()) {
+      items.extractItem(ApplianceInventory.FUEL, 1, false);
+    }
+    if (done == null || done.consumesInput()) {
+      items.extractItem(ApplianceInventory.INPUT, done == null ? 1 : done.getInputCount(in),
+          false);
+    }
     ItemStack out = items.getStackInSlot(ApplianceInventory.OUTPUT);
     if (out.isEmpty()) {
       items.setStackInSlot(ApplianceInventory.OUTPUT, result);

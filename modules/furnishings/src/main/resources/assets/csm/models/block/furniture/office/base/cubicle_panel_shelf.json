@@ -1,0 +1,256 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/charcoal",
+    "shelf": "csm:blocks/furniture/office/laminate_grey",
+    "trim": "csm:blocks/furniture/office/panel_trim",
+    "particle": "#fabric"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        11.5,
+        1.5
+      ],
+      "to": [
+        15,
+        12.25,
+        7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shelf",
+          "uv": [
+            1,
+            3.75,
+            15,
+            4.5
+          ]
+        },
+        "south": {
+          "texture": "#shelf",
+          "uv": [
+            1,
+            3.75,
+            15,
+            4.5
+          ]
+        },
+        "east": {
+          "texture": "#shelf",
+          "uv": [
+            9,
+            3.75,
+            14.5,
+            4.5
+          ]
+        },
+        "west": {
+          "texture": "#shelf",
+          "uv": [
+            1.5,
+            3.75,
+            7,
+            4.5
+          ]
+        },
+        "up": {
+          "texture": "#shelf",
+          "uv": [
+            1,
+            1.5,
+            15,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#shelf",
+          "uv": [
+            1,
+            9,
+            15,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        12.25,
+        1.5
+      ],
+      "to": [
+        15,
+        13.25,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shelf",
+          "uv": [
+            1,
+            2.75,
+            15,
+            3.75
+          ]
+        },
+        "south": {
+          "texture": "#shelf",
+          "uv": [
+            1,
+            2.75,
+            15,
+            3.75
+          ]
+        },
+        "east": {
+          "texture": "#shelf",
+          "uv": [
+            14,
+            2.75,
+            14.5,
+            3.75
+          ]
+        },
+        "west": {
+          "texture": "#shelf",
+          "uv": [
+            1.5,
+            2.75,
+            2,
+            3.75
+          ]
+        },
+        "up": {
+          "texture": "#shelf",
+          "uv": [
+            1,
+            1.5,
+            15,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        10.0,
+        6
+      ],
+      "to": [
+        2.5,
+        11.5,
+        7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim",
+          "uv": [
+            13.5,
+            4.5,
+            14,
+            6.0
+          ]
+        },
+        "south": {
+          "texture": "#trim",
+          "uv": [
+            2,
+            4.5,
+            2.5,
+            6.0
+          ]
+        },
+        "east": {
+          "texture": "#trim",
+          "uv": [
+            9,
+            4.5,
+            10,
+            6.0
+          ]
+        },
+        "west": {
+          "texture": "#trim",
+          "uv": [
+            6,
+            4.5,
+            7,
+            6.0
+          ]
+        },
+        "down": {
+          "texture": "#trim",
+          "uv": [
+            2,
+            9,
+            2.5,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.5,
+        10.0,
+        6
+      ],
+      "to": [
+        14,
+        11.5,
+        7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim",
+          "uv": [
+            2,
+            4.5,
+            2.5,
+            6.0
+          ]
+        },
+        "south": {
+          "texture": "#trim",
+          "uv": [
+            13.5,
+            4.5,
+            14,
+            6.0
+          ]
+        },
+        "east": {
+          "texture": "#trim",
+          "uv": [
+            9,
+            4.5,
+            10,
+            6.0
+          ]
+        },
+        "west": {
+          "texture": "#trim",
+          "uv": [
+            6,
+            4.5,
+            7,
+            6.0
+          ]
+        },
+        "down": {
+          "texture": "#trim",
+          "uv": [
+            13.5,
+            9,
+            14,
+            10
+          ]
+        }
+      }
+    }
+  ]
+}

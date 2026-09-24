@@ -1,0 +1,65 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/laptop_floor",
+    "textures": {
+      "shell": "csm:blocks/furniture/office/silver",
+      "keys": "csm:blocks/furniture/office/keys_silver",
+      "glow": "csm:blocks/furniture/office/screen_laptop"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/office/base/laptop_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/office/base/laptop_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/office/base/laptop_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/office/base/laptop_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/office/base/laptop_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/office/base/laptop_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/office/base/laptop_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/office/base/laptop_item"
+      }
+    ],
+    "lit": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/office/screen_laptop"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/office/screen_off"
+        }
+      }
+    }
+  }
+}

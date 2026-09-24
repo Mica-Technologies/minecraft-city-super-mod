@@ -1,0 +1,254 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_body_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_left_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_right_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_body_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_left_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_right_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_body_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_left_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_right_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_body_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_left_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_right_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_body_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_left_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_right_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_body_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_left_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_right_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_body_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_left_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_right_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_body_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_left_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/locker_blue_right_upper",
+        "y": 270
+      }
+    }
+  ]
+}

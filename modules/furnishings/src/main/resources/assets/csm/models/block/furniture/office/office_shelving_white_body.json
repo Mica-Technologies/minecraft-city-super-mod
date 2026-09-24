@@ -1,0 +1,12 @@
+{
+  "parent": "csm:block/furniture/residential/base/bookcase_body",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/residential/white_v",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "frame": "csm:blocks/furniture/office/metal_white",
+    "books": "csm:blocks/furniture/office/binders",
+    "books_b": "csm:blocks/furniture/office/binders_b",
+    "book_tops": "csm:blocks/furniture/office/binder_tops"
+  }
+}

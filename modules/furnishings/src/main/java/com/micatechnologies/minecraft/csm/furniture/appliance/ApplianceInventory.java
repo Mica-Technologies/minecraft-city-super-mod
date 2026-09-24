@@ -9,9 +9,10 @@ import net.minecraftforge.items.ItemStackHandler;
 
 /**
  * An appliance's three slots: {@link #INPUT}, {@link #OUTPUT} and {@link #FUEL} (used only by
- * an appliance that burns fuel). The input takes only what the appliance has a recipe for, up
- * to its input limit; the fuel slot takes only furnace fuel; nothing is put into the output but
- * by the appliance itself.
+ * an appliance that burns fuel, or uses up a supply). The input takes only what the appliance
+ * has a recipe for, up to its input limit; the fuel slot takes only furnace fuel, or for an
+ * appliance with a supply only that supply; nothing is put into the output but by the
+ * appliance itself.
  *
  * <p>The same class backs the server's slots and the client's stand-in, so a player's click is
  * refused on both sides alike.</p>
@@ -24,7 +25,7 @@ public class ApplianceInventory extends ItemStackHandler {
   public static final int INPUT = 0;
   /** What comes out. */
   public static final int OUTPUT = 1;
-  /** Fuel, for an appliance that burns it. */
+  /** Fuel, for an appliance that burns it; or its supply, for one that uses one up. */
   public static final int FUEL = 2;
   /** How many slots there are. */
   public static final int SLOTS = 3;
@@ -56,7 +57,7 @@ public class ApplianceInventory extends ItemStackHandler {
       return s.getBook().find(stack) != null;
     }
     if (slot == FUEL) {
-      return s.usesFuel() && TileEntityFurnace.isItemFuel(stack);
+      return s.usesFuel() ? TileEntityFurnace.isItemFuel(stack) : s.acceptsSupply(stack);
     }
     return false;
   }

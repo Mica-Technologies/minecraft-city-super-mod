@@ -1,0 +1,52 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/fax_machine_floor",
+    "textures": {
+      "shell": "csm:blocks/furniture/office/plastic_light_grey",
+      "plastic": "csm:blocks/furniture/office/plastic_dark_grey"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/office/base/fax_machine_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/office/base/fax_machine_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/office/base/fax_machine_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/office/base/fax_machine_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/office/base/fax_machine_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/office/base/fax_machine_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/office/base/fax_machine_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/office/base/fax_machine_item"
+      }
+    ]
+  }
+}

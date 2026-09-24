@@ -1,0 +1,12 @@
+{
+  "parent": "csm:block/furniture/residential/base/bookcase_stacked",
+  "textures": {
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "wood_v": "csm:blocks/furniture/office/laminate_grey",
+    "edge": "csm:blocks/furniture/office/laminate_grey_edge",
+    "frame": "csm:blocks/furniture/residential/metal_black",
+    "books": "csm:blocks/furniture/office/binders",
+    "books_b": "csm:blocks/furniture/office/binders_b",
+    "book_tops": "csm:blocks/furniture/office/binder_tops"
+  }
+}

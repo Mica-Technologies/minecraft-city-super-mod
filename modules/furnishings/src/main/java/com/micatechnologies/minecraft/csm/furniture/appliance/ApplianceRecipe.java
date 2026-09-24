@@ -61,6 +61,17 @@ public interface ApplianceRecipe {
   }
 
   /**
+   * Whether a cycle uses up the input. A recipe that makes something from the input without
+   * using it up (the copier copies a book and hands the original back) says no: the input stays
+   * where it is and the appliance goes on while there is room for another result.
+   *
+   * @return false to keep the input
+   */
+  default boolean consumesInput() {
+    return true;
+  }
+
+  /**
    * Whether the result goes back into the input slot for another cycle instead of into the
    * output: a tool being repaired stays in until it is whole. The input is then replaced by the
    * result rather than used up.

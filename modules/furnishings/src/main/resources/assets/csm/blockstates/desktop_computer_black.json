@@ -1,0 +1,65 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/desktop_computer_floor",
+    "textures": {
+      "plastic": "csm:blocks/furniture/residential/appliance_black",
+      "keys": "csm:blocks/furniture/office/keys_black",
+      "glow": "csm:blocks/furniture/office/screen_desktop"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/office/base/desktop_computer_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/office/base/desktop_computer_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/office/base/desktop_computer_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/office/base/desktop_computer_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/office/base/desktop_computer_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/office/base/desktop_computer_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/office/base/desktop_computer_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/office/base/desktop_computer_item"
+      }
+    ],
+    "lit": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/office/screen_desktop"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/office/screen_off"
+        }
+      }
+    }
+  }
+}

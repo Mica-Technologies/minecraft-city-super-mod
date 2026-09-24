@@ -1,0 +1,50 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/furniture/office/locker_grey",
+    "particle": "#steel"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        7
+      ],
+      "to": [
+        0.25,
+        13,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7,
+            3,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            15.75,
+            3,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            7,
+            0.25,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

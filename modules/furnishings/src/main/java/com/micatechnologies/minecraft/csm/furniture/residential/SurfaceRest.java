@@ -26,7 +26,7 @@ public enum SurfaceRest implements IStringSerializable {
   COUNTER(1.5),
   /** A sideboard, a dresser. */
   SIDEBOARD(2),
-  /** A dining table, a cafe table, a desk. */
+  /** A dining table, a cafe table, a desk, an office desk, a conference table. */
   TABLE(4),
   /** A side table, a nightstand. */
   SIDE_TABLE(7),
@@ -62,7 +62,18 @@ public enum SurfaceRest implements IStringSerializable {
     IBlockState below = world.getBlockState(pos.down());
     Block block = below.getBlock();
     if (block instanceof BlockKitchenCabinet) {
-      return ((BlockKitchenCabinet) block).getLine() == KitchenLine.WALL ? FLOOR : COUNTER;
+      switch (((BlockKitchenCabinet) block).getLine()) {
+        case WALL:
+          return FLOOR;
+        case DESK:
+          // Office desks, their pedestals and the L-desk corner: a table's height.
+          return TABLE;
+        case RECEPTION:
+          // The reception desk's transaction counter is a block high.
+          return FLOOR;
+        default:
+          return COUNTER;
+      }
     }
     if (block instanceof BlockBuiltInAppliance) {
       BlockBuiltInAppliance appliance = (BlockBuiltInAppliance) block;
@@ -102,6 +113,10 @@ public enum SurfaceRest implements IStringSerializable {
         return SIDEBOARD;
       }
       if (name.startsWith("desk_") && !name.startsWith("desk_chair_")) {
+        return TABLE;
+      }
+      // The teacher's desk, like the office desks, is a table's height.
+      if (name.startsWith("teacher_desk_")) {
         return TABLE;
       }
       if (name.startsWith("blanket_chest_")) {

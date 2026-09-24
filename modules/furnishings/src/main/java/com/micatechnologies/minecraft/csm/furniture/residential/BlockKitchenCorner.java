@@ -37,7 +37,22 @@ public class BlockKitchenCorner extends BlockKitchenCabinet {
    * @param registryName its registry name, ending in its finish
    */
   public BlockKitchenCorner(String registryName) {
-    super(registryName, BOX, KitchenLine.BASE, 18, KitchenFront.DOORS);
+    this(registryName, BOX, KitchenLine.BASE, 18, KitchenFront.DOORS);
+  }
+
+  /**
+   * Constructs a corner that turns another line's run: the office L-desk turns a run of office
+   * desks ({@link KitchenLine#DESK}) as this cabinet turns a countertop.
+   *
+   * @param registryName its registry name, ending in its finish
+   * @param box          its box facing north, in sixteenths
+   * @param line         the run it turns
+   * @param slots        how many slots it holds, a multiple of nine, or zero
+   * @param front        what it opens with
+   */
+  public BlockKitchenCorner(String registryName, int[] box, KitchenLine line, int slots,
+      KitchenFront front) {
+    super(registryName, box, line, slots, front);
   }
 
   @Override

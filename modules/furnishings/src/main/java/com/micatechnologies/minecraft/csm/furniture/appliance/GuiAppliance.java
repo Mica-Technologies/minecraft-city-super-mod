@@ -12,7 +12,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * An appliance's screen, drawn on the vanilla furnace's: the progress arrow fills through each
- * cycle, the flame burns down for an appliance with fuel. One that burns nothing has the fuel
+ * cycle, the flame burns down for an appliance with fuel. One with a supply (the copier's book
+ * and quill) keeps the fuel slot for it, the flame painted out. One that burns nothing has the fuel
  * slot and the flame painted out with the screen's own blank panel and its input slot moved level
  * with the output. One that uses water has a tank gauge to the left, whose tooltip says how many
  * cycles are left and how to fill it.
@@ -59,6 +60,10 @@ public class GuiAppliance extends GuiContainer {
     ApplianceSpec spec = container.getSpec();
     int x = mouseX - guiLeft;
     int y = mouseY - guiTop;
+    if (spec.usesSupply() && spec.getSupplyHint() != null && x >= 55 && x < 73 && y >= 52
+        && y < 70 && inventorySlots.getSlot(2).getStack().isEmpty()) {
+      drawHoveringText(I18n.format(spec.getSupplyHint()), mouseX, mouseY);
+    }
     if (spec.usesWater() && x >= TANK_X && x < TANK_X + TANK_W && y >= TANK_Y
         && y < TANK_Y + TANK_H) {
       List<String> lines = new ArrayList<>();
@@ -96,6 +101,9 @@ public class GuiAppliance extends GuiContainer {
       if (f > 0) {
         drawTexturedModalRect(x + 56, y + 36 + 12 - f, 176, 12 - f, 14, f + 1);
       }
+    } else if (spec.usesSupply()) {
+      // The supply slot stays where the fuel slot is; only the flame is painted out.
+      drawTexturedModalRect(x + 56, y + 36, 8, 36, 14, 14);
     } else {
       // Paint out the input slot, the flame and the fuel slot with the blank panel to their
       // left, then draw the input slot again level with the output.

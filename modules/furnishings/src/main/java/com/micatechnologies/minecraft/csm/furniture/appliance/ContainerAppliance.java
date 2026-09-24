@@ -53,7 +53,7 @@ public class ContainerAppliance extends Container {
     this.appliance = appliance;
     this.spec = spec;
     ItemStackHandler handler = server ? appliance.getItems() : new ApplianceInventory(() -> spec);
-    boolean fuel = spec.usesFuel();
+    boolean fuel = spec.usesFuel() || spec.usesSupply();
     addSlotToContainer(new SlotItemHandler(handler, ApplianceInventory.INPUT, 56, fuel ? 17 : 35));
     addSlotToContainer(new SlotItemHandler(handler, ApplianceInventory.OUTPUT, 116, 35));
     if (fuel) {

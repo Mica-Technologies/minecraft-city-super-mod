@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/office/base/cubicle_panel_shelf",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/charcoal",
+    "fabric_dark": "csm:blocks/furniture/residential/charcoal_dark"
+  }
+}

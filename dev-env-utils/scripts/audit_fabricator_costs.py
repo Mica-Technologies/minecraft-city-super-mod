@@ -522,6 +522,65 @@ def cost_for(registry, info, ancestors):
         if registry.startswith("cafe_table_"):
             return ("planks", "iron_ingot")
         return ("planks x2", "FASTENER_KIT")
+    if tab == "tabcommercialoffice":
+        # Mirrors OfficeFabricatorRules (Furniture & Novelties module).
+        if registry.startswith("copier_"):
+            return ("SHEET_METAL x3", "CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith(("desktop_computer_", "laptop_")):
+            return ("CONTROL_BOARD", "LED_MODULE", "WIRING_HARNESS")
+        if registry.startswith("retro_computer_"):
+            return ("CONTROL_BOARD", "glass", "WIRING_HARNESS")
+        if registry.startswith("computer_tower_"):
+            return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
+        if registry.startswith(("desk_phone_", "fax_machine_")):
+            return ("CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith("desk_lamp_"):
+            return ("LED_MODULE", "SHEET_METAL")
+        if registry.startswith("ring_light_"):
+            return ("LED_MODULE x2", "iron_ingot")
+        if registry.startswith("studio_camera_"):
+            return ("LENS_ASSEMBLY", "CONTROL_BOARD", "iron_ingot")
+        if registry.startswith("pen_holder_"):
+            return ("iron_ingot",)
+        if registry.startswith("paper_tray_"):
+            return ("SHEET_METAL", "paper")
+        if registry.startswith(("task_chair_", "conference_chair_", "gaming_chair_")):
+            return ("iron_ingot", "wool x2")
+        if registry.startswith("guest_chair_"):
+            return ("iron_ingot", "wool")
+        if registry.startswith("waiting_bench_"):
+            return ("iron_ingot x2", "wool")
+        if registry.startswith("school_desk_"):
+            return ("planks x2", "iron_ingot")
+        if registry.startswith(("office_desk_pedestal_", "teacher_desk_")):
+            return ("planks x4", "iron_ingot", "FASTENER_KIT")
+        if registry.startswith("office_desk_"):
+            return ("planks x3", "iron_ingot", "FASTENER_KIT")
+        if registry.startswith("reception_desk_"):
+            return ("planks x5", "FASTENER_KIT")
+        if registry.startswith("filing_cabinet_"):
+            return ("SHEET_METAL x2", "FASTENER_KIT")
+        if registry.startswith("office_shelving_"):
+            return ("planks x3", "paper x2")
+        if registry.startswith("conference_table_"):
+            return ("planks x3", "iron_ingot")
+        if registry.startswith("cubicle_panel_half_"):
+            return ("wool", "iron_ingot")
+        if registry.startswith("cubicle_panel_"):
+            return ("wool x2", "iron_ingot")
+        if registry.startswith("whiteboard_"):
+            return ("SHEET_METAL", "FASTENER_KIT")
+        if registry.startswith("chalkboard_"):
+            return ("planks x2", "coal")
+        if registry.startswith("cork_board_"):
+            return ("planks x2", "paper")
+        if registry.startswith("projector_screen_"):
+            return ("SHEET_METAL", "wool")
+        if registry.startswith("locker_"):
+            return ("SHEET_METAL x3", "FASTENER_KIT")
+        if registry.startswith("green_screen_"):
+            return ("wool x2", "iron_ingot")
+        return ("planks x2", "FASTENER_KIT")
     # Any other tab is a module's own, priced by the rule the module registers
     # (e.g. ParksFabricatorRules), which this audit does not mirror; this is the generic cost
     # such a rule falls back to.

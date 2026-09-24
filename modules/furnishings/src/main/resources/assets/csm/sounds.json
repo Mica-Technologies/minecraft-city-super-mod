@@ -304,5 +304,14 @@
         "stream": false
       }
     ]
+  },
+  "printer_run": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:printer_run",
+        "stream": false
+      }
+    ]
   }
 }

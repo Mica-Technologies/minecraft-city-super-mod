@@ -1,0 +1,328 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_body"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_plinth"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_stacked"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_top"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_left"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_left_full"
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_right"
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "up": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_right_full"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_plinth",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_stacked",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_left_full",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "up": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_right_full",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_plinth",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_stacked",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_left_full",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "up": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_right_full",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_plinth",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_stacked",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_left_full",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "up": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/office_shelving_white_right_full",
+        "y": 270
+      }
+    }
+  ]
+}

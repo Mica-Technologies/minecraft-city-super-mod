@@ -15,5 +15,9 @@ public enum KitchenLine {
   /** The double-sided island. */
   ISLAND,
   /** Bathroom vanities, whose basin tops join into one vanity top. */
-  VANITY
+  VANITY,
+  /** Office desks, desk pedestals and the L-desk corner, whose tops join into one desk. */
+  DESK,
+  /** Reception desks, whose raised transaction counters join into one counter. */
+  RECEPTION
 }

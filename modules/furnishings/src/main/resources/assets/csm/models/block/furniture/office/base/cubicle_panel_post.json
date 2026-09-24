@@ -1,0 +1,69 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/charcoal",
+    "trim": "csm:blocks/furniture/office/panel_trim",
+    "particle": "#fabric"
+  },
+  "elements": [
+    {
+      "from": [
+        6.75,
+        0,
+        6.75
+      ],
+      "to": [
+        9.25,
+        16,
+        9.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim",
+          "uv": [
+            6.75,
+            0,
+            9.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#trim",
+          "uv": [
+            6.75,
+            0,
+            9.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#trim",
+          "uv": [
+            6.75,
+            0,
+            9.25,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#trim",
+          "uv": [
+            6.75,
+            0,
+            9.25,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#trim",
+          "uv": [
+            6.75,
+            6.75,
+            9.25,
+            9.25
+          ]
+        }
+      }
+    }
+  ]
+}

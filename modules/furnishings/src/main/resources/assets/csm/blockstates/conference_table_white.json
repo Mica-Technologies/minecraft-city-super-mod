@@ -1,0 +1,161 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_top"
+      }
+    },
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_leg"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron_a"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron_b"
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_leg",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron_a",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_leg",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron_a",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_leg",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron_a",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/conference_table_white_apron_b",
+        "y": 270
+      }
+    }
+  ]
+}

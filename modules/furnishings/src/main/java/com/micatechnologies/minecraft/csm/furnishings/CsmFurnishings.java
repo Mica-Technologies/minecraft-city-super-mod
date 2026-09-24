@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.furniture.office.OfficeFabricatorRules;
 import com.micatechnologies.minecraft.csm.furniture.residential.BedSleepClientHandler;
 import com.micatechnologies.minecraft.csm.furniture.residential.ResidentialFabricatorRules;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
@@ -71,6 +72,9 @@ public class CsmFurnishings {
     // The Residential tab is this module's own, so Core prices it through the rule it is given.
     CsmFabricatorCosts.registerRule(ResidentialFabricatorRules.TAB_ID,
         ResidentialFabricatorRules::price);
+    // So is the Commercial & Office tab.
+    CsmFabricatorCosts.registerRule(OfficeFabricatorRules.TAB_ID,
+        OfficeFabricatorRules::price);
 
     // A sleeper in a Residential bed is laid out along it on the client (the handler touches a
     // client-only field, so a dedicated server never loads it).

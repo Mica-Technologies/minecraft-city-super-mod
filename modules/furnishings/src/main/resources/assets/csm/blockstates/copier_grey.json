@@ -1,0 +1,40 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/copier",
+    "textures": {
+      "shell": "csm:blocks/furniture/office/plastic_light_grey",
+      "trim": "csm:blocks/furniture/office/plastic_dark_grey",
+      "glow": "csm:blocks/furniture/residential/lamp_green_off"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "running": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/lamp_green_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/lamp_green_off"
+        }
+      }
+    }
+  }
+}
