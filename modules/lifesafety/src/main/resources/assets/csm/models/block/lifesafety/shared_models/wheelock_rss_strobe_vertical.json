@@ -1,0 +1,136 @@
+{
+  "credit": "CSM: Wheelock RSS strobe mounted vertically",
+  "textures": {
+    "0": "csm:blocks/lifesafety/wheelock_rss_strobe_vertical_red",
+    "particle": "csm:blocks/lifesafety/wheelock_rss_strobe_vertical_red"
+  },
+  "elements": [
+    {
+      "from": [
+        1.125,
+        1.125,
+        15
+      ],
+      "to": [
+        14.875,
+        14.875,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.125,
+            1.125,
+            14.875,
+            14.875
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            14.625,
+            1.125,
+            14.875,
+            14.875
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            1.125,
+            1.125,
+            1.375,
+            14.875
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            1.125,
+            1.125,
+            14.875,
+            1.375
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            1.125,
+            14.625,
+            14.875,
+            14.875
+          ],
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [
+        5.875,
+        1.5,
+        13
+      ],
+      "to": [
+        10.0,
+        14.375,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.0,
+            1.625,
+            10.125,
+            14.5
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            6.375,
+            1.625,
+            6.625,
+            14.5
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            6.375,
+            1.625,
+            6.625,
+            14.5
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            6.0,
+            1.625,
+            10.125,
+            1.875
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            6.0,
+            14.25,
+            10.125,
+            14.5
+          ],
+          "texture": "#0"
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    }
+  }
+}

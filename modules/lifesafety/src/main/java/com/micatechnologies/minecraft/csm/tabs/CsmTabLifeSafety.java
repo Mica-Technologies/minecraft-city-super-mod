@@ -259,6 +259,9 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(BlockFireAlarmWheelockMTHornStrobeWhiteBlue.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockMTHornWhite.class, fmlPreInitializationEvent);
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("rssstrobe", null, new AxisAlignedBB(0.187500, 0.375000, 0.750000, 0.812500, 1.000000, 1.000000), new float[]{3.4f, 9.7f, 12f}, new float[]{12.9f, 12.2f, 14f}));
+    initTabBlock(new BlockFireAlarmSounderStrobeFactory("rssstrobevertical", null, new AxisAlignedBB(0.070313, 0.070313, 0.812500, 0.929688, 0.929688, 1.000000), new float[]{5.875f, 1.5f, 12.5f}, new float[]{10.0f, 14.375f, 14.5f}));
+    initTabBlock(new BlockFireAlarmSounderStrobeFactory("gentexgxsstrobered", null, new AxisAlignedBB(0.070313, 0.070313, 0.812500, 0.929688, 0.929688, 1.000000), new float[]{6.125f, 1.5f, 12.5f}, new float[]{9.75f, 14.375f, 14.5f}));
+    initTabBlock(new BlockFireAlarmSounderStrobeFactory("gentexgxsstrobewhite", null, new AxisAlignedBB(0.070313, 0.070313, 0.812500, 0.929688, 0.929688, 1.000000), new float[]{6.125f, 1.5f, 12.5f}, new float[]{9.75f, 14.375f, 14.5f}));
     initTabBlock(new BlockRotatableNSEWUDFactory("gamewellfirebox", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("sslstrobe", null, new AxisAlignedBB(0.187500, 0.187500, 0.812500, 0.812500, 1.000000, 1.000000), new float[]{5.5f, 4.86f, 13f}, new float[]{10.25f, 9.63f, 14f}));
     initTabItem(ItemFireAlarmLinker.class, fmlPreInitializationEvent);

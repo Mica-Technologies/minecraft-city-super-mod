@@ -2,7 +2,7 @@
 
 Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
-!!! info "139 blocks in this tab"
+!!! info "142 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -49,6 +49,8 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Gentex Commander 5 (Black Edition) | `csm:firealarmgentexcommander5black` | 2 | 10 | pickaxe | 1 |
 | Gentex Commander 5 (GHSR - Red) | `csm:firealarmgentexcommander5red` | 2 | 10 | pickaxe | 1 |
 | Gentex Commander 5 (GHSW - White) | `csm:firealarmgentexcommander5white` | 2 | 10 | pickaxe | 1 |
+| Gentex GXS Strobe (Red) | `csm:gentexgxsstrobered` | 2 | 10 | pickaxe | 1 |
+| Gentex GXS Strobe (White) | `csm:gentexgxsstrobewhite` | 2 | 10 | pickaxe | 1 |
 | Gentex Smoke Alarm | `csm:gentex_smoke_alarm` | 2 | 10 | pickaxe | 1 |
 | Honeywell Addressable Module | `csm:hwam` |  |  |  |  |
 | KAC Call Point | `csm:firealarmkaccallpoint` | 2 | 10 | pickaxe | 1 |
@@ -149,6 +151,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Wheelock MT White (Horn Strobe) | `csm:firealarmwheelockmthornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | Wheelock MT White (Horn) | `csm:firealarmwheelockmthornwhite` | 2 | 10 | pickaxe | 1 |
 | Wheelock MT White/Blue (Horn Strobe) | `csm:firealarmwheelockmthornstrobewhiteblue` | 2 | 10 | pickaxe | 1 |
+| Wheelock RSS Strobe (Vertical, Red) | `csm:rssstrobevertical` | 2 | 10 | pickaxe | 1 |
 | Wheelock RSS Strobe Red | `csm:rssstrobe` | 2 | 10 | pickaxe | 1 |
 
 </div>

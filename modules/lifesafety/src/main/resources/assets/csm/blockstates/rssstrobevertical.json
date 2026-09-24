@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lifesafety/shared_models/wheelock_rss_strobe_vertical",
+    "textures": {
+      "all": "csm:blocks/lifesafety/wheelock_rss_strobe_vertical_red",
+      "particle": "csm:blocks/lifesafety/wheelock_rss_strobe_vertical_red",
+      "0": "csm:blocks/lifesafety/wheelock_rss_strobe_vertical_red"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}
