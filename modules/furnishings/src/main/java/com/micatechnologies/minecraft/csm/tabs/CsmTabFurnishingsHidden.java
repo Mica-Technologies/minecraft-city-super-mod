@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockBounceCastlePart;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockSwitchRelay;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -39,5 +40,6 @@ public class CsmTabFurnishingsHidden extends CsmTab {
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(new BlockSwitchRelay()); // Light Switch Relay
+    initTabBlock(new BlockBounceCastlePart()); // Bounce Castle Part
   }
 }

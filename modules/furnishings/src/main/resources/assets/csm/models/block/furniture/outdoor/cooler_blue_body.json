@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/cooler",
+  "textures": {
+    "shell": "csm:blocks/furniture/outdoor/cooler_blue"
+  }
+}

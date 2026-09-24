@@ -1,0 +1,92 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/furniture/residential/metal_steel",
+    "pad": "csm:blocks/furniture/outdoor/pad_blue",
+    "particle": "#pad"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        11,
+        0
+      ],
+      "to": [
+        3,
+        12.25,
+        3
+      ],
+      "faces": {
+        "up": {
+          "texture": "#pad",
+          "uv": [
+            0,
+            0,
+            3,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#pad",
+          "uv": [
+            0,
+            3.75,
+            3,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#pad",
+          "uv": [
+            0,
+            13,
+            3,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        10,
+        0
+      ],
+      "to": [
+        0.75,
+        11,
+        3
+      ],
+      "faces": {
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            13,
+            5,
+            16,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            5,
+            3,
+            6
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            13,
+            0.75,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/outdoor/base/fire_pit_steel",
+    "textures": {
+      "stone": "csm:blocks/furniture/outdoor/firepit_stone",
+      "steel": "csm:blocks/furniture/outdoor/steel_rust",
+      "flame": "csm:blocks/furniture/living/clear",
+      "embers": "csm:blocks/furniture/living/embers_off"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "lit": {
+      "true": {
+        "textures": {
+          "flame": "csm:blocks/furniture/living/flame",
+          "embers": "csm:blocks/furniture/living/embers_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "flame": "csm:blocks/furniture/living/clear",
+          "embers": "csm:blocks/furniture/living/embers_off"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    },
+    "inventory": [
+      {
+        "textures": {
+          "flame": "csm:blocks/furniture/living/flame",
+          "embers": "csm:blocks/furniture/living/embers_on"
+        }
+      }
+    ]
+  }
+}

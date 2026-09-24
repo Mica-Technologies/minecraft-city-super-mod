@@ -1,0 +1,27 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/outdoor/base/pet_bed",
+    "textures": {
+      "fabric": "csm:blocks/furniture/residential/charcoal",
+      "fabric_dark": "csm:blocks/furniture/residential/charcoal_dark"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room tables, chairs, bookcases, storage and sofas that join into runs.
 
-!!! info "265 blocks in this tab"
+!!! info "318 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,8 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Adirondack Chair (Teak) | `csm:adirondack_chair_teak` | 1.5 | 3.0 | axe | 0 |
+| Adirondack Chair (White) | `csm:adirondack_chair_white` | 1.5 | 3.0 | axe | 0 |
 | Air Fryer (Black) | `csm:air_fryer_black` | 1.5 | 3.0 | axe | 0 |
 | Air Fryer (White) | `csm:air_fryer_white` | 1.5 | 3.0 | axe | 0 |
 | Armchair (Charcoal) | `csm:armchair_charcoal` | 1.5 | 3.0 | axe | 0 |
@@ -39,6 +41,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Bookcase (White) | `csm:bookcase_white` | 1.5 | 3.0 | axe | 0 |
 | Bookshelf Speaker (Black) | `csm:bookshelf_speaker_black` | 1.5 | 3.0 | axe | 0 |
 | Bookshelf Speaker (Walnut) | `csm:bookshelf_speaker_walnut` | 1.5 | 3.0 | axe | 0 |
+| Bounce Castle (Red) | `csm:bounce_castle_red` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (Light Oak) | `csm:bunk_bed_oak` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (Walnut) | `csm:bunk_bed_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (White) | `csm:bunk_bed_white` | 1.5 | 3.0 | axe | 0 |
@@ -48,13 +51,18 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Cake Stand (Chocolate Cake) | `csm:cake_stand_chocolate` | 1.5 | 3.0 | axe | 0 |
 | Cake Stand (Strawberry Cake) | `csm:cake_stand_strawberry` | 1.5 | 3.0 | axe | 0 |
 | Candlestick (Brass) | `csm:candlestick_brass` | 1.5 | 3.0 | axe | 0 |
+| Cat Tree (Beige) | `csm:cat_tree_beige` | 1.5 | 3.0 | axe | 0 |
+| Cat Tree (Grey) | `csm:cat_tree_grey` | 1.5 | 3.0 | axe | 0 |
 | Ceiling Fan (Light Oak) | `csm:ceiling_fan_oak` | 1.5 | 3.0 | axe | 0 |
 | Ceiling Fan (Walnut) | `csm:ceiling_fan_walnut` | 1.5 | 3.0 | axe | 0 |
 | Ceiling Fan (White) | `csm:ceiling_fan_white` | 1.5 | 3.0 | axe | 0 |
 | Changing Table (Light Oak) | `csm:changing_table_oak` | 1.5 | 3.0 | axe | 0 |
 | Changing Table (Walnut) | `csm:changing_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | Changing Table (White) | `csm:changing_table_white` | 1.5 | 3.0 | axe | 0 |
+| Charcoal Kettle Grill (Black) | `csm:kettle_grill_black` | 1.5 | 3.0 | axe | 0 |
+| Charcoal Kettle Grill (Red) | `csm:kettle_grill_red` | 1.5 | 3.0 | axe | 0 |
 | Chest Freezer (White) | `csm:chest_freezer_white` | 1.5 | 3.0 | axe | 0 |
+| Chimney Stack (Brick) | `csm:chimney_brick` | 1.5 | 3.0 | axe | 0 |
 | Chopping Board (Light Oak) | `csm:chopping_board_oak` | 1.5 | 3.0 | axe | 0 |
 | Chopping Board (Walnut) | `csm:chopping_board_walnut` | 1.5 | 3.0 | axe | 0 |
 | Chopping Board (White) | `csm:chopping_board_white` | 1.5 | 3.0 | axe | 0 |
@@ -67,6 +75,8 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Coffee Table (Walnut) | `csm:coffee_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | Coffee Table (White) | `csm:coffee_table_white` | 1.5 | 3.0 | axe | 0 |
 | Cookie Jar (Ceramic) | `csm:cookie_jar_ceramic` | 1.5 | 3.0 | axe | 0 |
+| Cooler (Blue) | `csm:cooler_blue` | 1.5 | 3.0 | axe | 0 |
+| Cooler (Red) | `csm:cooler_red` | 1.5 | 3.0 | axe | 0 |
 | Cradle with Drawers (Light Oak) | `csm:cradle_with_drawers_oak` | 1.5 | 3.0 | axe | 0 |
 | Cradle with Drawers (Walnut) | `csm:cradle_with_drawers_walnut` | 1.5 | 3.0 | axe | 0 |
 | Cradle with Drawers (White) | `csm:cradle_with_drawers_white` | 1.5 | 3.0 | axe | 0 |
@@ -95,6 +105,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Dinner Plate (Plain) | `csm:dinner_plate_plain` | 1.5 | 3.0 | axe | 0 |
 | Dishwasher (Stainless Steel) | `csm:dishwasher_stainless` | 1.5 | 3.0 | axe | 0 |
 | Dishwasher (White) | `csm:dishwasher_white` | 1.5 | 3.0 | axe | 0 |
+| Diving Board (White) | `csm:diving_board_white` | 1.5 | 3.0 | axe | 0 |
 | Door Mat (Coir) | `csm:door_mat_coir` | 0.2 | 0.4 | axe | 0 |
 | Door Mat (Grey) | `csm:door_mat_grey` | 0.2 | 0.4 | axe | 0 |
 | Doorbell (White) | `csm:doorbell_white` | 1.5 | 3.0 | axe | 0 |
@@ -115,18 +126,24 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Electric Range (Stainless Steel) | `csm:kitchen_range_stainless` | 1.5 | 3.0 | axe | 0 |
 | Electric Range (White) | `csm:kitchen_range_white` | 1.5 | 3.0 | axe | 0 |
 | Fiddle-Leaf Fig (Terracotta Pot) | `csm:fiddle_leaf_fig_terracotta` | 1.5 | 3.0 | axe | 0 |
+| Fire Pit (Steel) | `csm:fire_pit_steel` | 1.5 | 3.0 | axe | 0 |
+| Fire Pit (Stone) | `csm:fire_pit_stone` | 1.5 | 3.0 | axe | 0 |
 | Fireplace (Light Oak) | `csm:fireplace_oak` | 1.5 | 3.0 | axe | 0 |
 | Fireplace (Walnut) | `csm:fireplace_walnut` | 1.5 | 3.0 | axe | 0 |
 | Fireplace (White) | `csm:fireplace_white` | 1.5 | 3.0 | axe | 0 |
 | Flat-Screen TV (Black) | `csm:flat_screen_tv_black` | 1.5 | 3.0 | axe | 0 |
 | Floor Lamp (Black) | `csm:floor_lamp_black` | 1.5 | 3.0 | axe | 0 |
 | Floor Lamp (Brass) | `csm:floor_lamp_brass` | 1.5 | 3.0 | axe | 0 |
+| Garden Hose Reel (Green) | `csm:hose_reel_green` | 1.5 | 3.0 | axe | 0 |
+| Gas Grill (Black) | `csm:gas_grill_black` | 1.5 | 3.0 | axe | 0 |
+| Gas Grill (Stainless Steel) | `csm:gas_grill_stainless` | 1.5 | 3.0 | axe | 0 |
 | Grab Bar (Stainless Steel) | `csm:grab_bar_stainless` | 1.5 | 3.0 | axe | 0 |
 | Hanging Plant (White Pot) | `csm:hanging_plant_white` | 1.5 | 3.0 | axe | 0 |
 | Heated Towel Rail (Chrome) | `csm:heated_towel_rail_chrome` | 1.5 | 3.0 | axe | 0 |
 | Hi-Fi Stereo (Black) | `csm:stereo_black` | 1.5 | 3.0 | axe | 0 |
 | Ironing Board (Blue) | `csm:ironing_board_blue` | 1.5 | 3.0 | axe | 0 |
 | Ironing Board (Grey) | `csm:ironing_board_grey` | 1.5 | 3.0 | axe | 0 |
+| Kiddie Pool (Blue) | `csm:kiddie_pool_blue` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Charcoal) | `csm:bed_king_charcoal` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Navy) | `csm:bed_king_navy` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Oatmeal) | `csm:bed_king_oatmeal` | 1.5 | 3.0 | axe | 0 |
@@ -161,6 +178,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Laundry Basket (Wicker) | `csm:laundry_basket_wicker` | 1.5 | 3.0 | axe | 0 |
 | Laundry Tub (White) | `csm:laundry_tub_white` | 1.5 | 3.0 | axe | 0 |
 | Light Switch (White) | `csm:light_switch_white` | 1.5 | 3.0 | axe | 0 |
+| Litter Box (Grey) | `csm:litter_box_grey` | 1.5 | 3.0 | axe | 0 |
 | Microwave (Black) | `csm:microwave_black` | 1.5 | 3.0 | axe | 0 |
 | Microwave (Stainless Steel) | `csm:microwave_stainless` | 1.5 | 3.0 | axe | 0 |
 | Microwave (White) | `csm:microwave_white` | 1.5 | 3.0 | axe | 0 |
@@ -174,14 +192,39 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Open Kitchen Shelf (Light Oak) | `csm:kitchen_wall_shelf_oak` | 1.5 | 3.0 | axe | 0 |
 | Open Kitchen Shelf (Walnut) | `csm:kitchen_wall_shelf_walnut` | 1.5 | 3.0 | axe | 0 |
 | Open Kitchen Shelf (White) | `csm:kitchen_wall_shelf_white` | 1.5 | 3.0 | axe | 0 |
+| Outdoor Rug (Blue Stripe) | `csm:outdoor_rug_blue` | 0.2 | 0.4 | axe | 0 |
+| Outdoor Rug (Sand Stripe) | `csm:outdoor_rug_sand` | 0.2 | 0.4 | axe | 0 |
+| Outdoor Sofa (Sand) | `csm:outdoor_sofa_sand` | 1.5 | 3.0 | axe | 0 |
+| Outdoor Sofa (Slate) | `csm:outdoor_sofa_slate` | 1.5 | 3.0 | axe | 0 |
+| Outdoor Sofa (Teal) | `csm:outdoor_sofa_teal` | 1.5 | 3.0 | axe | 0 |
+| Outdoor Sofa Corner (Sand) | `csm:outdoor_sofa_corner_sand` | 1.5 | 3.0 | axe | 0 |
+| Outdoor Sofa Corner (Slate) | `csm:outdoor_sofa_corner_slate` | 1.5 | 3.0 | axe | 0 |
+| Outdoor Sofa Corner (Teal) | `csm:outdoor_sofa_corner_teal` | 1.5 | 3.0 | axe | 0 |
+| Outdoor Wall Light (Black) | `csm:outdoor_wall_light_black` | 1.5 | 3.0 | axe | 0 |
+| Outdoor Wall Light (Galvanized) | `csm:outdoor_wall_light_galvanized` | 1.5 | 3.0 | axe | 0 |
 | Paper Towel Dispenser (Stainless Steel) | `csm:paper_towel_dispenser_stainless` | 1.5 | 3.0 | axe | 0 |
+| Patio Chair (Black) | `csm:patio_chair_black` | 1.5 | 3.0 | axe | 0 |
+| Patio Chair (Teak) | `csm:patio_chair_teak` | 1.5 | 3.0 | axe | 0 |
+| Patio Table (Black) | `csm:patio_table_black` | 1.5 | 3.0 | axe | 0 |
+| Patio Table (Teak) | `csm:patio_table_teak` | 1.5 | 3.0 | axe | 0 |
+| Patio Umbrella (Cream) | `csm:patio_umbrella_cream` | 1.5 | 3.0 | axe | 0 |
+| Patio Umbrella (Navy) | `csm:patio_umbrella_navy` | 1.5 | 3.0 | axe | 0 |
 | Pedestal Sink (White) | `csm:pedestal_sink_white` | 1.5 | 3.0 | axe | 0 |
+| Pet Bed (Charcoal) | `csm:pet_bed_charcoal` | 1.5 | 3.0 | axe | 0 |
+| Pet Bed (Navy) | `csm:pet_bed_navy` | 1.5 | 3.0 | axe | 0 |
+| Pet Bed (Red) | `csm:pet_bed_red` | 1.5 | 3.0 | axe | 0 |
+| Pet Bowls (Red) | `csm:pet_bowls_red` | 1.5 | 3.0 | axe | 0 |
+| Pet Bowls (Steel) | `csm:pet_bowls_steel` | 1.5 | 3.0 | axe | 0 |
 | Photo Frame (Light Oak) | `csm:photo_frame_oak` | 1.5 | 3.0 | axe | 0 |
 | Photo Frame (Walnut) | `csm:photo_frame_walnut` | 1.5 | 3.0 | axe | 0 |
 | Photo Frame (White) | `csm:photo_frame_white` | 1.5 | 3.0 | axe | 0 |
 | Piano Bench (Black) | `csm:piano_bench_black` | 1.5 | 3.0 | axe | 0 |
 | Piano Bench (Walnut) | `csm:piano_bench_walnut` | 1.5 | 3.0 | axe | 0 |
+| Picket Fence (White) | `csm:picket_fence_white` | 2.0 | 5.0 | axe | 0 |
+| Picket Gate (White) | `csm:picket_gate_white` |  |  |  |  |
 | Pillar Candles (White) | `csm:pillar_candles_white` | 1.5 | 3.0 | axe | 0 |
+| Pool Float Ring (Pink) | `csm:pool_float_pink` | 1.5 | 3.0 | axe | 0 |
+| Pool Float Ring (Yellow) | `csm:pool_float_yellow` | 1.5 | 3.0 | axe | 0 |
 | Range Hood (Stainless Steel) | `csm:range_hood_stainless` | 1.5 | 3.0 | axe | 0 |
 | Refrigerator (Stainless Steel) | `csm:refrigerator_stainless` | 1.5 | 3.0 | axe | 0 |
 | Refrigerator (White) | `csm:refrigerator_white` | 1.5 | 3.0 | axe | 0 |
@@ -223,13 +266,21 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Standing Mirror (Walnut) | `csm:standing_mirror_walnut` | 1.5 | 3.0 | axe | 0 |
 | Standing Mirror (White) | `csm:standing_mirror_white` | 1.5 | 3.0 | axe | 0 |
 | Steam Iron (Blue) | `csm:steam_iron_blue` | 1.5 | 3.0 | axe | 0 |
+| Stepping Stones (Grey) | `csm:stepping_stones_grey` | 1.0 | 3.0 | pickaxe | 0 |
+| Stepping Stones (Slate) | `csm:stepping_stones_slate` | 1.0 | 3.0 | pickaxe | 0 |
 | Storage Crate (Light Oak) | `csm:storage_crate_oak` | 1.5 | 3.0 | axe | 0 |
 | Storage Crate (Walnut) | `csm:storage_crate_walnut` | 1.5 | 3.0 | axe | 0 |
 | Storage Crate (White) | `csm:storage_crate_white` | 1.5 | 3.0 | axe | 0 |
+| String Lights (Multicolour) | `csm:string_lights_multicolour` | 1.5 | 3.0 | axe | 0 |
+| String Lights (Warm White) | `csm:string_lights_warm` | 1.5 | 3.0 | axe | 0 |
 | Subwoofer (Black) | `csm:subwoofer_black` | 1.5 | 3.0 | axe | 0 |
 | Succulent Pots (Terracotta) | `csm:succulent_pots_terracotta` | 1.5 | 3.0 | axe | 0 |
+| Sun Lounger (Black) | `csm:sun_lounger_black` | 1.5 | 3.0 | axe | 0 |
+| Sun Lounger (Teak) | `csm:sun_lounger_teak` | 1.5 | 3.0 | axe | 0 |
 | Table Lamp (Brass) | `csm:table_lamp_brass` | 1.5 | 3.0 | axe | 0 |
 | Table Lamp (White) | `csm:table_lamp_white` | 1.5 | 3.0 | axe | 0 |
+| Table Umbrella (Cream) | `csm:table_umbrella_cream` | 1.5 | 3.0 | axe | 0 |
+| Table Umbrella (Navy) | `csm:table_umbrella_navy` | 1.5 | 3.0 | axe | 0 |
 | Toaster (Red) | `csm:toaster_red` | 1.5 | 3.0 | axe | 0 |
 | Toaster (Stainless Steel) | `csm:toaster_stainless` | 1.5 | 3.0 | axe | 0 |
 | Toaster (White) | `csm:toaster_white` | 1.5 | 3.0 | axe | 0 |
@@ -238,6 +289,8 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Toilet Paper Holder (Chrome) | `csm:toilet_paper_holder_chrome` | 1.5 | 3.0 | axe | 0 |
 | Toiletries Tray (White) | `csm:toiletries_tray_white` | 1.5 | 3.0 | axe | 0 |
 | Towel Rail (Chrome) | `csm:towel_rail_chrome` | 1.5 | 3.0 | axe | 0 |
+| Trampoline (Blue) | `csm:trampoline_blue` | 1.5 | 3.0 | axe | 0 |
+| Trampoline (Green) | `csm:trampoline_green` | 1.5 | 3.0 | axe | 0 |
 | Tumble Dryer (Stainless Steel) | `csm:dryer_stainless` | 1.5 | 3.0 | axe | 0 |
 | Tumble Dryer (White) | `csm:dryer_white` | 1.5 | 3.0 | axe | 0 |
 | TV Stand (Light Oak) | `csm:tv_stand_oak` | 1.5 | 3.0 | axe | 0 |

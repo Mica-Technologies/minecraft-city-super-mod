@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.furniture.office.OfficeFabricatorRules;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.Bounce;
 import com.micatechnologies.minecraft.csm.furniture.residential.BedSleepClientHandler;
 import com.micatechnologies.minecraft.csm.furniture.residential.ResidentialFabricatorRules;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
@@ -83,6 +84,10 @@ public class CsmFurnishings {
     // So is the Commercial & Office tab.
     CsmFabricatorCosts.registerRule(OfficeFabricatorRules.TAB_ID,
         OfficeFabricatorRules::price);
+
+    // Trampolines, the bounce castle and the diving board: a jump off one goes higher. Both
+    // sides, since a player's movement is the client's and a mob's the server's.
+    MinecraftForge.EVENT_BUS.register(new Bounce());
 
     // A sleeper in a Residential bed is laid out along it on the client (the handler touches a
     // client-only field, so a dedicated server never loads it).

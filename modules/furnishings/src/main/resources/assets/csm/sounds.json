@@ -331,5 +331,23 @@
         "stream": false
       }
     ]
+  },
+  "grill_sizzle": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:grill_sizzle",
+        "stream": false
+      }
+    ]
+  },
+  "trampoline_boing": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:trampoline_boing",
+        "stream": false
+      }
+    ]
   }
 }

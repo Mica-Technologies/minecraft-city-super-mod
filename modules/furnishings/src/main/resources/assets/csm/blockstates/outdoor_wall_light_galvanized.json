@@ -1,0 +1,43 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/outdoor/base/outdoor_wall_light",
+    "textures": {
+      "metal": "csm:blocks/furniture/outdoor/galvanized",
+      "lens": "csm:blocks/furniture/residential/lens_on"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "lit": {
+      "true": {
+        "textures": {
+          "lens": "csm:blocks/furniture/residential/lens_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "lens": "csm:blocks/furniture/residential/lens_off"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

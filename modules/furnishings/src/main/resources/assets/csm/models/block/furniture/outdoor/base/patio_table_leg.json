@@ -1,0 +1,69 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "wood": "csm:blocks/furniture/outdoor/teak",
+    "wood_v": "csm:blocks/furniture/outdoor/teak_v",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        0.75,
+        0,
+        0.75
+      ],
+      "to": [
+        2.25,
+        11,
+        2.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood_v",
+          "uv": [
+            13.75,
+            5,
+            15.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wood_v",
+          "uv": [
+            0.75,
+            5,
+            2.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wood_v",
+          "uv": [
+            13.75,
+            5,
+            15.25,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wood_v",
+          "uv": [
+            0.75,
+            5,
+            2.25,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#wood_v",
+          "uv": [
+            0.75,
+            13.75,
+            2.25,
+            15.25
+          ]
+        }
+      }
+    }
+  ]
+}

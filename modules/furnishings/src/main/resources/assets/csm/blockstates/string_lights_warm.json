@@ -1,0 +1,195 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_strand"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_bulbs_on"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_bulbs_off"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_hook_left"
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_hook_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_strand",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_bulbs_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_bulbs_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_hook_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_hook_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_strand",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_bulbs_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_bulbs_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_hook_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_hook_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_strand",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_bulbs_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_bulbs_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_hook_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/string_lights_warm_hook_right",
+        "y": 270
+      }
+    }
+  ]
+}

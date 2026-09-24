@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "129 blocks in this tab"
+!!! info "130 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -20,6 +20,7 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Black Angled Thin Traffic Pole w/ 4 Mounts | `csm:trafficpolehorizontalanglemount3black` |  | 10 | pickaxe | 1 |
 | Black Horizontal Traffic Pole with Double Mount | `csm:trafficpolehorizontalmountdoubleblack` | 2 | 10 | pickaxe | 1 |
 | Black Horizontal Traffic Pole with Single Mount | `csm:trafficpolehorizontalsinglemountblack` | 2 | 10 | pickaxe | 1 |
+| Bounce Castle Part | `csm:bounce_castle_part` | 0.8 | 1.0 | pickaxe | 0 |
 | Crosswalk Signal (Gray) | `csm:controllablecrosswalkmountgray` | 2 | 10 | pickaxe | 1 |
 | Digital Billboard | `csm:ad_digital_billboard_part` | 1.5 | 10 | pickaxe | 0 |
 | Horizontal Angle Traffic Signal (Ahead Arrow) | `csm:controllablehorizontalangleaheadsignal` |  |  |  |  |

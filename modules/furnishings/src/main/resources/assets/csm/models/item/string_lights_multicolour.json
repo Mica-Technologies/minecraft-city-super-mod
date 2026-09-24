@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/string_lights_item",
+  "textures": {
+    "wire": "csm:blocks/furniture/outdoor/wire_black",
+    "metal": "csm:blocks/furniture/outdoor/powder_black",
+    "b1": "csm:blocks/furniture/outdoor/bulb_red_on",
+    "b2": "csm:blocks/furniture/outdoor/bulb_green_on",
+    "b3": "csm:blocks/furniture/outdoor/bulb_blue_on"
+  }
+}

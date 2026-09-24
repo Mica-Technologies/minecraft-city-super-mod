@@ -1,0 +1,110 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/outdoor/base/patio_umbrella_lower",
+    "textures": {
+      "canopy": "csm:blocks/furniture/outdoor/canopy_cream",
+      "canopy_dark": "csm:blocks/furniture/outdoor/canopy_cream_dark",
+      "pole": "csm:blocks/furniture/outdoor/pole_bronze"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_item"
+      }
+    ],
+    "facing=east,open=true,upper=true": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_open",
+        "y": 90
+      }
+    ],
+    "facing=east,open=true,upper=false": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_lower",
+        "y": 90
+      }
+    ],
+    "facing=east,open=false,upper=true": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_closed",
+        "y": 90
+      }
+    ],
+    "facing=east,open=false,upper=false": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_lower",
+        "y": 90
+      }
+    ],
+    "facing=north,open=true,upper=true": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_open"
+      }
+    ],
+    "facing=north,open=true,upper=false": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_lower"
+      }
+    ],
+    "facing=north,open=false,upper=true": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_closed"
+      }
+    ],
+    "facing=north,open=false,upper=false": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_lower"
+      }
+    ],
+    "facing=south,open=true,upper=true": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_open",
+        "y": 180
+      }
+    ],
+    "facing=south,open=true,upper=false": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_lower",
+        "y": 180
+      }
+    ],
+    "facing=south,open=false,upper=true": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_closed",
+        "y": 180
+      }
+    ],
+    "facing=south,open=false,upper=false": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_lower",
+        "y": 180
+      }
+    ],
+    "facing=west,open=true,upper=true": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_open",
+        "y": 270
+      }
+    ],
+    "facing=west,open=true,upper=false": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_lower",
+        "y": 270
+      }
+    ],
+    "facing=west,open=false,upper=true": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_closed",
+        "y": 270
+      }
+    ],
+    "facing=west,open=false,upper=false": [
+      {
+        "model": "csm:furniture/outdoor/base/patio_umbrella_lower",
+        "y": 270
+      }
+    ]
+  }
+}

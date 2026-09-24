@@ -1,0 +1,39 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/outdoor/base/gas_grill",
+    "textures": {
+      "enamel": "csm:blocks/furniture/residential/stainless",
+      "glow": "csm:blocks/furniture/outdoor/grill_glow_off"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "running": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/outdoor/grill_glow_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/outdoor/grill_glow_off"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

@@ -2,6 +2,21 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockBounceCastle;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockChimney;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockDivingBoard;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockFirePit;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockHoseReel;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockOutdoorGrill;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockPatioUmbrella;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockPicketFence;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockPicketGate;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockSteppingStones;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockStringLights;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockSunLounger;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockTableUmbrella;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.BlockTrampoline;
+import com.micatechnologies.minecraft.csm.furniture.outdoor.OutdoorAppliances;
 import com.micatechnologies.minecraft.csm.furniture.residential.BedLayout;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBasin;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBathroomFixture;
@@ -69,11 +84,15 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * appliances, the things on its counters and the tableware, and the food and drink the
  * appliances make; then the bedroom, study and nursery; then the bathroom, a commercial
  * restroom's fittings and the laundry; then the living room's extras (TVs, audio, the piano,
- * clocks, pictures, house plants, the fireplace, lamps, candles, the light switch and doorbell).
+ * clocks, pictures, house plants, the fireplace, lamps, candles, the light switch and doorbell);
+ * and last the outdoor and backyard section (patio furniture and umbrellas, grills, fire pits, a
+ * cooler, a chimney, a picket fence and gate, stepping stones, string lights, a trampoline, a
+ * bounce castle, a diving board, a kiddie pool, pet furniture, a hose reel and a wall light).
  * The lines below are printed by
  * {@code gen_furniture_residential.py --fragments}, {@code gen_furniture_kitchen.py --fragments},
  * {@code gen_furniture_appliances.py --fragments}, {@code gen_furniture_bedroom.py --fragments},
- * {@code gen_furniture_bathroom.py --fragments} and {@code gen_furniture_living.py --fragments}.
+ * {@code gen_furniture_bathroom.py --fragments}, {@code gen_furniture_living.py --fragments} and
+ * {@code gen_furniture_outdoor.py --fragments}.
  *
  * @version 1.0
  * @since 2026.9
@@ -625,5 +644,122 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockResidentialStorage("storage_crate_oak", new int[]{0, 0, 0, 16, 14, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
     initTabBlock(new BlockResidentialStorage("storage_crate_walnut", new int[]{0, 0, 0, 16, 14, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
     initTabBlock(new BlockResidentialStorage("storage_crate_white", new int[]{0, 0, 0, 16, 14, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+
+    // ---- Outdoor & Backyard: patio ----
+    // Patio Table
+    initTabBlock(new BlockDiningTable("patio_table_teak"));
+    initTabBlock(new BlockDiningTable("patio_table_black"));
+
+    // Patio Chair
+    initTabBlock(new BlockResidentialFurniture("patio_chair_teak", new int[]{2, 0, 3, 14, 16, 13}, false, 7.25, 0.5, 0));
+    initTabBlock(new BlockResidentialFurniture("patio_chair_black", new int[]{2, 0, 3, 14, 16, 13}, false, 7.25, 0.5, 0));
+
+    // Patio Umbrella
+    initTabBlock(new BlockPatioUmbrella("patio_umbrella_cream", new int[]{6, 0, 6, 10, 32, 10}));
+    initTabBlock(new BlockPatioUmbrella("patio_umbrella_navy", new int[]{6, 0, 6, 10, 32, 10}));
+
+    // Table Umbrella
+    initTabBlock(new BlockTableUmbrella("table_umbrella_cream", new int[]{7, 0, 7, 9, 16, 9}));
+    initTabBlock(new BlockTableUmbrella("table_umbrella_navy", new int[]{7, 0, 7, 9, 16, 9}));
+
+    // Sun Lounger
+    initTabBlock(new BlockSunLounger("sun_lounger_teak", new int[]{0, 0, 2, 32, 9, 14}));
+    initTabBlock(new BlockSunLounger("sun_lounger_black", new int[]{0, 0, 2, 32, 9, 14}));
+
+    // Adirondack Chair
+    initTabBlock(new BlockResidentialFurniture("adirondack_chair_teak", new int[]{1, 0, 2, 15, 16, 16}, false, 5.75, 0.5, 0));
+    initTabBlock(new BlockResidentialFurniture("adirondack_chair_white", new int[]{1, 0, 2, 15, 16, 16}, false, 5.75, 0.5, 0));
+
+    // Outdoor Sofa
+    initTabBlock(new BlockSofa("outdoor_sofa_sand", new int[]{0, 0, 1, 16, 14, 16}));
+    initTabBlock(new BlockSofa("outdoor_sofa_slate", new int[]{0, 0, 1, 16, 14, 16}));
+    initTabBlock(new BlockSofa("outdoor_sofa_teal", new int[]{0, 0, 1, 16, 14, 16}));
+
+    // Outdoor Sofa Corner
+    initTabBlock(new BlockSofaCorner("outdoor_sofa_corner_sand"));
+    initTabBlock(new BlockSofaCorner("outdoor_sofa_corner_slate"));
+    initTabBlock(new BlockSofaCorner("outdoor_sofa_corner_teal"));
+
+    // Outdoor Rug
+    initTabBlock(new BlockRug("outdoor_rug_blue"));
+    initTabBlock(new BlockRug("outdoor_rug_sand"));
+
+    // ---- Outdoor & Backyard: cooking and fire ----
+    // Gas Grill
+    initTabBlock(new BlockOutdoorGrill("gas_grill_black", new int[]{0, 0, 1, 16, 15, 14}, OutdoorAppliances.GAS_GRILL, new double[]{8, 14.5, 12}));
+    initTabBlock(new BlockOutdoorGrill("gas_grill_stainless", new int[]{0, 0, 1, 16, 15, 14}, OutdoorAppliances.GAS_GRILL, new double[]{8, 14.5, 12}));
+
+    // Charcoal Kettle Grill
+    initTabBlock(new BlockOutdoorGrill("kettle_grill_black", new int[]{1, 0, 2, 15, 16, 14}, OutdoorAppliances.CHARCOAL_GRILL, new double[]{8, 15.2, 8}));
+    initTabBlock(new BlockOutdoorGrill("kettle_grill_red", new int[]{1, 0, 2, 15, 16, 14}, OutdoorAppliances.CHARCOAL_GRILL, new double[]{8, 15.2, 8}));
+
+    // Fire Pit
+    initTabBlock(new BlockFirePit("fire_pit_stone", new int[]{0, 0, 0, 16, 12, 16}, false, 0.8, 14));
+    initTabBlock(new BlockFirePit("fire_pit_steel", new int[]{1, 0, 0, 15, 16, 16}, true, 4.5, 14));
+
+    // Cooler
+    initTabBlock(new BlockResidentialStorage("cooler_blue", new int[]{1, 0, 3, 15, 8, 12}, 18, FurnishingsSounds.FRIDGE_OPEN, FurnishingsSounds.FRIDGE_CLOSE));
+    initTabBlock(new BlockResidentialStorage("cooler_red", new int[]{1, 0, 3, 15, 8, 12}, 18, FurnishingsSounds.FRIDGE_OPEN, FurnishingsSounds.FRIDGE_CLOSE));
+
+    // Chimney Stack
+    initTabBlock(new BlockChimney("chimney_brick", new int[]{2, 0, 2, 14, 16, 14}));
+
+    // ---- Outdoor & Backyard: garden ----
+    // Picket Fence
+    initTabBlock(new BlockPicketFence("picket_fence_white"));
+
+    // Picket Gate
+    initTabBlock(new BlockPicketGate("picket_gate_white"));
+
+    // Stepping Stones
+    initTabBlock(new BlockSteppingStones("stepping_stones_grey"));
+    initTabBlock(new BlockSteppingStones("stepping_stones_slate"));
+
+    // String Lights
+    initTabBlock(new BlockStringLights("string_lights_warm", new int[]{0, 10, 7, 16, 16, 9}));
+    initTabBlock(new BlockStringLights("string_lights_multicolour", new int[]{0, 10, 7, 16, 16, 9}));
+
+    // ---- Outdoor & Backyard: backyard fun ----
+    // Trampoline
+    initTabBlock(new BlockTrampoline("trampoline_blue"));
+    initTabBlock(new BlockTrampoline("trampoline_green"));
+
+    // Bounce Castle
+    initTabBlock(new BlockBounceCastle("bounce_castle_red", new int[]{0, 0, 0, 16, 5, 16}));
+
+    // Diving Board
+    initTabBlock(new BlockDivingBoard("diving_board_white", new int[]{4, 0, 0, 12, 8, 16}));
+
+    // Kiddie Pool
+    initTabBlock(new BlockResidentialFurniture("kiddie_pool_blue", new int[]{0, 0, 0, 16, 4, 16}, true, 3.5, 0, 0));
+
+    // Pool Float Ring
+    initTabBlock(new BlockLivingDecor("pool_float_pink", new int[]{2, 0, 2, 14, 3, 14}, Material.CLOTH, SoundType.CLOTH, 0.5F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockLivingDecor("pool_float_yellow", new int[]{2, 0, 2, 14, 3, 14}, Material.CLOTH, SoundType.CLOTH, 0.5F, BlockRenderLayer.SOLID));
+
+    // ---- Outdoor & Backyard: pets ----
+    // Pet Bed
+    initTabBlock(new BlockLivingDecor("pet_bed_charcoal", new int[]{1, 0, 1, 15, 4, 15}, Material.CLOTH, SoundType.CLOTH, 0.5F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockLivingDecor("pet_bed_navy", new int[]{1, 0, 1, 15, 4, 15}, Material.CLOTH, SoundType.CLOTH, 0.5F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockLivingDecor("pet_bed_red", new int[]{1, 0, 1, 15, 4, 15}, Material.CLOTH, SoundType.CLOTH, 0.5F, BlockRenderLayer.SOLID));
+
+    // Pet Bowls
+    initTabBlock(new BlockLivingDecor("pet_bowls_steel", new int[]{1, 0, 4, 15, 3, 12}, Material.IRON, SoundType.METAL, 1.0F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockLivingDecor("pet_bowls_red", new int[]{1, 0, 4, 15, 3, 12}, Material.IRON, SoundType.METAL, 1.0F, BlockRenderLayer.SOLID));
+
+    // Litter Box
+    initTabBlock(new BlockLivingDecor("litter_box_grey", new int[]{2, 0, 3, 15, 4, 13}, Material.WOOD, SoundType.WOOD, 0.8F, BlockRenderLayer.SOLID));
+
+    // Cat Tree
+    initTabBlock(new BlockResidentialTall("cat_tree_beige", new int[]{1, 0, 1, 15, 25, 15}, true, 0, null, null));
+    initTabBlock(new BlockResidentialTall("cat_tree_grey", new int[]{1, 0, 1, 15, 25, 15}, true, 0, null, null));
+
+    // ---- Outdoor & Backyard: around the yard ----
+    // Garden Hose Reel
+    initTabBlock(new BlockHoseReel("hose_reel_green", new int[]{2, 0, 8, 14, 14, 16}));
+
+    // Outdoor Wall Light
+    initTabBlock(new BlockKitchenLight("outdoor_wall_light_black", new int[]{3, 6, 4, 13, 15, 16}, 12));
+    initTabBlock(new BlockKitchenLight("outdoor_wall_light_galvanized", new int[]{3, 6, 4, 13, 15, 16}, 12));
   }
 }

@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/patio_table_top",
+  "textures": {
+    "wood": "csm:blocks/furniture/outdoor/powder_black",
+    "wood_v": "csm:blocks/furniture/outdoor/powder_black",
+    "edge": "csm:blocks/furniture/outdoor/powder_black_edge",
+    "slats": "csm:blocks/furniture/outdoor/powder_black_slats"
+  }
+}

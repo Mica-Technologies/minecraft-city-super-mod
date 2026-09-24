@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/trampoline_leg",
+  "textures": {
+    "pad": "csm:blocks/furniture/outdoor/pad_green"
+  }
+}

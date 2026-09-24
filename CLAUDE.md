@@ -677,6 +677,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   and its hidden relay, the doorbell and the storage crate. Two-block pieces are cut into their
   blocks with spanned UVs so a picture stays whole; `--check`, `--fragments`.
   `gen_furniture_sounds.py` synthesises the doorbell chime and the fireplace crackle
+- `gen_furniture_outdoor.py` -- the Residential tab's outdoor and backyard section, importing the
+  residential, bedroom, appliance and living generators: the patio set (a slatted table joining
+  like the dining table, chairs, Adirondack chairs, two-block sun loungers, an outdoor sofa and
+  corner, rugs), umbrellas (free-standing, two blocks, and one for a table's middle; a square
+  canopy of strips narrowing to the top, open or furled), the gas and charcoal grills (the
+  appliance framework), fire pits, a cooler, a stacking chimney, the picket fence and gate
+  (vanilla fence and gate behaviour), stepping stones (layouts picked by position), string
+  lights, the trampoline, the bounce castle (drawn whole by its root, -16..32; sixteen invisible
+  parts carry its floor and walls), a diving board, a kiddie pool, float rings, pet furniture, a
+  hose reel with a working tap and an outdoor wall light; `--check`, `--fragments`.
+  `gen_furniture_sounds.py` synthesises the grill sizzle and the trampoline boing
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

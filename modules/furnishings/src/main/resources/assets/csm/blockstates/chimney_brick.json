@@ -1,0 +1,42 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/outdoor/base/chimney_top",
+    "textures": {
+      "brick": "csm:blocks/furniture/outdoor/brick_red"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "up": {
+      "true": {
+        "model": "csm:furniture/outdoor/base/chimney_column"
+      },
+      "false": {
+        "model": "csm:furniture/outdoor/base/chimney_top"
+      }
+    },
+    "lit": {
+      "true": {},
+      "false": {}
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

@@ -3,7 +3,8 @@
 The kitchen's cabinet doors, drawers and refrigerator door, and its appliances' beeps, timer ding,
 toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and jar lid, and the
 bathroom's toilet flush and shower spray, the laundry's washing machine, dryer and steam iron, the
-office's copier and school locker door, and the living room's doorbell chime and fireplace crackle
+office's copier and school locker door, the living room's doorbell chime and fireplace crackle,
+and the backyard's grill sizzle and trampoline boing
 (the locker sounds replace ones of unknown origin the mod shipped unused since its first
 version), made here from filtered noise, decaying sines and envelopes, never recorded or taken from a sound
 library. Each entry in SOUNDS names a function returning mono samples in -1..1 at RATE and the level
@@ -401,6 +402,48 @@ def fireplace_crackle():
     return place(total, parts) * env_ad(n, 0.25, 0.3)
 
 
+def grill_sizzle():
+    """Food on a hot grill, two seconds of it: a bright, crackly hiss of fat spitting, loudest
+    in the top octaves, with tiny pops scattered through it and a soft low roar of the burners
+    under it; it loops, so it swells in and out without a start or an end."""
+    total = 2.0
+    n = int(RATE * total)
+    t = t_of(total)
+    rng = np.random.RandomState(91)
+    hiss = band(noise(total, 92), 2500, 9000)
+    hiss /= max(1e-9, np.max(np.abs(hiss)))
+    # The hiss flutters as the fat spits.
+    flutter = 0.65 + 0.35 * np.abs(np.sin(2 * np.pi * 3.1 * t + 0.4)
+                                   * np.sin(2 * np.pi * 7.3 * t + 1.1))
+    roar = band(noise(total, 93), 90, 400)
+    roar /= max(1e-9, np.max(np.abs(roar)))
+    parts = [(0.0, 0.55 * hiss * flutter, 1.0), (0.0, 0.12 * roar, 1.0)]
+    for k in range(70):
+        start = rng.uniform(0.0, total - 0.02)
+        length = 0.008
+        tt = t_of(length)
+        pop = band(noise(length, 200 + k), 2000, 8000)
+        pop = pop / max(1e-9, np.max(np.abs(pop))) * np.exp(-tt * 500)
+        parts.append((start, pop, rng.uniform(0.2, 0.6)))
+    return place(total, parts) * env_ad(n, 0.15, 0.15)
+
+
+def trampoline_boing():
+    """A trampoline's springs as someone lands: a soft low thump on the mat and the twang of
+    the springs, a tone that bends up and rings down, quietly."""
+    total = 0.7
+    t = t_of(total)
+    # The springs: a slightly inharmonic tone that swoops up from 150 to 330 Hz and rings down.
+    f = 150 + 180 * (1 - np.exp(-t * 18))
+    phase = 2 * np.pi * np.cumsum(f) / RATE
+    spring = (np.sin(phase) + 0.35 * np.sin(2.01 * phase) + 0.15 * np.sin(3.03 * phase))
+    spring *= np.exp(-t * 6.5) * (1 + 0.25 * np.sin(2 * np.pi * 11 * t))
+    tt = t_of(0.12)
+    thump = np.sin(2 * np.pi * 70 * tt) * np.exp(-tt * 35)
+    thump += 0.5 * band(noise(0.12, 94), 100, 900) / 3.0 * np.exp(-tt * 60)
+    return place(total, [(0.0, 0.7 * spring, 1.0), (0.0, thump, 0.9)])
+
+
 SOUNDS = {
     'cabinet_open': (cabinet_open, 2600),
     'cabinet_close': (cabinet_close, 3600),
@@ -426,6 +469,8 @@ SOUNDS = {
     'printer_run': (printer_run, 2200),
     'doorbell_chime': (doorbell_chime, 3200),
     'fireplace_crackle': (fireplace_crackle, 1800),
+    'grill_sizzle': (grill_sizzle, 1600),
+    'trampoline_boing': (trampoline_boing, 2600),
 }
 
 

@@ -1,0 +1,44 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/outdoor/base/picket_gate_closed",
+    "textures": {
+      "wood": "csm:blocks/furniture/outdoor/paint_white",
+      "wood_v": "csm:blocks/furniture/outdoor/paint_white_v",
+      "edge": "csm:blocks/furniture/outdoor/paint_white_edge"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "open": {
+      "false": {
+        "model": "csm:furniture/outdoor/base/picket_gate_closed"
+      },
+      "true": {
+        "model": "csm:furniture/outdoor/base/picket_gate_open"
+      }
+    },
+    "in_wall": {
+      "true": {},
+      "false": {}
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

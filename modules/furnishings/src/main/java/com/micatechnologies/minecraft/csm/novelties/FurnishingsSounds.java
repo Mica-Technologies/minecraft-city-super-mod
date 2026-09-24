@@ -56,7 +56,9 @@ public enum FurnishingsSounds implements ICsmSound {
   IRON_STEAM("iron_steam"),
   PRINTER_RUN("printer_run"),
   DOORBELL_CHIME("doorbell_chime"),
-  FIREPLACE_CRACKLE("fireplace_crackle");
+  FIREPLACE_CRACKLE("fireplace_crackle"),
+  GRILL_SIZZLE("grill_sizzle"),
+  TRAMPOLINE_BOING("trampoline_boing");
 
   /**
    * The name of the sound.

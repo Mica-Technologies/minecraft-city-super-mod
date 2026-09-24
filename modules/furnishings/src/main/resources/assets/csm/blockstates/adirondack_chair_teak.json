@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/outdoor/base/adirondack_chair",
+    "textures": {
+      "wood": "csm:blocks/furniture/outdoor/teak",
+      "wood_v": "csm:blocks/furniture/outdoor/teak_v",
+      "edge": "csm:blocks/furniture/outdoor/teak_edge",
+      "slats": "csm:blocks/furniture/outdoor/teak_slats"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

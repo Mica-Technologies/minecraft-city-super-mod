@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/string_lights_bulbs",
+  "textures": {
+    "b1": "csm:blocks/furniture/outdoor/bulb_warm_on",
+    "b2": "csm:blocks/furniture/outdoor/bulb_warm_on",
+    "b3": "csm:blocks/furniture/outdoor/bulb_warm_on"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/outdoor_sofa_corner_item",
+  "textures": {
+    "fabric": "csm:blocks/furniture/outdoor/slate",
+    "fabric_dark": "csm:blocks/furniture/outdoor/slate_dark"
+  }
+}

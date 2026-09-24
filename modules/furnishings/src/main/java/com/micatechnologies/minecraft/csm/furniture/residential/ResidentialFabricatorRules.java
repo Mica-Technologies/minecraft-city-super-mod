@@ -16,7 +16,10 @@ import net.minecraft.block.Block;
  * porcelain is clay, its rails iron, its laundry appliances priced as the dishwasher. The living
  * room's extras are priced by what they are made of: electronics as an enclosure and a control
  * board, a speaker's driver, a piano's timber and strings, a painting as a painting, a plant as
- * a flower pot and what grows in it, a fireplace as stone and a mantel.
+ * a flower pot and what grows in it, a fireplace as stone and a mantel. Outdoors, a frame is teak
+ * or, powder-coated, iron; cushions, canopies and pet beds wool; grills and the fire pit's bowl
+ * sheet metal; plastic (a cooler, a kiddie pool) an enclosure shell; a chimney bricks; and what
+ * bounces a slime ball.
  *
  * <p>Priced by registry name, whose piece is its first words and whose finish is its last
  * ({@code sofa_corner_navy}). {@code audit_fabricator_costs.py} mirrors this.</p>
@@ -49,6 +52,9 @@ public final class ResidentialFabricatorRules {
   private static final String MC_GOLD_NUGGET = "minecraft:gold_nugget";
   private static final String MC_LEVER = "minecraft:lever";
   private static final String MC_STONE_BUTTON = "minecraft:stone_button";
+  private static final String MC_BRICK = "minecraft:brick";
+  private static final String MC_SLIME_BALL = "minecraft:slime_ball";
+  private static final String MC_SAND = "minecraft:sand";
 
   private ResidentialFabricatorRules() {
   }
@@ -63,6 +69,10 @@ public final class ResidentialFabricatorRules {
    */
   @Nullable
   public static List<FabricatorIngredient> price(Block block, String registryName) {
+    List<FabricatorIngredient> outdoor = outdoor(registryName);
+    if (outdoor != null) {
+      return outdoor;
+    }
     List<FabricatorIngredient> living = living(registryName);
     if (living != null) {
       return living;
@@ -522,6 +532,125 @@ public final class ResidentialFabricatorRules {
     if (registryName.startsWith("storage_crate_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    return null;
+  }
+
+  /**
+   * The outdoor and backyard section: frames are timber, or iron where they are powder-coated
+   * steel; upholstery, canopies and pet beds wool; the grills sheet metal (the gas grill with its
+   * igniter's wiring); a fire pit stone or a steel bowl; plastic things an enclosure shell; the
+   * chimney bricks; the trampoline, bounce castle and diving board a slime ball for their bounce.
+   *
+   * @param registryName the registry name
+   *
+   * @return the cost, or null if it is none of these
+   */
+  @Nullable
+  private static List<FabricatorIngredient> outdoor(String registryName) {
+    boolean black = registryName.endsWith("_black");
+    String frame = black ? MC_IRON_INGOT : MC_PLANKS;
+    if (registryName.startsWith("patio_table_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(frame, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("patio_chair_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(frame, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("patio_umbrella_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 3),
+          FabricatorIngredient.any(MC_IRON_INGOT, 2));
+    }
+    if (registryName.startsWith("table_umbrella_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 3),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("sun_lounger_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(frame, 3),
+          FabricatorIngredient.any(MC_WOOL, 2));
+    }
+    if (registryName.startsWith("adirondack_chair_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3));
+    }
+    if (registryName.startsWith("outdoor_sofa_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.any(MC_WOOL, 3));
+    }
+    if (registryName.startsWith("outdoor_rug_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 2));
+    }
+    if (registryName.startsWith("gas_grill_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("kettle_grill_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("fire_pit_")) {
+      return registryName.endsWith("_steel")
+          ? CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2))
+          : CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 4));
+    }
+    if (registryName.startsWith("cooler_") || registryName.startsWith("kiddie_pool_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 2));
+    }
+    if (registryName.startsWith("pool_float_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1));
+    }
+    if (registryName.startsWith("chimney_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_BRICK, 6));
+    }
+    if (registryName.startsWith("picket_fence_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2));
+    }
+    if (registryName.startsWith("picket_gate_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("stepping_stones_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 2));
+    }
+    if (registryName.startsWith("string_lights_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.any(MC_STRING, 2));
+    }
+    if (registryName.startsWith("trampoline_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 2),
+          FabricatorIngredient.any(MC_WOOL, 2), FabricatorIngredient.any(MC_SLIME_BALL, 1));
+    }
+    if (registryName.startsWith("bounce_castle_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 8),
+          FabricatorIngredient.any(MC_SLIME_BALL, 2));
+    }
+    if (registryName.startsWith("diving_board_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1), FabricatorIngredient.any(MC_SLIME_BALL, 1));
+    }
+    if (registryName.startsWith("pet_bed_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 2));
+    }
+    if (registryName.startsWith("pet_bowls_")) {
+      return registryName.endsWith("_red")
+          ? CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 2))
+          : CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("litter_box_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+          FabricatorIngredient.any(MC_SAND, 1));
+    }
+    if (registryName.startsWith("cat_tree_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.any(MC_WOOL, 3), FabricatorIngredient.any(MC_STRING, 2));
+    }
+    if (registryName.startsWith("hose_reel_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("outdoor_wall_light_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }
     return null;
   }

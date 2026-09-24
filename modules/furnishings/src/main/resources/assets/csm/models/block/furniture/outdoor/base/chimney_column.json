@@ -1,0 +1,59 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "brick": "csm:blocks/furniture/outdoor/brick_red",
+    "particle": "#brick"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        16,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#brick",
+          "uv": [
+            2,
+            0,
+            14,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#brick",
+          "uv": [
+            2,
+            0,
+            14,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#brick",
+          "uv": [
+            2,
+            0,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#brick",
+          "uv": [
+            2,
+            0,
+            14,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

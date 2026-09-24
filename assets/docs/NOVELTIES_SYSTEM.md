@@ -383,6 +383,69 @@ The living room's extras follow, drawn by `gen_furniture_living.py` (textures an
   mats (`BlockRug` in coir and rubber), and the storage crate (a `BlockResidentialStorage` of 27
   slots).
 
+The tab's last section, outdoor and backyard, is drawn by `gen_furniture_outdoor.py` (textures
+and models under `furniture/outdoor/`), its new classes in the `furniture.outdoor` package. None
+of it repeats the Parks module (benches, picnic tables, bins, playground, fountains, planters):
+this is a house's own patio and garden.
+
+- **Patio.** The patio table is a `BlockDiningTable` with a slatted top (teak or powder-coated
+  black), joining into any rectangle; chairs and Adirondack chairs sit on Core's seat. The sun
+  lounger (`BlockSunLounger`) is two blocks long on `WidePieces`, its backrest raised at the end
+  it was placed from; a click on either block sits you just past the backrest's hinge, looking
+  to the foot. The outdoor sofa and corner are `BlockSofa` and `BlockSofaCorner` with their own
+  teak-framed models, joining as the living room's do; outdoor rugs are `BlockRug`s.
+- **Umbrellas.** `BlockPatioUmbrella` is a `BlockResidentialTall` on a weighted base, its square
+  canopy 2.25 m across with its edge at 2.05 m; `BlockTableUmbrella` is one block set on a patio
+  table, its pole drawn down through the table top to a base on the ground and its canopy at the
+  same height. A click opens or furls either (`open`, stored; the free-standing one's in both
+  blocks). A canopy panel at 22.5 degrees is laid as strips that narrow toward the top, since a
+  JSON element cannot be both tilted and turned: from above and below they read as one pyramid.
+- **Grills** (`BlockOutdoorGrill`, a `BlockBuiltInAppliance` in no run, `OutdoorAppliances`):
+  both cook from the oven's recipe book on the appliance framework and sizzle while they cook,
+  the seam under the lid glowing and smoke rising from the vent. The gas grill needs nothing but
+  food (6 s); the charcoal kettle grill burns furnace fuel from its third slot (8 s).
+- **Fire pits** (`BlockFirePit`, stone ring or steel bowl) light as the fireplace does: flint and
+  steel, an empty hand, or a change of redstone power (`LampSwitching.POWERED`, stored; so a
+  light switch works one), with the living room's animated flame and embers swapped in, light
+  14, flames, smoke and the quiet crackle. The fire is only drawn. **The chimney stack**
+  (`BlockChimney`, a fire pit that gives no light) stacks, drawing its crown and two pots only
+  on the top block (`up`, actual state); a click or a change of power on any block lights the
+  whole stack, and smoke rises from the pots.
+- **The cooler** is a `BlockResidentialStorage` of 18 slots with the refrigerator's seal sounds.
+- **Garden.** `BlockPicketFence` (Core's `AbstractBlockFence`) and `BlockPicketGate` (vanilla's
+  `BlockFenceGate`, registered as the mod's blocks are) behave as vanilla's: the fence joins
+  wooden fences, gates and solid faces, the gate opens away from whoever clicks and on redstone.
+  The gate is one picket leaf on its hinges, and the open model is the closed one swung a
+  quarter about the hinge (`swing()` in the generator, which carries a turned element's axis
+  round with it). `BlockSteppingStones` lies a sixteenth thick like a rug; its blockstate lists
+  three layouts each turned four ways, and the game picks one by position, so a path does not
+  repeat. `BlockStringLights` is a `BlockResidentialRun` swagged across the top of the block with
+  three bulbs, a hook only where the run stops, no collision, light 8 while lit; a click or a
+  change of power to any block switches the whole run.
+- **Bouncing** (`IBouncy`, `Bounce`). The trampoline (`BlockTrampoline`, a `BlockDiningTable`
+  that joins into any rectangle, pad and legs only round the outside), the bounce castle's floor
+  and the diving board cancel fall damage and send what lands back up with 0.85 of its speed
+  (from `onLanded`, as slime does; sneaking lands dead). A jump off one adds to the bounce it was
+  made on (`LivingJumpEvent`, registered by `CsmFurnishings.preInit`, both sides since a
+  player's movement is the client's), so jumping each time you land builds up to about six
+  blocks; the diving board adds more from its front half, toward the tip. A fall of more than a
+  block boings, quietly.
+- **The bounce castle** (`BlockBounceCastle`) is three blocks square and two tall, placed and
+  broken as one. Its item puts the root in the middle of the floor, one block beyond where the
+  player clicked so the doorway faces them, and only where all eighteen blocks are free and
+  nobody is in them. The root draws the whole castle (a JSON element may reach -16..32, which is
+  just three blocks) and sixteen invisible `BlockBounceCastlePart`s (the hidden tab) fill the
+  rest: each stores only its place round the root (`index`, 0 to 15, in the world, not turned),
+  reads the castle's facing from the root, and takes its floor, walls and turret boxes from
+  `BounceCastleLayout`, whose numbers are the generator's `CASTLE`. The block over the root is
+  left empty for bouncing; breaking any part breaks the castle, which drops itself.
+- The rest: `BlockDivingBoard` (its board runs out past the block's front), the kiddie pool (sat
+  in, on Core's seat), float rings, pet beds, bowls and a litter box (`BlockLivingDecor`), a cat
+  tree (`BlockResidentialTall`), the hose reel (`BlockHoseReel`, an `IWaterTap`: a bucket or a
+  bottle held to its tap fills, and a water appliance beside it is plumbed) and the outdoor wall
+  light (`BlockKitchenLight`, a gooseneck barn light; the Lighting module already has carriage
+  lantern sconces).
+
 Every storage block implements `IResidentialStorage` (slots, where the slots are, open and close
 sounds), shares `ResidentialStorageHelper` and the one storage screen, and sounds its doors when
 the first player opens it and the last closes it.
@@ -480,6 +543,8 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:printer_run` | `PRINTER_RUN` | the copier while it copies (a 2 s loop every 40 ticks), the fax's click | synthesised |
 | `csm:doorbell_chime` | `DOORBELL_CHIME` | doorbell | synthesised: two struck chime bars, ding and dong |
 | `csm:fireplace_crackle` | `FIREPLACE_CRACKLE` | a lit fireplace, now and then from its display tick, quietly | synthesised |
+| `csm:grill_sizzle` | `GRILL_SIZZLE` | the gas and charcoal grills while they cook (a 2 s loop every 40 ticks) | synthesised |
+| `csm:trampoline_boing` | `TRAMPOLINE_BOING` | a fall of more than a block onto the trampoline, the bounce castle or the diving board, quietly | synthesised |
 | `csm:locker_door_open`, `csm:locker_door_close` | `LOCKER_DOOR_OPEN`, `LOCKER_DOOR_CLOSE` | lockers | synthesised (replacing the unused sounds of unknown origin the first version shipped under these names) |
 
 The xylophone, water dispensers/bubblers and the kitchen sink use only vanilla sounds (filling an

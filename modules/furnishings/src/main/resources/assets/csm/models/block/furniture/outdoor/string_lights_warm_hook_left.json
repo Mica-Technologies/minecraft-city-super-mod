@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/string_lights_hook_left",
+  "textures": {
+    "wire": "csm:blocks/furniture/outdoor/wire_black",
+    "metal": "csm:blocks/furniture/outdoor/powder_black"
+  }
+}

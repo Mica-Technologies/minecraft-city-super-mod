@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/patio_table_leg",
+  "textures": {
+    "wood": "csm:blocks/furniture/outdoor/teak",
+    "wood_v": "csm:blocks/furniture/outdoor/teak_v",
+    "edge": "csm:blocks/furniture/outdoor/teak_edge",
+    "slats": "csm:blocks/furniture/outdoor/teak_slats"
+  }
+}

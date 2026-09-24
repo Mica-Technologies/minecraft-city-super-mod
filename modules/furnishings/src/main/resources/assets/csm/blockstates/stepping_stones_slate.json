@@ -1,0 +1,51 @@
+{
+  "variants": {
+    "normal": [
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_a"
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_a",
+        "y": 90
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_a",
+        "y": 180
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_a",
+        "y": 270
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_b"
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_b",
+        "y": 90
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_b",
+        "y": 180
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_b",
+        "y": 270
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_c"
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_c",
+        "y": 90
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_c",
+        "y": 180
+      },
+      {
+        "model": "csm:furniture/outdoor/stepping_stones_slate_c",
+        "y": 270
+      }
+    ]
+  }
+}

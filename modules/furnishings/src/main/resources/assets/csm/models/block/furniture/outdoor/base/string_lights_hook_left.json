@@ -1,0 +1,145 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "metal": "csm:blocks/furniture/outdoor/powder_black",
+    "particle": "#metal"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        14.2,
+        7.6
+      ],
+      "to": [
+        0.5,
+        15.8,
+        8.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#metal",
+          "uv": [
+            15.5,
+            0.2,
+            16,
+            1.8
+          ]
+        },
+        "south": {
+          "texture": "#metal",
+          "uv": [
+            0,
+            0.2,
+            0.5,
+            1.8
+          ]
+        },
+        "east": {
+          "texture": "#metal",
+          "uv": [
+            7.6,
+            0.2,
+            8.4,
+            1.8
+          ]
+        },
+        "west": {
+          "texture": "#metal",
+          "uv": [
+            7.6,
+            0.2,
+            8.4,
+            1.8
+          ]
+        },
+        "up": {
+          "texture": "#metal",
+          "uv": [
+            0,
+            7.6,
+            0.5,
+            8.4
+          ]
+        },
+        "down": {
+          "texture": "#metal",
+          "uv": [
+            0,
+            7.6,
+            0.5,
+            8.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        14.2,
+        7.75
+      ],
+      "to": [
+        1.0,
+        14.6,
+        8.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#metal",
+          "uv": [
+            15.0,
+            1.4,
+            15.5,
+            1.8
+          ]
+        },
+        "south": {
+          "texture": "#metal",
+          "uv": [
+            0.5,
+            1.4,
+            1.0,
+            1.8
+          ]
+        },
+        "east": {
+          "texture": "#metal",
+          "uv": [
+            7.75,
+            1.4,
+            8.25,
+            1.8
+          ]
+        },
+        "west": {
+          "texture": "#metal",
+          "uv": [
+            7.75,
+            1.4,
+            8.25,
+            1.8
+          ]
+        },
+        "up": {
+          "texture": "#metal",
+          "uv": [
+            0.5,
+            7.75,
+            1.0,
+            8.25
+          ]
+        },
+        "down": {
+          "texture": "#metal",
+          "uv": [
+            0.5,
+            7.75,
+            1.0,
+            8.25
+          ]
+        }
+      }
+    }
+  ]
+}

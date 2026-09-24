@@ -1,0 +1,184 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "fabric": "csm:blocks/furniture/outdoor/sand",
+    "slats": "csm:blocks/furniture/outdoor/teak_slats",
+    "particle": "#fabric"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        1,
+        1.5
+      ],
+      "to": [
+        0.01,
+        4.5,
+        15.5
+      ],
+      "faces": {
+        "west": {
+          "texture": "#slats",
+          "uv": [
+            1.5,
+            11.5,
+            15.5,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        4.5,
+        13.5
+      ],
+      "to": [
+        0.01,
+        11.5,
+        15.5
+      ],
+      "faces": {
+        "west": {
+          "texture": "#slats",
+          "uv": [
+            13.5,
+            4.5,
+            15.5,
+            11.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        1,
+        0
+      ],
+      "to": [
+        15.5,
+        4.5,
+        0.01
+      ],
+      "faces": {
+        "north": {
+          "texture": "#slats",
+          "uv": [
+            0.5,
+            11.5,
+            14.5,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.5,
+        4.5,
+        0
+      ],
+      "to": [
+        15.5,
+        11.5,
+        0.01
+      ],
+      "faces": {
+        "north": {
+          "texture": "#slats",
+          "uv": [
+            0.5,
+            4.5,
+            2.5,
+            11.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        1,
+        0
+      ],
+      "to": [
+        1.5,
+        4.5,
+        1.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#slats",
+          "uv": [
+            14.5,
+            11.5,
+            16,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#slats",
+          "uv": [
+            0,
+            11.5,
+            1.5,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#slats",
+          "uv": [
+            0,
+            14.5,
+            1.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.1,
+        4.5,
+        0.1
+      ],
+      "to": [
+        2,
+        7.25,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fabric",
+          "uv": [
+            14,
+            8.75,
+            15.9,
+            11.5
+          ]
+        },
+        "west": {
+          "texture": "#fabric",
+          "uv": [
+            0.1,
+            8.75,
+            2,
+            11.5
+          ]
+        },
+        "up": {
+          "texture": "#fabric",
+          "uv": [
+            0.1,
+            0.1,
+            2,
+            2
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/stepping_stones_b",
+  "textures": {
+    "flag": "csm:blocks/furniture/outdoor/flagstone_slate"
+  }
+}

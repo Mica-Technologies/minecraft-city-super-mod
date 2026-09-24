@@ -397,7 +397,63 @@ def cost_for(registry, info, ancestors):
         return ("planks x2", "FASTENER_KIT")
     if tab == "tabresidential":
         # Mirrors ResidentialFabricatorRules (Furniture & Novelties module).
-        # The living room's extras come first.
+        # The outdoor and backyard section comes first.
+        frame = "iron_ingot" if registry.endswith("_black") else "planks"
+        if registry.startswith("patio_table_"):
+            return (frame + " x3", "FASTENER_KIT")
+        if registry.startswith("patio_chair_"):
+            return (frame + " x2", "FASTENER_KIT")
+        if registry.startswith("patio_umbrella_"):
+            return ("wool x3", "iron_ingot x2")
+        if registry.startswith("table_umbrella_"):
+            return ("wool x3", "iron_ingot")
+        if registry.startswith("sun_lounger_"):
+            return (frame + " x3", "wool x2")
+        if registry.startswith("adirondack_chair_"):
+            return ("planks x3",)
+        if registry.startswith("outdoor_sofa_"):
+            return ("planks x2", "wool x3")
+        if registry.startswith("outdoor_rug_"):
+            return ("wool x2",)
+        if registry.startswith("gas_grill_"):
+            return ("SHEET_METAL x3", "WIRING_HARNESS")
+        if registry.startswith("kettle_grill_"):
+            return ("SHEET_METAL x2", "iron_ingot")
+        if registry.startswith("fire_pit_"):
+            return ("SHEET_METAL x2",) if registry.endswith("_steel") else ("stone x4",)
+        if registry.startswith(("cooler_", "kiddie_pool_")):
+            return ("ENCLOSURE_SHELL x2",)
+        if registry.startswith("pool_float_"):
+            return ("ENCLOSURE_SHELL",)
+        if registry.startswith("chimney_"):
+            return ("brick x6",)
+        if registry.startswith("picket_fence_"):
+            return ("planks x2",)
+        if registry.startswith("picket_gate_"):
+            return ("planks x3", "FASTENER_KIT")
+        if registry.startswith("stepping_stones_"):
+            return ("stone x2",)
+        if registry.startswith("string_lights_"):
+            return ("LED_MODULE", "string x2")
+        if registry.startswith("trampoline_"):
+            return ("iron_ingot x2", "wool x2", "slime_ball")
+        if registry.startswith("bounce_castle_"):
+            return ("wool x8", "slime_ball x2")
+        if registry.startswith("diving_board_"):
+            return ("planks x2", "iron_ingot", "slime_ball")
+        if registry.startswith("pet_bed_"):
+            return ("wool x2",)
+        if registry.startswith("pet_bowls_"):
+            return ("clay_ball x2",) if registry.endswith("_red") else ("iron_ingot",)
+        if registry.startswith("litter_box_"):
+            return ("ENCLOSURE_SHELL", "sand")
+        if registry.startswith("cat_tree_"):
+            return ("planks x3", "wool x3", "string x2")
+        if registry.startswith("hose_reel_"):
+            return ("SHEET_METAL", "FASTENER_KIT")
+        if registry.startswith("outdoor_wall_light_"):
+            return ("LED_MODULE", "SHEET_METAL")
+        # The living room's extras.
         if registry.startswith(("large_flat_screen_tv_", "large_wall_tv_")):
             return ("ENCLOSURE_SHELL x2", "CONTROL_BOARD", "LED_MODULE x2")
         if registry.startswith(("flat_screen_tv_", "wall_tv_")):

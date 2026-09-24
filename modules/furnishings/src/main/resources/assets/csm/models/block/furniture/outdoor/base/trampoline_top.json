@@ -1,0 +1,42 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "mat": "csm:blocks/furniture/outdoor/mat_black",
+    "pad": "csm:blocks/furniture/outdoor/pad_blue",
+    "particle": "#pad"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        11,
+        0
+      ],
+      "to": [
+        16,
+        11.5,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#mat",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#mat",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}
