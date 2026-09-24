@@ -19,6 +19,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
@@ -54,6 +56,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private static final String legacyGlitchyKey = "glitchy";
   private static final String acknowledgedKey = "akd";
   private static final String drillKey = "drl";
+  private static final String troubleKey = "trb";
+  private static final String troubleAcknowledgedKey = "trA";
   private static final String alarmOriginPosKey = "aoP";
   private static final String alarmOriginNameKey = "aoN";
   /** Initiating devices that report to this panel, as a flat IntArray of x, y, z triples. */
@@ -96,11 +100,15 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private static final float SOUNDER_VOLUME = 2.0f;
   private static final float VOICE_EVAC_VOLUME = 3.0f;
   private static final float STORM_VOICE_EVAC_VOLUME = 3.0f;
-  private static final int PRUNE_INTERVAL_TICKS = 6000; // ~5 minutes
+  /** How often the appliance cache is rebuilt, to catch a horn's tone changed by hand. */
+  private static final int CACHE_REFRESH_TICKS = 6000; // ~5 minutes
 
   private static final String CHANNEL_VOICE_EVAC = "voiceevac";
   private static final String CHANNEL_STORM = "storm";
   private static final String CHANNEL_STROBE_ONLY = "strobeonly";
+  /** The panel's own buzzer: a channel per panel (the position is appended), heard close by. */
+  private static final String CHANNEL_BUZZER_PREFIX = "panelbuzzer_";
+  private static final float BUZZER_HEARING_RANGE = 12.0f;
 
   private final ArrayList<BlockPos> connectedAppliances = new ArrayList<>();
   private int soundIndex;
@@ -111,11 +119,22 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private boolean glitchy;
   private boolean acknowledged;
   private boolean drill;
+  /**
+   * A linked appliance has gone missing and nobody has acknowledged it yet. Latched: it stays
+   * set until ACK even once the panel forgets the device, as a real panel's trouble does.
+   */
+  private boolean trouble;
+  /**
+   * How many missing devices the last ACK covered, so only a new loss sounds trouble again. Saved,
+   * or every world load would beep again for devices already acknowledged.
+   */
+  private int acknowledgedMissing;
+  private String lastBuzzerSound = null;
   private BlockPos alarmOriginPos;
   private String alarmOriginName = "";
   private final ArrayList<BlockPos> initiatingDevices = new ArrayList<>();
   private boolean alarmWasActive = false;
-  private int pruneTickCounter = 0;
+  private int cacheRefreshTickCounter = 0;
 
   // Channel-based active player tracking (voice evac, storm, and each horn sound)
   private final Map<String, HashSet<UUID>> channelActivePlayers = new HashMap<>();
@@ -140,6 +159,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     glitchy = readBool(compound, glitchyKey, legacyGlitchyKey);
     acknowledged = compound.getBoolean(acknowledgedKey);
     drill = compound.getBoolean(drillKey);
+    trouble = compound.getBoolean(troubleKey);
+    acknowledgedMissing = compound.getInteger(troubleAcknowledgedKey);
 
     int[] origin = compound.getIntArray(alarmOriginPosKey);
     alarmOriginPos = origin.length == 3 ? new BlockPos(origin[0], origin[1], origin[2]) : null;
@@ -294,6 +315,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     compound.setBoolean(glitchyKey, glitchy);
     compound.setBoolean(acknowledgedKey, acknowledged);
     compound.setBoolean(drillKey, drill);
+    compound.setBoolean(troubleKey, trouble);
+    compound.setInteger(troubleAcknowledgedKey, acknowledgedMissing);
     if (alarmOriginPos != null) {
       compound.setIntArray(alarmOriginPosKey, new int[] {alarmOriginPos.getX(),
           alarmOriginPos.getY(), alarmOriginPos.getZ()});
@@ -386,6 +409,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     // clear a discharge was to place a block in the puddle.
     if (!alarmState && wasActive && world != null && !world.isRemote) {
       resetInitiatingDevices();
+      playBuzzerTone(panelBlock() != null ? panelBlock().getBuzzerResetSound() : null);
     }
 
     // Post API events and update registry on state transitions
@@ -485,10 +509,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       TileEntity te = world.getTileEntity(bp);
       if (te instanceof TileEntityFireAlarmSensor) {
         ((TileEntityFireAlarmSensor) te).clearDischargedWater(world);
-      } else {
-        it.remove();
-        changed = true;
       }
+      // A device that is gone stays indexed: it is in trouble until put back or unlinked
     }
     if (changed) {
       markDirty();
@@ -558,14 +580,24 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   /**
-   * Acknowledges the active alarm. No-op when the panel is not in alarm, so a stray press cannot
-   * leave a quiet panel latched into the acknowledged state.
+   * Acknowledges the active alarm and any trouble, which quiets the panel's own buzzer. Only an
+   * active alarm is marked acknowledged, so a stray press cannot leave a quiet panel latched into
+   * that state; a trouble is cleared, and sounds again only if another device goes missing.
    */
   public void acknowledge() {
-    if (!alarm || acknowledged) {
+    boolean changed = false;
+    if (alarm && !acknowledged) {
+      acknowledged = true;
+      changed = true;
+    }
+    if (trouble) {
+      trouble = false;
+      acknowledgedMissing = world != null ? countMissingDevices() : 0;
+      changed = true;
+    }
+    if (!changed) {
       return;
     }
-    acknowledged = true;
     markDirty();
     if (world != null && !world.isRemote) {
       syncServerToClient(world);
@@ -624,8 +656,22 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       return "Audible Silence";
     } else if (alarm) {
       return drill ? "Drill Active" : "Alarm Active";
+    } else if (trouble) {
+      return "Trouble";
     }
     return "Normal";
+  }
+
+  /**
+   * Whether an unacknowledged trouble is latched: a linked appliance went missing since the last
+   * ACK.
+   *
+   * @return {@code true} while the trouble buzzer should sound
+   *
+   * @since 2026.9
+   */
+  public boolean getTrouble() {
+    return trouble;
   }
 
   public int getSoundIndex() {
@@ -674,11 +720,14 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     }
 
     try {
-      // Periodic lightweight pruning of invalid connected appliances
-      pruneTickCounter += tickRate;
-      if (pruneTickCounter >= PRUNE_INTERVAL_TICKS) {
-        pruneTickCounter = 0;
-        pruneInvalidAppliances();
+      // Trouble first, from the devices as they stand this tick
+      updateTrouble();
+
+      // A missing device is never dropped here: it stays listed, in trouble and with its
+      // coordinates on the display, until it is put back or unlinked with the linker
+      cacheRefreshTickCounter += tickRate;
+      if (cacheRefreshTickCounter >= CACHE_REFRESH_TICKS) {
+        cacheRefreshTickCounter = 0;
         cachedVoiceEvacPositions = null;
       }
 
@@ -818,6 +867,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           stopChannel(players, CHANNEL_STORM);
         }
       }
+
+      manageBuzzer(players);
     } catch (Exception e) {
       com.micatechnologies.minecraft.csm.Csm.getLogger()
           .error("Error ticking fire alarm control panel at {}", getPos(), e);
@@ -925,30 +976,6 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     return false;
   }
 
-  /**
-   * Removes connected appliance entries that no longer point to valid fire alarm sounder blocks.
-   * Only prunes one invalid entry per call to keep the operation lightweight.
-   */
-  private void pruneInvalidAppliances() {
-    Iterator<BlockPos> it = connectedAppliances.iterator();
-    boolean pruned = false;
-    while (it.hasNext()) {
-      BlockPos bp = it.next();
-      if (world.isBlockLoaded(bp)) {
-        Block blockAtPos = world.getBlockState(bp).getBlock();
-        if (!(blockAtPos instanceof AbstractBlockFireAlarmSounder)) {
-          it.remove();
-          pruned = true;
-          break;
-        }
-      }
-    }
-    if (pruned) {
-      cachedVoiceEvacPositions = null;
-      markDirty();
-    }
-  }
-
   private void rebuildApplianceCache() {
     cachedVoiceEvacPositions = new ArrayList<>();
     cachedHornGroups = new HashMap<>();
@@ -993,5 +1020,188 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   public String getCurrentSoundResourceName() {
     return SOUND_RESOURCE_NAMES[soundIndex];
+  }
+
+  /** The panel block this tile entity belongs to, or {@code null} if it is not one. */
+  private BlockFireAlarmControlPanel panelBlock() {
+    if (world == null) {
+      return null;
+    }
+    Block block = world.getBlockState(getPos()).getBlock();
+    return block instanceof BlockFireAlarmControlPanel ? (BlockFireAlarmControlPanel) block : null;
+  }
+
+  /**
+   * Linked appliances (horns, strobes, speakers) that are loaded but no longer a fire alarm
+   * appliance -- broken or replaced. Works on either side, so the display can list them.
+   *
+   * @return the missing appliances' positions, in link order
+   *
+   * @since 2026.9
+   */
+  public List<BlockPos> getMissingAppliances() {
+    List<BlockPos> missing = new ArrayList<>();
+    if (world == null) {
+      return missing;
+    }
+    for (BlockPos bp : connectedAppliances) {
+      if (world.isBlockLoaded(bp)
+          && !(world.getBlockState(bp).getBlock() instanceof AbstractBlockFireAlarmSounder)) {
+        missing.add(bp);
+      }
+    }
+    return missing;
+  }
+
+  /**
+   * Linked initiating devices (pull stations, detectors, sprinklers) that are loaded but no longer
+   * one.
+   *
+   * @return the missing initiating devices' positions, in link order
+   *
+   * @since 2026.9
+   */
+  public List<BlockPos> getMissingInitiatingDevices() {
+    List<BlockPos> missing = new ArrayList<>();
+    if (world == null) {
+      return missing;
+    }
+    for (BlockPos bp : initiatingDevices) {
+      if (world.isBlockLoaded(bp) && !(world.getTileEntity(bp) instanceof TileEntityFireAlarmSensor)) {
+        missing.add(bp);
+      }
+    }
+    return missing;
+  }
+
+  private int countMissingDevices() {
+    return getMissingAppliances().size() + getMissingInitiatingDevices().size();
+  }
+
+  /**
+   * Unlinks an appliance, as the linker does on a sneak-click.
+   *
+   * @param blockPos the appliance's position
+   *
+   * @return {@code true} if it was linked to this panel
+   *
+   * @since 2026.9
+   */
+  public synchronized boolean removeLinkedAlarm(BlockPos blockPos) {
+    boolean removed = connectedAppliances.remove(blockPos);
+    if (removed) {
+      afterUnlink();
+    }
+    return removed;
+  }
+
+  /**
+   * Unlinks an initiating device from the panel's index. The caller clears the device's own link.
+   *
+   * @param blockPos the device's position
+   *
+   * @return {@code true} if it was indexed on this panel
+   *
+   * @since 2026.9
+   */
+  public synchronized boolean removeLinkedInitiatingDevice(BlockPos blockPos) {
+    boolean removed = initiatingDevices.remove(blockPos);
+    if (removed) {
+      afterUnlink();
+    }
+    return removed;
+  }
+
+  /**
+   * Unlinks every device that is missing -- the only way to be rid of one, since a device that is
+   * gone cannot be clicked.
+   *
+   * @return how many were unlinked
+   *
+   * @since 2026.9
+   */
+  public synchronized int removeMissingDevices() {
+    List<BlockPos> appliances = getMissingAppliances();
+    List<BlockPos> initiating = getMissingInitiatingDevices();
+    connectedAppliances.removeAll(appliances);
+    initiatingDevices.removeAll(initiating);
+    int removed = appliances.size() + initiating.size();
+    if (removed > 0) {
+      afterUnlink();
+    }
+    return removed;
+  }
+
+  private void afterUnlink() {
+    cachedVoiceEvacPositions = null;
+    int missing = countMissingDevices();
+    acknowledgedMissing = Math.min(acknowledgedMissing, missing);
+    // Unlinking the last missing device resolves the trouble; there is nothing left to ACK
+    if (missing == 0) {
+      trouble = false;
+    }
+    markDirty();
+    if (world != null && !world.isRemote) {
+      syncServerToClient(world);
+    }
+  }
+
+  /**
+   * Raises trouble when more devices are missing than the last ACK covered. An empty panel is
+   * not in trouble here (the display still says NO APPLIANCES LINKED): a panel that has just been
+   * placed should not beep until it has been set up.
+   */
+  private void updateTrouble() {
+    int missing = countMissingDevices();
+    if (missing > acknowledgedMissing && !trouble) {
+      trouble = true;
+      markDirty();
+      syncServerToClient(world);
+    }
+    if (missing < acknowledgedMissing) {
+      acknowledgedMissing = missing;
+    }
+  }
+
+  /**
+   * The panel's own buzzer: its alarm sound while an alarm is neither acknowledged nor silenced,
+   * otherwise its trouble sound while a trouble is latched, otherwise quiet. It plays on a channel
+   * of its own at the panel, so it never disturbs the appliances' channels.
+   */
+  private void manageBuzzer(List<EntityPlayerMP> players) {
+    BlockFireAlarmControlPanel block = panelBlock();
+    String channel = CHANNEL_BUZZER_PREFIX + getPos().getX() + "_" + getPos().getY() + "_"
+        + getPos().getZ();
+    LifeSafetySounds sound = null;
+    if (block != null && alarm && !acknowledged && !audibleSilence) {
+      sound = block.getBuzzerAlarmSound();
+    } else if (block != null && trouble) {
+      sound = block.getBuzzerTroubleSound();
+    }
+    if (sound == null) {
+      if (lastBuzzerSound != null) {
+        stopChannel(players, channel);
+        lastBuzzerSound = null;
+      }
+      return;
+    }
+    String resource = "csm:" + sound.getSoundName();
+    if (!resource.equals(lastBuzzerSound)) {
+      stopChannel(players, channel);
+      lastBuzzerSound = resource;
+    }
+    manageSoundForPlayers(players, Collections.singletonList(getPos()), channel, resource,
+        BUZZER_HEARING_RANGE);
+  }
+
+  /** Plays a one-off tone at the panel (the reset chirp). */
+  private void playBuzzerTone(LifeSafetySounds sound) {
+    if (sound == null || world == null || world.isRemote) {
+      return;
+    }
+    SoundEvent event = sound.getSoundEvent();
+    if (event != null) {
+      world.playSound(null, getPos(), event, SoundCategory.BLOCKS, 1.0F, 1.0F);
+    }
   }
 }

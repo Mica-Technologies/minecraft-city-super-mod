@@ -236,7 +236,27 @@ public class FireAlarmControlPanelGui extends GuiScreen {
   }
 
   private boolean hasTrouble() {
-    return deviceMissing > 0 || deviceTotal == 0;
+    return deviceMissing > 0 || deviceTotal == 0 || panel.getTrouble()
+        || !panel.getMissingInitiatingDevices().isEmpty();
+  }
+
+  /**
+   * The missing device to show this moment, cycling every two seconds: its number in the list,
+   * whether it was an appliance or an initiating device, and where it was. {@code null} when
+   * nothing is missing.
+   */
+  private String missingDeviceLine() {
+    List<BlockPos> appliances = panel.getMissingAppliances();
+    List<BlockPos> initiating = panel.getMissingInitiatingDevices();
+    int total = appliances.size() + initiating.size();
+    if (total == 0) {
+      return null;
+    }
+    int index = (ticks / 40) % total;
+    boolean isAppliance = index < appliances.size();
+    BlockPos pos = isAppliance ? appliances.get(index) : initiating.get(index - appliances.size());
+    return "MISSING " + (index + 1) + "/" + total + (isAppliance ? " APPLIANCE " : " INITIATING ")
+        + pos.getX() + "," + pos.getY() + "," + pos.getZ();
   }
 
   private int displayedSoundIndex() {
@@ -255,6 +275,18 @@ public class FireAlarmControlPanelGui extends GuiScreen {
 
   private int maxScroll() {
     return Math.max(0, TileEntityFireAlarmControlPanel.getSoundNames().length - VISIBLE_ROWS);
+  }
+
+  /** The panel's model name, from its block: "CSM 4100", or the Edwards iO's "CSM iO64". */
+  private String panelTitle() {
+    World world = panel.getWorld();
+    if (world != null) {
+      Block block = world.getBlockState(blockPos).getBlock();
+      if (block instanceof BlockFireAlarmControlPanel) {
+        return ((BlockFireAlarmControlPanel) block).getPanelTitle();
+      }
+    }
+    return "CSM 4100";
   }
 
   private void send(FireAlarmPanelConfigAction action) {
@@ -372,7 +404,7 @@ public class FireAlarmControlPanelGui extends GuiScreen {
     // Red header strip carrying the model name, as on the real cabinet's door label.
     drawRect(left, top, left + W, top + 18, COLOR_HEADER);
     drawRect(left, top + 18, left + W, top + 19, COLOR_HEADER_EDGE);
-    fontRenderer.drawString("CSM 4100", left + 8, top + 5, COLOR_HEADER_TEXT);
+    fontRenderer.drawString(panelTitle(), left + 8, top + 5, COLOR_HEADER_TEXT);
     String subtitle = "FIRE ALARM CONTROL PANEL";
     fontRenderer.drawString(subtitle, left + W - 8 - fontRenderer.getStringWidth(subtitle),
         top + 5, COLOR_HEADER_TEXT);
@@ -409,6 +441,10 @@ public class FireAlarmControlPanelGui extends GuiScreen {
     } else if (panel.getAlarmStormState()) {
       headline = "** SUPERVISORY - STORM WARNING **";
       headlineColor = COLOR_AMBER;
+    } else if (panel.getTrouble()) {
+      // Unacknowledged trouble blinks like an unacknowledged alarm, in amber
+      headline = "*** TROUBLE ***";
+      headlineColor = flash ? COLOR_AMBER : COLOR_AMBER_DIM;
     } else {
       headline = ">>> SYSTEM IS NORMAL <<<";
       headlineColor = COLOR_AMBER_HEAD;
@@ -438,12 +474,17 @@ public class FireAlarmControlPanelGui extends GuiScreen {
 
     String detail;
     int detailColor = COLOR_AMBER_DIM;
-    if (deviceTotal == 0) {
+    String missingLine = missingDeviceLine();
+    if (missingLine != null) {
+      // Steps through every missing device, so a player can walk to each one and put it back,
+      // or unlink it with a sneak-click of the linker on this panel
+      detail = missingLine;
+      detailColor = COLOR_AMBER;
+    } else if (deviceTotal == 0) {
       detail = "TROUBLE: NO APPLIANCES LINKED";
       detailColor = COLOR_AMBER;
-    } else if (deviceMissing > 0) {
-      detail = "TROUBLE: " + deviceMissing + " LINKED DEVICE"
-          + (deviceMissing == 1 ? "" : "S") + " MISSING";
+    } else if (panel.getTrouble()) {
+      detail = "TROUBLE: DEVICE REMOVED - PRESS ACK";
       detailColor = COLOR_AMBER;
     } else if (alarm && panel.getAcknowledged()) {
       detail = "ALARM ACKNOWLEDGED";
@@ -589,10 +630,11 @@ public class FireAlarmControlPanelGui extends GuiScreen {
     for (GuiButton button : buttonList) {
       switch (button.id) {
         case BTN_ACK:
-          button.enabled = alarm && !panel.getAcknowledged();
+          button.enabled = (alarm && !panel.getAcknowledged()) || panel.getTrouble();
           addKeyHover(button, "ACKNOWLEDGE",
-              "Acknowledges an active alarm so the FIRE ALARM lamp",
-              "stops flashing. Does not silence anything.");
+              "Acknowledges an alarm or trouble: the lamp stops",
+              "flashing and the panel's own buzzer goes quiet.",
+              "Does not silence the appliances.");
           break;
         case BTN_SILENCE:
           button.enabled = alarm;

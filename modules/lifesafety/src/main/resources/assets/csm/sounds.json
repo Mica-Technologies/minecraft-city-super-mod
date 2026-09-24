@@ -359,6 +359,42 @@
       }
     ]
   },
+  "simplex_panel_alarm": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_panel_alarm",
+        "stream": false
+      }
+    ]
+  },
+  "simplex_panel_trouble": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_panel_trouble",
+        "stream": false
+      }
+    ]
+  },
+  "edwards_io_alarm": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:edwards_io_alarm",
+        "stream": false
+      }
+    ]
+  },
+  "edwards_io_trouble": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:edwards_io_trouble",
+        "stream": false
+      }
+    ]
+  },
   "pullstation_pull": {
     "category": "block",
     "sounds": [
@@ -503,15 +539,6 @@
       }
     ]
   },
-  "new_simplex_beep": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:new_simplex_beep",
-        "stream": false
-      }
-    ]
-  },
   "power_linked": {
     "category": "block",
     "sounds": [
@@ -580,24 +607,6 @@
     "sounds": [
       {
         "name": "csm:tl_switch_on",
-        "stream": false
-      }
-    ]
-  },
-  "ups_lowbatt": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:ups_lowbatt",
-        "stream": false
-      }
-    ]
-  },
-  "ups_silence": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:ups_silence",
         "stream": false
       }
     ]

@@ -171,6 +171,18 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
   }
 
   /**
+   * Forgets the panel this device reports to, when it is unlinked with the linker.
+   *
+   * @since 2026.9
+   */
+  public void clearLinkedPanel() {
+    linkedPanelX = 0;
+    linkedPanelY = UNLINKED_Y;
+    linkedPanelZ = 0;
+    markDirty();
+  }
+
+  /**
    * Records a block this device has flooded, so it can be drained again when the panel is reset.
    *
    * @param pos the position water was placed at

@@ -1,0 +1,96 @@
+{
+  "credit": "CSM: Edwards iO fire alarm control panel",
+  "textures": {
+    "0": "csm:blocks/lifesafety/fire_alarm_control_panel_edwards_io_red",
+    "particle": "csm:blocks/lifesafety/fire_alarm_control_panel_edwards_io_red"
+  },
+  "elements": [
+    {
+      "from": [
+        0.2,
+        0,
+        13
+      ],
+      "to": [
+        15.8,
+        26,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.25,
+            0,
+            12.875,
+            16
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            12.25,
+            0,
+            12.375,
+            16
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            3.75,
+            0,
+            3.875,
+            16
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            3.75,
+            0.25,
+            12.25,
+            0.5
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            3.75,
+            15.5,
+            12.25,
+            15.75
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            3.25,
+            0,
+            12.875,
+            16
+          ],
+          "texture": "#0"
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        -2.5,
+        0
+      ]
+    }
+  }
+}

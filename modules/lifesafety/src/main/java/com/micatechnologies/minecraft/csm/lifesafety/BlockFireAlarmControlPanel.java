@@ -267,5 +267,51 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
   public TileEntity createNewTileEntity(World worldIn, int meta) {
     return new TileEntityFireAlarmControlPanel();
   }
+
+  /**
+   * The panel's own buzzer while an alarm is unacknowledged. This panel is a Simplex 4100, so it
+   * sounds like one; another make of panel overrides the three buzzer sounds and nothing else.
+   *
+   * @return the looping alarm buzzer sound
+   *
+   * @since 2026.9
+   */
+  public LifeSafetySounds getBuzzerAlarmSound() {
+    return LifeSafetySounds.SIMPLEX_PANEL_ALARM;
+  }
+
+  /**
+   * The model name across the top of this panel's front-panel screen.
+   *
+   * @return the panel's title
+   *
+   * @since 2026.9
+   */
+  public String getPanelTitle() {
+    return "CSM 4100";
+  }
+
+  /**
+   * The panel's own buzzer while a trouble condition (a linked device gone missing) is
+   * unacknowledged.
+   *
+   * @return the looping trouble buzzer sound
+   *
+   * @since 2026.9
+   */
+  public LifeSafetySounds getBuzzerTroubleSound() {
+    return LifeSafetySounds.SIMPLEX_PANEL_TROUBLE;
+  }
+
+  /**
+   * The tone the panel plays once when it is reset out of an alarm.
+   *
+   * @return the reset tone
+   *
+   * @since 2026.9
+   */
+  public LifeSafetySounds getBuzzerResetSound() {
+    return LifeSafetySounds.SIMPLEX_PANEL_RESET;
+  }
 }
 

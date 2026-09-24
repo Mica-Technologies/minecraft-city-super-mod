@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmBeaconFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.IStrobeBlock;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmControlPanel;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmEdwardsIOPanel;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmDetectorFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmPullStationFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmESTPull;
@@ -127,6 +128,8 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmBeaconFactory("firealarmbeaconblue", new AxisAlignedBB(0.187500, 0.187500, 0.500000, 0.812500, 0.812500, 1.000000), new float[]{5.4f, 5.4f, 8f}, new float[]{10.6f, 10.6f, 9f}, new float[]{0.28f, 0.5f, 1.0f}));
     initTabBlock(new BlockFireAlarmBeaconFactory("firealarmbeaconclear", new AxisAlignedBB(0.187500, 0.187500, 0.500000, 0.812500, 0.812500, 1.000000), new float[]{5.4f, 5.4f, 8f}, new float[]{10.6f, 10.6f, 9f}, new float[]{1.0f, 1.0f, 1.0f}));
     initTabBlock(BlockFireAlarmControlPanel.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockFireAlarmEdwardsIOPanel("firealarmedwardsiopanelred"));
+    initTabBlock(new BlockFireAlarmEdwardsIOPanel("firealarmedwardsiopanelwhite"));
     initTabBlock(new BlockRemoteAnnunciator("remote_annunciator", new int[]{3, 3, 14, 13, 13, 16}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmest2028atstrobered", null, new AxisAlignedBB(0.187500, 0.087500, 0.675000, 0.812500, 1.000000, 1.000000), new float[]{5.63f, 2.78f, 10.8f}, new float[]{10.55f, 14.38f, 12.6f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmest2028atwstrobewhite", null, new AxisAlignedBB(0.187500, 0.087500, 0.675000, 0.812500, 1.000000, 1.000000), new float[]{5.63f, 2.78f, 10.8f}, new float[]{10.55f, 14.38f, 12.6f}));

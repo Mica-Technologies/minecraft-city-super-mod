@@ -117,6 +117,12 @@ public class ItemFireAlarmLinker extends AbstractItem {
     ItemStack heldStack = player.getHeldItem(hand);
     BlockPos alarmPanelPos = getSelectedPanel(heldStack);
 
+    // Sneak-click unlinks: on a fire alarm panel it drops every device of that panel's that has
+    // gone missing (they cannot be clicked, being gone); on a device it leaves the selected panel
+    if (player.isSneaking() && unlink(worldIn, player, pos, state, alarmPanelPos)) {
+      return EnumActionResult.SUCCESS;
+    }
+
     // Emergency Services controllers (station alerting, warning sirens) are selected the way a
     // panel is, and offered each device clicked after.
     if (state.getBlock() instanceof ILinkedDeviceController.ControllerBlock
@@ -270,6 +276,53 @@ public class ItemFireAlarmLinker extends AbstractItem {
    * logged out with, so a linker carried from one building to the next would otherwise keep pointing
    * at a panel across the map, and the next click would wire a sounder to the wrong building.
    */
+  /**
+   * Handles a sneak-click. Returns {@code false} to let the click fall through to linking, which
+   * is what happens when the selected controller is not a fire alarm panel.
+   */
+  private boolean unlink(World world, EntityPlayer player, BlockPos pos, IBlockState state,
+      BlockPos panelPos) {
+    TileEntity clicked = world.getTileEntity(pos);
+    if (state.getBlock() instanceof BlockFireAlarmControlPanel
+        && clicked instanceof TileEntityFireAlarmControlPanel) {
+      int removed = ((TileEntityFireAlarmControlPanel) clicked).removeMissingDevices();
+      if (!world.isRemote) {
+        String where = describePanel(pos);
+        player.sendMessage(new TextComponentString(removed == 0
+            ? "No missing devices on the " + where
+            : "Unlinked " + removed + " missing device" + (removed == 1 ? "" : "s")
+                + " from the " + where));
+      }
+      return true;
+    }
+    if (panelPos == null
+        || !(world.getTileEntity(panelPos) instanceof TileEntityFireAlarmControlPanel)) {
+      return false;
+    }
+    TileEntityFireAlarmControlPanel panel =
+        (TileEntityFireAlarmControlPanel) world.getTileEntity(panelPos);
+    boolean removed = panel.removeLinkedAlarm(pos);
+    if (clicked instanceof TileEntityFireAlarmSensor) {
+      // A pull station, detector, door holder or annunciator keeps its own link to the panel
+      TileEntityFireAlarmSensor device = (TileEntityFireAlarmSensor) clicked;
+      if (panelPos.equals(device.getLinkedPanelPos(world))) {
+        device.clearLinkedPanel();
+        removed = true;
+      }
+      removed |= panel.removeLinkedInitiatingDevice(pos);
+    }
+    if (!world.isRemote) {
+      player.sendMessage(new TextComponentString(
+          (removed ? "Unlinked from the " : "Not linked to the ") + describePanel(panelPos)));
+    }
+    return true;
+  }
+
+  private static String describePanel(BlockPos pos) {
+    return "fire alarm control panel at (" + pos.getX() + "," + pos.getY() + "," + pos.getZ()
+        + ")";
+  }
+
   @Override
   public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer player,
       EnumHand hand) {
@@ -294,6 +347,8 @@ public class ItemFireAlarmLinker extends AbstractItem {
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
     list.add("Link fire alarm appliances to a fire alarm control panel");
+    list.add("Sneak-click a device to unlink it from the selected panel");
+    list.add("Sneak-click a panel to unlink its missing devices");
     BlockPos selected = getSelectedPanel(itemstack);
     list.add(selected == null
         ? "No panel selected"

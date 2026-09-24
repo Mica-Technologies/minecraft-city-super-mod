@@ -53,6 +53,43 @@ All fire alarm code lives in `src/main/java/com/micatechnologies/minecraft/csm/l
   connected appliance positions in NBT. State transitions (alarm, storm, audible silence,
   acknowledgement) call `syncServerToClient` so an open GUI tracks alarms raised elsewhere.
 
+### Panel makes: Simplex 4100 and Edwards iO
+
+The original panel is a Simplex 4100. `BlockFireAlarmEdwardsIOPanel` (registry names
+`firealarmedwardsiopanelred` / `firealarmedwardsiopanelwhite`) is an Edwards iO64 in red or white:
+a subclass that shares the tile entity, GUI, linking and every behaviour, and overrides only its
+cabinet (15.6 x 26 x 3 px, 1.625 blocks tall, rising into the block above -- the iO64's 0.6
+width-to-height ratio, at the tallest that stays one block wide), its GUI title and its buzzer
+sounds. The linker and config tool test `instanceof BlockFireAlarmControlPanel`, so a subclass
+needs nothing else. Red and white are separate blocks, like the mod's other red/white devices.
+
+### The panel's own buzzer and trouble
+
+A real panel sounds a buzzer behind its door; CSM's does too, on a channel of its own
+(`panelbuzzer_x_y_z`, 12-block range) positioned at the panel, so it never disturbs the
+appliances' channels. Each panel block names its three sounds (`getBuzzerAlarmSound`,
+`getBuzzerTroubleSound`, `getBuzzerResetSound`): the Simplex 4100 uses `simplex_panel_*`, the
+Edwards iO `edwards_io_*`.
+
+| State | Buzzer |
+|---|---|
+| Alarm, not acknowledged, not silenced | alarm sound, looping |
+| Otherwise, trouble latched | trouble sound, looping |
+| Reset out of an alarm | reset tone, once (`world.playSound`) |
+
+**Trouble** (`trb`) is raised when more linked devices are missing than the last ACK covered.
+Missing means loaded but no longer a device: an appliance whose block is no longer an
+`AbstractBlockFireAlarmSounder`, or an initiating device with no `TileEntityFireAlarmSensor`.
+ACK clears the latch and quiets the buzzer; the TROUBLE lamp stays lit while anything is still
+missing, as on a real panel. An empty panel is not in trouble -- a panel just placed should not
+beep before it is set up -- though its display still says NO APPLIANCES LINKED.
+
+**Nothing is forgotten.** A missing device stays linked until it is put back (the same kind of
+block at the same position clears it on its own) or unlinked with the linker. The panel used to
+prune a missing appliance every five minutes and drop a missing initiating device on reset, which
+erased the only record of where it had been. The display steps through the missing devices every
+two seconds: `MISSING 2/3 INITIATING 142,7,-2297`.
+
 ### Panel GUI ("CSM 4100")
 - **`FireAlarmControlPanelGui`** -- Client-side front-panel screen: amber-on-black display,
   FIRE ALARM / SUPERVISORY / TROUBLE / SIGNALS SILENCED / AC POWER lamps, and ACK, SILENCE
@@ -239,9 +276,14 @@ in the control panel's NBT as a newline-delimited string of `"x y z"` coordinate
 Connection is typically initiated by the appliance block classes (e.g., fire alarm pull
 stations, activator blocks) which find a nearby control panel and call `addLinkedAlarm`.
 
-Invalid appliances are pruned every ~5 minutes (`PRUNE_INTERVAL_TICKS = 6000`) by checking
-if the block at each stored position is still an `AbstractBlockFireAlarmSounder` instance.
-Only one invalid entry is pruned per cycle to stay lightweight.
+Links are never pruned: a device that goes missing puts the panel in trouble and stays listed
+until it is put back or unlinked (see "The panel's own buzzer and trouble").
+
+**Unlinking** is a sneak-click with the linker. On a device, with a panel selected, it removes the
+device from that panel -- from the appliance list, from the initiating-device index, and, for a
+device that keeps its own link (pull stations, detectors, door holders, annunciators), from the
+device's `lp` too (`TileEntityFireAlarmSensor.clearLinkedPanel`). On a panel it unlinks every
+device of that panel's that is missing, since a device that is gone cannot be clicked.
 
 ### Devices that follow a panel (door holders, annunciators)
 

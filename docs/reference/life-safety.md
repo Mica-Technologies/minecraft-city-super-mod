@@ -2,7 +2,7 @@
 
 Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
-!!! info "137 blocks in this tab"
+!!! info "139 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -19,6 +19,8 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Edwards EST 202-8A-T Wall Mount Strobe (Red) | `csm:firealarmest2028atstrobered` | 2 | 10 | pickaxe | 1 |
 | Edwards EST 202-8A-TW Wall Mount Strobe (White) | `csm:firealarmest2028atwstrobewhite` | 2 | 10 | pickaxe | 1 |
 | Edwards Glass Rod Pull Station | `csm:firealarmedwardsglassrodpullstation` | 2 | 10 | pickaxe | 1 |
+| Edwards iO Fire Alarm Control Panel (Red) | `csm:firealarmedwardsiopanelred` | 2 | 10 | pickaxe | 1 |
+| Edwards iO Fire Alarm Control Panel (White) | `csm:firealarmedwardsiopanelwhite` | 2 | 10 | pickaxe | 1 |
 | EST Adaptahorn Gray (Horn) | `csm:firealarmestadaptahorngray` | 2 | 10 | pickaxe | 1 |
 | EST Adaptahorn Red (Horn) | `csm:firealarmestadaptahornred` | 2 | 10 | pickaxe | 1 |
 | EST Genesis Red (Horn Strobe) | `csm:firealarmestgenesisred` | 2 | 10 | pickaxe | 1 |
