@@ -33,7 +33,7 @@ Removed 2026-09-24:
 | `windchime` | Wind Chime | Furniture | 0.6 x 1.9 x 0.8 |  |
 | `dollhouse1` | Dollhouse 1 | Gaming | 2 x 2 x 2 |  |
 | `dollhouse2` | Dollhouse 2 | Gaming | 2 x 2.1 x 2 |  |
-| `etchasketch` | Etch A Sketch | Gaming | 0.5 x 0.1 x 0.4 |  |
+| `etchasketch` | Etch A Sketch | Gaming | 0.5 x 0.1 x 0.4 | A named product or character: only an original design could come back. |
 | `playingcards` | Playing Cards | Gaming | 0.8 x 0.1 x 0.5 |  |
 | `toyboxboy` | Toybox (Boy) | Gaming | 4 x 2.4 x 2.7 |  |
 | `toyboxgirl` | Toybox (Girl) | Gaming | 4 x 2.4 x 2.8 |  |
@@ -44,11 +44,11 @@ Removed 2026-09-24:
 | `goldenfurawardstrophy` | Golden Fur Awards Trophy | Novelties | 0.4 x 1 x 0.4 |  |
 | `minicmastree` | Mini Christmas Tree | Novelties | 0.8 x 0.8 x 0.9 |  |
 | `presents` | Presents | Novelties | 1.3 x 0.8 x 1 |  |
-| `r2d2` | R2-D2 | Novelties | 0.3 x 0.3 x 0.2 |  |
+| `r2d2` | R2-D2 | Novelties | 0.3 x 0.3 x 0.2 | A named product or character: only an original design could come back. |
 | `reindeer` | Reindeer | Novelties | 0.5 x 0.8 x 0.3 |  |
-| `rubixcube` | Rubix Cube | Novelties | 0.2 x 0.2 x 0.2 |  |
+| `rubixcube` | Rubix Cube | Novelties | 0.2 x 0.2 x 0.2 | A named product or character: only an original design could come back. |
 | `shootingdummy` | Shooting Dummy | Novelties | 1 x 2 x 0.5 |  |
 | `singlepumpkin` | Single Pumpkin | Novelties | 0.5 x 0.6 x 0.5 |  |
 | `snowglobe` | Snow Globe | Novelties | 0.5 x 0.4 x 0.5 |  |
-| `tardis` | TARDIS | Novelties | 0.4 x 0.7 x 0.4 |  |
+| `tardis` | TARDIS | Novelties | 0.4 x 0.7 x 0.4 | A named product or character: only an original design could come back. |
 | `treasurechest` | Treasure Chest | Novelties | 0.5 x 0.2 x 0.2 |  |
