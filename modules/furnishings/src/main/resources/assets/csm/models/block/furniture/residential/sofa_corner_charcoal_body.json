@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/residential/base/sofa_corner_body",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/charcoal",
+    "fabric_dark": "csm:blocks/furniture/residential/charcoal_dark"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/residential/base/sofa_left",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/navy",
+    "fabric_dark": "csm:blocks/furniture/residential/navy_dark"
+  }
+}

@@ -394,6 +394,23 @@ def cost_for(registry, info, ancestors):
         if has_any(registry, METAL_FURNITURE_WORDS):
             return ("SHEET_METAL", "FASTENER_KIT")
         return ("planks x2", "FASTENER_KIT")
+    if tab == "tabresidential":
+        # Mirrors ResidentialFabricatorRules (Furniture & Novelties module).
+        if registry.startswith("sofa_"):
+            return ("planks x2", "wool x3")
+        if registry.startswith("armchair_"):
+            return ("planks x2", "wool x2")
+        if registry.startswith("bookcase_"):
+            return ("planks x3", "book x2")
+        if registry.startswith("sideboard_"):
+            return ("planks x6", "FASTENER_KIT")
+        if registry.startswith("tv_stand_"):
+            return ("planks x4", "FASTENER_KIT")
+        if registry.startswith("dining_table_"):
+            return ("planks x3", "FASTENER_KIT")
+        if registry.startswith("cafe_table_"):
+            return ("planks", "iron_ingot")
+        return ("planks x2", "FASTENER_KIT")
     # Any other tab is a module's own, priced by the rule the module registers
     # (e.g. ParksFabricatorRules), which this audit does not mirror; this is the generic cost
     # such a rule falls back to.

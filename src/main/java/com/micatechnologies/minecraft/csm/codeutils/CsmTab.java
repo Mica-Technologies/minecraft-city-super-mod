@@ -55,6 +55,7 @@ import org.apache.logging.log4j.Logger;
  *   Order 21 = CsmTabExitsEmergency
  *   Order 22 = CsmTabFireProtection
  *   Order 23 = CsmTabEmergencyServices
+ *   Order 24 = CsmTabResidential
  * </pre>
  * <p>When adding a new tab, choose the next available order value and update this list. A
  * module that owns retiring blocks ships its own hidden tab at a negative order; hidden tabs

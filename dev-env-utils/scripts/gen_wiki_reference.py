@@ -129,6 +129,9 @@ TABS = {
     "tabparks": ("parks", "Parks",
                  "Park amenities: benches, tables, bins, playground pieces, fountains and "
                  "irrigation."),
+    "tabresidential": ("residential", "Residential",
+                       "The furniture of homes: dining and living room tables, chairs, "
+                       "bookcases, storage and sofas that join into runs."),
     "tabpowergrid": ("power-grid", "Power Grid",
                      "Utility poles, transformers and the Forge Energy that runs through them."),
     "tabroadsigns": ("road-signs", "Road Signs",
@@ -160,7 +163,7 @@ TABS = {
 PAGE_ORDER = ["tabbuildingmaterials", "tabconstructionsite", "tabfurniture", "tabgaming",
               "tabemergencyservices", "tabexitsemergency", "tabfireprotection",
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
-              "tabnovelties", "tabparks", "tabpowergrid", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",
+              "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtreesplants",
               "tabnone"]
 

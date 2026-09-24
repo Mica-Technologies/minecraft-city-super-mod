@@ -1,0 +1,102 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/charcoal",
+    "fabric_dark": "csm:blocks/furniture/residential/charcoal_dark",
+    "particle": "#fabric"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        1.5,
+        2
+      ],
+      "to": [
+        0.01,
+        5,
+        15.5
+      ],
+      "faces": {
+        "west": {
+          "texture": "#fabric_dark",
+          "uv": [
+            2,
+            11,
+            15.5,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        5,
+        12
+      ],
+      "to": [
+        0.01,
+        13,
+        15.5
+      ],
+      "faces": {
+        "west": {
+          "texture": "#fabric_dark",
+          "uv": [
+            12,
+            3,
+            15.5,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        1.5,
+        0
+      ],
+      "to": [
+        15.5,
+        5,
+        0.01
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fabric_dark",
+          "uv": [
+            0.5,
+            11,
+            14,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        12,
+        5,
+        0
+      ],
+      "to": [
+        15.5,
+        13,
+        0.01
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fabric_dark",
+          "uv": [
+            0.5,
+            3,
+            4,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

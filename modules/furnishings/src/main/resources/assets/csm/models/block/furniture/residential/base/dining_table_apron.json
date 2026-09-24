@@ -1,0 +1,51 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "wood": "csm:blocks/furniture/residential/oak",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        2.5,
+        9,
+        1.25
+      ],
+      "to": [
+        13.5,
+        11,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            2.5,
+            5,
+            13.5,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            2.5,
+            5,
+            13.5,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#edge",
+          "uv": [
+            2.5,
+            14,
+            13.5,
+            14.75
+          ]
+        }
+      }
+    }
+  ]
+}

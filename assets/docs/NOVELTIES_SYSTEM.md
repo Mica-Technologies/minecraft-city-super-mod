@@ -166,6 +166,26 @@ Blocks removed because their models were not our own work are listed, with their
 names, in `assets/to-be-added-to-mod/BLOCKS_TO_REVISIT.md`; Core's `CsmRetiredNames` drops
 those names from old worlds without a prompt.
 
+## Residential Furniture
+
+The Residential tab (`CsmTabResidential`) is the furniture round-out's living and dining set, all
+drawn by `gen_furniture_residential.py`, in the `furniture.residential` package:
+
+- `BlockResidentialFurniture`: single pieces facing the placer; chairs, stools and armchairs sit
+  on Core's `EntityCsmSeat` like the park bench (sneak-click does not sit).
+- `BlockResidentialRun` (`LEFT`/`RIGHT`, same block and facing), `BlockBookcase` (adds `UP`/`DOWN`
+  so a stack shares one top and plinth), `BlockSofa` (also joins a same-fabric corner) and
+  `BlockSofaCorner`: runs drawn as one piece, end parts only at the ends. All actual state.
+- `BlockDiningTable`: no facing; joins N/E/S/W in world directions into any rectangle, legs only
+  at the outer corners.
+- `BlockResidentialStorage` (TV stand 9 slots, sideboard 18): `TileEntityResidentialStorage` holds
+  an `ItemStackHandler` exposed as a capability (hoppers work), drops on break, gives a comparator
+  signal; the screen is served by `NoveltiesGuiProvider`.
+
+Finishes are separate blocks (`_oak`, `_walnut`, `_white`; fabrics `_charcoal`, `_navy`,
+`_oatmeal`, `_red`). The plan for the rest of the round-out (bedroom, kitchen, bath, office,
+outdoor, working appliances) aims at parity with other furniture mods.
+
 ## Sound Assets
 
 All custom sounds are declared in `FurnishingsSounds.java` (handed to Core's registrar by `CsmFurnishings.preInit`) and defined in `sounds.json`. Every

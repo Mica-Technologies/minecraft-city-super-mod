@@ -1,0 +1,168 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_body"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_left"
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "left": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_front"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_caps"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "left": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_front",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_caps",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "left": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_front",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_caps",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "left": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_front",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/sofa_corner_charcoal_caps",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/coffee_table",
+    "textures": {
+      "wood": "csm:blocks/furniture/residential/walnut",
+      "wood_v": "csm:blocks/furniture/residential/walnut_v",
+      "edge": "csm:blocks/furniture/residential/walnut_edge"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

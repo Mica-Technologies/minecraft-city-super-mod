@@ -624,6 +624,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   models rebuilt in 2026-09: produce crates; bar and game room pieces and the wooden barrel;
   props; seasonal figures; the OBJ showpieces (jukebox, piano, clock, swing chair, tree). Which block each draws
   is tabled in `assets/docs/NOVELTIES_SYSTEM.md`; none writes lang or tab lines; `--check`
+- `gen_furniture_residential.py` -- the Residential tab (furniture round-out): tables, chairs, bar
+  stools, bookcases, TV stands, sideboards in light oak, walnut and white; armchairs, sofas and
+  sofa corners in four fabrics. Joining pieces use multipart blockstates driven by actual state
+  (a model parent must be `csm:block/...`; a blockstate may drop the `block/`); writes its own
+  lang lines by key; `--check`, `--fragments`
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on
