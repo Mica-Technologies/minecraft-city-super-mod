@@ -151,6 +151,7 @@ public class CsmTabTechnology extends CsmTab {
     initTabItem(new ItemDecorativeFactory("appleipadpro", "This iPad does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appleiphonese2020", "This iPhone does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appleiphonexr", "This iPhone does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("rabbitr1", "This Rabbit R1 does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appleiphonexs", "This iPhone does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appletvremote", "This remote does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("applewatch", "This Apple Watch does nothing and is only for looks!"));
