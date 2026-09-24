@@ -25,7 +25,7 @@ public class BlockTeeterTotter extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-1.500000, 0.002308, -0.445781, 1.456807, 1.036926, 0.451636);
+    return new AxisAlignedBB(-0.844000, 0.000000, 0.187500, 1.864000, 1.318000, 0.812500);
   }
 
   @Override

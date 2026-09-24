@@ -1,9 +1,17 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:park_swing_b.obj",
+    "model": "csm:parks/amenities/swing_tyre_set.obj",
     "custom": {
       "flip-v": true
+    },
+    "textures": {
+      "#frame": "csm:blocks/parks/amenities/platform_blue",
+      "#cap": "csm:blocks/parks/amenities/yellow_plastic",
+      "#tyre": "csm:blocks/parks/amenities/swing_tyre",
+      "#clamp": "csm:blocks/parks/amenities/iron",
+      "#chain": "csm:blocks/parks/amenities/swing_chain",
+      "particle": "csm:blocks/parks/amenities/platform_blue"
     }
   },
   "variants": {
@@ -35,11 +43,15 @@
               0
             ],
             "translation": [
-              0.0269,
-              0.0,
-              0.0
+              0,
+              -0.15,
+              0
             ],
-            "scale": 0.176
+            "scale": [
+              0.2,
+              0.2,
+              0.2
+            ]
           },
           "ground": {
             "rotation": [
@@ -49,10 +61,31 @@
             ],
             "translation": [
               0,
-              3,
+              -0.15,
               0
             ],
-            "scale": 0.176
+            "scale": [
+              0.2,
+              0.2,
+              0.2
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0,
+              -0.15,
+              0
+            ],
+            "scale": [
+              0.2,
+              0.2,
+              0.2
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -62,10 +95,14 @@
             ],
             "translation": [
               0,
-              2.5,
+              0.15,
               0
             ],
-            "scale": 0.176
+            "scale": [
+              0.2,
+              0.2,
+              0.2
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
@@ -75,10 +112,14 @@
             ],
             "translation": [
               0,
-              2.5,
+              0.15,
               0
             ],
-            "scale": 0.176
+            "scale": [
+              0.2,
+              0.2,
+              0.2
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -91,7 +132,11 @@
               0,
               0
             ],
-            "scale": 0.176
+            "scale": [
+              0.2,
+              0.2,
+              0.2
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -104,10 +149,11 @@
               0,
               0
             ],
-            "scale": 0.176
-          },
-          "fixed": {
-            "scale": 0.176
+            "scale": [
+              0.2,
+              0.2,
+              0.2
+            ]
           }
         }
       }

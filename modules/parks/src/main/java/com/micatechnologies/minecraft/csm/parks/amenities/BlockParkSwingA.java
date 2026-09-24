@@ -25,7 +25,7 @@ public class BlockParkSwingA extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-1.489179, -0.000858, -0.330205, 1.477943, 2.771747, 0.331154);
+    return new AxisAlignedBB(-0.890625, 0.000000, -0.651300, 1.890625, 2.784400, 1.651300);
   }
 
   @Override

@@ -25,7 +25,7 @@ public class BlockParkTrashCan extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.437500, 0.000000, -0.437500, 0.437533, 1.000000, 0.437500);
+    return new AxisAlignedBB(0.156250, 0.000000, 0.156250, 0.843750, 0.906250, 0.843750);
   }
 
   @Override

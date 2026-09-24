@@ -25,7 +25,7 @@ public class BlockBirdbath extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.406250, 0.000000, -0.406250, 0.406250, 1.068804, 0.406250);
+    return new AxisAlignedBB(0.176600, 0.000000, 0.176600, 0.823400, 0.731200, 0.823400);
   }
 
   @Override
