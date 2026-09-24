@@ -67,6 +67,8 @@ CATALOGUE = [
     # state properties, so it was left alone deliberately.
     ("powergrid/shared_models/scelightmount", ["scelightmount"]),
     ("powergrid/shared_models/scelightmountsmall", ["scelightmountsmall"]),
+    # A small NEMA enclosure: its two clamp bands are the pole end; on a wall they are hidden in it.
+    ("technology/shared_models/nema_enclosure", ["nema_enclosure"]),
 ]
 
 # (blockstate value, model suffix, how much further back the pole's skin is than the large

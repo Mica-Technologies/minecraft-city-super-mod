@@ -1,0 +1,38 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/shared_models/nema_enclosure"
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "polefit": {
+      "large": {},
+      "thin": {
+        "model": "csm:technology/shared_models/nema_enclosure_thin"
+      },
+      "pedestal": {
+        "model": "csm:technology/shared_models/nema_enclosure_pedestal"
+      }
+    }
+  }
+}

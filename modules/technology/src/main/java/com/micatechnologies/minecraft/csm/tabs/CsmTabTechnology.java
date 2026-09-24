@@ -132,6 +132,7 @@ public class CsmTabTechnology extends CsmTab {
     initTabBlock(new BlockRotatableNSEWUDFactory("wapac", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("wapn", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("wg", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.312500, 0.000000, 0.187500, 0.687500, 0.562500, 0.812500), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory.PoleFitted("nema_enclosure", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.140625, 0.093750, 0.687500, 0.859375, 0.906250, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));
     // The Redstone TTS Module and its linker belong to this tab but ship in the optional Text to
     // Speech module, which requires this one. Naming their classes here would point Technology at
     // a module that depends on it, so they are resolved by name and only when that module is

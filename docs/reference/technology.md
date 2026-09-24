@@ -2,7 +2,7 @@
 
 Servers, routers, screens and consumer electronics.
 
-!!! info "45 blocks in this tab"
+!!! info "46 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -39,6 +39,7 @@ Servers, routers, screens and consumer electronics.
 | FourJay Speaker 2 | `csm:fjs2` |  |  |  |  |
 | JBL Control Speaker (Black) | `csm:jblc2` |  |  |  |  |
 | JBL Control Speaker (White) | `csm:jblc1` |  |  |  |  |
+| NEMA Enclosure | `csm:nema_enclosure` |  |  |  |  |
 | Polk Audio Speaker (Black) | `csm:polk_audio_speaker_black` |  |  |  |  |
 | Polk Audio Speaker (White) | `csm:polk_audio_speaker_white` |  |  |  |  |
 | Redstone TTS Module | `csm:redstonetts` | 2 | 10 | pickaxe | 1 |
