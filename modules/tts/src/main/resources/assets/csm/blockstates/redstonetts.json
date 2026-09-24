@@ -1,18 +1,15 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube_all",
-    "textures": {
-      "all": "csm:blocks/technology/redstone_tts_module",
-      "particle": "csm:blocks/technology/redstone_tts_module"
-    }
+    "model": "csm:technology/dectalk"
   },
   "variants": {
-    "inventory": [
-      {}
-    ],
-    "normal": [
-      {}
-    ]
+    "facing": {
+      "north": {},
+      "east": {"y": 90},
+      "south": {"y": 180},
+      "west": {"y": 270}
+    },
+    "inventory": [{}]
   }
 }

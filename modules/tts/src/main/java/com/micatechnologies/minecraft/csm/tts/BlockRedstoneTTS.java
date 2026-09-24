@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.tts;
 
 import com.micatechnologies.minecraft.csm.Csm;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,12 +21,13 @@ import net.minecraft.world.World;
 
 /**
  * Redstone-activated text-to-speech block. When powered by a redstone signal, this block speaks
- * a user-configured text string using the system TTS engine within a configurable radius.
+ * a user-configured text string using the system TTS engine within a configurable radius. It is
+ * dressed as a DECtalk Express, the speech synthesiser of the 1980s, and faces whoever places it.
  *
  * @author Mica Technologies
  * @since 1.0
  */
-public class BlockRedstoneTTS extends AbstractBlock implements ICsmTileEntityProvider {
+public class BlockRedstoneTTS extends AbstractBlockRotatableNSEW implements ICsmTileEntityProvider {
 
   public BlockRedstoneTTS() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255);

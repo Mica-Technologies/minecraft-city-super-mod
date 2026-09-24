@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "csm:blocks/technology/dectalk_case",
+    "north": "csm:blocks/technology/dectalk_face",
+    "south": "csm:blocks/technology/dectalk_case",
+    "east": "csm:blocks/technology/dectalk_case",
+    "west": "csm:blocks/technology/dectalk_knob_side",
+    "up": "csm:blocks/technology/dectalk_case",
+    "down": "csm:blocks/technology/dectalk_case"
+  }
+}
