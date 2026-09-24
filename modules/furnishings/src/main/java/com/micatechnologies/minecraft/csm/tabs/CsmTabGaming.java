@@ -5,12 +5,6 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.furniture.BlockBillardTable;
 import com.micatechnologies.minecraft.csm.furniture.BlockCardDeck;
 import com.micatechnologies.minecraft.csm.furniture.BlockDartBoard;
-import com.micatechnologies.minecraft.csm.furniture.BlockDollhouse1;
-import com.micatechnologies.minecraft.csm.furniture.BlockDollhouse2;
-import com.micatechnologies.minecraft.csm.furniture.BlockEtchASketch;
-import com.micatechnologies.minecraft.csm.furniture.BlockPlayingCards;
-import com.micatechnologies.minecraft.csm.furniture.BlockToyboxBoy;
-import com.micatechnologies.minecraft.csm.furniture.BlockToyboxGirl;
 import com.micatechnologies.minecraft.csm.novelties.BlockACAsteroids;
 import com.micatechnologies.minecraft.csm.novelties.BlockACBattleZone;
 import com.micatechnologies.minecraft.csm.novelties.BlockACCentipede;
@@ -75,11 +69,5 @@ public class CsmTabGaming extends CsmTab {
     // Games & Toys
     initTabBlock(BlockCardDeck.class, fmlPreInitializationEvent); // Card Deck
     initTabBlock(BlockDartBoard.class, fmlPreInitializationEvent); // Dart Board
-    initTabBlock(BlockDollhouse1.class, fmlPreInitializationEvent); // Dollhouse 1
-    initTabBlock(BlockDollhouse2.class, fmlPreInitializationEvent); // Dollhouse 2
-    initTabBlock(BlockEtchASketch.class, fmlPreInitializationEvent); // Etch A Sketch
-    initTabBlock(BlockPlayingCards.class, fmlPreInitializationEvent); // Playing Cards
-    initTabBlock(BlockToyboxBoy.class, fmlPreInitializationEvent); // Toybox (Boy)
-    initTabBlock(BlockToyboxGirl.class, fmlPreInitializationEvent); // Toybox (Girl)
   }
 }

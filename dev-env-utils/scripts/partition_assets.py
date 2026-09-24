@@ -531,7 +531,7 @@ def build_plan():
 def root_level_module(rel, owners):
     """Owner of a root-level models/block or textures/blocks file no blockstate reaches.
 
-    The root of ``models/block`` holds the crate/dollhouse OBJ family, whose file names match the
+    The root of ``models/block`` holds the crate OBJ family, whose file names match the
     Furniture and Novelties blocks that use them; anything else stays in Core.
     """
     stem = rel.rsplit("/", 1)[1]
@@ -539,7 +539,7 @@ def root_level_module(rel, owners):
     module = owners.get(stem)
     if module:
         return module
-    # The crate/dollhouse OBJ names drop the underscores their block ids carry.
+    # The crate OBJ names drop the underscores their block ids carry.
     squashed = stem.replace("_", "")
     for candidate, owner in owners.items():
         if owner == "furnishings" and candidate.replace("_", "") == squashed:

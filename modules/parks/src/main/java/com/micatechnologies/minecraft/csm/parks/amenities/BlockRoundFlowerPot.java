@@ -23,9 +23,12 @@ public class BlockRoundFlowerPot extends AbstractBlockRotatableNSEWUD {
     return "roundflowerpot";
   }
 
+  /**
+   * The box of the concrete planter model it draws, the same one {@code planter_concrete} has.
+   */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.781250, 0.000000, -0.781250, 0.781250, 1.292988, 0.781250);
+    return new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 0.875000, 0.937500);
   }
 
   @Override

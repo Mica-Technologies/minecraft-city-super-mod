@@ -23,6 +23,10 @@ turns it for the other three sides.
 
 The temporary fence stands 1.75 blocks, a real panel's six feet, so its upper part is drawn in the
 cell above with gen_scaffold's fitted UVs (a span there is shifted a whole block, never clamped).
+
+Files are written where they already live: the barbed-wire top's whole-segment model and its two
+textures are also what Furnishings' Barbed Wire block draws, so they sit in Core's tree at the same
+paths, and a file written into Building's tree would ship them twice.
 """
 
 import argparse
@@ -36,6 +40,7 @@ import tempfile
 
 from PIL import Image
 
+import csm_layout
 import gen_cmu
 import gen_scaffold as sc
 
@@ -471,17 +476,32 @@ def blockstates():
 # Writing
 # --------------------------------------------------------------------------------------------
 
-def write_all(tex_dir, model_dir, state_dir):
+REL_DIRS = {"tex": "textures/blocks/constructionsite", "model": "models/block/constructionsite",
+            "state": "blockstates"}
+
+
+def home(kind, filename):
+    """Where a generated file lives in the tree: Building's, unless another tree (Core) has it."""
+    return csm_layout.asset_for_write("building", REL_DIRS[kind] + "/" + filename)
+
+
+def write_all(tex_dir, model_dir, state_dir, in_tree=False):
+    """Writes every file into the three folders, or, with ``in_tree``, each where it lives."""
+    dirs = {"tex": tex_dir, "model": model_dir, "state": state_dir}
+
+    def dest(kind, filename):
+        return home(kind, filename) if in_tree else os.path.join(dirs[kind], filename)
+
     written = []
     os.makedirs(tex_dir, exist_ok=True)
     for name, img in sorted(textures().items()):
-        img.save(os.path.join(tex_dir, name + ".png"))
+        img.save(dest("tex", name + ".png"))
         written.append(("tex", name + ".png"))
     for name, body in sorted(models().items()):
-        gen_cmu._write_json(os.path.join(model_dir, name + ".json"), body)
+        gen_cmu._write_json(dest("model", name + ".json"), body)
         written.append(("model", name + ".json"))
     for name, body in sorted(blockstates().items()):
-        gen_cmu._write_json(os.path.join(state_dir, name + ".json"), body)
+        gen_cmu._write_json(dest("state", name + ".json"), body)
         written.append(("state", name + ".json"))
     return written
 
@@ -520,7 +540,7 @@ def main():
     roots = {"tex": TEX_DIR, "model": MODEL_DIR, "state": STATE_DIR}
 
     if not args.check:
-        written = write_all(TEX_DIR, MODEL_DIR, STATE_DIR)
+        written = write_all(TEX_DIR, MODEL_DIR, STATE_DIR, in_tree=True)
         print("Wrote %d fencing files" % len(written))
         return 0
 
@@ -532,7 +552,7 @@ def main():
         written = write_all(tmp_roots["tex"], tmp_roots["model"], tmp_roots["state"])
         drifted = []
         for kind, filename in written:
-            here = os.path.join(roots[kind], filename)
+            here = home(kind, filename)
             there = os.path.join(tmp_roots[kind], filename)
             if not os.path.exists(here) or not filecmp.cmp(here, there, shallow=False):
                 drifted.append(os.path.relpath(here, REPO))

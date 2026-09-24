@@ -17,7 +17,9 @@ meters. The code is in `modules/roads/.../streetscape/`. The player's guide is
 Moved in when the tab was made (registry names unchanged, so saved worlds keep them): the fire
 hydrant from Furnishings, and the Delineator Post, its yellow version and the Zebra Delineator
 from Traffic Accessories. The hydrant keeps its six-way rotation, because changing it to four
-would turn south-facing hydrants in existing worlds.
+would turn south-facing hydrants in existing worlds. It draws the same lathed hydrant OBJ as the
+NFPA-coloured ones below (red, silver caps), with their box; its class is its own only for that
+rotation.
 
 ## Settling
 

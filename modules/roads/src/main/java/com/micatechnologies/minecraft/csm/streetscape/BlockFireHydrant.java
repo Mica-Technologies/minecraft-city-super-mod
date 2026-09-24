@@ -43,9 +43,13 @@ public class BlockFireHydrant extends AbstractBlockRotatableNSEWUD
     return "firehydrant";
   }
 
+  /**
+   * The box of the Streetscape hydrant model it draws, the same one the {@code hydrant_*} blocks
+   * are given by {@code gen_streetscape_street_furniture.py}.
+   */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0.181250, 0.000000, 0.237500, 0.818750, 0.862500, 0.856250);
+    return new AxisAlignedBB(0.137500, 0.000000, 0.137500, 0.862500, 0.812500, 0.750000);
   }
 
   @Override

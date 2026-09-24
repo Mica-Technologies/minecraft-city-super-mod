@@ -387,7 +387,7 @@ def main():
 
     # Inventory-only copies, centred on the ORIGIN (0,0,0). Item-frame/GUI rotation pivots about the
     # model origin (unlike world placement, which pivots about the block centre), so an origin-
-    # centred model stays in view -- the same trick the furniture OBJs (anchor.obj) use. The world
+    # centred model stays in view -- the same trick the furniture OBJs use. The world
     # variants keep the 0..1 models; only the blockstate "inventory" variant points at these.
     for mesh, fname in ((build_short(), "miovision_360_inv.obj"),
                         (build_tall(), "miovision_360_tall_inv.obj")):

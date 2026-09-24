@@ -113,7 +113,7 @@ public final class CsmFabricatorCosts {
 
   /** Display-name words for furniture that is plainly metal rather than timber. */
   private static final String[] METAL_FURNITURE_WORDS = {
-      "hydrant", "anchor", "chain", "chains", "barbed", "radiator", "grill", "grate", "rail",
+      "hydrant", "chain", "chains", "barbed", "radiator", "grill", "grate", "rail",
   };
 
   /** Display-name words for novelties that are actually electronics. */
@@ -357,7 +357,7 @@ public final class CsmFabricatorCosts {
         || CsmBlockDisplayNames.hasWord(registryName, "card")) {
       return cost(FabricatorIngredient.any(MC_PAPER, 3));
     }
-    // Dollhouses, toyboxes, dart boards and the games tables are all woodwork.
+    // Dart boards and the games tables are woodwork.
     return cost(FabricatorIngredient.any(MC_PLANKS, 2),
         FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
   }

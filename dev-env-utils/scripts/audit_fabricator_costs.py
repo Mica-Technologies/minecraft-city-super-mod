@@ -52,8 +52,8 @@ POLE_NOUNS = {"pole", "mast", "crossarm", "standard", "post"}
 MOUNT_NOUNS = {"mount", "bracket", "backplate", "cover", "visor", "clamp", "hanger", "adapter",
                "coupler", "cap", "top", "base", "plate", "arm"}
 OPTICAL_WORDS = ["camera", "alpr", "radar", "lidar"]
-METAL_FURNITURE_WORDS = ["hydrant", "anchor", "chain", "chains", "barbed", "radiator", "grill",
-                         "grate", "rail"]
+METAL_FURNITURE_WORDS = ["hydrant", "chain", "chains", "barbed", "radiator", "grill", "grate",
+                         "rail"]
 ELECTRONIC_NOVELTY_WORDS = ["record", "player", "jukebox", "radio", "television", "tv"]
 
 

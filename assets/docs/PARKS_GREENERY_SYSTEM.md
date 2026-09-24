@@ -262,7 +262,9 @@ arm where it *is* joined.
 
 The Parks tab holds the nine items moved from Furniture & Novelties, with their registry ids
 unchanged: the swings, teeter totter, park trash can, water bubblers, bird bath and flower pots.
-Everything else there is written by `gen_park_amenities.py`.
+Everything else there is written by `gen_park_amenities.py`. The two flower pots keep their own
+classes (a six-way facing, which saved worlds store) but draw the Trees & Plants tab's
+`planter_concrete` model, with its box.
 
 - **Benches and picnic tables** (`BlockParkBench`) are one block of seat each, placed side by side
   into a run. `LEFT` and `RIGHT` (the sitter's, actual state) say whether the same block, facing the

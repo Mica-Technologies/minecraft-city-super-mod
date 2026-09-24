@@ -17,6 +17,7 @@
  */
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmRetiredNames;
 import com.micatechnologies.minecraft.csm.codeutils.CsmSoundRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
@@ -420,6 +421,33 @@ public class Csm {
   @SubscribeEvent
   public void ignoreMissingSounds(RegistryEvent.MissingMappings<SoundEvent> event) {
     CsmSoundRegistry.ignoreMissing(event);
+  }
+
+  /**
+   * Drops the blocks the mod retired on purpose from a world that still holds them, so they load
+   * as air rather than stopping the load with Forge's missing-entries prompt. Only the names in
+   * {@link CsmRetiredNames} are dropped; any other missing {@code csm:} block still gets the
+   * prompt, since that usually means a module is missing from the install.
+   *
+   * @param event the block registry's missing-mappings event
+   *
+   * @since 2026.9
+   */
+  @SubscribeEvent
+  public void ignoreRetiredBlocks(RegistryEvent.MissingMappings<Block> event) {
+    CsmRetiredNames.ignoreRetired(event);
+  }
+
+  /**
+   * The item half of {@link #ignoreRetiredBlocks}: a retired block's item block goes with it.
+   *
+   * @param event the item registry's missing-mappings event
+   *
+   * @since 2026.9
+   */
+  @SubscribeEvent
+  public void ignoreRetiredItems(RegistryEvent.MissingMappings<Item> event) {
+    CsmRetiredNames.ignoreRetired(event);
   }
 
   /**

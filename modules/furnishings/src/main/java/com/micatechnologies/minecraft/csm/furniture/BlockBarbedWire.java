@@ -23,9 +23,13 @@ public class BlockBarbedWire extends AbstractBlockRotatableNSEWUD {
     return "barbedwire";
   }
 
+  /**
+   * The cell the chain-link barbed-wire top model it draws fills: its V arms reach the cell's
+   * edges, and its top strand is 14.5 pixels up.
+   */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.514729, 0.000000, -0.500000, 0.525456, 1.325581, 0.500000);
+    return new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.906250, 1.000000);
   }
 
   @Override

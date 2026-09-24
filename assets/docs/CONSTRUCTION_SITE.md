@@ -117,6 +117,10 @@ in a straight run. Fences join their own family -- both temporary fences, both c
 - **The barbed wire is a strip of texture**, not geometry: a plane two pixels tall sampling the rows
   of `barbed_wire.png` the wire is drawn on (explicit UVs), because a barb in elements is eight
   boxes and a fence has dozens of barbs.
+- **The barbed top's whole-segment model is shared with Furnishings.** `barbed_top_inventory` and
+  its two textures (`barbed_wire`, `chainlink_post_galv`) are also what the Furniture tab's Barbed
+  Wire block draws, so they live in Core's tree at the same paths; `gen_fencing.py` writes each
+  file wherever it already is.
 - **The temporary fence's icon is scaled down** (`display.gui`): at 1.75 blocks, block/block's
   inventory view pushed it out of the top of the slot.
 - **The temporary fence's models turn ambient occlusion off** (`"ambientocclusion": false`).

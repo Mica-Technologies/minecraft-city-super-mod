@@ -12,7 +12,6 @@ Removed 2026-09-24:
 | Registry name | Name | Was in tab | Size (blocks) | Notes |
 |---|---|---|---|---|
 | `anchor` | Anchor | Furniture | 3.7 x 5 x 1.1 |  |
-| `barbedwire` | Barbed Wire | Furniture | 1 x 1.3 x 1 |  |
 | `cowhide` | Cowhide | Furniture | 2 x 2 x 1 |  |
 | `cookooclock` | Cuckoo Clock | Furniture | 0.5 x 1 x 0.5 | Worth revisiting with a model of our own. |
 | `cuttingboard` | Cutting Board | Furniture | 1.8 x 1.4 x 1.6 | Worth revisiting with a model of our own. |

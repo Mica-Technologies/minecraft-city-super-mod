@@ -139,10 +139,6 @@ redstone. All use `CUTOUT_MIPPED` render layer except arcade cabinets (`SOLID`).
 |---|---|---|
 | `airhockeytable` | Air Hockey Table | Gaming |
 | `coffeecup` | Coffee Cup | Novelties |
-| `creeperplush` | Creeper Plush | Novelties |
-| `gardengnome` | Garden Gnome | Novelties |
-| `goldbars` | Gold Bars | Novelties |
-| `goldenfurawardstrophy` | Golden Fur Awards Trophy | Novelties |
 | `nutcracker` | Nutcracker | Novelties |
 | `picnicbasket` | Picnic Basket | Novelties |
 | `pingpongtable` | Ping Pong Table | Gaming |
@@ -150,11 +146,7 @@ redstone. All use `CUTOUT_MIPPED` render layer except arcade cabinets (`SOLID`).
 | `pspapaginos` | Player Statue (PapaGinos) | Novelties |
 | `psthatcrazypandog` | Player Statue (AngelWingsPanda) | Novelties |
 | `pumpkins` | Pumpkins | Novelties |
-| `r2d2` | R2-D2 | Novelties |
-| `rubixcube` | Rubix Cube | Novelties |
 | `scarecrow` | Scarecrow | Novelties |
-| `shootingdummy` | Shooting Dummy | Novelties |
-| `singlepumpkin` | Single Pumpkin | Novelties |
 
 ## Sound Assets
 
@@ -176,14 +168,3 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 
 The xylophone and water dispensers/bubblers use only vanilla sounds
 (`SoundEvents.BLOCK_NOTE_XYLOPHONE` and `SoundEvents.ITEM_BOTTLE_FILL`).
-
-## Future Work
-
-The following Tier 3 enhancements are tracked in `assets/docs/agent_progress/LARGER_FEATURES_PLAN.md`:
-
-- **Rubik's Cube** (`rubixcube`) -- cycle texture states between scrambled and solved on
-  right-click
-- **Snow Globe** (currently in `furniture` package as `BlockSnowglobe`) -- spawn snow particles
-  on right-click
-- **R2-D2** (`r2d2`) -- play random beep/whistle sounds on right-click (requires new sound
-  assets)
