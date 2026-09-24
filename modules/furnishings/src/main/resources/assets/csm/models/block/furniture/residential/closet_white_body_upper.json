@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/residential/base/closet_body_upper",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/residential/white_v",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "louvre": "csm:blocks/furniture/residential/louvre_white"
+  }
+}

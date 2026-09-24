@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,upper=false": {
+      "model": "csm:furniture/residential/dresser_mirror_walnut_lower"
+    },
+    "facing=north,upper=true": {
+      "model": "csm:furniture/residential/dresser_mirror_walnut_upper"
+    },
+    "facing=east,upper=false": {
+      "model": "csm:furniture/residential/dresser_mirror_walnut_lower",
+      "y": 90
+    },
+    "facing=east,upper=true": {
+      "model": "csm:furniture/residential/dresser_mirror_walnut_upper",
+      "y": 90
+    },
+    "facing=south,upper=false": {
+      "model": "csm:furniture/residential/dresser_mirror_walnut_lower",
+      "y": 180
+    },
+    "facing=south,upper=true": {
+      "model": "csm:furniture/residential/dresser_mirror_walnut_upper",
+      "y": 180
+    },
+    "facing=west,upper=false": {
+      "model": "csm:furniture/residential/dresser_mirror_walnut_lower",
+      "y": 270
+    },
+    "facing=west,upper=true": {
+      "model": "csm:furniture/residential/dresser_mirror_walnut_upper",
+      "y": 270
+    }
+  }
+}

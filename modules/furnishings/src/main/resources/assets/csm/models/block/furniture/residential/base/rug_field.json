@@ -1,0 +1,32 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "rug": "csm:blocks/furniture/residential/rug_navy",
+    "particle": "#rug"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        0.75,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#rug",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

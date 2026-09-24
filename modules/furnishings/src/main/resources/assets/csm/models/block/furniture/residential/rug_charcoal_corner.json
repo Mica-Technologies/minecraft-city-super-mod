@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/residential/base/rug_corner",
+  "textures": {
+    "rug": "csm:blocks/furniture/residential/rug_charcoal",
+    "rug_border": "csm:blocks/furniture/residential/rug_border_charcoal"
+  }
+}

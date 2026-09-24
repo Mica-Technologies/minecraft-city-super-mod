@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,part=0": {
+      "model": "csm:furniture/residential/day_bed_walnut_cell0"
+    },
+    "facing=north,part=1": {
+      "model": "csm:furniture/residential/day_bed_walnut_cell1"
+    },
+    "facing=east,part=0": {
+      "model": "csm:furniture/residential/day_bed_walnut_cell0",
+      "y": 90
+    },
+    "facing=east,part=1": {
+      "model": "csm:furniture/residential/day_bed_walnut_cell1",
+      "y": 90
+    },
+    "facing=south,part=0": {
+      "model": "csm:furniture/residential/day_bed_walnut_cell0",
+      "y": 180
+    },
+    "facing=south,part=1": {
+      "model": "csm:furniture/residential/day_bed_walnut_cell1",
+      "y": 180
+    },
+    "facing=west,part=0": {
+      "model": "csm:furniture/residential/day_bed_walnut_cell0",
+      "y": 270
+    },
+    "facing=west,part=1": {
+      "model": "csm:furniture/residential/day_bed_walnut_cell1",
+      "y": 270
+    }
+  }
+}

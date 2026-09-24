@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.furniture.residential.BedSleepClientHandler;
 import com.micatechnologies.minecraft.csm.furniture.residential.ResidentialFabricatorRules;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import com.micatechnologies.minecraft.csm.novelties.ArcadeHighScoreHandler;
@@ -11,6 +12,7 @@ import com.micatechnologies.minecraft.csm.novelties.ArcadeHighScorePacket;
 import com.micatechnologies.minecraft.csm.novelties.BlockHd;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
 import com.micatechnologies.minecraft.csm.novelties.NoveltiesGuiProvider;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -69,6 +71,12 @@ public class CsmFurnishings {
     // The Residential tab is this module's own, so Core prices it through the rule it is given.
     CsmFabricatorCosts.registerRule(ResidentialFabricatorRules.TAB_ID,
         ResidentialFabricatorRules::price);
+
+    // A sleeper in a Residential bed is laid out along it on the client (the handler touches a
+    // client-only field, so a dedicated server never loads it).
+    if (event.getSide().isClient()) {
+      MinecraftForge.EVENT_BUS.register(new BedSleepClientHandler());
+    }
 
     // A lambda, not BlockHd::clearClientCaches: that method is @SideOnly(CLIENT), so it is
     // stripped from the class on a dedicated server and a method reference — which resolves the

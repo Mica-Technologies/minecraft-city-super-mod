@@ -242,6 +242,32 @@ The kitchen's appliances, the things on its counters and the tableware follow, d
   and the box moves with it. The kettle whistles and steams on right-click, the mixer whirrs. The
   cookie jar holds nine stacks of cookies and nothing else (`TileEntityCookieJar`).
 
+The bedroom, study and nursery follow, drawn by `gen_furniture_bedroom.py`:
+
+- `BlockResidentialBed` + `BedLayout` (single, double/king, bunk, day bed): beds are slept in
+  through Forge's bed hooks (`isBed`, `getBedDirection`, `getBedSpawnPosition`,
+  `setBedOccupied`, a no-op: whether a bed is taken is read off the players sleeping in it), so
+  night skipping and respawning work as in a vanilla bed. A bed fills two or four blocks; the
+  cell is stored with the facing (`part`), placed as one by its own `ItemBlock` (which refuses
+  if any cell is taken) and broken as one; only cell 0 drops it. The sleeping position is the
+  head cell of the side (or tier) clicked, so a double, king or bunk sleeps two. In the Nether
+  or End a bed says so rather than exploding. A day bed sits by day (when sleeping is refused
+  for the time) and sleeps at night.
+- Vanilla lays a sleeper out only in a `BlockHorizontal`. The server therefore moves a sleeper
+  onto the pillow, and `BedSleepClientHandler` (client-only, registered by the module) sets the
+  body's render offset each tick: feet 1.8 blocks from the head, at the mattress's height (a top
+  bunk's is not a vanilla bed's). The mattress heights in `BedLayout` are the generator's.
+- `BlockResidentialTall` generalises the refrigerator's two-block placing and breaking, with
+  optional storage: the refrigerator now extends it, as do the dresser with mirror, wardrobe
+  (27), vanity (9) and standing mirror (none). `BlockCloset` adds left/right joining.
+- The nightstand (9), dresser (27), blanket chest (18), cradle with drawers and changing table
+  (9 each) are `BlockResidentialStorage` with drawer or door sounds; the desk joins into runs,
+  9 slots a block. Small counter pieces rest on the nightstand, dresser, desk and blanket chest
+  (`SurfaceRest` maps them onto the side table, sideboard, table and coffee table heights).
+- The desk chair, rocking chair and vanity stool sit on `EntityCsmSeat`; the crib is decorative.
+- `BlockRug`: a sixteenth thick, joins on all four sides; the bound border and its corners are
+  drawn only on open sides.
+
 Every storage block implements `IResidentialStorage` (slots, where the slots are, open and close
 sounds), shares `ResidentialStorageHelper` and the one storage screen, and sounds its doors when
 the first player opens it and the last closes it.

@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/residential/base/bed_single_cell1",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/oatmeal",
+    "fabric_dark": "csm:blocks/furniture/residential/oatmeal_dark",
+    "duvet": "csm:blocks/furniture/residential/duvet_oatmeal",
+    "tufted": "csm:blocks/furniture/residential/tufted_oatmeal"
+  }
+}

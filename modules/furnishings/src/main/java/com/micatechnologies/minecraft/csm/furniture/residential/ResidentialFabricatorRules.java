@@ -12,7 +12,7 @@ import net.minecraft.block.Block;
  * Furniture tab's is, in proportion to how much of it there is; upholstery adds wool, a
  * bookcase its books, and the cafe table's cast iron base an iron ingot. The kitchen adds stone
  * for its countertops and prices its appliances as sheet metal and electrics, its tableware as
- * clay or glass.
+ * clay or glass. The bedroom's beds are wool and planks, as a vanilla bed is.
  *
  * <p>Priced by registry name, whose piece is its first words and whose finish is its last
  * ({@code sofa_corner_navy}). {@code audit_fabricator_costs.py} mirrors this.</p>
@@ -32,6 +32,7 @@ public final class ResidentialFabricatorRules {
   private static final String MC_GLASS = "minecraft:glass";
   private static final String MC_CLAY = "minecraft:clay_ball";
   private static final String MC_CAKE = "minecraft:cake";
+  private static final String MC_GLASS_PANE = "minecraft:glass_pane";
 
   private ResidentialFabricatorRules() {
   }
@@ -49,6 +50,10 @@ public final class ResidentialFabricatorRules {
     List<FabricatorIngredient> kitchen = kitchen(registryName);
     if (kitchen != null) {
       return kitchen;
+    }
+    List<FabricatorIngredient> bedroom = bedroom(registryName);
+    if (bedroom != null) {
+      return bedroom;
     }
     if (registryName.startsWith("sofa_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
@@ -142,6 +147,75 @@ public final class ResidentialFabricatorRules {
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
     }
+    return null;
+  }
+
+  /**
+   * The bedroom and nursery: a bed is wool and planks as a vanilla bed is (three of each for a
+   * single, twice that for a double, a king or a bunk); the case pieces are timber and fittings
+   * in proportion to their size, with glass for a mirror; a rug is wool.
+   *
+   * @param registryName the registry name
+   *
+   * @return the cost, or null if it is not a bedroom piece
+   */
+  @Nullable
+  private static List<FabricatorIngredient> bedroom(String registryName) {
+    if (registryName.startsWith("bed_single_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.any(MC_WOOL, 3));
+    }
+    if (registryName.startsWith("bed_double_") || registryName.startsWith("bed_king_")
+        || registryName.startsWith("bunk_bed_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 6),
+          FabricatorIngredient.any(MC_WOOL, 6));
+    }
+    if (registryName.startsWith("day_bed_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4),
+          FabricatorIngredient.any(MC_WOOL, 3));
+    }
+    if (registryName.startsWith("wardrobe_") || registryName.startsWith("closet_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 8),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("dresser_mirror_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 6),
+          FabricatorIngredient.any(MC_GLASS_PANE, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("dresser_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 6),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("vanity_stool_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 1),
+          FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("vanity_") || registryName.startsWith("standing_mirror_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.any(MC_GLASS_PANE, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("desk_chair_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1),
+          FabricatorIngredient.any(MC_WOOL, 2));
+    }
+    if (registryName.startsWith("desk_") || registryName.startsWith("blanket_chest_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("crib_") || registryName.startsWith("cradle_with_drawers_")
+        || registryName.startsWith("changing_table_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4),
+          FabricatorIngredient.any(MC_WOOL, 1), FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("rocking_chair_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3));
+    }
+    if (registryName.startsWith("rug_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 2));
+    }
+    // The nightstand falls through to the chairs' and small tables' cost.
     return null;
   }
 

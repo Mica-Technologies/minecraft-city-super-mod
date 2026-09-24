@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/residential/base/bunk_bed_cell3",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/walnut",
+    "wood_v": "csm:blocks/furniture/residential/walnut_v",
+    "edge": "csm:blocks/furniture/residential/walnut_edge"
+  }
+}

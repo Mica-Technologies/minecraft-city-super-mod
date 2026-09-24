@@ -438,6 +438,32 @@ def cost_for(registry, info, ancestors):
             return ("SHEET_METAL x4", "CONTROL_BOARD", "WIRING_HARNESS")
         if registry.startswith("chest_freezer_"):
             return ("SHEET_METAL x3", "CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith("bed_single_"):
+            return ("planks x3", "wool x3")
+        if registry.startswith(("bed_double_", "bed_king_", "bunk_bed_")):
+            return ("planks x6", "wool x6")
+        if registry.startswith("day_bed_"):
+            return ("planks x4", "wool x3")
+        if registry.startswith(("wardrobe_", "closet_")):
+            return ("planks x8", "FASTENER_KIT")
+        if registry.startswith("dresser_mirror_"):
+            return ("planks x6", "glass_pane x2", "FASTENER_KIT")
+        if registry.startswith("dresser_"):
+            return ("planks x6", "FASTENER_KIT")
+        if registry.startswith("vanity_stool_"):
+            return ("planks", "wool")
+        if registry.startswith(("vanity_", "standing_mirror_")):
+            return ("planks x3", "glass_pane x3", "FASTENER_KIT")
+        if registry.startswith("desk_chair_"):
+            return ("iron_ingot", "wool x2")
+        if registry.startswith(("desk_", "blanket_chest_")):
+            return ("planks x4", "FASTENER_KIT")
+        if registry.startswith(("crib_", "cradle_with_drawers_", "changing_table_")):
+            return ("planks x4", "wool", "FASTENER_KIT")
+        if registry.startswith("rocking_chair_"):
+            return ("planks x3",)
+        if registry.startswith("rug_"):
+            return ("wool x2",)
         if registry.startswith("sofa_"):
             return ("planks x2", "wool x3")
         if registry.startswith("armchair_"):

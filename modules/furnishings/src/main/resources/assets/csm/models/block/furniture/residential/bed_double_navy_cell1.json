@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/residential/base/bed_double_cell1",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/navy",
+    "fabric_dark": "csm:blocks/furniture/residential/navy_dark",
+    "duvet": "csm:blocks/furniture/residential/duvet_navy",
+    "tufted": "csm:blocks/furniture/residential/tufted_navy"
+  }
+}

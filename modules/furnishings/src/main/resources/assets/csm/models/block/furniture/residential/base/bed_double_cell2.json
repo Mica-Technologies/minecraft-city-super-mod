@@ -1,0 +1,213 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "duvet": "csm:blocks/furniture/residential/duvet_navy",
+    "fabric_dark": "csm:blocks/furniture/residential/charcoal_dark",
+    "leg": "csm:blocks/furniture/residential/walnut_v",
+    "mattress": "csm:blocks/furniture/residential/bed_ticking",
+    "sheet": "csm:blocks/furniture/residential/bed_sheet",
+    "particle": "#fabric_dark"
+  },
+  "elements": [
+    {
+      "from": [
+        4.25,
+        2.5,
+        0.75
+      ],
+      "to": [
+        16,
+        5.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fabric_dark",
+          "uv": [
+            0,
+            10.5,
+            11.75,
+            13.5
+          ]
+        },
+        "west": {
+          "texture": "#fabric_dark",
+          "uv": [
+            0.75,
+            10.5,
+            16,
+            13.5
+          ]
+        },
+        "up": {
+          "texture": "#fabric_dark",
+          "uv": [
+            4.25,
+            0.75,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#fabric_dark",
+          "uv": [
+            4.25,
+            0,
+            16,
+            15.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.75,
+        0,
+        1.25
+      ],
+      "to": [
+        6.25,
+        2.5,
+        2.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leg",
+          "uv": [
+            9.75,
+            13.5,
+            11.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#leg",
+          "uv": [
+            4.75,
+            13.5,
+            6.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#leg",
+          "uv": [
+            13.25,
+            13.5,
+            14.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#leg",
+          "uv": [
+            1.25,
+            13.5,
+            2.75,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#leg",
+          "uv": [
+            4.75,
+            13.25,
+            6.25,
+            14.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.5,
+        5.5,
+        1.5
+      ],
+      "to": [
+        16,
+        9,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#mattress",
+          "uv": [
+            0,
+            7,
+            11.5,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#mattress",
+          "uv": [
+            1.5,
+            7,
+            16,
+            10.5
+          ]
+        },
+        "up": {
+          "texture": "#sheet",
+          "uv": [
+            4.5,
+            1.5,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.0,
+        6.5,
+        0.5
+      ],
+      "to": [
+        16,
+        9.6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#duvet",
+          "uv": [
+            0,
+            6.4,
+            12.0,
+            9.5
+          ]
+        },
+        "west": {
+          "texture": "#duvet",
+          "uv": [
+            0.5,
+            6.4,
+            16,
+            9.5
+          ]
+        },
+        "up": {
+          "texture": "#duvet",
+          "uv": [
+            4.0,
+            0.5,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#duvet",
+          "uv": [
+            4.0,
+            0,
+            16,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}

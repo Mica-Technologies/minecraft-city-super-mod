@@ -644,6 +644,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   drawn once per surface it can stand on (`SurfaceRest`, dropped to sit on a counter or table),
   its UVs fitted before the drop; `--check`, `--fragments`. The appliances run on the
   `furniture.appliance` machine framework (NOVELTIES_SYSTEM.md, Residential Furniture)
+- `gen_furniture_bedroom.py` -- the bedroom, study and nursery, importing the residential and
+  kitchen generators: beds (single, double, king in four fabrics; day bed and bunk in the wood
+  finishes) drawn whole in `BedLayout`'s frame and cut at the block lines into one model per
+  cell, the two-block pieces (dresser with mirror, wardrobe, standing mirror, vanity, the
+  joining white closet) cut into halves, the one-block storage and seats, and rugs whose border
+  is drawn only on an open side (multipart `OR` corners); `--check`, `--fragments`. The mattress
+  heights must match `BedLayout.java`
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

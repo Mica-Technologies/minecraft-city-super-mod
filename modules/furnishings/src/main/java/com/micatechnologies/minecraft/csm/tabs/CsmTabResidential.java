@@ -2,9 +2,11 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.furniture.residential.BedLayout;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBookcase;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBuiltInAppliance;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockChestFreezer;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockCloset;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCookieJar;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterAppliance;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterPiece;
@@ -15,8 +17,11 @@ import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCorn
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenLight;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenSink;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockRefrigerator;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialBed;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialFurniture;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialTall;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockRug;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockSofa;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockSofaCorner;
 import com.micatechnologies.minecraft.csm.furniture.residential.ItemResidentialFood;
@@ -37,9 +42,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * stands, sideboards, armchairs and sofas), each in three wood finishes or four fabrics, then the
  * kitchen (cabinets, sink, island, hoods, lights, refrigerators, freezer), then its working
  * appliances, the things on its counters and the tableware, and the food and drink the
- * appliances make. The lines below are printed by {@code gen_furniture_residential.py
+ * appliances make; then the bedroom, study and nursery. The lines below are printed by {@code gen_furniture_residential.py
  * --fragments}, {@code gen_furniture_kitchen.py --fragments} and
- * {@code gen_furniture_appliances.py --fragments}.
+ * {@code gen_furniture_appliances.py --fragments} and {@code gen_furniture_bedroom.py --fragments}.
  *
  * @version 1.0
  * @since 2026.9
@@ -270,5 +275,114 @@ public class CsmTabResidential extends CsmTab {
     initTabItem(new ItemResidentialFood("toast", 6, 0.75F, false, null));
     initTabItem(new ItemResidentialFood("smoothie", 4, 0.6F, true, null));
     initTabItem(new ItemResidentialFood("coffee", 1, 0.2F, true, new PotionEffect(MobEffects.SPEED, 600, 0)));
+
+    // ---- Bedroom, study and nursery ----
+    // Single Bed
+    initTabBlock(new BlockResidentialBed("bed_single_charcoal", BedLayout.SINGLE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_single_navy", BedLayout.SINGLE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_single_oatmeal", BedLayout.SINGLE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_single_red", BedLayout.SINGLE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+
+    // Double Bed
+    initTabBlock(new BlockResidentialBed("bed_double_charcoal", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_double_navy", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_double_oatmeal", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_double_red", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
+
+    // King Bed
+    initTabBlock(new BlockResidentialBed("bed_king_charcoal", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_king_navy", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_king_oatmeal", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_king_red", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+
+    // Day Bed
+    initTabBlock(new BlockResidentialBed("day_bed_oak", BedLayout.DAY, new int[][]{{0, 0, 1, 16, 7, 15}, {0, 0, 1, 16, 7, 15}}, false));
+    initTabBlock(new BlockResidentialBed("day_bed_walnut", BedLayout.DAY, new int[][]{{0, 0, 1, 16, 7, 15}, {0, 0, 1, 16, 7, 15}}, false));
+    initTabBlock(new BlockResidentialBed("day_bed_white", BedLayout.DAY, new int[][]{{0, 0, 1, 16, 7, 15}, {0, 0, 1, 16, 7, 15}}, false));
+
+    // Bunk Bed
+    initTabBlock(new BlockResidentialBed("bunk_bed_oak", BedLayout.BUNK, new int[][]{{0, 0, 0, 16, 6, 16}, {0, 0, 0, 16, 6, 16}, {0, 1, 0, 16, 5, 16}, {0, 1, 0, 16, 5, 16}}, false));
+    initTabBlock(new BlockResidentialBed("bunk_bed_walnut", BedLayout.BUNK, new int[][]{{0, 0, 0, 16, 6, 16}, {0, 0, 0, 16, 6, 16}, {0, 1, 0, 16, 5, 16}, {0, 1, 0, 16, 5, 16}}, false));
+    initTabBlock(new BlockResidentialBed("bunk_bed_white", BedLayout.BUNK, new int[][]{{0, 0, 0, 16, 6, 16}, {0, 0, 0, 16, 6, 16}, {0, 1, 0, 16, 5, 16}, {0, 1, 0, 16, 5, 16}}, false));
+
+    // Nightstand
+    initTabBlock(new BlockResidentialStorage("nightstand_oak", new int[]{2, 0, 3, 14, 9, 16}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("nightstand_walnut", new int[]{2, 0, 3, 14, 9, 16}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("nightstand_white", new int[]{2, 0, 3, 14, 9, 16}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+
+    // Dresser
+    initTabBlock(new BlockResidentialStorage("dresser_oak", new int[]{0, 0, 4, 16, 14, 16}, 27, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("dresser_walnut", new int[]{0, 0, 4, 16, 14, 16}, 27, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("dresser_white", new int[]{0, 0, 4, 16, 14, 16}, 27, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+
+    // Dresser with Mirror
+    initTabBlock(new BlockResidentialTall("dresser_mirror_oak", new int[]{0, 0, 4, 16, 29, 16}, false, 27, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialTall("dresser_mirror_walnut", new int[]{0, 0, 4, 16, 29, 16}, false, 27, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialTall("dresser_mirror_white", new int[]{0, 0, 4, 16, 29, 16}, false, 27, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+
+    // Wardrobe
+    initTabBlock(new BlockResidentialTall("wardrobe_oak", new int[]{0, 0, 2, 16, 30, 16}, false, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockResidentialTall("wardrobe_walnut", new int[]{0, 0, 2, 16, 30, 16}, false, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockResidentialTall("wardrobe_white", new int[]{0, 0, 2, 16, 30, 16}, false, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+
+    // Closet
+    initTabBlock(new BlockCloset("closet_white", new int[]{0, 0, 3, 16, 32, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+
+    // Blanket Chest
+    initTabBlock(new BlockResidentialStorage("blanket_chest_oak", new int[]{1, 0, 4, 15, 7, 13}, 18, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockResidentialStorage("blanket_chest_walnut", new int[]{1, 0, 4, 15, 7, 13}, 18, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockResidentialStorage("blanket_chest_white", new int[]{1, 0, 4, 15, 7, 13}, 18, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+
+    // Desk
+    initTabBlock(new BlockResidentialStorage("desk_oak", new int[]{0, 0, 3, 16, 12, 16}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("desk_walnut", new int[]{0, 0, 3, 16, 12, 16}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("desk_white", new int[]{0, 0, 3, 16, 12, 16}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+
+    // Desk Chair
+    initTabBlock(new BlockResidentialFurniture("desk_chair_charcoal", new int[]{3, 0, 3, 13, 16, 14}, true, 8, 0.5, 0));
+    initTabBlock(new BlockResidentialFurniture("desk_chair_navy", new int[]{3, 0, 3, 13, 16, 14}, true, 8, 0.5, 0));
+    initTabBlock(new BlockResidentialFurniture("desk_chair_oatmeal", new int[]{3, 0, 3, 13, 16, 14}, true, 8, 0.5, 0));
+    initTabBlock(new BlockResidentialFurniture("desk_chair_red", new int[]{3, 0, 3, 13, 16, 14}, true, 8, 0.5, 0));
+
+    // Standing Mirror
+    initTabBlock(new BlockResidentialTall("standing_mirror_oak", new int[]{3, 0, 5, 13, 28, 11}, false, 0, null, null));
+    initTabBlock(new BlockResidentialTall("standing_mirror_walnut", new int[]{3, 0, 5, 13, 28, 11}, false, 0, null, null));
+    initTabBlock(new BlockResidentialTall("standing_mirror_white", new int[]{3, 0, 5, 13, 28, 11}, false, 0, null, null));
+
+    // Vanity Table
+    initTabBlock(new BlockResidentialTall("vanity_oak", new int[]{0, 0, 5, 16, 26, 16}, false, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialTall("vanity_walnut", new int[]{0, 0, 5, 16, 26, 16}, false, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialTall("vanity_white", new int[]{0, 0, 5, 16, 26, 16}, false, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+
+    // Vanity Stool
+    initTabBlock(new BlockResidentialFurniture("vanity_stool_oak", new int[]{4, 0, 4, 12, 8, 12}, false, 8.25, 0, 0));
+    initTabBlock(new BlockResidentialFurniture("vanity_stool_walnut", new int[]{4, 0, 4, 12, 8, 12}, false, 8.25, 0, 0));
+    initTabBlock(new BlockResidentialFurniture("vanity_stool_white", new int[]{4, 0, 4, 12, 8, 12}, false, 8.25, 0, 0));
+
+    // Crib
+    initTabBlock(new BlockResidentialFurniture("crib_oak", new int[]{0, 0, 3, 16, 14, 14}, false));
+    initTabBlock(new BlockResidentialFurniture("crib_walnut", new int[]{0, 0, 3, 16, 14, 14}, false));
+    initTabBlock(new BlockResidentialFurniture("crib_white", new int[]{0, 0, 3, 16, 14, 14}, false));
+
+    // Cradle with Drawers
+    initTabBlock(new BlockResidentialStorage("cradle_with_drawers_oak", new int[]{1, 0, 3, 15, 13, 14}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("cradle_with_drawers_walnut", new int[]{1, 0, 3, 15, 13, 14}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("cradle_with_drawers_white", new int[]{1, 0, 3, 15, 13, 14}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+
+    // Changing Table
+    initTabBlock(new BlockResidentialStorage("changing_table_oak", new int[]{0, 0, 3, 16, 15, 15}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("changing_table_walnut", new int[]{0, 0, 3, 16, 15, 15}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+    initTabBlock(new BlockResidentialStorage("changing_table_white", new int[]{0, 0, 3, 16, 15, 15}, 9, FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE));
+
+    // Rocking Chair
+    initTabBlock(new BlockResidentialFurniture("rocking_chair_oak", new int[]{2, 0, 1, 14, 15, 15}, false, 7.5, 0.5, 0));
+    initTabBlock(new BlockResidentialFurniture("rocking_chair_walnut", new int[]{2, 0, 1, 14, 15, 15}, false, 7.5, 0.5, 0));
+    initTabBlock(new BlockResidentialFurniture("rocking_chair_white", new int[]{2, 0, 1, 14, 15, 15}, false, 7.5, 0.5, 0));
+
+    // Rug
+    initTabBlock(new BlockRug("rug_charcoal"));
+    initTabBlock(new BlockRug("rug_navy"));
+    initTabBlock(new BlockRug("rug_oatmeal"));
+    initTabBlock(new BlockRug("rug_red"));
   }
 }

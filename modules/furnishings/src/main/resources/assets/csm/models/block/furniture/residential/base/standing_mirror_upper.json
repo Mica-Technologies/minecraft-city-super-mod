@@ -1,0 +1,362 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "mirror": "csm:blocks/furniture/residential/mirror_glass",
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        3.25,
+        0,
+        7.5
+      ],
+      "to": [
+        4.25,
+        10,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood_v",
+          "uv": [
+            11.75,
+            6,
+            12.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wood_v",
+          "uv": [
+            3.25,
+            6,
+            4.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wood_v",
+          "uv": [
+            7.5,
+            6,
+            8.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wood_v",
+          "uv": [
+            7.5,
+            6,
+            8.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wood_v",
+          "uv": [
+            3.25,
+            7.5,
+            4.25,
+            8.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        11.75,
+        0,
+        7.5
+      ],
+      "to": [
+        12.75,
+        10,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood_v",
+          "uv": [
+            3.25,
+            6,
+            4.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wood_v",
+          "uv": [
+            11.75,
+            6,
+            12.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wood_v",
+          "uv": [
+            7.5,
+            6,
+            8.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wood_v",
+          "uv": [
+            7.5,
+            6,
+            8.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wood_v",
+          "uv": [
+            11.75,
+            7.5,
+            12.75,
+            8.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.25,
+        0,
+        7.25
+      ],
+      "to": [
+        5.0,
+        12,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            11.0,
+            4,
+            11.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            4.25,
+            4,
+            5.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wood_v",
+          "uv": [
+            7.25,
+            4,
+            8.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wood_v",
+          "uv": [
+            7.25,
+            4,
+            8.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            4.25,
+            7.25,
+            5.0,
+            8.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        11.0,
+        0,
+        7.25
+      ],
+      "to": [
+        11.75,
+        12,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            4.25,
+            4,
+            5.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            11.0,
+            4,
+            11.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wood_v",
+          "uv": [
+            7.25,
+            4,
+            8.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wood_v",
+          "uv": [
+            7.25,
+            4,
+            8.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            11.0,
+            7.25,
+            11.75,
+            8.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.0,
+        11.25,
+        7.25
+      ],
+      "to": [
+        11.0,
+        12,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            5.0,
+            4,
+            11.0,
+            4.75
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            5.0,
+            4,
+            11.0,
+            4.75
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            7.25,
+            4,
+            8.75,
+            4.75
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            7.25,
+            4,
+            8.75,
+            4.75
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            5.0,
+            7.25,
+            11.0,
+            8.75
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            5.0,
+            7.25,
+            11.0,
+            8.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.0,
+        0,
+        7.75
+      ],
+      "to": [
+        11.0,
+        11.25,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#mirror",
+          "uv": [
+            5.0,
+            4.75,
+            11.0,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.0,
+        0,
+        8.0
+      ],
+      "to": [
+        11.0,
+        11.25,
+        8.75
+      ],
+      "faces": {
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            5.0,
+            4.75,
+            11.0,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

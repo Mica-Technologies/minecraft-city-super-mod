@@ -1,0 +1,50 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "rug_border": "csm:blocks/furniture/residential/rug_border_navy",
+    "particle": "#rug_border"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        3,
+        1,
+        3
+      ],
+      "faces": {
+        "up": {
+          "texture": "#rug_border",
+          "uv": [
+            0,
+            0,
+            3,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#rug_border",
+          "uv": [
+            13,
+            15,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#rug_border",
+          "uv": [
+            0,
+            15,
+            3,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

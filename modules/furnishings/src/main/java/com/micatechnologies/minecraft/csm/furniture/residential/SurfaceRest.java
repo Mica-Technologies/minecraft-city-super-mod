@@ -21,15 +21,15 @@ public enum SurfaceRest implements IStringSerializable {
   FLOOR(0),
   /** A kitchen countertop, an island, the range, the dishwasher, the chest freezer's lid. */
   COUNTER(1.5),
-  /** A sideboard. */
+  /** A sideboard, a dresser. */
   SIDEBOARD(2),
-  /** A dining table or a cafe table. */
+  /** A dining table, a cafe table, a desk. */
   TABLE(4),
-  /** A side table. */
+  /** A side table, a nightstand. */
   SIDE_TABLE(7),
   /** A TV stand. */
   TV_STAND(8),
-  /** A coffee table. */
+  /** A coffee table, a blanket chest. */
   COFFEE_TABLE(9);
 
   private final double drop;
@@ -86,6 +86,19 @@ public enum SurfaceRest implements IStringSerializable {
       }
       if (name.startsWith("sideboard_")) {
         return SIDEBOARD;
+      }
+      // The bedroom's tops are drawn at heights the living room already has.
+      if (name.startsWith("nightstand_")) {
+        return SIDE_TABLE;
+      }
+      if (name.startsWith("dresser_") && !name.startsWith("dresser_mirror_")) {
+        return SIDEBOARD;
+      }
+      if (name.startsWith("desk_") && !name.startsWith("desk_chair_")) {
+        return TABLE;
+      }
+      if (name.startsWith("blanket_chest_")) {
+        return COFFEE_TABLE;
       }
     }
     return FLOOR;

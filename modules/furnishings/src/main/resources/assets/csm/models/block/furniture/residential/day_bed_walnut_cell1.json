@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/residential/base/day_bed_cell1",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/walnut",
+    "wood_v": "csm:blocks/furniture/residential/walnut_v",
+    "edge": "csm:blocks/furniture/residential/walnut_edge",
+    "fabric": "csm:blocks/furniture/residential/oatmeal",
+    "fabric_dark": "csm:blocks/furniture/residential/oatmeal_dark"
+  }
+}
