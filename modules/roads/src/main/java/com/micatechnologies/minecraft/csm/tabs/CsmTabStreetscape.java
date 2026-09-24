@@ -4,6 +4,8 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.streetscape.BlockBollardFlexible;
 import com.micatechnologies.minecraft.csm.streetscape.BlockFireHydrant;
+import com.micatechnologies.minecraft.csm.streetscape.BlockMailbox;
+import com.micatechnologies.minecraft.csm.streetscape.BlockMailboxCurbside;
 import com.micatechnologies.minecraft.csm.streetscape.BlockNewsRack;
 import com.micatechnologies.minecraft.csm.streetscape.BlockParkingMeter;
 import com.micatechnologies.minecraft.csm.streetscape.BlockStreetCover;
@@ -331,5 +333,73 @@ public class CsmTabStreetscape extends CsmTab {
     initTabBlock(new BlockNewsRack("news_rack_free", new UtilityBoxSpec(1, 1, 2,
         new AxisAlignedBB(0.000000, 0.000000, 0.162500, 1.000000, 1.500000, 0.837500),
         null)));
+
+    // Mailboxes (gen_streetscape_mailboxes.py --fragments).
+    initTabBlock(new BlockMailbox("mailbox_collection_blue", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.187500, 0.000000, 0.112500, 0.812500, 1.562500, 0.812500),
+        null),
+        new float[][]{{3f, 3f, 13f, 20f}},
+        new int[]{27},
+        new String[]{"Mailbox"}));
+    initTabBlock(new BlockMailbox("mailbox_cluster_gray", new UtilityBoxSpec(2, 1, 2,
+        new AxisAlignedBB(-0.781250, 0.000000, 0.156250, 0.781250, 1.937500, 0.843750),
+        null),
+        new float[][]{{5.75f, 25.02f, 10.81f, 28.87f}, {0.23f, 25.02f, 5.29f, 28.87f},
+            {-5.29f, 25.02f, -0.23f, 28.87f}, {-10.81f, 25.02f, -5.75f, 28.87f},
+            {5.75f, 20.75f, 10.81f, 24.6f}, {0.23f, 20.75f, 5.29f, 24.6f},
+            {-5.29f, 20.75f, -0.23f, 24.6f}, {-10.81f, 20.75f, -5.75f, 24.6f},
+            {5.75f, 16.48f, 10.81f, 20.33f}, {0.23f, 16.48f, 5.29f, 20.33f},
+            {-5.29f, 16.48f, -0.23f, 20.33f}, {-10.81f, 16.48f, -5.75f, 20.33f},
+            {0.23f, 9.13f, 10.81f, 15.85f}, {-10.81f, 9.13f, -0.23f, 15.85f}},
+        new int[]{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 27, 27},
+        new String[]{"Box 1", "Box 2", "Box 3", "Box 4", "Box 5", "Box 6", "Box 7", "Box 8",
+            "Box 9", "Box 10", "Box 11", "Box 12", "Parcel Locker 1", "Parcel Locker 2"}));
+    initTabBlock(new BlockMailbox("mailbox_cluster_bronze", new UtilityBoxSpec(2, 1, 2,
+        new AxisAlignedBB(-0.781250, 0.000000, 0.156250, 0.781250, 1.937500, 0.843750),
+        null),
+        new float[][]{{5.75f, 25.02f, 10.81f, 28.87f}, {0.23f, 25.02f, 5.29f, 28.87f},
+            {-5.29f, 25.02f, -0.23f, 28.87f}, {-10.81f, 25.02f, -5.75f, 28.87f},
+            {5.75f, 20.75f, 10.81f, 24.6f}, {0.23f, 20.75f, 5.29f, 24.6f},
+            {-5.29f, 20.75f, -0.23f, 24.6f}, {-10.81f, 20.75f, -5.75f, 24.6f},
+            {5.75f, 16.48f, 10.81f, 20.33f}, {0.23f, 16.48f, 5.29f, 20.33f},
+            {-5.29f, 16.48f, -0.23f, 20.33f}, {-10.81f, 16.48f, -5.75f, 20.33f},
+            {0.23f, 9.13f, 10.81f, 15.85f}, {-10.81f, 9.13f, -0.23f, 15.85f}},
+        new int[]{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 27, 27},
+        new String[]{"Box 1", "Box 2", "Box 3", "Box 4", "Box 5", "Box 6", "Box 7", "Box 8",
+            "Box 9", "Box 10", "Box 11", "Box 12", "Parcel Locker 1", "Parcel Locker 2"}));
+    initTabBlock(new BlockMailboxCurbside("mailbox_curbside_black", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.262500, 0.000000, 0.075000, 0.687516, 1.500016, 0.875000),
+        null),
+        new float[][]{{5f, 17.5f, 11f, 24.0f}},
+        new int[]{9},
+        new String[]{"Mailbox"}));
+    initTabBlock(new BlockMailboxCurbside("mailbox_curbside_green", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.262500, 0.000000, 0.075000, 0.687516, 1.500016, 0.875000),
+        null),
+        new float[][]{{5f, 17.5f, 11f, 24.0f}},
+        new int[]{9},
+        new String[]{"Mailbox"}));
+    initTabBlock(new BlockMailboxCurbside("mailbox_curbside_white", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.262500, 0.000000, 0.075000, 0.687516, 1.500016, 0.875000),
+        null),
+        new float[][]{{5f, 17.5f, 11f, 24.0f}},
+        new int[]{9},
+        new String[]{"Mailbox"}));
+    initTabBlock(new BlockMailbox("mailbox_wall_bank_aluminum", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.062500, 0.093750, 0.778125, 0.937500, 0.937500, 1.000000),
+        null),
+        new float[][]{{8.26f, 10.54f, 14.07f, 14.09f}, {1.93f, 10.54f, 7.74f, 14.09f},
+            {8.26f, 6.47f, 14.07f, 10.03f}, {1.93f, 6.47f, 7.74f, 10.03f},
+            {8.26f, 2.41f, 14.07f, 5.96f}, {1.93f, 2.41f, 7.74f, 5.96f}},
+        new int[]{9, 9, 9, 9, 9, 9},
+        new String[]{"Box 1", "Box 2", "Box 3", "Box 4", "Box 5", "Box 6"}));
+    initTabBlock(new BlockMailbox("mailbox_wall_bank_brass", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.062500, 0.093750, 0.778125, 0.937500, 0.937500, 1.000000),
+        null),
+        new float[][]{{8.26f, 10.54f, 14.07f, 14.09f}, {1.93f, 10.54f, 7.74f, 14.09f},
+            {8.26f, 6.47f, 14.07f, 10.03f}, {1.93f, 6.47f, 7.74f, 10.03f},
+            {8.26f, 2.41f, 14.07f, 5.96f}, {1.93f, 2.41f, 7.74f, 5.96f}},
+        new int[]{9, 9, 9, 9, 9, 9},
+        new String[]{"Box 1", "Box 2", "Box 3", "Box 4", "Box 5", "Box 6"}));
   }
 }

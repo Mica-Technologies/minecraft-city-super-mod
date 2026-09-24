@@ -1,0 +1,117 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "flag": "false"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black_flag_down"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "flag": "true"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black_flag_up"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "flag": "false"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black_flag_down",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "flag": "true"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black_flag_up",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "flag": "false"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black_flag_down",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "flag": "true"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black_flag_up",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "flag": "false"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black_flag_down",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "flag": "true"
+      },
+      "apply": {
+        "model": "csm:streetscape/mailboxes/mailbox_curbside_black_flag_up",
+        "y": 270
+      }
+    }
+  ]
+}

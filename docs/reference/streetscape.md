@@ -2,7 +2,7 @@
 
 Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals and parking meters.
 
-!!! info "86 blocks in this tab"
+!!! info "94 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,8 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Apartment Mailbox Bank (Aluminum) | `csm:mailbox_wall_bank_aluminum` | 3 | 12 | pickaxe | 1 |
+| Apartment Mailbox Bank (Brass) | `csm:mailbox_wall_bank_brass` | 3 | 12 | pickaxe | 1 |
 | Buried Utility Marker (Electric) | `csm:utility_marker_electric` | 3 | 12 | pickaxe | 1 |
 | Buried Utility Marker (Gas) | `csm:utility_marker_gas` | 3 | 12 | pickaxe | 1 |
 | Buried Utility Marker (Telecom) | `csm:utility_marker_telecom` | 3 | 12 | pickaxe | 1 |
@@ -18,8 +20,14 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 | Cast-Iron Bollard (Dark Green) | `csm:bollard_cast_iron_green` | 3 | 12 | pickaxe | 1 |
 | Catch Basin Grate | `csm:catch_basin_grate` | 1.5 | 10 | pickaxe | 0 |
 | Catch Basin Grate (Rusted) | `csm:catch_basin_grate_rusted` | 1.5 | 10 | pickaxe | 0 |
+| Cluster Mailbox (Bronze) | `csm:mailbox_cluster_bronze` | 3 | 12 | pickaxe | 1 |
+| Cluster Mailbox (Gray) | `csm:mailbox_cluster_gray` | 3 | 12 | pickaxe | 1 |
+| Collection Mailbox (Blue) | `csm:mailbox_collection_blue` | 3 | 12 | pickaxe | 1 |
 | Concrete Sphere Bollard (Red) | `csm:bollard_sphere_red` | 3 | 12 | pickaxe | 1 |
 | Crash-Rated Bollard | `csm:bollard_crash_rated` | 3 | 12 | pickaxe | 1 |
+| Curbside Mailbox (Black) | `csm:mailbox_curbside_black` | 3 | 12 | pickaxe | 1 |
+| Curbside Mailbox (Green) | `csm:mailbox_curbside_green` | 3 | 12 | pickaxe | 1 |
+| Curbside Mailbox (White) | `csm:mailbox_curbside_white` | 3 | 12 | pickaxe | 1 |
 | Delineator Post | `csm:delineator_post` | 0.6 | 3 | pickaxe | 0 |
 | Delineator Post (Yellow) | `csm:delineator_post_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Electric Pull Box | `csm:vault_lid_electric` | 1.5 | 10 | pickaxe | 0 |

@@ -28,6 +28,8 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMo
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.streetscape.ParkingMeterActionPacket;
 import com.micatechnologies.minecraft.csm.streetscape.ParkingMeterActionPacketHandler;
+import com.micatechnologies.minecraft.csm.streetscape.MailboxActionPacket;
+import com.micatechnologies.minecraft.csm.streetscape.MailboxActionPacketHandler;
 import com.micatechnologies.minecraft.csm.streetscape.ParkingMeterSettingsPacket;
 import com.micatechnologies.minecraft.csm.streetscape.ParkingMeterSettingsPacketHandler;
 import com.micatechnologies.minecraft.csm.streetscape.ParkingPaymentSum;
@@ -253,6 +255,10 @@ public class CsmRoads {
     NETWORK.registerMessage(
         ParkingMeterSettingsPacketHandler.class,
         ParkingMeterSettingsPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        MailboxActionPacketHandler.class,
+        MailboxActionPacket.class,
         Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's

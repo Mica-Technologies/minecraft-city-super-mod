@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -20,6 +21,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -94,18 +96,51 @@ public class BlockUtilityBoxPart extends AbstractBlock
 
   /**
    * Breaking a part breaks its unit, from the root, so the unit's one item drops as if the root
-   * had been broken.
+   * had been broken. A unit that refuses the player ({@link BlockUtilityBox#mayBreakUnit})
+   * refuses from every cell.
    */
   @Override
   public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos,
       @Nonnull EntityPlayer player, boolean willHarvest) {
-    if (!world.isRemote) {
-      BlockPos root = BlockUtilityBox.findRoot(world, pos);
-      if (root != null) {
+    BlockPos root = BlockUtilityBox.findRoot(world, pos);
+    if (root != null) {
+      BlockUtilityBox box = (BlockUtilityBox) world.getBlockState(root).getBlock();
+      if (!box.mayBreakUnit(world, root, player)) {
+        return false;
+      }
+      if (!world.isRemote) {
         world.destroyBlock(root, !player.capabilities.isCreativeMode);
       }
     }
     return super.removedByPlayer(state, world, pos, player, willHarvest);
+  }
+
+  /** Mined as its unit is: a unit the player may not break does not crack from any cell. */
+  @Override
+  @SuppressWarnings("deprecation")
+  public float getPlayerRelativeBlockHardness(@Nonnull IBlockState state,
+      @Nonnull EntityPlayer player, @Nonnull World world, @Nonnull BlockPos pos) {
+    BlockPos root = BlockUtilityBox.findRoot(world, pos);
+    if (root == null) {
+      return super.getPlayerRelativeBlockHardness(state, player, world, pos);
+    }
+    IBlockState rootState = world.getBlockState(root);
+    return rootState.getPlayerRelativeBlockHardness(player, world, root);
+  }
+
+  /**
+   * As blast-proof as its unit: an explosion taking a part would take the unit with it, so a
+   * unit that resists one must resist it at every cell.
+   */
+  @Override
+  public float getExplosionResistance(@Nonnull World world, @Nonnull BlockPos pos,
+      @Nullable Entity exploder, @Nonnull Explosion explosion) {
+    BlockPos root = BlockUtilityBox.findRoot(world, pos);
+    if (root == null) {
+      return super.getExplosionResistance(world, pos, exploder, explosion);
+    }
+    return world.getBlockState(root).getBlock().getExplosionResistance(world, root, exploder,
+        explosion);
   }
 
   /**

@@ -505,6 +505,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   and #cap materials, six NFPA colour schemes by retexture), the wall hydrant, the sidewalk
   standpipe, and the news racks (`BlockNewsRack`: a multipart blockstate draws end panels only at
   the ends of a bank); `--check`, `--fragments`
+- `gen_streetscape_mailboxes.py` -- the mailboxes (`BlockMailbox`, `BlockMailboxCurbside`): the
+  UIA MAIL collection box, cluster box units, curbside boxes whose flag is actual state, and the
+  wall bank. Each door's rectangle goes into the tab line from the same layout the front decal
+  is drawn from, since a click opens the door nearest the point looked at; `--check`,
+  `--fragments`
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →

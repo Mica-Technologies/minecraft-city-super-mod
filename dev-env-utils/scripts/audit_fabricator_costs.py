@@ -374,6 +374,8 @@ def cost_for(registry, info, ancestors):
         if "mechanical" in registry:
             return ("SHEET_METAL", "FASTENER_KIT")
         return ("CONTROL_BOARD", "SHEET_METAL")
+    if tab == "tabstreetscape" and registry.startswith("mailbox_cluster"):
+        return ("SHEET_METAL x2", "FASTENER_KIT")
     if tab == "tabstreetscape" and registry.startswith("bollard_sphere"):
         return ("CONCRETE_MIX x2",)
     if tab == "tabstreetscape" and registry == "parking_pay_by_phone_sign":

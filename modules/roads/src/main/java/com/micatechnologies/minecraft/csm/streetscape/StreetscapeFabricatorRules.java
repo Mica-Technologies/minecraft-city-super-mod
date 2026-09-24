@@ -60,6 +60,11 @@ public final class StreetscapeFabricatorRules {
             FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
             FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
       }
+      // A cluster box unit is two blocks of steel cabinet and fourteen locks.
+      if (registryName.startsWith("mailbox_cluster")) {
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      }
       // The concrete sphere is cast concrete through and through.
       if (registryName.startsWith("bollard_sphere")) {
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 2));

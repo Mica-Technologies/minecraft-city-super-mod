@@ -164,6 +164,15 @@ public class BlockUtilityBox extends AbstractBlockRoadSurfaceRotatableNSEW
   }
 
   /**
+   * Whether {@code player} may break the unit rooted at {@code root}. Every cell asks this, so a
+   * unit that guards what it holds (a mailbox) is guarded whichever cell is hit. Anyone may,
+   * here.
+   */
+  public boolean mayBreakUnit(World world, BlockPos root, EntityPlayer player) {
+    return true;
+  }
+
+  /**
    * The root of the unit covering {@code cell}, searching every cell a unit could be rooted at,
    * or {@code null} if none covers it.
    */
