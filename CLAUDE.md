@@ -83,7 +83,7 @@ container per jar.
 | Module tree | Mod id | Display name | Contents |
 |---|---|---|---|
 | `src/main` | `csm` | CSM: Core | base classes, registration, tabs machinery, config, parts + Fabricator, shared assets |
-| `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` (the Streetscape tab: hydrants, delineators and street fixtures external road mods lack) |
+| `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` (the Streetscape tab: covers, utility boxes, bollards, hydrants, news racks, working mailboxes and parking meters; see `assets/docs/STREETSCAPE_SYSTEM.md`) |
 | `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; four tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection, Emergency Services |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
@@ -353,7 +353,14 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   they are generated, round parts as exact octagons, synthesised sounds, generic emblems, every
   block that does something, why cross-module effects go by redstone, the fire pole's fall, the
   outdoor warning sirens (horn baked at rest, drawn only while sounding, volume from the horn's
-  bearing), and the traps
+  bearing), the connectable standpipe (actual-state runs, floor pass-through, corner elbows off
+  the set-back axes), and the traps
+- `assets/docs/STREETSCAPE_SYSTEM.md` -- The Streetscape tab in Roads: what is left out and why
+  (the external road mod's curbs, bike racks, brands), settling, the utility box multi-block
+  (root draws, parts forward, all-or-nothing placing, a break hook every cell asks), covers,
+  bollards, hydrants and news racks, parking meters (real-time expiry, the clock skew, the
+  scheduled redstone, SUM by reflection and why at server started), mailboxes (doors picked by
+  ray trace, the mode in the GUI id, contents never synced, insert-only automation), and the traps
 - `assets/docs/STATION_ALERTING_SYSTEM.md` -- A fire station's alerting: the controller, its
   linked speakers, alert lights, relays and bay clearance lights, the dispatch sequence, and why
   the relay's redstone is how it opens bay doors, strikes the gong and preempts traffic signals

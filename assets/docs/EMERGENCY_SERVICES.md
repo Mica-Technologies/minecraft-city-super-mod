@@ -16,7 +16,7 @@ The one Life Safety tab had grown to 165 entries, 120 of them fire alarm applian
 |---|---|---|---|
 | `tablifesafety` | Fire Alarm & Detection | 3 | panel, pull stations, appliances, detectors, annunciator, linker and config tool |
 | `tabexitsemergency` | Exits & Emergency Lighting | 20 | exit and stair signs, emergency lights |
-| `tabfireprotection` | Fire Protection | 21 | extinguishers, cabinets, standpipe, fire department connections, riser room, sprinklers, door holders, sign plates |
+| `tabfireprotection` | Fire Protection | 21 | extinguishers, cabinets, connectable standpipe, fire department connections, riser room, sprinklers, door holders, sign plates |
 | `tabemergencyservices` | Emergency Services | 22 | fire, police and EMS station fittings, sirens, call box, dispatch, the working items |
 
 The fire alarm tab kept its id, so its Fabricator rule and every reference to it still hold. Blocks
@@ -135,6 +135,38 @@ never runs twice. The signal ordinals are saved (`SirenSignal`): append, never r
   and fades as the horn sweeps past. The horn angle is the world clock's, so every siren in the
   world turns in step and nothing about the angle is ever sent.
 - The electronic array does not turn and sounds evenly all round.
+
+## The connectable standpipe
+
+`BlockStandpipePipe` and `BlockStandpipeWallPipe` (`lifesafety/fireprotection`), all written by
+`gen_standpipe_system.py`: 16 blocks in two finishes (red, galvanised silver) and two sizes
+(8 px main, 6 px branch), plus four fittings. `standpipe_riser` keeps its registry name and
+becomes the red wall branch pipe, so risers already placed join runs. Its old model in
+`fireprotection/` is gone, and `gen_fire_protection.py` no longer writes it.
+
+- **Nothing is stored but the facing.** Every join is actual state from the neighbours, drawn by
+  a multipart blockstate with one arm model per side, a cast joint where the run is not straight
+  (`JOINT`), and collar plates (`FLOOR`, `CEILING`). A run re-forms as pieces come and go.
+- **Two styles, joined only where their axes meet.** A free-standing pipe is centred and joins
+  on all six sides. A wall pipe's axis is set back to the wall behind it (z = 11 facing north), so
+  it joins wall pipes of the same facing up, down and sideways, and a free-standing pipe only
+  through its front. Side by side the two axes would miss.
+- **Floors and ceilings.** A solid face above or below that is not standpipe counts as a join
+  (`passesThrough`): the arm runs into it and a steel plate is drawn on the face. Only a real
+  pipe counts toward "joined to nothing", so a lone pipe on the ground still stands upright.
+- **Corners.** A plain wall pipe with a wall pipe on the perpendicular wall behind it is an
+  outside corner; with one in front of it, an inside corner (`Corner`). The other run's axis
+  crosses this one at x = 5 or 11 rather than mid-cell, so the corner piece draws both of its arms
+  to an elbow there and joins nothing else. The pipe on the other face recognises a perpendicular
+  neighbour in corner mode and meets it with its ordinary side arm.
+- **Fittings** are wall pipes with a body drawn at the joint (`Fitting`: VALVE, HOSE_OUTLET,
+  AIR_VALVE, INLET). Each gives up the side its body takes (the air valve's top, the inlet's
+  bottom and front, the outlets' front). Their bodies' boxes go into the tab line from the same
+  elements.
+- **Every arm is capped at both ends**, so where a main meets a branch the step is closed
+  rather than see-through.
+- **No baked shading on pipe textures.** Each arm face takes half a block of texture, so shading
+  drawn across a texture repeats along a run as bands.
 
 ## Traps
 

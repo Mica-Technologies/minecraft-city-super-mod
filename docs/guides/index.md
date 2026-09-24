@@ -70,6 +70,13 @@ How each system works, and how to build with it.
 
     Changeable message boards and variable speed limits, portable and overhead.
 
+-   :material-mailbox:{ .lg .middle } **[Streetscape](streetscape.md)**
+
+    ---
+
+    Covers, utility boxes, bollards, hydrants and news racks; mailboxes that lock, and parking
+    meters that take emeralds or the server's money.
+
 </div>
 
 ## Buildings & utilities
@@ -87,7 +94,8 @@ How each system works, and how to build with it.
 
     ---
 
-    Extinguishers and standpipes, fire, police and ambulance stations, station alerting, a fire
+    Extinguishers, standpipe runs that turn corners and pass through floors, fire, police and
+    ambulance stations, station alerting, a fire
     pole that works, and warning sirens heard across town.
 
 -   :material-lightbulb-on:{ .lg .middle } **[Lighting](lighting.md)**

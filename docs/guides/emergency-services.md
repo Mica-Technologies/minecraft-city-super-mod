@@ -11,8 +11,9 @@ The **Fire Protection** tab has what a building fights a fire with besides its a
 - **Fire extinguishers** on their wall brackets (ABC, CO2, water and class K), and **cabinets**
   for them. Click a cabinet to open or shut its door. The **AED cabinet** chirps when it is opened,
   as the real ones do.
-- The **standpipe** (hose valve and riser), and **fire department connections**: brass and chrome
-  wall connections, a freestanding one and a Storz inlet.
+- The **standpipe**: a hose valve, and pipe that connects into runs (see
+  [Connectable standpipe](#connectable-standpipe) below). Also **fire department connections**:
+  brass and chrome wall connections, a freestanding one and a Storz inlet.
 - The **riser room**: the sprinkler alarm valve, an OS&Y valve, the post indicator valve outside,
   a backflow preventer, and the **water motor gong** on the outside wall. Link it to a fire alarm
   panel with the fire alarm linker, like a horn, and it clangs whenever the alarm sounds.
@@ -20,6 +21,36 @@ The **Fire Protection** tab has what a building fights a fire with besides its a
 - **Magnetic door holders.** Put one beside a door, on the wall or the floor. It holds the door open
   until the fire alarm goes off, then lets it shut. Link it to a panel with the fire alarm linker,
   or leave it unlinked to follow any fire alarm sounding nearby. It works with any door.
+
+## Connectable standpipe
+
+Dry standpipe pipe that joins the pipe next to it, so you can run a riser up a building or a main
+along a bridge. Elbows and tees form by themselves. It comes in red and in galvanised silver, in
+two sizes: an 8 px **main** and a 6 px **branch**. Where a main meets a branch, the step down is
+the reducer.
+
+- **Wall pipe** sits against the wall or parapet behind it, as a bridge or building standpipe
+  does. It joins wall pipes above, below and to either side that face the same way. Place it
+  facing away from the wall. The **Standpipe Riser** is the red wall branch pipe, so risers you
+  had already placed join the new runs.
+- **Free-standing pipe** is centred in its block and joins in all six directions. To take a run
+  off the wall, place a free-standing pipe directly in front of a wall pipe.
+- **Corners.** A wall run turns round the corner of a building by itself. Around an **outside**
+  corner, put a wall pipe on the corner block, facing the same way as the run it continues; it
+  bends back onto the next face. Around an **inside** corner, the last pipe of one run bends
+  forward onto the run on the other wall.
+- **Floors and ceilings.** A pipe that meets a solid block above or below goes into it, with a steel
+  collar plate where it passes through. Continue the pipe on the other side of the slab and the
+  riser reads as one pipe through the floor.
+
+**Fittings** sit in a wall run, in either colour:
+
+| Fitting | What it does |
+|---|---|
+| **Inlet Manifold** | The fire department inlet at the foot of a run: capped inlets facing the street on a check valve |
+| **Hose Outlet** | A tee with a capped hose valve, facing out |
+| **Air Release Valve** | The green tank at a high point of the run; nothing joins on top of it |
+| **Drain Valve** | An in-line valve with a handwheel |
 
 The **Fire Alarm & Detection** tab gains photoelectric, duct and beam smoke detectors, and the
 **remote annunciator**: it lights when its panel is in alarm, and right-clicking it tells you what

@@ -29,6 +29,8 @@ CSM is written to sit alongside other mods rather than take anything over:
 | **OptiFine** | Works. The mod's own renderers write their lighting per vertex specifically so shader packs read it correctly. |
 | **Immersive Engineering** | No dependency in either direction. CSM's span wire is its own implementation and does not use IE's wire system. |
 | **WorldEdit / FAWE** | Fine. Blocks with tile entities (signals, panels, dynamic signs) keep their configuration through a copy only if the tool copies tile entity data. |
+| **SUM (server utility mod)** | Optional. With SUM's economy on and `csm_roads` allowed in its `economy_integration.allowedMods`, parking meters charge the player's wallet instead of taking emeralds. Without SUM they take emeralds; nothing else changes. |
+| **Road mods with sloped road blocks** | Work zone devices and everything in the Streetscape tab settle onto sloped and partial-height road and sidewalk blocks instead of floating above them. |
 
 ## Adding CSM to an existing world
 

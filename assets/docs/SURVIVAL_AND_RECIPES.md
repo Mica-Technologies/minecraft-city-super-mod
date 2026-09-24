@@ -142,7 +142,14 @@ Rules are applied in this order:
    (it is priced per block, as it is built), and the tower crane head 4 Pole Sections + a Control Board + a Wiring Harness (its
    masts are poles by rule 1); anything else there is Sheet Metal + a Fastener Kit.
 4. **Mounting hardware** — mount, bracket, backplate, cover, visor, base, plate, arm, top — takes
-   Sheet Metal + Fastener Kit rather than its subsystem's electronics.
+   Sheet Metal + Fastener Kit rather than its subsystem's electronics. Streetscape is exempt, like
+   Structure & Framing: a manhole *cover* is cast iron, not a bracket. Its own rule
+   (`streetscape/StreetscapeFabricatorRules`) prices covers in iron (plus Concrete Mix for vault
+   lids and valve boxes), digital meters and pay stations as a Control Board + Sheet Metal,
+   transformers as 2 Sheet Metal + a Wiring Harness + Concrete Mix, the concrete sphere as 2
+   Concrete Mix, cluster mailboxes as 2 Sheet Metal + a Fastener Kit, and the signs and markers as
+   a Sign Blank; everything else in the tab takes the generic cost. In Fire Protection the
+   standpipe's pipes, manifold and outlet go with its valves: Sheet Metal + a Fastener Kit.
 5. **Optical devices** (camera, ALPR, radar, lidar) take Optical Sensor + Control Board.
 6. **Equipment with a dedicated base class**: fire alarm sounders, activators and detectors;
    signal heads, detection sensors, the controller cabinet. These are the only rules that need to

@@ -47,9 +47,13 @@ public class BlockUtilityBoxPart extends AbstractBlock
     super(Material.IRON, SoundType.METAL, "pickaxe", 1, 3F, 12F, 0F, 0);
   }
 
+  /**
+   * {@link #REGISTRY_NAME}, spelled out: the integrity tool and the other source-reading tools
+   * find a block's registry name from a literal returned here.
+   */
   @Override
   public String getBlockRegistryName() {
-    return REGISTRY_NAME;
+    return "utility_box_part";
   }
 
   /**
