@@ -262,9 +262,12 @@ arm where it *is* joined.
 
 The Parks tab holds the nine items moved from Furniture & Novelties, with their registry ids
 unchanged: the swings, teeter totter, park trash can, water bubblers, bird bath and flower pots.
-Everything else there is written by `gen_park_amenities.py`. The two flower pots keep their own
-classes (a six-way facing, which saved worlds store) but draw the Trees & Plants tab's
-`planter_concrete` model, with its box.
+The two swing sets, the teeter totter, the slatted trash can and the bird bath are drawn by
+`gen_park_legacy_amenities.py` (the swing sets as OBJ, since at 2.78 m to the beam they pass
+the two blocks a JSON model can reach); everything else there is written by
+`gen_park_amenities.py`. The two flower pots keep their own classes (a six-way facing, which
+saved worlds store) but draw the Trees & Plants tab's `planter_concrete` and
+`planter_corten` models, with their box.
 
 - **Benches and picnic tables** (`BlockParkBench`) are one block of seat each, placed side by side
   into a run. `LEFT` and `RIGHT` (the sitter's, actual state) say whether the same block, facing the
@@ -335,6 +338,7 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
 | `gen_trees.py` | Bark and leaf-cluster textures; the palm crown sheets and icons; moss; the log and leaves placeholder models and blockstates; the lang for woods, leaves and presets; the tool's icon, model and messages. `--fragments` prints the tab lines |
 | `gen_park_plantings.py` | Every block in the accessories and plantings catalogue: textures, element models, blockstates, item models and lang. `--fragments` |
 | `gen_park_amenities.py` | The same for the amenities. It borrows `gen_park_plantings.py`'s helpers |
+| `gen_park_legacy_amenities.py` | The models, textures and blockstates of the five amenities that kept their old ids (both swing sets, the teeter totter, the trash can, the bird bath). It writes no lang and no tab lines, since those blocks already have them |
 
 All three take `--check`. Each writes lang lines by key in all four languages, leaving every other
 line in place, so the three can share the module's lang files.

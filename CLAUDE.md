@@ -616,6 +616,14 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_park_amenities.py` -- the Parks tab: benches and picnic tables (end frames only at a run's
   ends), bins, playground, pergola, fountains with animated water, irrigation; borrows
   gen_park_plantings.py's helpers; `--check`, `--fragments`
+- `gen_park_legacy_amenities.py` -- the five Parks amenities that kept their old ids: both swing
+  sets (OBJ, 2.78 m to the beam), the teeter totter, the slatted trash can and the low-poly bird
+  bath; writes no lang or tab lines; `--check`
+- `gen_produce_crates.py`, `gen_furnishings_gameroom.py`, `gen_novelties.py`,
+  `gen_novelties_seasonal.py`, `gen_furnishings_showpieces.py` -- the Furniture & Novelties
+  models rebuilt in 2026-09: produce crates; bar and game room pieces and the wooden barrel;
+  props; seasonal figures; the OBJ showpieces (jukebox, piano, clock, swing chair, tree). Which block each draws
+  is tabled in `assets/docs/NOVELTIES_SYSTEM.md`; none writes lang or tab lines; `--check`
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

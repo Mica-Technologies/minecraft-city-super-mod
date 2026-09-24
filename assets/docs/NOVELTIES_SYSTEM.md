@@ -148,6 +148,24 @@ redstone. All use `CUTOUT_MIPPED` render layer except arcade cabinets (`SOLID`).
 | `pumpkins` | Pumpkins | Novelties |
 | `scarecrow` | Scarecrow | Novelties |
 
+## Where the Models Come From
+
+These blocks' models are drawn by generators in `dev-env-utils/scripts/`, and
+each takes `--check` (the arcade cabinets, statues, air hockey and ping pong tables, record
+player and Dream Machine are hand-made models):
+
+| Script | Blocks |
+|---|---|
+| `gen_produce_crates.py` | The produce crates, the carrot barrel and the large shipping crate |
+| `gen_furnishings_gameroom.py` | Wine and beer racks, the beer tap, the wooden barrel, pool table, dartboard, card deck, office chair, radiator, coat rack, tall mirror, restroom signs, hot tub, chains, boarded planks |
+| `gen_novelties.py` | Barber pole, birdhouse, doghouse, hand pump, coffee cup, picnic basket, cookies, xylophone, water dispenser, garden flamingo |
+| `gen_novelties_seasonal.py` | Wreath, pumpkins, nutcracker, scarecrow, snowman |
+| `gen_furnishings_showpieces.py` | Jukebox, grand piano, grandfather clock, swing chair, Christmas tree (OBJ) |
+
+Blocks removed because their models were not our own work are listed, with their old registry
+names, in `assets/to-be-added-to-mod/BLOCKS_TO_REVISIT.md`; Core's `CsmRetiredNames` drops
+those names from old worlds without a prompt.
+
 ## Sound Assets
 
 All custom sounds are declared in `FurnishingsSounds.java` (handed to Core's registrar by `CsmFurnishings.preInit`) and defined in `sounds.json`. Every

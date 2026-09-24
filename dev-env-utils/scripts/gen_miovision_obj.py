@@ -13,7 +13,7 @@ detection-camera blocks:
                               over the top and the bell dome hangs down from it. Matches real
                               mast-arm installs where the camera arm extends upward off the arm.
 
-Coordinate convention (matches the mod's Blockbench-exported furniture OBJs, e.g. apple_crate):
+Coordinate convention (the block-centred convention of OBJ models exported from Blockbench):
   * 1 unit == 1 block.
   * X and Z are CENTERED on the block (-0.5 .. 0.5) so the vertical centre axis is X=0, Z=0. This
     makes the Forge blockstate `transform.rotation` y:45 steps pivot about the block centre for true

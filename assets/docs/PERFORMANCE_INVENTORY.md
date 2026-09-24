@@ -406,8 +406,8 @@ Two things this test taught about the alarm itself:
 Ranked by triangle count from the OBJ files: `dollhouse2` 3,576, `beer_rack` 3,036, `dollhouse1`
 2,760, the tomato and onion crates 2,616, `banana_crate` 2,400, `miovision_360_tall` 1,668 (the
 heaviest in-world roads model), the `pendant_industrial_dome` 784 family.
-(Both dollhouses and the TARDIS have since been removed from the mod; the figures are kept as
-measured.)
+(Every furniture model named here has since been removed or rebuilt from our own generators; the
+figures are kept as measured.)
 
 **Per frame:** placing 256 copies of each of dollhouse2, beerrack, tomatoecrate, tardis,
 miovision360tall, pendant dome, bell sensor and a horn strobe moved frame time by -18 to +74 µs
