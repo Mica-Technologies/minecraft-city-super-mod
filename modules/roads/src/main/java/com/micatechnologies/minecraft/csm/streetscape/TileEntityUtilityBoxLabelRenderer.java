@@ -16,8 +16,8 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 /**
- * Draws a utility box's ID number: yellow digits on a black decal, stuck on the box's front
- * face where its {@link UtilityBoxSpec.Label} says.
+ * Draws a utility box's ID number: yellow digits on a black decal (or the label's own colours),
+ * stuck on the box's front face where its {@link UtilityBoxSpec.Label} says.
  *
  * <p>The digits take the world's light, as a decal does; they are not lit. The light is read from
  * the cell in front of the box rather than the box's own cell, which the box's body shades.
@@ -31,7 +31,6 @@ public class TileEntityUtilityBoxLabelRenderer
 
   private static final ResourceLocation WHITE_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/white1px.png");
-  private static final int DECAL_YELLOW = 0xF0C020;
   /** The decal's black margin around the digits, in pixels. */
   private static final float MARGIN = 0.35f;
   /** Line pitch as a multiple of the character height. */
@@ -116,7 +115,9 @@ public class TileEntityUtilityBoxLabelRenderer
     GlStateManager.rotate(180, 0, 1, 0);
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-    GlStateManager.color(0.06f, 0.06f, 0.05f, 1.0f);
+    int back = label.getBackColour();
+    GlStateManager.color(((back >> 16) & 0xFF) / 255f, ((back >> 8) & 0xFF) / 255f,
+        (back & 0xFF) / 255f, 1.0f);
     BufferBuilder buf = Tessellator.getInstance().getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
     buf.pos(-halfW, -halfH, 0).tex(0, 0).endVertex();
@@ -130,7 +131,8 @@ public class TileEntityUtilityBoxLabelRenderer
     GlStateManager.translate(0, 0, 0.02f);
     GlStateManager.depthMask(false);
     GlStateManager.scale(scale, -scale, scale);
-    fr.drawString(text, -fr.getStringWidth(text) / 2, -fr.FONT_HEIGHT / 2, DECAL_YELLOW);
+    fr.drawString(text, -fr.getStringWidth(text) / 2, -fr.FONT_HEIGHT / 2,
+        label.getTextColour());
     GlStateManager.depthMask(true);
     GlStateManager.popMatrix();
   }

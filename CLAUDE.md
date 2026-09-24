@@ -492,6 +492,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   fill its other cells. The unit box and ID-number decal position in each tab line are measured
   from the model's own elements, and a big unit gets a second, shrunken inventory model;
   `--check`, `--fragments`
+- `gen_streetscape_meters.py` -- the parking meters (`BlockParkingMeter`: mechanical and digital,
+  one or two heads, the multi-space pay station) and the pay-by-phone sign, on the utility box
+  multi-block code. Each head's window is written into its tab line so the meter renderer draws
+  exactly on it. Payment is emeralds, or money through the optional SUM economy (reached by
+  reflection in `ParkingPaymentSum`, never a build dependency); `--check`, `--fragments`
 - `gen_rail_crossing.py` -- the railroad crossing hardware's assets: the flasher's wig-wag lens
   strip with its `_e` companion, the hardware swatch, the flasher and gate JSON models and the
   four blockstates. `gen_rail_crossing_sounds.py` synthesises the crossing bell (numpy →

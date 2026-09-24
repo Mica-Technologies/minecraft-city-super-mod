@@ -138,7 +138,7 @@ TABS = {
     "tabstreetscape": ("streetscape", "Streetscape",
                        "Street fixtures between the curb and the building line: fire hydrants, "
                        "delineators, manhole covers, utility lids, drainage grates, pad-mount "
-                       "transformers and utility pedestals."),
+                       "transformers, utility pedestals and parking meters."),
     "tabstructureframing": ("structure-framing", "Structure & Framing",
                             "Steel and wood stud walls, the structure that spans between "
                             "them, and structural steel."),

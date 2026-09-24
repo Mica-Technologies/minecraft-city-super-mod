@@ -172,12 +172,18 @@ public final class UtilityBoxSpec {
    */
   public static final class Label {
 
+    /** A utility decal's colours: yellow characters on black. */
+    public static final int DECAL_YELLOW = 0xF0C020;
+    public static final int DECAL_BLACK = 0x0F0F0D;
+
     private final float centreX;
     private final float centreY;
     private final float faceZ;
     private final int lines;
     private final float textHeight;
     private final boolean vertical;
+    private final int textColour;
+    private final int backColour;
 
     /**
      * @param centreX    the decal's centre across the face, in pixels
@@ -189,6 +195,19 @@ public final class UtilityBoxSpec {
      */
     public Label(float centreX, float centreY, float faceZ, int lines, float textHeight,
         boolean vertical) {
+      this(centreX, centreY, faceZ, lines, textHeight, vertical, DECAL_YELLOW, DECAL_BLACK);
+    }
+
+    /**
+     * A label in other colours than a utility decal's yellow on black.
+     *
+     * @param textColour the characters' colour, 0xRRGGBB
+     * @param backColour the backing's colour, 0xRRGGBB
+     */
+    public Label(float centreX, float centreY, float faceZ, int lines, float textHeight,
+        boolean vertical, int textColour, int backColour) {
+      this.textColour = textColour;
+      this.backColour = backColour;
       this.centreX = centreX;
       this.centreY = centreY;
       this.faceZ = faceZ;
@@ -219,6 +238,14 @@ public final class UtilityBoxSpec {
 
     public boolean isVertical() {
       return vertical;
+    }
+
+    public int getTextColour() {
+      return textColour;
+    }
+
+    public int getBackColour() {
+      return backColour;
     }
   }
 }

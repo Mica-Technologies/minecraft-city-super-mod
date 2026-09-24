@@ -241,7 +241,13 @@ def inventory_elements(elements):
 
 
 def model_for(textures, elements):
-    t = {name: C.T(tex) for name, tex in textures.items()}
+    return model_for_catalogue(C, textures, elements)
+
+
+def model_for_catalogue(cat, textures, elements):
+    """A model whose texture keys map to textures of catalogue cat; the first is the particle.
+    Other Streetscape generators borrow this with their own catalogue."""
+    t = {name: cat.T(tex) for name, tex in textures.items()}
     t["particle"] = t[list(textures)[0]]
     return lc.model(t, elements)
 

@@ -76,6 +76,12 @@ public class TileEntityUtilityBoxLabel extends AbstractTileEntity {
     return new String[]{String.valueOf(first), String.valueOf(second)};
   }
 
+  /** Nothing a baked model reads comes from here; only the special renderer does. */
+  @Override
+  protected long getBakedModelKey() {
+    return 0L;
+  }
+
   /**
    * The whole unit, not just the root cell: on a two-wide box the decal sits over the seam
    * between cells, and a renderer is culled by this box.

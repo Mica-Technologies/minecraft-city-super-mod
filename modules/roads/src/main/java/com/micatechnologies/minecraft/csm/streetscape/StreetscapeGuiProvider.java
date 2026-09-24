@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * The Streetscape tab's screens: the utility box number editor.
+ * The Streetscape tab's screens: the utility box number editor and the parking meter screen.
  *
  * @version 1.0
  */
@@ -18,6 +18,15 @@ public class StreetscapeGuiProvider implements ICsmGuiProvider {
   @Nullable
   @Override
   public Object getClientGuiElement(int id, EntityPlayer player, World world, BlockPos pos) {
+    if (id == BlockParkingMeter.GUI_ID) {
+      TileEntity te = world.getTileEntity(pos);
+      Block block = world.getBlockState(pos).getBlock();
+      if (te instanceof TileEntityParkingMeter && block instanceof BlockParkingMeter) {
+        return new ParkingMeterGui((TileEntityParkingMeter) te,
+            ((BlockParkingMeter) block).getKind() == BlockParkingMeter.Kind.STATION);
+      }
+      return null;
+    }
     if (id != BlockUtilityBoxLabelled.GUI_ID) {
       return null;
     }

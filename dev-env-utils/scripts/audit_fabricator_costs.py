@@ -369,6 +369,13 @@ def cost_for(registry, info, ancestors):
         if has("AbstractBlockControllableSignal"):
             return ("LED_MODULE", "LENS_ASSEMBLY", "SHEET_METAL")
         return ("SHEET_METAL", "WIRING_HARNESS")
+    if tab == "tabstreetscape" and has("BlockParkingMeter"):
+        # Mirrors StreetscapeFabricatorRules: electronics unless it is clockwork.
+        if "mechanical" in registry:
+            return ("SHEET_METAL", "FASTENER_KIT")
+        return ("CONTROL_BOARD", "SHEET_METAL")
+    if tab == "tabstreetscape" and registry == "parking_pay_by_phone_sign":
+        return ("SIGN_BLANK",)
     if tab == "tabstreetscape" and has("BlockUtilityBox") and registry.startswith("transformer"):
         return ("SHEET_METAL x2", "WIRING_HARNESS", "CONCRETE_MIX")
     if tab == "tabstreetscape" and has("BlockStreetCover"):

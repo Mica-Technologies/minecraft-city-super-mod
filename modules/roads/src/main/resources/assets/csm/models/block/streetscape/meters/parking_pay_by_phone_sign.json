@@ -1,0 +1,161 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "face": "csm:blocks/streetscape/meters/sign_face",
+    "back": "csm:blocks/streetscape/meters/galvanised",
+    "post": "csm:blocks/streetscape/meters/galvanised",
+    "particle": "csm:blocks/streetscape/meters/sign_face"
+  },
+  "elements": [
+    {
+      "from": [
+        7.4,
+        0,
+        7.8
+      ],
+      "to": [
+        8.6,
+        26,
+        9.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            7.4,
+            0,
+            8.6,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            7.4,
+            0,
+            8.6,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            7.0,
+            0,
+            8.2,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            7.8,
+            0,
+            9.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            7.4,
+            7.8,
+            8.6,
+            9.0
+          ]
+        },
+        "down": {
+          "texture": "#post",
+          "uv": [
+            7.4,
+            7.0,
+            8.6,
+            8.2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.5,
+        15,
+        7.4
+      ],
+      "to": [
+        12.5,
+        26,
+        7.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.5,
+        15,
+        7.4
+      ],
+      "to": [
+        12.5,
+        26,
+        7.8
+      ],
+      "faces": {
+        "south": {
+          "texture": "#back",
+          "uv": [
+            3.5,
+            0,
+            12.5,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#back",
+          "uv": [
+            8.2,
+            0,
+            8.6,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#back",
+          "uv": [
+            7.4,
+            0,
+            7.8,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#back",
+          "uv": [
+            3.5,
+            7.4,
+            12.5,
+            7.8
+          ]
+        },
+        "down": {
+          "texture": "#back",
+          "uv": [
+            3.5,
+            8.2,
+            12.5,
+            8.6
+          ]
+        }
+      }
+    }
+  ]
+}

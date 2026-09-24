@@ -119,6 +119,28 @@ public class CsmConfig {
           + "Manageable in-game by ops via \"/csm poleignore add|remove <block>\".";
   private static final String[] FIELD_DEFAULT_TRAFFIC_POLE_IGNORE_BLOCKS = new String[0];
 
+  private static final String CATEGORY_PARKING = "parking";
+  private static final String CATEGORY_PARKING_DESCRIPTION =
+      "Parking meters and pay stations. Each meter's owner sets its own rate within the caps "
+          + "below; the defaults are what a newly placed meter starts with. The money rate is "
+          + "used when the optional economy mod is installed and allows the csm_roads "
+          + "integration, the emerald rate otherwise.";
+  private static final int FIELD_DEFAULT_PARKING_EMERALDS_PER_BLOCK = 1;
+  private static final int FIELD_DEFAULT_PARKING_MINUTES_PER_BLOCK = 15;
+  private static final int FIELD_DEFAULT_PARKING_MAX_MINUTES = 240;
+  private static final double FIELD_DEFAULT_PARKING_MONEY_PER_BLOCK = 1.00;
+  private static final int FIELD_DEFAULT_PARKING_CAP_MINUTES = 1440;
+  private static final int FIELD_DEFAULT_PARKING_CAP_EMERALDS = 64;
+  private static final double FIELD_DEFAULT_PARKING_CAP_MONEY = 100.0;
+
+  private static int parkingEmeraldsPerBlock = FIELD_DEFAULT_PARKING_EMERALDS_PER_BLOCK;
+  private static int parkingMinutesPerBlock = FIELD_DEFAULT_PARKING_MINUTES_PER_BLOCK;
+  private static int parkingMaxMinutes = FIELD_DEFAULT_PARKING_MAX_MINUTES;
+  private static double parkingMoneyPerBlock = FIELD_DEFAULT_PARKING_MONEY_PER_BLOCK;
+  private static int parkingCapMinutes = FIELD_DEFAULT_PARKING_CAP_MINUTES;
+  private static int parkingCapEmeralds = FIELD_DEFAULT_PARKING_CAP_EMERALDS;
+  private static double parkingCapMoney = FIELD_DEFAULT_PARKING_CAP_MONEY;
+
   /**
    * The configuration field value for the enableUpdateCheck option.
    */
@@ -215,6 +237,30 @@ public class CsmConfig {
         CATEGORY_TRAFFIC_POLES, FIELD_DEFAULT_TRAFFIC_POLE_IGNORE_BLOCKS,
         FIELD_DESCRIPTION_TRAFFIC_POLE_IGNORE_BLOCKS);
     trafficPoleIgnoreBlockIds = parseBlockIds(rawIgnores);
+
+    config.setCategoryComment(CATEGORY_PARKING, CATEGORY_PARKING_DESCRIPTION);
+    parkingCapMinutes = config.getInt("capMinutes", CATEGORY_PARKING,
+        FIELD_DEFAULT_PARKING_CAP_MINUTES, 1, 525600,
+        "The most time an owner may let a meter sell ahead, in minutes.");
+    parkingCapEmeralds = config.getInt("capEmeraldsPerBlock", CATEGORY_PARKING,
+        FIELD_DEFAULT_PARKING_CAP_EMERALDS, 1, 4096,
+        "The most emeralds an owner may charge per block of time.");
+    parkingCapMoney = config.get(CATEGORY_PARKING, "capMoneyPerBlock",
+        FIELD_DEFAULT_PARKING_CAP_MONEY,
+        "The most money an owner may charge per block of time.", 0.01, 1000000.0).getDouble();
+    parkingEmeraldsPerBlock = config.getInt("defaultEmeraldsPerBlock", CATEGORY_PARKING,
+        FIELD_DEFAULT_PARKING_EMERALDS_PER_BLOCK, 1, 4096,
+        "Emeralds a new meter charges per block of time.");
+    parkingMinutesPerBlock = config.getInt("defaultMinutesPerBlock", CATEGORY_PARKING,
+        FIELD_DEFAULT_PARKING_MINUTES_PER_BLOCK, 1, 1440,
+        "Minutes of parking a new meter sells per block (per payment).");
+    parkingMaxMinutes = config.getInt("defaultMaxMinutes", CATEGORY_PARKING,
+        FIELD_DEFAULT_PARKING_MAX_MINUTES, 1, 525600,
+        "The most time a new meter sells ahead, in minutes.");
+    parkingMoneyPerBlock = config.get(CATEGORY_PARKING, "defaultMoneyPerBlock",
+        FIELD_DEFAULT_PARKING_MONEY_PER_BLOCK,
+        "Money a new meter charges per block of time, in the economy's currency.", 0.01,
+        1000000.0).getDouble();
     configVersion++;
 
     if (config.hasChanged()) {
@@ -278,6 +324,41 @@ public class CsmConfig {
             FIELD_DESCRIPTION_TRAFFIC_POLE_IGNORE_BLOCKS)
         .setValues(serialized);
     config.save();
+  }
+
+  /** Emeralds a newly placed parking meter charges per block of time. */
+  public static int getParkingEmeraldsPerBlock() {
+    return Math.min(parkingEmeraldsPerBlock, parkingCapEmeralds);
+  }
+
+  /** Minutes a newly placed parking meter sells per block. */
+  public static int getParkingMinutesPerBlock() {
+    return parkingMinutesPerBlock;
+  }
+
+  /** The most time a newly placed parking meter sells ahead, in minutes. */
+  public static int getParkingMaxMinutes() {
+    return Math.min(parkingMaxMinutes, parkingCapMinutes);
+  }
+
+  /** Money a newly placed parking meter charges per block of time. */
+  public static double getParkingMoneyPerBlock() {
+    return Math.min(parkingMoneyPerBlock, parkingCapMoney);
+  }
+
+  /** The most time any parking meter may sell ahead, in minutes. */
+  public static int getParkingCapMinutes() {
+    return parkingCapMinutes;
+  }
+
+  /** The most emeralds any parking meter may charge per block. */
+  public static int getParkingCapEmeralds() {
+    return parkingCapEmeralds;
+  }
+
+  /** The most money any parking meter may charge per block. */
+  public static double getParkingCapMoney() {
+    return parkingCapMoney;
   }
 
   /**

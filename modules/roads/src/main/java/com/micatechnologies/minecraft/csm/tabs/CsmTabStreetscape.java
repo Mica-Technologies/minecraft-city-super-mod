@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.streetscape.BlockFireHydrant;
+import com.micatechnologies.minecraft.csm.streetscape.BlockParkingMeter;
 import com.micatechnologies.minecraft.csm.streetscape.BlockStreetCover;
 import com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBox;
 import com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBoxLabelled;
@@ -228,5 +229,37 @@ public class CsmTabStreetscape extends CsmTab {
     initTabBlock(new BlockUtilityBox("utility_marker_telecom", new UtilityBoxSpec(1, 1, 2,
         new AxisAlignedBB(0.456250, 0.000000, 0.475000, 0.543750, 1.250000, 0.525000),
         null)));
+
+    // Parking meters (gen_streetscape_meters.py --fragments).
+    initTabBlock(new BlockParkingMeter("parking_meter_mechanical", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.350000, 0.000000, 0.356250, 0.650000, 1.306250, 0.612500),
+        null),
+        BlockParkingMeter.Kind.MECHANICAL, new float[][]{{8f, 17.6f, 6.15f, 3.2f, 2.6f}}));
+    initTabBlock(new BlockParkingMeter("parking_meter_mechanical_double",
+        new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.162500, 0.000000, 0.356250, 0.837500, 1.331250, 0.612500),
+        null),
+        BlockParkingMeter.Kind.MECHANICAL, new float[][]{
+            {11.0f, 18.0f, 6.15f, 3.0f, 2.6f},
+            {5.0f, 18.0f, 6.15f, 3.0f, 2.6f}}));
+    initTabBlock(new BlockParkingMeter("parking_meter_digital", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.343750, 0.000000, 0.371875, 0.656250, 1.412500, 0.625000),
+        null),
+        BlockParkingMeter.Kind.DIGITAL, new float[][]{{8f, 20.2f, 5.95f, 4.0f, 1.8f}}));
+    initTabBlock(new BlockParkingMeter("parking_meter_digital_double", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.162500, 0.000000, 0.371875, 0.837500, 1.437500, 0.625000),
+        null),
+        BlockParkingMeter.Kind.DIGITAL, new float[][]{
+            {11.0f, 20.6f, 5.95f, 3.6f, 1.8f},
+            {5.0f, 20.6f, 5.95f, 3.6f, 1.8f}}));
+    initTabBlock(new BlockParkingMeter("parking_pay_station", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.218750, 0.000000, 0.281250, 0.781250, 1.587500, 0.718750),
+        null),
+        BlockParkingMeter.Kind.STATION, new float[][]{{8f, 18.8f, 4.95f, 5.8f, 3.6f}}));
+    initTabBlock(new BlockUtilityBoxLabelled("parking_pay_by_phone_sign",
+        new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.218750, 0.000000, 0.462500, 0.781250, 1.625000, 0.562500),
+        new UtilityBoxSpec.Label(8.0f, 16.3f, 7.4f, 1, 1.3f, false,
+            0xF0F0EC, 0x16683E))));
   }
 }

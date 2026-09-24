@@ -117,5 +117,9 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.streetscape.TileEntityUtilityBoxLabel.class,
         new com.micatechnologies.minecraft.csm.streetscape.TileEntityUtilityBoxLabelRenderer());
+    // A parking meter's dial, LCD or pay station screen.
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.streetscape.TileEntityParkingMeter.class,
+        new com.micatechnologies.minecraft.csm.streetscape.TileEntityParkingMeterRenderer());
   }
 }

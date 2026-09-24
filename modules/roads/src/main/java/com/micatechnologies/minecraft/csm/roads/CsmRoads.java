@@ -26,6 +26,11 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityBarricade
 import com.micatechnologies.minecraft.csm.trafficaccessories.TrafficAccessoriesGuiProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacketHandler;
+import com.micatechnologies.minecraft.csm.streetscape.ParkingMeterActionPacket;
+import com.micatechnologies.minecraft.csm.streetscape.ParkingMeterActionPacketHandler;
+import com.micatechnologies.minecraft.csm.streetscape.ParkingMeterSettingsPacket;
+import com.micatechnologies.minecraft.csm.streetscape.ParkingMeterSettingsPacketHandler;
+import com.micatechnologies.minecraft.csm.streetscape.ParkingPaymentSum;
 import com.micatechnologies.minecraft.csm.streetscape.StreetscapeGuiProvider;
 import com.micatechnologies.minecraft.csm.streetscape.StreetscapeFabricatorRules;
 import com.micatechnologies.minecraft.csm.streetscape.UtilityBoxLabelPacket;
@@ -67,6 +72,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
@@ -239,12 +246,36 @@ public class CsmRoads {
         UtilityBoxLabelPacketHandler.class,
         UtilityBoxLabelPacket.class,
         Side.SERVER);
+    NETWORK.registerMessage(
+        ParkingMeterActionPacketHandler.class,
+        ParkingMeterActionPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        ParkingMeterSettingsPacketHandler.class,
+        ParkingMeterSettingsPacket.class,
+        Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
     // pre-initialization before it fires the sound registry event, so Core sees the complete
     // union when it creates the sound events.
     RoadsSounds.registerSounds();
     proxy.preInit(event);
+  }
+
+  /**
+   * Parking meters take money through SUM's economy when SUM is installed and allows it. SUM
+   * attaches its economy in its own server-starting handler, and SUM loads after CSM, so asking
+   * in this module's server-starting handler is too early: the handle is asked for once the
+   * server has started, after every mod's.
+   */
+  @Mod.EventHandler
+  public void serverStarted(FMLServerStartedEvent event) {
+    ParkingPaymentSum.acquire();
+  }
+
+  @Mod.EventHandler
+  public void serverStopping(FMLServerStoppingEvent event) {
+    ParkingPaymentSum.release();
   }
 
   @Mod.EventHandler

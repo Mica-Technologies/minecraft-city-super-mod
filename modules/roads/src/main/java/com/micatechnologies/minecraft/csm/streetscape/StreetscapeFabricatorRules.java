@@ -40,6 +40,18 @@ public final class StreetscapeFabricatorRules {
    */
   @Nullable
   public static List<FabricatorIngredient> price(Block block, String registryName) {
+    if (block instanceof BlockParkingMeter) {
+      // A digital meter or pay station is electronics in a steel case; a mechanical one is
+      // clockwork, and takes the generic cost.
+      if (((BlockParkingMeter) block).getKind() != BlockParkingMeter.Kind.MECHANICAL) {
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      }
+      return null;
+    }
+    if (registryName.equals("parking_pay_by_phone_sign")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+    }
     if (block instanceof BlockUtilityBox) {
       // A transformer is a steel cabinet full of windings on a concrete pad; every other box
       // is an enclosure, and takes the generic sheet metal and fasteners.
