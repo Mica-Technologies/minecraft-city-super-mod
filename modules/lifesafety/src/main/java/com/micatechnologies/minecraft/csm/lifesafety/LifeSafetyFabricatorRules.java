@@ -146,6 +146,9 @@ public final class LifeSafetyFabricatorRules {
     if (CsmBlockDisplayNames.hasWord(registryName, "valve")
         || CsmBlockDisplayNames.hasWord(registryName, "connection")
         || CsmBlockDisplayNames.hasWord(registryName, "riser")
+        || CsmBlockDisplayNames.hasWord(registryName, "pipe")
+        || CsmBlockDisplayNames.hasWord(registryName, "manifold")
+        || CsmBlockDisplayNames.hasWord(registryName, "outlet")
         || CsmBlockDisplayNames.hasWord(registryName, "preventer")
         || CsmBlockDisplayNames.hasWord(registryName, "box")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),

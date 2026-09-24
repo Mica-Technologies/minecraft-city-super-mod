@@ -1,0 +1,273 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_up"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_down"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "front": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_front"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "joint": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_joint"
+      }
+    },
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_air_valve_red_body"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_up",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_down",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "front": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_front",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "joint": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_joint",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_air_valve_red_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_up",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_down",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "front": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_front",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "joint": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_joint",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_air_valve_red_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_up",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_down",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "front": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_arm_front",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "joint": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_wall_joint",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_air_valve_red_body",
+        "y": 270
+      }
+    }
+  ]
+}

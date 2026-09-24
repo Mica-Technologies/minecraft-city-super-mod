@@ -642,12 +642,8 @@ fp_prop("standpipe_hose_valve", (5, 4, 5, 11, 12, 16), True,
             + [box([6.4, 5.6, 5.49], [9.6, 8.8, 5.5], "cap", faces=("north",))])},
         facing_state(M("standpipe_hose_valve")))
 
-fp_prop("standpipe_riser", (5, 0, 9, 11, 16, 16), True,
-        ("Standpipe Riser", "Steigleitung", "Tubería vertical de columna seca", "Stigarledning"),
-        {"standpipe_riser": model({"red": T("red"), "steel": T("steel"), "particle": T("red")},
-                                  post(8, 12, 2.5, 0, 16, "red", top=False, bottom=False)
-                                  + [box([5, 6, 14.5], [11, 7, 16], "steel")])},
-        facing_state(M("standpipe_riser")))
+# The Standpipe Riser is the red wall branch pipe of the connectable standpipe now, and
+# gen_standpipe_system.py writes it.
 
 
 def siamese(reg, names, metal, plate, cap):

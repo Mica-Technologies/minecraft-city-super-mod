@@ -316,7 +316,8 @@ def cost_for(registry, info, ancestors):
             return ("SHEET_METAL x2", "FASTENER_KIT")
         if has_word(registry, "extinguisher"):
             return ("SHEET_METAL x2",)
-        if has_any(registry, ("valve", "connection", "riser", "preventer", "box")):
+        if has_any(registry, ("valve", "connection", "riser", "pipe", "manifold", "outlet",
+                              "preventer", "box")):
             return ("SHEET_METAL", "FASTENER_KIT")
         return ("SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabemergencyservices":

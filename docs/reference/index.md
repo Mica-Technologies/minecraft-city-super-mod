@@ -15,7 +15,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Gaming](gaming.md) | 19 | Arcade cabinets and the playable machines that go with them. |
 | [Emergency Services](emergency-services.md) | 62 | Fire, police and ambulance station fittings, community warning sirens and dispatch. |
 | [Exits & Emergency Lighting](exits-and-emergency-lighting.md) | 38 | Exit and stair signs, and the emergency lights that take over when the power fails. |
-| [Fire Protection](fire-protection.md) | 37 | Sprinklers and the rest of what a building fights a fire with besides its alarm. |
+| [Fire Protection](fire-protection.md) | 52 | Sprinklers and the rest of what a building fights a fire with besides its alarm. |
 | [HVAC](hvac.md) | 45 | Heating and cooling that actually simulates room temperature. |
 | [Interior Finishes](interior-finishes.md) | 60 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
 | [Fire Alarm & Detection](life-safety.md) | 127 | Fire alarm panels, pull stations, horns, strobes, speakers and detectors. |
@@ -33,7 +33,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Trees & Plants](trees-and-plants.md) | 134 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Unlisted](unlisted.md) | 127 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **2510** | |
+| **Total** | **2525** | |
 
 ## How to read the table
 

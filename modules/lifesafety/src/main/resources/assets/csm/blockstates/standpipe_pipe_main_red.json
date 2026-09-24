@@ -1,0 +1,60 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_arm_north"
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_arm_south"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_arm_east"
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_arm_west"
+      }
+    },
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_arm_up"
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_arm_down"
+      }
+    },
+    {
+      "when": {
+        "joint": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_red_joint"
+      }
+    }
+  ]
+}

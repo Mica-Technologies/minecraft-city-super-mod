@@ -622,6 +622,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   open, standpipe, fire department connections, riser room valves, the water motor gong, door
   holders, sign plates) and the new detectors and remote annunciator in Fire Alarm & Detection;
   `--check`, `--fragments`
+- `gen_standpipe_system.py` -- the connectable dry standpipe in Fire Protection: free-standing
+  (`BlockStandpipePipe`, six-way) and wall-run (`BlockStandpipeWallPipe`, axis set back to the
+  wall) pipe, main and branch, red and silver, as multipart blockstates of per-side arm models,
+  plus the inlet manifold, hose outlet, air release and drain valves as wall pipes with a body
+  at the joint. Also writes `standpipe_riser`, the red wall branch pipe; `--check`, `--fragments`
 - `gen_emergency_lighting.py` -- the emergency lights added to Exits & Emergency Lighting
   (twin-head units, LED bar, remote heads, wall pack, recessed downlight), all one factory class;
   the lamp boxes in its tab lines are the model's lamps, so the renderer's glow sits on them;

@@ -2,7 +2,7 @@
 
 Sprinklers and the rest of what a building fights a fire with besides its alarm.
 
-!!! info "37 blocks in this tab"
+!!! info "52 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -43,7 +43,22 @@ Sprinklers and the rest of what a building fights a fire with besides its alarm.
 | Post Indicator Valve | `csm:post_indicator_valve` | 2.0 | 6.0 | pickaxe | 0 |
 | Sprinkler Riser Alarm Check Valve | `csm:sprinkler_alarm_valve` | 2.0 | 6.0 | pickaxe | 0 |
 | Sprinkler Riser Room Sign | `csm:riser_sign` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Air Release Valve (Red) | `csm:standpipe_air_valve_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Air Release Valve (Silver) | `csm:standpipe_air_valve_silver` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Branch Pipe (Red) | `csm:standpipe_pipe_branch_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Branch Pipe (Silver) | `csm:standpipe_pipe_branch_silver` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Branch Pipe, Wall (Silver) | `csm:standpipe_wall_pipe_branch_silver` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Drain Valve (Red) | `csm:standpipe_drain_valve_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Drain Valve (Silver) | `csm:standpipe_drain_valve_silver` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Hose Outlet (Red) | `csm:standpipe_hose_outlet_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Hose Outlet (Silver) | `csm:standpipe_hose_outlet_silver` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Hose Valve | `csm:standpipe_hose_valve` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Inlet Manifold (Red) | `csm:standpipe_inlet_manifold_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Inlet Manifold (Silver) | `csm:standpipe_inlet_manifold_silver` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Main Pipe (Red) | `csm:standpipe_pipe_main_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Main Pipe (Silver) | `csm:standpipe_pipe_main_silver` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Main Pipe, Wall (Red) | `csm:standpipe_wall_pipe_main_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Main Pipe, Wall (Silver) | `csm:standpipe_wall_pipe_main_silver` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Riser | `csm:standpipe_riser` | 2.0 | 6.0 | pickaxe | 0 |
 | Storz Fire Department Connection | `csm:fdc_storz` | 2.0 | 6.0 | pickaxe | 0 |
 | Water Fire Extinguisher | `csm:fire_extinguisher_water` | 2.0 | 6.0 | pickaxe | 0 |
