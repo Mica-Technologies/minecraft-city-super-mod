@@ -45,6 +45,10 @@ public enum RoadsSounds implements ICsmSound {
   CROSSWALK_CANADIAN_MELODY_HURRY("crosswalk_canadian_melody_hurry"),
   CROSSWALK_MALE2_AUTOMATED("crosswalk_male2_automated"),
   CROSSWALK_MALE2_CROSS("crosswalk_male2_cross"),
+  CAMPBELL_OLD_LOCATE("campbell_old_locate"),
+  CROSSWALK_MALE2_WAIT("crosswalk_male2_wait"),
+  CROSSWALK_BEEPBOOP("crosswalk_beepboop"),
+  CROSSWALK_AWAHH("crosswalk_awahh"),
   /** One second of the crossing bell's strikes; the flasher plays it once a second while active. */
   RAILROAD_CROSSING_BELL("railroad_crossing_bell");
 

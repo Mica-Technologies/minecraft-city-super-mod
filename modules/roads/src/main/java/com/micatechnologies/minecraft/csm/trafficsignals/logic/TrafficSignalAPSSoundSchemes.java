@@ -28,6 +28,7 @@ public class TrafficSignalAPSSoundSchemes {
    *   <li>Campbell Phil Voice - Walk Sign is On for All Crossings</li>
    *   <li>Campbell Canadian Melody (with its hurried melody through the clearance)</li>
    *   <li>Campbell Automated Walk Signal</li>
+   *   <li>Campbell Ancient</li>
    * </ul>
    *
    * @since 1.0
@@ -83,7 +84,10 @@ public class TrafficSignalAPSSoundSchemes {
           new TrafficSignalAPSSoundScheme("Campbell Automated Walk Signal",
               RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CROSSWALK_MALE2_AUTOMATED, 80,
               RoadsSounds.CROSSWALK_MALE2_AUTOMATED, 80, RoadsSounds.CROSSWALK_MALE2_CROSS,
-              80)};
+              80),
+          new TrafficSignalAPSSoundScheme("Campbell Ancient",
+              RoadsSounds.CAMPBELL_OLD_LOCATE, RoadsSounds.CROSSWALK_MALE2_WAIT, 20,
+              RoadsSounds.CROSSWALK_MALE2_WAIT, 20, RoadsSounds.CROSSWALK_BEEPBOOP, 60)};
   /**
    * The Polara sound schemes.
    *
@@ -95,6 +99,7 @@ public class TrafficSignalAPSSoundSchemes {
    *   <li>Polara Spanish Voice - Walk Sign is On</li>
    *   <li>Polara Spanish Voice - Walk Sign is on for All Crossings</li>
    *   <li>Polara Automated Walk Signal</li>
+   *   <li>Polara Meme</li>
    * </ul>
    *
    * @since 1.0
@@ -125,5 +130,8 @@ public class TrafficSignalAPSSoundSchemes {
           new TrafficSignalAPSSoundScheme("Polara Automated Walk Signal",
               RoadsSounds.POLARA_TONE1, RoadsSounds.CROSSWALK_MALE2_AUTOMATED, 80,
               RoadsSounds.CROSSWALK_MALE2_AUTOMATED, 80, RoadsSounds.CROSSWALK_MALE2_CROSS,
-              80)};
+              80),
+          new TrafficSignalAPSSoundScheme("Polara Meme",
+              RoadsSounds.POLARA_TONE1, RoadsSounds.POLARA_WAIT, 20,
+              RoadsSounds.POLARA_WAIT, 20, RoadsSounds.CROSSWALK_AWAHH, 60)};
 }

@@ -72,6 +72,7 @@ inserting one earlier would silently change the sound of every button already pl
 | 11 | Audio Disabled | — | — | — | — |
 | 12 | Canadian Melody | campbell_tone1 | campbell_wait | crosswalk_canadian_melody (clearance: crosswalk_canadian_melody_hurry, 40t) | 60t |
 | 13 | Automated Walk Signal | campbell_tone1 | crosswalk_male2_automated (80t) | crosswalk_male2_cross | 80t |
+| 14 | Ancient | campbell_old_locate | crosswalk_male2_wait | crosswalk_beepboop | 60t |
 
 ### Polara (`TileEntityTrafficSignalAPSPolara`)
 
@@ -85,6 +86,7 @@ inserting one earlier would silently change the sound of every button already pl
 | 6 | Spanish Voice - Walk Sign On All Crossings | polara_tone1 | polara_lang2_wait | polara_lang2_walk_all_crossings | 100t |
 | 7 | Audio Disabled | — | — | — | — |
 | 8 | Automated Walk Signal | polara_tone1 | crosswalk_male2_automated (80t) | crosswalk_male2_cross | 80t |
+| 9 | Meme | polara_tone1 | polara_wait | crosswalk_awahh | 60t |
 
 The Automated Walk Signal is on both lists with the same voice, but each list keeps its own
 brand's locate tone, so a Campbell button never chirps like a Polara one.

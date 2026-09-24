@@ -260,6 +260,42 @@
       }
     ]
   },
+  "campbell_old_locate": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_old_locate",
+        "stream": false
+      }
+    ]
+  },
+  "crosswalk_male2_wait": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:crosswalk_male2_wait",
+        "stream": false
+      }
+    ]
+  },
+  "crosswalk_beepboop": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:crosswalk_beepboop",
+        "stream": false
+      }
+    ]
+  },
+  "crosswalk_awahh": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:crosswalk_awahh",
+        "stream": false
+      }
+    ]
+  },
   "railroad_crossing_bell": {
     "category": "block",
     "sounds": [

@@ -77,7 +77,8 @@ class TrafficSignalAPSSoundSchemesTest {
         "Campbell Phil Voice - Walk Sign is On for All Crossings",
         "Audio Disabled",
         "Campbell Canadian Melody",
-        "Campbell Automated Walk Signal"};
+        "Campbell Automated Walk Signal",
+        "Campbell Ancient"};
     for (int i = 0; i < shipped.length; i++) {
       assertEquals(shipped[i], TrafficSignalAPSSoundSchemes.CAMPBELL[i].getName(),
           "Campbell scheme " + i + " moved; saved buttons would change sound");
@@ -148,7 +149,8 @@ class TrafficSignalAPSSoundSchemesTest {
         "Polara Spanish Voice - Walk Sign is On",
         "Polara Spanish Voice - Walk Sign is on for All Crossings",
         "Audio Disabled",
-        "Polara Automated Walk Signal"};
+        "Polara Automated Walk Signal",
+        "Polara Meme"};
     for (int i = 0; i < shipped.length; i++) {
       assertEquals(shipped[i], TrafficSignalAPSSoundSchemes.POLARA[i].getName(),
           "Polara scheme " + i + " moved; saved buttons would change sound");
@@ -243,13 +245,13 @@ class TrafficSignalAPSSoundSchemesTest {
   // region: Array sizes
 
   @Test
-  void campbellHas13Schemes() {
-    assertEquals(13, TrafficSignalAPSSoundSchemes.CAMPBELL.length);
+  void campbellHas14Schemes() {
+    assertEquals(14, TrafficSignalAPSSoundSchemes.CAMPBELL.length);
   }
 
   @Test
-  void polaraHas8Schemes() {
-    assertEquals(8, TrafficSignalAPSSoundSchemes.POLARA.length);
+  void polaraHas9Schemes() {
+    assertEquals(9, TrafficSignalAPSSoundSchemes.POLARA.length);
   }
 
   // endregion
