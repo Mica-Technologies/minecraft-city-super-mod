@@ -19,7 +19,10 @@ import net.minecraft.world.IBlockAccess;
 public enum SurfaceRest implements IStringSerializable {
   /** The floor, or anything full height: no drop. */
   FLOOR(0),
-  /** A kitchen countertop, an island, the range, the dishwasher, the chest freezer's lid. */
+  /**
+   * A kitchen countertop, an island, the range, the dishwasher, the chest freezer's lid, a
+   * bathroom vanity, the washing machine and dryer, the ironing board.
+   */
   COUNTER(1.5),
   /** A sideboard, a dresser. */
   SIDEBOARD(2),
@@ -62,7 +65,11 @@ public enum SurfaceRest implements IStringSerializable {
       return ((BlockKitchenCabinet) block).getLine() == KitchenLine.WALL ? FLOOR : COUNTER;
     }
     if (block instanceof BlockBuiltInAppliance) {
-      return ((BlockBuiltInAppliance) block).getLine() == KitchenLine.BASE ? COUNTER : FLOOR;
+      BlockBuiltInAppliance appliance = (BlockBuiltInAppliance) block;
+      // The washing machine and dryer stand free, their tops at a countertop's height.
+      String name = appliance.getBlockRegistryName();
+      return appliance.getLine() == KitchenLine.BASE || name.startsWith("washing_machine_")
+          || name.startsWith("dryer_") ? COUNTER : FLOOR;
     }
     if (block instanceof BlockDiningTable) {
       return TABLE;
@@ -99,6 +106,10 @@ public enum SurfaceRest implements IStringSerializable {
       }
       if (name.startsWith("blanket_chest_")) {
         return COFFEE_TABLE;
+      }
+      // The ironing board's top is at a countertop's height, so an iron stands on it.
+      if (name.startsWith("ironing_board_")) {
+        return COUNTER;
       }
     }
     return FLOOR;

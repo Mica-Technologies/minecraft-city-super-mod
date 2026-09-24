@@ -1,0 +1,82 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/shower_enclosure_chrome_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/shower_enclosure_chrome_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/shower_enclosure_chrome_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/shower_enclosure_chrome_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/shower_enclosure_chrome_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/shower_enclosure_chrome_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/shower_enclosure_chrome_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/shower_enclosure_chrome_upper",
+        "y": 270
+      }
+    }
+  ]
+}

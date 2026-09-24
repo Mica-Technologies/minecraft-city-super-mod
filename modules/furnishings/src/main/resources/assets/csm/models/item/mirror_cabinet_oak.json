@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/residential/base/mirror_cabinet_item",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "edge": "csm:blocks/furniture/residential/oak_edge"
+  }
+}

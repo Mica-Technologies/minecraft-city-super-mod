@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/residential/base/laundry_basket_item",
+  "textures": {
+    "wicker": "csm:blocks/furniture/residential/basket_white",
+    "wicker_rim": "csm:blocks/furniture/residential/basket_white_rim"
+  }
+}

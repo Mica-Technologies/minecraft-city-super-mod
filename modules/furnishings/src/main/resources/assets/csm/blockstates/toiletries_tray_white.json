@@ -1,0 +1,51 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/toiletries_tray_floor",
+    "textures": {
+      "porcelain": "csm:blocks/furniture/residential/porcelain"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/residential/base/toiletries_tray_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/residential/base/toiletries_tray_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/residential/base/toiletries_tray_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/residential/base/toiletries_tray_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/residential/base/toiletries_tray_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/residential/base/toiletries_tray_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/residential/base/toiletries_tray_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/residential/base/toiletries_tray_item"
+      }
+    ]
+  }
+}

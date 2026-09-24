@@ -1,0 +1,34 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/baby_changing_station_closed",
+    "textures": {
+      "plastic": "csm:blocks/furniture/residential/plastic_grey"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "open": {
+      "true": {
+        "model": "csm:furniture/residential/base/baby_changing_station_open"
+      },
+      "false": {
+        "model": "csm:furniture/residential/base/baby_changing_station_closed"
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

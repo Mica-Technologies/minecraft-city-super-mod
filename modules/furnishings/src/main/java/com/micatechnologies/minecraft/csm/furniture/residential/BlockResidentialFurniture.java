@@ -97,14 +97,33 @@ public class BlockResidentialFurniture extends AbstractBlockRotatableNSEW {
    */
   protected BlockResidentialFurniture(String registryName, int[] box, Material material,
       SoundType sound, float hardness) {
+    this(registryName, box, material, sound, hardness, -16, 0, 0);
+  }
+
+  /**
+   * Constructs a piece of another material with a seat: a toilet (porcelain), a bathtub.
+   *
+   * @param registryName  its registry name
+   * @param box           its box facing north, in sixteenths: {x0, y0, z0, x1, y1, z1}
+   * @param material      its material
+   * @param sound         the sound of placing, stepping on and breaking it
+   * @param hardness      how long it takes to break
+   * @param seatTopPx     the top of the seat above the floor, in sixteenths (negative: none)
+   * @param seatForwardPx how far forward of the block's middle the seat's middle is, in
+   *                      sixteenths
+   * @param seatLeftPx    how far to the sitter's left of the block's middle, in sixteenths
+   */
+  protected BlockResidentialFurniture(String registryName, int[] box, Material material,
+      SoundType sound, float hardness, double seatTopPx, double seatForwardPx,
+      double seatLeftPx) {
     super(stash(registryName, material), sound, "pickaxe", 0, hardness, hardness * 2.0F, 0.0F,
         0);
     this.registryName = registryName;
     this.box = new AxisAlignedBB(box[0] / 16.0, box[1] / 16.0, box[2] / 16.0, box[3] / 16.0,
         box[4] / 16.0, box[5] / 16.0);
-    this.seatTop = -1;
-    this.seatForward = 0;
-    this.seatLeft = 0;
+    this.seatTop = seatTopPx / 16.0;
+    this.seatForward = seatForwardPx / 16.0;
+    this.seatLeft = seatLeftPx / 16.0;
     PENDING.remove();
   }
 

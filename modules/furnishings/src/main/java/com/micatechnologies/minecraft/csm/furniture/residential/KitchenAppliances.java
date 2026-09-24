@@ -102,7 +102,8 @@ public final class KitchenAppliances {
   }
 
   /**
-   * Whether the appliance at {@code pos} stands beside a kitchen sink base, and so is plumbed.
+   * Whether the appliance at {@code pos} stands beside a block with a tap (a kitchen sink base,
+   * a bathroom vanity, a pedestal sink, a laundry tub: an {@link IWaterTap}), and so is plumbed.
    *
    * @param world the world
    * @param pos   the appliance
@@ -111,7 +112,7 @@ public final class KitchenAppliances {
    */
   public static boolean nextToSink(World world, BlockPos pos) {
     for (EnumFacing side : EnumFacing.HORIZONTALS) {
-      if (world.getBlockState(pos.offset(side)).getBlock() instanceof BlockKitchenSink) {
+      if (world.getBlockState(pos.offset(side)).getBlock() instanceof IWaterTap) {
         return true;
       }
     }

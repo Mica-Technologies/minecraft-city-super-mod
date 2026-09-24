@@ -651,6 +651,15 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   joining white closet) cut into halves, the one-block storage and seats, and rugs whose border
   is drawn only on an open side (multipart `OR` corners); `--check`, `--fragments`. The mattress
   heights must match `BedLayout.java`
+- `gen_furniture_bathroom.py` -- the bathroom, commercial restroom and laundry, importing the
+  residential, kitchen, bedroom and appliance generators: toilet, pedestal sink, vanities that
+  join under one top (own `KitchenLine`), mirror cabinets, the two-block bathtub (cut into cells
+  like a bed, its water a part shown while full), the two-tall shower enclosure (translucent
+  glass), shower head, towel rails, radiator, wastebaskets, bath mats (the bedroom's rug geometry
+  in terry), urinal, dispensers, grab bar, the fold-down changing station, the washing machine
+  and dryer (round door windows as cutouts, lit while running), iron, ironing board, baskets and
+  laundry tub; `--check`, `--fragments`. `gen_furniture_sounds.py` synthesises the flush, shower,
+  washer, dryer and iron sounds
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

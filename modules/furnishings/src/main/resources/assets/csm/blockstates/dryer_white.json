@@ -1,0 +1,42 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/dryer",
+    "textures": {
+      "shell": "csm:blocks/furniture/residential/appliance_white",
+      "door": "csm:blocks/furniture/residential/appliance_white",
+      "handle": "csm:blocks/furniture/residential/appliance_trim",
+      "trim": "csm:blocks/furniture/residential/appliance_trim",
+      "glow": "csm:blocks/furniture/residential/dryer_window_off"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "running": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/dryer_window_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/dryer_window_off"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

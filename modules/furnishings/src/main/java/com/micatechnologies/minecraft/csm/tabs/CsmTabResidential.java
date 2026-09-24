@@ -3,6 +3,10 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.furniture.residential.BedLayout;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockBasin;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockBathroomFixture;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockBathroomVanity;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockBathtub;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBookcase;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBuiltInAppliance;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockChestFreezer;
@@ -12,22 +16,29 @@ import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterAppl
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterPiece;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockDiningTable;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockDishwasher;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockFoldingFixture;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCabinet;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCorner;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenLight;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenSink;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockLaundryAppliance;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockRefrigerator;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialBed;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialFurniture;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialTall;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockRug;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockShower;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockShowerHead;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockSofa;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockSofaCorner;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockToilet;
+import com.micatechnologies.minecraft.csm.furniture.residential.FixtureMaterial;
 import com.micatechnologies.minecraft.csm.furniture.residential.ItemResidentialFood;
 import com.micatechnologies.minecraft.csm.furniture.residential.KitchenAppliances;
 import com.micatechnologies.minecraft.csm.furniture.residential.KitchenFront;
 import com.micatechnologies.minecraft.csm.furniture.residential.KitchenLine;
+import com.micatechnologies.minecraft.csm.furniture.residential.LaundryAppliances;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -42,9 +53,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * stands, sideboards, armchairs and sofas), each in three wood finishes or four fabrics, then the
  * kitchen (cabinets, sink, island, hoods, lights, refrigerators, freezer), then its working
  * appliances, the things on its counters and the tableware, and the food and drink the
- * appliances make; then the bedroom, study and nursery. The lines below are printed by {@code gen_furniture_residential.py
- * --fragments}, {@code gen_furniture_kitchen.py --fragments} and
- * {@code gen_furniture_appliances.py --fragments} and {@code gen_furniture_bedroom.py --fragments}.
+ * appliances make; then the bedroom, study and nursery; then the bathroom, a commercial
+ * restroom's fittings and the laundry. The lines below are printed by
+ * {@code gen_furniture_residential.py --fragments}, {@code gen_furniture_kitchen.py --fragments},
+ * {@code gen_furniture_appliances.py --fragments}, {@code gen_furniture_bedroom.py --fragments}
+ * and {@code gen_furniture_bathroom.py --fragments}.
  *
  * @version 1.0
  * @since 2026.9
@@ -384,5 +397,97 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockRug("rug_navy"));
     initTabBlock(new BlockRug("rug_oatmeal"));
     initTabBlock(new BlockRug("rug_red"));
+
+    // ---- Bathroom ----
+    // Toilet
+    initTabBlock(new BlockToilet("toilet_white", new int[]{3, 0, 2, 13, 16, 16}));
+
+    // Toilet Paper Holder
+    initTabBlock(new BlockBathroomFixture("toilet_paper_holder_chrome", new int[]{4, 8, 11, 12, 13, 16}, FixtureMaterial.METAL));
+
+    // Pedestal Sink
+    initTabBlock(new BlockBasin("pedestal_sink_white", new int[]{2, 0, 3, 14, 16, 16}, FixtureMaterial.PORCELAIN));
+
+    // Bathroom Vanity
+    initTabBlock(new BlockBathroomVanity("bathroom_vanity_oak"));
+    initTabBlock(new BlockBathroomVanity("bathroom_vanity_walnut"));
+    initTabBlock(new BlockBathroomVanity("bathroom_vanity_white"));
+
+    // Mirror Cabinet
+    initTabBlock(new BlockResidentialStorage("mirror_cabinet_oak", new int[]{1, 1, 12, 15, 15, 16}, 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockResidentialStorage("mirror_cabinet_walnut", new int[]{1, 1, 12, 15, 15, 16}, 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockResidentialStorage("mirror_cabinet_white", new int[]{1, 1, 12, 15, 15, 16}, 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+
+    // Bathtub
+    initTabBlock(new BlockBathtub("bathtub_white"));
+
+    // Shower Enclosure
+    initTabBlock(new BlockShower("shower_enclosure_chrome", new int[]{0, 0, 0, 16, 31, 16}));
+
+    // Shower Head
+    initTabBlock(new BlockShowerHead("shower_head_chrome", new int[]{5, 3, 8, 11, 14, 16}));
+
+    // Towel Rail
+    initTabBlock(new BlockBathroomFixture("towel_rail_chrome", new int[]{2, 6, 13, 14, 14, 16}, FixtureMaterial.METAL));
+
+    // Heated Towel Rail
+    initTabBlock(new BlockBathroomFixture("heated_towel_rail_chrome", new int[]{1, 1, 13, 15, 16, 16}, FixtureMaterial.METAL));
+
+    // Bathroom Radiator
+    initTabBlock(new BlockBathroomFixture("bathroom_radiator_white", new int[]{0, 0, 13, 16, 14, 16}, FixtureMaterial.METAL));
+
+    // Wastebasket
+    initTabBlock(new BlockResidentialStorage("wastebasket_stainless", new int[]{4, 0, 4, 12, 9, 13}, 9, FurnishingsSounds.JAR_LID, null));
+    initTabBlock(new BlockResidentialStorage("wastebasket_white", new int[]{4, 0, 4, 12, 9, 13}, 9, FurnishingsSounds.JAR_LID, null));
+
+    // Toiletries Tray
+    initTabBlock(new BlockCounterPiece("toiletries_tray_white", new int[]{3, 0, 5, 13, 6, 11}, Material.GLASS, SoundType.GLASS, BlockRenderLayer.SOLID));
+
+    // Toilet Brush
+    initTabBlock(new BlockCounterPiece("toilet_brush_stainless", new int[]{6, 0, 6, 10, 11, 10}, Material.WOOD, SoundType.METAL, BlockRenderLayer.SOLID));
+
+    // Bath Mat
+    initTabBlock(new BlockRug("bath_mat_white"));
+    initTabBlock(new BlockRug("bath_mat_blue"));
+    initTabBlock(new BlockRug("bath_mat_grey"));
+
+    // ---- Commercial restroom ----
+    // Urinal
+    initTabBlock(new BlockBathroomFixture("urinal_white", new int[]{4, 3, 7, 12, 16, 16}, FixtureMaterial.PORCELAIN, FurnishingsSounds.TOILET_FLUSH, 1.3F));
+
+    // Soap Dispenser
+    initTabBlock(new BlockBathroomFixture("soap_dispenser_white", new int[]{6, 7, 12, 10, 14, 16}, FixtureMaterial.PLASTIC));
+
+    // Paper Towel Dispenser
+    initTabBlock(new BlockBathroomFixture("paper_towel_dispenser_stainless", new int[]{3, 4, 11, 13, 15, 16}, FixtureMaterial.METAL));
+
+    // Grab Bar
+    initTabBlock(new BlockBathroomFixture("grab_bar_stainless", new int[]{1, 12, 13, 15, 15, 16}, FixtureMaterial.METAL));
+
+    // Baby Changing Station
+    initTabBlock(new BlockFoldingFixture("baby_changing_station_grey", new int[]{1, 0, 12, 15, 16, 16}, new int[]{1, 0, 2, 15, 4, 16}, FixtureMaterial.PLASTIC));
+
+    // ---- Laundry ----
+    // Washing Machine
+    initTabBlock(new BlockLaundryAppliance("washing_machine_white", new int[]{0, 0, 0, 16, 15, 16}, LaundryAppliances.WASHING_MACHINE));
+    initTabBlock(new BlockLaundryAppliance("washing_machine_stainless", new int[]{0, 0, 0, 16, 15, 16}, LaundryAppliances.WASHING_MACHINE));
+
+    // Tumble Dryer
+    initTabBlock(new BlockLaundryAppliance("dryer_white", new int[]{0, 0, 0, 16, 15, 16}, LaundryAppliances.DRYER));
+    initTabBlock(new BlockLaundryAppliance("dryer_stainless", new int[]{0, 0, 0, 16, 15, 16}, LaundryAppliances.DRYER));
+
+    // Steam Iron
+    initTabBlock(new BlockCounterPiece("steam_iron_blue", new int[]{5, 0, 2, 11, 4, 12}, Material.WOOD, SoundType.METAL, BlockRenderLayer.SOLID, FurnishingsSounds.IRON_STEAM, 1.0F, new double[]{8, 0.5, 3.25}));
+
+    // Ironing Board
+    initTabBlock(new BlockBathroomFixture("ironing_board_blue", new int[]{0, 0, 5, 16, 15, 11}, FixtureMaterial.METAL));
+    initTabBlock(new BlockBathroomFixture("ironing_board_grey", new int[]{0, 0, 5, 16, 15, 11}, FixtureMaterial.METAL));
+
+    // Laundry Basket
+    initTabBlock(new BlockResidentialStorage("laundry_basket_wicker", new int[]{2, 0, 3, 14, 9, 13}, 9));
+    initTabBlock(new BlockResidentialStorage("laundry_basket_white", new int[]{2, 0, 3, 14, 9, 13}, 9));
+
+    // Laundry Tub
+    initTabBlock(new BlockBasin("laundry_tub_white", new int[]{1, 0, 3, 15, 16, 16}, FixtureMaterial.PLASTIC));
   }
 }

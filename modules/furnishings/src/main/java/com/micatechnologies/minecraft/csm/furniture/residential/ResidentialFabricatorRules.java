@@ -12,7 +12,8 @@ import net.minecraft.block.Block;
  * Furniture tab's is, in proportion to how much of it there is; upholstery adds wool, a
  * bookcase its books, and the cafe table's cast iron base an iron ingot. The kitchen adds stone
  * for its countertops and prices its appliances as sheet metal and electrics, its tableware as
- * clay or glass. The bedroom's beds are wool and planks, as a vanilla bed is.
+ * clay or glass. The bedroom's beds are wool and planks, as a vanilla bed is. The bathroom's
+ * porcelain is clay, its rails iron, its laundry appliances priced as the dishwasher.
  *
  * <p>Priced by registry name, whose piece is its first words and whose finish is its last
  * ({@code sofa_corner_navy}). {@code audit_fabricator_costs.py} mirrors this.</p>
@@ -33,6 +34,7 @@ public final class ResidentialFabricatorRules {
   private static final String MC_CLAY = "minecraft:clay_ball";
   private static final String MC_CAKE = "minecraft:cake";
   private static final String MC_GLASS_PANE = "minecraft:glass_pane";
+  private static final String MC_PAPER = "minecraft:paper";
 
   private ResidentialFabricatorRules() {
   }
@@ -47,6 +49,10 @@ public final class ResidentialFabricatorRules {
    */
   @Nullable
   public static List<FabricatorIngredient> price(Block block, String registryName) {
+    List<FabricatorIngredient> bathroom = bathroom(registryName);
+    if (bathroom != null) {
+      return bathroom;
+    }
     List<FabricatorIngredient> kitchen = kitchen(registryName);
     if (kitchen != null) {
       return kitchen;
@@ -86,6 +92,102 @@ public final class ResidentialFabricatorRules {
     // Chairs, stools and the smaller tables.
     return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
         FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+  }
+
+  /**
+   * The bathroom, restroom and laundry: porcelain is fired clay (a toilet or a bath a good deal
+   * of it), with a steel tap or valve where it has one; rails, holders and grab bars are iron;
+   * the vanity and mirror cabinet are timber like the kitchen's, with clay for the basin and
+   * glass for the mirror; the shower is glass in a steel frame on a porcelain tray; the washing
+   * machine and dryer are priced as the dishwasher is.
+   *
+   * @param registryName the registry name
+   *
+   * @return the cost, or null if it is none of these
+   */
+  @Nullable
+  private static List<FabricatorIngredient> bathroom(String registryName) {
+    if (registryName.startsWith("toilet_paper_holder_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1),
+          FabricatorIngredient.any(MC_PAPER, 1));
+    }
+    if (registryName.startsWith("toilet_brush_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("toilet_") || registryName.startsWith("urinal_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 4),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("pedestal_sink_") || registryName.startsWith("laundry_tub_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 3),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("bathroom_vanity_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.any(MC_CLAY, 2), FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("mirror_cabinet_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.any(MC_GLASS_PANE, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("bathtub_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 6),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("shower_head_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("shower_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_GLASS_PANE, 4),
+          FabricatorIngredient.any(MC_CLAY, 2), FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("towel_rail_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1),
+          FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("heated_towel_rail_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("bathroom_radiator_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+    }
+    if (registryName.startsWith("wastebasket_") || registryName.startsWith("soap_dispenser_")
+        || registryName.startsWith("paper_towel_dispenser_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("toiletries_tray_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 1),
+          FabricatorIngredient.any(MC_GLASS, 1));
+    }
+    if (registryName.startsWith("bath_mat_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("grab_bar_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 2));
+    }
+    if (registryName.startsWith("baby_changing_station_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("washing_machine_") || registryName.startsWith("dryer_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("steam_iron_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("ironing_board_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 2),
+          FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("laundry_basket_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2));
+    }
+    return null;
   }
 
   /**

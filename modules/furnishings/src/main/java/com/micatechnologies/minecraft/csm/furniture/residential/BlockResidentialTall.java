@@ -5,7 +5,9 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -65,9 +67,32 @@ public class BlockResidentialTall extends BlockResidentialFurniture
     this.slots = slots;
     this.openSound = openSound;
     this.closeSound = closeSound;
-    this.upperBox = new AxisAlignedBB(box[0] / 16.0, Math.max(box[1] - 16, 0) / 16.0,
-        box[2] / 16.0, box[3] / 16.0, Math.max(box[4] - 16, 1) / 16.0, box[5] / 16.0);
+    this.upperBox = upperBox(box);
     setDefaultState(getDefaultState().withProperty(UPPER, false));
+  }
+
+  /**
+   * Constructs a two-block piece of another material that stores nothing: a shower enclosure.
+   *
+   * @param registryName its registry name
+   * @param box          its box facing north, in sixteenths from the floor of the lower half
+   * @param material     its material
+   * @param sound        the sound of placing, stepping on and breaking it
+   * @param hardness     how long it takes to break
+   */
+  protected BlockResidentialTall(String registryName, int[] box, Material material,
+      SoundType sound, float hardness) {
+    super(registryName, lowerBox(box), material, sound, hardness);
+    this.slots = 0;
+    this.openSound = null;
+    this.closeSound = null;
+    this.upperBox = upperBox(box);
+    setDefaultState(getDefaultState().withProperty(UPPER, false));
+  }
+
+  private static AxisAlignedBB upperBox(int[] box) {
+    return new AxisAlignedBB(box[0] / 16.0, Math.max(box[1] - 16, 0) / 16.0, box[2] / 16.0,
+        box[3] / 16.0, Math.max(box[4] - 16, 1) / 16.0, box[5] / 16.0);
   }
 
   private static int[] lowerBox(int[] box) {

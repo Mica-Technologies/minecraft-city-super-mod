@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/residential/base/rug_side",
+  "textures": {
+    "rug": "csm:blocks/furniture/residential/bath_mat_white",
+    "rug_border": "csm:blocks/furniture/residential/bath_mat_border_white"
+  }
+}

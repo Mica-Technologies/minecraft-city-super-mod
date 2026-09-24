@@ -1,0 +1,184 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shell": "csm:blocks/furniture/residential/stainless",
+    "tissue": "csm:blocks/furniture/residential/paper_towel",
+    "trim": "csm:blocks/furniture/residential/stainless_dark",
+    "particle": "#shell"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        5.5,
+        12
+      ],
+      "to": [
+        13,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            1,
+            13,
+            10.5
+          ]
+        },
+        "south": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            1,
+            13,
+            10.5
+          ]
+        },
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            1,
+            4,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#shell",
+          "uv": [
+            12,
+            1,
+            16,
+            10.5
+          ]
+        },
+        "up": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            12,
+            13,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            0,
+            13,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        8.25,
+        11.95
+      ],
+      "to": [
+        13,
+        8.35,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim",
+          "uv": [
+            3,
+            7.65,
+            13,
+            7.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        10.5,
+        11.95
+      ],
+      "to": [
+        9.5,
+        13,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tissue",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        4,
+        12.6
+      ],
+      "to": [
+        11,
+        5.5,
+        12.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tissue",
+          "uv": [
+            5,
+            10.5,
+            11,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#tissue",
+          "uv": [
+            5,
+            10.5,
+            11,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#tissue",
+          "uv": [
+            3.3,
+            10.5,
+            3.4,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#tissue",
+          "uv": [
+            12.6,
+            10.5,
+            12.7,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#tissue",
+          "uv": [
+            5,
+            3.3,
+            11,
+            3.4
+          ]
+        }
+      }
+    }
+  ]
+}

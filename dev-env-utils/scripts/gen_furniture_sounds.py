@@ -1,10 +1,11 @@
 """Synthesise the Furniture & Novelties module's furniture sounds and write them as OGG Vorbis.
 
 The kitchen's cabinet doors, drawers and refrigerator door, and its appliances' beeps, timer ding,
-toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and jar lid, made here from filtered noise, decaying
-sines and envelopes, never recorded or taken from a sound library. Each entry in SOUNDS names a
-function returning mono samples in -1..1 at RATE and the level (RMS, of 32767) it is normalised to;
-the script writes modules/furnishings/src/main/resources/assets/csm/sounds/<name>.ogg through
+toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and jar lid, and the
+bathroom's toilet flush and shower spray and the laundry's washing machine, dryer and steam iron,
+made here from filtered noise, decaying sines and envelopes, never recorded or taken from a sound
+library. Each entry in SOUNDS names a function returning mono samples in -1..1 at RATE and the level
+(RMS, of 32767) it is normalised to; the script writes modules/furnishings/src/main/resources/assets/csm/sounds/<name>.ogg through
 ffmpeg and adds a "<name>" entry to that module's sounds.json if it has none. The event still
 needs its constant in FurnishingsSounds; CsmSoundsTest fails the build until it has one.
 
@@ -231,6 +232,93 @@ def jar_lid():
                                    click=0.3), 1.0)])
 
 
+def toilet_flush():
+    """A toilet flushing: the lever's clunk, the cistern emptying into the bowl in a rush that
+    swirls and gurgles away, and the quiet hiss of the cistern refilling."""
+    total = 3.6
+    n = int(RATE * total)
+    t = t_of(total)
+    lever = knock(0.25, [(240, 1.0), (520, 0.5), (1100, 0.2)], 30, 41, click=0.5)
+    rush = band(noise(total, 42), 180, 3200)
+    rush /= max(1e-9, np.max(np.abs(rush)))
+    swell = np.clip((t - 0.08) / 0.3, 0, 1) * np.clip((2.4 - t) / 0.9, 0, 1) ** 1.5
+    swirl = 0.7 + 0.3 * np.sin(2 * np.pi * (5.0 + 2.0 * t) * t)
+    gurgle = np.zeros(n)
+    rng = np.random.RandomState(43)
+    for _ in range(18):
+        start = rng.uniform(1.3, 2.5)
+        f = rng.uniform(160, 420)
+        tt = t_of(0.09)
+        g = np.sin(2 * np.pi * f * (1 + 3 * tt) * tt) * np.exp(-tt * 40)
+        i = int(RATE * start)
+        m = min(len(g), n - i)
+        gurgle[i:i + m] += g[:m] * rng.uniform(0.4, 1.0)
+    refill = band(noise(total, 44), 1800, 6500)
+    refill /= max(1e-9, np.max(np.abs(refill)))
+    refill *= np.clip((t - 1.9) / 0.5, 0, 1) * np.clip((total - t) / 0.4, 0, 1)
+    body = 0.85 * rush * swell * swirl + 0.35 * gurgle + 0.12 * refill
+    return place(total, [(0.0, lever, 0.6), (0.0, body, 1.0)])
+
+
+def shower_spray():
+    """A shower running: a broad hiss of water on a tray with the crackle of drops through it,
+    level from end to end, two seconds and a little over so that it is played again every
+    forty ticks without a gap (the ends fade over a twentieth of a second)."""
+    total = 2.1
+    n = int(RATE * total)
+    hiss = band(noise(total, 45), 700, 9000)
+    hiss /= max(1e-9, np.max(np.abs(hiss)))
+    rng = np.random.RandomState(46)
+    drops = np.zeros(n)
+    for _ in range(260):
+        i = rng.randint(0, n - 200)
+        tt = t_of(0.004)
+        drops[i:i + len(tt)] += np.sin(2 * np.pi * rng.uniform(1800, 4200) * tt)             * np.exp(-tt * 900) * rng.uniform(0.3, 1.0)
+    return (0.8 * hiss + 0.5 * drops) * env_ad(n, 0.05, 0.05)
+
+
+def washing_machine_run():
+    """A front loader washing: the motor's hum, and the water and clothes sloshing each time the
+    drum turns over, swelling and easing so that it repeats every three seconds."""
+    total = 3.0
+    n = int(RATE * total)
+    t = t_of(total)
+    hum = np.sin(2 * np.pi * 50 * t) + 0.5 * np.sin(2 * np.pi * 100 * t)         + 0.2 * np.sin(2 * np.pi * 150 * t)
+    slosh = band(noise(total, 47), 150, 1100)
+    slosh /= max(1e-9, np.max(np.abs(slosh)))
+    slosh *= np.sin(np.pi * ((t * 1.0) % 1.0)) ** 2
+    return (0.3 * hum + 0.7 * slosh) * env_ad(n, 0.35, 0.35)
+
+
+def dryer_tumble():
+    """A tumble dryer: a steady motor and fan, and the soft thump of the clothes dropping as the
+    drum turns, with the odd zip or button ticking against the drum."""
+    total = 3.0
+    n = int(RATE * total)
+    t = t_of(total)
+    motor = np.sin(2 * np.pi * 60 * t) + 0.4 * np.sin(2 * np.pi * 120 * t)
+    fan = band(noise(total, 48), 300, 2500)
+    fan /= max(1e-9, np.max(np.abs(fan)))
+    parts = [(0.0, 0.25 * motor + 0.25 * fan, 1.0)]
+    for k, start in enumerate(np.arange(0.25, total - 0.3, 0.62)):
+        thud = knock(0.3, [(70, 1.0), (140, 0.5), (300, 0.15)], 22, 49 + k, click=0.15)
+        parts.append((start, thud, 0.9))
+    rng = np.random.RandomState(60)
+    for k in range(5):
+        tick = knock(0.05, [(2600, 1.0), (4100, 0.4)], 80, 61 + k, click=0.2)
+        parts.append((rng.uniform(0.2, total - 0.3), tick, 0.25))
+    return place(total, parts) * env_ad(n, 0.3, 0.3)
+
+
+def iron_steam():
+    """A steam iron's shot of steam: a sharp hiss that rises in a breath and dies away."""
+    total = 0.9
+    t = t_of(total)
+    hiss = band(noise(total, 66), 2200, 9500)
+    hiss /= max(1e-9, np.max(np.abs(hiss)))
+    return hiss * np.clip(t / 0.04, 0, 1) * np.exp(-np.clip(t - 0.12, 0, None) * 5.5)
+
+
 SOUNDS = {
     'cabinet_open': (cabinet_open, 2600),
     'cabinet_close': (cabinet_close, 3600),
@@ -246,6 +334,11 @@ SOUNDS = {
     'dishwasher_hum': (dishwasher_hum, 2000),
     'kettle_whistle': (kettle_whistle, 2400),
     'jar_lid': (jar_lid, 2400),
+    'toilet_flush': (toilet_flush, 3000),
+    'shower_spray': (shower_spray, 2200),
+    'washing_machine_run': (washing_machine_run, 2200),
+    'dryer_tumble': (dryer_tumble, 2200),
+    'iron_steam': (iron_steam, 2600),
 }
 
 

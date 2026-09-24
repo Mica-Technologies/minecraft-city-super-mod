@@ -1,0 +1,107 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:furniture/residential/bath_mat_white_field"
+      }
+    },
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bath_mat_white_side"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bath_mat_white_side",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bath_mat_white_side",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bath_mat_white_side",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "false"
+          },
+          {
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bath_mat_white_corner"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "false"
+          },
+          {
+            "north": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bath_mat_white_corner",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "false"
+          },
+          {
+            "east": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bath_mat_white_corner",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "west": "false"
+          },
+          {
+            "south": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bath_mat_white_corner",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -268,12 +268,59 @@ The bedroom, study and nursery follow, drawn by `gen_furniture_bedroom.py`:
 - `BlockRug`: a sixteenth thick, joins on all four sides; the bound border and its corners are
   drawn only on open sides.
 
+The bathroom, a commercial restroom's fittings and the laundry follow, drawn by
+`gen_furniture_bathroom.py`:
+
+- **Taps.** `IWaterTap` marks a block with a working tap and holds the fill: an empty bucket
+  or a glass bottle held to it comes back full (vanilla fill sounds). The kitchen sink base,
+  `BlockBathroomVanity`, `BlockBasin` (the pedestal sink and the laundry tub) and the bathtub
+  have one. An appliance that uses water standing beside any of them is plumbed
+  (`KitchenAppliances.nextToSink` now asks for an `IWaterTap`), so a washing machine beside a
+  laundry tub never runs dry, as a dishwasher beside a sink does not.
+- `BlockBathroomVanity` is a `BlockKitchenCabinet` on a line of its own (`KitchenLine.VANITY`):
+  vanities of one finish join under one stone top with a basin and tap in every block, end
+  panels only where the run stops, and never run on into a kitchen. Nine slots under each; its
+  top is at a countertop's height, so small pieces rest on it.
+- `BlockToilet` sits (Core's seat) when the seat is clicked and flushes when the cistern is: a
+  click in the back fifth of the block, or above the seat, plays the synthesised flush and
+  swirls water in the bowl. The urinal (`BlockBathroomFixture` with a click sound) flushes on
+  any click.
+- `BlockBathtub`: two blocks long, placed by its own item only where both are free, broken as
+  one; the placed block is the tap end (`head` false), the other is `facing.rotateY()` of it.
+  `water` is stored in both and draws the water surface: a water bucket fills it, an empty
+  bucket scoops a full one out, an empty hand on the tap end runs the tap (or pulls the plug),
+  a bottle fills at the tap, and an empty hand on the head end sits the bather in it, looking
+  along the tub to the taps.
+- `BlockShower` (a `BlockResidentialTall`, glass, drawn in the translucent layer) and
+  `BlockShowerHead` (a wall head at the top of its block) spray while `on` (stored): the block
+  schedules its own update every two ticks, and `ShowerSpray` sends one particle packet of
+  water (block dust of water, which the client tints and lets fall) from the rose and a splash
+  where it lands, and replays the two-second spray loop every forty ticks. No tile entity, and
+  nothing ticks while it is off. Only the tray and the glass collide, so a player walks into the
+  enclosure through its open side and stands under the rose.
+- `BlockFoldingFixture`: the baby changing station folds down on a click and up on the next
+  (`open`, stored; its own model and box each way), with the trapdoor sounds. It is meant for
+  the block above the floor's, so the bed is at 1.1 m.
+- Laundry: `BlockLaundryAppliance` (a `BlockBuiltInAppliance` in no run, drawn in the cutout
+  layer so the round door window is a circle on a square) with `LaundryAppliances`: the washing
+  machine repairs armour a twenty-fifth a 12 s wash, one wash of water each, until it is whole
+  (the elytra is left out, as it is of the dishwasher); the dryer dries wet sponges in 10 s.
+  Both windows light while they run. Their tops, the vanity's and the ironing board's are
+  counter height in `SurfaceRest`, so the steam iron (a `BlockCounterPiece` that hisses and
+  puffs steam on click) stands on the board.
+- The rest are plain pieces: `BlockBathroomFixture` (a toilet paper holder, towel rails, the
+  radiator, soap and paper towel dispensers, the grab bar, the ironing board), storage (the
+  mirror cabinet, wastebaskets and laundry baskets, nine slots each; the wastebasket keeps what
+  is put in it rather than voiding it, so nothing is lost by a wrong click), counter pieces (the
+  toiletries tray, the toilet brush) and bath mats (`BlockRug` in terry, joining like the rugs).
+
 Every storage block implements `IResidentialStorage` (slots, where the slots are, open and close
 sounds), shares `ResidentialStorageHelper` and the one storage screen, and sounds its doors when
 the first player opens it and the last closes it.
 
 Finishes are separate blocks (`_oak`, `_walnut`, `_white`; fabrics `_charcoal`, `_navy`,
-`_oatmeal`, `_red`; appliances `_stainless`, `_white`). Countertops: dark granite on oak, light
+`_oatmeal`, `_red`; appliances `_stainless`, `_white`; bathroom fittings `_white` porcelain or
+`_chrome`). Countertops: dark granite on oak, light
 quartz on walnut and white. The plan for the rest of the round-out (bedroom, kitchen, bath, office,
 outdoor, working appliances) aims at parity with other furniture mods.
 
@@ -300,6 +347,10 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:appliance_beep`, `csm:oven_timer`, `csm:toaster_pop` | `APPLIANCE_BEEP`, `OVEN_TIMER`, `TOASTER_POP` | done: microwave, air fryer, dishwasher; ovens; toaster | synthesised |
 | `csm:blender_whirr`, `csm:coffee_gurgle`, `csm:dishwasher_hum` | `BLENDER_WHIRR`, `COFFEE_GURGLE`, `DISHWASHER_HUM` | while running (the mixer's click too) | synthesised |
 | `csm:kettle_whistle`, `csm:jar_lid` | `KETTLE_WHISTLE`, `JAR_LID` | kettle click, cookie jar | synthesised |
+| `csm:toilet_flush` | `TOILET_FLUSH` | toilet (cistern click), urinal | synthesised |
+| `csm:shower_spray` | `SHOWER_SPRAY` | shower and shower head while on (a 2 s loop replayed every 40 ticks), the bath's tap | synthesised |
+| `csm:washing_machine_run`, `csm:dryer_tumble` | `WASHING_MACHINE_RUN`, `DRYER_TUMBLE` | while running | synthesised |
+| `csm:iron_steam` | `IRON_STEAM` | steam iron click | synthesised |
 
 The xylophone, water dispensers/bubblers and the kitchen sink use only vanilla sounds (filling an
 appliance's tank with a bucket or bottle does too)

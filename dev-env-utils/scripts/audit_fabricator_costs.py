@@ -396,6 +396,49 @@ def cost_for(registry, info, ancestors):
         return ("planks x2", "FASTENER_KIT")
     if tab == "tabresidential":
         # Mirrors ResidentialFabricatorRules (Furniture & Novelties module).
+        # The bathroom, restroom and laundry come first.
+        if registry.startswith("toilet_paper_holder_"):
+            return ("iron_ingot", "paper")
+        if registry.startswith("toilet_brush_"):
+            return ("iron_ingot",)
+        if registry.startswith(("toilet_", "urinal_")):
+            return ("clay_ball x4", "FASTENER_KIT")
+        if registry.startswith(("pedestal_sink_", "laundry_tub_")):
+            return ("clay_ball x3", "SHEET_METAL")
+        if registry.startswith("bathroom_vanity_"):
+            return ("planks x3", "clay_ball x2", "SHEET_METAL")
+        if registry.startswith("mirror_cabinet_"):
+            return ("planks x2", "glass_pane x2", "FASTENER_KIT")
+        if registry.startswith("bathtub_"):
+            return ("clay_ball x6", "SHEET_METAL")
+        if registry.startswith("shower_head_"):
+            return ("SHEET_METAL",)
+        if registry.startswith("shower_"):
+            return ("glass_pane x4", "clay_ball x2", "SHEET_METAL")
+        if registry.startswith("towel_rail_"):
+            return ("iron_ingot", "wool")
+        if registry.startswith("heated_towel_rail_"):
+            return ("SHEET_METAL", "WIRING_HARNESS")
+        if registry.startswith("bathroom_radiator_"):
+            return ("SHEET_METAL x2",)
+        if registry.startswith(("wastebasket_", "soap_dispenser_", "paper_towel_dispenser_")):
+            return ("SHEET_METAL",)
+        if registry.startswith("toiletries_tray_"):
+            return ("clay_ball", "glass")
+        if registry.startswith("bath_mat_"):
+            return ("wool",)
+        if registry.startswith("grab_bar_"):
+            return ("iron_ingot x2",)
+        if registry.startswith("baby_changing_station_"):
+            return ("SHEET_METAL", "FASTENER_KIT")
+        if registry.startswith(("washing_machine_", "dryer_")):
+            return ("SHEET_METAL x3", "CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith("steam_iron_"):
+            return ("SHEET_METAL", "WIRING_HARNESS")
+        if registry.startswith("ironing_board_"):
+            return ("iron_ingot x2", "wool")
+        if registry.startswith("laundry_basket_"):
+            return ("planks x2",)
         if registry.startswith("kitchen_range_"):
             return ("SHEET_METAL x4", "CONTROL_BOARD", "WIRING_HARNESS")
         if registry.startswith(("wall_oven_", "dishwasher_")):

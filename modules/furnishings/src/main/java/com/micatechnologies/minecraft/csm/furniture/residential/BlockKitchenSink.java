@@ -2,16 +2,8 @@ package com.micatechnologies.minecraft.csm.furniture.residential;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,7 +15,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockKitchenSink extends BlockKitchenCabinet {
+public class BlockKitchenSink extends BlockKitchenCabinet implements IWaterTap {
 
   private static final int[] BOX = {0, 0, 0, 16, 15, 16};
 
@@ -39,26 +31,7 @@ public class BlockKitchenSink extends BlockKitchenCabinet {
   @Override
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-    ItemStack held = player.getHeldItem(hand);
-    Item item = held.getItem();
-    if (item != Items.BUCKET && item != Items.GLASS_BOTTLE) {
-      return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
-    }
-    if (!world.isRemote) {
-      boolean bucket = item == Items.BUCKET;
-      ItemStack filled = bucket ? new ItemStack(Items.WATER_BUCKET)
-          : PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
-      if (!player.capabilities.isCreativeMode) {
-        held.shrink(1);
-      }
-      if (held.isEmpty()) {
-        player.setHeldItem(hand, filled);
-      } else if (!player.inventory.addItemStackToInventory(filled)) {
-        player.dropItem(filled, false);
-      }
-      SoundEvent sound = bucket ? SoundEvents.ITEM_BUCKET_FILL : SoundEvents.ITEM_BOTTLE_FILL;
-      world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
-    }
-    return true;
+    return IWaterTap.fillAtTap(world, pos, player, hand)
+        || super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
   }
 }

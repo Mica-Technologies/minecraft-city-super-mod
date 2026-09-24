@@ -259,5 +259,50 @@
         "stream": false
       }
     ]
+  },
+  "toilet_flush": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:toilet_flush",
+        "stream": false
+      }
+    ]
+  },
+  "shower_spray": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:shower_spray",
+        "stream": false
+      }
+    ]
+  },
+  "washing_machine_run": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:washing_machine_run",
+        "stream": false
+      }
+    ]
+  },
+  "dryer_tumble": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:dryer_tumble",
+        "stream": false
+      }
+    ]
+  },
+  "iron_steam": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:iron_steam",
+        "stream": false
+      }
+    ]
   }
 }

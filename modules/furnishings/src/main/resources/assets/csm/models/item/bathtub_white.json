@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/residential/base/bathtub_item",
+  "textures": {
+    "porcelain": "csm:blocks/furniture/residential/porcelain",
+    "water": "csm:blocks/furniture/residential/bath_water"
+  }
+}

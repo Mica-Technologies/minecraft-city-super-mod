@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room tables, chairs, bookcases, storage and sofas that join into runs.
 
-!!! info "175 blocks in this tab"
+!!! info "212 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -17,9 +17,18 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Armchair (Navy) | `csm:armchair_navy` | 1.5 | 3.0 | axe | 0 |
 | Armchair (Oatmeal) | `csm:armchair_oatmeal` | 1.5 | 3.0 | axe | 0 |
 | Armchair (Red) | `csm:armchair_red` | 1.5 | 3.0 | axe | 0 |
+| Baby Changing Station (Grey) | `csm:baby_changing_station_grey` | 1.5 | 3.0 | axe | 0 |
 | Bar Stool (Light Oak) | `csm:bar_stool_oak` | 1.5 | 3.0 | axe | 0 |
 | Bar Stool (Walnut) | `csm:bar_stool_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bar Stool (White) | `csm:bar_stool_white` | 1.5 | 3.0 | axe | 0 |
+| Bath Mat (Blue) | `csm:bath_mat_blue` | 0.2 | 0.4 | axe | 0 |
+| Bath Mat (Grey) | `csm:bath_mat_grey` | 0.2 | 0.4 | axe | 0 |
+| Bath Mat (White) | `csm:bath_mat_white` | 0.2 | 0.4 | axe | 0 |
+| Bathroom Radiator (White) | `csm:bathroom_radiator_white` | 1.5 | 3.0 | axe | 0 |
+| Bathroom Vanity (Light Oak) | `csm:bathroom_vanity_oak` | 1.5 | 3.0 | axe | 0 |
+| Bathroom Vanity (Walnut) | `csm:bathroom_vanity_walnut` | 1.5 | 3.0 | axe | 0 |
+| Bathroom Vanity (White) | `csm:bathroom_vanity_white` | 1.5 | 3.0 | axe | 0 |
+| Bathtub (White) | `csm:bathtub_white` | 1.5 | 3.0 | axe | 0 |
 | Blanket Chest (Light Oak) | `csm:blanket_chest_oak` | 1.5 | 3.0 | axe | 0 |
 | Blanket Chest (Walnut) | `csm:blanket_chest_walnut` | 1.5 | 3.0 | axe | 0 |
 | Blanket Chest (White) | `csm:blanket_chest_white` | 1.5 | 3.0 | axe | 0 |
@@ -94,6 +103,10 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Electric Kettle (White) | `csm:kettle_white` | 1.5 | 3.0 | axe | 0 |
 | Electric Range (Stainless Steel) | `csm:kitchen_range_stainless` | 1.5 | 3.0 | axe | 0 |
 | Electric Range (White) | `csm:kitchen_range_white` | 1.5 | 3.0 | axe | 0 |
+| Grab Bar (Stainless Steel) | `csm:grab_bar_stainless` | 1.5 | 3.0 | axe | 0 |
+| Heated Towel Rail (Chrome) | `csm:heated_towel_rail_chrome` | 1.5 | 3.0 | axe | 0 |
+| Ironing Board (Blue) | `csm:ironing_board_blue` | 1.5 | 3.0 | axe | 0 |
+| Ironing Board (Grey) | `csm:ironing_board_grey` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Charcoal) | `csm:bed_king_charcoal` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Navy) | `csm:bed_king_navy` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Oatmeal) | `csm:bed_king_oatmeal` | 1.5 | 3.0 | axe | 0 |
@@ -122,15 +135,23 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Kitchen Wall Cabinet (Light Oak) | `csm:kitchen_wall_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Wall Cabinet (Walnut) | `csm:kitchen_wall_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Wall Cabinet (White) | `csm:kitchen_wall_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Laundry Basket (White) | `csm:laundry_basket_white` | 1.5 | 3.0 | axe | 0 |
+| Laundry Basket (Wicker) | `csm:laundry_basket_wicker` | 1.5 | 3.0 | axe | 0 |
+| Laundry Tub (White) | `csm:laundry_tub_white` | 1.5 | 3.0 | axe | 0 |
 | Microwave (Black) | `csm:microwave_black` | 1.5 | 3.0 | axe | 0 |
 | Microwave (Stainless Steel) | `csm:microwave_stainless` | 1.5 | 3.0 | axe | 0 |
 | Microwave (White) | `csm:microwave_white` | 1.5 | 3.0 | axe | 0 |
+| Mirror Cabinet (Light Oak) | `csm:mirror_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
+| Mirror Cabinet (Walnut) | `csm:mirror_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
+| Mirror Cabinet (White) | `csm:mirror_cabinet_white` | 1.5 | 3.0 | axe | 0 |
 | Nightstand (Light Oak) | `csm:nightstand_oak` | 1.5 | 3.0 | axe | 0 |
 | Nightstand (Walnut) | `csm:nightstand_walnut` | 1.5 | 3.0 | axe | 0 |
 | Nightstand (White) | `csm:nightstand_white` | 1.5 | 3.0 | axe | 0 |
 | Open Kitchen Shelf (Light Oak) | `csm:kitchen_wall_shelf_oak` | 1.5 | 3.0 | axe | 0 |
 | Open Kitchen Shelf (Walnut) | `csm:kitchen_wall_shelf_walnut` | 1.5 | 3.0 | axe | 0 |
 | Open Kitchen Shelf (White) | `csm:kitchen_wall_shelf_white` | 1.5 | 3.0 | axe | 0 |
+| Paper Towel Dispenser (Stainless Steel) | `csm:paper_towel_dispenser_stainless` | 1.5 | 3.0 | axe | 0 |
+| Pedestal Sink (White) | `csm:pedestal_sink_white` | 1.5 | 3.0 | axe | 0 |
 | Range Hood (Stainless Steel) | `csm:range_hood_stainless` | 1.5 | 3.0 | axe | 0 |
 | Refrigerator (Stainless Steel) | `csm:refrigerator_stainless` | 1.5 | 3.0 | axe | 0 |
 | Refrigerator (White) | `csm:refrigerator_white` | 1.5 | 3.0 | axe | 0 |
@@ -141,6 +162,8 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Rug (Navy) | `csm:rug_navy` | 0.2 | 0.4 | axe | 0 |
 | Rug (Oatmeal) | `csm:rug_oatmeal` | 0.2 | 0.4 | axe | 0 |
 | Rug (Red) | `csm:rug_red` | 0.2 | 0.4 | axe | 0 |
+| Shower Enclosure (Chrome) | `csm:shower_enclosure_chrome` | 1.5 | 3.0 | axe | 0 |
+| Shower Head (Chrome) | `csm:shower_head_chrome` | 1.5 | 3.0 | axe | 0 |
 | Side Table (Light Oak) | `csm:side_table_oak` | 1.5 | 3.0 | axe | 0 |
 | Side Table (Walnut) | `csm:side_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | Side Table (White) | `csm:side_table_white` | 1.5 | 3.0 | axe | 0 |
@@ -151,6 +174,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Single Bed (Navy) | `csm:bed_single_navy` | 1.5 | 3.0 | axe | 0 |
 | Single Bed (Oatmeal) | `csm:bed_single_oatmeal` | 1.5 | 3.0 | axe | 0 |
 | Single Bed (Red) | `csm:bed_single_red` | 1.5 | 3.0 | axe | 0 |
+| Soap Dispenser (White) | `csm:soap_dispenser_white` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Charcoal) | `csm:sofa_charcoal` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Navy) | `csm:sofa_navy` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Oatmeal) | `csm:sofa_oatmeal` | 1.5 | 3.0 | axe | 0 |
@@ -167,14 +191,23 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Standing Mirror (Light Oak) | `csm:standing_mirror_oak` | 1.5 | 3.0 | axe | 0 |
 | Standing Mirror (Walnut) | `csm:standing_mirror_walnut` | 1.5 | 3.0 | axe | 0 |
 | Standing Mirror (White) | `csm:standing_mirror_white` | 1.5 | 3.0 | axe | 0 |
+| Steam Iron (Blue) | `csm:steam_iron_blue` | 1.5 | 3.0 | axe | 0 |
 | Toaster (Red) | `csm:toaster_red` | 1.5 | 3.0 | axe | 0 |
 | Toaster (Stainless Steel) | `csm:toaster_stainless` | 1.5 | 3.0 | axe | 0 |
 | Toaster (White) | `csm:toaster_white` | 1.5 | 3.0 | axe | 0 |
+| Toilet (White) | `csm:toilet_white` | 1.5 | 3.0 | axe | 0 |
+| Toilet Brush (Stainless Steel) | `csm:toilet_brush_stainless` | 1.5 | 3.0 | axe | 0 |
+| Toilet Paper Holder (Chrome) | `csm:toilet_paper_holder_chrome` | 1.5 | 3.0 | axe | 0 |
+| Toiletries Tray (White) | `csm:toiletries_tray_white` | 1.5 | 3.0 | axe | 0 |
+| Towel Rail (Chrome) | `csm:towel_rail_chrome` | 1.5 | 3.0 | axe | 0 |
+| Tumble Dryer (Stainless Steel) | `csm:dryer_stainless` | 1.5 | 3.0 | axe | 0 |
+| Tumble Dryer (White) | `csm:dryer_white` | 1.5 | 3.0 | axe | 0 |
 | TV Stand (Light Oak) | `csm:tv_stand_oak` | 1.5 | 3.0 | axe | 0 |
 | TV Stand (Walnut) | `csm:tv_stand_walnut` | 1.5 | 3.0 | axe | 0 |
 | TV Stand (White) | `csm:tv_stand_white` | 1.5 | 3.0 | axe | 0 |
 | Under-Cabinet Light (Stainless Steel) | `csm:under_cabinet_light_stainless` | 1.5 | 3.0 | axe | 0 |
 | Under-Cabinet Range Hood (Stainless Steel) | `csm:range_hood_under_cabinet_stainless` | 1.5 | 3.0 | axe | 0 |
+| Urinal (White) | `csm:urinal_white` | 1.5 | 3.0 | axe | 0 |
 | Vanity Stool (Light Oak) | `csm:vanity_stool_oak` | 1.5 | 3.0 | axe | 0 |
 | Vanity Stool (Walnut) | `csm:vanity_stool_walnut` | 1.5 | 3.0 | axe | 0 |
 | Vanity Stool (White) | `csm:vanity_stool_white` | 1.5 | 3.0 | axe | 0 |
@@ -186,5 +219,9 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Wardrobe (Light Oak) | `csm:wardrobe_oak` | 1.5 | 3.0 | axe | 0 |
 | Wardrobe (Walnut) | `csm:wardrobe_walnut` | 1.5 | 3.0 | axe | 0 |
 | Wardrobe (White) | `csm:wardrobe_white` | 1.5 | 3.0 | axe | 0 |
+| Washing Machine (Stainless Steel) | `csm:washing_machine_stainless` | 1.5 | 3.0 | axe | 0 |
+| Washing Machine (White) | `csm:washing_machine_white` | 1.5 | 3.0 | axe | 0 |
+| Wastebasket (Stainless Steel) | `csm:wastebasket_stainless` | 1.5 | 3.0 | axe | 0 |
+| Wastebasket (White) | `csm:wastebasket_white` | 1.5 | 3.0 | axe | 0 |
 
 </div>

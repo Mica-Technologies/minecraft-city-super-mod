@@ -1,0 +1,168 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "head": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_cell0"
+      }
+    },
+    {
+      "when": {
+        "head": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_cell1"
+      }
+    },
+    {
+      "when": {
+        "head": "false",
+        "water": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_water0"
+      }
+    },
+    {
+      "when": {
+        "head": "true",
+        "water": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_water1"
+      }
+    },
+    {
+      "when": {
+        "head": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_cell0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "head": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_cell1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "head": "false",
+        "water": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_water0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "head": "true",
+        "water": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_water1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "head": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_cell0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "head": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_cell1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "head": "false",
+        "water": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_water0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "head": "true",
+        "water": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_water1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "head": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_cell0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "head": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_cell1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "head": "false",
+        "water": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_water0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "head": "true",
+        "water": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/bathtub_white_water1",
+        "y": 270
+      }
+    }
+  ]
+}
