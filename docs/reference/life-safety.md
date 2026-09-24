@@ -2,7 +2,7 @@
 
 Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
-!!! info "127 blocks in this tab"
+!!! info "137 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,7 +11,9 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| ADT Carbon Monoxide Detector | `csm:adt_co_detector` |  |  |  |  |
 | Beam Smoke Detector | `csm:beam_smoke_detector` | 2 | 10 | pickaxe | 1 |
+| Cerberus Pyrotronics Pull Station | `csm:firealarmpyrotronicspull` | 2 | 10 | pickaxe | 1 |
 | Duct Smoke Detector | `csm:duct_smoke_detector` | 2 | 10 | pickaxe | 1 |
 | Edwards Emergency Phone | `csm:eep` |  |  |  |  |
 | Edwards EST 202-8A-T Wall Mount Strobe (Red) | `csm:firealarmest2028atstrobered` | 2 | 10 | pickaxe | 1 |
@@ -45,11 +47,13 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Gentex Commander 5 (Black Edition) | `csm:firealarmgentexcommander5black` | 2 | 10 | pickaxe | 1 |
 | Gentex Commander 5 (GHSR - Red) | `csm:firealarmgentexcommander5red` | 2 | 10 | pickaxe | 1 |
 | Gentex Commander 5 (GHSW - White) | `csm:firealarmgentexcommander5white` | 2 | 10 | pickaxe | 1 |
+| Gentex Smoke Alarm | `csm:gentex_smoke_alarm` | 2 | 10 | pickaxe | 1 |
 | Honeywell Addressable Module | `csm:hwam` |  |  |  |  |
 | KAC Call Point | `csm:firealarmkaccallpoint` | 2 | 10 | pickaxe | 1 |
 | KAC Sounder Red (Horn) | `csm:firealarmkacsounderred` | 2 | 10 | pickaxe | 1 |
 | Kidde Smoke Alarm | `csm:kiddesmoke` |  |  |  |  |
 | Nest Protect 2nd Generation | `csm:nestprotect` |  |  |  |  |
+| Old Local Fire Alarm Pull Station | `csm:firealarmoldlocalpull` | 2 | 10 | pickaxe | 1 |
 | Photoelectric Smoke Detector | `csm:smoke_detector_photoelectric` | 2 | 10 | pickaxe | 1 |
 | Remote Fire Alarm Annunciator | `csm:remote_annunciator` | 2.0 | 6.0 | pickaxe | 0 |
 | Simplex 2901 Red (Horn Strobe) | `csm:firealarmsimplex2901hornstrobered` | 2 | 10 | pickaxe | 1 |
@@ -76,6 +80,9 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Simplex TrueAlert White (Speaker Strobe) | `csm:firealarmsimplextruealertspeakerstrobewhite` | 2 | 10 | pickaxe | 1 |
 | Simplex TrueAlert White (Speaker) | `csm:firealarmsimplextruealertspeakerwhite` | 2 | 10 | pickaxe | 1 |
 | Space Age Elec. AV32 Red (Horn Strobe) | `csm:firealarmspaceageav32red` | 2 | 10 | pickaxe | 1 |
+| System Sensor 5251 Heat Detector | `csm:systemsensor_5251_heat_detector` | 2 | 10 | pickaxe | 1 |
+| System Sensor 5601 Heat Detector | `csm:systemsensor_5601_heat_detector` | 2 | 10 | pickaxe | 1 |
+| System Sensor i3 Smoke Detector | `csm:systemsensor_i3_smoke_detector` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED Black (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledspeakerstrobeblack` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED Black/Ceiling (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledceilingspeakerstrobeblack` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED Red (Horn Strobe) | `csm:firealarmsystemsensorlseriesledhornstrobered` | 2 | 10 | pickaxe | 1 |
@@ -100,6 +107,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | System Sensor L Series White/Ceiling (Horn Strobe) | `csm:firealarmsystemsensorlseriesceilinghornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series White/Ceiling (Speaker Strobe) | `csm:firealarmsystemsensorlseriesceilingspeakerstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series White/Ceiling (Speaker) | `csm:firealarmsystemsensorlseriesceilingspeakerwhite` | 2 | 10 | pickaxe | 1 |
+| System Sensor SpectrAlert Advance Horn Strobe (Amber, ALERT) | `csm:firealarmsystemsensoradvancehornstrobeamber` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Advance LF Red (Horn Strobe) | `csm:firealarmsystemsensoradvancelfhornstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Advance LF White (Horn Strobe) | `csm:firealarmsystemsensoradvancelfhornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Advance Red (Horn Strobe) | `csm:firealarmsystemsensoradvancehornstrobered` | 2 | 10 | pickaxe | 1 |
@@ -112,6 +120,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | System Sensor SpectrAlert Advance White/Ceiling (Horn Strobe) | `csm:firealarmsystemsensoradvanceceilinghornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Classic Red (Horn Strobe) | `csm:firealarmsystemsensorclassichornstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Classic White (Horn Strobe) | `csm:firealarmsystemsensorclassichornstrobewhite` | 2 | 10 | pickaxe | 1 |
+| Tornado Alert Alarm Station | `csm:firealarmtornadopull` | 2 | 10 | pickaxe | 1 |
 | Wheelock 7002T Red (Horn Strobe) | `csm:firealarmwheelock7002tred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS Red (Horn Strobe) | `csm:firealarmwheelockasred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS White (Horn Strobe) | `csm:firealarmwheelockaswhite` | 2 | 10 | pickaxe | 1 |
@@ -132,6 +141,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Wheelock ET80 Red (Horn Strobe) | `csm:firealarmwheelocket80red` | 2 | 10 | pickaxe | 1 |
 | Wheelock Exceeder Red (Horn Strobe) | `csm:firealarmwheelockexceederred` | 2 | 10 | pickaxe | 1 |
 | Wheelock Exceeder White (Horn Strobe) | `csm:firealarmwheelockexceederwhite` | 2 | 10 | pickaxe | 1 |
+| Wheelock MT Horn Strobe (Grid Grille, Red) | `csm:firealarmwheelockmtgridhornstrobered` | 2 | 10 | pickaxe | 1 |
 | Wheelock MT Red (Horn Strobe) | `csm:firealarmwheelockmthornstrobered` | 2 | 10 | pickaxe | 1 |
 | Wheelock MT Red (Horn) | `csm:firealarmwheelockmthornred` | 2 | 10 | pickaxe | 1 |
 | Wheelock MT White (Horn Strobe) | `csm:firealarmwheelockmthornstrobewhite` | 2 | 10 | pickaxe | 1 |

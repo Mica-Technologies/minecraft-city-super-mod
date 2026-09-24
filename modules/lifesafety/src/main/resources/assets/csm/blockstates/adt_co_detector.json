@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lifesafety/shared_models/adt_heat_detector",
+    "textures": {
+      "all": "csm:blocks/lifesafety/adt_co_detector",
+      "particle": "csm:blocks/lifesafety/adt_co_detector",
+      "0": "csm:blocks/lifesafety/adt_co_detector"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

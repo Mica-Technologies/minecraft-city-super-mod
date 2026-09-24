@@ -7,7 +7,8 @@ package com.micatechnologies.minecraft.csm.lifesafety;
  * <p>A set belongs to a family of appliances rather than to any one of them: every Gentex GOS-based
  * unit offers the same five tones and every Simplex 4903 the same two, and a copy of the list per
  * block class is a copy that can drift out of step with the others. The Commander 3 and the
- * Commander 5 read one of these; the 4903s, horizontal and vertical, read the other.</p>
+ * Commander 5 read one of these; the 4903s, horizontal and vertical, read another; the grid-grille
+ * Wheelock MT reads the MT's pair.</p>
  */
 public final class FireAlarmSoundSets {
 
@@ -39,6 +40,18 @@ public final class FireAlarmSoundSets {
   public static final String[] SIMPLEX_4903_NAMES = {
       "Old",
       "New"
+  };
+
+  /** The Wheelock MT's two tones, in the order a block cycles through them. */
+  public static final String[] WHEELOCK_MT = {
+      "csm:mt_code3",
+      "csm:wheelockas"
+  };
+
+  /** Human-readable names for {@link #WHEELOCK_MT}, in the same order. */
+  public static final String[] WHEELOCK_MT_NAMES = {
+      "MT Code 3",
+      "Wheelock AS"
   };
 
   private FireAlarmSoundSets() {

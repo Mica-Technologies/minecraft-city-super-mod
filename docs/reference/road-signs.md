@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "677 blocks in this tab"
+!!! info "678 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -212,6 +212,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Fresh Oil and Chips Sign | `csm:signfreshoilandchips` | 2 | 10 | pickaxe | 1 |
 | FWY Detour | `csm:freewaydetoursign` | 2 | 10 | pickaxe | 1 |
 | Gas Sign | `csm:signgas` | 2 | 10 | pickaxe | 1 |
+| Golf Sign | `csm:signgolf` | 2 | 10 | pickaxe | 1 |
 | Handicap Sign | `csm:signhandicap` | 2 | 10 | pickaxe | 1 |
 | Handicapped/Reserved Parking Sign | `csm:signhandicapreservedparking` | 2 | 10 | pickaxe | 1 |
 | Hang Glider Sign | `csm:signhangglider` | 2 | 10 | pickaxe | 1 |

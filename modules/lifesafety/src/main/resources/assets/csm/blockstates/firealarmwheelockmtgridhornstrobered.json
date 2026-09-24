@@ -1,0 +1,41 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lifesafety/shared_models/wheelock_mt_hornstrobe",
+    "textures": {
+      "all": "csm:blocks/lifesafety/firealarmwheelockmtgridhornstrobered",
+      "particle": "csm:blocks/lifesafety/firealarmwheelockmtgridhornstrobered",
+      "0": "csm:blocks/lifesafety/firealarmwheelockmtgridhornstrobered"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "sound": {
+      "0": {},
+      "1": {}
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

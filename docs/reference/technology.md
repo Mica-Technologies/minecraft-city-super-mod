@@ -2,7 +2,7 @@
 
 Servers, routers, screens and consumer electronics.
 
-!!! info "37 blocks in this tab"
+!!! info "45 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,8 @@ Servers, routers, screens and consumer electronics.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Altec Lansing Speaker (Black) | `csm:altec_lansing_speaker_black` |  |  |  |  |
+| Altec Lansing Speaker (White) | `csm:altec_lansing_speaker_white` |  |  |  |  |
 | Apple iMac | `csm:imac` | 2 | 10 | pickaxe | 1 |
 | Apple iMac Pro | `csm:imacpro` | 2 | 10 | pickaxe | 1 |
 | Apple MacBook Pro | `csm:mbp` | 2 | 10 | pickaxe | 1 |
@@ -20,8 +22,12 @@ Servers, routers, screens and consumer electronics.
 | Atlas Speaker 3 | `csm:atls3` |  |  |  |  |
 | Atlas Speaker 4 | `csm:atls4` |  |  |  |  |
 | Atlas Speaker 5 | `csm:atls5` |  |  |  |  |
+| Bosch Speaker 1 | `csm:bosch_speaker_1` |  |  |  |  |
+| Bosch Speaker 2 | `csm:bosch_speaker_2` |  |  |  |  |
 | Bose Speaker (Black) | `csm:bose2` |  |  |  |  |
 | Bose Speaker (White) | `csm:bose1` |  |  |  |  |
+| Boston Acoustics Speaker (Black) | `csm:boston_acoustics_speaker_black` |  |  |  |  |
+| Boston Acoustics Speaker (White) | `csm:boston_acoustics_speaker_white` |  |  |  |  |
 | Cable STB | `csm:stbox` |  |  |  |  |
 | Enterasys Wireless AC AP | `csm:wapac` |  |  |  |  |
 | Enterasys Wireless N AP | `csm:wapn` |  |  |  |  |
@@ -33,6 +39,8 @@ Servers, routers, screens and consumer electronics.
 | FourJay Speaker 2 | `csm:fjs2` |  |  |  |  |
 | JBL Control Speaker (Black) | `csm:jblc2` |  |  |  |  |
 | JBL Control Speaker (White) | `csm:jblc1` |  |  |  |  |
+| Polk Audio Speaker (Black) | `csm:polk_audio_speaker_black` |  |  |  |  |
+| Polk Audio Speaker (White) | `csm:polk_audio_speaker_white` |  |  |  |  |
 | Redstone TTS Module | `csm:redstonetts` | 2 | 10 | pickaxe | 1 |
 | Sat TV Dish | `csm:tvdish` |  |  |  |  |
 | Sat TV Dish (Side) | `csm:tvdishside` |  |  |  |  |

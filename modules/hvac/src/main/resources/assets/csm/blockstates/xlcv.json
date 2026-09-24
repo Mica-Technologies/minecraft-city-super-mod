@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:hvac/shared_models/circle_vent",
+    "textures": {
+      "all": "csm:blocks/hvac/xl_circle_vent",
+      "particle": "csm:blocks/hvac/xl_circle_vent",
+      "0": "csm:blocks/hvac/xl_circle_vent"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

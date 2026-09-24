@@ -554,6 +554,7 @@ tile.signphotoenforced.name=Photo Enforced Sign
 tile.signrailroadcrossbuck.name=Railroad Crossing Sign (Crossbuck)
 tile.signrailroadtracks2.name=2 Tracks Sign (Plaque)
 tile.signpicnic.name=Picnic Sign
+tile.signgolf.name=Golf Sign
 tile.signplayground.name=Playground Sign
 tile.signpolice.name=Police Sign
 tile.signpost.name=Sign Pole

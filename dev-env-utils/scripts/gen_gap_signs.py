@@ -299,6 +299,16 @@ def COMPOSED(shape, drawer, **kw):
     return make
 
 
+def ART_SYM(name, colour, size=256):
+    """A recreational pictogram the book does not draw, from black-on-clear ink in ``artwork/``,
+    set white on the mod's rounded ``colour`` panel exactly as the book's pictograms are (the
+    golfer, lifted off a Caltrans G200-80 golf course sign)."""
+    def make():
+        ink = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'artwork', name))
+        return shs.symbol_on_panel(ink, shs.MOD_COLOURS[colour], 1.0, size=size)
+    return make
+
+
 def T(shape, lines, bg=YELLOW, fg=BLACK):
     return lambda: text_sign(shape, lines, bg, fg)
 
@@ -654,6 +664,9 @@ CATALOGUE = [
      'Radroute-Schild',
      'Cykelled-Vägmärke'),
      'landscape', SHS('landscape', 'Guide', 85, 0), 'signtobikeroute'),
+    # --- recreation: no golf symbol in the book, so the golfer is artwork on the RS panel
+    ('signgolf', ('Golf Sign', 'Señal de Golf', 'Golf-Schild', 'Golf-Vägmärke'),
+     'square', ART_SYM('golfer.png', 'brown'), 'signpicnic'),
 ]
 for _mph, _after in ((10, 'signaddright'), (15, 'signadvisoryspeed10'), (20, 'signadvisoryspeed15'),
                      (25, 'signadvisoryspeed20'), (30, 'signadvisoryspeed25'), (35, 'signadvisoryspeed30'),

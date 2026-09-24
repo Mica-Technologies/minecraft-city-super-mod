@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/shared_models/bose_speaker_1",
+    "textures": {
+      "all": "csm:blocks/technology/polk_audio_speaker_white",
+      "particle": "csm:blocks/technology/polk_audio_speaker_white",
+      "0": "csm:blocks/technology/polk_audio_speaker_white"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

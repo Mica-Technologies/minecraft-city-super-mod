@@ -16,24 +16,24 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Emergency Services](emergency-services.md) | 62 | Fire, police and ambulance station fittings, community warning sirens and dispatch. |
 | [Exits & Emergency Lighting](exits-and-emergency-lighting.md) | 38 | Exit and stair signs, and the emergency lights that take over when the power fails. |
 | [Fire Protection](fire-protection.md) | 52 | Sprinklers and the rest of what a building fights a fire with besides its alarm. |
-| [HVAC](hvac.md) | 45 | Heating and cooling that actually simulates room temperature. |
+| [HVAC](hvac.md) | 46 | Heating and cooling that actually simulates room temperature. |
 | [Interior Finishes](interior-finishes.md) | 60 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
-| [Fire Alarm & Detection](life-safety.md) | 127 | Fire alarm panels, pull stations, horns, strobes, speakers and detectors. |
+| [Fire Alarm & Detection](life-safety.md) | 137 | Fire alarm panels, pull stations, horns, strobes, speakers and detectors. |
 | [Lighting](lighting.md) | 132 | Street lights, floodlights, pendants and sconces, all switchable. |
 | [Materials](materials.md) | 1 | The CSM Fabricator, which turns vanilla ingots into CSM blocks. |
 | [Novelties](novelties.md) | 33 | Decorative oddities that did not belong anywhere else. |
 | [Parks](parks.md) | 32 | Park amenities: benches, tables, bins, playground pieces, fountains and irrigation. |
 | [Power Grid](power-grid.md) | 46 | Utility poles, transformers and the Forge Energy that runs through them. |
-| [Road Signs](road-signs.md) | 677 | The MUTCD sign set, grouped the way the manual groups it. |
+| [Road Signs](road-signs.md) | 678 | The MUTCD sign set, grouped the way the manual groups it. |
 | [Signage & Advertising](signage.md) | 5 | Street ad kiosks, wall poster boards and billboards built to size. |
 | [Streetscape](streetscape.md) | 94 | Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals and parking meters. |
 | [Structure & Framing](structure-framing.md) | 32 | Steel and wood stud walls, the structure that spans between them, and structural steel. |
-| [Technology](technology.md) | 37 | Servers, routers, screens and consumer electronics. |
+| [Technology](technology.md) | 45 | Servers, routers, screens and consumer electronics. |
 | [Traffic Accessories](traffic-accessories.md) | 386 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Trees & Plants](trees-and-plants.md) | 134 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Unlisted](unlisted.md) | 128 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **2526** | |
+| **Total** | **2546** | |
 
 ## How to read the table
 

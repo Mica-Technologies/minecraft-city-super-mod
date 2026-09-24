@@ -31,6 +31,8 @@ public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSo
   private final float[] strobeLensTo;
   private final boolean redSlowToggle;
   private final StrobeLensShape strobeLensShape;
+  /** The flash colour {r, g, b}, or null for the default white (or red, if slow toggle). */
+  private final float[] strobeColor;
 
   public BlockFireAlarmSounderStrobeFactory(String registryName, String soundResource,
       AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo) {
@@ -56,12 +58,23 @@ public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSo
       AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo,
       boolean redSlowToggle, StrobeLensShape strobeLensShape) {
     this(initRegistryName(registryName), registryName, soundResource, boundingBox,
-        strobeLensFrom, strobeLensTo, redSlowToggle, strobeLensShape);
+        strobeLensFrom, strobeLensTo, redSlowToggle, strobeLensShape, null);
+  }
+
+  /**
+   * A coloured-lens appliance (the amber mass-notification strobe) whose flash matches its lens.
+   */
+  public BlockFireAlarmSounderStrobeFactory(String registryName, String soundResource,
+      AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo,
+      float[] strobeColor) {
+    this(initRegistryName(registryName), registryName, soundResource, boundingBox,
+        strobeLensFrom, strobeLensTo, false, StrobeLensShape.RECTANGULAR, strobeColor);
   }
 
   private BlockFireAlarmSounderStrobeFactory(Void ignored, String registryName,
       String soundResource, AxisAlignedBB boundingBox, float[] strobeLensFrom,
-      float[] strobeLensTo, boolean redSlowToggle, StrobeLensShape strobeLensShape) {
+      float[] strobeLensTo, boolean redSlowToggle, StrobeLensShape strobeLensShape,
+      float[] strobeColor) {
     this.registryName = registryName;
     this.soundResource = soundResource;
     this.boundingBox = boundingBox;
@@ -69,6 +82,7 @@ public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSo
     this.strobeLensTo = strobeLensTo;
     this.redSlowToggle = redSlowToggle;
     this.strobeLensShape = strobeLensShape;
+    this.strobeColor = strobeColor;
   }
 
   @Override
@@ -112,6 +126,11 @@ public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSo
   @Override
   public boolean isRedSlowToggleStrobe() {
     return redSlowToggle;
+  }
+
+  @Override
+  public float[] getStrobeColor() {
+    return strobeColor != null ? strobeColor : IStrobeBlock.super.getStrobeColor();
   }
 
   @Override
