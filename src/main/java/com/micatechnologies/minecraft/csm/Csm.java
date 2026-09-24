@@ -409,6 +409,20 @@ public class Csm {
   }
 
   /**
+   * Drops {@code csm:} sound events a world remembers but the mod no longer registers, instead of
+   * stopping the load with Forge's missing-entries prompt.
+   *
+   * @param event the sound registry's missing-mappings event
+   *
+   * @see CsmSoundRegistry#ignoreMissing(RegistryEvent.MissingMappings)
+   * @since 2026.9
+   */
+  @SubscribeEvent
+  public void ignoreMissingSounds(RegistryEvent.MissingMappings<SoundEvent> event) {
+    CsmSoundRegistry.ignoreMissing(event);
+  }
+
+  /**
    * Registers the mod's entities: today only {@link EntityCsmSeat}, the invisible seat a block
    * that can be sat in (the portable toilet) puts its rider on. It is Core's, like every other
    * registration, so a module that uses it never touches a Forge registry.

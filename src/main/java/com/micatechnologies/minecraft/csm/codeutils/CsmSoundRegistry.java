@@ -89,4 +89,23 @@ public class CsmSoundRegistry {
       event.getRegistry().register(soundEvent);
     }
   }
+
+  /**
+   * Lets a world load quietly when it names a {@code csm:} sound event that no longer exists: a
+   * sound the mod has removed, or one belonging to a module that is not installed. Without this,
+   * Forge stops the load with its missing-registry-entries prompt. A sound event is safe to drop
+   * because a world stores nothing about it except its id in the registry snapshot, unlike a
+   * block or item, whose placed copies depend on the name.
+   *
+   * @param event the sound registry's missing-mappings event
+   *
+   * @since 2026.9
+   */
+  public static void ignoreMissing(RegistryEvent.MissingMappings<SoundEvent> event) {
+    for (RegistryEvent.MissingMappings.Mapping<SoundEvent> mapping : event.getAllMappings()) {
+      if (CsmConstants.MOD_NAMESPACE.equals(mapping.key.getNamespace())) {
+        mapping.ignore();
+      }
+    }
+  }
 }
