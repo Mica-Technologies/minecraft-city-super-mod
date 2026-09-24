@@ -1,11 +1,18 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/shared_models/water_dispenser",
+    "model": "csm:novelties/props/waterdispenser.obj",
+    "custom": {
+      "flip-v": true
+    },
     "textures": {
-      "all": "csm:blocks/novelties/water_dispenser",
-      "particle": "csm:blocks/novelties/water_dispenser",
-      "0": "csm:blocks/novelties/water_dispenser"
+      "particle": "csm:blocks/novelties/props/cooler_body",
+      "#body": "csm:blocks/novelties/props/cooler_body",
+      "#panel": "csm:blocks/novelties/props/cooler_panel",
+      "#grille": "csm:blocks/novelties/props/drip_grille",
+      "#hot": "csm:blocks/novelties/props/tap_hot",
+      "#cold": "csm:blocks/novelties/props/tap_cold",
+      "#bottle": "csm:blocks/novelties/props/bottle"
     }
   },
   "variants": {
@@ -28,7 +35,132 @@
       }
     },
     "inventory": [
-      {}
+      {
+        "custom": {
+          "flip-v": true
+        },
+        "transform": {
+          "gui": {
+            "rotation": [
+              30,
+              225,
+              0
+            ],
+            "translation": [
+              -0.0009,
+              -0.0809,
+              -0.0477
+            ],
+            "scale": [
+              0.406,
+              0.406,
+              0.406
+            ]
+          },
+          "ground": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.1499,
+              0.0005
+            ],
+            "scale": [
+              0.1624,
+              0.1624,
+              0.1624
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              -0.0751,
+              0.001
+            ],
+            "scale": [
+              0.3248,
+              0.3248,
+              0.3248
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.0005,
+              0.1412,
+              -0.0543
+            ],
+            "scale": [
+              0.2436,
+              0.2436,
+              0.2436
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.0005,
+              0.1412,
+              -0.0543
+            ],
+            "scale": [
+              0.2436,
+              0.2436,
+              0.2436
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "translation": [
+              0.0006,
+              -0.0601,
+              0.0006
+            ],
+            "scale": [
+              0.2598,
+              0.2598,
+              0.2598
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "translation": [
+              -0.0006,
+              -0.0601,
+              -0.0006
+            ],
+            "scale": [
+              0.2598,
+              0.2598,
+              0.2598
+            ]
+          }
+        }
+      }
     ],
     "normal": [
       {}

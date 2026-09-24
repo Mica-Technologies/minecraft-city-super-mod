@@ -1,9 +1,15 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:barberpole.obj",
+    "model": "csm:novelties/props/barberpole.obj",
     "custom": {
       "flip-v": true
+    },
+    "textures": {
+      "particle": "csm:blocks/novelties/props/chrome",
+      "#stripes": "csm:blocks/novelties/props/barber_stripes",
+      "#chrome": "csm:blocks/novelties/props/chrome",
+      "#plate": "csm:blocks/novelties/props/chrome_plate"
     }
   },
   "variants": {
@@ -27,6 +33,9 @@
     },
     "inventory": [
       {
+        "custom": {
+          "flip-v": true
+        },
         "transform": {
           "gui": {
             "rotation": [
@@ -35,11 +44,15 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              0.1264,
+              -0.0795,
+              0.1
             ],
-            "scale": 0.625
+            "scale": [
+              0.6355,
+              0.6355,
+              0.6355
+            ]
           },
           "ground": {
             "rotation": [
@@ -48,11 +61,32 @@
               0
             ],
             "translation": [
+              0.0,
+              0.18,
+              -0.0715
+            ],
+            "scale": [
+              0.2542,
+              0.2542,
+              0.2542
+            ]
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.625
+            "translation": [
+              0.0,
+              -0.0151,
+              -0.143
+            ],
+            "scale": [
+              0.5084,
+              0.5084,
+              0.5084
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,24 +95,32 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.0758,
+              0.2266,
+              -0.0306
             ],
-            "scale": 0.625
+            "scale": [
+              0.3813,
+              0.3813,
+              0.3813
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
               75,
-              225,
+              45,
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.0758,
+              0.2266,
+              -0.0306
             ],
-            "scale": 0.625
+            "scale": [
+              0.3813,
+              0.3813,
+              0.3813
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +129,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              -0.0809,
+              -0.0121,
+              -0.0809
             ],
-            "scale": 0.625
+            "scale": [
+              0.4067,
+              0.4067,
+              0.4067
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +146,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0809,
+              -0.0121,
+              0.0809
             ],
-            "scale": 0.625
-          },
-          "fixed": {
-            "scale": 0.625
+            "scale": [
+              0.4067,
+              0.4067,
+              0.4067
+            ]
           }
         }
       }

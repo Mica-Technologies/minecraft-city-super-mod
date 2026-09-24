@@ -31,7 +31,7 @@ public class BlockPumpkins extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.062500, 0.000000, 0.025000, 1.062500, 0.625000, 0.950000);
+    return new AxisAlignedBB(0.175650, 0.000000, 0.200690, 0.865503, 0.382616, 0.815503);
   }
 
   @Override

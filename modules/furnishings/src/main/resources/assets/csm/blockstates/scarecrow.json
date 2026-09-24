@@ -1,10 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:scarecrow.obj",
-    "custom": {
-      "flip-v": true
-    }
+    "model": "csm:novelties/seasonal/scarecrow"
   },
   "variants": {
     "facing": {
@@ -35,11 +32,15 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              0.0091,
+              -0.1137,
+              -0.0552
             ],
-            "scale": 0.263
+            "scale": [
+              0.3417,
+              0.3417,
+              0.3417
+            ]
           },
           "ground": {
             "rotation": [
@@ -48,11 +49,32 @@
               0
             ],
             "translation": [
+              0.0,
+              0.1371,
+              -0.0051
+            ],
+            "scale": [
+              0.1367,
+              0.1367,
+              0.1367
+            ]
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.263
+            "translation": [
+              0.0,
+              -0.1008,
+              -0.0103
+            ],
+            "scale": [
+              0.2734,
+              0.2734,
+              0.2734
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,24 +83,32 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.0054,
+              0.1419,
+              -0.0744
             ],
-            "scale": 0.263
+            "scale": [
+              0.205,
+              0.205,
+              0.205
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
               75,
-              225,
+              45,
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.0054,
+              0.1419,
+              -0.0744
             ],
-            "scale": 0.263
+            "scale": [
+              0.205,
+              0.205,
+              0.205
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +117,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              -0.0058,
+              -0.0806,
+              -0.0058
             ],
-            "scale": 0.263
+            "scale": [
+              0.2187,
+              0.2187,
+              0.2187
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +134,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0058,
+              -0.0806,
+              0.0058
             ],
-            "scale": 0.263
-          },
-          "fixed": {
-            "scale": 0.263
+            "scale": [
+              0.2187,
+              0.2187,
+              0.2187
+            ]
           }
         }
       }

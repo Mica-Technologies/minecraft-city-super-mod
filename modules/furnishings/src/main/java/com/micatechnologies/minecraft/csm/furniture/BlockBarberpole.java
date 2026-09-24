@@ -25,7 +25,7 @@ public class BlockBarberpole extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.187500, 0.000000, -0.500000, 0.187500, 1.000000, 0.000063);
+    return new AxisAlignedBB(0.337500, 0.000000, 0.562500, 0.662500, 0.996875, 1.000000);
   }
 
   @Override

@@ -1,10 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:doghouse.obj",
-    "custom": {
-      "flip-v": true
-    }
+    "model": "csm:novelties/props/doghouse"
   },
   "variants": {
     "facing": {
@@ -35,11 +32,15 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              0.0,
+              -0.024,
+              -0.0139
             ],
-            "scale": 0.526
+            "scale": [
+              0.5383,
+              0.5383,
+              0.5383
+            ]
           },
           "ground": {
             "rotation": [
@@ -48,11 +49,32 @@
               0
             ],
             "translation": [
+              0.0,
+              0.1764,
+              0.0
+            ],
+            "scale": [
+              0.2153,
+              0.2153,
+              0.2153
+            ]
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.526
+            "translation": [
+              0.0,
+              -0.0222,
+              0.0
+            ],
+            "scale": [
+              0.4306,
+              0.4306,
+              0.4306
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,24 +83,32 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0,
+              0.1519,
+              -0.0161
             ],
-            "scale": 0.526
+            "scale": [
+              0.323,
+              0.323,
+              0.323
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
               75,
-              225,
+              45,
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0,
+              0.1519,
+              -0.0161
             ],
-            "scale": 0.526
+            "scale": [
+              0.323,
+              0.323,
+              0.323
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +117,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0,
+              -0.0177,
+              0.0
             ],
-            "scale": 0.526
+            "scale": [
+              0.3445,
+              0.3445,
+              0.3445
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +134,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0,
+              -0.0177,
+              0.0
             ],
-            "scale": 0.526
-          },
-          "fixed": {
-            "scale": 0.526
+            "scale": [
+              0.3445,
+              0.3445,
+              0.3445
+            ]
           }
         }
       }

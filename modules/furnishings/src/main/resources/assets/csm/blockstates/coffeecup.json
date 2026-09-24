@@ -1,23 +1,165 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/shared_models/coffee_cup",
+    "model": "csm:novelties/props/coffeecup.obj",
+    "custom": {
+      "flip-v": true
+    },
     "textures": {
-      "all": "csm:blocks/novelties/coffee_cup",
-      "particle": "csm:blocks/novelties/coffee_cup",
-      "0": "csm:blocks/novelties/coffee_cup"
+      "particle": "csm:blocks/novelties/props/china",
+      "#china": "csm:blocks/novelties/props/china",
+      "#coffee": "csm:blocks/novelties/props/coffee"
     }
   },
   "variants": {
     "facing": {
-      "down": { "x": 90 },
-      "east": { "y": 90 },
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
       "north": {},
-      "south": { "y": 180 },
-      "up": { "x": 270 },
-      "west": { "y": 270 }
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "inventory": [{}],
-    "normal": [{}]
+    "inventory": [
+      {
+        "custom": {
+          "flip-v": true
+        },
+        "transform": {
+          "gui": {
+            "rotation": [
+              30,
+              225,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.9401,
+              0.5427
+            ],
+            "scale": [
+              2.4359,
+              2.4359,
+              2.4359
+            ]
+          },
+          "ground": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.6217,
+              0.0
+            ],
+            "scale": [
+              0.9744,
+              0.9744,
+              0.9744
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.8684,
+              0.0
+            ],
+            "scale": [
+              1.9487,
+              1.9487,
+              1.9487
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.3248,
+              0.6291
+            ],
+            "scale": [
+              1.4615,
+              1.4615,
+              1.4615
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.3248,
+              0.6291
+            ],
+            "scale": [
+              1.4615,
+              1.4615,
+              1.4615
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.6947,
+              0.0
+            ],
+            "scale": [
+              1.559,
+              1.559,
+              1.559
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.6947,
+              0.0
+            ],
+            "scale": [
+              1.559,
+              1.559,
+              1.559
+            ]
+          }
+        }
+      }
+    ],
+    "normal": [
+      {}
+    ]
   }
 }

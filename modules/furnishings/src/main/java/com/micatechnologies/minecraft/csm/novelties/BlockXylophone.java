@@ -38,7 +38,7 @@ public class BlockXylophone extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.025000, 0.000000, 0.162500, 0.975000, 0.150000, 0.787500);
+    return new AxisAlignedBB(0.017687, 0.000000, 0.027309, 0.989533, 0.146875, 0.812500);
   }
 
   @Override

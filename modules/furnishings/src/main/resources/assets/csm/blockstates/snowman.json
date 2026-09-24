@@ -1,9 +1,19 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:snowman.obj",
+    "model": "csm:novelties/seasonal/snowman.obj",
     "custom": {
       "flip-v": true
+    },
+    "textures": {
+      "particle": "csm:blocks/novelties/seasonal/snow",
+      "#snow": "csm:blocks/novelties/seasonal/snow",
+      "#coal": "csm:blocks/novelties/seasonal/coal",
+      "#hat": "csm:blocks/novelties/seasonal/hat_black",
+      "#band": "csm:blocks/novelties/seasonal/hat_red",
+      "#carrot": "csm:blocks/novelties/seasonal/carrot",
+      "#scarf": "csm:blocks/novelties/seasonal/scarf",
+      "#stick": "csm:blocks/novelties/seasonal/stick"
     }
   },
   "variants": {
@@ -27,6 +37,9 @@
     },
     "inventory": [
       {
+        "custom": {
+          "flip-v": true
+        },
         "transform": {
           "gui": {
             "rotation": [
@@ -35,11 +48,15 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              -0.0,
+              -0.1059,
+              -0.0611
             ],
-            "scale": 0.292
+            "scale": [
+              0.3493,
+              0.3493,
+              0.3493
+            ]
           },
           "ground": {
             "rotation": [
@@ -48,11 +65,32 @@
               0
             ],
             "translation": [
+              0.0,
+              0.1386,
+              0.0
+            ],
+            "scale": [
+              0.1397,
+              0.1397,
+              0.1397
+            ]
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.292
+            "translation": [
+              0.0,
+              -0.0978,
+              0.0
+            ],
+            "scale": [
+              0.2794,
+              0.2794,
+              0.2794
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,24 +99,32 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0,
+              0.1373,
+              -0.0708
             ],
-            "scale": 0.292
+            "scale": [
+              0.2096,
+              0.2096,
+              0.2096
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
               75,
-              225,
+              45,
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0,
+              0.1373,
+              -0.0708
             ],
-            "scale": 0.292
+            "scale": [
+              0.2096,
+              0.2096,
+              0.2096
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +133,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0,
+              -0.0782,
+              -0.0
             ],
-            "scale": 0.292
+            "scale": [
+              0.2235,
+              0.2235,
+              0.2235
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +150,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              -0.0,
+              -0.0782,
+              0.0
             ],
-            "scale": 0.292
-          },
-          "fixed": {
-            "scale": 0.292
+            "scale": [
+              0.2235,
+              0.2235,
+              0.2235
+            ]
           }
         }
       }

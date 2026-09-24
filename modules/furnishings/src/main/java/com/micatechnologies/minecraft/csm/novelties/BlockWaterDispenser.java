@@ -59,7 +59,7 @@ public class BlockWaterDispenser extends AbstractBlockRotatableNSEWUD {
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(0.187500, 0.000000, 0.140625, 0.812500, 2.000000, 0.843750);
+        return new AxisAlignedBB(0.337500, 0.000000, 0.325000, 0.662500, 1.462500, 0.668750);
     }
 
   /**

@@ -25,7 +25,7 @@ public class BlockDoghouse extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.500000, 0.000000, -0.562500, 0.433013, 0.812500, 0.625000);
+    return new AxisAlignedBB(0.018946, 0.000000, 0.006250, 0.981054, 1.103033, 0.993750);
   }
 
   @Override

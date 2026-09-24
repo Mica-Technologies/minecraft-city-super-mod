@@ -31,7 +31,7 @@ public class BlockPicnicBasket extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.062500, 0.000000, 0.125000, 1.062500, 0.812500, 0.875000);
+    return new AxisAlignedBB(0.237500, 0.000000, 0.287500, 0.762500, 0.512500, 0.700000);
   }
 
   @Override

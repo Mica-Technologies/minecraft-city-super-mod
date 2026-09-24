@@ -31,7 +31,7 @@ public class BlockCoffeeCup extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0.379688, 0.000000, 0.412500, 0.609375, 0.131250, 0.631250);
+    return new AxisAlignedBB(0.378125, 0.000000, 0.378125, 0.621875, 0.108750, 0.621875);
   }
 
   @Override

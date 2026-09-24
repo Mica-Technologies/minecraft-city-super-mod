@@ -25,7 +25,7 @@ public class BlockSnowman extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.729655, 0.000000, -0.337500, 0.729655, 2.137500, 0.442500);
+    return new AxisAlignedBB(-0.058734, 0.000000, 0.125000, 1.058734, 1.700000, 0.875000);
   }
 
   @Override

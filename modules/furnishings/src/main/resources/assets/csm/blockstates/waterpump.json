@@ -1,10 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:water_pump.obj",
-    "custom": {
-      "flip-v": true
-    }
+    "model": "csm:novelties/props/waterpump"
   },
   "variants": {
     "facing": {
@@ -35,11 +32,15 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              0.0388,
+              -0.072,
+              0.0032
             ],
-            "scale": 0.252
+            "scale": [
+              0.4723,
+              0.4723,
+              0.4723
+            ]
           },
           "ground": {
             "rotation": [
@@ -48,11 +49,32 @@
               0
             ],
             "translation": [
+              0.0,
+              0.1632,
+              -0.0219
+            ],
+            "scale": [
+              0.1889,
+              0.1889,
+              0.1889
+            ]
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.252
+            "translation": [
+              0.0,
+              -0.0486,
+              -0.0439
+            ],
+            "scale": [
+              0.3778,
+              0.3778,
+              0.3778
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,24 +83,32 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.0233,
+              0.1693,
+              -0.0412
             ],
-            "scale": 0.252
+            "scale": [
+              0.2834,
+              0.2834,
+              0.2834
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
               75,
-              225,
+              45,
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.0233,
+              0.1693,
+              -0.0412
             ],
-            "scale": 0.252
+            "scale": [
+              0.2834,
+              0.2834,
+              0.2834
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +117,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              -0.0248,
+              -0.0389,
+              -0.0248
             ],
-            "scale": 0.252
+            "scale": [
+              0.3023,
+              0.3023,
+              0.3023
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +134,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0248,
+              -0.0389,
+              0.0248
             ],
-            "scale": 0.252
-          },
-          "fixed": {
-            "scale": 0.252
+            "scale": [
+              0.3023,
+              0.3023,
+              0.3023
+            ]
           }
         }
       }

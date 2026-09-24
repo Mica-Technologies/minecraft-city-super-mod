@@ -25,7 +25,7 @@ public class BlockWaterPump extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.531250, 0.000000, -1.484639, 0.531250, 2.224095, 1.000000);
+    return new AxisAlignedBB(0.187500, 0.000000, 0.187500, 0.812500, 1.257215, 1.044715);
   }
 
   @Override

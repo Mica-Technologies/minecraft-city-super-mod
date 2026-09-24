@@ -1,9 +1,14 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:cookies.obj",
+    "model": "csm:novelties/props/cookies.obj",
     "custom": {
       "flip-v": true
+    },
+    "textures": {
+      "particle": "csm:blocks/novelties/props/cookie",
+      "#plate": "csm:blocks/novelties/props/plate",
+      "#cookie": "csm:blocks/novelties/props/cookie"
     }
   },
   "variants": {
@@ -27,6 +32,9 @@
     },
     "inventory": [
       {
+        "custom": {
+          "flip-v": true
+        },
         "transform": {
           "gui": {
             "rotation": [
@@ -35,11 +43,15 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              0.0,
+              0.651,
+              0.3759
             ],
-            "scale": 0.625
+            "scale": [
+              1.5833,
+              1.5833,
+              1.5833
+            ]
           },
           "ground": {
             "rotation": [
@@ -48,11 +60,32 @@
               0
             ],
             "translation": [
+              0.0,
+              0.4882,
+              0.0
+            ],
+            "scale": [
+              0.6333,
+              0.6333,
+              0.6333
+            ]
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.625
+            "translation": [
+              0.0,
+              0.6014,
+              0.0
+            ],
+            "scale": [
+              1.2667,
+              1.2667,
+              1.2667
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,24 +94,32 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0,
+              0.273,
+              0.4357
             ],
-            "scale": 0.625
+            "scale": [
+              0.95,
+              0.95,
+              0.95
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
               75,
-              225,
+              45,
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0,
+              0.273,
+              0.4357
             ],
-            "scale": 0.625
+            "scale": [
+              0.95,
+              0.95,
+              0.95
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +128,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0,
+              0.4811,
+              0.0
             ],
-            "scale": 0.625
+            "scale": [
+              1.0133,
+              1.0133,
+              1.0133
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +145,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0,
+              0.4811,
+              0.0
             ],
-            "scale": 0.625
-          },
-          "fixed": {
-            "scale": 0.625
+            "scale": [
+              1.0133,
+              1.0133,
+              1.0133
+            ]
           }
         }
       }

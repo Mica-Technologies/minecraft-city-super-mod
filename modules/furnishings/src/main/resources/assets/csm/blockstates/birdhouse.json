@@ -1,10 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:birdhouse.obj",
-    "custom": {
-      "flip-v": true
-    }
+    "model": "csm:novelties/props/birdhouse"
   },
   "variants": {
     "facing": {
@@ -35,11 +32,15 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              -0.0024,
+              -0.0996,
+              -0.0603
             ],
-            "scale": 0.625
+            "scale": [
+              0.3609,
+              0.3609,
+              0.3609
+            ]
           },
           "ground": {
             "rotation": [
@@ -48,11 +49,32 @@
               0
             ],
             "translation": [
+              0.0,
+              0.1409,
+              0.0014
+            ],
+            "scale": [
+              0.1444,
+              0.1444,
+              0.1444
+            ]
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.625
+            "translation": [
+              0.0,
+              -0.0931,
+              0.0027
+            ],
+            "scale": [
+              0.2887,
+              0.2887,
+              0.2887
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,24 +83,32 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0014,
+              0.1368,
+              -0.0671
             ],
-            "scale": 0.625
+            "scale": [
+              0.2165,
+              0.2165,
+              0.2165
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
               75,
-              225,
+              45,
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              0.0014,
+              0.1368,
+              -0.0671
             ],
-            "scale": 0.625
+            "scale": [
+              0.2165,
+              0.2165,
+              0.2165
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +117,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0015,
+              -0.0745,
+              0.0015
             ],
-            "scale": 0.625
+            "scale": [
+              0.231,
+              0.231,
+              0.231
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +134,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              -0.0015,
+              -0.0745,
+              -0.0015
             ],
-            "scale": 0.625
-          },
-          "fixed": {
-            "scale": 0.625
+            "scale": [
+              0.231,
+              0.231,
+              0.231
+            ]
           }
         }
       }

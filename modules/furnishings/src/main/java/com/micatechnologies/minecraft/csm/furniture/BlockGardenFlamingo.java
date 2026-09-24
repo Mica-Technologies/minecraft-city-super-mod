@@ -25,7 +25,7 @@ public class BlockGardenFlamingo extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.156250, 0.001194, -0.515979, 0.156250, 1.842095, 0.706917);
+    return new AxisAlignedBB(0.409375, 0.000000, 0.215768, 0.590625, 0.962500, 0.825528);
   }
 
   @Override

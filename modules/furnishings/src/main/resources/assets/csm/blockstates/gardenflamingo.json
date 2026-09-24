@@ -1,10 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:garden_flamingo.obj",
-    "custom": {
-      "flip-v": true
-    }
+    "model": "csm:novelties/props/gardenflamingo"
   },
   "variants": {
     "facing": {
@@ -35,11 +32,15 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              0.009,
+              0.0055,
+              0.0136
             ],
-            "scale": 0.34
+            "scale": [
+              0.6169,
+              0.6169,
+              0.6169
+            ]
           },
           "ground": {
             "rotation": [
@@ -48,11 +49,32 @@
               0
             ],
             "translation": [
+              0.0,
+              0.1921,
+              -0.0051
+            ],
+            "scale": [
+              0.2468,
+              0.2468,
+              0.2468
+            ]
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.34
+            "translation": [
+              0.0,
+              0.0093,
+              -0.0102
+            ],
+            "scale": [
+              0.4935,
+              0.4935,
+              0.4935
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,24 +83,32 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.0054,
+              0.1633,
+              0.0053
             ],
-            "scale": 0.34
+            "scale": [
+              0.3701,
+              0.3701,
+              0.3701
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
               75,
-              225,
+              45,
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.0054,
+              0.1633,
+              0.0053
             ],
-            "scale": 0.34
+            "scale": [
+              0.3701,
+              0.3701,
+              0.3701
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +117,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              -0.0058,
+              0.0074,
+              -0.0058
             ],
-            "scale": 0.34
+            "scale": [
+              0.3948,
+              0.3948,
+              0.3948
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +134,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.0058,
+              0.0074,
+              0.0058
             ],
-            "scale": 0.34
-          },
-          "fixed": {
-            "scale": 0.34
+            "scale": [
+              0.3948,
+              0.3948,
+              0.3948
+            ]
           }
         }
       }

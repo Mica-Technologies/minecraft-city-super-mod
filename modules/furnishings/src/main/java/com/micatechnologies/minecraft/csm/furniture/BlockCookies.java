@@ -25,7 +25,7 @@ public class BlockCookies extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.303961, 0.000000, -0.432500, 0.412500, 0.400000, 0.383961);
+    return new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.687500, 0.062500, 0.687500);
   }
 
   @Override

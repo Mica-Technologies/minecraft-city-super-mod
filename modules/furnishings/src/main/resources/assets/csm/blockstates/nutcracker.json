@@ -1,23 +1,154 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/shared_models/nutcracker",
-    "textures": {
-      "all": "csm:blocks/novelties/nutcracker",
-      "particle": "csm:blocks/novelties/nutcracker",
-      "0": "csm:blocks/novelties/nutcracker"
-    }
+    "model": "csm:novelties/seasonal/nutcracker"
   },
   "variants": {
     "facing": {
-      "down": { "x": 90 },
-      "east": { "y": 90 },
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
       "north": {},
-      "south": { "y": 180 },
-      "up": { "x": 270 },
-      "west": { "y": 270 }
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "inventory": [{}],
-    "normal": [{}]
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              30,
+              225,
+              0
+            ],
+            "translation": [
+              -0.0014,
+              0.0197,
+              0.0097
+            ],
+            "scale": [
+              0.6376,
+              0.6376,
+              0.6376
+            ]
+          },
+          "ground": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.1963,
+              0.0008
+            ],
+            "scale": [
+              0.255,
+              0.255,
+              0.255
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.0175,
+              0.0016
+            ],
+            "scale": [
+              0.5101,
+              0.5101,
+              0.5101
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.0008,
+              0.1588,
+              0.0129
+            ],
+            "scale": [
+              0.3826,
+              0.3826,
+              0.3826
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.0008,
+              0.1588,
+              0.0129
+            ],
+            "scale": [
+              0.3826,
+              0.3826,
+              0.3826
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "translation": [
+              0.0009,
+              0.014,
+              0.0009
+            ],
+            "scale": [
+              0.4081,
+              0.4081,
+              0.4081
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "translation": [
+              -0.0009,
+              0.014,
+              -0.0009
+            ],
+            "scale": [
+              0.4081,
+              0.4081,
+              0.4081
+            ]
+          }
+        }
+      }
+    ],
+    "normal": [
+      {}
+    ]
   }
 }

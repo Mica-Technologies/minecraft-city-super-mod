@@ -1,23 +1,154 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/shared_models/picnic_basket",
-    "textures": {
-      "all": "csm:blocks/novelties/picnic_basket",
-      "particle": "csm:blocks/novelties/picnic_basket",
-      "0": "csm:blocks/novelties/picnic_basket"
-    }
+    "model": "csm:novelties/props/picnicbasket"
   },
   "variants": {
     "facing": {
-      "down": { "x": 90 },
-      "east": { "y": 90 },
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
       "north": {},
-      "south": { "y": 180 },
-      "up": { "x": 270 },
-      "west": { "y": 270 }
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "inventory": [{}],
-    "normal": [{}]
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              30,
+              225,
+              0
+            ],
+            "translation": [
+              -0.005,
+              0.2412,
+              0.1335
+            ],
+            "scale": [
+              1.131,
+              1.131,
+              1.131
+            ]
+          },
+          "ground": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.2978,
+              0.0028
+            ],
+            "scale": [
+              0.4524,
+              0.4524,
+              0.4524
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.2205,
+              0.0057
+            ],
+            "scale": [
+              0.9048,
+              0.9048,
+              0.9048
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.003,
+              0.1962,
+              0.1605
+            ],
+            "scale": [
+              0.6786,
+              0.6786,
+              0.6786
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.003,
+              0.1962,
+              0.1605
+            ],
+            "scale": [
+              0.6786,
+              0.6786,
+              0.6786
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "translation": [
+              0.0032,
+              0.1764,
+              0.0032
+            ],
+            "scale": [
+              0.7238,
+              0.7238,
+              0.7238
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "translation": [
+              -0.0032,
+              0.1764,
+              -0.0032
+            ],
+            "scale": [
+              0.7238,
+              0.7238,
+              0.7238
+            ]
+          }
+        }
+      }
+    ],
+    "normal": [
+      {}
+    ]
   }
 }

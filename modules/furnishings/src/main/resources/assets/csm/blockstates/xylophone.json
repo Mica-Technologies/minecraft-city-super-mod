@@ -1,23 +1,154 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/shared_models/xylophone",
-    "textures": {
-      "all": "csm:blocks/novelties/xylophone",
-      "particle": "csm:blocks/novelties/xylophone",
-      "0": "csm:blocks/novelties/xylophone"
-    }
+    "model": "csm:novelties/props/xylophone"
   },
   "variants": {
     "facing": {
-      "down": { "x": 90 },
-      "east": { "y": 90 },
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
       "north": {},
-      "south": { "y": 180 },
-      "up": { "x": 270 },
-      "west": { "y": 270 }
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "inventory": [{}],
-    "normal": [{}]
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              30,
+              225,
+              0
+            ],
+            "translation": [
+              -0.033,
+              0.2438,
+              0.099
+            ],
+            "scale": [
+              0.611,
+              0.611,
+              0.611
+            ]
+          },
+          "ground": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              -0.0009,
+              0.2917,
+              0.0196
+            ],
+            "scale": [
+              0.2444,
+              0.2444,
+              0.2444
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              -0.0018,
+              0.2085,
+              0.0391
+            ],
+            "scale": [
+              0.4888,
+              0.4888,
+              0.4888
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.0198,
+              0.1758,
+              0.1567
+            ],
+            "scale": [
+              0.3666,
+              0.3666,
+              0.3666
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0.0198,
+              0.1758,
+              0.1567
+            ],
+            "scale": [
+              0.3666,
+              0.3666,
+              0.3666
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "translation": [
+              0.0211,
+              0.1668,
+              0.0231
+            ],
+            "scale": [
+              0.391,
+              0.391,
+              0.391
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "translation": [
+              -0.0211,
+              0.1668,
+              -0.0231
+            ],
+            "scale": [
+              0.391,
+              0.391,
+              0.391
+            ]
+          }
+        }
+      }
+    ],
+    "normal": [
+      {}
+    ]
   }
 }

@@ -31,7 +31,7 @@ public class BlockNutcracker extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0.425000, 0.000000, 0.453125, 0.575000, 0.393750, 0.565625);
+    return new AxisAlignedBB(0.303125, 0.000000, 0.381250, 0.696875, 0.931250, 0.612500);
   }
 
   @Override

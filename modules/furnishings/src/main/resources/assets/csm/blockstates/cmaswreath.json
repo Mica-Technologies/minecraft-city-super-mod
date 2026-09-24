@@ -1,9 +1,16 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:cmas_wreath.obj",
+    "model": "csm:novelties/seasonal/cmaswreath.obj",
     "custom": {
       "flip-v": true
+    },
+    "textures": {
+      "particle": "csm:blocks/novelties/seasonal/needles",
+      "#needles": "csm:blocks/novelties/seasonal/needles",
+      "#berry": "csm:blocks/novelties/seasonal/berry",
+      "#cone": "csm:blocks/novelties/seasonal/cone",
+      "#ribbon": "csm:blocks/novelties/seasonal/ribbon"
     }
   },
   "variants": {
@@ -27,6 +34,9 @@
     },
     "inventory": [
       {
+        "custom": {
+          "flip-v": true
+        },
         "transform": {
           "gui": {
             "rotation": [
@@ -35,11 +45,15 @@
               0
             ],
             "translation": [
-              -0.4,
-              0,
-              0
+              0.1906,
+              -0.0874,
+              0.1662
             ],
-            "scale": 0.625
+            "scale": [
+              0.704,
+              0.704,
+              0.704
+            ]
           },
           "ground": {
             "rotation": [
@@ -48,11 +62,32 @@
               0
             ],
             "translation": [
+              -0.0008,
+              0.1904,
+              -0.107
+            ],
+            "scale": [
+              0.2816,
+              0.2816,
+              0.2816
+            ]
+          },
+          "fixed": {
+            "rotation": [
               0,
-              3,
+              0,
               0
             ],
-            "scale": 0.625
+            "translation": [
+              -0.0017,
+              0.0059,
+              -0.214
+            ],
+            "scale": [
+              0.5632,
+              0.5632,
+              0.5632
+            ]
           },
           "thirdperson_righthand": {
             "rotation": [
@@ -61,24 +96,32 @@
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.1144,
+              0.2662,
+              -0.0249
             ],
-            "scale": 0.625
+            "scale": [
+              0.4224,
+              0.4224,
+              0.4224
+            ]
           },
           "thirdperson_lefthand": {
             "rotation": [
               75,
-              225,
+              45,
               0
             ],
             "translation": [
-              0,
-              2.5,
-              0
+              -0.1144,
+              0.2662,
+              -0.0249
             ],
-            "scale": 0.625
+            "scale": [
+              0.4224,
+              0.4224,
+              0.4224
+            ]
           },
           "firstperson_righthand": {
             "rotation": [
@@ -87,11 +130,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              -0.122,
+              0.0047,
+              -0.1201
             ],
-            "scale": 0.625
+            "scale": [
+              0.4505,
+              0.4505,
+              0.4505
+            ]
           },
           "firstperson_lefthand": {
             "rotation": [
@@ -100,14 +147,15 @@
               0
             ],
             "translation": [
-              0,
-              0,
-              0
+              0.122,
+              0.0047,
+              0.1201
             ],
-            "scale": 0.625
-          },
-          "fixed": {
-            "scale": 0.625
+            "scale": [
+              0.4505,
+              0.4505,
+              0.4505
+            ]
           }
         }
       }

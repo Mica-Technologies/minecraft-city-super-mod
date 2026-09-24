@@ -31,7 +31,7 @@ public class BlockScarecrow extends AbstractBlockRotatableNSEWUD {
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.812500, 0.000000, -0.375000, 0.812500, 2.375000, 0.375000);
+    return new AxisAlignedBB(-0.250000, 0.000000, 0.312500, 1.250000, 1.737500, 0.762500);
   }
 
   @Override
