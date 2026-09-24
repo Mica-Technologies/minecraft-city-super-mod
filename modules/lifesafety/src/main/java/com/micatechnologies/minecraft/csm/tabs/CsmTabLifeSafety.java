@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.lifesafety.IStrobeBlock;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmEdwardsIOPanel;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmDetectorFactory;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmDetectorStrobe;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmPullStationFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmESTPull;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmEdwardsGlassRodPullStation;
@@ -166,6 +167,7 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmDetectorFactory("systemsensor_5251_heat_detector", new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000)));
     initTabBlock(new BlockFireAlarmDetectorFactory("systemsensor_5601_heat_detector", new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000)));
     initTabBlock(new BlockFireAlarmDetectorFactory("gentex_smoke_alarm", new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000)));
+    initTabBlock(new BlockFireAlarmDetectorStrobe("gentex710csc", new AxisAlignedBB(0.040000, 0.040000, 0.625000, 0.960000, 0.960000, 1.000000), new float[]{0.96f, 1.44f, 9.5f}, new float[]{4.736f, 15.36f, 11.5f}));
     initTabBlock(new BlockRotatableNSEWUDFactory("adt_co_detector", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000), false, false, true, BlockRenderLayer.CUTOUT_MIPPED, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("hwam", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.125000, 0.312500, 0.937500, 0.875000, 0.937500, 1.000000), false, false, true, BlockRenderLayer.SOLID, false, false));
     initTabBlock(BlockFireAlarmKACCallPoint.class, fmlPreInitializationEvent);

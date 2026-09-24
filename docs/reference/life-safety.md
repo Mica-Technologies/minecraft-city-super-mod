@@ -2,7 +2,7 @@
 
 Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
-!!! info "142 blocks in this tab"
+!!! info "143 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -43,6 +43,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Gamewell Century Pull Station | `csm:firealarmgamewellcenturypull` | 2 | 10 | pickaxe | 1 |
 | Gamewell Fire Box | `csm:gamewellfirebox` |  |  |  |  |
 | Generic Pull Station | `csm:firealarmgenericpullstation` | 2 | 10 | pickaxe | 1 |
+| Gentex 710CS-C (Smoke Detector / Strobe) | `csm:gentex710csc` | 2 | 10 | pickaxe | 1 |
 | Gentex Commander 3 Red (Horn Strobe) | `csm:firealarmgentexcommander3red` | 2 | 10 | pickaxe | 1 |
 | Gentex Commander 3 Red/Outdoor (Horn Strobe) | `csm:firealarmgentexcommander3outdoorred` | 2 | 10 | pickaxe | 1 |
 | Gentex Commander 3 White (Horn Strobe) | `csm:firealarmgentexcommander3white` | 2 | 10 | pickaxe | 1 |

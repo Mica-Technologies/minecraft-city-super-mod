@@ -85,6 +85,7 @@ tile.systemsensor_i3_smoke_detector.name=Detector de Humo System Sensor i3
 tile.systemsensor_5251_heat_detector.name=Detector de Calor System Sensor 5251
 tile.systemsensor_5601_heat_detector.name=Detector de Calor System Sensor 5601
 tile.gentex_smoke_alarm.name=Gentex Detector de Humo
+tile.gentex710csc.name=Gentex 710CS-C (Detector de Humo / Estrobo)
 tile.adt_co_detector.name=Detector de Monóxido de Carbono ADT
 tile.firealarmkaccallpoint.name=KAC Pulsador de Alarma
 tile.firealarmkacsounderred.name=KAC Sounder Rojo (Bocina)

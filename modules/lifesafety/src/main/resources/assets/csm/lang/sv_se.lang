@@ -85,6 +85,7 @@ tile.systemsensor_i3_smoke_detector.name=System Sensor i3 Rökdetektor
 tile.systemsensor_5251_heat_detector.name=System Sensor 5251 Värmedetektor
 tile.systemsensor_5601_heat_detector.name=System Sensor 5601 Värmedetektor
 tile.gentex_smoke_alarm.name=Gentex Brandvarnare
+tile.gentex710csc.name=Gentex 710CS-C (Rökdetektor / Blixtljus)
 tile.adt_co_detector.name=ADT Kolmonoxiddetektor
 tile.firealarmkaccallpoint.name=KAC Larmknapp
 tile.firealarmkacsounderred.name=KAC Sounder Röd (Horn)

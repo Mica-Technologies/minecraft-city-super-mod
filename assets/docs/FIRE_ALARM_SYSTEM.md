@@ -131,6 +131,16 @@ Devices can be **re-linked** freely. `setLinkedPanelPos` returns a `LinkResult`
 refused any device that already had a panel, silently, so the only way to move a pull station was
 to break it.
 
+### Detectors with a strobe built in
+
+`BlockFireAlarmDetectorStrobe` (the Gentex 710CS-C) is a detector -- linked, indexed and reporting
+exactly as one -- that also implements `IStrobeBlock`. Its tile entity is
+`TileEntityFireAlarmSensorStrobe`, a sensor subclass that exists only so the strobe flash renderer
+can be bound to these devices and not to every sensor. The panel's `rebuildApplianceCache` adds
+indexed initiating devices that are strobes to its strobe-only positions, so they flash with the
+appliances; indexing one clears the cache so it flashes at the next alarm without waiting for the
+periodic rebuild.
+
 ### Detector Scanning
 `AbstractBlockFireAlarmDetector.findFire` covers the column under each position within
 `RADIUS_AROUND_BLOCKS_CHECK` (15), running down from the detector **until it reaches a floor** --

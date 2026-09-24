@@ -481,6 +481,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       return false;
     }
     initiatingDevices.add(blockPos);
+    // A detector with a strobe built in flashes with the appliances
+    cachedVoiceEvacPositions = null;
     markDirty();
     return true;
   }
@@ -1014,6 +1016,15 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           cachedStrobeOnlyPositions.add(bp);
           cachedAllStrobePositions.add(bp);
         }
+      }
+    }
+
+    // Detectors with a strobe built in (the Gentex 710CS-C) are initiating devices, not
+    // appliances, but their strobe flashes with the rest in an alarm
+    for (BlockPos bp : initiatingDevices) {
+      if (world.isBlockLoaded(bp) && world.getBlockState(bp).getBlock() instanceof IStrobeBlock) {
+        cachedStrobeOnlyPositions.add(bp);
+        cachedAllStrobePositions.add(bp);
       }
     }
   }

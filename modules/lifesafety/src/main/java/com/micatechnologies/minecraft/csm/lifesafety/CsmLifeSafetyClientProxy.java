@@ -20,6 +20,10 @@ public class CsmLifeSafetyClientProxy extends CsmLifeSafetyCommonProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmSoundIndex.class,
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
+    // And to detectors with a strobe built in, whose tile entity is a sensor's
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmSensorStrobe.class,
+        new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
 
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityEmergencyLight.class,
