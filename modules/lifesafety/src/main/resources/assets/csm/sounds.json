@@ -1,13 +1,4 @@
 {
-  "bell": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:bell",
-        "stream": false
-      }
-    ]
-  },
   "codetector": {
     "category": "block",
     "sounds": [
@@ -103,33 +94,6 @@
     "sounds": [
       {
         "name": "csm:wheelockas",
-        "stream": false
-      }
-    ]
-  },
-  "adaptabell": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:adaptabell",
-        "stream": false
-      }
-    ]
-  },
-  "bell2": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:bell2",
-        "stream": false
-      }
-    ]
-  },
-  "firebell": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:firebell",
         "stream": false
       }
     ]

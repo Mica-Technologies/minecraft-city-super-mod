@@ -16,7 +16,6 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
  * @since 2026.9
  */
 public enum LifeSafetySounds implements ICsmSound {
-  BELL("bell"),
   CODETECTOR("codetector"),
   ET70_CHIME("et70_chime"),
   MILLS_FIREALARM("mills_firealarm"),
@@ -29,9 +28,6 @@ public enum LifeSafetySounds implements ICsmSound {
   SPECTRALERT_CLASSIC("spectralert_classic"),
   SPECTRALERT_LF("spectralert_lf"),
   WHEELOCKAS("wheelockas"),
-  ADAPTABELL("adaptabell"),
-  BELL2("bell2"),
-  FIREBELL("firebell"),
   KAC_CONTINUOUS("kac_continuous"),
   KAC_CODE3("kac_code3"),
   SVENEW("svenew"),
