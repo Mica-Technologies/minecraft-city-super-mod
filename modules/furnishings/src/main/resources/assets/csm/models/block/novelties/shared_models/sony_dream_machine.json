@@ -1,0 +1,26 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "csm:blocks/novelties/sony_dream_machine_back",
+    "front": "csm:blocks/novelties/sony_dream_machine_front",
+    "back": "csm:blocks/novelties/sony_dream_machine_back",
+    "top": "csm:blocks/novelties/sony_dream_machine_top",
+    "bottom": "csm:blocks/novelties/sony_dream_machine_bottom",
+    "left": "csm:blocks/novelties/sony_dream_machine_left",
+    "right": "csm:blocks/novelties/sony_dream_machine_right"
+  },
+  "elements": [
+    {
+      "from": [2.5, 0, 4],
+      "to": [13.5, 11, 12.5],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#front"},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#back"},
+        "east": {"uv": [0, 0, 16, 16], "texture": "#left"},
+        "west": {"uv": [0, 0, 16, 16], "texture": "#right"},
+        "up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#top"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#bottom", "cullface": "down"}
+      }
+    }
+  ]
+}

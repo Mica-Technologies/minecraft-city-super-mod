@@ -1,0 +1,15 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:novelties/shared_models/sony_dream_machine"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {"y": 90},
+      "south": {"y": 180},
+      "west": {"y": 270}
+    },
+    "inventory": [{}]
+  }
+}

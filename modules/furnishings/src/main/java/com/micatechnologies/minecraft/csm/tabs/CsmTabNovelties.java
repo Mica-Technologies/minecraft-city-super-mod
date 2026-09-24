@@ -23,6 +23,7 @@ import com.micatechnologies.minecraft.csm.novelties.BlockGoldenFurAwardsTrophy;
 import com.micatechnologies.minecraft.csm.novelties.BlockHd;
 import com.micatechnologies.minecraft.csm.novelties.BlockNutcracker;
 import com.micatechnologies.minecraft.csm.novelties.BlockOldRecordPlayer;
+import com.micatechnologies.minecraft.csm.novelties.BlockSonyDreamMachine;
 import com.micatechnologies.minecraft.csm.novelties.BlockPSHawkA97;
 import com.micatechnologies.minecraft.csm.novelties.BlockPSPapaGinos;
 import com.micatechnologies.minecraft.csm.novelties.BlockPSThatCrazyPandog;
@@ -100,6 +101,7 @@ public class CsmTabNovelties extends CsmTab {
     initTabBlock(BlockCoffeeCup.class, fmlPreInitializationEvent); // Coffee Cup
     initTabBlock(BlockHd.class, fmlPreInitializationEvent); // Hand Dryer
     initTabBlock(BlockOldRecordPlayer.class, fmlPreInitializationEvent); // Old Record Player
+    initTabBlock(BlockSonyDreamMachine.class, fmlPreInitializationEvent); // Sony Dream Machine
     initTabBlock(BlockPicnicBasket.class, fmlPreInitializationEvent); // Picnic Basket
     initTabBlock(BlockPSHawkA97.class, fmlPreInitializationEvent); // Player Statue HawkA97
     initTabBlock(BlockPSPapaGinos.class, fmlPreInitializationEvent); // Player Statue PapaGinos

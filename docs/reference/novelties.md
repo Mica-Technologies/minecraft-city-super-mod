@@ -2,7 +2,7 @@
 
 Decorative oddities that did not belong anywhere else.
 
-!!! info "33 blocks in this tab"
+!!! info "34 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -40,6 +40,7 @@ Decorative oddities that did not belong anywhere else.
 | Single Pumpkin | `csm:singlepumpkin` | 2 | 10 | pickaxe | 1 |
 | Snow Globe | `csm:snowglobe` | 2 | 10 | pickaxe | 1 |
 | Snowman | `csm:snowman` | 2 | 10 | pickaxe | 1 |
+| Sony Dream Machine Clock Radio | `csm:sony_dream_machine` | 1 | 10 | pickaxe | 1 |
 | TARDIS | `csm:tardis` | 2 | 10 | pickaxe | 1 |
 | Treasure Chest | `csm:treasurechest` | 2 | 10 | pickaxe | 1 |
 | Water Dispenser | `csm:waterdispenser` | 1 | 10 | pickaxe | 1 |
