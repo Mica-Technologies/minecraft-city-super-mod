@@ -66,6 +66,42 @@
     {
       "when": {
         "facing": "north",
+        "corner": "outer_right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_outer_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "corner": "outer_left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_outer_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "corner": "inner_right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_inner_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "corner": "inner_left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_inner_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
         "joint": "true"
       },
       "apply": {
@@ -145,6 +181,46 @@
     {
       "when": {
         "facing": "east",
+        "corner": "outer_right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_outer_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "corner": "outer_left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_outer_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "corner": "inner_right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_inner_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "corner": "inner_left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_inner_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
         "joint": "true"
       },
       "apply": {
@@ -225,6 +301,46 @@
     {
       "when": {
         "facing": "south",
+        "corner": "outer_right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_outer_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "corner": "outer_left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_outer_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "corner": "inner_right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_inner_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "corner": "inner_left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_inner_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
         "joint": "true"
       },
       "apply": {
@@ -299,6 +415,46 @@
       },
       "apply": {
         "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_ceiling",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "corner": "outer_right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_outer_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "corner": "outer_left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_outer_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "corner": "inner_right"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_inner_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "corner": "inner_left"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_wall_corner_inner_left",
         "y": 270
       }
     },

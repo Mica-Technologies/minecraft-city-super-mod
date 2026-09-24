@@ -18,6 +18,9 @@ Above or below, a solid face counts as a join: the arm runs into it and a steel 
 drawn on the face, so a riser reads as going through the floor to the next storey (the user's
 request, 2026-09-23).
 
+A plain wall pipe with a wall pipe on the wall at right angles behind it (an outside corner) or
+in front of it (an inside corner) turns the corner: see wall_corner.
+
 The main is 8 px across, the branch 6 px. The Standpipe Riser keeps its registry name as the red
 wall branch pipe (the user's choice, 2026-09-23), so risers already placed join runs.
 """
@@ -43,16 +46,14 @@ AIR_GREEN = (46, 104, 92)
 
 @C.texture("galvanised")
 def galvanised():
-    img = lc.fill(GALVANISED, 16, 5, 71)
-    lc.cylinder_shading(img, 0, 16, GALVANISED)
-    return img
+    # No baked shading: an arm's faces take a half-block of texture each, so shading drawn
+    # across the texture repeats along the pipe as bands. The octagon's faces shade themselves.
+    return lc.fill(GALVANISED, 16, 5, 71)
 
 
 @C.texture("air_green")
 def air_green():
-    img = lc.fill(AIR_GREEN, 16, 4, 72)
-    lc.cylinder_shading(img, 0, 16, AIR_GREEN)
-    return img
+    return lc.fill(AIR_GREEN, 16, 4, 72)
 
 
 FINISHES = {
@@ -98,6 +99,26 @@ def wall_arm(side, r):
 def wall_joint(r):
     j = r + JOINT_GROW
     return octagon("y", 8, AXIS_Z, j, 8 - j, 8 + j, "p", True)
+
+
+# Round a building corner the other face's run crosses this pipe's axis at x = 5 or 11 (facing
+# north), where its own axis is set back to its own wall, so a corner piece draws both arms to an
+# elbow there. Outer: the side arm on the elbow's side and an arm to the back; inner: the side
+# arm from the other side and an arm to the front. The pipe on the other face uses its usual arm.
+CORNERS = ("outer_right", "outer_left", "inner_right", "inner_left")
+
+
+def wall_corner(kind, r):
+    e = 16 - AXIS_Z if kind.endswith("right") else AXIS_Z
+    outer = kind.startswith("outer")
+    to_right = outer == kind.endswith("right")
+    x0, x1 = (0, e) if to_right else (e, 16)
+    j = r + JOINT_GROW
+    els = octagon("x", 8, AXIS_Z, r, x0, x1, "p", True)
+    els += (octagon("z", e, 8, r, AXIS_Z, 16, "p", True) if outer
+            else octagon("z", e, 8, r, 0, AXIS_Z, "p", True))
+    els += octagon("y", e, AXIS_Z, j, 8 - j, 8 + j, "p", True)
+    return els
 
 
 # Where a pipe goes through a floor or ceiling: a steel collar plate flat on the face, so the
@@ -200,6 +221,10 @@ def wall_state(prefix, fitting_model=None):
         for where in ("floor", "ceiling"):
             parts.append({"when": {"facing": facing, where: "true"},
                           "apply": dict(model=C.M(prefix + "_" + where), **rot)})
+        if not fitting_model:
+            for kind in CORNERS:
+                parts.append({"when": {"facing": facing, "corner": kind},
+                              "apply": dict(model=C.M(prefix + "_corner_" + kind), **rot)})
         parts.append({"when": {"facing": facing, "joint": "true"},
                       "apply": dict(model=C.M(prefix + "_joint"), **rot)})
         if fitting_model:
@@ -253,6 +278,8 @@ def pipes():
             models[wp + "_joint"] = model(finish, wall_joint(r))
             models[wp + "_floor"] = model(finish, plate(AXIS_Z, r, False))
             models[wp + "_ceiling"] = model(finish, plate(AXIS_Z, r, True))
+            for kind in CORNERS:
+                models[wp + "_corner_" + kind] = model(finish, wall_corner(kind, r))
             C.extra_models = getattr(C, "extra_models", {})
             C.extra_models.update(models)
 

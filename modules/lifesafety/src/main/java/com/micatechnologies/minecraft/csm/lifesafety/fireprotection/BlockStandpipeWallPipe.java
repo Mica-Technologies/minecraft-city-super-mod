@@ -1,16 +1,19 @@
 package com.micatechnologies.minecraft.csm.lifesafety.fireprotection;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -51,8 +54,41 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
   /** Set where the pipe goes up through a ceiling. */
   public static final PropertyBool CEILING = BlockStandpipePipe.CEILING;
 
+  /** Where a plain pipe turns a building corner; see {@link Corner}. */
+  public static final PropertyEnum<Corner> CORNER = PropertyEnum.create("corner", Corner.class);
+
   /** The axis's distance from the front of the cell, facing north, in pixels. */
   public static final float AXIS_Z = 11.0F;
+
+  /**
+   * A plain wall pipe turning a building corner onto a wall at right angles to its own.
+   *
+   * <p>Round an outside corner, the pipe on the corner (which has no wall behind it) finds the
+   * run on the other face behind it; round an inside corner, the last pipe of a run finds the
+   * other face's run in front of it. Either way the other run's axis, set back to its own wall,
+   * crosses this pipe's axis at x = 5 or x = 11 (facing north), not at the middle of the cell,
+   * so the corner piece draws its own arms to an elbow there instead of the usual ones. The
+   * pipe on the other face needs nothing special: its ordinary side arm meets this one's.
+   * Right and left are the side the elbow is on, as seen from the front.</p>
+   */
+  public enum Corner implements IStringSerializable {
+    NONE, OUTER_RIGHT, OUTER_LEFT, INNER_RIGHT, INNER_LEFT;
+
+    @Override
+    @Nonnull
+    public String getName() {
+      return name().toLowerCase(Locale.ROOT);
+    }
+
+    public boolean isOuter() {
+      return this == OUTER_RIGHT || this == OUTER_LEFT;
+    }
+
+    /** The elbow's x, facing north, in pixels: the other run's axis. */
+    public float elbowX() {
+      return this == OUTER_RIGHT || this == INNER_RIGHT ? 16.0F - AXIS_Z : AXIS_Z;
+    }
+  }
 
   /** What is drawn at the joint, and which sides that leaves free to join. */
   public enum Fitting {
@@ -121,7 +157,8 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
     setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
         .withProperty(UP, false).withProperty(DOWN, false).withProperty(LEFT, false)
         .withProperty(RIGHT, false).withProperty(FRONT, false).withProperty(JOINT, false)
-        .withProperty(FLOOR, false).withProperty(CEILING, false));
+        .withProperty(FLOOR, false).withProperty(CEILING, false)
+        .withProperty(CORNER, Corner.NONE));
   }
 
   private static Material stash(String registryName) {
@@ -151,11 +188,50 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
     if (side == front) {
       return other.getBlock() instanceof BlockStandpipePipe;
     }
-    if (!(other.getBlock() instanceof BlockStandpipeWallPipe)
-        || other.getValue(FACING) != front) {
+    if (!(other.getBlock() instanceof BlockStandpipeWallPipe)) {
       return false;
     }
+    EnumFacing otherFront = other.getValue(FACING);
+    if (otherFront != front) {
+      // A corner piece beside this pipe, on the wall at right angles: round an outside corner
+      // it faces away from this pipe, round an inside one toward it.
+      return side.getAxis() != EnumFacing.Axis.Y
+          && (otherFront == side || otherFront == side.getOpposite())
+          && ((BlockStandpipeWallPipe) other.getBlock()).corner(world, pos.offset(side),
+          otherFront) != Corner.NONE;
+    }
     return ((BlockStandpipeWallPipe) other.getBlock()).fitting.takes(relative.getOpposite());
+  }
+
+  /**
+   * Whether the plain pipe at {@code pos}, facing {@code front}, turns a corner: a wall pipe on
+   * the wall at right angles behind it (outside corner) or in front of it (inside corner).
+   */
+  Corner corner(IBlockAccess world, BlockPos pos, EnumFacing front) {
+    if (fitting != Fitting.NONE) {
+      return Corner.NONE;
+    }
+    IBlockState back = world.getBlockState(pos.offset(front.getOpposite()));
+    if (back.getBlock() instanceof BlockStandpipeWallPipe) {
+      EnumFacing f = back.getValue(FACING);
+      if (f == front.rotateY()) {
+        return Corner.OUTER_RIGHT;
+      }
+      if (f == front.rotateYCCW()) {
+        return Corner.OUTER_LEFT;
+      }
+    }
+    IBlockState ahead = world.getBlockState(pos.offset(front));
+    if (ahead.getBlock() instanceof BlockStandpipeWallPipe) {
+      EnumFacing f = ahead.getValue(FACING);
+      if (f == front.rotateY()) {
+        return Corner.INNER_RIGHT;
+      }
+      if (f == front.rotateYCCW()) {
+        return Corner.INNER_LEFT;
+      }
+    }
+    return Corner.NONE;
   }
 
   /**
@@ -177,7 +253,7 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
   @Nonnull
   protected BlockStateContainer createBlockState() {
     return new BlockStateContainer(this, FACING, UP, DOWN, LEFT, RIGHT, FRONT, JOINT, FLOOR,
-        CEILING);
+        CEILING, CORNER);
   }
 
   @Override
@@ -187,6 +263,13 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
       BlockPos pos) {
     IBlockState base = super.getActualState(state, world, pos);
     EnumFacing front = base.getValue(FACING);
+    Corner corner = corner(world, pos, front);
+    if (corner != Corner.NONE) {
+      // The corner piece draws its own two arms and elbow, and joins nothing else.
+      return base.withProperty(UP, false).withProperty(DOWN, false).withProperty(LEFT, false)
+          .withProperty(RIGHT, false).withProperty(FRONT, false).withProperty(JOINT, false)
+          .withProperty(FLOOR, false).withProperty(CEILING, false).withProperty(CORNER, corner);
+    }
     boolean up = joins(world, pos, front, EnumFacing.UP);
     boolean down = joins(world, pos, front, EnumFacing.DOWN);
     boolean left = joins(world, pos, front, front.rotateY());
@@ -210,12 +293,25 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
     return base.withProperty(UP, up).withProperty(DOWN, down).withProperty(LEFT, left)
         .withProperty(RIGHT, right).withProperty(FRONT, out)
         .withProperty(JOINT, fitting == Fitting.NONE && !straight)
-        .withProperty(FLOOR, floor).withProperty(CEILING, ceiling);
+        .withProperty(FLOOR, floor).withProperty(CEILING, ceiling)
+        .withProperty(CORNER, Corner.NONE);
   }
 
   /** The pipe along each joined arm, the joint, and the fitting's body; facing north. */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    Corner corner = state.getValue(CORNER);
+    if (corner != Corner.NONE) {
+      double j = (radius + 0.8) / 16.0;
+      double e = corner.elbowX() / 16.0;
+      double z = AXIS_Z / 16.0;
+      boolean rightSide = corner.elbowX() < 8.0F;
+      // The side arm runs from the elbow out through the side the elbow is on (outer) or the
+      // other side (inner); the second arm runs from the elbow to the back or to the front.
+      boolean toRight = corner.isOuter() == rightSide;
+      return new AxisAlignedBB(toRight ? 0 : e - j, 0.5 - j, corner.isOuter() ? z - j : 0,
+          toRight ? e + j : 1, 0.5 + j, corner.isOuter() ? 1 : z + j);
+    }
     double r = (radius + (state.getValue(JOINT) ? 0.8 : 0.0)) / 16.0;
     double z = AXIS_Z / 16.0;
     AxisAlignedBB pipe = new AxisAlignedBB(
