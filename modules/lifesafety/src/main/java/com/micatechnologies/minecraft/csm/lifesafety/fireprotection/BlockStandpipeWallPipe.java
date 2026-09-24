@@ -27,7 +27,9 @@ import net.minecraft.world.IBlockAccess;
  * <p>Which sides are joined is actual state, from the neighbours. {@link #LEFT} and {@link #RIGHT}
  * are as seen from the front, so facing north the left arm is the east one (+x). A plain pipe
  * joined to nothing stands upright, as the riser always did; {@link #JOINT} draws the cast
- * fitting wherever the run is not straight.</p>
+ * fitting wherever the run is not straight. Above or below, a solid face counts as a join: the
+ * pipe runs into it and {@link #FLOOR} or {@link #CEILING} draws the collar plate where it goes
+ * through, so a riser carries on from one storey to the next.</p>
  *
  * <p>A {@link Fitting} is the same block with its own body drawn at the joint (a valve, the
  * hose outlet, the air release valve, the inlet manifold); each gives up the side its body
@@ -44,6 +46,10 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
   public static final PropertyBool RIGHT = PropertyBool.create("right");
   public static final PropertyBool FRONT = PropertyBool.create("front");
   public static final PropertyBool JOINT = PropertyBool.create("joint");
+  /** Set where the pipe goes down through a floor, to draw the collar plate there. */
+  public static final PropertyBool FLOOR = BlockStandpipePipe.FLOOR;
+  /** Set where the pipe goes up through a ceiling. */
+  public static final PropertyBool CEILING = BlockStandpipePipe.CEILING;
 
   /** The axis's distance from the front of the cell, facing north, in pixels. */
   public static final float AXIS_Z = 11.0F;
@@ -114,7 +120,8 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
     PENDING.remove();
     setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
         .withProperty(UP, false).withProperty(DOWN, false).withProperty(LEFT, false)
-        .withProperty(RIGHT, false).withProperty(FRONT, false).withProperty(JOINT, false));
+        .withProperty(RIGHT, false).withProperty(FRONT, false).withProperty(JOINT, false)
+        .withProperty(FLOOR, false).withProperty(CEILING, false));
   }
 
   private static Material stash(String registryName) {
@@ -169,7 +176,8 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UP, DOWN, LEFT, RIGHT, FRONT, JOINT);
+    return new BlockStateContainer(this, FACING, UP, DOWN, LEFT, RIGHT, FRONT, JOINT, FLOOR,
+        CEILING);
   }
 
   @Override
@@ -184,7 +192,16 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
     boolean left = joins(world, pos, front, front.rotateY());
     boolean right = joins(world, pos, front, front.rotateYCCW());
     boolean out = joins(world, pos, front, front);
-    if (fitting == Fitting.NONE && !up && !down && !left && !right && !out) {
+    boolean lone = !up && !down && !left && !right && !out;
+    // Through a floor or ceiling: the arm runs into the solid face and gets a collar plate.
+    boolean floor = fitting.takes(EnumFacing.DOWN)
+        && BlockStandpipePipe.passesThrough(world, pos, EnumFacing.DOWN);
+    boolean ceiling = fitting.takes(EnumFacing.UP)
+        && BlockStandpipePipe.passesThrough(world, pos, EnumFacing.UP);
+    up |= ceiling;
+    down |= floor;
+    if (fitting == Fitting.NONE && lone) {
+      // Joined to no other pipe: upright, as the riser always stood, floor or no floor.
       up = true;
       down = true;
     }
@@ -192,7 +209,8 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
     boolean straight = count == 2 && ((up && down) || (left && right));
     return base.withProperty(UP, up).withProperty(DOWN, down).withProperty(LEFT, left)
         .withProperty(RIGHT, right).withProperty(FRONT, out)
-        .withProperty(JOINT, fitting == Fitting.NONE && !straight);
+        .withProperty(JOINT, fitting == Fitting.NONE && !straight)
+        .withProperty(FLOOR, floor).withProperty(CEILING, ceiling);
   }
 
   /** The pipe along each joined arm, the joint, and the fitting's body; facing north. */

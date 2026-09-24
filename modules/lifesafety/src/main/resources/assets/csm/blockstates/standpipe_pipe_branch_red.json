@@ -55,6 +55,22 @@
       "apply": {
         "model": "csm:lifesafety/standpipe/standpipe_branch_red_joint"
       }
+    },
+    {
+      "when": {
+        "floor": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_floor"
+      }
+    },
+    {
+      "when": {
+        "ceiling": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_red_ceiling"
+      }
     }
   ]
 }

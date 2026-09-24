@@ -55,6 +55,22 @@
       "apply": {
         "model": "csm:lifesafety/standpipe/standpipe_main_silver_joint"
       }
+    },
+    {
+      "when": {
+        "floor": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_silver_floor"
+      }
+    },
+    {
+      "when": {
+        "ceiling": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_main_silver_ceiling"
+      }
     }
   ]
 }

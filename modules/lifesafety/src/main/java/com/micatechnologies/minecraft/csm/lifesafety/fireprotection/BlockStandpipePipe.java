@@ -28,7 +28,9 @@ import net.minecraft.world.IBlockAccess;
  * <p>Which sides are joined is actual state, from the neighbours, so nothing is stored and a run
  * re-forms as pieces are added or taken away. {@link #JOINT} is set wherever the pipe is not a
  * straight run (a bend, a tee or an end), and draws the cast fitting there. A pipe joined to
- * nothing is drawn standing upright.</p>
+ * nothing is drawn standing upright. Above or below, a solid face counts as a join: the pipe runs
+ * into it and {@link #FLOOR} or {@link #CEILING} draws the collar plate where it goes through,
+ * so a run carries on from one storey to the next.</p>
  *
  * @version 1.0
  */
@@ -42,6 +44,10 @@ public class BlockStandpipePipe extends AbstractBlock {
   public static final PropertyBool DOWN = PropertyBool.create("down");
   /** Set where the pipe is not a straight run, so the cast fitting is drawn. */
   public static final PropertyBool JOINT = PropertyBool.create("joint");
+  /** Set where the pipe goes down through a floor, to draw the collar plate there. */
+  public static final PropertyBool FLOOR = PropertyBool.create("floor");
+  /** Set where the pipe goes up through a ceiling. */
+  public static final PropertyBool CEILING = PropertyBool.create("ceiling");
 
   private static final ThreadLocal<String> PENDING = new ThreadLocal<>();
 
@@ -59,7 +65,8 @@ public class BlockStandpipePipe extends AbstractBlock {
     PENDING.remove();
     setDefaultState(blockState.getBaseState().withProperty(NORTH, false)
         .withProperty(SOUTH, false).withProperty(EAST, false).withProperty(WEST, false)
-        .withProperty(UP, false).withProperty(DOWN, false).withProperty(JOINT, false));
+        .withProperty(UP, false).withProperty(DOWN, false).withProperty(JOINT, false)
+        .withProperty(FLOOR, false).withProperty(CEILING, false));
   }
 
   private static Material stash(String registryName) {
@@ -109,13 +116,32 @@ public class BlockStandpipePipe extends AbstractBlock {
     return false;
   }
 
+  /**
+   * Whether the pipe runs on through the floor or ceiling on its {@code side}: a solid face
+   * above or below that is not itself standpipe. The arm then reaches the face and a collar
+   * plate is drawn where it goes through, so a run on one storey carries on in the next.
+   */
+  static boolean passesThrough(IBlockAccess world, BlockPos pos, EnumFacing side) {
+    if (side.getAxis() != EnumFacing.Axis.Y) {
+      return false;
+    }
+    BlockPos at = pos.offset(side);
+    IBlockState other = world.getBlockState(at);
+    return !(other.getBlock() instanceof BlockStandpipePipe)
+        && !(other.getBlock() instanceof BlockStandpipeWallPipe)
+        && other.isSideSolid(world, at, side.getOpposite());
+  }
+
   /** The six arms, in {@link EnumFacing} order; a pipe joined to nothing stands upright. */
   static boolean[] arms(IBlockAccess world, BlockPos pos) {
     boolean[] arms = new boolean[6];
     boolean any = false;
     for (EnumFacing side : EnumFacing.values()) {
-      arms[side.getIndex()] = joins(world, pos, side);
-      any |= arms[side.getIndex()];
+      boolean joined = joins(world, pos, side);
+      arms[side.getIndex()] = joined || passesThrough(world, pos, side);
+      // Only another pipe counts here: a pipe standing on a floor with nothing else is still
+      // the upright pipe it always was, now going through that floor.
+      any |= joined;
     }
     if (!any) {
       arms[EnumFacing.UP.getIndex()] = true;
@@ -144,7 +170,8 @@ public class BlockStandpipePipe extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, NORTH, SOUTH, EAST, WEST, UP, DOWN, JOINT);
+    return new BlockStateContainer(this, NORTH, SOUTH, EAST, WEST, UP, DOWN, JOINT, FLOOR,
+        CEILING);
   }
 
   @Override
@@ -157,7 +184,9 @@ public class BlockStandpipePipe extends AbstractBlock {
     for (EnumFacing side : EnumFacing.values()) {
       actual = actual.withProperty(arm(side), arms[side.getIndex()]);
     }
-    return actual.withProperty(JOINT, !straight(arms));
+    return actual.withProperty(JOINT, !straight(arms))
+        .withProperty(FLOOR, passesThrough(world, pos, EnumFacing.DOWN))
+        .withProperty(CEILING, passesThrough(world, pos, EnumFacing.UP));
   }
 
   @Override

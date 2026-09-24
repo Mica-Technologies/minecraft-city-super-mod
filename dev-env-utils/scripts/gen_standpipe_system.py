@@ -14,8 +14,12 @@ where the run is not straight. A fitting is a wall pipe whose body is drawn in p
 joint. Every round part is an exact octagon (life_safety_gen_common._octagon), and each arm is
 capped at both ends, so where a main meets a branch the step between them is closed.
 
-The main is 8 px across, the branch 6 px. The Standpipe Riser keeps its registry name as the
-red wall branch pipe (the user's choice, 2026-09-23), so risers already placed join runs.
+Above or below, a solid face counts as a join: the arm runs into it and a steel collar plate is
+drawn on the face, so a riser reads as going through the floor to the next storey (the user's
+request, 2026-09-23).
+
+The main is 8 px across, the branch 6 px. The Standpipe Riser keeps its registry name as the red
+wall branch pipe (the user's choice, 2026-09-23), so risers already placed join runs.
 """
 import os
 import sys
@@ -94,6 +98,18 @@ def wall_arm(side, r):
 def wall_joint(r):
     j = r + JOINT_GROW
     return octagon("y", 8, AXIS_Z, j, 8 - j, 8 + j, "p", True)
+
+
+# Where a pipe goes through a floor or ceiling: a steel collar plate flat on the face, so the
+# run reads as passing through rather than stopping against it. On a wall pipe the plate's back
+# edge runs half a pixel into the wall, out of sight.
+PLATE_GROW = 1.6
+PLATE_THICK = 0.6
+
+
+def plate(cz, r, ceiling):
+    y0, y1 = (16 - PLATE_THICK, 16) if ceiling else (0, PLATE_THICK)
+    return octagon("y", 8, cz, r + PLATE_GROW, y0, y1, "steel", True)
 
 
 # ------------------------------------------------------------------------------------------
@@ -181,6 +197,9 @@ def wall_state(prefix, fitting_model=None):
         for side in ("up", "down", "left", "right", "front"):
             parts.append({"when": {"facing": facing, side: "true"},
                           "apply": dict(model=C.M(prefix + "_arm_" + side), **rot)})
+        for where in ("floor", "ceiling"):
+            parts.append({"when": {"facing": facing, where: "true"},
+                          "apply": dict(model=C.M(prefix + "_" + where), **rot)})
         parts.append({"when": {"facing": facing, "joint": "true"},
                       "apply": dict(model=C.M(prefix + "_joint"), **rot)})
         if fitting_model:
@@ -192,6 +211,8 @@ def centred_state(prefix):
     parts = [{"when": {side: "true"}, "apply": {"model": C.M(prefix + "_arm_" + side)}}
              for side in ("north", "south", "east", "west", "up", "down")]
     parts.append({"when": {"joint": "true"}, "apply": {"model": C.M(prefix + "_joint")}})
+    for where in ("floor", "ceiling"):
+        parts.append({"when": {where: "true"}, "apply": {"model": C.M(prefix + "_" + where)}})
     return {"multipart": parts}
 
 
@@ -224,10 +245,14 @@ def pipes():
             for side in ("north", "south", "east", "west", "up", "down"):
                 models[prefix + "_arm_" + side] = model(finish, centred_arm(side, r))
             models[prefix + "_joint"] = model(finish, centred_joint(r))
+            models[prefix + "_floor"] = model(finish, plate(8, r, False))
+            models[prefix + "_ceiling"] = model(finish, plate(8, r, True))
             wp = prefix + "_wall"
             for side in ("up", "down", "left", "right", "front"):
                 models[wp + "_arm_" + side] = model(finish, wall_arm(side, r))
             models[wp + "_joint"] = model(finish, wall_joint(r))
+            models[wp + "_floor"] = model(finish, plate(AXIS_Z, r, False))
+            models[wp + "_ceiling"] = model(finish, plate(AXIS_Z, r, True))
             C.extra_models = getattr(C, "extra_models", {})
             C.extra_models.update(models)
 

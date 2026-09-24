@@ -48,6 +48,24 @@
     {
       "when": {
         "facing": "north",
+        "floor": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_wall_floor"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "ceiling": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_wall_ceiling"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
         "joint": "true"
       },
       "apply": {
@@ -107,6 +125,26 @@
     {
       "when": {
         "facing": "east",
+        "floor": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_wall_floor",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "ceiling": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_wall_ceiling",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
         "joint": "true"
       },
       "apply": {
@@ -167,6 +205,26 @@
     {
       "when": {
         "facing": "south",
+        "floor": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_wall_floor",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "ceiling": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_wall_ceiling",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
         "joint": "true"
       },
       "apply": {
@@ -221,6 +279,26 @@
       },
       "apply": {
         "model": "csm:lifesafety/standpipe/standpipe_branch_silver_wall_arm_front",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "floor": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_wall_floor",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "ceiling": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_wall_ceiling",
         "y": 270
       }
     },
