@@ -26,6 +26,7 @@ public class ContainerResidentialStorage extends Container {
   private final TileEntityResidentialStorage storage;
   private final int rows;
   private final int boxSlots;
+  private final boolean server;
 
   /**
    * Constructs the container.
@@ -38,6 +39,7 @@ public class ContainerResidentialStorage extends Container {
   public ContainerResidentialStorage(InventoryPlayer playerInventory,
       TileEntityResidentialStorage storage, int slots, boolean server) {
     this.storage = storage;
+    this.server = server;
     this.rows = Math.max(1, slots / 9);
     this.boxSlots = rows * 9;
     IItemHandler handler = server ? storage.getItems() : new ItemStackHandler(boxSlots);
@@ -56,6 +58,17 @@ public class ContainerResidentialStorage extends Container {
     }
     for (int c = 0; c < 9; c++) {
       addSlotToContainer(new Slot(playerInventory, c, 8 + c * 18, 161 + shift));
+    }
+    if (server) {
+      storage.opened();
+    }
+  }
+
+  @Override
+  public void onContainerClosed(@Nonnull EntityPlayer player) {
+    super.onContainerClosed(player);
+    if (server) {
+      storage.closed();
     }
   }
 

@@ -133,5 +133,59 @@
         "stream": false
       }
     ]
+  },
+  "cabinet_open": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:cabinet_open",
+        "stream": false
+      }
+    ]
+  },
+  "cabinet_close": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:cabinet_close",
+        "stream": false
+      }
+    ]
+  },
+  "drawer_open": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:drawer_open",
+        "stream": false
+      }
+    ]
+  },
+  "drawer_close": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:drawer_close",
+        "stream": false
+      }
+    ]
+  },
+  "fridge_open": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:fridge_open",
+        "stream": false
+      }
+    ]
+  },
+  "fridge_close": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:fridge_close",
+        "stream": false
+      }
+    ]
   }
 }

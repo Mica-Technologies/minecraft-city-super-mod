@@ -1,0 +1,175 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "lens": "csm:blocks/furniture/residential/lens_on",
+    "shell": "csm:blocks/furniture/residential/stainless",
+    "particle": "#shell"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        15.25,
+        9.5
+      ],
+      "to": [
+        15,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            1,
+            0,
+            15,
+            0.75
+          ]
+        },
+        "south": {
+          "texture": "#shell",
+          "uv": [
+            1,
+            0,
+            15,
+            0.75
+          ]
+        },
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            5,
+            0,
+            6.5,
+            0.75
+          ]
+        },
+        "west": {
+          "texture": "#shell",
+          "uv": [
+            9.5,
+            0,
+            11,
+            0.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        15.25,
+        9.5
+      ],
+      "to": [
+        1.5,
+        15.3,
+        11
+      ],
+      "faces": {
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            1,
+            5,
+            1.5,
+            6.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.5,
+        15.25,
+        9.5
+      ],
+      "to": [
+        15,
+        15.3,
+        11
+      ],
+      "faces": {
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            14.5,
+            5,
+            15,
+            6.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        15.25,
+        9.5
+      ],
+      "to": [
+        14.5,
+        15.3,
+        9.75
+      ],
+      "faces": {
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            1.5,
+            6.25,
+            14.5,
+            6.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        15.25,
+        10.75
+      ],
+      "to": [
+        14.5,
+        15.3,
+        11
+      ],
+      "faces": {
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            1.5,
+            5,
+            14.5,
+            5.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        15.2,
+        9.75
+      ],
+      "to": [
+        14.5,
+        15.3,
+        10.75
+      ],
+      "faces": {
+        "down": {
+          "texture": "#lens",
+          "uv": [
+            1.5,
+            5.25,
+            14.5,
+            6.25
+          ]
+        }
+      }
+    }
+  ]
+}

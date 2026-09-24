@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/residential/base/refrigerator_item",
+  "textures": {
+    "shell": "csm:blocks/furniture/residential/appliance_white",
+    "door": "csm:blocks/furniture/residential/appliance_white",
+    "handle": "csm:blocks/furniture/residential/appliance_trim",
+    "trim": "csm:blocks/furniture/residential/appliance_trim"
+  }
+}

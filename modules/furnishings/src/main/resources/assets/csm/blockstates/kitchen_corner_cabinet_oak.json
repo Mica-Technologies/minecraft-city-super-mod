@@ -1,0 +1,254 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "front": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_north"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_west"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_blind"
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_right"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_left"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_back"
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_north",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_west",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_blind",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_back",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_north",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_west",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_blind",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_back",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_north",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_west",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_blind",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "front": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/kitchen_corner_cabinet_oak_end_back",
+        "y": 270
+      }
+    }
+  ]
+}

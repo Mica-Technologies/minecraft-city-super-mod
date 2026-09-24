@@ -1,0 +1,41 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/range_hood",
+    "textures": {
+      "shell": "csm:blocks/furniture/residential/stainless",
+      "door": "csm:blocks/furniture/residential/stainless_v",
+      "handle": "csm:blocks/furniture/residential/chrome",
+      "trim": "csm:blocks/furniture/residential/stainless_dark"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "lit": {
+      "true": {
+        "textures": {
+          "lens": "csm:blocks/furniture/residential/lens_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "lens": "csm:blocks/furniture/residential/lens_off"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.gui.ICsmGuiProvider;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.ContainerResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.GuiResidentialStorage;
+import com.micatechnologies.minecraft.csm.furniture.residential.IResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.TileEntityResidentialStorage;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -14,8 +15,8 @@ import net.minecraft.world.World;
 
 /**
  * Supplies the Furniture &amp; Novelties module's GUI screens: the multi-game arcade cabinet, and
- * the storage of the Residential tab's TV stands and sideboards (the one with a server-side
- * container).
+ * the storage of the Residential tab's TV stands, sideboards, kitchen cabinets, refrigerators
+ * and freezers (the one with a server-side container).
  *
  * @version 1.1
  * @since 2026.9
@@ -58,17 +59,17 @@ public class NoveltiesGuiProvider implements ICsmGuiProvider {
         : null;
   }
 
-  /** A TV stand's or sideboard's container, or null if the block is not there. */
+  /** A Residential storage block's container, or null if the block is not there. */
   @Nullable
   private static ContainerResidentialStorage storageContainer(EntityPlayer player, World world,
       BlockPos pos, boolean server) {
     TileEntity te = world.getTileEntity(pos);
     Block block = world.getBlockState(pos).getBlock();
     if (!(te instanceof TileEntityResidentialStorage)
-        || !(block instanceof BlockResidentialStorage)) {
+        || !(block instanceof IResidentialStorage)) {
       return null;
     }
     return new ContainerResidentialStorage(player.inventory, (TileEntityResidentialStorage) te,
-        ((BlockResidentialStorage) block).getSlots(), server);
+        ((IResidentialStorage) block).getSlots(), server);
   }
 }

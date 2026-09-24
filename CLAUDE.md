@@ -629,6 +629,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   sofa corners in four fabrics. Joining pieces use multipart blockstates driven by actual state
   (a model parent must be `csm:block/...`; a blockstate may drop the `block/`); writes its own
   lang lines by key; `--check`, `--fragments`
+- `gen_furniture_kitchen.py` -- the Residential tab's kitchen, importing
+  `gen_furniture_residential.py`'s helpers and finishes: base cabinets (doors, drawers, door and
+  drawer, sink with a working tap), the corner base that turns a run, island, wall cabinets and
+  open shelves, each finish with its countertop; range hoods and the under-cabinet light (lit
+  lens by blockstate), the two-block refrigerator (drawn whole, cut at the block line into two
+  models) and the chest freezer; `--check`, `--fragments`. `gen_furniture_sounds.py`
+  synthesises the cabinet, drawer and refrigerator door sounds (numpy to ffmpeg to OGG)
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

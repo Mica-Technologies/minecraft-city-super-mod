@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/residential/base/kitchen_wall_shelf_right",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/walnut",
+    "wood_v": "csm:blocks/furniture/residential/walnut_v",
+    "edge": "csm:blocks/furniture/residential/walnut_edge",
+    "counter": "csm:blocks/furniture/residential/counter_quartz"
+  }
+}

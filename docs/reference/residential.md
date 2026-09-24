@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room tables, chairs, bookcases, storage and sofas that join into runs.
 
-!!! info "39 blocks in this tab"
+!!! info "69 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -24,6 +24,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Café Table (Light Oak) | `csm:cafe_table_oak` | 1.5 | 3.0 | axe | 0 |
 | Café Table (Walnut) | `csm:cafe_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | Café Table (White) | `csm:cafe_table_white` | 1.5 | 3.0 | axe | 0 |
+| Chest Freezer (White) | `csm:chest_freezer_white` | 1.5 | 3.0 | axe | 0 |
 | Coffee Table (Light Oak) | `csm:coffee_table_oak` | 1.5 | 3.0 | axe | 0 |
 | Coffee Table (Walnut) | `csm:coffee_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | Coffee Table (White) | `csm:coffee_table_white` | 1.5 | 3.0 | axe | 0 |
@@ -33,6 +34,33 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Dining Table (Light Oak) | `csm:dining_table_oak` | 1.5 | 3.0 | axe | 0 |
 | Dining Table (Walnut) | `csm:dining_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | Dining Table (White) | `csm:dining_table_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Base Cabinet (Light Oak) | `csm:kitchen_base_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Base Cabinet (Walnut) | `csm:kitchen_base_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Base Cabinet (White) | `csm:kitchen_base_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Corner Cabinet (Light Oak) | `csm:kitchen_corner_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Corner Cabinet (Walnut) | `csm:kitchen_corner_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Corner Cabinet (White) | `csm:kitchen_corner_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Door and Drawer Cabinet (Light Oak) | `csm:kitchen_door_drawer_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Door and Drawer Cabinet (Walnut) | `csm:kitchen_door_drawer_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Door and Drawer Cabinet (White) | `csm:kitchen_door_drawer_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Drawer Cabinet (Light Oak) | `csm:kitchen_drawer_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Drawer Cabinet (Walnut) | `csm:kitchen_drawer_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Drawer Cabinet (White) | `csm:kitchen_drawer_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Island (Light Oak) | `csm:kitchen_island_oak` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Island (Walnut) | `csm:kitchen_island_walnut` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Island (White) | `csm:kitchen_island_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Sink Cabinet (Light Oak) | `csm:kitchen_sink_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Sink Cabinet (Walnut) | `csm:kitchen_sink_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Sink Cabinet (White) | `csm:kitchen_sink_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Wall Cabinet (Light Oak) | `csm:kitchen_wall_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Wall Cabinet (Walnut) | `csm:kitchen_wall_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Wall Cabinet (White) | `csm:kitchen_wall_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Open Kitchen Shelf (Light Oak) | `csm:kitchen_wall_shelf_oak` | 1.5 | 3.0 | axe | 0 |
+| Open Kitchen Shelf (Walnut) | `csm:kitchen_wall_shelf_walnut` | 1.5 | 3.0 | axe | 0 |
+| Open Kitchen Shelf (White) | `csm:kitchen_wall_shelf_white` | 1.5 | 3.0 | axe | 0 |
+| Range Hood (Stainless Steel) | `csm:range_hood_stainless` | 1.5 | 3.0 | axe | 0 |
+| Refrigerator (Stainless Steel) | `csm:refrigerator_stainless` | 1.5 | 3.0 | axe | 0 |
+| Refrigerator (White) | `csm:refrigerator_white` | 1.5 | 3.0 | axe | 0 |
 | Side Table (Light Oak) | `csm:side_table_oak` | 1.5 | 3.0 | axe | 0 |
 | Side Table (Walnut) | `csm:side_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | Side Table (White) | `csm:side_table_white` | 1.5 | 3.0 | axe | 0 |
@@ -50,5 +78,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | TV Stand (Light Oak) | `csm:tv_stand_oak` | 1.5 | 3.0 | axe | 0 |
 | TV Stand (Walnut) | `csm:tv_stand_walnut` | 1.5 | 3.0 | axe | 0 |
 | TV Stand (White) | `csm:tv_stand_white` | 1.5 | 3.0 | axe | 0 |
+| Under-Cabinet Light (Stainless Steel) | `csm:under_cabinet_light_stainless` | 1.5 | 3.0 | axe | 0 |
+| Under-Cabinet Range Hood (Stainless Steel) | `csm:range_hood_under_cabinet_stainless` | 1.5 | 3.0 | axe | 0 |
 
 </div>

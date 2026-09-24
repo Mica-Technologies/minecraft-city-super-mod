@@ -182,8 +182,36 @@ drawn by `gen_furniture_residential.py`, in the `furniture.residential` package:
   an `ItemStackHandler` exposed as a capability (hoppers work), drops on break, gives a comparator
   signal; the screen is served by `NoveltiesGuiProvider`.
 
+The kitchen follows in the same tab, drawn by `gen_furniture_kitchen.py`:
+
+- `BlockKitchenCabinet` (a `BlockResidentialStorage`): base cabinets (two doors, drawer bank,
+  door and drawer), islands, wall cabinets and open shelves. Each has a `KitchenLine` (base,
+  wall, island) and joins any cabinet of its line and finish, whatever its front, so a drawer
+  bank and a sink base share one countertop. `acceptsRun(state, side, runFacing)` is how a
+  neighbour asks whether a run continues through a block. `KitchenFront` picks the sound (doors,
+  drawers, or an open shelf with no slots and no tile entity).
+- `BlockKitchenCorner` turns a base run like the sofa corner (`left`, `front`): both joined is a
+  blind corner (countertop over an L of carcass, as a real one is), one joined is that run's end
+  with an end panel, alone it is a plain base. Corners accept each other, so two make a U.
+- `BlockKitchenSink`: an empty bucket or glass bottle fills at the tap (vanilla fill sounds);
+  anything else opens the nine slots under it.
+- `BlockKitchenLight` (range hoods, under-cabinet light): stored `lit`, toggled by right-click,
+  its lens texture swapped by the blockstate. The chimney hood sits in the wall-cabinet row with
+  its canopy dipping below the block; the under-cabinet hood and light hang at the top of the
+  block under a wall cabinet.
+- `BlockRefrigerator`: two blocks, stored `upper`; placed and broken as one like a door, the
+  lower half holds the 27 slots and drops the item. The model is drawn whole and cut into two.
+- `BlockChestFreezer` + `TileEntityResidentialFreezer`: 27 slots; once a second a water bottle
+  that has sat 30 s becomes ice, a water bucket packed ice, the empty container going to another
+  slot (the water waits while there is no room).
+
+Every storage block implements `IResidentialStorage` (slots, where the slots are, open and close
+sounds), shares `ResidentialStorageHelper` and the one storage screen, and sounds its doors when
+the first player opens it and the last closes it.
+
 Finishes are separate blocks (`_oak`, `_walnut`, `_white`; fabrics `_charcoal`, `_navy`,
-`_oatmeal`, `_red`). The plan for the rest of the round-out (bedroom, kitchen, bath, office,
+`_oatmeal`, `_red`; appliances `_stainless`, `_white`). Countertops: dark granite on oak, light
+quartz on walnut and white. The plan for the rest of the round-out (bedroom, kitchen, bath, office,
 outdoor, working appliances) aims at parity with other furniture mods.
 
 ## Sound Assets
@@ -203,6 +231,9 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:handdryer` | `HANDDRYER` | BlockHd | `handdryer.ogg` |
 | `csm:oldrecordplayer` | `OLDRECORDPLAYER` | BlockOldRecordPlayer | `oldrecordplayer.ogg` |
 | `csm:oldrecordplayer2` | `OLDRECORDPLAYER2` | BlockOldRecordPlayer | `oldrecordplayer2.ogg` |
+| `csm:cabinet_open`, `csm:cabinet_close` | `CABINET_OPEN`, `CABINET_CLOSE` | kitchen cabinets with doors | synthesised by `gen_furniture_sounds.py` |
+| `csm:drawer_open`, `csm:drawer_close` | `DRAWER_OPEN`, `DRAWER_CLOSE` | the drawer bank | synthesised |
+| `csm:fridge_open`, `csm:fridge_close` | `FRIDGE_OPEN`, `FRIDGE_CLOSE` | refrigerator, chest freezer | synthesised |
 
-The xylophone and water dispensers/bubblers use only vanilla sounds
-(`SoundEvents.BLOCK_NOTE_XYLOPHONE` and `SoundEvents.ITEM_BOTTLE_FILL`).
+The xylophone, water dispensers/bubblers and the kitchen sink use only vanilla sounds
+(`SoundEvents.BLOCK_NOTE_XYLOPHONE`, `SoundEvents.ITEM_BOTTLE_FILL`, `ITEM_BUCKET_FILL`).

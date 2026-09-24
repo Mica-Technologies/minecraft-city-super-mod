@@ -396,6 +396,24 @@ def cost_for(registry, info, ancestors):
         return ("planks x2", "FASTENER_KIT")
     if tab == "tabresidential":
         # Mirrors ResidentialFabricatorRules (Furniture & Novelties module).
+        if registry.startswith(("kitchen_corner_cabinet_", "kitchen_island_")):
+            return ("planks x5", "stone x2", "FASTENER_KIT")
+        if registry.startswith("kitchen_sink_cabinet_"):
+            return ("planks x3", "stone", "SHEET_METAL")
+        if registry.startswith("kitchen_wall_shelf_"):
+            return ("planks x2",)
+        if registry.startswith("kitchen_wall_cabinet_"):
+            return ("planks x3", "FASTENER_KIT")
+        if registry.startswith("kitchen_"):
+            return ("planks x4", "stone", "FASTENER_KIT")
+        if registry.startswith("range_hood_"):
+            return ("SHEET_METAL x2", "DUCTING", "LED_MODULE")
+        if registry.startswith("under_cabinet_light_"):
+            return ("LED_MODULE", "SHEET_METAL")
+        if registry.startswith("refrigerator_"):
+            return ("SHEET_METAL x4", "CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith("chest_freezer_"):
+            return ("SHEET_METAL x3", "CONTROL_BOARD", "WIRING_HARNESS")
         if registry.startswith("sofa_"):
             return ("planks x2", "wool x3")
         if registry.startswith("armchair_"):

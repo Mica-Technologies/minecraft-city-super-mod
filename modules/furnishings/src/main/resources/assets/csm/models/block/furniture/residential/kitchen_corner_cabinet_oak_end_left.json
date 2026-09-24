@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/residential/base/kitchen_corner_cabinet_end_left",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "counter": "csm:blocks/furniture/residential/counter_granite"
+  }
+}

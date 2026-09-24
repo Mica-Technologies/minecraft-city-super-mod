@@ -1,0 +1,185 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "counter": "csm:blocks/furniture/residential/counter_granite",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "wood": "csm:blocks/furniture/residential/oak",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        13.75,
+        0.5
+      ],
+      "to": [
+        16,
+        14.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#counter",
+          "uv": [
+            0,
+            1.5,
+            16,
+            2.25
+          ]
+        },
+        "up": {
+          "texture": "#counter",
+          "uv": [
+            0,
+            0.5,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#counter",
+          "uv": [
+            0,
+            0,
+            16,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        13.75,
+        0
+      ],
+      "to": [
+        16,
+        14.5,
+        0.5
+      ],
+      "faces": {
+        "west": {
+          "texture": "#counter",
+          "uv": [
+            0,
+            1.5,
+            0.5,
+            2.25
+          ]
+        },
+        "up": {
+          "texture": "#counter",
+          "uv": [
+            0.5,
+            0,
+            16,
+            0.5
+          ]
+        },
+        "down": {
+          "texture": "#counter",
+          "uv": [
+            0.5,
+            15.5,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        1.5,
+        1.75
+      ],
+      "to": [
+        16,
+        13.75,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            2.25,
+            16,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.75,
+        1.5,
+        0
+      ],
+      "to": [
+        16,
+        13.75,
+        1.75
+      ],
+      "faces": {
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            2.25,
+            1.75,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        2.5
+      ],
+      "to": [
+        16,
+        1.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            14.5,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        1.5,
+        2.5
+      ],
+      "faces": {
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            14.5,
+            2.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}
