@@ -26,6 +26,8 @@ public class TrafficSignalAPSSoundSchemes {
    *   <li>Campbell Phil Voice - Warning Lights are Flashing</li>
    *   <li>Campbell Phil Voice - Yellow Lights are Flashing</li>
    *   <li>Campbell Phil Voice - Walk Sign is On for All Crossings</li>
+   *   <li>Campbell Canadian Melody (with its hurried melody through the clearance)</li>
+   *   <li>Campbell Automated Walk Signal</li>
    * </ul>
    *
    * @since 1.0
@@ -71,7 +73,17 @@ public class TrafficSignalAPSSoundSchemes {
               RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_PHIL_WAIT, 20,
               RoadsSounds.CAMPBELL_PHIL_WAIT, 20, RoadsSounds.CAMPBELL_PHIL_WALK_EXCLUSIVE,
               100),
-          new TrafficSignalAPSSoundScheme("Audio Disabled", null, null, 20, null, 20, null, 20)};
+          new TrafficSignalAPSSoundScheme("Audio Disabled", null, null, 20, null, 20, null, 20),
+          // Schemes added after "Audio Disabled": a button saves its scheme by index, so a new
+          // one goes at the end or every placed button changes sound
+          new TrafficSignalAPSSoundScheme("Campbell Canadian Melody",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_WAIT, 20,
+              RoadsSounds.CAMPBELL_WAIT, 20, RoadsSounds.CROSSWALK_CANADIAN_MELODY, 60,
+              RoadsSounds.CROSSWALK_CANADIAN_MELODY_HURRY, 40),
+          new TrafficSignalAPSSoundScheme("Campbell Automated Walk Signal",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CROSSWALK_MALE2_AUTOMATED, 80,
+              RoadsSounds.CROSSWALK_MALE2_AUTOMATED, 80, RoadsSounds.CROSSWALK_MALE2_CROSS,
+              80)};
   /**
    * The Polara sound schemes.
    *
@@ -82,6 +94,7 @@ public class TrafficSignalAPSSoundSchemes {
    *   <li>Polara Spanish Standard Rapid Tick</li>
    *   <li>Polara Spanish Voice - Walk Sign is On</li>
    *   <li>Polara Spanish Voice - Walk Sign is on for All Crossings</li>
+   *   <li>Polara Automated Walk Signal</li>
    * </ul>
    *
    * @since 1.0
@@ -107,5 +120,10 @@ public class TrafficSignalAPSSoundSchemes {
               RoadsSounds.POLARA_TONE1, RoadsSounds.POLARA_LANG2_WAIT, 20,
               RoadsSounds.POLARA_LANG2_WAIT, 20,
               RoadsSounds.POLARA_LANG2_WALK_ALL_CROSSINGS, 100),
-          new TrafficSignalAPSSoundScheme("Audio Disabled", null, null, 20, null, 20, null, 20)};
+          new TrafficSignalAPSSoundScheme("Audio Disabled", null, null, 20, null, 20, null, 20),
+          // Added after "Audio Disabled" for the same reason as the Campbell list's
+          new TrafficSignalAPSSoundScheme("Polara Automated Walk Signal",
+              RoadsSounds.POLARA_TONE1, RoadsSounds.CROSSWALK_MALE2_AUTOMATED, 80,
+              RoadsSounds.CROSSWALK_MALE2_AUTOMATED, 80, RoadsSounds.CROSSWALK_MALE2_CROSS,
+              80)};
 }

@@ -58,15 +58,41 @@ class TrafficSignalAPSSoundSchemesTest {
     }
   }
 
+  /**
+   * A placed button saves its scheme as an index into this list, so every scheme that has ever
+   * shipped must keep its index: new schemes go after "Audio Disabled", never before it.
+   */
   @Test
-  void campbellLastSchemeIsAudioDisabled() {
-    TrafficSignalAPSSoundScheme last =
-        TrafficSignalAPSSoundSchemes.CAMPBELL[TrafficSignalAPSSoundSchemes.CAMPBELL.length - 1];
-    assertEquals("Audio Disabled", last.getName());
-    assertNull(last.getLocateSound());
-    assertNull(last.getWaitSound());
-    assertNull(last.getPressSound());
-    assertNull(last.getWalkSound());
+  void campbellShippedSchemesKeepTheirIndexes() {
+    String[] shipped = {
+        "Campbell Standard Voice - Walk Sign is On",
+        "Campbell Standard Voice - Warning Lights are Flashing",
+        "Campbell Standard Voice - Yellow Lights are Flashing",
+        "Campbell Standard Voice - Walk Sign is On for All Crossings",
+        "Campbell Standard Percussive (East-West)",
+        "Campbell Standard Percussive (North-South)",
+        "Campbell Phil Voice - Walk Sign is On",
+        "Campbell Phil Voice - Warning Lights Activated",
+        "Campbell Phil Voice - Crossing Lights Activated",
+        "Campbell Phil Voice - Walk Sign is On for All Crossings",
+        "Audio Disabled",
+        "Campbell Canadian Melody",
+        "Campbell Automated Walk Signal"};
+    for (int i = 0; i < shipped.length; i++) {
+      assertEquals(shipped[i], TrafficSignalAPSSoundSchemes.CAMPBELL[i].getName(),
+          "Campbell scheme " + i + " moved; saved buttons would change sound");
+    }
+  }
+
+  @Test
+  void campbellAudioDisabledIsSilent() {
+    TrafficSignalAPSSoundScheme disabled = TrafficSignalAPSSoundSchemes.CAMPBELL[10];
+    assertEquals("Audio Disabled", disabled.getName());
+    assertNull(disabled.getLocateSound());
+    assertNull(disabled.getWaitSound());
+    assertNull(disabled.getPressSound());
+    assertNull(disabled.getWalkSound());
+    assertNull(disabled.getClearanceSound());
   }
 
   // endregion
@@ -111,15 +137,75 @@ class TrafficSignalAPSSoundSchemesTest {
     }
   }
 
+  /** As {@link #campbellShippedSchemesKeepTheirIndexes()}, for the Polara list. */
   @Test
-  void polaraLastSchemeIsAudioDisabled() {
-    TrafficSignalAPSSoundScheme last =
-        TrafficSignalAPSSoundSchemes.POLARA[TrafficSignalAPSSoundSchemes.POLARA.length - 1];
-    assertEquals("Audio Disabled", last.getName());
-    assertNull(last.getLocateSound());
-    assertNull(last.getWaitSound());
-    assertNull(last.getPressSound());
-    assertNull(last.getWalkSound());
+  void polaraShippedSchemesKeepTheirIndexes() {
+    String[] shipped = {
+        "Polara Standard Rapid Tick",
+        "Polara Voice - Walk Sign is On",
+        "Polara Voice - Walk Sign is on for All Crossings",
+        "Polara Spanish Standard Rapid Tick",
+        "Polara Spanish Voice - Walk Sign is On",
+        "Polara Spanish Voice - Walk Sign is on for All Crossings",
+        "Audio Disabled",
+        "Polara Automated Walk Signal"};
+    for (int i = 0; i < shipped.length; i++) {
+      assertEquals(shipped[i], TrafficSignalAPSSoundSchemes.POLARA[i].getName(),
+          "Polara scheme " + i + " moved; saved buttons would change sound");
+    }
+  }
+
+  @Test
+  void polaraAudioDisabledIsSilent() {
+    TrafficSignalAPSSoundScheme disabled = TrafficSignalAPSSoundSchemes.POLARA[6];
+    assertEquals("Audio Disabled", disabled.getName());
+    assertNull(disabled.getLocateSound());
+    assertNull(disabled.getWaitSound());
+    assertNull(disabled.getPressSound());
+    assertNull(disabled.getWalkSound());
+    assertNull(disabled.getClearanceSound());
+  }
+
+  // endregion
+
+  // region: Clearance sounds and brand locate tones
+
+  @Test
+  void clearanceSoundHasARepeatLength() {
+    for (TrafficSignalAPSSoundScheme[] list : new TrafficSignalAPSSoundScheme[][]{
+        TrafficSignalAPSSoundSchemes.CAMPBELL, TrafficSignalAPSSoundSchemes.POLARA}) {
+      for (TrafficSignalAPSSoundScheme scheme : list) {
+        if (scheme.getClearanceSound() != null) {
+          assertTrue(scheme.getLenOfClearanceSound() > 0,
+              "Clearance sound needs a repeat length for: " + scheme.getName());
+        }
+      }
+    }
+  }
+
+  @Test
+  void canadianMelodyHurriesThroughClearance() {
+    TrafficSignalAPSSoundScheme canadian = TrafficSignalAPSSoundSchemes.CAMPBELL[11];
+    assertEquals("Campbell Canadian Melody", canadian.getName());
+    assertNotNull(canadian.getClearanceSound());
+    assertNotEquals(canadian.getWalkSound(), canadian.getClearanceSound());
+  }
+
+  /** Each brand's buttons keep their own locate tone, whatever voice a scheme borrows. */
+  @Test
+  void eachListUsesItsOwnBrandsLocateTone() {
+    for (TrafficSignalAPSSoundScheme scheme : TrafficSignalAPSSoundSchemes.CAMPBELL) {
+      if (scheme.getLocateSound() != null) {
+        assertTrue(scheme.getLocateSound().getSoundName().startsWith("campbell_"),
+            "Campbell scheme with a non-Campbell locate tone: " + scheme.getName());
+      }
+    }
+    for (TrafficSignalAPSSoundScheme scheme : TrafficSignalAPSSoundSchemes.POLARA) {
+      if (scheme.getLocateSound() != null) {
+        assertTrue(scheme.getLocateSound().getSoundName().startsWith("polara_"),
+            "Polara scheme with a non-Polara locate tone: " + scheme.getName());
+      }
+    }
   }
 
   // endregion
@@ -157,13 +243,13 @@ class TrafficSignalAPSSoundSchemesTest {
   // region: Array sizes
 
   @Test
-  void campbellHas11Schemes() {
-    assertEquals(11, TrafficSignalAPSSoundSchemes.CAMPBELL.length);
+  void campbellHas13Schemes() {
+    assertEquals(13, TrafficSignalAPSSoundSchemes.CAMPBELL.length);
   }
 
   @Test
-  void polaraHas7Schemes() {
-    assertEquals(7, TrafficSignalAPSSoundSchemes.POLARA.length);
+  void polaraHas8Schemes() {
+    assertEquals(8, TrafficSignalAPSSoundSchemes.POLARA.length);
   }
 
   // endregion

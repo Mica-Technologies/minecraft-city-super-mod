@@ -467,15 +467,28 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
           currentWalkSoundLen = getCrosswalkSound().getLenOfWalkSound();
           playSoundOnChannel(getChannel(), currentWalkSound, false);
         }
+      } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW
+          && getCrosswalkSound().getClearanceSound() != null) {
+        // A scheme with a clearance sound of its own (the Canadian melody's hurried version)
+        // loops it through the flashing hand exactly as the walk sound loops, in place of the
+        // locator tone
+        currentWalkSound =
+            getCrosswalkSound().getClearanceSound().getSoundLocation().toString();
+        currentWalkSoundLen = getCrosswalkSound().getLenOfClearanceSound();
+        playSoundOnChannel(getChannel(), currentWalkSound, false);
       }
     }
+
+    boolean clearanceLoop = blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW
+        && currentWalkSound != null;
 
     // Server-controlled walk sound cycling: resend the one-shot start packet at each
     // lenOfWalkSound interval. The client handler stops the old sound (which is in its
     // baked-silence tail by now) and starts a fresh one. This gives precise loop timing
     // from the server tick counter, avoids client-side repeat timing drift, and ensures
-    // newly loaded clients pick up the sound within one cycle.
-    if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN
+    // newly loaded clients pick up the sound within one cycle. A clearance sound loops the
+    // same way.
+    if ((blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN || clearanceLoop)
         && currentWalkSound != null
         && currentWalkSoundLen > 0
         && world.getTotalWorldTime() % currentWalkSoundLen == 0) {
@@ -484,8 +497,9 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
 
     // Per-interval locate tone: send a one-shot beep at each global 20-tick boundary.
     // All APS buttons with the same interval fire at the same world tick = perfect sync.
-    // Uses repeat=false (original 0.1s beep files, no padding).
-    if ((blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW
+    // Uses repeat=false (original 0.1s beep files, no padding). Not while a clearance sound
+    // loops in its place.
+    if ((blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW && !clearanceLoop
         || blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_RED)
         && world.getTotalWorldTime() % LOCATE_TONE_INTERVAL == 0) {
       locateToneActive = true;

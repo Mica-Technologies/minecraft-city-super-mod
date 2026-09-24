@@ -43,6 +43,10 @@ public enum RoadsSounds implements ICsmSound {
   POLARA_WAIT("polara_wait"),
   POLARA_WALK("polara_walk"),
   POLARA_WALK_ALL_CROSSINGS("polara_walk_all_crossings"),
+  CROSSWALK_CANADIAN_MELODY("crosswalk_canadian_melody"),
+  CROSSWALK_CANADIAN_MELODY_HURRY("crosswalk_canadian_melody_hurry"),
+  CROSSWALK_MALE2_AUTOMATED("crosswalk_male2_automated"),
+  CROSSWALK_MALE2_CROSS("crosswalk_male2_cross"),
   /** One second of the crossing bell's strikes; the flasher plays it once a second while active. */
   RAILROAD_CROSSING_BELL("railroad_crossing_bell");
 

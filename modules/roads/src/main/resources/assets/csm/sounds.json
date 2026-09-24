@@ -242,6 +242,42 @@
       }
     ]
   },
+  "crosswalk_canadian_melody": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:crosswalk_canadian_melody",
+        "stream": false
+      }
+    ]
+  },
+  "crosswalk_canadian_melody_hurry": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:crosswalk_canadian_melody_hurry",
+        "stream": false
+      }
+    ]
+  },
+  "crosswalk_male2_automated": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:crosswalk_male2_automated",
+        "stream": false
+      }
+    ]
+  },
+  "crosswalk_male2_cross": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:crosswalk_male2_cross",
+        "stream": false
+      }
+    ]
+  },
   "railroad_crossing_bell": {
     "category": "block",
     "sounds": [

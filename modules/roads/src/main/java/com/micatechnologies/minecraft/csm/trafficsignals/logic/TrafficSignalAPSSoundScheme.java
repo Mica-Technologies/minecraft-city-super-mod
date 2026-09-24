@@ -90,6 +90,22 @@ public class TrafficSignalAPSSoundScheme {
   private final int lenOfLocateSound;
 
   /**
+   * The sound repeated while the pedestrian clearance (flashing hand) runs, or {@code null} for
+   * the usual locator tone there. Only a few devices play something of their own in clearance,
+   * such as the hurried melody on Canadian units.
+   *
+   * @since 2026.9
+   */
+  private final RoadsSounds clearanceSound;
+
+  /**
+   * How often, in ticks, the clearance sound repeats. Unused when there is no clearance sound.
+   *
+   * @since 2026.9
+   */
+  private final int lenOfClearanceSound;
+
+  /**
    * The constructor for an {@link TrafficSignalAPSSoundScheme} instance with the default locator
    * sound length.
    *
@@ -116,6 +132,44 @@ public class TrafficSignalAPSSoundScheme {
     this.lenOfPressSound = lenOfPressSound;
     this.walkSound = walkSound;
     this.lenOfWalkSound = lenOfWalkSound;
+    this.clearanceSound = null;
+    this.lenOfClearanceSound = 0;
+    this.volume = 1;
+    this.pitch = 1;
+  }
+
+  /**
+   * The constructor for an {@link TrafficSignalAPSSoundScheme} instance that plays a sound of its
+   * own during the pedestrian clearance instead of the locator tone.
+   *
+   * @param name                The name for the APS sound scheme.
+   * @param locateSound         The locator sound for the APS sound scheme.
+   * @param waitSound           The wait sound for the APS sound scheme.
+   * @param lenOfWaitSound      The length of the wait sound for the APS sound scheme.
+   * @param pressSound          The press sound for the APS sound scheme.
+   * @param lenOfPressSound     The length of the press sound for the APS sound scheme.
+   * @param walkSound           The walk sound for the APS sound scheme.
+   * @param lenOfWalkSound      The length of the walk sound for the APS sound scheme.
+   * @param clearanceSound      The sound repeated during the pedestrian clearance.
+   * @param lenOfClearanceSound How often the clearance sound repeats, in ticks.
+   *
+   * @since 2026.9
+   */
+  TrafficSignalAPSSoundScheme(String name, RoadsSounds locateSound,
+      RoadsSounds waitSound, int lenOfWaitSound, RoadsSounds pressSound,
+      int lenOfPressSound, RoadsSounds walkSound, int lenOfWalkSound,
+      RoadsSounds clearanceSound, int lenOfClearanceSound) {
+    this.name = name;
+    this.locateSound = locateSound;
+    this.lenOfLocateSound = 20;
+    this.waitSound = waitSound;
+    this.lenOfWaitSound = lenOfWaitSound;
+    this.pressSound = pressSound;
+    this.lenOfPressSound = lenOfPressSound;
+    this.walkSound = walkSound;
+    this.lenOfWalkSound = lenOfWalkSound;
+    this.clearanceSound = clearanceSound;
+    this.lenOfClearanceSound = lenOfClearanceSound;
     this.volume = 1;
     this.pitch = 1;
   }
@@ -149,8 +203,32 @@ public class TrafficSignalAPSSoundScheme {
     this.lenOfPressSound = lenOfPressSound;
     this.walkSound = walkSound;
     this.lenOfWalkSound = lenOfWalkSound;
+    this.clearanceSound = null;
+    this.lenOfClearanceSound = 0;
     this.volume = 1;
     this.pitch = 1;
+  }
+
+  /**
+   * Gets the sound repeated during the pedestrian clearance.
+   *
+   * @return The clearance sound, or {@code null} when the locator tone plays in clearance.
+   *
+   * @since 2026.9
+   */
+  public RoadsSounds getClearanceSound() {
+    return clearanceSound;
+  }
+
+  /**
+   * Gets how often the clearance sound repeats.
+   *
+   * @return The clearance sound's repeat length in ticks.
+   *
+   * @since 2026.9
+   */
+  public int getLenOfClearanceSound() {
+    return lenOfClearanceSound;
   }
 
   /**

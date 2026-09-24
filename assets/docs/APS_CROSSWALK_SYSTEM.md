@@ -38,41 +38,56 @@ APS buttons respond to the crosswalk signal COLOR property:
 | Color | State | Sound Played | Repeat Interval |
 |---|---|---|---|
 | 0 (RED) | Don't Walk | Locate tone | `lenOfLocateSound` (20 ticks) |
-| 1 (YELLOW) | Clearance | Locate tone | `lenOfLocateSound` (20 ticks) |
+| 1 (YELLOW) | Clearance | Clearance sound if the scheme has one, else locate tone | `lenOfClearanceSound`, else 20 ticks |
 | 2 (GREEN) | Walk | Walk sound | `lenOfWalkSound` (varies) |
 | 3 (OFF) | Off | None | — |
 
 Tweeters only play during GREEN (color=2) at their tick rate (40 ticks).
 
+A scheme may carry an optional **clearance sound** (`TrafficSignalAPSSoundScheme#getClearanceSound`).
+When it has one, the flashing hand loops that sound exactly as the walk phase loops the walk sound
+(the same channel, restarted every `lenOfClearanceSound` ticks from the server clock) and the
+locate tone stays silent until the hand goes solid. Only the Canadian melody uses it, for its
+hurried version; every other scheme leaves it null and keeps the locate tone through clearance.
+
+A button saves its scheme as an index into its list, so **new schemes go after "Audio Disabled"**:
+inserting one earlier would silently change the sound of every button already placed.
+
 ## APS Devices
 
 ### Campbell / PedSafety (`TileEntityTrafficSignalAPSCampbell`)
 
-| # | Scheme | Locate | Walk Sound | Walk Len |
-|---|---|---|---|---|
-| 1 | Std Voice - Walk Sign On | campbell_tone1 | campbell_walk_sign_on | 50t |
-| 2 | Std Voice - Warning Lights Flashing | campbell_tone1 | campbell_warning_lights_are_flashing | 60t |
-| 3 | Std Voice - Yellow Lights Flashing | campbell_tone1 | campbell_yellow_lights_are_flashing | 60t |
-| 4 | Std Voice - Walk Sign On All Crossings | campbell_tone1 | campbell_walk_exclusive | 70t |
-| 5 | Std Percussive (East-West) | campbell_tone1 | campbell_perc_ew | 40t |
-| 6 | Std Percussive (North-South) | campbell_tone1 | campbell_perc_ns | 40t |
-| 7 | Phil Voice - Walk Sign On | campbell_tone1 | campbell_phil_walk_on | 50t |
-| 8 | Phil Voice - Warning Lights Activated | campbell_tone1 | campbell_phil_warning_lights_activated | 130t |
-| 9 | Phil Voice - Crossing Lights Activated | campbell_tone1 | campbell_phil_crossing_lights_activated | 130t |
-| 10 | Phil Voice - Walk Sign On All Crossings | campbell_tone1 | campbell_phil_walk_exclusive | 70t |
-| 11 | Audio Disabled | — | — | — |
+| # | Scheme | Locate | Press | Walk Sound | Walk Len |
+|---|---|---|---|---|---|
+| 1 | Std Voice - Walk Sign On | campbell_tone1 | campbell_wait | campbell_walk_sign_on | 80t |
+| 2 | Std Voice - Warning Lights Flashing | campbell_tone1 | campbell_wait_look_both_ways | campbell_warning_lights_are_flashing | 80t |
+| 3 | Std Voice - Yellow Lights Flashing | campbell_tone1 | campbell_wait_look_both_ways | campbell_yellow_lights_are_flashing | 80t |
+| 4 | Std Voice - Walk Sign On All Crossings | campbell_tone1 | campbell_wait | campbell_walk_exclusive | 100t |
+| 5 | Std Percussive (East-West) | campbell_tone1 | campbell_wait | campbell_perc_ew | 60t |
+| 6 | Std Percussive (North-South) | campbell_tone1 | campbell_wait | campbell_perc_ns | 60t |
+| 7 | Phil Voice - Walk Sign On | campbell_tone1 | campbell_phil_wait | campbell_phil_walk_on | 80t |
+| 8 | Phil Voice - Warning Lights Activated | campbell_tone1 | campbell_phil_wait_look_both_ways | campbell_phil_warning_lights_activated | 160t |
+| 9 | Phil Voice - Crossing Lights Activated | campbell_tone1 | campbell_phil_wait_look_both_ways | campbell_phil_crossing_lights_activated | 140t |
+| 10 | Phil Voice - Walk Sign On All Crossings | campbell_tone1 | campbell_phil_wait | campbell_phil_walk_exclusive | 100t |
+| 11 | Audio Disabled | — | — | — | — |
+| 12 | Canadian Melody | campbell_tone1 | campbell_wait | crosswalk_canadian_melody (clearance: crosswalk_canadian_melody_hurry, 40t) | 60t |
+| 13 | Automated Walk Signal | campbell_tone1 | crosswalk_male2_automated (80t) | crosswalk_male2_cross | 80t |
 
 ### Polara (`TileEntityTrafficSignalAPSPolara`)
 
-| # | Scheme | Locate | Walk Sound | Walk Len |
-|---|---|---|---|---|
-| 1 | Std Rapid Tick | polara_tone1 | polara_rapid_tick1 | 50t |
-| 2 | Voice - Walk Sign On | polara_tone1 | polara_walk | 45t |
-| 3 | Voice - Walk Sign On All Crossings | polara_tone1 | polara_walk_all_crossings | 55t |
-| 4 | Spanish Std Rapid Tick | polara_tone1 | polara_rapid_tick1 | 50t |
-| 5 | Spanish Voice - Walk Sign On | polara_tone1 | polara_lang2_walk | 60t |
-| 6 | Spanish Voice - Walk Sign On All Crossings | polara_tone1 | polara_lang2_walk_all_crossings | 80t |
-| 7 | Audio Disabled | — | — | — |
+| # | Scheme | Locate | Press | Walk Sound | Walk Len |
+|---|---|---|---|---|---|
+| 1 | Std Rapid Tick | polara_tone1 | polara_wait | polara_rapid_tick1 | 60t |
+| 2 | Voice - Walk Sign On | polara_tone1 | polara_wait | polara_walk | 60t |
+| 3 | Voice - Walk Sign On All Crossings | polara_tone1 | polara_wait | polara_walk_all_crossings | 80t |
+| 4 | Spanish Std Rapid Tick | polara_tone1 | polara_lang2_wait | polara_rapid_tick1 | 60t |
+| 5 | Spanish Voice - Walk Sign On | polara_tone1 | polara_lang2_wait | polara_lang2_walk | 80t |
+| 6 | Spanish Voice - Walk Sign On All Crossings | polara_tone1 | polara_lang2_wait | polara_lang2_walk_all_crossings | 100t |
+| 7 | Audio Disabled | — | — | — | — |
+| 8 | Automated Walk Signal | polara_tone1 | crosswalk_male2_automated (80t) | crosswalk_male2_cross | 80t |
+
+The Automated Walk Signal is on both lists with the same voice, but each list keeps its own
+brand's locate tone, so a Campbell button never chirps like a Polara one.
 
 ### Tweeters
 
