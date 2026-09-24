@@ -1,0 +1,234 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_body"
+      }
+    },
+    {
+      "when": {
+        "running": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_led_on"
+      }
+    },
+    {
+      "when": {
+        "running": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_led_off"
+      }
+    },
+    {
+      "when": {
+        "counter": "none",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_top"
+      }
+    },
+    {
+      "when": {
+        "counter": "granite",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_granite"
+      }
+    },
+    {
+      "when": {
+        "counter": "quartz",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_quartz"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "running": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_led_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "running": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_led_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "counter": "none",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "counter": "granite",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_granite",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "counter": "quartz",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_quartz",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "running": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_led_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "running": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_led_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "counter": "none",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "counter": "granite",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_granite",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "counter": "quartz",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_quartz",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "running": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_led_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "running": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_led_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "counter": "none",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "counter": "granite",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_granite",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "counter": "quartz",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_quartz",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 """Synthesise the Furniture & Novelties module's furniture sounds and write them as OGG Vorbis.
 
-The kitchen's cabinet doors, drawers and refrigerator door, made here from filtered noise, decaying
+The kitchen's cabinet doors, drawers and refrigerator door, and its appliances' beeps, timer ding,
+toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and jar lid, made here from filtered noise, decaying
 sines and envelopes, never recorded or taken from a sound library. Each entry in SOUNDS names a
 function returning mono samples in -1..1 at RATE and the level (RMS, of 32767) it is normalised to;
 the script writes modules/furnishings/src/main/resources/assets/csm/sounds/<name>.ogg through
@@ -132,6 +133,104 @@ def fridge_close():
                         (0.12, clink, 0.06)])
 
 
+def tone(seconds, freq, harmonics=((1, 1.0),)):
+    t = t_of(seconds)
+    return sum(a * np.sin(2 * np.pi * freq * k * t) for k, a in harmonics)
+
+
+def env_ad(n, attack, release):
+    """An envelope n samples long rising over attack seconds and falling over release."""
+    e = np.ones(n)
+    a = max(1, int(RATE * attack))
+    r = max(1, int(RATE * release))
+    e[:a] = np.linspace(0, 1, a)
+    e[-r:] *= np.linspace(1, 0, r)
+    return e
+
+
+def appliance_beep():
+    """A microwave's end-of-cycle beep: three short, soft-edged 2 kHz tones."""
+    b = tone(0.13, 2050, ((1, 1.0), (3, 0.12)))
+    b *= env_ad(len(b), 0.005, 0.02)
+    return place(0.75, [(0.0, b, 1.0), (0.25, b, 1.0), (0.5, b, 1.0)])
+
+
+def oven_timer():
+    """An oven timer's ding: a small struck bell, two inharmonic partials ringing down."""
+    t = t_of(1.2)
+    x = (np.sin(2 * np.pi * 1760 * t) + 0.45 * np.sin(2 * np.pi * 4230 * t) * np.exp(-t * 3)
+         + 0.2 * np.sin(2 * np.pi * 2650 * t)) * np.exp(-t * 3.2)
+    return x * env_ad(len(t), 0.002, 0.05)
+
+
+def toaster_pop():
+    """The toaster letting go: the spring's twang and the carriage knocking up to its stop."""
+    t = t_of(0.35)
+    twang = np.sin(2 * np.pi * (900 - 500 * t / 0.35) * t) * np.exp(-t * 14)
+    clack = knock(0.2, [(640, 1.0), (1500, 0.5), (2900, 0.2)], 45, 31, click=0.7)
+    return place(0.45, [(0.0, twang, 0.4), (0.03, clack, 1.0)])
+
+
+def blender_whirr():
+    """A blender's motor: a buzzy fundamental and its harmonics under a rush of noise, spinning
+    up, holding and running down again, so it loops without a click."""
+    n = int(RATE * 1.5)
+    t = t_of(1.5)
+    f = 190 + 25 * np.clip(t / 0.2, 0, 1)
+    ph = 2 * np.pi * np.cumsum(f) / RATE
+    motor = sum(a * np.sin(k * ph) for k, a in ((1, 1.0), (2, 0.6), (3, 0.45), (5, 0.25),
+                                                 (7, 0.15)))
+    rush = band(noise(1.5, 32), 900, 5000)
+    rush /= max(1e-9, np.max(np.abs(rush)))
+    return (motor * 0.6 + rush * 0.35) * env_ad(n, 0.12, 0.2)
+
+
+def coffee_gurgle():
+    """A drip coffee machine: bubbles popping at random in the boiler over a steady hiss."""
+    rng = np.random.RandomState(33)
+    parts = []
+    for _ in range(26):
+        start = rng.uniform(0, 2.2)
+        freq = rng.uniform(280, 900)
+        t = t_of(0.08)
+        pop = np.sin(2 * np.pi * freq * (1 + 2.5 * t) * t) * np.exp(-t * 60)
+        parts.append((start, pop, rng.uniform(0.4, 1.0)))
+    hiss = band(noise(2.4, 34), 2000, 7000)
+    hiss /= max(1e-9, np.max(np.abs(hiss)))
+    parts.append((0.0, hiss * env_ad(len(hiss), 0.3, 0.4), 0.18))
+    return place(2.4, parts)
+
+
+def dishwasher_hum():
+    """A dishwasher washing: a low pump hum and water sloshing, swelling and easing so that it
+    repeats every three seconds without a seam."""
+    n = int(RATE * 3.0)
+    t = t_of(3.0)
+    hum = np.sin(2 * np.pi * 100 * t) + 0.4 * np.sin(2 * np.pi * 200 * t)
+    slosh = band(noise(3.0, 35), 250, 1400)
+    slosh /= max(1e-9, np.max(np.abs(slosh)))
+    slosh *= 0.55 + 0.45 * np.sin(2 * np.pi * 0.66 * t) ** 2
+    return (0.35 * hum + 0.65 * slosh) * env_ad(n, 0.4, 0.4)
+
+
+def kettle_whistle():
+    """A kettle coming to the boil: breathy noise growing into a whistle near 2.3 kHz with a
+    slight warble, then cut off as it is lifted."""
+    n = int(RATE * 1.8)
+    t = t_of(1.8)
+    f = 2250 + 60 * np.clip(t / 1.0, 0, 1) + 15 * np.sin(2 * np.pi * 5.5 * t)
+    whistle = np.sin(2 * np.pi * np.cumsum(f) / RATE) * np.clip((t - 0.25) / 0.6, 0, 1)
+    breath = band(noise(1.8, 36), 1500, 4500)
+    breath /= max(1e-9, np.max(np.abs(breath)))
+    return (0.7 * whistle + 0.3 * breath) * env_ad(n, 0.2, 0.15)
+
+
+def jar_lid():
+    """A ceramic lid lifted from its jar: a bright clink and a small ring."""
+    return place(0.3, [(0.0, knock(0.3, [(1900, 1.0), (3300, 0.5), (5200, 0.25)], 18, 37,
+                                   click=0.3), 1.0)])
+
+
 SOUNDS = {
     'cabinet_open': (cabinet_open, 2600),
     'cabinet_close': (cabinet_close, 3600),
@@ -139,6 +238,14 @@ SOUNDS = {
     'drawer_close': (drawer_close, 3600),
     'fridge_open': (fridge_open, 3000),
     'fridge_close': (fridge_close, 4200),
+    'appliance_beep': (appliance_beep, 2600),
+    'oven_timer': (oven_timer, 2600),
+    'toaster_pop': (toaster_pop, 3400),
+    'blender_whirr': (blender_whirr, 2800),
+    'coffee_gurgle': (coffee_gurgle, 2000),
+    'dishwasher_hum': (dishwasher_hum, 2000),
+    'kettle_whistle': (kettle_whistle, 2400),
+    'jar_lid': (jar_lid, 2400),
 }
 
 

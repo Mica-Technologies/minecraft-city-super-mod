@@ -1,6 +1,10 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.codeutils.gui.ICsmGuiProvider;
+import com.micatechnologies.minecraft.csm.furniture.appliance.ContainerAppliance;
+import com.micatechnologies.minecraft.csm.furniture.appliance.GuiAppliance;
+import com.micatechnologies.minecraft.csm.furniture.appliance.IAppliance;
+import com.micatechnologies.minecraft.csm.furniture.appliance.TileEntityAppliance;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.ContainerResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.GuiResidentialStorage;
@@ -15,10 +19,11 @@ import net.minecraft.world.World;
 
 /**
  * Supplies the Furniture &amp; Novelties module's GUI screens: the multi-game arcade cabinet, and
- * the storage of the Residential tab's TV stands, sideboards, kitchen cabinets, refrigerators
- * and freezers (the one with a server-side container).
+ * the storage of the Residential tab's TV stands, sideboards, kitchen cabinets, refrigerators,
+ * freezers and cookie jar, and the working appliances' screen (both with a server-side
+ * container).
  *
- * @version 1.1
+ * @version 1.2
  * @since 2026.9
  */
 public class NoveltiesGuiProvider implements ICsmGuiProvider {
@@ -43,6 +48,12 @@ public class NoveltiesGuiProvider implements ICsmGuiProvider {
         returnValue = new GuiResidentialStorage(player.inventory, container,
             world.getBlockState(pos).getBlock().getLocalizedName());
       }
+    } else if (id == IAppliance.GUI_ID) {
+      ContainerAppliance container = applianceContainer(player, world, pos, false);
+      if (container != null) {
+        returnValue = new GuiAppliance(player.inventory, container,
+            world.getBlockState(pos).getBlock().getLocalizedName());
+      }
     }
     return returnValue;
   }
@@ -55,8 +66,23 @@ public class NoveltiesGuiProvider implements ICsmGuiProvider {
   @Nullable
   @Override
   public Object getServerGuiElement(int id, EntityPlayer player, World world, BlockPos pos) {
-    return id == BlockResidentialStorage.GUI_ID ? storageContainer(player, world, pos, true)
-        : null;
+    if (id == BlockResidentialStorage.GUI_ID) {
+      return storageContainer(player, world, pos, true);
+    }
+    return id == IAppliance.GUI_ID ? applianceContainer(player, world, pos, true) : null;
+  }
+
+  /** A working appliance's container, or null if the appliance is not there. */
+  @Nullable
+  private static ContainerAppliance applianceContainer(EntityPlayer player, World world,
+      BlockPos pos, boolean server) {
+    TileEntity te = world.getTileEntity(pos);
+    Block block = world.getBlockState(pos).getBlock();
+    if (!(te instanceof TileEntityAppliance) || !(block instanceof IAppliance)) {
+      return null;
+    }
+    return new ContainerAppliance(player.inventory, (TileEntityAppliance) te,
+        ((IAppliance) block).getApplianceSpec(), server);
   }
 
   /** A Residential storage block's container, or null if the block is not there. */

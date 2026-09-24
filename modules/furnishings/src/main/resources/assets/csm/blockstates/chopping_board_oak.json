@@ -1,0 +1,53 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/chopping_board_floor",
+    "textures": {
+      "wood": "csm:blocks/furniture/residential/oak",
+      "wood_v": "csm:blocks/furniture/residential/oak_v",
+      "edge": "csm:blocks/furniture/residential/oak_edge"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/residential/base/chopping_board_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/residential/base/chopping_board_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/residential/base/chopping_board_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/residential/base/chopping_board_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/residential/base/chopping_board_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/residential/base/chopping_board_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/residential/base/chopping_board_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/residential/base/chopping_board_item"
+      }
+    ]
+  }
+}

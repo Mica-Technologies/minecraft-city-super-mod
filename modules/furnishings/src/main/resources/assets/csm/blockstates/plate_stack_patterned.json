@@ -1,0 +1,52 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/plate_stack_floor",
+    "textures": {
+      "plate": "csm:blocks/furniture/residential/plate_patterned",
+      "stack_side": "csm:blocks/furniture/residential/plate_stack_side_patterned"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/residential/base/plate_stack_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/residential/base/plate_stack_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/residential/base/plate_stack_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/residential/base/plate_stack_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/residential/base/plate_stack_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/residential/base/plate_stack_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/residential/base/plate_stack_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/residential/base/plate_stack_item"
+      }
+    ]
+  }
+}

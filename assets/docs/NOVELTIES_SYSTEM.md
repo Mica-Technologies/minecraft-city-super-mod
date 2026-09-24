@@ -205,6 +205,43 @@ The kitchen follows in the same tab, drawn by `gen_furniture_kitchen.py`:
   that has sat 30 s becomes ice, a water bucket packed ice, the empty container going to another
   slot (the water waits while there is no room).
 
+The kitchen's appliances, the things on its counters and the tableware follow, drawn by
+`gen_furniture_appliances.py`:
+
+- **Working appliances** share one small machine framework in `furniture.appliance`, meant for
+  the later phases' washing machine and printer too. An `ApplianceRecipeBook` is a named list of
+  `ApplianceRecipe`s (`ApplianceRecipeBook.get("oven").add(...)`; a recipe says what input it
+  takes and how many, what it makes, how long it takes, and whether the result goes back into
+  the input for another cycle, as a repair does). An `ApplianceSpec` says which book a kind of
+  appliance works from and how: a time factor, the input slot's limit, a water tank (a bucket
+  fills it, a bottle adds a cycle, a `plumbed` predicate keeps it full), furnace fuel from a third
+  slot, a sound while running and one when done, and the light it gives. The block implements
+  `IAppliance` (its spec; `RUNNING`, stored, lights its window) and hands the shared work to
+  `ApplianceHelper`. `TileEntityAppliance` runs the cycle on the server; hoppers can put into the
+  input and fuel slots what they take and take only from the output; a comparator reads the
+  slots' fill. `ContainerAppliance` + `GuiAppliance` (GUI id 36, served by
+  `NoveltiesGuiProvider`) draw on the vanilla furnace screen, the fuel slot and flame painted
+  out for an electric appliance, with a water gauge for one that uses water.
+- Electric appliances need no fuel or redstone: they run whenever the input holds something they
+  can use (a kitchen is not wired, and a hopper-fed oven should just cook). `KitchenAppliances`
+  holds the books and specs: the oven (range and wall oven) cooks any smelting recipe whose
+  output is food in 8 s; the microwave the same, one item, in 3 s, and beeps; the air fryer raw
+  food (meat, fish, potatoes) in 4 s; the toaster bread into `toast` in 5 s; the blender an apple
+  or two melon slices into a `smoothie`; the coffee machine cocoa beans into `coffee` (Speed for
+  30 s), a cup of water each; the dishwasher repairs a tool or weapon (not armour) by a
+  twenty-fifth of its durability every 12 s wash, keeping it until it is whole. The coffee
+  machine and dishwasher are plumbed when they stand beside a kitchen sink base.
+- `BlockBuiltInAppliance` (range, wall oven) and `BlockDishwasher` stand in the base run as an
+  `IKitchenFitting`: a cabinet beside one carries its run through it, so shows no end panel. The
+  dishwasher also carries the countertop of the cabinet beside it (`counter`, actual state:
+  granite beside oak, quartz beside walnut and white, its own top alone). The cooktop cabinet is
+  a drawer bank with a glass cooktop in its countertop.
+- `BlockCounterPiece` (tableware, chopping board, kettle, mixer), `BlockCounterAppliance` and
+  `BlockCookieJar` stand on whatever is under them: `rest` (actual state, `SurfaceRest`) picks a
+  model drawn that far down -- 1.5 px on a countertop, 4 on a dining table, 9 on a coffee table --
+  and the box moves with it. The kettle whistles and steams on right-click, the mixer whirrs. The
+  cookie jar holds nine stacks of cookies and nothing else (`TileEntityCookieJar`).
+
 Every storage block implements `IResidentialStorage` (slots, where the slots are, open and close
 sounds), shares `ResidentialStorageHelper` and the one storage screen, and sounds its doors when
 the first player opens it and the last closes it.
@@ -234,6 +271,10 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:cabinet_open`, `csm:cabinet_close` | `CABINET_OPEN`, `CABINET_CLOSE` | kitchen cabinets with doors | synthesised by `gen_furniture_sounds.py` |
 | `csm:drawer_open`, `csm:drawer_close` | `DRAWER_OPEN`, `DRAWER_CLOSE` | the drawer bank | synthesised |
 | `csm:fridge_open`, `csm:fridge_close` | `FRIDGE_OPEN`, `FRIDGE_CLOSE` | refrigerator, chest freezer | synthesised |
+| `csm:appliance_beep`, `csm:oven_timer`, `csm:toaster_pop` | `APPLIANCE_BEEP`, `OVEN_TIMER`, `TOASTER_POP` | done: microwave, air fryer, dishwasher; ovens; toaster | synthesised |
+| `csm:blender_whirr`, `csm:coffee_gurgle`, `csm:dishwasher_hum` | `BLENDER_WHIRR`, `COFFEE_GURGLE`, `DISHWASHER_HUM` | while running (the mixer's click too) | synthesised |
+| `csm:kettle_whistle`, `csm:jar_lid` | `KETTLE_WHISTLE`, `JAR_LID` | kettle click, cookie jar | synthesised |
 
-The xylophone, water dispensers/bubblers and the kitchen sink use only vanilla sounds
+The xylophone, water dispensers/bubblers and the kitchen sink use only vanilla sounds (filling an
+appliance's tank with a bucket or bottle does too)
 (`SoundEvents.BLOCK_NOTE_XYLOPHONE`, `SoundEvents.ITEM_BOTTLE_FILL`, `ITEM_BUCKET_FILL`).

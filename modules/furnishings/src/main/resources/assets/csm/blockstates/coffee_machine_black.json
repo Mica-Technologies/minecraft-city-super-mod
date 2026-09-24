@@ -1,0 +1,67 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/coffee_machine_floor",
+    "textures": {
+      "shell": "csm:blocks/furniture/residential/appliance_black",
+      "door": "csm:blocks/furniture/residential/appliance_black",
+      "handle": "csm:blocks/furniture/residential/chrome",
+      "trim": "csm:blocks/furniture/residential/appliance_black_trim",
+      "glow": "csm:blocks/furniture/residential/lamp_green_off"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/residential/base/coffee_machine_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/residential/base/coffee_machine_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/residential/base/coffee_machine_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/residential/base/coffee_machine_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/residential/base/coffee_machine_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/residential/base/coffee_machine_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/residential/base/coffee_machine_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/residential/base/coffee_machine_item"
+      }
+    ],
+    "running": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/lamp_green_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/lamp_green_off"
+        }
+      }
+    }
+  }
+}

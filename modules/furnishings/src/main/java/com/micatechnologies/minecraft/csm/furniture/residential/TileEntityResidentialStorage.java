@@ -49,7 +49,30 @@ public class TileEntityResidentialStorage extends AbstractTileEntity {
       protected void onContentsChanged(int slot) {
         markDirty();
       }
+
+      @Override
+      public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        return accepts(stack);
+      }
+
+      @Override
+      @Nonnull
+      public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        return accepts(stack) ? super.insertItem(slot, stack, simulate) : stack;
+      }
     };
+  }
+
+  /**
+   * Whether the slots take {@code stack}, from a player or a hopper alike. Anything, unless a
+   * subclass holds only one kind of thing (the cookie jar).
+   *
+   * @param stack the stack
+   *
+   * @return true if it goes in
+   */
+  public boolean accepts(@Nonnull ItemStack stack) {
+    return true;
   }
 
   /**

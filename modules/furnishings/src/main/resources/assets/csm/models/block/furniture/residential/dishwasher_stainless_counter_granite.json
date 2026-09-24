@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/residential/base/dishwasher_counter",
+  "textures": {
+    "counter": "csm:blocks/furniture/residential/counter_granite"
+  }
+}

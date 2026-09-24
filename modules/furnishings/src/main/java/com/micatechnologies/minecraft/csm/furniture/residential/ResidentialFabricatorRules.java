@@ -11,7 +11,8 @@ import net.minecraft.block.Block;
  * What the Fabricator charges for the Residential tab: furniture is timber and fittings, as the
  * Furniture tab's is, in proportion to how much of it there is; upholstery adds wool, a
  * bookcase its books, and the cafe table's cast iron base an iron ingot. The kitchen adds stone
- * for its countertops and prices its appliances as sheet metal and electrics.
+ * for its countertops and prices its appliances as sheet metal and electrics, its tableware as
+ * clay or glass.
  *
  * <p>Priced by registry name, whose piece is its first words and whose finish is its last
  * ({@code sofa_corner_navy}). {@code audit_fabricator_costs.py} mirrors this.</p>
@@ -28,6 +29,9 @@ public final class ResidentialFabricatorRules {
   private static final String MC_BOOK = "minecraft:book";
   private static final String MC_IRON_INGOT = "minecraft:iron_ingot";
   private static final String MC_STONE = "minecraft:stone";
+  private static final String MC_GLASS = "minecraft:glass";
+  private static final String MC_CLAY = "minecraft:clay_ball";
+  private static final String MC_CAKE = "minecraft:cake";
 
   private ResidentialFabricatorRules() {
   }
@@ -89,10 +93,19 @@ public final class ResidentialFabricatorRules {
    */
   @Nullable
   private static List<FabricatorIngredient> kitchen(String registryName) {
+    List<FabricatorIngredient> appliance = appliances(registryName);
+    if (appliance != null) {
+      return appliance;
+    }
     if (registryName.startsWith("kitchen_corner_cabinet_")
         || registryName.startsWith("kitchen_island_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 5),
           FabricatorIngredient.any(MC_STONE, 2), FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("kitchen_cooktop_cabinet_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4),
+          FabricatorIngredient.any(MC_STONE, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
     }
     if (registryName.startsWith("kitchen_sink_cabinet_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
@@ -128,6 +141,67 @@ public final class ResidentialFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    return null;
+  }
+
+  /**
+   * The working appliances and the small things for the counter: the big appliances are sheet
+   * metal with a control board and wiring, as the refrigerator is; the countertop ones a sheet
+   * and wiring, with a control board where they have a timer or a display; tableware is fired
+   * clay or glass.
+   *
+   * @param registryName the registry name
+   *
+   * @return the cost, or null if it is none of these
+   */
+  @Nullable
+  private static List<FabricatorIngredient> appliances(String registryName) {
+    if (registryName.startsWith("kitchen_range_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 4),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("wall_oven_") || registryName.startsWith("dishwasher_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("microwave_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("air_fryer_") || registryName.startsWith("coffee_machine_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("blender_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
+          FabricatorIngredient.any(MC_GLASS, 1));
+    }
+    if (registryName.startsWith("toaster_") || registryName.startsWith("kettle_")
+        || registryName.startsWith("stand_mixer_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("cookie_jar_") || registryName.startsWith("plate_stack_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 3));
+    }
+    if (registryName.startsWith("dinner_plate_") || registryName.startsWith("coffee_mug_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 1));
+    }
+    if (registryName.startsWith("drinking_glass_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_GLASS, 1));
+    }
+    if (registryName.startsWith("cake_stand_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_GLASS, 1),
+          FabricatorIngredient.any(MC_CAKE, 1));
+    }
+    if (registryName.startsWith("chopping_board_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 1));
     }
     return null;
   }

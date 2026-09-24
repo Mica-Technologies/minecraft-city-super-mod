@@ -187,5 +187,77 @@
         "stream": false
       }
     ]
+  },
+  "appliance_beep": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:appliance_beep",
+        "stream": false
+      }
+    ]
+  },
+  "oven_timer": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:oven_timer",
+        "stream": false
+      }
+    ]
+  },
+  "toaster_pop": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:toaster_pop",
+        "stream": false
+      }
+    ]
+  },
+  "blender_whirr": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:blender_whirr",
+        "stream": false
+      }
+    ]
+  },
+  "coffee_gurgle": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:coffee_gurgle",
+        "stream": false
+      }
+    ]
+  },
+  "dishwasher_hum": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:dishwasher_hum",
+        "stream": false
+      }
+    ]
+  },
+  "kettle_whistle": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:kettle_whistle",
+        "stream": false
+      }
+    ]
+  },
+  "jar_lid": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:jar_lid",
+        "stream": false
+      }
+    ]
   }
 }

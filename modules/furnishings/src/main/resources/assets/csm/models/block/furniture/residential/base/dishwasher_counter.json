@@ -1,0 +1,77 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "counter": "csm:blocks/furniture/residential/counter_granite",
+    "particle": "#counter"
+  },
+  "elements": [
+    {
+      "from": [
+        0.0,
+        13.75,
+        0.5
+      ],
+      "to": [
+        16.0,
+        14.5,
+        16.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#counter",
+          "uv": [
+            0,
+            1.5,
+            16,
+            2.25
+          ]
+        },
+        "south": {
+          "texture": "#counter",
+          "uv": [
+            0,
+            1.5,
+            16,
+            2.25
+          ]
+        },
+        "east": {
+          "texture": "#counter",
+          "uv": [
+            0,
+            1.5,
+            15.5,
+            2.25
+          ]
+        },
+        "west": {
+          "texture": "#counter",
+          "uv": [
+            0.5,
+            1.5,
+            16,
+            2.25
+          ]
+        },
+        "up": {
+          "texture": "#counter",
+          "uv": [
+            0,
+            0.5,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#counter",
+          "uv": [
+            0,
+            0,
+            16,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}

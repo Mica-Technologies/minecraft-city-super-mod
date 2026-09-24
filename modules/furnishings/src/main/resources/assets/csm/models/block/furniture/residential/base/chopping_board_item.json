@@ -1,0 +1,293 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "chrome": "csm:blocks/furniture/residential/chrome",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "rubber": "csm:blocks/furniture/residential/rubber_black",
+    "wood": "csm:blocks/furniture/residential/oak",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        3.0,
+        7.425,
+        4.5
+      ],
+      "to": [
+        13.0,
+        8.175,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            3,
+            15.25,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            3,
+            15.25,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            4.5,
+            15.25,
+            11.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            4.5,
+            15.25,
+            11.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            3,
+            4.5,
+            13,
+            11.5
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            3,
+            4.5,
+            13,
+            11.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.5,
+        8.175,
+        7.25
+      ],
+      "to": [
+        9.5,
+        8.275,
+        8.25
+      ],
+      "faces": {
+        "up": {
+          "texture": "#chrome",
+          "uv": [
+            4.5,
+            7.25,
+            9.5,
+            8.25
+          ]
+        },
+        "north": {
+          "texture": "#chrome",
+          "uv": [
+            6.5,
+            15.15,
+            11.5,
+            15.25
+          ]
+        },
+        "south": {
+          "texture": "#chrome",
+          "uv": [
+            4.5,
+            15.15,
+            9.5,
+            15.25
+          ]
+        },
+        "west": {
+          "texture": "#chrome",
+          "uv": [
+            7.25,
+            15.15,
+            8.25,
+            15.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        9.5,
+        8.175,
+        7.35
+      ],
+      "to": [
+        12.0,
+        8.575,
+        8.15
+      ],
+      "faces": {
+        "up": {
+          "texture": "#rubber",
+          "uv": [
+            9.5,
+            7.35,
+            12,
+            8.15
+          ]
+        },
+        "north": {
+          "texture": "#rubber",
+          "uv": [
+            4,
+            14.85,
+            6.5,
+            15.25
+          ]
+        },
+        "south": {
+          "texture": "#rubber",
+          "uv": [
+            9.5,
+            14.85,
+            12,
+            15.25
+          ]
+        },
+        "east": {
+          "texture": "#rubber",
+          "uv": [
+            7.85,
+            14.85,
+            8.65,
+            15.25
+          ]
+        },
+        "west": {
+          "texture": "#rubber",
+          "uv": [
+            7.35,
+            14.85,
+            8.15,
+            15.25
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.6875,
+        0.6875,
+        0.6875
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.275,
+        0.275,
+        0.275
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.4125,
+        0.4125,
+        0.4125
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.44,
+        0.44,
+        0.44
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.44,
+        0.44,
+        0.44
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/residential/base/kitchen_cooktop_cabinet_body",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/residential/white_v",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "counter": "csm:blocks/furniture/residential/counter_quartz"
+  }
+}

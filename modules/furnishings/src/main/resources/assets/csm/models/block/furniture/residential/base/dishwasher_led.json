@@ -1,0 +1,33 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "glow": "csm:blocks/furniture/residential/oven_window_off",
+    "shell": "csm:blocks/furniture/residential/stainless",
+    "particle": "#shell"
+  },
+  "elements": [
+    {
+      "from": [
+        13.25,
+        12.6,
+        0.9
+      ],
+      "to": [
+        14.0,
+        12.95,
+        0.95
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glow",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

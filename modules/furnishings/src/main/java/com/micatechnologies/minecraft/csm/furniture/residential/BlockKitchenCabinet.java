@@ -46,6 +46,15 @@ public class BlockKitchenCabinet extends BlockResidentialStorage {
   }
 
   /**
+   * The countertop this cabinet's finish has, which a dishwasher beside it carries on.
+   *
+   * @return the countertop
+   */
+  public KitchenCountertop getCountertop() {
+    return KitchenCountertop.of(getFinish());
+  }
+
+  /**
    * Whether this cabinet, in {@code state}, takes a run facing {@code runFacing} that arrives
    * from {@code side} (the world direction from this cabinet to the run's next block). A
    * straight cabinet takes a run facing its own way on either side.
@@ -63,7 +72,8 @@ public class BlockKitchenCabinet extends BlockResidentialStorage {
 
   /**
    * Whether a run facing {@code runFacing} goes on from {@code pos} into its neighbour past
-   * {@code side}: a cabinet of this line and finish that takes it.
+   * {@code side}: a cabinet of this line and finish that takes it, or a fitting of any finish
+   * (the range, the dishwasher) standing in the run ({@link IKitchenFitting}).
    *
    * @param world     the world
    * @param pos       this block
@@ -75,6 +85,10 @@ public class BlockKitchenCabinet extends BlockResidentialStorage {
   protected boolean joins(IBlockAccess world, BlockPos pos, EnumFacing side,
       EnumFacing runFacing) {
     IBlockState other = world.getBlockState(pos.offset(side));
+    if (other.getBlock() instanceof IKitchenFitting) {
+      return ((IKitchenFitting) other.getBlock()).fitsRun(other, side.getOpposite(), runFacing,
+          line);
+    }
     if (!(other.getBlock() instanceof BlockKitchenCabinet)) {
       return false;
     }

@@ -636,6 +636,14 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   lens by blockstate), the two-block refrigerator (drawn whole, cut at the block line into two
   models) and the chest freezer; `--check`, `--fragments`. `gen_furniture_sounds.py`
   synthesises the cabinet, drawer and refrigerator door sounds (numpy to ffmpeg to OGG)
+- `gen_furniture_appliances.py` -- the kitchen's appliances and tableware, importing the
+  residential and kitchen generators: range, wall oven, dishwasher (carrying the neighbouring
+  cabinet's countertop), cooktop cabinet, the countertop appliances (microwave, toaster, air
+  fryer, blender, coffee machine, kettle, stand mixer), cookie jar, chopping board, plates, mugs,
+  a glass, cake stands, and the toast / smoothie / coffee item sprites. Each countertop piece is
+  drawn once per surface it can stand on (`SurfaceRest`, dropped to sit on a counter or table),
+  its UVs fitted before the drop; `--check`, `--fragments`. The appliances run on the
+  `furniture.appliance` machine framework (NOVELTIES_SYSTEM.md, Residential Furniture)
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

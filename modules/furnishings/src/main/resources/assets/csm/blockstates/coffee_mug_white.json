@@ -1,0 +1,52 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/coffee_mug_floor",
+    "textures": {
+      "mug": "csm:blocks/furniture/residential/ceramic_white",
+      "top": "csm:blocks/furniture/residential/mug_top_white"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/residential/base/coffee_mug_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/residential/base/coffee_mug_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/residential/base/coffee_mug_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/residential/base/coffee_mug_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/residential/base/coffee_mug_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/residential/base/coffee_mug_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/residential/base/coffee_mug_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/residential/base/coffee_mug_item"
+      }
+    ]
+  }
+}

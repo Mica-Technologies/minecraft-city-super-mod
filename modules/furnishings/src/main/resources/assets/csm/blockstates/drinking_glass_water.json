@@ -1,0 +1,52 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/drinking_glass_floor",
+    "textures": {
+      "glass": "csm:blocks/furniture/residential/glass_clear",
+      "water": "csm:blocks/furniture/residential/water_glass"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/residential/base/drinking_glass_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/residential/base/drinking_glass_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/residential/base/drinking_glass_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/residential/base/drinking_glass_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/residential/base/drinking_glass_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/residential/base/drinking_glass_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/residential/base/drinking_glass_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/residential/base/drinking_glass_item"
+      }
+    ]
+  }
+}

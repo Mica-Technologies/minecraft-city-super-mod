@@ -6,7 +6,8 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 /**
  * The sounds shipped by the CSM: Furniture &amp; Novelties module: the arcade cabinet attract
  * loops, the record players and radios, the kitchen's cabinet, drawer and refrigerator doors
- * (synthesised by {@code gen_furniture_sounds.py}), and the other furnishing sounds.
+ * and its appliances' beeps, whirrs and whistles (synthesised by
+ * {@code gen_furniture_sounds.py}), and the other furnishing sounds.
  *
  * <p>Each constant's name is the sound's {@code sounds.json} key and the path of its registry
  * name, so a sound event stays {@code csm:&lt;key&gt;} and nothing that refers to one by
@@ -37,7 +38,15 @@ public enum FurnishingsSounds implements ICsmSound {
   DRAWER_OPEN("drawer_open"),
   DRAWER_CLOSE("drawer_close"),
   FRIDGE_OPEN("fridge_open"),
-  FRIDGE_CLOSE("fridge_close");
+  FRIDGE_CLOSE("fridge_close"),
+  APPLIANCE_BEEP("appliance_beep"),
+  OVEN_TIMER("oven_timer"),
+  TOASTER_POP("toaster_pop"),
+  BLENDER_WHIRR("blender_whirr"),
+  COFFEE_GURGLE("coffee_gurgle"),
+  DISHWASHER_HUM("dishwasher_hum"),
+  KETTLE_WHISTLE("kettle_whistle"),
+  JAR_LID("jar_lid");
 
   /**
    * The name of the sound.

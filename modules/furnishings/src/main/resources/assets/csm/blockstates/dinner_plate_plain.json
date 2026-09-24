@@ -1,0 +1,51 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/residential/base/dinner_plate_floor",
+    "textures": {
+      "plate": "csm:blocks/furniture/residential/plate_plain"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/residential/base/dinner_plate_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/residential/base/dinner_plate_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/residential/base/dinner_plate_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/residential/base/dinner_plate_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/residential/base/dinner_plate_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/residential/base/dinner_plate_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/residential/base/dinner_plate_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/residential/base/dinner_plate_item"
+      }
+    ]
+  }
+}

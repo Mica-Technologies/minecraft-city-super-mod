@@ -85,9 +85,36 @@ public class BlockResidentialFurniture extends AbstractBlockRotatableNSEW {
     PENDING.remove();
   }
 
+  /**
+   * Constructs a piece of another material that is not sat on: an appliance (metal) or
+   * tableware (glass, ceramic).
+   *
+   * @param registryName its registry name
+   * @param box          its box facing north, in sixteenths: {x0, y0, z0, x1, y1, z1}
+   * @param material     its material
+   * @param sound        the sound of placing, stepping on and breaking it
+   * @param hardness     how long it takes to break
+   */
+  protected BlockResidentialFurniture(String registryName, int[] box, Material material,
+      SoundType sound, float hardness) {
+    super(stash(registryName, material), sound, "pickaxe", 0, hardness, hardness * 2.0F, 0.0F,
+        0);
+    this.registryName = registryName;
+    this.box = new AxisAlignedBB(box[0] / 16.0, box[1] / 16.0, box[2] / 16.0, box[3] / 16.0,
+        box[4] / 16.0, box[5] / 16.0);
+    this.seatTop = -1;
+    this.seatForward = 0;
+    this.seatLeft = 0;
+    PENDING.remove();
+  }
+
   private static Material stash(String registryName, boolean upholstered) {
+    return stash(registryName, upholstered ? Material.CLOTH : Material.WOOD);
+  }
+
+  private static Material stash(String registryName, Material material) {
     PENDING.set(registryName);
-    return upholstered ? Material.CLOTH : Material.WOOD;
+    return material;
   }
 
   @Override

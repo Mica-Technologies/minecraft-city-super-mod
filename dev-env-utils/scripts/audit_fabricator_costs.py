@@ -396,8 +396,32 @@ def cost_for(registry, info, ancestors):
         return ("planks x2", "FASTENER_KIT")
     if tab == "tabresidential":
         # Mirrors ResidentialFabricatorRules (Furniture & Novelties module).
+        if registry.startswith("kitchen_range_"):
+            return ("SHEET_METAL x4", "CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith(("wall_oven_", "dishwasher_")):
+            return ("SHEET_METAL x3", "CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith("microwave_"):
+            return ("SHEET_METAL x2", "CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith(("air_fryer_", "coffee_machine_")):
+            return ("SHEET_METAL", "CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith("blender_"):
+            return ("SHEET_METAL", "WIRING_HARNESS", "glass")
+        if registry.startswith(("toaster_", "kettle_", "stand_mixer_")):
+            return ("SHEET_METAL", "WIRING_HARNESS")
+        if registry.startswith(("cookie_jar_", "plate_stack_")):
+            return ("clay_ball x3",)
+        if registry.startswith(("dinner_plate_", "coffee_mug_")):
+            return ("clay_ball",)
+        if registry.startswith("drinking_glass_"):
+            return ("glass",)
+        if registry.startswith("cake_stand_"):
+            return ("glass", "cake")
+        if registry.startswith("chopping_board_"):
+            return ("planks",)
         if registry.startswith(("kitchen_corner_cabinet_", "kitchen_island_")):
             return ("planks x5", "stone x2", "FASTENER_KIT")
+        if registry.startswith("kitchen_cooktop_cabinet_"):
+            return ("planks x4", "stone", "WIRING_HARNESS")
         if registry.startswith("kitchen_sink_cabinet_"):
             return ("planks x3", "stone", "SHEET_METAL")
         if registry.startswith("kitchen_wall_shelf_"):
