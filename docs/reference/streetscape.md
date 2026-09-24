@@ -2,7 +2,7 @@
 
 Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals and parking meters.
 
-!!! info "73 blocks in this tab"
+!!! info "86 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -26,6 +26,12 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 | Electric Pull Box (Rusted) | `csm:vault_lid_electric_rusted` | 1.5 | 10 | pickaxe | 0 |
 | Fiber Optic Handhole | `csm:vault_lid_fiber_optic` | 1.5 | 10 | pickaxe | 0 |
 | Fire Hydrant | `csm:firehydrant` | 2 | 10 | pickaxe | 1 |
+| Fire Hydrant (Red, Silver Cap) | `csm:hydrant_red_silver_cap` | 3 | 12 | pickaxe | 1 |
+| Fire Hydrant (Red, White Cap) | `csm:hydrant_red_white_cap` | 3 | 12 | pickaxe | 1 |
+| Fire Hydrant (Yellow, Blue Cap) | `csm:hydrant_yellow_blue_cap` | 3 | 12 | pickaxe | 1 |
+| Fire Hydrant (Yellow, Green Cap) | `csm:hydrant_yellow_green_cap` | 3 | 12 | pickaxe | 1 |
+| Fire Hydrant (Yellow, Orange Cap) | `csm:hydrant_yellow_orange_cap` | 3 | 12 | pickaxe | 1 |
+| Fire Hydrant (Yellow, Red Cap) | `csm:hydrant_yellow_red_cap` | 3 | 12 | pickaxe | 1 |
 | Flexible Delineator (White) | `csm:bollard_flexible_white` | 3 | 12 | pickaxe | 1 |
 | Flexible Delineator (Yellow) | `csm:bollard_flexible_yellow` | 3 | 12 | pickaxe | 1 |
 | Gas Valve Box | `csm:valve_box_gas` | 1.5 | 10 | pickaxe | 0 |
@@ -46,6 +52,11 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 | Manhole Cover (Telecom, Rusted) | `csm:manhole_telecom_rusted` | 1.5 | 10 | pickaxe | 0 |
 | Manhole Cover (Water) | `csm:manhole_water` | 1.5 | 10 | pickaxe | 0 |
 | Manhole Cover (Water, Rusted) | `csm:manhole_water_rusted` | 1.5 | 10 | pickaxe | 0 |
+| Newspaper Rack (Blue) | `csm:news_rack_blue` | 3 | 12 | pickaxe | 1 |
+| Newspaper Rack (Free Paper) | `csm:news_rack_free` | 3 | 12 | pickaxe | 1 |
+| Newspaper Rack (Green) | `csm:news_rack_green` | 3 | 12 | pickaxe | 1 |
+| Newspaper Rack (Red) | `csm:news_rack_red` | 3 | 12 | pickaxe | 1 |
+| Newspaper Rack (Yellow) | `csm:news_rack_yellow` | 3 | 12 | pickaxe | 1 |
 | Pad-Mount Transformer (Large) | `csm:transformer_padmount_large` | 3 | 12 | pickaxe | 1 |
 | Pad-Mount Transformer (Large, Rusted) | `csm:transformer_padmount_large_rusted` | 3 | 12 | pickaxe | 1 |
 | Pad-Mount Transformer (Medium) | `csm:transformer_padmount_medium` | 3 | 12 | pickaxe | 1 |
@@ -63,6 +74,7 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 | Pipe Bollard (Yellow Sleeve) | `csm:bollard_pipe_sleeve` | 3 | 12 | pickaxe | 1 |
 | Sewer Cleanout | `csm:sewer_cleanout` | 1.5 | 10 | pickaxe | 0 |
 | Sewer Cleanout (Rusted) | `csm:sewer_cleanout_rusted` | 1.5 | 10 | pickaxe | 0 |
+| Sidewalk Standpipe Connection | `csm:standpipe_sidewalk` | 3 | 12 | pickaxe | 1 |
 | Stainless Steel Bollard | `csm:bollard_stainless` | 3 | 12 | pickaxe | 1 |
 | Storm Drain Marker | `csm:storm_drain_marker` | 1.5 | 10 | pickaxe | 0 |
 | Telecom Enclosure (Low Profile) | `csm:telecom_enclosure_low` | 3 | 12 | pickaxe | 1 |
@@ -79,6 +91,7 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 | Utility Pedestal (Square, Short, Rusted) | `csm:utility_pedestal_square_short_rusted` | 3 | 12 | pickaxe | 1 |
 | Utility Pedestal (Square, Tall) | `csm:utility_pedestal_square_tall` | 3 | 12 | pickaxe | 1 |
 | Utility Pedestal (Square, Tall, Rusted) | `csm:utility_pedestal_square_tall_rusted` | 3 | 12 | pickaxe | 1 |
+| Wall Hydrant | `csm:hydrant_wall` | 3 | 12 | pickaxe | 1 |
 | Water Meter Box | `csm:vault_lid_water_meter` | 1.5 | 10 | pickaxe | 0 |
 | Water Meter Box (Rusted) | `csm:vault_lid_water_meter_rusted` | 1.5 | 10 | pickaxe | 0 |
 | Water Valve Box | `csm:valve_box_water` | 1.5 | 10 | pickaxe | 0 |

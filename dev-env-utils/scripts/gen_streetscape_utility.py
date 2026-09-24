@@ -92,7 +92,8 @@ def rusted(img, seed):
             yy = y + step
             if yy < img.height and px[x, yy][3]:
                 r, g, b, a = px[x, yy]
-                px[x, yy] = lc.clamp(tuple(v * 0.55 + t * 0.45 for v, t in zip((r, g, b), RUST))) + (a,)
+                px[x, yy] = lc.clamp(tuple(v * 0.55 + t * 0.45
+                                           for v, t in zip((r, g, b), RUST))) + (a,)
     return out
 
 
@@ -265,8 +266,9 @@ def low_profile(x0, x1, z0, z1, h, hinges=True):
     r = 1.0
     els = [
         pad(x0 - 1.2, z0 - 1.5, x1 + 1.2, z1 + 1.2),
-        slab([x0, 1, z0], [x1, h - r, z1], "body", ("north", "south", "east", "west")),
-        slab([x0 + 0.35, h - r, z0 + 0.35], [x1 - 0.35, h - 0.35, z1 - 0.35], "body"),
+        slab([x0, 1, z0], [x1, h - r, z1], "body", ("north", "south", "east", "west", "up")),
+        slab([x0 + 0.35, h - r, z0 + 0.35], [x1 - 0.35, h - 0.35, z1 - 0.35], "body",
+             ("north", "south", "east", "west", "up")),
         slab([x0 + r, h - 0.35, z0 + r], [x1 - r, h, z1 - r], "body", ("up", "north", "south",
                                                                        "east", "west")),
         # the seam where the lid meets the body, a hair proud of the front
@@ -328,9 +330,9 @@ def square_pedestal(height):
 def round_pedestal(height):
     """A round pedestal with a domed cap: octagon rings stepping in, as the mod draws round
     things."""
-    return (post(8, 8, 3.4, 0, height, "body", top=False)
-            + post(8, 8, 3.0, height, height + 0.9, "body", top=False, bottom=False)
-            + post(8, 8, 2.2, height + 0.9, height + 1.6, "body", top=False, bottom=False)
+    return (post(8, 8, 3.4, 0, height, "body")
+            + post(8, 8, 3.0, height, height + 0.9, "body", bottom=False)
+            + post(8, 8, 2.2, height + 0.9, height + 1.6, "body", bottom=False)
             + post(8, 8, 1.2, height + 1.6, height + 2.0, "body", bottom=False))
 
 
@@ -338,7 +340,8 @@ def ribbed_pedestal():
     """The ribbed plastic telecom pedestal: a square body with a flat lid and a clamp bar down
     the front."""
     return [
-        slab([4, 0, 4], [12, 17, 12], "ribbed", ("north", "south", "east", "west", "down")),
+        slab([4, 0, 4], [12, 17, 12], "ribbed",
+             ("north", "south", "east", "west", "down", "up")),
         slab([4.3, 17, 4.3], [11.7, 18, 11.7], "lid"),
         slab([7.2, 2, 3.5], [8.8, 15, 4], "lid"),
         slab([6.6, 9, 3.4], [9.4, 10.5, 4], "lid"),
@@ -349,7 +352,7 @@ def low_telecom():
     """The low-profile moulded telecom enclosure: a ribbed box with a lid carrying its emblem."""
     return [
         slab([1, 0, 4.5], [15, 7.5, 12.5], "ribbed", ("north", "south", "east", "west",
-                                                      "down")),
+                                                      "down", "up")),
         slab([1.3, 7.5, 4.8], [14.7, 8.5, 12.2], "lid", ("north", "south", "east", "west")),
         decal([1.3, 7.5, 4.8], [14.7, 8.5, 12.2], "emblem", "up"),
     ]

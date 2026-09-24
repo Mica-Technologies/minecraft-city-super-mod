@@ -1,0 +1,77 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/streetscape/furniture/frame",
+    "particle": "csm:blocks/streetscape/furniture/frame"
+  },
+  "elements": [
+    {
+      "from": [
+        15.2,
+        8.0,
+        2.6
+      ],
+      "to": [
+        16,
+        24.0,
+        13.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            0.8,
+            8.0
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            15.2,
+            0,
+            16,
+            8.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            2.6,
+            0,
+            13.4,
+            8.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            2.6,
+            0,
+            13.4,
+            8.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            15.2,
+            2.6,
+            16,
+            13.4
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            15.2,
+            2.6,
+            16,
+            13.4
+          ]
+        }
+      }
+    }
+  ]
+}

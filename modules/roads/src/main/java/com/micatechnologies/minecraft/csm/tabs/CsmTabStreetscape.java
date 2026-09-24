@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.streetscape.BlockBollardFlexible;
 import com.micatechnologies.minecraft.csm.streetscape.BlockFireHydrant;
+import com.micatechnologies.minecraft.csm.streetscape.BlockNewsRack;
 import com.micatechnologies.minecraft.csm.streetscape.BlockParkingMeter;
 import com.micatechnologies.minecraft.csm.streetscape.BlockStreetCover;
 import com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBox;
@@ -75,6 +76,31 @@ public class CsmTabStreetscape extends CsmTab {
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(BlockFireHydrant.class, fmlPreInitializationEvent); // Fire Hydrant
+    // Hydrants and standpipes (gen_streetscape_street_furniture.py --fragments).
+    initTabBlock(new BlockUtilityBox("hydrant_yellow_blue_cap", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.137500, 0.000000, 0.137500, 0.862500, 0.812500, 0.750000),
+        null)));
+    initTabBlock(new BlockUtilityBox("hydrant_yellow_green_cap", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.137500, 0.000000, 0.137500, 0.862500, 0.812500, 0.750000),
+        null)));
+    initTabBlock(new BlockUtilityBox("hydrant_yellow_orange_cap", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.137500, 0.000000, 0.137500, 0.862500, 0.812500, 0.750000),
+        null)));
+    initTabBlock(new BlockUtilityBox("hydrant_yellow_red_cap", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.137500, 0.000000, 0.137500, 0.862500, 0.812500, 0.750000),
+        null)));
+    initTabBlock(new BlockUtilityBox("hydrant_red_white_cap", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.137500, 0.000000, 0.137500, 0.862500, 0.812500, 0.750000),
+        null)));
+    initTabBlock(new BlockUtilityBox("hydrant_red_silver_cap", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.137500, 0.000000, 0.137500, 0.862500, 0.812500, 0.750000),
+        null)));
+    initTabBlock(new BlockUtilityBox("hydrant_wall", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.281250, 0.281250, 0.636750, 0.718750, 0.718750, 1.000000),
+        null)));
+    initTabBlock(new BlockUtilityBox("standpipe_sidewalk", new UtilityBoxSpec(1, 1, 1,
+        new AxisAlignedBB(0.259358, 0.000000, 0.286750, 0.740642, 0.712511, 0.600011),
+        null)));
 
     // Delineators, moved here from Traffic Accessories.
     initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_post",
@@ -288,5 +314,22 @@ public class CsmTabStreetscape extends CsmTab {
         new AxisAlignedBB(0.218750, 0.000000, 0.462500, 0.781250, 1.625000, 0.562500),
         new UtilityBoxSpec.Label(8.0f, 16.3f, 7.4f, 1, 1.3f, false,
             0xF0F0EC, 0x16683E))));
+
+    // News racks (gen_streetscape_street_furniture.py --fragments).
+    initTabBlock(new BlockNewsRack("news_rack_blue", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.000000, 0.000000, 0.162500, 1.000000, 1.500000, 0.837500),
+        null)));
+    initTabBlock(new BlockNewsRack("news_rack_red", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.000000, 0.000000, 0.162500, 1.000000, 1.500000, 0.837500),
+        null)));
+    initTabBlock(new BlockNewsRack("news_rack_green", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.000000, 0.000000, 0.162500, 1.000000, 1.500000, 0.837500),
+        null)));
+    initTabBlock(new BlockNewsRack("news_rack_yellow", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.000000, 0.000000, 0.162500, 1.000000, 1.500000, 0.837500),
+        null)));
+    initTabBlock(new BlockNewsRack("news_rack_free", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.000000, 0.000000, 0.162500, 1.000000, 1.500000, 0.837500),
+        null)));
   }
 }

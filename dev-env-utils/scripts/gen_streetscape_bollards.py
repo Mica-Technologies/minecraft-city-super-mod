@@ -136,15 +136,15 @@ def cast_iron():
             + post(8, 8, 1.8, 1.2, 11, "body", top=False, bottom=False)
             + ring(2.1, 3.0, 3.6, "trim") + ring(2.1, 9.4, 10.0, "trim")
             + post(8, 8, 2.2, 11, 12.2, "trim", bottom=True)
-            + post(8, 8, 1.9, 12.2, 13.4, "trim", bottom=False, top=False)
-            + post(8, 8, 1.3, 13.4, 14.2, "trim", bottom=False, top=False)
+            + post(8, 8, 1.9, 12.2, 13.4, "trim", bottom=False)
+            + post(8, 8, 1.3, 13.4, 14.2, "trim", bottom=False)
             + post(8, 8, 0.6, 14.2, 14.8, "trim", bottom=False))
 
 
 def stainless():
     """A brushed stainless sleeve with a shallow domed cap."""
-    return (post(8, 8, 2.3, 0, 13.5, "body", top=False)
-            + post(8, 8, 2.0, 13.5, 14.1, "body", bottom=False, top=False)
+    return (post(8, 8, 2.3, 0, 13.5, "body")
+            + post(8, 8, 2.0, 13.5, 14.1, "body", bottom=False)
             + post(8, 8, 1.3, 14.1, 14.5, "body", bottom=False))
 
 
@@ -152,16 +152,16 @@ def crash_rated():
     """A thick crash-rated steel bollard on its anchor plate, in safety yellow with a
     reflective band."""
     return ([slab([3, 0, 3], [13, 0.5, 13], "plate")]
-            + post(8, 8, 3.0, 0.5, 15, "body", top=False, bottom=False)
+            + post(8, 8, 3.0, 0.5, 15, "body", bottom=False)
             + ring(3.05, 12, 13, "band")
-            + post(8, 8, 2.6, 15, 15.5, "body", bottom=True))
+            + post(8, 8, 2.6, 15, 15.5, "body", bottom=False))
 
 
 def pipe_sleeve():
     """A steel pipe bollard under a yellow plastic cover sleeve with two reflective bands."""
-    return (post(8, 8, 2.8, 0, 14, "body", top=False)
+    return (post(8, 8, 2.8, 0, 14, "body")
             + ring(2.85, 10.5, 11.3, "band") + ring(2.85, 12, 12.8, "band")
-            + post(8, 8, 2.4, 14, 14.6, "body", bottom=False, top=False)
+            + post(8, 8, 2.4, 14, 14.6, "body", bottom=False)
             + post(8, 8, 1.5, 14.6, 15, "body", bottom=False))
 
 
@@ -170,7 +170,7 @@ def flexible():
     return (post(8, 8, 2.2, 0, 0.5, "base")
             + post(8, 8, 1.1, 0.5, 15, "body", top=False, bottom=False)
             + ring(1.15, 12, 13, "band") + ring(1.15, 13.8, 14.6, "band")
-            + post(8, 8, 1.15, 15, 15.3, "body", bottom=False))
+            + post(8, 8, 1.15, 15, 15.3, "body"))
 
 
 def sphere_profile():

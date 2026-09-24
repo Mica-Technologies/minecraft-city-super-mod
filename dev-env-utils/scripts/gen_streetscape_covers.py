@@ -306,7 +306,8 @@ def rusted(img, seed):
             yy = y + step
             if yy < SIZE and px[x, yy][3]:
                 r, g, b, a = px[x, yy]
-                px[x, yy] = lc.clamp(tuple(v * 0.5 + t * 0.5 for v, t in zip((r, g, b), RUST))) + (a,)
+                px[x, yy] = lc.clamp(tuple(v * 0.5 + t * 0.5
+                                           for v, t in zip((r, g, b), RUST))) + (a,)
     return out
 
 
