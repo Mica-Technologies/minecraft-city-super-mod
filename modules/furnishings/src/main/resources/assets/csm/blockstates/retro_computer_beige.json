@@ -61,6 +61,10 @@
           "glow": "csm:blocks/furniture/office/crt_off"
         }
       }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
     }
   }
 }

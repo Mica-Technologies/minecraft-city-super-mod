@@ -1,0 +1,178 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "photo": "csm:blocks/furniture/living/photo_beach",
+    "wood": "csm:blocks/furniture/residential/oak",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        4.5,
+        -6.5,
+        7.5
+      ],
+      "to": [
+        11.5,
+        -1.0,
+        8.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            4.5,
+            10.0,
+            11.5,
+            15.5
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            4.5,
+            10.0,
+            11.5,
+            15.5
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            7.75,
+            10.0,
+            8.5,
+            15.5
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            7.5,
+            10.0,
+            8.25,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            4.5,
+            7.5,
+            11.5,
+            8.25
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            4.5,
+            7.75,
+            11.5,
+            8.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          -6.5,
+          8.0
+        ],
+        "axis": "x",
+        "angle": 22.5
+      }
+    },
+    {
+      "from": [
+        5.25,
+        -5.75,
+        7.4
+      ],
+      "to": [
+        10.75,
+        -1.75,
+        7.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#photo",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          -6.5,
+          8.0
+        ],
+        "axis": "x",
+        "angle": 22.5
+      }
+    },
+    {
+      "from": [
+        7.5,
+        -7.0,
+        8.6
+      ],
+      "to": [
+        8.5,
+        -6.5,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            7.5,
+            15.5,
+            8.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            7.5,
+            15.5,
+            8.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            5.5,
+            15.5,
+            7.4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            8.6,
+            15.5,
+            10.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            7.5,
+            8.6,
+            8.5,
+            10.5
+          ]
+        }
+      }
+    }
+  ]
+}

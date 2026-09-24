@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/residential/base/rug_field",
+  "textures": {
+    "rug": "csm:blocks/furniture/living/rubber_mat",
+    "rug_border": "csm:blocks/furniture/living/rubber_mat_border"
+  }
+}

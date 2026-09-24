@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
 import javax.annotation.Nonnull;
+import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -19,11 +20,13 @@ import net.minecraft.world.World;
  * under-cabinet light. It is placed lit; right-click switches its lamp off and on. Lit, it
  * gives the light level it was made with and the blockstate shows its lens glowing.
  *
- * <p>{@link #LIT} is stored, in the bit above the facing.</p>
+ * <p>It follows redstone too: a change of power switches it on or off ({@link LampSwitching}).
+ * {@link #LIT} is stored in the bit above the facing, {@link LampSwitching#POWERED} in the top
+ * bit.</p>
  *
  * @since 2026.9
  */
-public class BlockKitchenLight extends BlockResidentialFurniture {
+public class BlockKitchenLight extends BlockResidentialFurniture implements ISwitchable {
 
   /** Whether the lamp is on. */
   public static final PropertyBool LIT = PropertyBool.create("lit");
@@ -40,24 +43,27 @@ public class BlockKitchenLight extends BlockResidentialFurniture {
   public BlockKitchenLight(String registryName, int[] box, int lightLevel) {
     super(registryName, box, false);
     this.lightLevel = lightLevel;
-    setDefaultState(getDefaultState().withProperty(LIT, true));
+    setDefaultState(getDefaultState().withProperty(LIT, true)
+        .withProperty(LampSwitching.POWERED, false));
   }
 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIT);
+    return new BlockStateContainer(this, FACING, LIT, LampSwitching.POWERED);
   }
 
   @Override
   @Nonnull
   public IBlockState getStateFromMeta(int meta) {
-    return super.getStateFromMeta(meta & 3).withProperty(LIT, (meta & 4) != 0);
+    return super.getStateFromMeta(meta & 3).withProperty(LIT, (meta & 4) != 0)
+        .withProperty(LampSwitching.POWERED, (meta & 8) != 0);
   }
 
   @Override
   public int getMetaFromState(IBlockState state) {
-    return super.getMetaFromState(state) | (state.getValue(LIT) ? 4 : 0);
+    return super.getMetaFromState(state) | (state.getValue(LIT) ? 4 : 0)
+        | (state.getValue(LampSwitching.POWERED) ? 8 : 0);
   }
 
   @Override
@@ -65,7 +71,7 @@ public class BlockKitchenLight extends BlockResidentialFurniture {
   public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing,
       float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
     return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer)
-        .withProperty(LIT, true);
+        .withProperty(LIT, true).withProperty(LampSwitching.POWERED, false);
   }
 
   @Override
@@ -93,5 +99,17 @@ public class BlockKitchenLight extends BlockResidentialFurniture {
           0.3F, lit ? 0.6F : 0.5F);
     }
     return true;
+  }
+
+  /**
+   * A change of redstone power switches it: on when power comes, off when it goes
+   * ({@link LampSwitching}), so a light switch, linked or beside it, works it.
+   */
+  @Override
+  @SuppressWarnings("deprecation")
+  public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block,
+      BlockPos fromPos) {
+    super.neighborChanged(state, world, pos, block, fromPos);
+    LampSwitching.follow(world, pos, state, LIT);
   }
 }

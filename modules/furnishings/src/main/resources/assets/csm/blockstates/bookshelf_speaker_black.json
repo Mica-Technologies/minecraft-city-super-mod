@@ -1,0 +1,51 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/bookshelf_speaker_floor",
+    "textures": {
+      "cab": "csm:blocks/furniture/living/vinyl_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/living/base/bookshelf_speaker_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/living/base/bookshelf_speaker_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/living/base/bookshelf_speaker_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/living/base/bookshelf_speaker_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/living/base/bookshelf_speaker_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/living/base/bookshelf_speaker_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/living/base/bookshelf_speaker_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/bookshelf_speaker_item"
+      }
+    ]
+  }
+}

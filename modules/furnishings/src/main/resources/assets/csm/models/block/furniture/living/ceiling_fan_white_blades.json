@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/living/base/ceiling_fan_blades",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/residential/white_v",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "nickel": "csm:blocks/furniture/residential/metal_steel",
+    "bowl": "csm:blocks/furniture/living/bowl_off"
+  }
+}

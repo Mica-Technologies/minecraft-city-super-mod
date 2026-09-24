@@ -1,0 +1,60 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "art": "csm:blocks/furniture/living/art_abstract",
+    "canvas_side": "csm:blocks/furniture/living/canvas_side",
+    "particle": "#canvas_side"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        1.5,
+        15.0
+      ],
+      "to": [
+        16,
+        15.5,
+        16.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#art",
+          "uv": [
+            8.0,
+            4.0,
+            16.0,
+            12.0
+          ]
+        },
+        "west": {
+          "texture": "#canvas_side",
+          "uv": [
+            15.0,
+            0.5,
+            16.0,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#canvas_side",
+          "uv": [
+            2,
+            15.0,
+            16,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#canvas_side",
+          "uv": [
+            2,
+            0.0,
+            16,
+            1.0
+          ]
+        }
+      }
+    }
+  ]
+}

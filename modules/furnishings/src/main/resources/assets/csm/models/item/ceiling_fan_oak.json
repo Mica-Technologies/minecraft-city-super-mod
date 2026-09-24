@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/living/base/ceiling_fan_item",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "nickel": "csm:blocks/furniture/residential/metal_steel",
+    "bowl": "csm:blocks/furniture/living/bowl_off"
+  }
+}

@@ -314,6 +314,75 @@ The bathroom, a commercial restroom's fittings and the laundry follow, drawn by
   is put in it rather than voiding it, so nothing is lost by a wrong click), counter pieces (the
   toiletries tray, the toilet brush) and bath mats (`BlockRug` in terry, joining like the rugs).
 
+The living room's extras follow, drawn by `gen_furniture_living.py` (textures and models under
+`furniture/living/`):
+
+- **TVs** (`BlockTelevision`): a flat screen on its stand or on the wall, one block or two wide,
+  and an old tube TV. Right-click steps the channel through `TvChannel` (off, news, sports,
+  nature, colour bars, snow), each an animated 64 px texture the blockstate swaps onto the screen
+  (a flat screen shows its 16:9 band, the tube TV crops it to 4:3). The channel lives in a
+  `TileEntityTelevision` (the metadata is full), read by `getActualState`; the tile entity's
+  baked-model key is the channel, so only a change of channel rebuilds the section. A standing TV
+  rests on what is under it (`SurfaceRest`), a wall TV ignores it. A two-block TV keeps the
+  channel in both blocks and a click on either changes both. The stand TV two wide is the one
+  blockstate written out in full keys (channel x facing x block x rest), since both the block and
+  the rest pick its model.
+- **Two-block pieces** (`WidePieces`, `BlockResidentialWide`): placed as one by their own item
+  (`ItemWidePiece`, which refuses unless both blocks are free), broken as one, `part` 0 where it
+  was placed and 1 to the right of someone facing it; drawn whole and cut into the two blocks,
+  a picture across both (a screen, the keys, the flames, a canvas) keeping one texture across the
+  cut (the generator's spanned UVs). The large TVs, the upright piano, the fireplace and the wide
+  wall art.
+- **Stereo** (`BlockStereo` + `TileEntityStereo`): right-click with a music disc puts it on the
+  turntable and plays it with the jukebox's own world event (1010), so the "Now Playing" line, the
+  record volume and the range are vanilla's; right-click again ejects it (the event with 0 stops
+  it), and breaking the stereo does both. `record` (stored) draws the disc and lights the display.
+  A comparator reads the disc as a jukebox's. Bookshelf speakers and the subwoofer are counter
+  pieces.
+- **Upright piano** (`BlockUprightPiano`): a click on the keys plays the key under the cursor with
+  the note block's harp (pitch 0.5 to 2, two octaves, fifteen white keys, a black key from the
+  back half of the keys near one), low notes on the player's left, with a note particle. The
+  keyboard's position is `PIANO_KEYS` in the generator. The piano bench (`BlockPianoBench`) faces
+  the way its placer looks, so its sitter faces the keys.
+- **Clocks** (`TileEntityResidentialClockRenderer`): the digital clock's red HH:MM (24-hour, the
+  world's time) is a string drawn fullbright on its display, made again only when the minute
+  changes; the wall clock's two hands are two untextured quads. Where the digital clock stands is
+  read from the world at most once a second. Both stop drawing past 32 blocks.
+- **Ceiling fan** (`BlockCeilingFan`): runs on redstone -- powered, the light is on and the
+  blades turn; unpowered, both are off (the last power is a `TileEntityPowerMemory`'s, as the
+  metadata holds facing, light and fan). Between changes a click steps off, fan, fan and light,
+  light. While it runs the blockstate leaves the blades out and `TileEntityCeilingFanRenderer`
+  draws the very same baked quads turning (found as the quads the still fan has and the running
+  one does not); a few dozen quads a fan, only while it runs.
+- **Fireplace** (`BlockFireplace`): flint and steel lights it, an empty hand lights it or puts it
+  out, and a change of redstone power does either; lit, the animated flame and the glowing embers
+  are swapped in, it gives light 13, sends up flame and smoke particles and now and then crackles.
+  The fire is drawn only: it sets nothing alight.
+- **Lamps and candles**: `BlockKitchenLight` and `BlockCounterLight` (and so the kitchen and
+  office lights, the floor and table lamps and `BlockCandle`) now follow redstone
+  (`LampSwitching`: `powered`, stored, and only a change of power switches them). Candles puff a
+  wisp of smoke; their flame is drawn.
+- **Light switch** (`BlockLightSwitch`): a lever on the wall (it powers what it is on and beside).
+  It can also be linked to one block (`SwitchLinks`, `ItemLightSwitch`): with the switch in hand,
+  right-click a block that switches with redstone (this module's `ISwitchable` blocks, Core's
+  powered blocks, vanilla's lamp, doors, trapdoors, gates, pistons, dispensers, note blocks, TNT,
+  powered rails, hoppers, wire, repeaters and comparators) to link it, sneak-right-click the air
+  or any other block to clear it, then place the switch anywhere within 32 blocks in the same
+  dimension (`TileEntityLightSwitch` keeps the link; a sneak-right-click with an empty hand says
+  what it is linked to). Switched on, it puts a hidden relay (`BlockSwitchRelay`, in the hidden
+  tab: invisible, no box, not breakable by a player, replaceable by a placed block) in a free
+  cell beside the linked block, which powers that block alone, weakly and strongly, as a lever
+  its wall; switched off or broken, it takes the relay away. A relay removes itself when the
+  block it powers goes, or when a neighbour changes and its switch is gone, off or linked
+  elsewhere. Nothing ticks. That is what lets it drive a vanilla redstone lamp or door as well as
+  this module's lamps: every block reads power from its neighbours.
+- **Doorbell** (`BlockDoorbell`): pressed, it rings a synthesised two-note chime and gives a
+  one-second redstone pulse, as a stone button does.
+- The rest: photo frames and wall art (`BlockLivingDecor`, and the wide art on
+  `BlockResidentialWide`), house plants in pots (counter pieces, cutout; a hanging plant), door
+  mats (`BlockRug` in coir and rubber), and the storage crate (a `BlockResidentialStorage` of 27
+  slots).
+
 Every storage block implements `IResidentialStorage` (slots, where the slots are, open and close
 sounds), shares `ResidentialStorageHelper` and the one storage screen, and sounds its doors when
 the first player opens it and the last closes it.
@@ -409,6 +478,8 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:washing_machine_run`, `csm:dryer_tumble` | `WASHING_MACHINE_RUN`, `DRYER_TUMBLE` | while running | synthesised |
 | `csm:iron_steam` | `IRON_STEAM` | steam iron click | synthesised |
 | `csm:printer_run` | `PRINTER_RUN` | the copier while it copies (a 2 s loop every 40 ticks), the fax's click | synthesised |
+| `csm:doorbell_chime` | `DOORBELL_CHIME` | doorbell | synthesised: two struck chime bars, ding and dong |
+| `csm:fireplace_crackle` | `FIREPLACE_CRACKLE` | a lit fireplace, now and then from its display tick, quietly | synthesised |
 | `csm:locker_door_open`, `csm:locker_door_close` | `LOCKER_DOOR_OPEN`, `LOCKER_DOOR_CLOSE` | lockers | synthesised (replacing the unused sounds of unknown origin the first version shipped under these names) |
 
 The xylophone, water dispensers/bubblers and the kitchen sink use only vanilla sounds (filling an

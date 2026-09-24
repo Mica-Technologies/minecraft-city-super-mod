@@ -9,30 +9,44 @@ import com.micatechnologies.minecraft.csm.furniture.residential.BlockBathroomVan
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBathtub;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBookcase;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBuiltInAppliance;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockCandle;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockCeilingFan;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockChestFreezer;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCloset;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCookieJar;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterAppliance;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterLight;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterPiece;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockDigitalClock;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockDiningTable;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockDishwasher;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockDoorbell;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockFireplace;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockFoldingFixture;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCabinet;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCorner;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenLight;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenSink;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockLaundryAppliance;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockLightSwitch;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockLivingDecor;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockPianoBench;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockRefrigerator;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialBed;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialFurniture;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialTall;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialWide;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockRug;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockShower;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockShowerHead;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockSofa;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockSofaCorner;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockStereo;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockTelevision;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockToilet;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockUprightPiano;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockWallClock;
 import com.micatechnologies.minecraft.csm.furniture.residential.FixtureMaterial;
 import com.micatechnologies.minecraft.csm.furniture.residential.ItemResidentialFood;
 import com.micatechnologies.minecraft.csm.furniture.residential.KitchenAppliances;
@@ -54,10 +68,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * kitchen (cabinets, sink, island, hoods, lights, refrigerators, freezer), then its working
  * appliances, the things on its counters and the tableware, and the food and drink the
  * appliances make; then the bedroom, study and nursery; then the bathroom, a commercial
- * restroom's fittings and the laundry. The lines below are printed by
+ * restroom's fittings and the laundry; then the living room's extras (TVs, audio, the piano,
+ * clocks, pictures, house plants, the fireplace, lamps, candles, the light switch and doorbell).
+ * The lines below are printed by
  * {@code gen_furniture_residential.py --fragments}, {@code gen_furniture_kitchen.py --fragments},
- * {@code gen_furniture_appliances.py --fragments}, {@code gen_furniture_bedroom.py --fragments}
- * and {@code gen_furniture_bathroom.py --fragments}.
+ * {@code gen_furniture_appliances.py --fragments}, {@code gen_furniture_bedroom.py --fragments},
+ * {@code gen_furniture_bathroom.py --fragments} and {@code gen_furniture_living.py --fragments}.
  *
  * @version 1.0
  * @since 2026.9
@@ -489,5 +505,125 @@ public class CsmTabResidential extends CsmTab {
 
     // Laundry Tub
     initTabBlock(new BlockBasin("laundry_tub_white", new int[]{1, 0, 3, 15, 16, 16}, FixtureMaterial.PLASTIC));
+
+    // ---- Living room: TV and audio ----
+    // Flat-Screen TV
+    initTabBlock(new BlockTelevision("flat_screen_tv_black", new int[]{0, 0, 5, 16, 11, 11}, false, false));
+
+    // Wall-Mounted TV
+    initTabBlock(new BlockTelevision("wall_tv_black", new int[]{0, 3, 14, 16, 13, 16}, false, true));
+
+    // Large Flat-Screen TV
+    initTabBlock(new BlockTelevision("large_flat_screen_tv_black", new int[]{3, 0, 6, 29, 16, 11}, true, false));
+
+    // Large Wall-Mounted TV
+    initTabBlock(new BlockTelevision("large_wall_tv_black", new int[]{3, 1, 14, 29, 15, 16}, true, true));
+
+    // CRT TV
+    initTabBlock(new BlockTelevision("crt_tv_grey", new int[]{1, 0, 2, 15, 13, 14}, false, false));
+
+    // Hi-Fi Stereo
+    initTabBlock(new BlockStereo("stereo_black", new int[]{2, 0, 3, 14, 7, 13}));
+
+    // Bookshelf Speaker
+    initTabBlock(new BlockCounterPiece("bookshelf_speaker_black", new int[]{5, 0, 5, 11, 9, 11}, Material.WOOD, SoundType.WOOD, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockCounterPiece("bookshelf_speaker_walnut", new int[]{5, 0, 5, 11, 9, 11}, Material.WOOD, SoundType.WOOD, BlockRenderLayer.SOLID));
+
+    // Subwoofer
+    initTabBlock(new BlockCounterPiece("subwoofer_black", new int[]{3, 0, 3, 13, 10, 13}, Material.WOOD, SoundType.WOOD, BlockRenderLayer.SOLID));
+
+    // ---- Music ----
+    // Upright Piano
+    initTabBlock(new BlockUprightPiano("upright_piano_black", new int[]{3, 0, 3, 29, 16, 16}));
+    initTabBlock(new BlockUprightPiano("upright_piano_walnut", new int[]{3, 0, 3, 29, 16, 16}));
+
+    // Piano Bench
+    initTabBlock(new BlockPianoBench("piano_bench_black", new int[]{2, 0, 5, 14, 10, 11}, 9.25));
+    initTabBlock(new BlockPianoBench("piano_bench_walnut", new int[]{2, 0, 5, 14, 10, 11}, 9.25));
+
+    // ---- Clocks, pictures and plants ----
+    // Digital Alarm Clock
+    initTabBlock(new BlockDigitalClock("digital_clock_black", new int[]{4, 0, 6, 12, 4, 10}));
+
+    // Wall Clock
+    initTabBlock(new BlockWallClock("wall_clock_oak", new int[]{1, 1, 14, 15, 15, 16}));
+    initTabBlock(new BlockWallClock("wall_clock_walnut", new int[]{1, 1, 14, 15, 15, 16}));
+    initTabBlock(new BlockWallClock("wall_clock_white", new int[]{1, 1, 14, 15, 15, 16}));
+
+    // Photo Frame
+    initTabBlock(new BlockCounterPiece("photo_frame_oak", new int[]{4, 0, 7, 12, 6, 11}, Material.WOOD, SoundType.WOOD, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockCounterPiece("photo_frame_walnut", new int[]{4, 0, 7, 12, 6, 11}, Material.WOOD, SoundType.WOOD, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockCounterPiece("photo_frame_white", new int[]{4, 0, 7, 12, 6, 11}, Material.WOOD, SoundType.WOOD, BlockRenderLayer.SOLID));
+
+    // Wall Photo Frames
+    initTabBlock(new BlockLivingDecor("wall_photo_frames_oak", new int[]{2, 3, 15, 15, 13, 16}, Material.WOOD, SoundType.WOOD, 0.8F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockLivingDecor("wall_photo_frames_walnut", new int[]{2, 3, 15, 15, 13, 16}, Material.WOOD, SoundType.WOOD, 0.8F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockLivingDecor("wall_photo_frames_white", new int[]{2, 3, 15, 15, 13, 16}, Material.WOOD, SoundType.WOOD, 0.8F, BlockRenderLayer.SOLID));
+
+    // Wall Art
+    initTabBlock(new BlockLivingDecor("wall_art_abstract", new int[]{1, 1, 15, 15, 15, 16}, Material.WOOD, SoundType.CLOTH, 0.8F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockLivingDecor("wall_art_landscape", new int[]{1, 1, 15, 15, 15, 16}, Material.WOOD, SoundType.CLOTH, 0.8F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockLivingDecor("wall_art_geometric", new int[]{1, 1, 15, 15, 15, 16}, Material.WOOD, SoundType.CLOTH, 0.8F, BlockRenderLayer.SOLID));
+
+    // Wide Wall Art
+    initTabBlock(new BlockResidentialWide("wide_wall_art_abstract", new int[]{2, 1, 15, 30, 16, 16}));
+    initTabBlock(new BlockResidentialWide("wide_wall_art_landscape", new int[]{2, 1, 15, 30, 16, 16}));
+    initTabBlock(new BlockResidentialWide("wide_wall_art_geometric", new int[]{2, 1, 15, 30, 16, 16}));
+
+    // Monstera
+    initTabBlock(new BlockCounterPiece("monstera_plant_white", new int[]{3, 0, 3, 13, 14, 13}, Material.PLANTS, SoundType.PLANT, BlockRenderLayer.CUTOUT));
+
+    // Snake Plant
+    initTabBlock(new BlockCounterPiece("snake_plant_grey", new int[]{5, 0, 5, 11, 15, 11}, Material.PLANTS, SoundType.PLANT, BlockRenderLayer.CUTOUT));
+
+    // Fiddle-Leaf Fig
+    initTabBlock(new BlockCounterPiece("fiddle_leaf_fig_terracotta", new int[]{4, 0, 4, 12, 16, 12}, Material.PLANTS, SoundType.PLANT, BlockRenderLayer.CUTOUT));
+
+    // Succulent Pots
+    initTabBlock(new BlockCounterPiece("succulent_pots_terracotta", new int[]{3, 0, 4, 13, 6, 13}, Material.PLANTS, SoundType.PLANT, BlockRenderLayer.CUTOUT));
+
+    // Hanging Plant
+    initTabBlock(new BlockLivingDecor("hanging_plant_white", new int[]{4, 1, 4, 12, 16, 12}, Material.PLANTS, SoundType.PLANT, 0.3F, BlockRenderLayer.CUTOUT));
+
+    // ---- Fireplace and lighting ----
+    // Fireplace
+    initTabBlock(new BlockFireplace("fireplace_oak", new int[]{1, 0, 3, 31, 16, 16}));
+    initTabBlock(new BlockFireplace("fireplace_walnut", new int[]{1, 0, 3, 31, 16, 16}));
+    initTabBlock(new BlockFireplace("fireplace_white", new int[]{1, 0, 3, 31, 16, 16}));
+
+    // Ceiling Fan
+    initTabBlock(new BlockCeilingFan("ceiling_fan_oak", new int[]{5, 7, 5, 11, 16, 11}));
+    initTabBlock(new BlockCeilingFan("ceiling_fan_walnut", new int[]{5, 7, 5, 11, 16, 11}));
+    initTabBlock(new BlockCeilingFan("ceiling_fan_white", new int[]{5, 7, 5, 11, 16, 11}));
+
+    // Floor Lamp
+    initTabBlock(new BlockKitchenLight("floor_lamp_brass", new int[]{4, 0, 4, 12, 16, 12}, 14));
+    initTabBlock(new BlockKitchenLight("floor_lamp_black", new int[]{4, 0, 4, 12, 16, 12}, 14));
+
+    // Table Lamp
+    initTabBlock(new BlockCounterLight("table_lamp_brass", new int[]{4, 0, 4, 12, 12, 12}, Material.WOOD, SoundType.GLASS, BlockRenderLayer.SOLID, 13));
+    initTabBlock(new BlockCounterLight("table_lamp_white", new int[]{4, 0, 4, 12, 12, 12}, Material.WOOD, SoundType.GLASS, BlockRenderLayer.SOLID, 13));
+
+    // Pillar Candles
+    initTabBlock(new BlockCandle("pillar_candles_white", new int[]{4, 0, 4, 12, 10, 12}, 9, new double[][]{{6.25, 9, 8.75}, {9.75, 7, 9.25}, {8.25, 5.5, 6.25}}));
+
+    // Candlestick
+    initTabBlock(new BlockCandle("candlestick_brass", new int[]{6, 0, 6, 10, 15, 10}, 7, new double[][]{{8, 14, 8}}));
+
+    // ---- Around the house ----
+    // Door Mat
+    initTabBlock(new BlockRug("door_mat_coir"));
+    initTabBlock(new BlockRug("door_mat_grey"));
+
+    // Light Switch
+    initTabBlock(new BlockLightSwitch("light_switch_white", new int[]{6, 5, 15, 10, 11, 16}));
+
+    // Doorbell
+    initTabBlock(new BlockDoorbell("doorbell_white", new int[]{7, 6, 15, 9, 10, 16}));
+
+    // Storage Crate
+    initTabBlock(new BlockResidentialStorage("storage_crate_oak", new int[]{0, 0, 0, 16, 14, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockResidentialStorage("storage_crate_walnut", new int[]{0, 0, 0, 16, 14, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockResidentialStorage("storage_crate_white", new int[]{0, 0, 0, 16, 14, 16}, 27, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
   }
 }

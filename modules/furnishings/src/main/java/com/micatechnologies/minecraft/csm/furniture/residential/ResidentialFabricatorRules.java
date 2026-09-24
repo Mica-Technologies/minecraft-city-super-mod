@@ -13,7 +13,10 @@ import net.minecraft.block.Block;
  * bookcase its books, and the cafe table's cast iron base an iron ingot. The kitchen adds stone
  * for its countertops and prices its appliances as sheet metal and electrics, its tableware as
  * clay or glass. The bedroom's beds are wool and planks, as a vanilla bed is. The bathroom's
- * porcelain is clay, its rails iron, its laundry appliances priced as the dishwasher.
+ * porcelain is clay, its rails iron, its laundry appliances priced as the dishwasher. The living
+ * room's extras are priced by what they are made of: electronics as an enclosure and a control
+ * board, a speaker's driver, a piano's timber and strings, a painting as a painting, a plant as
+ * a flower pot and what grows in it, a fireplace as stone and a mantel.
  *
  * <p>Priced by registry name, whose piece is its first words and whose finish is its last
  * ({@code sofa_corner_navy}). {@code audit_fabricator_costs.py} mirrors this.</p>
@@ -35,6 +38,17 @@ public final class ResidentialFabricatorRules {
   private static final String MC_CAKE = "minecraft:cake";
   private static final String MC_GLASS_PANE = "minecraft:glass_pane";
   private static final String MC_PAPER = "minecraft:paper";
+  private static final String MC_CLOCK = "minecraft:clock";
+  private static final String MC_PAINTING = "minecraft:painting";
+  private static final String MC_FLOWER_POT = "minecraft:flower_pot";
+  private static final String MC_SAPLING = "minecraft:sapling";
+  private static final String MC_CACTUS = "minecraft:cactus";
+  private static final String MC_VINE = "minecraft:vine";
+  private static final String MC_STRING = "minecraft:string";
+  private static final String MC_TORCH = "minecraft:torch";
+  private static final String MC_GOLD_NUGGET = "minecraft:gold_nugget";
+  private static final String MC_LEVER = "minecraft:lever";
+  private static final String MC_STONE_BUTTON = "minecraft:stone_button";
 
   private ResidentialFabricatorRules() {
   }
@@ -49,6 +63,10 @@ public final class ResidentialFabricatorRules {
    */
   @Nullable
   public static List<FabricatorIngredient> price(Block block, String registryName) {
+    List<FabricatorIngredient> living = living(registryName);
+    if (living != null) {
+      return living;
+    }
     List<FabricatorIngredient> bathroom = bathroom(registryName);
     if (bathroom != null) {
       return bathroom;
@@ -378,6 +396,132 @@ public final class ResidentialFabricatorRules {
     }
     if (registryName.startsWith("chopping_board_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 1));
+    }
+    return null;
+  }
+
+  /**
+   * The living room's extras: TVs, a stereo and speakers are an enclosure with a control board
+   * and a panel or a driver; the piano timber with iron for its strings; clocks a clock;
+   * pictures a painting or paper in a frame; house plants a flower pot and what grows in it;
+   * the fireplace stone under a timber mantel; the ceiling fan and lamps sheet metal and wiring
+   * with an LED; candles a torch; the switch a lever and the doorbell a button with a sounder;
+   * the crate a chest's timber.
+   *
+   * @param registryName the registry name
+   *
+   * @return the cost, or null if it is none of these
+   */
+  @Nullable
+  private static List<FabricatorIngredient> living(String registryName) {
+    if (registryName.startsWith("large_flat_screen_tv_")
+        || registryName.startsWith("large_wall_tv_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 2),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 2));
+    }
+    if (registryName.startsWith("flat_screen_tv_") || registryName.startsWith("wall_tv_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
+    if (registryName.startsWith("crt_tv_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.any(MC_GLASS, 1));
+    }
+    if (registryName.startsWith("stereo_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1));
+    }
+    if (registryName.startsWith("bookshelf_speaker_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 1),
+          FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1));
+    }
+    if (registryName.startsWith("subwoofer_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1));
+    }
+    if (registryName.startsWith("upright_piano_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 6),
+          FabricatorIngredient.any(MC_IRON_INGOT, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("piano_bench_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("digital_clock_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+    }
+    if (registryName.startsWith("wall_clock_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 1),
+          FabricatorIngredient.any(MC_CLOCK, 1));
+    }
+    if (registryName.startsWith("photo_frame_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 1),
+          FabricatorIngredient.any(MC_PAPER, 1));
+    }
+    if (registryName.startsWith("wall_photo_frames_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.any(MC_PAPER, 3));
+    }
+    if (registryName.startsWith("wide_wall_art_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PAINTING, 2));
+    }
+    if (registryName.startsWith("wall_art_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PAINTING, 1));
+    }
+    if (registryName.startsWith("monstera_plant_") || registryName.startsWith("snake_plant_")
+        || registryName.startsWith("fiddle_leaf_fig_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_FLOWER_POT, 1),
+          FabricatorIngredient.any(MC_SAPLING, 1));
+    }
+    if (registryName.startsWith("succulent_pots_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_FLOWER_POT, 1),
+          FabricatorIngredient.any(MC_CACTUS, 1));
+    }
+    if (registryName.startsWith("hanging_plant_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_FLOWER_POT, 1),
+          FabricatorIngredient.any(MC_VINE, 1), FabricatorIngredient.any(MC_STRING, 1));
+    }
+    if (registryName.startsWith("fireplace_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 4),
+          FabricatorIngredient.any(MC_PLANKS, 2), FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("ceiling_fan_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.any(MC_PLANKS, 1));
+    }
+    if (registryName.startsWith("floor_lamp_") || registryName.startsWith("table_lamp_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1), FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("pillar_candles_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_TORCH, 3));
+    }
+    if (registryName.startsWith("candlestick_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_TORCH, 1),
+          FabricatorIngredient.any(MC_GOLD_NUGGET, 2));
+    }
+    if (registryName.startsWith("door_mat_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("light_switch_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_LEVER, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("doorbell_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE_BUTTON, 1),
+          FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1));
+    }
+    if (registryName.startsWith("storage_crate_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }
     return null;
   }

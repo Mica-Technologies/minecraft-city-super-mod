@@ -1,0 +1,51 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/succulent_pots_floor",
+    "textures": {
+      "pot": "csm:blocks/furniture/living/terracotta"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/living/base/succulent_pots_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/living/base/succulent_pots_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/living/base/succulent_pots_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/living/base/succulent_pots_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/living/base/succulent_pots_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/living/base/succulent_pots_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/living/base/succulent_pots_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/succulent_pots_item"
+      }
+    ]
+  }
+}

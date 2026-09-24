@@ -1,0 +1,107 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:furniture/living/door_mat_grey_field"
+      }
+    },
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/living/door_mat_grey_side"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/living/door_mat_grey_side",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/living/door_mat_grey_side",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/living/door_mat_grey_side",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "false"
+          },
+          {
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/living/door_mat_grey_corner"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "false"
+          },
+          {
+            "north": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/living/door_mat_grey_corner",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "false"
+          },
+          {
+            "east": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/living/door_mat_grey_corner",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "west": "false"
+          },
+          {
+            "south": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/living/door_mat_grey_corner",
+        "y": 270
+      }
+    }
+  ]
+}

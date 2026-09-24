@@ -1,0 +1,136 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "plate": "csm:blocks/furniture/living/switch_white",
+    "particle": "#plate"
+  },
+  "elements": [
+    {
+      "from": [
+        6.25,
+        5.5,
+        15.5
+      ],
+      "to": [
+        9.75,
+        10.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            6.25,
+            5.5,
+            9.75,
+            10.5
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            5.5,
+            0.5,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            15.5,
+            5.5,
+            16,
+            10.5
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            6.25,
+            15.5,
+            9.75,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            6.25,
+            0,
+            9.75,
+            0.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.25,
+        7.0,
+        15.05
+      ],
+      "to": [
+        8.75,
+        9.0,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            7.0,
+            8.75,
+            9.0
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            7.0,
+            0.95,
+            9.0
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            15.05,
+            7.0,
+            15.5,
+            9.0
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            15.05,
+            8.75,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            0.5,
+            8.75,
+            0.95
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          15.5
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    }
+  ]
+}

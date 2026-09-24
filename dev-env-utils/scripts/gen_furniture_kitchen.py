@@ -592,6 +592,8 @@ def light_state(piece, ftex):
             "variants": {"facing": {f: ({"y": r} if r else {}) for f, r in ROT.items()},
                          "lit": {"true": {"textures": {"lens": T("lens_on")}},
                                  "false": {"textures": {"lens": T("lens_off")}}},
+                         # Whether redstone last powered it: stored, drawn the same either way.
+                         "powered": {"true": {}, "false": {}},
                          "inventory": [{}]}}
 
 

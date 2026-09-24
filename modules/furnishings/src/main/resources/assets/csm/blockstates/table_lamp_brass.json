@@ -1,0 +1,69 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/table_lamp_floor",
+    "textures": {
+      "metal": "csm:blocks/furniture/residential/brass",
+      "base": "csm:blocks/furniture/residential/brass",
+      "shade": "csm:blocks/furniture/living/linen_on"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/living/base/table_lamp_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/living/base/table_lamp_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/living/base/table_lamp_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/living/base/table_lamp_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/living/base/table_lamp_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/living/base/table_lamp_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/living/base/table_lamp_coffee_table"
+      }
+    },
+    "lit": {
+      "true": {
+        "textures": {
+          "shade": "csm:blocks/furniture/living/linen_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "shade": "csm:blocks/furniture/living/linen_off"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/table_lamp_item"
+      }
+    ]
+  }
+}

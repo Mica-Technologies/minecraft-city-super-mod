@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/switch_relay"
+  },
+  "variants": {
+    "facing": {
+      "down": {},
+      "up": {},
+      "north": {},
+      "south": {},
+      "west": {},
+      "east": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

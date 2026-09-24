@@ -1,0 +1,34 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/doorbell_off",
+    "textures": {
+      "plate": "csm:blocks/furniture/living/switch_white"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "powered": {
+      "true": {
+        "model": "csm:furniture/living/base/doorbell_on"
+      },
+      "false": {
+        "model": "csm:furniture/living/base/doorbell_off"
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

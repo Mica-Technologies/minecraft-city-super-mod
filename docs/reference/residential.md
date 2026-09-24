@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room tables, chairs, bookcases, storage and sofas that join into runs.
 
-!!! info "212 blocks in this tab"
+!!! info "265 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -37,6 +37,8 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Bookcase (Light Oak) | `csm:bookcase_oak` | 1.5 | 3.0 | axe | 0 |
 | Bookcase (Walnut) | `csm:bookcase_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bookcase (White) | `csm:bookcase_white` | 1.5 | 3.0 | axe | 0 |
+| Bookshelf Speaker (Black) | `csm:bookshelf_speaker_black` | 1.5 | 3.0 | axe | 0 |
+| Bookshelf Speaker (Walnut) | `csm:bookshelf_speaker_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (Light Oak) | `csm:bunk_bed_oak` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (Walnut) | `csm:bunk_bed_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (White) | `csm:bunk_bed_white` | 1.5 | 3.0 | axe | 0 |
@@ -45,6 +47,10 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Café Table (White) | `csm:cafe_table_white` | 1.5 | 3.0 | axe | 0 |
 | Cake Stand (Chocolate Cake) | `csm:cake_stand_chocolate` | 1.5 | 3.0 | axe | 0 |
 | Cake Stand (Strawberry Cake) | `csm:cake_stand_strawberry` | 1.5 | 3.0 | axe | 0 |
+| Candlestick (Brass) | `csm:candlestick_brass` | 1.5 | 3.0 | axe | 0 |
+| Ceiling Fan (Light Oak) | `csm:ceiling_fan_oak` | 1.5 | 3.0 | axe | 0 |
+| Ceiling Fan (Walnut) | `csm:ceiling_fan_walnut` | 1.5 | 3.0 | axe | 0 |
+| Ceiling Fan (White) | `csm:ceiling_fan_white` | 1.5 | 3.0 | axe | 0 |
 | Changing Table (Light Oak) | `csm:changing_table_oak` | 1.5 | 3.0 | axe | 0 |
 | Changing Table (Walnut) | `csm:changing_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | Changing Table (White) | `csm:changing_table_white` | 1.5 | 3.0 | axe | 0 |
@@ -67,6 +73,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Crib (Light Oak) | `csm:crib_oak` | 1.5 | 3.0 | axe | 0 |
 | Crib (Walnut) | `csm:crib_walnut` | 1.5 | 3.0 | axe | 0 |
 | Crib (White) | `csm:crib_white` | 1.5 | 3.0 | axe | 0 |
+| CRT TV (Grey) | `csm:crt_tv_grey` | 1.5 | 3.0 | axe | 0 |
 | Day Bed (Light Oak) | `csm:day_bed_oak` | 1.5 | 3.0 | axe | 0 |
 | Day Bed (Walnut) | `csm:day_bed_walnut` | 1.5 | 3.0 | axe | 0 |
 | Day Bed (White) | `csm:day_bed_white` | 1.5 | 3.0 | axe | 0 |
@@ -77,6 +84,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Desk Chair (Navy) | `csm:desk_chair_navy` | 1.5 | 3.0 | axe | 0 |
 | Desk Chair (Oatmeal) | `csm:desk_chair_oatmeal` | 1.5 | 3.0 | axe | 0 |
 | Desk Chair (Red) | `csm:desk_chair_red` | 1.5 | 3.0 | axe | 0 |
+| Digital Alarm Clock (Black) | `csm:digital_clock_black` | 1.5 | 3.0 | axe | 0 |
 | Dining Chair (Light Oak) | `csm:dining_chair_oak` | 1.5 | 3.0 | axe | 0 |
 | Dining Chair (Walnut) | `csm:dining_chair_walnut` | 1.5 | 3.0 | axe | 0 |
 | Dining Chair (White) | `csm:dining_chair_white` | 1.5 | 3.0 | axe | 0 |
@@ -87,6 +95,9 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Dinner Plate (Plain) | `csm:dinner_plate_plain` | 1.5 | 3.0 | axe | 0 |
 | Dishwasher (Stainless Steel) | `csm:dishwasher_stainless` | 1.5 | 3.0 | axe | 0 |
 | Dishwasher (White) | `csm:dishwasher_white` | 1.5 | 3.0 | axe | 0 |
+| Door Mat (Coir) | `csm:door_mat_coir` | 0.2 | 0.4 | axe | 0 |
+| Door Mat (Grey) | `csm:door_mat_grey` | 0.2 | 0.4 | axe | 0 |
+| Doorbell (White) | `csm:doorbell_white` | 1.5 | 3.0 | axe | 0 |
 | Double Bed (Charcoal) | `csm:bed_double_charcoal` | 1.5 | 3.0 | axe | 0 |
 | Double Bed (Navy) | `csm:bed_double_navy` | 1.5 | 3.0 | axe | 0 |
 | Double Bed (Oatmeal) | `csm:bed_double_oatmeal` | 1.5 | 3.0 | axe | 0 |
@@ -103,8 +114,17 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Electric Kettle (White) | `csm:kettle_white` | 1.5 | 3.0 | axe | 0 |
 | Electric Range (Stainless Steel) | `csm:kitchen_range_stainless` | 1.5 | 3.0 | axe | 0 |
 | Electric Range (White) | `csm:kitchen_range_white` | 1.5 | 3.0 | axe | 0 |
+| Fiddle-Leaf Fig (Terracotta Pot) | `csm:fiddle_leaf_fig_terracotta` | 1.5 | 3.0 | axe | 0 |
+| Fireplace (Light Oak) | `csm:fireplace_oak` | 1.5 | 3.0 | axe | 0 |
+| Fireplace (Walnut) | `csm:fireplace_walnut` | 1.5 | 3.0 | axe | 0 |
+| Fireplace (White) | `csm:fireplace_white` | 1.5 | 3.0 | axe | 0 |
+| Flat-Screen TV (Black) | `csm:flat_screen_tv_black` | 1.5 | 3.0 | axe | 0 |
+| Floor Lamp (Black) | `csm:floor_lamp_black` | 1.5 | 3.0 | axe | 0 |
+| Floor Lamp (Brass) | `csm:floor_lamp_brass` | 1.5 | 3.0 | axe | 0 |
 | Grab Bar (Stainless Steel) | `csm:grab_bar_stainless` | 1.5 | 3.0 | axe | 0 |
+| Hanging Plant (White Pot) | `csm:hanging_plant_white` | 1.5 | 3.0 | axe | 0 |
 | Heated Towel Rail (Chrome) | `csm:heated_towel_rail_chrome` | 1.5 | 3.0 | axe | 0 |
+| Hi-Fi Stereo (Black) | `csm:stereo_black` | 1.5 | 3.0 | axe | 0 |
 | Ironing Board (Blue) | `csm:ironing_board_blue` | 1.5 | 3.0 | axe | 0 |
 | Ironing Board (Grey) | `csm:ironing_board_grey` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Charcoal) | `csm:bed_king_charcoal` | 1.5 | 3.0 | axe | 0 |
@@ -135,15 +155,19 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Kitchen Wall Cabinet (Light Oak) | `csm:kitchen_wall_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Wall Cabinet (Walnut) | `csm:kitchen_wall_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Wall Cabinet (White) | `csm:kitchen_wall_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Large Flat-Screen TV (Black) | `csm:large_flat_screen_tv_black` | 1.5 | 3.0 | axe | 0 |
+| Large Wall-Mounted TV (Black) | `csm:large_wall_tv_black` | 1.5 | 3.0 | axe | 0 |
 | Laundry Basket (White) | `csm:laundry_basket_white` | 1.5 | 3.0 | axe | 0 |
 | Laundry Basket (Wicker) | `csm:laundry_basket_wicker` | 1.5 | 3.0 | axe | 0 |
 | Laundry Tub (White) | `csm:laundry_tub_white` | 1.5 | 3.0 | axe | 0 |
+| Light Switch (White) | `csm:light_switch_white` | 1.5 | 3.0 | axe | 0 |
 | Microwave (Black) | `csm:microwave_black` | 1.5 | 3.0 | axe | 0 |
 | Microwave (Stainless Steel) | `csm:microwave_stainless` | 1.5 | 3.0 | axe | 0 |
 | Microwave (White) | `csm:microwave_white` | 1.5 | 3.0 | axe | 0 |
 | Mirror Cabinet (Light Oak) | `csm:mirror_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Mirror Cabinet (Walnut) | `csm:mirror_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Mirror Cabinet (White) | `csm:mirror_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Monstera (White Pot) | `csm:monstera_plant_white` | 1.5 | 3.0 | axe | 0 |
 | Nightstand (Light Oak) | `csm:nightstand_oak` | 1.5 | 3.0 | axe | 0 |
 | Nightstand (Walnut) | `csm:nightstand_walnut` | 1.5 | 3.0 | axe | 0 |
 | Nightstand (White) | `csm:nightstand_white` | 1.5 | 3.0 | axe | 0 |
@@ -152,6 +176,12 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Open Kitchen Shelf (White) | `csm:kitchen_wall_shelf_white` | 1.5 | 3.0 | axe | 0 |
 | Paper Towel Dispenser (Stainless Steel) | `csm:paper_towel_dispenser_stainless` | 1.5 | 3.0 | axe | 0 |
 | Pedestal Sink (White) | `csm:pedestal_sink_white` | 1.5 | 3.0 | axe | 0 |
+| Photo Frame (Light Oak) | `csm:photo_frame_oak` | 1.5 | 3.0 | axe | 0 |
+| Photo Frame (Walnut) | `csm:photo_frame_walnut` | 1.5 | 3.0 | axe | 0 |
+| Photo Frame (White) | `csm:photo_frame_white` | 1.5 | 3.0 | axe | 0 |
+| Piano Bench (Black) | `csm:piano_bench_black` | 1.5 | 3.0 | axe | 0 |
+| Piano Bench (Walnut) | `csm:piano_bench_walnut` | 1.5 | 3.0 | axe | 0 |
+| Pillar Candles (White) | `csm:pillar_candles_white` | 1.5 | 3.0 | axe | 0 |
 | Range Hood (Stainless Steel) | `csm:range_hood_stainless` | 1.5 | 3.0 | axe | 0 |
 | Refrigerator (Stainless Steel) | `csm:refrigerator_stainless` | 1.5 | 3.0 | axe | 0 |
 | Refrigerator (White) | `csm:refrigerator_white` | 1.5 | 3.0 | axe | 0 |
@@ -174,6 +204,7 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Single Bed (Navy) | `csm:bed_single_navy` | 1.5 | 3.0 | axe | 0 |
 | Single Bed (Oatmeal) | `csm:bed_single_oatmeal` | 1.5 | 3.0 | axe | 0 |
 | Single Bed (Red) | `csm:bed_single_red` | 1.5 | 3.0 | axe | 0 |
+| Snake Plant (Grey Pot) | `csm:snake_plant_grey` | 1.5 | 3.0 | axe | 0 |
 | Soap Dispenser (White) | `csm:soap_dispenser_white` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Charcoal) | `csm:sofa_charcoal` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Navy) | `csm:sofa_navy` | 1.5 | 3.0 | axe | 0 |
@@ -192,6 +223,13 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Standing Mirror (Walnut) | `csm:standing_mirror_walnut` | 1.5 | 3.0 | axe | 0 |
 | Standing Mirror (White) | `csm:standing_mirror_white` | 1.5 | 3.0 | axe | 0 |
 | Steam Iron (Blue) | `csm:steam_iron_blue` | 1.5 | 3.0 | axe | 0 |
+| Storage Crate (Light Oak) | `csm:storage_crate_oak` | 1.5 | 3.0 | axe | 0 |
+| Storage Crate (Walnut) | `csm:storage_crate_walnut` | 1.5 | 3.0 | axe | 0 |
+| Storage Crate (White) | `csm:storage_crate_white` | 1.5 | 3.0 | axe | 0 |
+| Subwoofer (Black) | `csm:subwoofer_black` | 1.5 | 3.0 | axe | 0 |
+| Succulent Pots (Terracotta) | `csm:succulent_pots_terracotta` | 1.5 | 3.0 | axe | 0 |
+| Table Lamp (Brass) | `csm:table_lamp_brass` | 1.5 | 3.0 | axe | 0 |
+| Table Lamp (White) | `csm:table_lamp_white` | 1.5 | 3.0 | axe | 0 |
 | Toaster (Red) | `csm:toaster_red` | 1.5 | 3.0 | axe | 0 |
 | Toaster (Stainless Steel) | `csm:toaster_stainless` | 1.5 | 3.0 | axe | 0 |
 | Toaster (White) | `csm:toaster_white` | 1.5 | 3.0 | axe | 0 |
@@ -207,6 +245,8 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | TV Stand (White) | `csm:tv_stand_white` | 1.5 | 3.0 | axe | 0 |
 | Under-Cabinet Light (Stainless Steel) | `csm:under_cabinet_light_stainless` | 1.5 | 3.0 | axe | 0 |
 | Under-Cabinet Range Hood (Stainless Steel) | `csm:range_hood_under_cabinet_stainless` | 1.5 | 3.0 | axe | 0 |
+| Upright Piano (Black) | `csm:upright_piano_black` | 1.5 | 3.0 | axe | 0 |
+| Upright Piano (Walnut) | `csm:upright_piano_walnut` | 1.5 | 3.0 | axe | 0 |
 | Urinal (White) | `csm:urinal_white` | 1.5 | 3.0 | axe | 0 |
 | Vanity Stool (Light Oak) | `csm:vanity_stool_oak` | 1.5 | 3.0 | axe | 0 |
 | Vanity Stool (Walnut) | `csm:vanity_stool_walnut` | 1.5 | 3.0 | axe | 0 |
@@ -214,8 +254,18 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Vanity Table (Light Oak) | `csm:vanity_oak` | 1.5 | 3.0 | axe | 0 |
 | Vanity Table (Walnut) | `csm:vanity_walnut` | 1.5 | 3.0 | axe | 0 |
 | Vanity Table (White) | `csm:vanity_white` | 1.5 | 3.0 | axe | 0 |
+| Wall Art (Abstract) | `csm:wall_art_abstract` | 1.5 | 3.0 | axe | 0 |
+| Wall Art (Geometric) | `csm:wall_art_geometric` | 1.5 | 3.0 | axe | 0 |
+| Wall Art (Landscape) | `csm:wall_art_landscape` | 1.5 | 3.0 | axe | 0 |
+| Wall Clock (Light Oak) | `csm:wall_clock_oak` | 1.5 | 3.0 | axe | 0 |
+| Wall Clock (Walnut) | `csm:wall_clock_walnut` | 1.5 | 3.0 | axe | 0 |
+| Wall Clock (White) | `csm:wall_clock_white` | 1.5 | 3.0 | axe | 0 |
 | Wall Oven (Stainless Steel) | `csm:wall_oven_stainless` | 1.5 | 3.0 | axe | 0 |
 | Wall Oven (White) | `csm:wall_oven_white` | 1.5 | 3.0 | axe | 0 |
+| Wall Photo Frames (Light Oak) | `csm:wall_photo_frames_oak` | 1.5 | 3.0 | axe | 0 |
+| Wall Photo Frames (Walnut) | `csm:wall_photo_frames_walnut` | 1.5 | 3.0 | axe | 0 |
+| Wall Photo Frames (White) | `csm:wall_photo_frames_white` | 1.5 | 3.0 | axe | 0 |
+| Wall-Mounted TV (Black) | `csm:wall_tv_black` | 1.5 | 3.0 | axe | 0 |
 | Wardrobe (Light Oak) | `csm:wardrobe_oak` | 1.5 | 3.0 | axe | 0 |
 | Wardrobe (Walnut) | `csm:wardrobe_walnut` | 1.5 | 3.0 | axe | 0 |
 | Wardrobe (White) | `csm:wardrobe_white` | 1.5 | 3.0 | axe | 0 |
@@ -223,5 +273,8 @@ The furniture of homes: dining and living room tables, chairs, bookcases, storag
 | Washing Machine (White) | `csm:washing_machine_white` | 1.5 | 3.0 | axe | 0 |
 | Wastebasket (Stainless Steel) | `csm:wastebasket_stainless` | 1.5 | 3.0 | axe | 0 |
 | Wastebasket (White) | `csm:wastebasket_white` | 1.5 | 3.0 | axe | 0 |
+| Wide Wall Art (Abstract) | `csm:wide_wall_art_abstract` | 1.5 | 3.0 | axe | 0 |
+| Wide Wall Art (Geometric) | `csm:wide_wall_art_geometric` | 1.5 | 3.0 | axe | 0 |
+| Wide Wall Art (Landscape) | `csm:wide_wall_art_landscape` | 1.5 | 3.0 | axe | 0 |
 
 </div>

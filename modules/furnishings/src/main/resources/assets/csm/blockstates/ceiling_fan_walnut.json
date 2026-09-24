@@ -1,0 +1,33 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:furniture/living/ceiling_fan_walnut_body"
+      }
+    },
+    {
+      "when": {
+        "fan": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/living/ceiling_fan_walnut_blades"
+      }
+    },
+    {
+      "when": {
+        "light": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/living/ceiling_fan_walnut_bowl_on"
+      }
+    },
+    {
+      "when": {
+        "light": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/living/ceiling_fan_walnut_bowl_off"
+      }
+    }
+  ]
+}

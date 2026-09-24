@@ -1,0 +1,36 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/upright_piano_cell0",
+    "textures": {
+      "lacquer": "csm:blocks/furniture/residential/walnut"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "part": {
+      "0": {
+        "model": "csm:furniture/living/base/upright_piano_cell0"
+      },
+      "1": {
+        "model": "csm:furniture/living/base/upright_piano_cell1"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/upright_piano_item"
+      }
+    ]
+  }
+}

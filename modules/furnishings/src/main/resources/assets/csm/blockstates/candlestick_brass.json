@@ -1,0 +1,68 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/candlestick_floor",
+    "textures": {
+      "brass": "csm:blocks/furniture/residential/brass",
+      "candle_flame": "csm:blocks/furniture/living/candle_flame"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/living/base/candlestick_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/living/base/candlestick_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/living/base/candlestick_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/living/base/candlestick_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/living/base/candlestick_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/living/base/candlestick_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/living/base/candlestick_coffee_table"
+      }
+    },
+    "lit": {
+      "true": {
+        "textures": {
+          "candle_flame": "csm:blocks/furniture/living/candle_flame"
+        }
+      },
+      "false": {
+        "textures": {
+          "candle_flame": "csm:blocks/furniture/living/clear"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/candlestick_item"
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/digital_clock_floor",
+    "textures": {
+      "clock_body": "csm:blocks/furniture/living/clock_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/living/base/digital_clock_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/living/base/digital_clock_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/living/base/digital_clock_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/living/base/digital_clock_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/living/base/digital_clock_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/living/base/digital_clock_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/living/base/digital_clock_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/digital_clock_item"
+      }
+    ]
+  }
+}

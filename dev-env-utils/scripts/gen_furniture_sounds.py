@@ -2,9 +2,10 @@
 
 The kitchen's cabinet doors, drawers and refrigerator door, and its appliances' beeps, timer ding,
 toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and jar lid, and the
-bathroom's toilet flush and shower spray, the laundry's washing machine, dryer and steam iron, and
-the office's copier and school locker door (which replace the locker sounds of unknown origin
-the mod shipped unused since its first version), made here from filtered noise, decaying sines and envelopes, never recorded or taken from a sound
+bathroom's toilet flush and shower spray, the laundry's washing machine, dryer and steam iron, the
+office's copier and school locker door, and the living room's doorbell chime and fireplace crackle
+(the locker sounds replace ones of unknown origin the mod shipped unused since its first
+version), made here from filtered noise, decaying sines and envelopes, never recorded or taken from a sound
 library. Each entry in SOUNDS names a function returning mono samples in -1..1 at RATE and the level
 (RMS, of 32767) it is normalised to; the script writes modules/furnishings/src/main/resources/assets/csm/sounds/<name>.ogg through
 ffmpeg and adds a "<name>" entry to that module's sounds.json if it has none. The event still
@@ -356,6 +357,50 @@ def printer_run():
     return place(total, parts) * env_ad(n, 0.08, 0.12)
 
 
+def chime_bar(seconds, freq, seed):
+    """One tone bar of a door chime struck by its plunger: a warm fundamental, its octave and a
+    faint inharmonic partial ringing down, and the felt tip's soft thud."""
+    t = t_of(seconds)
+    x = (np.sin(2 * np.pi * freq * t) + 0.32 * np.sin(2 * np.pi * freq * 2.0 * t)
+         * np.exp(-t * 2.5) + 0.12 * np.sin(2 * np.pi * freq * 2.76 * t) * np.exp(-t * 6))
+    x *= np.exp(-t * 1.9)
+    thud = band(noise(seconds, seed), 150, 900) * np.exp(-t * 90)
+    x += 0.25 * thud / max(1e-9, np.max(np.abs(thud)))
+    return x * env_ad(len(t), 0.002, 0.08)
+
+
+def doorbell_chime():
+    """A two-note door chime: the plunger strikes the high bar as the button goes in, and the
+    low bar as it springs back, a major third below -- ding, dong."""
+    return place(2.3, [(0.0, chime_bar(1.7, 659.3, 81), 1.0),
+                       (0.55, chime_bar(1.75, 523.3, 82), 1.0)])
+
+
+def fireplace_crackle():
+    """A log fire, two and a half seconds of it: a low soft roar of burning, and wood cracking
+    and popping in it at random -- tiny ticks, a few sharper snaps, and a hiss of sap."""
+    total = 2.5
+    n = int(RATE * total)
+    t = t_of(total)
+    rng = np.random.RandomState(83)
+    roar = band(noise(total, 84), 70, 520)
+    roar /= max(1e-9, np.max(np.abs(roar)))
+    roar *= 0.8 + 0.2 * np.sin(2 * np.pi * 0.7 * t + 1.3)
+    parts = [(0.0, 0.22 * roar, 1.0)]
+    for k in range(46):
+        start = rng.uniform(0.0, total - 0.05)
+        big = rng.rand() < 0.18
+        length = 0.05 if big else 0.012
+        tt = t_of(length)
+        snap = band(noise(length, 100 + k), 900 if big else 1800, 6000)
+        snap = snap / max(1e-9, np.max(np.abs(snap))) * np.exp(-tt * (70 if big else 380))
+        parts.append((start, snap, rng.uniform(0.5, 1.0) if big else rng.uniform(0.15, 0.45)))
+    hiss = band(noise(0.5, 99), 3000, 8000)
+    hiss = hiss / max(1e-9, np.max(np.abs(hiss))) * np.sin(np.pi * np.clip(t_of(0.5) / 0.5, 0, 1))
+    parts.append((1.3, hiss, 0.12))
+    return place(total, parts) * env_ad(n, 0.25, 0.3)
+
+
 SOUNDS = {
     'cabinet_open': (cabinet_open, 2600),
     'cabinet_close': (cabinet_close, 3600),
@@ -379,6 +424,8 @@ SOUNDS = {
     'locker_door_open': (locker_door_open, 3000),
     'locker_door_close': (locker_door_close, 3600),
     'printer_run': (printer_run, 2200),
+    'doorbell_chime': (doorbell_chime, 3200),
+    'fireplace_crackle': (fireplace_crackle, 1800),
 }
 
 

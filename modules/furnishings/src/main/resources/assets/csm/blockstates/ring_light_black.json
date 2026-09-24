@@ -34,6 +34,10 @@
           "lens": "csm:blocks/furniture/residential/lens_off"
         }
       }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
     }
   }
 }

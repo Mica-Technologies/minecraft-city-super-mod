@@ -60,6 +60,10 @@
           "glow": "csm:blocks/furniture/office/screen_off"
         }
       }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
     }
   }
 }

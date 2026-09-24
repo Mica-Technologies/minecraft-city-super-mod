@@ -1,0 +1,59 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/fireplace_cell0",
+    "textures": {
+      "wood": "csm:blocks/furniture/residential/oak",
+      "wood_v": "csm:blocks/furniture/residential/oak_v",
+      "edge": "csm:blocks/furniture/residential/oak_edge",
+      "stone": "csm:blocks/furniture/living/limestone",
+      "flame": "csm:blocks/furniture/living/clear",
+      "embers": "csm:blocks/furniture/living/embers_off"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "part": {
+      "0": {
+        "model": "csm:furniture/living/base/fireplace_cell0"
+      },
+      "1": {
+        "model": "csm:furniture/living/base/fireplace_cell1"
+      }
+    },
+    "lit": {
+      "true": {
+        "textures": {
+          "flame": "csm:blocks/furniture/living/flame",
+          "embers": "csm:blocks/furniture/living/embers_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "flame": "csm:blocks/furniture/living/clear",
+          "embers": "csm:blocks/furniture/living/embers_off"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/fireplace_item",
+        "textures": {
+          "flame": "csm:blocks/furniture/living/flame",
+          "embers": "csm:blocks/furniture/living/embers_on"
+        }
+      }
+    ]
+  }
+}

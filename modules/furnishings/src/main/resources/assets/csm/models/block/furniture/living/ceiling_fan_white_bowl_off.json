@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/living/base/ceiling_fan_bowl",
+  "textures": {
+    "bowl": "csm:blocks/furniture/living/bowl_off"
+  }
+}

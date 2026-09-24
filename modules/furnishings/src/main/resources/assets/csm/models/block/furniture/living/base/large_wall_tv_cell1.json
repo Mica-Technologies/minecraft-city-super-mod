@@ -1,0 +1,134 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "back": "csm:blocks/furniture/living/tv_back",
+    "bezel": "csm:blocks/furniture/living/tv_bezel",
+    "screen": "csm:blocks/furniture/living/tv_off",
+    "particle": "#bezel"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        1.5,
+        14.5
+      ],
+      "to": [
+        12.25,
+        15.0,
+        15.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bezel",
+          "uv": [
+            3.75,
+            1.0,
+            16,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#bezel",
+          "uv": [
+            0,
+            1.0,
+            12.25,
+            14.5
+          ]
+        },
+        "east": {
+          "texture": "#bezel",
+          "uv": [
+            0.75,
+            1.0,
+            1.5,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#bezel",
+          "uv": [
+            0,
+            14.5,
+            12.25,
+            15.25
+          ]
+        },
+        "down": {
+          "texture": "#bezel",
+          "uv": [
+            0,
+            0.75,
+            12.25,
+            1.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        1.75,
+        14.4
+      ],
+      "to": [
+        12.0,
+        14.75,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#screen",
+          "uv": [
+            0.0,
+            3.5,
+            8.0,
+            12.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        4.0,
+        15.25
+      ],
+      "to": [
+        6,
+        12.0,
+        16.0
+      ],
+      "faces": {
+        "east": {
+          "texture": "#back",
+          "uv": [
+            0.0,
+            4.0,
+            0.75,
+            12.0
+          ]
+        },
+        "up": {
+          "texture": "#back",
+          "uv": [
+            0,
+            15.25,
+            6,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#back",
+          "uv": [
+            0,
+            0.0,
+            6,
+            0.75
+          ]
+        }
+      }
+    }
+  ]
+}

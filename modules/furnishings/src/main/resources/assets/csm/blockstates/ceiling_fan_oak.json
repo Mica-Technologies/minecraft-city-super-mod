@@ -1,0 +1,33 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:furniture/living/ceiling_fan_oak_body"
+      }
+    },
+    {
+      "when": {
+        "fan": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/living/ceiling_fan_oak_blades"
+      }
+    },
+    {
+      "when": {
+        "light": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/living/ceiling_fan_oak_bowl_on"
+      }
+    },
+    {
+      "when": {
+        "light": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/living/ceiling_fan_oak_bowl_off"
+      }
+    }
+  ]
+}

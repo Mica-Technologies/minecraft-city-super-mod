@@ -670,6 +670,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   screens and the desk lamp), the copier (`OfficeAppliances`, a supply slot on the appliance
   framework) and a streamer's set; `--check`, `--fragments`. `gen_furniture_sounds.py`
   synthesises the copier's run and the locker door
+- `gen_furniture_living.py` -- the Residential tab's living extras: TVs (animated channel
+  textures, one- and two-block, stand and wall, a tube TV), the disc-playing stereo, speakers,
+  the playable upright piano and bench, the digital and wall clocks, photo frames, wall art,
+  house plants, the fireplace, ceiling fan, lamps, candles, door mats, the linkable light switch
+  and its hidden relay, the doorbell and the storage crate. Two-block pieces are cut into their
+  blocks with spanned UVs so a picture stays whole; `--check`, `--fragments`.
+  `gen_furniture_sounds.py` synthesises the doorbell chime and the fireplace crackle
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

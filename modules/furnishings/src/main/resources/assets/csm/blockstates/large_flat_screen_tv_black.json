@@ -1,0 +1,2960 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+    "textures": {
+      "bezel": "csm:blocks/furniture/living/tv_bezel",
+      "screen": "csm:blocks/furniture/living/tv_off"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_item",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=off,facing=east,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=east,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 90
+      }
+    ],
+    "channel=off,facing=north,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=north,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      }
+    ],
+    "channel=off,facing=south,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=south,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 180
+      }
+    ],
+    "channel=off,facing=west,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=off,facing=west,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=east,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=east,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 90
+      }
+    ],
+    "channel=news,facing=north,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=north,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      }
+    ],
+    "channel=news,facing=south,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=south,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 180
+      }
+    ],
+    "channel=news,facing=west,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=news,facing=west,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=east,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=east,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 90
+      }
+    ],
+    "channel=sports,facing=north,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=north,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      }
+    ],
+    "channel=sports,facing=south,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=south,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 180
+      }
+    ],
+    "channel=sports,facing=west,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=sports,facing=west,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=east,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=east,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 90
+      }
+    ],
+    "channel=nature,facing=north,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=north,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ],
+    "channel=nature,facing=south,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=south,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 180
+      }
+    ],
+    "channel=nature,facing=west,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=nature,facing=west,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=east,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=east,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 90
+      }
+    ],
+    "channel=bars,facing=north,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=north,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      }
+    ],
+    "channel=bars,facing=south,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=south,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 180
+      }
+    ],
+    "channel=bars,facing=west,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=bars,facing=west,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=east,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=east,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 90
+      }
+    ],
+    "channel=static,facing=north,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=north,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    ],
+    "channel=static,facing=south,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=south,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 180
+      }
+    ],
+    "channel=static,facing=west,part=0,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=0,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=0,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=0,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=0,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=0,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=0,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell0_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=1,rest=floor": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_floor",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=1,rest=counter": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_counter",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=1,rest=sideboard": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_sideboard",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=1,rest=table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=1,rest=side_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_side_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=1,rest=tv_stand": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_tv_stand",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ],
+    "channel=static,facing=west,part=1,rest=coffee_table": [
+      {
+        "model": "csm:furniture/living/base/large_flat_screen_tv_cell1_coffee_table",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        },
+        "y": 270
+      }
+    ]
+  }
+}

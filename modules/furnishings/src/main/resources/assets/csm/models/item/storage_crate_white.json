@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/living/base/storage_crate_item",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/residential/white_v",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "crate": "csm:blocks/furniture/living/crate_white"
+  }
+}

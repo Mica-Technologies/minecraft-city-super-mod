@@ -1,0 +1,51 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/subwoofer_floor",
+    "textures": {
+      "cab": "csm:blocks/furniture/living/vinyl_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/living/base/subwoofer_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/living/base/subwoofer_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/living/base/subwoofer_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/living/base/subwoofer_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/living/base/subwoofer_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/living/base/subwoofer_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/living/base/subwoofer_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/subwoofer_item"
+      }
+    ]
+  }
+}

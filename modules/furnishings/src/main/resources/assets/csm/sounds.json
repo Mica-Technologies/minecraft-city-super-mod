@@ -313,5 +313,23 @@
         "stream": false
       }
     ]
+  },
+  "doorbell_chime": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:doorbell_chime",
+        "stream": false
+      }
+    ]
+  },
+  "fireplace_crackle": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:fireplace_crackle",
+        "stream": false
+      }
+    ]
   }
 }

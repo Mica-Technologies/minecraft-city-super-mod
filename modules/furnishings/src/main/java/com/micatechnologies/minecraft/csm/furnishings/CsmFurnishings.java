@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.furnishings;
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.furniture.office.OfficeFabricatorRules;
 import com.micatechnologies.minecraft.csm.furniture.residential.BedSleepClientHandler;
@@ -15,6 +16,8 @@ import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
 import com.micatechnologies.minecraft.csm.novelties.NoveltiesGuiProvider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +46,11 @@ public class CsmFurnishings {
 
   public static final String MOD_ID = "csm_furnishings";
   public static final String MOD_NAME = "CSM: Furniture & Novelties";
+
+  @SidedProxy(
+      clientSide = "com.micatechnologies.minecraft.csm.furnishings.CsmFurnishingsClientProxy",
+      serverSide = "com.micatechnologies.minecraft.csm.furnishings.CsmFurnishingsCommonProxy")
+  public static ICsmProxy proxy;
 
   /**
    * This module's network channel. Its packets are registered below, in a fixed order, so
@@ -98,5 +106,13 @@ public class CsmFurnishings {
     // pre-initialization before it fires the sound registry event, so Core sees the complete
     // union when it creates the sound events.
     FurnishingsSounds.registerSounds();
+    proxy.preInit(event);
+  }
+
+  @Mod.EventHandler
+  public void init(FMLInitializationEvent event) {
+    // Client: bind this module's tile-entity renderers (the clocks, the ceiling fan). Server:
+    // nothing.
+    proxy.init(event);
   }
 }

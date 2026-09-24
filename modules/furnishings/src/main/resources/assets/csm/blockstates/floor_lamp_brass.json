@@ -1,0 +1,43 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/floor_lamp",
+    "textures": {
+      "metal": "csm:blocks/furniture/residential/brass",
+      "shade": "csm:blocks/furniture/living/linen_on"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "lit": {
+      "true": {
+        "textures": {
+          "shade": "csm:blocks/furniture/living/linen_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "shade": "csm:blocks/furniture/living/linen_off"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

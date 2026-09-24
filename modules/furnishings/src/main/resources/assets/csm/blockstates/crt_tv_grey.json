@@ -1,0 +1,91 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/crt_tv_floor",
+    "textures": {
+      "crt": "csm:blocks/furniture/living/crt_grey",
+      "screen": "csm:blocks/furniture/living/tv_off"
+    }
+  },
+  "variants": {
+    "channel": {
+      "off": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      },
+      "news": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      },
+      "sports": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      },
+      "nature": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      },
+      "bars": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      },
+      "static": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    },
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "part": {
+      "0": {},
+      "1": {}
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/living/base/crt_tv_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/living/base/crt_tv_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/living/base/crt_tv_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/living/base/crt_tv_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/living/base/crt_tv_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/living/base/crt_tv_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/living/base/crt_tv_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/crt_tv_item",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ]
+  }
+}

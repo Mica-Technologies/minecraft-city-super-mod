@@ -1335,6 +1335,8 @@ def counter_state(piece, ftex, glow=None):
     if glow:
         tex["glow"] = glow[1]
         variants["lit"] = switch(glow[0], glow[1], "glow")
+        # Whether redstone last powered it: stored, drawn the same either way.
+        variants["powered"] = {"true": {}, "false": {}}
     return {"forge_marker": 1,
             "defaults": {"model": BASE + "%s_floor" % piece, "textures": tex},
             "variants": variants}
@@ -1458,7 +1460,8 @@ def generate(assets):
             state = single_state(piece, ftex)
         elif kind == "light":
             state = single_state(piece, dict(ftex, lens=T("lens_on")),
-                                 {"lit": switch(T("lens_off"), T("lens_on"), "lens")})
+                                 {"lit": switch(T("lens_off"), T("lens_on"), "lens"),
+                                  "powered": {"true": {}, "false": {}}})
         elif kind == "appliance":
             off, on = spec["glow"]
             state = single_state(piece, dict(ftex, glow=off),

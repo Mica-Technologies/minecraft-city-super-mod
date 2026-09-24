@@ -1,0 +1,27 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/hanging_plant",
+    "textures": {
+      "pot": "csm:blocks/furniture/residential/ceramic_white",
+      "pothos_top": "csm:blocks/furniture/living/pothos_top"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

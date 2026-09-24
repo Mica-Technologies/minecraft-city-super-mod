@@ -1,0 +1,52 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/monstera_plant_floor",
+    "textures": {
+      "pot": "csm:blocks/furniture/residential/ceramic_white",
+      "leaf": "csm:blocks/furniture/living/monstera_leaf"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/living/base/monstera_plant_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/living/base/monstera_plant_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/living/base/monstera_plant_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/living/base/monstera_plant_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/living/base/monstera_plant_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/living/base/monstera_plant_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/living/base/monstera_plant_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/monstera_plant_item"
+      }
+    ]
+  }
+}

@@ -7,8 +7,8 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
  * The sounds shipped by the CSM: Furniture &amp; Novelties module: the arcade cabinet attract
  * loops, the record players and radios, the kitchen's cabinet, drawer and refrigerator doors
  * and its appliances' beeps, whirrs and whistles, the bathroom's flush and shower and the
- * laundry's washing machine, dryer and iron, the office copier's run and the school locker's
- * door (synthesised by
+ * laundry's washing machine, dryer and iron, the office copier's run, the school locker's door,
+ * and the living room's doorbell chime and fireplace crackle (synthesised by
  * {@code gen_furniture_sounds.py}), and the other furnishing sounds.
  *
  * <p>Each constant's name is the sound's {@code sounds.json} key and the path of its registry
@@ -54,7 +54,9 @@ public enum FurnishingsSounds implements ICsmSound {
   WASHING_MACHINE_RUN("washing_machine_run"),
   DRYER_TUMBLE("dryer_tumble"),
   IRON_STEAM("iron_steam"),
-  PRINTER_RUN("printer_run");
+  PRINTER_RUN("printer_run"),
+  DOORBELL_CHIME("doorbell_chime"),
+  FIREPLACE_CRACKLE("fireplace_crackle");
 
   /**
    * The name of the sound.

@@ -1,0 +1,257 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leaf": "csm:blocks/furniture/living/monstera_leaf",
+    "pot": "csm:blocks/furniture/residential/ceramic_white",
+    "soil": "csm:blocks/furniture/living/soil",
+    "particle": "#leaf"
+  },
+  "elements": [
+    {
+      "from": [
+        5.0,
+        -8.0,
+        5.0
+      ],
+      "to": [
+        11.0,
+        -3.0,
+        11.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pot",
+          "uv": [
+            5,
+            11,
+            11,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#pot",
+          "uv": [
+            5,
+            11,
+            11,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#pot",
+          "uv": [
+            5,
+            11,
+            11,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#pot",
+          "uv": [
+            5,
+            11,
+            11,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#pot",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.05,
+        -3.4,
+        5.05
+      ],
+      "to": [
+        10.95,
+        -3.2,
+        10.95
+      ],
+      "faces": {
+        "up": {
+          "texture": "#soil",
+          "uv": [
+            5.05,
+            5.05,
+            10.95,
+            10.95
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.5,
+        -3.4,
+        8.0
+      ],
+      "to": [
+        11.5,
+        8.0,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaf",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#leaf",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          -3.4,
+          8.0
+        ],
+        "axis": "y",
+        "angle": 22.5
+      }
+    },
+    {
+      "from": [
+        4.5,
+        -3.4,
+        8.0
+      ],
+      "to": [
+        11.5,
+        8.0,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaf",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#leaf",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          -3.4,
+          8.0
+        ],
+        "axis": "y",
+        "angle": -22.5
+      }
+    },
+    {
+      "from": [
+        8.0,
+        -3.4,
+        4.5
+      ],
+      "to": [
+        8.0,
+        6.5,
+        11.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#leaf",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#leaf",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          -3.4,
+          8.0
+        ],
+        "axis": "y",
+        "angle": 22.5
+      }
+    },
+    {
+      "from": [
+        8.0,
+        -3.4,
+        4.5
+      ],
+      "to": [
+        8.0,
+        6.5,
+        11.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#leaf",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#leaf",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          -3.4,
+          8.0
+        ],
+        "axis": "y",
+        "angle": -22.5
+      }
+    }
+  ]
+}

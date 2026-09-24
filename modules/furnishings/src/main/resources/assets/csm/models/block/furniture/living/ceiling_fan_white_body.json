@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/living/base/ceiling_fan_body",
+  "textures": {
+    "nickel": "csm:blocks/furniture/residential/metal_steel"
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "back": "csm:blocks/furniture/living/tv_back",
+    "bezel": "csm:blocks/furniture/living/tv_bezel",
+    "screen": "csm:blocks/furniture/living/tv_off",
+    "particle": "#bezel"
+  },
+  "elements": [
+    {
+      "from": [
+        0.75,
+        3.625,
+        7.3
+      ],
+      "to": [
+        15.25,
+        12.375,
+        8.05
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bezel",
+          "uv": [
+            0.75,
+            3.75,
+            15.25,
+            12.5
+          ]
+        },
+        "south": {
+          "texture": "#bezel",
+          "uv": [
+            0.75,
+            3.75,
+            15.25,
+            12.5
+          ]
+        },
+        "east": {
+          "texture": "#bezel",
+          "uv": [
+            0.75,
+            3.75,
+            1.5,
+            12.5
+          ]
+        },
+        "west": {
+          "texture": "#bezel",
+          "uv": [
+            14.5,
+            3.75,
+            15.25,
+            12.5
+          ]
+        },
+        "up": {
+          "texture": "#bezel",
+          "uv": [
+            0.75,
+            14.5,
+            15.25,
+            15.25
+          ]
+        },
+        "down": {
+          "texture": "#bezel",
+          "uv": [
+            0.75,
+            0.75,
+            15.25,
+            1.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.0,
+        3.875,
+        7.2
+      ],
+      "to": [
+        15.0,
+        12.125,
+        7.3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#screen",
+          "uv": [
+            0.0,
+            3.5,
+            16.0,
+            12.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.0,
+        5.125,
+        8.05
+      ],
+      "to": [
+        11.0,
+        11.125,
+        8.8
+      ],
+      "faces": {
+        "east": {
+          "texture": "#back",
+          "uv": [
+            0,
+            5,
+            0.75,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#back",
+          "uv": [
+            15.25,
+            5,
+            16,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#back",
+          "uv": [
+            5,
+            15.25,
+            11,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#back",
+          "uv": [
+            5,
+            0,
+            11,
+            0.75
+          ]
+        }
+      }
+    }
+  ]
+}

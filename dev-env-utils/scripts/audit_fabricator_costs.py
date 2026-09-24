@@ -19,7 +19,8 @@ import sys
 import csm_block_index as index_mod
 
 # Tabs whose blocks are never fabricable.
-NON_FABRICABLE_TABS = {"tabroadshidden", "tablightinghidden", "tabmaterials"}
+NON_FABRICABLE_TABS = {"tabroadshidden", "tablightinghidden", "tabfurnishingshidden",
+                       "tabmaterials"}
 
 
 def build_ancestry(classes):
@@ -396,7 +397,60 @@ def cost_for(registry, info, ancestors):
         return ("planks x2", "FASTENER_KIT")
     if tab == "tabresidential":
         # Mirrors ResidentialFabricatorRules (Furniture & Novelties module).
-        # The bathroom, restroom and laundry come first.
+        # The living room's extras come first.
+        if registry.startswith(("large_flat_screen_tv_", "large_wall_tv_")):
+            return ("ENCLOSURE_SHELL x2", "CONTROL_BOARD", "LED_MODULE x2")
+        if registry.startswith(("flat_screen_tv_", "wall_tv_")):
+            return ("ENCLOSURE_SHELL", "CONTROL_BOARD", "LED_MODULE")
+        if registry.startswith("crt_tv_"):
+            return ("ENCLOSURE_SHELL", "CONTROL_BOARD", "glass")
+        if registry.startswith("stereo_"):
+            return ("ENCLOSURE_SHELL", "CONTROL_BOARD", "SOUNDER_DRIVER")
+        if registry.startswith("bookshelf_speaker_"):
+            return ("planks", "SOUNDER_DRIVER")
+        if registry.startswith("subwoofer_"):
+            return ("planks x2", "SOUNDER_DRIVER")
+        if registry.startswith("upright_piano_"):
+            return ("planks x6", "iron_ingot x2", "FASTENER_KIT")
+        if registry.startswith("piano_bench_"):
+            return ("planks x2", "wool")
+        if registry.startswith("digital_clock_"):
+            return ("ENCLOSURE_SHELL", "CONTROL_BOARD")
+        if registry.startswith("wall_clock_"):
+            return ("planks", "clock")
+        if registry.startswith("photo_frame_"):
+            return ("planks", "paper")
+        if registry.startswith("wall_photo_frames_"):
+            return ("planks x2", "paper x3")
+        if registry.startswith("wide_wall_art_"):
+            return ("painting x2",)
+        if registry.startswith("wall_art_"):
+            return ("painting",)
+        if registry.startswith(("monstera_plant_", "snake_plant_", "fiddle_leaf_fig_")):
+            return ("flower_pot", "sapling")
+        if registry.startswith("succulent_pots_"):
+            return ("flower_pot", "cactus")
+        if registry.startswith("hanging_plant_"):
+            return ("flower_pot", "vine", "string")
+        if registry.startswith("fireplace_"):
+            return ("stone x4", "planks x2", "iron_ingot")
+        if registry.startswith("ceiling_fan_"):
+            return ("SHEET_METAL", "WIRING_HARNESS", "LED_MODULE", "planks")
+        if registry.startswith(("floor_lamp_", "table_lamp_")):
+            return ("LED_MODULE", "iron_ingot", "wool")
+        if registry.startswith("pillar_candles_"):
+            return ("torch x3",)
+        if registry.startswith("candlestick_"):
+            return ("torch", "gold_nugget x2")
+        if registry.startswith("door_mat_"):
+            return ("wool",)
+        if registry.startswith("light_switch_"):
+            return ("lever", "WIRING_HARNESS")
+        if registry.startswith("doorbell_"):
+            return ("stone_button", "SOUNDER_DRIVER")
+        if registry.startswith("storage_crate_"):
+            return ("planks x4", "FASTENER_KIT")
+        # The bathroom, restroom and laundry.
         if registry.startswith("toilet_paper_holder_"):
             return ("iron_ingot", "paper")
         if registry.startswith("toilet_brush_"):
