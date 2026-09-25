@@ -275,8 +275,11 @@ public final class CsmMemStats {
       rowsPerState += values > 1 ? 1 : 0;
       row.properties.add(new PropertyRow(prop.getName(), values));
     }
-    row.neighbourCells = cellsPerState * row.states;
-    row.neighbourRows = rowsPerState * row.states;
+    // CSM's own containers build no neighbour table (CsmStateLayout); only vanilla's do.
+    boolean tables = !(block.getBlockState() instanceof CsmBlockStateContainer
+        || block.getBlockState() instanceof CsmExtendedBlockState);
+    row.neighbourCells = tables ? cellsPerState * row.states : 0;
+    row.neighbourRows = tables ? rowsPerState * row.states : 0;
 
     Set<IBlockState> metaStates = new HashSet<>();
     for (int meta = 0; meta < 16; meta++) {

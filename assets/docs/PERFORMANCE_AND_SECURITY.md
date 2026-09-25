@@ -53,25 +53,72 @@ fix list are in `PERFORMANCE_INVENTORY.md`.
 
 ### Memory
 
-**The figures in this section are out of date (2026-09-25).** With every module the client now
-holds about 4.0 GiB live at the main menu (157 MiB with Core only), which is more than the old
-generation a 6 GB ParallelGC heap gets, so it sits in constant full GC. What that heap is made of,
-block by block, comes from `/csm memstats [dump]`: every block's states and the estimated size of
-their neighbour tables, and on a client the baked models and quads its states reach, with the
-duplicates counted. `dump` writes CSV reports under `csm-memstats/` in the game folder. The
-command only reads; it never asks an OBJ model for its quads, since Forge builds those lazily and
-asking would build them all.
+**With every module the client holds about 1.7 GiB live** after a full GC (1,675 MiB at the main
+menu, 1,730 MiB in a flat world; 2026-09-25, `-Xmx6G`, ParallelGC). Before the three fixes below it
+was 4.0 GiB, more than the 4 GiB old generation that heap gets, so the client sat in constant full
+GC and froze every few seconds. Launch to the main menu went from a median of 58 s to 35 s, most of
+it from pre-init (13 s to 1.5 s) and the full GC that no longer happens.
 
-**CSM needs about 2 GB of heap to start.** At 1 GB and at 1.5 GB it fails with an
-`OutOfMemoryError` in `ModelLoader.setupModelRegistry` -- baking the block model registry at
-startup, before any world exists. At 2 GB about 1.44 GB is resident at the main menu, and touring
-all 100 benchmark intersections adds 24 MB on top.
+| | Main menu | Flat world | Launch (median of 3) | Full GC during launch |
+|---|---|---|---|---|
+| Before | 4,019 MiB | 4,074 MiB | 58 s | 12, ~14 s |
+| Identical baked quads shared | 3,026 MiB | 3,081 MiB | 47 s | 7-8, 4-8 s |
+| State container without neighbour tables | 2,087 MiB | 2,142 MiB | 36 s | 6, ~3 s |
+| Retextured model copies released | 1,675 MiB | 1,730 MiB | 35 s | 6, ~3 s |
+
+What the heap is made of, block by block, comes from `/csm memstats [dump]`: every block's states
+(and, for a block still on vanilla's container, the estimated size of its neighbour tables), and on
+a client the baked models and quads its states reach, with the duplicates counted. `dump` writes CSV
+reports under `csm-memstats/` in the game folder. The command only reads; it never asks an OBJ model
+for its quads, since Forge builds those lazily and asking would build them all.
+
+The three mechanisms, and the rule each one makes:
+
+- **Baked quads are shared** (`CsmQuadSharing`, Core, client). Forge bakes a submodel again for
+  every blockstate variant that names it, so 7.0 million baked quads held about 750 thousand
+  distinct ones. After `ModelBakeEvent` (lowest priority) every quad in a `csm:` model's
+  `SimpleBakedModel` lists is replaced by the first equal quad (vertex data, tint, face, sprite,
+  diffuse flag, format). OBJ models (lazy), other quad classes and CSM's own baked model classes
+  are left alone. **Rule: never write into a baked quad's `getVertexData()` array** -- it is shared
+  by every model that has that quad; build a new quad instead. Code that compares quads by
+  identity sees more equal quads as the same instance, never fewer.
+- **CSM blocks have no per-state neighbour tables** (`CsmBlockStateContainer`,
+  `CsmExtendedBlockState`, `CsmStateLayout`). Vanilla gives every state a table of the states one
+  property change away: 7.1 million cells for CSM's 290 thousand states, about 945 MiB, and most
+  of pre-init. CSM's container numbers a block's states in mixed radix and finds a neighbour by
+  arithmetic. States, their order, properties, equality, hash codes, names and metadata are
+  vanilla's; `getPropertyValueTable()` still answers, built on demand and not kept. **Rule: a new
+  block's `createBlockState` returns `new CsmBlockStateContainer(...)`** (or
+  `CsmExtendedBlockState`, or `CsmBlockStateContainer.Builder`), never vanilla's.
+  `CsmBlockStateContainerTest` holds the heaviest real blocks to vanilla's container state by
+  state, and `/csm statecheck` does it for every registered block in game (3,120 blocks, 290,376
+  states, 11.8 million comparisons, no failures). The blocks still on vanilla's container are
+  vanilla subclasses (stairs, fences) and single-state blocks: 200 blocks, 2,482 states.
+- **Retextured model copies are released after baking** (`CsmUnbakedModelRelease`, Core,
+  client). For every variant that sets `textures`, Forge copies the whole model (a new
+  `BlockPart` and face map per element) to bake it, and the baked model keeps the copy reachable.
+  After the bake the element lists of those per-variant copies under `csm:` are emptied (135
+  thousand lists, 1.3 million elements, about 410 MiB). Models that are files in Forge's model
+  cache, their parents and every list they use are left intact. **Rule: never bake a CSM
+  variant's unbaked model again after the bake event** -- ask the model manager for the baked one,
+  or load the file afresh through `ModelLoaderRegistry`. Forge's own re-bake path is its
+  animation state machine, which no CSM block or item uses. A resource reload loads every model
+  afresh, and does survive now: without this, an F3+T with every module ran out of a 6 GB heap
+  while the old and new models were both alive.
+
+A resource reload (F3+T) with every module takes over 30 s, and the integrated server drops the
+player ("Disconnected") while it runs, with or without these fixes. Never reload resources in a
+session someone is using.
+
+**The heap floor.** Before these fixes CSM needed about 2 GB of heap to start with fewer modules
+(`OutOfMemoryError` in `ModelLoader.setupModelRegistry` at 1-1.5 GB); the floor with every module
+has not been re-measured since. Re-check it with `dev-env-utils/gradle/lowmem.gradle` whenever a
+large batch of blocks or models lands.
 
 The render caches are under 1 MB each at full occupancy, so **if memory use needs to come down, the
 model registry is the target and the caches are noise.** Do not add memory-pressure scaling to the
 render caches: it would give back under a megabyte at a real frame-rate cost, and compiled display
-lists live in driver memory the JVM cannot see anyway. Re-check the floor with
-`dev-env-utils/gradle/lowmem.gradle` whenever a large batch of blocks or models lands.
+lists live in driver memory the JVM cannot see anyway.
 
 This is about the *bound being too low*, not too high: see the cliff below, where a cache that is
 too small is catastrophic and one that is too large costs driver memory nobody has measured yet.
