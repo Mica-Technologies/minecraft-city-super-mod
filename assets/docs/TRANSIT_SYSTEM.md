@@ -50,6 +50,14 @@ of the gate, and is saved in the tile entity as `opMode` (the enum's ordinal).
 
 ## The fare vending machine and the fare media
 
+The machine itself is drawn by `gen_transit_fare_vending.py`: a free-standing ticket machine two
+blocks tall in the invented CITYLINE livery (teal, a yellow accent), with a lit TICKETS header, a
+hooded touchscreen, keypad and tap pad, card, cash and coin slots and a ticket tray in relief. It is
+one block whose model reaches into the space above (so every machine already placed keeps its
+metadata); the model turns ambient occlusion off because that upper half was being shaded by the
+lower block's neighbours, and the block gives light 6 for the screen and header. Its bounding box
+follows the cabinet. The GUI is unchanged.
+
 Right-clicking the vending machine opens `FareVendingGui` (GUI id 16). It sells, for emeralds
 (`FareVendingPurchase`): a single-use ticket for one emerald; a new card with 1, 2, 5, 10 or 25
 trips, at one emerald a trip; and reloads of +1, +5 or +25 trips onto the card in the player's

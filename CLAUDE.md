@@ -732,6 +732,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `audit_model_weight.py` -- how heavy every JSON block model is: quads per model and module, the
   heaviest models, and how many of their faces are hidden by the model's own closed opaque boxes
   (what `model_depth.py`'s pruning would remove). Offline, a few seconds a module
+- `gen_transit_fare_vending.py` -- the fare vending machine's model, textures and blockstate
+  (Transit): a free-standing machine two blocks tall in the invented CITYLINE livery, drawn from one
+  block (so placed machines keep their metadata) with ambient occlusion off, since its upper half
+  sits in the air above its block; textures at 4 texels a unit, each face's uv exactly its drawn
+  window; `--check`
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

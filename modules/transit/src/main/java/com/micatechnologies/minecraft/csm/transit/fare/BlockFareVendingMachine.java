@@ -22,8 +22,10 @@ import net.minecraft.world.World;
  * reusable {@link ItemTransitCard} pre-loaded with 1/2/5/10/25 trips, or reload a card they
  * already hold.
  *
- * <p>Bounding box and metadata encoding match the previous cosmetic registration so existing
- * world placements decode unchanged.</p>
+ * <p>The model is drawn by {@code gen_transit_fare_vending.py}: a free-standing machine two
+ * blocks tall in the CITYLINE livery, drawn from this one block with ambient occlusion off (its
+ * upper half sits in the air above and was shaded by this block's neighbours). The metadata
+ * encoding is unchanged, so machines already placed decode as they were.</p>
  *
  * @author Mica Technologies
  * @since 2026.5
@@ -33,12 +35,16 @@ public class BlockFareVendingMachine extends AbstractBlockRotatableNSEWUD {
   /** GUI handler ID used in {@link com.micatechnologies.minecraft.csm.CsmGuiHandler}. */
   public static final int GUI_ID = 16;
 
-  /** Two-block-tall bbox matching the original farevend factory entry. */
+  /**
+   * The machine's cabinet, header and tray facing north (the base class turns it): 14 units wide,
+   * from the tray's lip to the back of the block, 30 units tall.
+   */
   private static final AxisAlignedBB BBOX = new AxisAlignedBB(
-      0.0, 0.0, 0.9375, 1.0, 2.0, 1.0);
+      0.0625, 0.0, 0.3875, 0.9375, 1.875, 1.0);
 
   public BlockFareVendingMachine() {
-    super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
+    // a faint glow from the lit header and screen (light 6)
+    super(Material.IRON, SoundType.METAL, "pickaxe", 1, 2F, 10F, 0.4F, 0);
   }
 
   @Override
