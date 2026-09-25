@@ -5,8 +5,9 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 
 /**
  * The Transit module's sounds, all synthesised by {@code dev-env-utils/scripts/
- * gen_transit_sounds.py}: the help point's connect chime and the ticket validator's accept and
- * refuse tones. Each name is its {@code sounds.json} key and the path of its {@code csm:} event.
+ * gen_transit_sounds.py}: the help point's connect chime, the ticket validator's accept and
+ * refuse tones (the boarding pass scanner's too) and the self check-in kiosk's printer. Each name is its {@code sounds.json} key and the path of its
+ * {@code csm:} event.
  *
  * @since 2026.9
  */
@@ -17,7 +18,9 @@ public enum TransitSounds implements ICsmSound {
   /** The ticket validator taking a fare: one bright beep. */
   VALIDATOR_ACCEPT("validator_accept"),
   /** The ticket validator refusing: two low beeps. */
-  VALIDATOR_DENY("validator_deny");
+  VALIDATOR_DENY("validator_deny"),
+  /** The self check-in kiosk printing a boarding pass: the printer's chatter and the cut. */
+  KIOSK_PRINT("kiosk_print");
 
   private final String soundName;
 

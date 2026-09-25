@@ -1,0 +1,273 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_body"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_end_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_end_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_end_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_end_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_end_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_end_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_end_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_end_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "airline": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_0"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "airline": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "airline": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "airline": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "airline": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "airline": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "airline": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "airline": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "airline": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "airline": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "airline": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "airline": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "airline": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "airline": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "airline": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "airline": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_checkin_desk_panel_3",
+        "y": 270
+      }
+    }
+  ]
+}

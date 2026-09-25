@@ -1,0 +1,82 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "low": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_security_tray_items_floor"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "low": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_security_tray_items_floor",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "low": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_security_tray_items_floor",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "low": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_security_tray_items_floor",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "low": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_security_tray_items_low"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "low": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_security_tray_items_low",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "low": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_security_tray_items_low",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "low": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_security_tray_items_low",
+        "y": 270
+      }
+    }
+  ]
+}

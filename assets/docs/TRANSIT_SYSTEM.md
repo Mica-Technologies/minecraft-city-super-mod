@@ -8,8 +8,9 @@ may name. Its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)
 Core's tab scan, and every block and item keeps the `csm:` namespace.
 
 The module holds the working fare system, which it took over from Technology, the bus stops and
-shelters, and the station and platform fit-out, made to complement the stations of RCMC, the
-author's train mod. What it is to grow into is at the end of this page.
+shelters, the station and platform fit-out, made to complement the stations of RCMC, the
+author's train mod, and an airport terminal's pieces. What it is to grow into is at the end of
+this page.
 
 | Block or item | Registry name | Class |
 |---|---|---|
@@ -26,6 +27,7 @@ author's train mod. What it is to grow into is at the end of this page.
 | Bus Stop Curb Plaque | `csm:bus_stop_curb_plaque` | `transit.stop.BlockBusStopPlaque` |
 | Bus Shelter (Glass, Cantilever, Flat Roof; four agencies each) | `csm:bus_shelter_<style>_<agency>` | `transit.shelter.BlockBusShelter` |
 | Station and platform fit-out (29 blocks) | see Station and platform fit-out, below | `transit.platform` |
+| Airport terminal pieces (25 blocks) and the Boarding Pass (item) | see Airports, below | `transit.airport` |
 
 ---
 
@@ -469,10 +471,224 @@ metal; the canopy two sheet metal and an LED module; a column a pole section and
 the signs a sign blank and a fastener kit; the bench, perch and bin two sheet metal and a
 fastener kit. `audit_fabricator_costs.py` mirrors the branches.
 
+## Airports
+
+Twenty-five blocks and one item in `transit.airport`, all drawn by `gen_transit_airport.py`, with
+one sound (`kiosk_print`) from `gen_transit_sounds.py`. Every airline, flight number and city is
+invented, and every pictogram generic (a plane, a suitcase, a bus, a taxi).
+
+### Terminal only
+
+These are the pieces inside a terminal: check-in, the queue, security, the gate, the boards,
+baggage claim and carts. There are no aircraft, and nothing airside: jet bridges, ground equipment
+and airfield lights are for later. Two things a terminal needs come from other modules rather
+than being drawn again:
+
+- **The walk-through metal detector** is Life Safety's (`metal_detector`, in Emergency Services),
+  which already works: it alarms and lights red on a player carrying metal. An airport one was
+  built and cut before release, because it was the same block under the same name.
+- **Duty-free and cafe fit-out** is Furnishings' Market & Store tab (shelving, coolers, the
+  checkout, the counters).
+
+Transit cannot name either module (it may reference only Core and Roads), so these meet only in
+the world: an install without Life Safety simply has no detector.
+
+| Block | Registry name | Class |
+|---|---|---|
+| Check-In Desk | `csm:airport_checkin_desk` | `BlockCheckinDesk` |
+| Bag Drop Scale | `csm:airport_checkin_scale` | `BlockAirportCounter` |
+| Gate Desk | `csm:airport_gate_desk` | `BlockAirportCounter` |
+| Self Check-In Kiosk | `csm:airport_self_checkin_kiosk` | `BlockSelfCheckinKiosk` |
+| Queue Stanchion (Black Belt, Blue Belt) | `csm:airport_queue_stanchion_black`, `_blue` | `BlockQueueStanchion` |
+| Security X-Ray Scanner | `csm:airport_xray_scanner` | `BlockSecurityLine` |
+| Security Roller Conveyor, Divesting Table | `csm:airport_security_roller`, `csm:airport_divest_table` | `BlockSecurityLine` |
+| Security Trays (Stack), Security Tray (With Belongings) | `csm:airport_security_trays`, `csm:airport_security_tray_items` | `BlockSecurityTray` |
+| Boarding Pass Scanner | `csm:airport_boarding_pass_scanner` | `BlockBoardingPassScanner` |
+| Airport Seating (Black, Blue) | `csm:airport_seating_black`, `_blue` | `transit.platform.BlockPlatformBench` |
+| Flight Information Board (Departures, Arrivals) | `csm:airport_flight_board_departures`, `_arrivals` | `BlockFlightBoard` |
+| Baggage Carousel | `csm:airport_baggage_carousel` | `BlockBaggageCarousel` |
+| Gate Sign | `csm:airport_gate_sign` | `BlockGateSign` |
+| Airport Sign (Gates, Arrivals, Check-In, Baggage Claim, Ground Transport) | `csm:airport_sign_<name>` | `transit.platform.BlockPlatformFixture` |
+| Luggage Cart | `csm:airport_luggage_cart` | `transit.platform.BlockPlatformFixture` |
+| Luggage Cart Rack | `csm:airport_cart_rack` | `transit.platform.BlockPlatformRun` |
+| Boarding Pass (item) | `csm:boarding_pass` | `ItemBoardingPass` |
+
+Every model faces north as the platform fit-out's do: a counter's customer side, a sign's front
+and a monitor's screen look north, a wall piece has its wall at z = 16, and every piece faces the
+player who places it. The element helpers are `gen_transit_platforms.py`'s.
+
+### The schedule
+
+`FlightSchedule` is the whole airport's timetable, and it is a function of the world's clock and
+nothing else: it saves nothing, sends nothing, and every board, kiosk and scanner in the world
+agrees. Each list (departures, arrivals) has a flight every 20 minutes of the day, 72 a day, the
+same flights every day as an airline timetable repeats. A flight is made from its slot's place in
+the day by a hash: its airline (one of four: KESTREL AIR, LANTERN AIRWAYS, WILLOWJET, SAXTON
+AIRLINES), number, city (sixteen invented, PORT VESTA to ST AUBREN), gate (A1 to D20), its time a
+few minutes into its slot, and now and then a 30-minute delay (about one in nine) or a
+cancellation (about one in thirty). A slot is counted from the world's first 6:00 as a `long`, so a
+boarding pass names its flight by slot for as long as anyone keeps it.
+
+The schedule runs on the **world's time of day**, the one the platform clock shows, so the boards
+agree with the clocks and the sun. That makes an airport busy: a game hour is 50 real seconds, so
+a flight leaves every 17 seconds and the rows roll up the board about that often. The statuses
+follow from the minutes left: BOARDING under 45, FINAL CALL under 20, GATE CLOSED under 10, then
+DEPARTED for ten minutes; arrivals are ON TIME, LANDING under 15, LANDED for twenty. A world with
+the daylight cycle off stops the boards, as it stops the clocks.
+
+### The flight information boards
+
+`BlockFlightBoard` is a slim landscape monitor against the back of its block: on a wall, or on two
+rods to the block above when there is no wall behind it (`hung`, actual state; not under another
+board). Its bezel and the screen's texture (the DEPARTURES or ARRIVALS header and the row bands)
+are baked. `TileEntityFlightBoardRenderer` draws the rest, a board being one quad and at most
+sixteen list calls a frame:
+
+- **The screen, lit.** The same texture again, a hair in front, fullbright, one quad from the
+  block atlas, so a board glows at night like a screen rather than going dark with the room.
+  Beyond the renderer's range (48 blocks) only the baked screen shows.
+- **The text**, all display lists shared by every board (`CsmSharedDisplayLists`), laid out in
+  their columns in the font's units when compiled: a row's white part (time, flight, city, gate)
+  keyed by the flight's place in the day (at most 144 lists over both boards), each remark in its
+  colour (nine), the column heads (two) and the clock in the header (one per minute of the day).
+  Following "Display lists: one texture, no cached state", the lists hold geometry only; the font
+  atlas, the colours, the depth mask and the fullbright lightmap are set outside them.
+- **Pages.** Boards of the same kind facing the same way side by side and stacked are a bank, read
+  like text: left to right along a row, then the next row down. Each board lists seven flights
+  from its page, the number of boards to its reader's left plus the whole rows above it, so a bank
+  of six lists the next 42 flights. `TileEntityFlightBoard` looks the page and facing up once a
+  second, up to eight boards each way.
+
+The screen's place and the bands (`SCREEN_*`, `HEADER_H`, `COLHEAD_H`, `ROW_PITCH`, `ROWS` and the
+256 x 148 window) are in both the generator and the renderer: change one, change both.
+
+### Check-in and the kiosk
+
+- **Check-in desk** (`BlockCheckinDesk`): a customer ledge over a laminate front and a stainless
+  kick plate, the agent's work top, monitor and bag-tag printer behind, and a lit airline panel on
+  a post. A click with an empty hand steps the airline, a sneaking click back; the airline is kept
+  in the two metadata bits above the facing, so the desk has no tile entity.
+- **Bag drop scale** (`BlockAirportCounter`, family `checkin`): a low weighing belt between two
+  stainless guards, running into a rubber curtain under a hood, its weight read out on the
+  customer's side. Desks and scales facing the same way join into one counter (`left`, `right`):
+  a desk draws its end panel only where the run stops, so desk, scale, desk reads as one.
+- **Gate desk** (`BlockAirportCounter`, family `gate`): the same counter in charcoal with a lit
+  strip and a boarding pass reader set in the ledge; gate desks join with each other only.
+- **Self check-in kiosk** (`BlockSelfCheckinKiosk`): a pedestal with a tilted touchscreen over the
+  card and passport readers and the pass slot, under a lit CHECK-IN header on a stem. A click
+  prints a **Boarding Pass** for one of the next six departures at least 45 minutes off and not
+  cancelled, with a seat, and plays `kiosk_print`. The screen and slots are in the lower block
+  on purpose: a click reaches only the block the aim passes through, so the header above cannot be
+  clicked (the help point's lesson).
+
+The **Boarding Pass** (`ItemBoardingPass`) carries only its flight's slot, a seat and whether it
+has been used (`s`, `seat`, `b`); the tooltip works the flight number, city, time and gate out of
+`FlightSchedule`, so a pass always agrees with the boards. One taken from the creative tab has no
+flight and says where passes come from.
+
+### The queue
+
+`BlockQueueStanchion`: a weighted base, a chrome post and a belt cassette. Its belt reaches out to
+every stanchion beside it (world sides, actual state), whatever the colour of the other's belt, so
+a row of stanchions is one barrier. A queue is rows of stanchions with a block of floor between
+them, each row stopping a block short where the lane turns. The belts collide up to a fence's
+height, so a queue cannot be jumped. The belt's faces map the whole texture top to bottom onto
+their 1.8 units, which is how the blue belt keeps its two white edges. There are no diagonal
+belts: a belt runs only to the four sides.
+
+### Security
+
+The X-ray unit, roller conveyor and divesting table (`BlockSecurityLine`) all have their tops at
+12 sixteenths (`LANE_Y`), so a lane of them reads as one. Pieces side by side join whichever way
+each faces, as long as the lane runs along the same axis, and the rollers and the table draw their
+end plates only where the lane stops. The **X-ray unit** is a housing with a tunnel through it,
+lead curtains at both mouths, an animated belt (`xray_belt`, four frames), a generic radiation
+sticker and an operator's monitor on top; it collides to its housing's top (22 sixteenths).
+
+**Security trays** (`BlockSecurityTray`), a stack or one tray with a laptop, a jacket and shoes,
+stand on the floor, and set on a roller or the divesting table they drop onto its top (`low`,
+actual state): the model and the box reach four sixteenths down into the lane's block, which is
+where a player means them to be. Not onto the X-ray, whose housing stands over its belt
+(`BlockSecurityLine.hasOpenTop`).
+
+### The gate
+
+- **Boarding pass scanner** (`BlockBoardingPassScanner`): the ticket validator's idea for a plane.
+  Held to it, a Boarding Pass whose flight has neither departed nor been cancelled, and that has
+  not been used, is marked boarded; the screen shows a green tick and the validator's accept tone
+  sounds. Otherwise a red cross, the refusal tone, and the action bar says why. It does not check
+  the gate: which gate a scanner stands at is the builder's business, and the schedule has no way
+  to know.
+- **Gate sign** (`BlockGateSign`): GATE over the letter (black on yellow) and number (yellow on
+  charcoal), hung on rods, on both faces. A click steps the number 1 to 20, a sneaking click steps
+  the letter A to D. The gate is one value 1 to 80 in the platform signs' `TileEntityPlatformSign`,
+  read as two actual-state properties, `letter` and `number`, each of which swaps the texture of
+  its own cell, so 24 textures make every gate. The back's cells are laid out mirrored, so it reads
+  the same from behind.
+- **Airport seating**: beam seating with upholstered seats, chrome armrests and a T leg, black or
+  blue. It is `BlockPlatformBench` with its own model: the seats are in the platform bench's places
+  (`SEATS`), so the bench's sitting code works unchanged, and seats side by side join the same way.
+
+### Baggage claim
+
+`BlockBaggageCarousel` is one block of carousel that joins on all four sides (world sides, actual
+state) into a loop of any size; a 2 x N rectangle is the usual carousel. Which of its sides are
+open picks its top from sixteen rules in the blockstate: one open side is a straight run of plates
+(an animated texture, `carousel_belt`, eight frames) turned so the plates move **clockwise round
+the loop** seen from above; two open sides that meet are a corner whose plates fan round the
+inner corner; no open side is the middle island of a loop three or more wide; anything else (the
+ends of a one-wide run, a lone block) is a round end plate. An open side gets the stainless skirt
+and its rubber bumper. The carousel stores nothing, so it needs no facing: the plates' direction
+follows from where the loop's edge is.
+
+### Carts and wayfinding
+
+- **Luggage cart**: a ribbed bed on four small wheels, a nose stop and a ladder frame up to a red
+  grip. **Cart rack** (`BlockPlatformRun`): nested carts, three a block, between two blue guide
+  rails, running along the player's left and right; a hoop at one end of a row and a post with
+  the CARTS sign at the other.
+- **Wayfinding signs**: hanging panels 24 units wide (reaching four past each side of their
+  block), yellow capitals on charcoal with a black pictogram on a yellow square and an arrow:
+  GATES (a plane taking off), ARRIVALS (a plane landing), CHECK-IN (a figure at a desk), BAGGAGE
+  CLAIM (a case over a belt) and GROUND TRANSPORT (a bus over a taxi). Each has its own back art
+  with the pictogram and the arrow swapped over, so from either side the arrow points the same way
+  in the world; turning the sign round points it the other way.
+
+### Traps
+
+- **The airlines are named in two places.** `FlightSchedule.AIRLINES` and the generator's
+  `AIRLINES` must list the same airlines in the same order: the desk's `airline` metadata indexes
+  both.
+- **A property value must be lower case.** The gate sign's letters are `a` to `d` in the
+  blockstate, because a property's values are checked against `[a-z0-9_]+`; `BlockGateSign.Letter`
+  returns its name in lower case for the same reason.
+- **Do not add a second metal detector.** Life Safety has one; a Transit one clashed on its sound
+  event name (`metal_detector_alarm`, which `CsmSoundsTest` holds to one module) before it was cut.
+- **Keep a renderer's face clear of the model's.** The baked screen stands 0.4 proud of the
+  bezel (`SCREEN_Z` 14.6) on purpose: at 0.1, `model_depth.separate` treated the two as a clash and
+  moved the screen forward, past the depth the renderer draws at, and the whole lit screen and its
+  text vanished behind the baked one with no error. A face a renderer draws on must be more than
+  0.2 from any other face of its model.
+- **The boards follow the world's time of day, not total time.** `/time set` jumps the boards with
+  the clocks, which is right; total world time would put them out of step with every clock in the
+  mod.
+
+### Prices
+
+`TransitFabricatorRules.airport`: the desks two sheet metal, a control board and a fastener kit;
+the scale a sheet metal, a control board and a wiring harness; the kiosk a control board, an LED
+module and sheet metal; the X-ray an enclosure shell, a control board, an optical sensor and a
+wiring harness; the pass scanner a control board, an optical sensor and sheet metal; a board an LED
+module, a control board and sheet metal; the carousel two sheet metal, a wiring harness and a
+fastener kit; a stanchion a pole section and a fastener kit; trays and the cart a sheet metal and a
+fastener kit; the signs a sign blank and a fastener kit; the rollers, divesting table, seating and
+cart rack two sheet metal and a fastener kit. `audit_fabricator_costs.py` mirrors the branches.
+
 ## Where the module is going
 
 Transit is planned to grow, in order: stations (a subway entrance headhouse built to size, and
-more station wayfinding), and working departure boards configured through a screen, drawn by a
+more station wayfinding), an airport's airside pieces (a jet bridge, ground equipment, stand signs
+and airfield lights switched by redstone), and working departure boards configured through a screen, drawn by a
 baked renderer, with announcements through Text to Speech only when that module is installed --
 for bus stops and station concourses, since RCMC's arrival boards already serve its platforms.
 

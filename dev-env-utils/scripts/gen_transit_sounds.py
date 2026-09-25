@@ -1,5 +1,6 @@
 """Synthesise the Transit module's sounds and write them as OGG Vorbis: the help point's connect
-chime and the ticket validator's accept and refuse tones.
+chime, the ticket validator's accept and refuse tones (which the boarding pass scanner uses too)
+and the self check-in kiosk printing a boarding pass.
 
 Made here from decaying sines and envelopes, never recorded or taken from a sound library, with
 the helpers of gen_furniture_sounds.py (the door chime's struck bar, the card terminal's piezo)
@@ -19,6 +20,8 @@ changing its function, listen to it, and commit the OGG with the change.
 import json
 import os
 import sys
+
+import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen_furniture_sounds as fs  # noqa: E402
@@ -49,10 +52,25 @@ def validator_deny():
     return fs.place(0.42, [(0.0, b, 1.0), (0.22, b, 1.0)])
 
 
+def kiosk_print():
+    """A kiosk printing a boarding pass: a thermal printer's stepper chattering as the pass feeds
+    out, then the cutter's snap."""
+    total = 1.1
+    t = fs.t_of(0.8)
+    step = np.sign(np.sin(2 * np.pi * 180 * t)) * 0.5 + np.sin(2 * np.pi * 360 * t) * 0.3
+    step *= 0.75 + 0.25 * np.sin(2 * np.pi * 30 * t)
+    feed = fs.band(fs.noise(0.8, 211), 1500, 6000)
+    feed /= max(1e-9, np.max(np.abs(feed)))
+    run = (0.5 * step + 0.35 * feed) * fs.env_ad(len(t), 0.03, 0.06)
+    cut = fs.knock(0.12, [(1700, 1.0), (3400, 0.4)], 70, 212, click=0.8)
+    return fs.place(total, [(0.0, run, 1.0), (0.86, cut, 0.9)])
+
+
 SOUNDS = {
     'help_point_chime': (help_point_chime, 3200),
     'validator_accept': (validator_accept, 2600),
     'validator_deny': (validator_deny, 3000),
+    'kiosk_print': (kiosk_print, 2400),
 }
 
 

@@ -115,6 +115,9 @@ public final class TransitFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }
+    if (registryName.startsWith("airport_")) {
+      return airport(registryName);
+    }
     if (registryName.startsWith("platform_")) {
       // the bench, the perch and the litter bin
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
@@ -123,5 +126,62 @@ public final class TransitFabricatorRules {
     return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
         FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
         FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+  }
+
+  /**
+   * Prices an airport terminal piece by what it is made of: electronics where it has a screen,
+   * a reader or a sensor, sheet metal and fittings for the furniture, a sign blank for a sign.
+   */
+  private static List<FabricatorIngredient> airport(String registryName) {
+    switch (registryName) {
+      case "airport_checkin_desk":
+      case "airport_gate_desk":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_checkin_scale":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "airport_self_checkin_kiosk":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "airport_xray_scanner":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "airport_boarding_pass_scanner":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "airport_flight_board_departures":
+      case "airport_flight_board_arrivals":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "airport_baggage_carousel":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_queue_stanchion_black":
+      case "airport_queue_stanchion_blue":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_security_trays":
+      case "airport_security_tray_items":
+      case "airport_luggage_cart":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      default:
+        if (registryName.startsWith("airport_sign_") || registryName.equals("airport_gate_sign")) {
+          return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+              FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+        }
+        // the security rollers and divesting table, the seating and the cart rack
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
   }
 }

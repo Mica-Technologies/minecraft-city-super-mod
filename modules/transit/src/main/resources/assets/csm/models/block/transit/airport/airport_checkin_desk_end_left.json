@@ -1,0 +1,85 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "front": "csm:blocks/transit/airport/laminate_front",
+    "top": "csm:blocks/transit/airport/counter_top",
+    "back": "csm:blocks/transit/airport/desk_back",
+    "end": "csm:blocks/transit/airport/counter_top",
+    "black": "csm:blocks/transit/airport/black",
+    "screen": "csm:blocks/transit/airport/agent_screen",
+    "printer": "csm:blocks/transit/airport/printer",
+    "panel": "csm:blocks/transit/airport/airline_kestrel",
+    "post": "csm:blocks/transit/airport/steel",
+    "particle": "csm:blocks/transit/airport/laminate_front"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1.0
+      ],
+      "to": [
+        0.8,
+        15.8,
+        15.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#end",
+          "uv": [
+            15.2,
+            0.2,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#end",
+          "uv": [
+            0,
+            0.2,
+            0.8,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#end",
+          "uv": [
+            0.4,
+            0.2,
+            15.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#end",
+          "uv": [
+            1.0,
+            0.2,
+            15.6,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#end",
+          "uv": [
+            0,
+            1.0,
+            0.8,
+            15.6
+          ]
+        },
+        "down": {
+          "texture": "#end",
+          "uv": [
+            0,
+            0.4,
+            0.8,
+            15.0
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "chrome": "csm:blocks/transit/airport/chrome",
+    "belt": "csm:blocks/transit/airport/belt_blue",
+    "particle": "csm:blocks/transit/airport/chrome"
+  },
+  "elements": [
+    {
+      "from": [
+        9.2,
+        11.8,
+        7.85
+      ],
+      "to": [
+        16,
+        13.6,
+        8.15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#belt",
+          "uv": [
+            0,
+            0,
+            6.8,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#belt",
+          "uv": [
+            9.2,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#belt",
+          "uv": [
+            9.2,
+            7.85,
+            16.0,
+            8.15
+          ]
+        },
+        "down": {
+          "texture": "#belt",
+          "uv": [
+            9.2,
+            7.85,
+            16.0,
+            8.15
+          ]
+        }
+      }
+    }
+  ]
+}

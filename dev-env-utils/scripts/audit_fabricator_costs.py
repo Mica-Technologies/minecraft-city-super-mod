@@ -388,6 +388,29 @@ def cost_for(registry, info, ancestors):
             return ("SIGN_BLANK", "FASTENER_KIT")
         if registry.startswith("platform_"):
             return ("SHEET_METAL x2", "FASTENER_KIT")
+        if registry.startswith("airport_"):
+            if registry in ("airport_checkin_desk", "airport_gate_desk"):
+                return ("SHEET_METAL x2", "CONTROL_BOARD", "FASTENER_KIT")
+            if registry == "airport_checkin_scale":
+                return ("SHEET_METAL", "CONTROL_BOARD", "WIRING_HARNESS")
+            if registry == "airport_self_checkin_kiosk":
+                return ("CONTROL_BOARD", "LED_MODULE", "SHEET_METAL")
+            if registry == "airport_xray_scanner":
+                return ("ENCLOSURE_SHELL", "CONTROL_BOARD", "OPTICAL_SENSOR", "WIRING_HARNESS")
+            if registry == "airport_boarding_pass_scanner":
+                return ("CONTROL_BOARD", "OPTICAL_SENSOR", "SHEET_METAL")
+            if registry.startswith("airport_flight_board_"):
+                return ("LED_MODULE", "CONTROL_BOARD", "SHEET_METAL")
+            if registry == "airport_baggage_carousel":
+                return ("SHEET_METAL x2", "WIRING_HARNESS", "FASTENER_KIT")
+            if registry.startswith("airport_queue_stanchion_"):
+                return ("POLE_SECTION", "FASTENER_KIT")
+            if registry in ("airport_security_trays", "airport_security_tray_items",
+                            "airport_luggage_cart"):
+                return ("SHEET_METAL", "FASTENER_KIT")
+            if registry.startswith("airport_sign_") or registry == "airport_gate_sign":
+                return ("SIGN_BLANK", "FASTENER_KIT")
+            return ("SHEET_METAL x2", "FASTENER_KIT")
         if registry.startswith("bus_shelter_glass_"):
             return ("POLE_SECTION", "SHEET_METAL x2", "glass_pane x4", "LED_MODULE")
         if registry.startswith("bus_shelter_cantilever_"):

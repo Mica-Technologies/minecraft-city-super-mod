@@ -1,0 +1,83 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "front": "csm:blocks/transit/airport/gate_front",
+    "top": "csm:blocks/transit/airport/counter_top",
+    "back": "csm:blocks/transit/airport/desk_back",
+    "end": "csm:blocks/transit/airport/graphite",
+    "black": "csm:blocks/transit/airport/black",
+    "screen": "csm:blocks/transit/airport/agent_screen",
+    "reader": "csm:blocks/transit/airport/scanner_top",
+    "particle": "csm:blocks/transit/airport/gate_front"
+  },
+  "elements": [
+    {
+      "from": [
+        15.2,
+        0,
+        0.8
+      ],
+      "to": [
+        16,
+        16.0,
+        13.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#end",
+          "uv": [
+            0,
+            0.2,
+            0.8,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#end",
+          "uv": [
+            15.2,
+            0.2,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#end",
+          "uv": [
+            2.8,
+            0.2,
+            15.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#end",
+          "uv": [
+            1.0,
+            0.2,
+            13.2,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#end",
+          "uv": [
+            15.2,
+            1.0,
+            16.0,
+            13.2
+          ]
+        },
+        "down": {
+          "texture": "#end",
+          "uv": [
+            15.2,
+            2.8,
+            16.0,
+            15.0
+          ]
+        }
+      }
+    }
+  ]
+}

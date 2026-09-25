@@ -94,7 +94,7 @@ container per jar.
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, plantings and park amenities; two tabs, Trees & Plants and Parks |
-| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
+| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -125,7 +125,8 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    generators), landscape/ (plantings), amenities/ (the Parks tab)
 ├── technology/       # Modern tech: servers, routers, TVs
 ├── transit/         (modules/transit) fare/ (fare gates, vending machine, tickets, cards),
-│                    stop/, shelter/, platform/ (station and platform fit-out)
+│                    stop/, shelter/, platform/ (station and platform fit-out),
+│                    airport/ (terminal pieces and the flight schedule)
 ├── tts/              (modules/tts)
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
 ├── trafficaccessories/
@@ -405,8 +406,11 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   style, settling the whole stack, the invented agencies, route plates set by clicking and drawn
   from shared lists, the arrival display's made-up but steady countdown); the shelters; the
   station and platform fit-out made to complement RCMC (tactile paving, furniture, signs, tile,
-  columns, canopy, validator, and keeping clear of a train at the platform edge); and what the
-  module is to grow (stations, boards)
+  columns, canopy, validator, and keeping clear of a train at the platform edge); the airport
+  terminal (terminal only, the metal detector left to Life Safety, a flight schedule made from
+  the world's time of day, the lit boards and their shared lists and pages across a bank, the
+  kiosk's boarding pass and the gate scanner, the carousel's sixteen tops, trays that drop onto
+  the lane); and what the module is to grow (stations, airside, boards)
 - `assets/docs/HVAC_SYSTEM.md` -- Rooms that hold heat: the thermal simulation (flood-filled
   spaces split into regions, walls/openings/ground/neighbours, implicit step), model-based
   modulating control, vent throw and the thermostat trim, why a partly unloaded room freezes, the
@@ -766,6 +770,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   the gap warning and network map, subway tile with agency frieze bands, stacking columns, the
   four-way canopy and the ticket validator; `--check`, `--fragments`.
   `gen_transit_sounds.py` synthesises the help point chime and the validator's tones
+- `gen_transit_airport.py` -- the airport terminal pieces (Transit; terminal only, no aircraft
+  or airside): check-in desks and bag drop scales that join into one counter, the airline panel
+  stepped by metadata, the self check-in kiosk, queue stanchions whose belts reach every
+  neighbour, the security lane (X-ray with an animated belt, rollers, divesting table) and trays
+  that drop onto it, the gate desk, boarding pass scanner, beam seating on the platform bench's
+  seats, the departures and arrivals boards (screen texture only: the rows are the renderer's,
+  its layout numbers shared with `TileEntityFlightBoardRenderer`), the baggage carousel (sixteen
+  tops by open sides, the plates animated clockwise), carts and the cart rack, the gate sign
+  (letter and number cells, 24 textures for 80 gates) and five hanging wayfinding signs with
+  generic pictograms; airlines listed as `FlightSchedule.java` lists them; `--check`,
+  `--fragments`. `gen_transit_sounds.py` synthesises the kiosk's printer
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

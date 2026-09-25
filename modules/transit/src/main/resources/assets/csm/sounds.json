@@ -25,5 +25,14 @@
         "stream": false
       }
     ]
+  },
+  "kiosk_print": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:kiosk_print",
+        "stream": false
+      }
+    ]
   }
 }

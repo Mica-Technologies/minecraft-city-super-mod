@@ -1,0 +1,37 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "belt": "csm:blocks/transit/airport/carousel_belt",
+    "corner": "csm:blocks/transit/airport/carousel_corner",
+    "end": "csm:blocks/transit/airport/carousel_end",
+    "island": "csm:blocks/transit/airport/carousel_island",
+    "skirt": "csm:blocks/transit/airport/carousel_skirt",
+    "lip": "csm:blocks/transit/airport/rubber",
+    "particle": "csm:blocks/transit/airport/carousel_skirt"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        5.8,
+        0
+      ],
+      "to": [
+        16,
+        6.6,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#island",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

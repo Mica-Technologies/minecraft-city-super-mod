@@ -1,0 +1,41 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/airport/airport_queue_stanchion_blue_post"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_queue_stanchion_blue_arm_north"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_queue_stanchion_blue_arm_east"
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_queue_stanchion_blue_arm_south"
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_queue_stanchion_blue_arm_west"
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/transit/airport/airport_checkin_desk_panel_0",
+  "textures": {
+    "panel": "csm:blocks/transit/airport/airline_willow"
+  }
+}
