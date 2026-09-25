@@ -888,7 +888,7 @@ def bench_parts():
         body += [B((x0, 7, 3), (x1, 7.75, 10), "seat"),
                  B((xc - 1, 5.5, 5.5), (xc + 1, 7, 10), "steel", SIDES + ("down",)),
                  B((x0, 8.2, 10.1), (x1, 15, 10.85), "seat",
-                   rot=("x", -22.5, (xc, 8.2, 10.1)))]
+                   rot=("x", 22.5, (xc, 8.2, 10.1)))]
     body += armrest(8)   # the middle armrest, between the block's two seats
     return [("body", {}, body),
             ("join_left", {"left": T}, [B((0, 4, 8.5), (1, 5.5, 10), "steel", beam_faces)]
@@ -1027,13 +1027,26 @@ def emergency_point():
             els, tex, display=gui_display(0.7, 0.0, (0, 180, 0)))
 
 
+def flat_caps(els, uv=(1, 1, 1.5, 1.5)):
+    """An octagon's caps are four overlapping rectangles a hair apart; on a textured cap they
+    show different texels where they overlap and flicker. Reading every cap off the same half
+    texel makes the overlap one colour, so there is nothing to see fight."""
+    for e in els:
+        for name in ("up", "down"):
+            if name in e["faces"]:
+                e["faces"][name]["uv"] = list(uv)
+    return els
+
+
 def cctv():
-    # a dome hung from the ceiling on a short pipe
-    els = [ceiling_plate(8, 8, 1.4), rod(8, 8, 11.2, 15.6, "white", 0.5),
-           B((5.4, 10.2, 5.4), (10.6, 11.2, 10.6), "white")]
-    els += octagon_y(8, 8, 2.5, 8.9, 10.2, "smoked", top=False, bottom=False)
-    els += octagon_y(8, 8, 2.0, 8.1, 8.9, "smoked", top=False, bottom=False)
-    els += octagon_y(8, 8, 1.2, 7.6, 8.1, "smoked", top=False, bottom=True)
+    # a dome hung from the ceiling on a short pipe: a white housing and three smoked tiers,
+    # every tier closed underneath (an open tier is see-through from below, where it is
+    # looked at from), the caps flat so their overlapping rectangles cannot flicker
+    els = [ceiling_plate(8, 8, 1.4), rod(8, 8, 11.2, 15.6, "white", 0.5)]
+    els += flat_caps(octagon_y(8, 8, 2.8, 10.2, 11.2, "white", top=True, bottom=True))
+    els += flat_caps(octagon_y(8, 8, 2.5, 8.9, 10.2, "smoked", top=False, bottom=True))
+    els += flat_caps(octagon_y(8, 8, 2.0, 8.1, 8.9, "smoked", top=False, bottom=True))
+    els += flat_caps(octagon_y(8, 8, 1.2, 7.6, 8.1, "smoked", top=False, bottom=True))
     tex = {"white": C.T("white"), "steel": C.T("steel"), "smoked": C.T("smoked"),
            "particle": C.T("white")}
     fixture("platform_cctv_dome",
