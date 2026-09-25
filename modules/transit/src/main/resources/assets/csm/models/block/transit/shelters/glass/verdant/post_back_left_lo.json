@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/shelters/glass/post_back_left_lo",
+  "textures": {
+    "frame": "csm:blocks/transit/shelters/frame_verdant",
+    "particle": "csm:blocks/transit/shelters/frame_verdant"
+  }
+}

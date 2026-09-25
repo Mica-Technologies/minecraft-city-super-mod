@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/shelters/cantilever/screen_join_left_lo",
+  "textures": {
+    "frame": "csm:blocks/transit/shelters/frame_emberline",
+    "particle": "csm:blocks/transit/shelters/frame_emberline"
+  }
+}

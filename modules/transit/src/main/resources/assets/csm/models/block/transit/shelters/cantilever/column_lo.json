@@ -1,0 +1,119 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/transit/shelters/frame_cityline",
+    "steel": "csm:blocks/transit/shelters/steel",
+    "particle": "csm:blocks/transit/shelters/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        7,
+        0,
+        14
+      ],
+      "to": [
+        9,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            2,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            14,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        0,
+        13.5
+      ],
+      "to": [
+        10,
+        0.5,
+        16.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            6,
+            15.5,
+            10,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            15.5,
+            2.5,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            13.5,
+            15.5,
+            16.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            6,
+            13.5,
+            10,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            6,
+            15.5,
+            10,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

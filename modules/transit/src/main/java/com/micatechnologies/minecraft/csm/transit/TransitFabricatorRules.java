@@ -15,7 +15,10 @@ import net.minecraft.block.Block;
  * so moving it changed no price. The bus stops are priced by what they are made of: a pole length
  * is a pole section, a flag a sign blank and its fixings, a poster case a sign blank in sheet
  * metal, the arrival display an LED panel with its board, the curb plaque a casting of sheet
- * metal. {@code audit_fabricator_costs.py} mirrors these branches.</p>
+ * metal. A shelter is a pole section's worth of posts, sheet metal for its roof and frame and
+ * an LED module for its roof light; the glass shelter adds glass panes and a second sheet, the
+ * cantilever's canopy a second sheet. {@code audit_fabricator_costs.py} mirrors these
+ * branches.</p>
  *
  * @since 2026.9
  */
@@ -23,6 +26,8 @@ public final class TransitFabricatorRules {
 
   /** The Transit tab, priced by {@link #price}. */
   public static final String TAB_ID = "tabtransit";
+
+  private static final String MC_GLASS_PANE = "minecraft:glass_pane";
 
   private TransitFabricatorRules() {
   }
@@ -52,6 +57,22 @@ public final class TransitFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("bus_shelter_glass_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.any(MC_GLASS_PANE, 4),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
+    if (registryName.startsWith("bus_shelter_cantilever_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
+    if (registryName.startsWith("bus_shelter_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
     }
     if (registryName.equals("bus_stop_curb_plaque")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));

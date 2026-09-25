@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/shelters/flat/post_joint_lo",
+  "textures": {
+    "frame": "csm:blocks/transit/shelters/frame_riverway",
+    "particle": "csm:blocks/transit/shelters/frame_riverway"
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/transit/shelters/frame_cityline",
+    "glass": "csm:blocks/transit/shelters/glass",
+    "glass_frit": "csm:blocks/transit/shelters/glass_frit",
+    "particle": "csm:blocks/transit/shelters/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        14.75,
+        0,
+        2
+      ],
+      "to": [
+        15.75,
+        1.5,
+        14.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            14.5,
+            14.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            2,
+            14.5,
+            14.5,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            14.75,
+            2,
+            15.75,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            14.75,
+            1.5,
+            15.75,
+            14.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.05,
+        1.5,
+        2
+      ],
+      "to": [
+        15.45,
+        14.5,
+        14.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#glass",
+          "uv": [
+            1.5,
+            1.5,
+            14.0,
+            14.5
+          ]
+        },
+        "west": {
+          "texture": "#glass",
+          "uv": [
+            2,
+            1.5,
+            14.5,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.75,
+        14.5,
+        2
+      ],
+      "to": [
+        15.75,
+        15.5,
+        14.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            0.5,
+            14.0,
+            1.5
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            2,
+            0.5,
+            14.5,
+            1.5
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            14.75,
+            2,
+            15.75,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            14.75,
+            1.5,
+            15.75,
+            14.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.05,
+        15.5,
+        2
+      ],
+      "to": [
+        15.45,
+        16,
+        14.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#glass_frit",
+          "uv": [
+            1.5,
+            0,
+            14.0,
+            0.5
+          ]
+        },
+        "west": {
+          "texture": "#glass_frit",
+          "uv": [
+            2,
+            0,
+            14.5,
+            0.5
+          ]
+        }
+      }
+    }
+  ]
+}

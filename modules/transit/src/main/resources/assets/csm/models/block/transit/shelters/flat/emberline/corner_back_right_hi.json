@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/shelters/flat/corner_back_right_hi",
+  "textures": {
+    "frame": "csm:blocks/transit/shelters/frame_emberline",
+    "particle": "csm:blocks/transit/shelters/frame_emberline"
+  }
+}

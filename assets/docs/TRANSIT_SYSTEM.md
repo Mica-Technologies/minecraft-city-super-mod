@@ -22,6 +22,7 @@ What it is to grow into is at the end of this page.
 | Bus Stop Route Map Case | `csm:bus_stop_route_map_case` | `transit.stop.BlockBusStopFitting` |
 | Bus Arrival Display | `csm:bus_stop_arrival_display` | `transit.stop.BlockBusArrivalDisplay` |
 | Bus Stop Curb Plaque | `csm:bus_stop_curb_plaque` | `transit.stop.BlockBusStopPlaque` |
+| Bus Shelter (Glass, Cantilever, Flat Roof; four agencies each) | `csm:bus_shelter_<style>_<agency>` | `transit.shelter.BlockBusShelter` |
 
 ---
 
@@ -196,10 +197,79 @@ flag a sign blank and a fastener kit; a case a sign blank and sheet metal; the a
 LED module, a control board and sheet metal; the plaque sheet metal. `audit_fabricator_costs.py`
 mirrors the branches.
 
+## Shelters
+
+Twelve blocks, `bus_shelter_<style>_<agency>`: three styles (`BusShelterStyle`) in the four
+agencies' liveries, all one class, `BlockBusShelter`, and all drawn by `gen_transit_shelters.py`.
+
+| Style | What it is | Layer |
+|---|---|---|
+| `glass` | glass back and end walls with a dotted frit band at eye level, steel posts, a roof with the agency's name on its fascia, a timber bench, and an empty frame at one end for an ad panel | translucent |
+| `cantilever` | a canopy on one column a block, curving down at the back, open front and ends, a perforated steel screen and a bench | cutout |
+| `flat` | a thin flat roof with a slim name fascia on slim corner posts, and a lean rail | cutout |
+
+### One piece, two blocks
+
+A shelter is placed as a door is: into its block and the one above (`upper`), both broken
+together, only the lower half dropping the item. It faces the player who places it; its open
+front is that side.
+
+### Joining
+
+Shelters of the same block facing the same way join both ways, from actual state only:
+
+- **Along their length** (`left`, `right`: the same block continues on the sitter's left or
+  right). End walls, end posts and the roof's end overhang are drawn only where the run stops; the
+  back wall, bench and fascia run on through, and a post stands at every joint along the back. Any
+  number in a row read as one shelter.
+- **Front to back** (`ahead`, `behind`: the same block continues in front or behind). The back
+  wall and bench are drawn only in the back row, the fascia and front posts only along the front,
+  and the end walls run through, so two rows make a shelter two blocks deep (or three, or more).
+
+Every part is written once in "shelter coordinates" (y from 0 to 32 over both halves) and cut at
+the block line, so a post or a glass pane is one piece in the generator and two models in the
+game. The collision boxes (`BusShelterStyle.collision`) are the walls, bench, rail, posts and roof
+of each half, from the same numbers. The selection box is the whole block, so the end of a shelter
+is easy to click when setting an ad panel against it.
+
+### The roof light
+
+A lens under the roof, lit when the shelter is placed (or matching the shelter it joins). It is
+switched as the Residential lamps are: a click with an empty hand, or a change of redstone power at
+either half -- on when power comes, off when it goes. The lower half remembers the power it last
+saw (`powered`), the upper holds `lit`, each in the bit above `upper`. Either switches every upper
+half of the shelter the block belongs to, up to 64 blocks, so one daylight sensor or switch lights
+a long shelter. A lit upper half gives light 8. A click holding anything is left to the item, so
+an ad panel (or any block) can be placed against a shelter.
+
+### The ad panel slot
+
+The glass shelter keeps the sitter's left end of its back row for an advertising panel: no glass,
+but an empty steel frame -- two posts and a rail top and bottom -- set in 1.25 px from the block
+edge, with the back wall, bench and roof stopping at it too. The panel itself is Signage's **Bus
+Shelter Ad Panel** (`ad_shelter_panel`, `ADVERTISING_SYSTEM.md`), which the player sets against
+that frame from outside the shelter: a 1 x 2 backlit lightbox in the next block, its back lip
+reaching the pixel into this one that the shelter leaves clear, one ad facing along the pavement
+and one facing into the shelter. Transit and Signage never refer to each other; they meet only in
+the world, so a shelter without Signage installed simply has an empty frame.
+
+### Liveries
+
+The geometry is drawn once per style in CITYLINE's colours; every other agency's model of a part
+that shows livery is a child model naming its own `frame` and `fascia` textures (`fascia_slim` on
+the flat roof). The fascias carry the agency's name and the stripe its flag uses: CITYLINE teal
+with yellow, RIVERWAY navy with orange end bars, VERDANT green with white lines, EMBERLINE red on a
+graphite frame.
+
+### Prices
+
+`TransitFabricatorRules`: a glass shelter is a pole section, two sheet metal, four glass panes and
+an LED module; the cantilever a pole section, two sheet metal and an LED module; the flat roof a
+pole section, one sheet metal and an LED module. `audit_fabricator_costs.py` mirrors them.
+
 ## Where the module is going
 
-Transit is planned to grow, in order: glass-and-steel bus shelters that join along their length,
-rail and subway platforms (platform edges with tactile warning strips, tactile paving, platform
+Transit is planned to grow, in order: rail and subway platforms (platform edges with tactile warning strips, tactile paving, platform
 furniture), stations (a subway entrance headhouse built to size, ticket validators that use the
 fare code, station wayfinding), and working departure boards configured through a screen, drawn by
 a baked renderer, with announcements through Text to Speech only when that module is installed.

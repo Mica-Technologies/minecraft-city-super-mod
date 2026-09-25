@@ -1,0 +1,900 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/column_lo"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/column_lo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/column_lo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/column_lo",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/column_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/column_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/column_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/column_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_lo"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_lo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_lo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_lo",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_left_lo"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_left_lo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_left_lo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_left_lo",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_left_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_left_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_left_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_left_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_right_lo"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_right_lo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_right_lo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_right_lo",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_right_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_right_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_right_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/screen_join_right_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false",
+        "behind": "false",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_left_lo"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false",
+        "behind": "false",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_left_lo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false",
+        "behind": "false",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_left_lo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false",
+        "behind": "false",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_left_lo",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "behind": "false",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_left_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "behind": "false",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_left_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "behind": "false",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_left_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "behind": "false",
+        "left": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_left_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false",
+        "behind": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_right_lo"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false",
+        "behind": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_right_lo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false",
+        "behind": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_right_lo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false",
+        "behind": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_right_lo",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "behind": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_right_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "behind": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_right_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "behind": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_right_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "behind": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/stile_right_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_lo"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_lo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_lo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_lo",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_join_left_lo"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_join_left_lo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_join_left_lo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false",
+        "behind": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_join_left_lo",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_join_right_lo"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_join_right_lo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_join_right_lo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false",
+        "behind": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/bench_join_right_lo",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/canopy_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/canopy_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/canopy_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/canopy_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/front_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/front_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/front_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/front_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/back_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/back_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/back_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/back_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/light_on_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/light_on_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/light_on_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/light_on_hi",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/light_off_hi"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/light_off_hi",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/light_off_hi",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/shelters/cantilever/light_off_hi",
+        "y": 270
+      }
+    }
+  ]
+}

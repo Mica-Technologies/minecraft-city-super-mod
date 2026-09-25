@@ -370,6 +370,12 @@ def cost_for(registry, info, ancestors):
             return ("LED_MODULE", "CONTROL_BOARD", "SHEET_METAL")
         if registry == "bus_stop_curb_plaque":
             return ("SHEET_METAL",)
+        if registry.startswith("bus_shelter_glass_"):
+            return ("POLE_SECTION", "SHEET_METAL x2", "glass_pane x4", "LED_MODULE")
+        if registry.startswith("bus_shelter_cantilever_"):
+            return ("POLE_SECTION", "SHEET_METAL x2", "LED_MODULE")
+        if registry.startswith("bus_shelter_"):
+            return ("POLE_SECTION", "SHEET_METAL", "LED_MODULE")
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtrafficaccessories":
         return ("SHEET_METAL", "FASTENER_KIT")

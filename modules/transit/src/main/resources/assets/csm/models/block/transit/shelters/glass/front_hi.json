@@ -1,0 +1,139 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "fascia": "csm:blocks/transit/shelters/fascia_cityline",
+    "frame": "csm:blocks/transit/shelters/frame_cityline",
+    "roof": "csm:blocks/transit/shelters/roof",
+    "under": "csm:blocks/transit/shelters/under",
+    "particle": "csm:blocks/transit/shelters/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        13.5,
+        -4
+      ],
+      "to": [
+        16,
+        15.5,
+        0
+      ],
+      "faces": {
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0.5,
+            16,
+            2.5
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0.5,
+            4,
+            2.5
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            12,
+            0.5,
+            16,
+            2.5
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            12,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#under",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        12,
+        -4.5
+      ],
+      "to": [
+        16,
+        16,
+        -4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            4,
+            0,
+            4.5,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            11.5,
+            0,
+            12.0,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            11.5,
+            16,
+            12.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            4,
+            16,
+            4.5
+          ]
+        }
+      }
+    }
+  ]
+}

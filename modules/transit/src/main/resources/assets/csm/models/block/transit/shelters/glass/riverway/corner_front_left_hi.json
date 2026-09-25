@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/shelters/glass/corner_front_left_hi",
+  "textures": {
+    "frame": "csm:blocks/transit/shelters/frame_riverway",
+    "particle": "csm:blocks/transit/shelters/frame_riverway"
+  }
+}

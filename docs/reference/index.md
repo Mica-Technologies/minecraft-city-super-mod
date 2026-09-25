@@ -34,10 +34,10 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Technology](technology.md) | 45 | Servers, routers, screens and consumer electronics. |
 | [Traffic Accessories](traffic-accessories.md) | 386 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
-| [Transit](transit.md) | 18 | Public transit: bus stop poles, flags, timetable and map cases and the arrival display, fare gates, the fare vending machine, and the tickets and cards they take. |
+| [Transit](transit.md) | 30 | Public transit: bus stop poles, flags, timetable and map cases and the arrival display, fare gates, the fare vending machine, and the tickets and cards they take. |
 | [Trees & Plants](trees-and-plants.md) | 134 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Unlisted](unlisted.md) | 131 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **2979** | |
+| **Total** | **2991** | |
 
 ## How to read the table
 

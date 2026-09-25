@@ -8,6 +8,8 @@ import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda3;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareVendingMachine;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemFareTicket;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemTransitCard;
+import com.micatechnologies.minecraft.csm.transit.shelter.BlockBusShelter;
+import com.micatechnologies.minecraft.csm.transit.shelter.BusShelterStyle;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusArrivalDisplay;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopFitting;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopFlag;
@@ -107,5 +109,19 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockBusStopFitting("bus_stop_route_map_case", new double[]{3.5, 0, 5.5, 12.5, 16, 9.3}));
     initTabBlock(new BlockBusArrivalDisplay("bus_stop_arrival_display", new double[]{0.7, 0, 3.7, 15.3, 16, 9.3}));
     initTabBlock(new BlockBusStopPlaque("bus_stop_curb_plaque"));
+
+    // Bus shelters (gen_transit_shelters.py --fragments)
+    initTabBlock(new BlockBusShelter("bus_shelter_glass_cityline", BusShelterStyle.GLASS));
+    initTabBlock(new BlockBusShelter("bus_shelter_glass_riverway", BusShelterStyle.GLASS));
+    initTabBlock(new BlockBusShelter("bus_shelter_glass_verdant", BusShelterStyle.GLASS));
+    initTabBlock(new BlockBusShelter("bus_shelter_glass_emberline", BusShelterStyle.GLASS));
+    initTabBlock(new BlockBusShelter("bus_shelter_cantilever_cityline", BusShelterStyle.CANTILEVER));
+    initTabBlock(new BlockBusShelter("bus_shelter_cantilever_riverway", BusShelterStyle.CANTILEVER));
+    initTabBlock(new BlockBusShelter("bus_shelter_cantilever_verdant", BusShelterStyle.CANTILEVER));
+    initTabBlock(new BlockBusShelter("bus_shelter_cantilever_emberline", BusShelterStyle.CANTILEVER));
+    initTabBlock(new BlockBusShelter("bus_shelter_flat_cityline", BusShelterStyle.FLAT));
+    initTabBlock(new BlockBusShelter("bus_shelter_flat_riverway", BusShelterStyle.FLAT));
+    initTabBlock(new BlockBusShelter("bus_shelter_flat_verdant", BusShelterStyle.FLAT));
+    initTabBlock(new BlockBusShelter("bus_shelter_flat_emberline", BusShelterStyle.FLAT));
   }
 }

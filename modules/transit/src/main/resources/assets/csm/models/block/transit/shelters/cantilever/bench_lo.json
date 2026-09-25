@@ -1,0 +1,128 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "bench": "csm:blocks/transit/shelters/bench",
+    "steel": "csm:blocks/transit/shelters/steel",
+    "particle": "csm:blocks/transit/shelters/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        1.5,
+        7,
+        10
+      ],
+      "to": [
+        14.5,
+        8,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bench",
+          "uv": [
+            1.5,
+            8,
+            14.5,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#bench",
+          "uv": [
+            1.5,
+            8,
+            14.5,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#bench",
+          "uv": [
+            2,
+            8,
+            6,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#bench",
+          "uv": [
+            10,
+            8,
+            14,
+            9
+          ]
+        },
+        "up": {
+          "texture": "#bench",
+          "uv": [
+            1.5,
+            10,
+            14.5,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#bench",
+          "uv": [
+            1.5,
+            2,
+            14.5,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.2,
+        6,
+        10.5
+      ],
+      "to": [
+        8.8,
+        7,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            7.2,
+            9,
+            8.8,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            9,
+            5.5,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            10.5,
+            9,
+            14.0,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            7.2,
+            2,
+            8.8,
+            5.5
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/transit/shelters/cantilever/front_hi",
+  "textures": {
+    "fascia": "csm:blocks/transit/shelters/fascia_verdant",
+    "frame": "csm:blocks/transit/shelters/frame_verdant",
+    "particle": "csm:blocks/transit/shelters/frame_verdant"
+  }
+}

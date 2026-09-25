@@ -746,6 +746,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   the timetable and route map cases, the arrival display and the curb plaque. Faces carrying a
   picture use a window of their texture at the face's own aspect. The pole styles are read from
   `BusStopPoleStyle.java` and the run stops if the two lists differ; `--check`, `--fragments`
+- `gen_transit_shelters.py` -- the bus shelters (Transit): glass and steel, cantilever canopy and
+  flat roof, two blocks tall, joining along their length and front to back from actual state
+  (`left`, `right`, `ahead`, `behind`). Every part is written once in shelter coordinates (y 0 to
+  32) and cut at the block line into a model per half; liveries are child models naming the
+  agency's `frame` and `fascia` textures. The glass shelter's back row stops 1.25 px short of its
+  left end, the empty frame Signage's shelter ad panel is set against; the collision boxes in
+  `BusShelterStyle.java` share its numbers; `--check`, `--fragments`
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

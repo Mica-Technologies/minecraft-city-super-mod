@@ -1,0 +1,92 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/transit/shelters/frame_cityline",
+    "screen": "csm:blocks/transit/shelters/screen",
+    "particle": "csm:blocks/transit/shelters/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        1.5,
+        0,
+        14.6
+      ],
+      "to": [
+        14.5,
+        4,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#screen",
+          "uv": [
+            1.5,
+            12,
+            14.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#screen",
+          "uv": [
+            1.5,
+            12,
+            14.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        4,
+        14.4
+      ],
+      "to": [
+        14.5,
+        5,
+        15.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            11,
+            14.5,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            11,
+            14.5,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            14.4,
+            14.5,
+            15.2
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            1.5,
+            0.8,
+            14.5,
+            1.6
+          ]
+        }
+      }
+    }
+  ]
+}
