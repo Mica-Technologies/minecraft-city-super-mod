@@ -221,7 +221,13 @@ Version is derived from Git tags (format: `YYYY.MM.DD` for releases). No manual 
 Everything goes in the tree of the module that owns the subsystem — `modules/<name>/src/main/…`,
 or `src/main/…` for Core's own (Materials) content. Paths below are relative to that tree.
 
-1. Create class in the appropriate subsystem package extending a base class; use `snake_case` registry name
+1. Create class in the appropriate subsystem package extending a base class; use `snake_case` registry name.
+   If it overrides `createBlockState`, build `new CsmBlockStateContainer(this, ...)` (or
+   `CsmExtendedBlockState` for unlisted properties), never vanilla's `BlockStateContainer` /
+   `ExtendedBlockState`: those store a neighbour table on every state, ~945 MiB across CSM before
+   the 2026-09 memory sweep. `CsmBlockStateContainerUseTest` fails the build on a vanilla one. Every
+   property multiplies the states and, in a Forge blockstate, the baked variants; a property that
+   only swaps a texture or picks the same model is memory for nothing (PERFORMANCE_AND_SECURITY.md)
 2. Create `resources/assets/csm/blockstates/<registry_name>.json` (prefer Forge format with `forge_marker: 1` — see below)
 3. Create `resources/assets/csm/models/block/<registry_name>.json` (parent references shared model via `csm:block/shared_models/<subsystem>/<model_name>`)
 4. Add textures to `resources/assets/csm/textures/blocks/<subsystem>/` (PNG, power-of-two resolution)
