@@ -11,7 +11,7 @@
 	"elements": [
 		{
 			"name": "sign_cube",
-			"from": [4.5, 6, 15.84],
+			"from": [4.5, 6, 15.69],
 			"to": [11.5, 15, 15.9],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
 			"faces": {
@@ -20,7 +20,7 @@
 		},
 		{
 			"name": "button_cube",
-			"from": [6.4, 3.55, 15.84],
+			"from": [6.4, 3.55, 15.69],
 			"to": [9.6, 6, 15.9],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
 			"faces": {
@@ -29,7 +29,7 @@
 		},
 		{
 			"name": "pilot_light_cube",
-			"from": [7.825, 3.2, 15.84],
+			"from": [7.825, 3.2, 15.69],
 			"to": [8.125, 3.5, 15.9],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
 			"faces": {

@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"elements": [
 		{
-			"from": [-12.5, -16, -5.5],
+			"from": [-12.5, -15.8, -5.5],
 			"to": [28.5, 32, 17.5],
 			"rotation": {"angle": 0, "axis": "y", "origin": [9, 8, 5]},
 			"faces": {
