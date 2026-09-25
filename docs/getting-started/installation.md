@@ -38,9 +38,10 @@ every module requires it. Beyond that, install only the subsystems you actually 
 
 !!! tip "Want the whole mod?"
 
-    Install all thirteen jars. That is the same content, in the same creative tabs, in the same order,
-    as the mod had when it was a single jar. Modpacks that shipped the old single jar should list
-    every jar they want instead.
+    Install all thirteen jars. That is everything the mod has; every block and item keeps the name it
+    had when the mod was a single jar, so worlds carry over, though some have since moved to the tab
+    of the module that now holds them (the fare equipment to Transit, for example). Modpacks that
+    shipped the old single jar should list every jar they want instead.
 
 ## Steps
 
