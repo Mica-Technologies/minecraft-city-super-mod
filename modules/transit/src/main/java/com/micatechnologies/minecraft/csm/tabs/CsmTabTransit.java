@@ -8,12 +8,19 @@ import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda3;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareVendingMachine;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemFareTicket;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemTransitCard;
+import com.micatechnologies.minecraft.csm.transit.stop.BlockBusArrivalDisplay;
+import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopFitting;
+import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopFlag;
+import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopPlaque;
+import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopPole;
+import com.micatechnologies.minecraft.csm.transit.stop.BusStopPoleStyle;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The tab for public transit: the fare gates, the fare vending machine and the tickets and cards
- * they take.
+ * they take, and the bus stops (poles, agency flags, poster cases, the arrival display and the
+ * curb plaque).
  *
  * @version 1.0
  * @since 2026.9
@@ -84,5 +91,21 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(BlockFareGateAda3.class, fmlPreInitializationEvent);
     initTabItem(ItemFareTicket.class, fmlPreInitializationEvent);
     initTabItem(ItemTransitCard.class, fmlPreInitializationEvent);
+
+    // Bus stops (gen_transit_stops.py --fragments)
+    initTabBlock(new BlockBusStopPole("bus_stop_pole_round_galvanized", BusStopPoleStyle.ROUND_GALVANIZED));
+    initTabBlock(new BlockBusStopPole("bus_stop_pole_square_galvanized", BusStopPoleStyle.SQUARE_GALVANIZED));
+    initTabBlock(new BlockBusStopPole("bus_stop_pole_round_teal", BusStopPoleStyle.ROUND_TEAL));
+    initTabBlock(new BlockBusStopPole("bus_stop_pole_square_navy", BusStopPoleStyle.SQUARE_NAVY));
+    initTabBlock(new BlockBusStopPole("bus_stop_pole_round_green", BusStopPoleStyle.ROUND_GREEN));
+    initTabBlock(new BlockBusStopPole("bus_stop_pole_square_red", BusStopPoleStyle.SQUARE_RED));
+    initTabBlock(new BlockBusStopFlag("bus_stop_flag_cityline", new double[]{6.7, 0, 6.7, 16, 16, 9.3}));
+    initTabBlock(new BlockBusStopFlag("bus_stop_flag_riverway", new double[]{6.7, 0, 6.7, 16, 16, 9.3}));
+    initTabBlock(new BlockBusStopFlag("bus_stop_flag_verdant", new double[]{6.7, 0, 6.7, 16, 16, 9.3}));
+    initTabBlock(new BlockBusStopFlag("bus_stop_flag_emberline", new double[]{6.7, 0, 6.7, 16, 16, 9.3}));
+    initTabBlock(new BlockBusStopFitting("bus_stop_timetable_case", new double[]{4, 0, 5.5, 12, 16, 9.3}));
+    initTabBlock(new BlockBusStopFitting("bus_stop_route_map_case", new double[]{3.5, 0, 5.5, 12.5, 16, 9.3}));
+    initTabBlock(new BlockBusArrivalDisplay("bus_stop_arrival_display", new double[]{0.7, 0, 3.7, 15.3, 16, 9.3}));
+    initTabBlock(new BlockBusStopPlaque("bus_stop_curb_plaque"));
   }
 }

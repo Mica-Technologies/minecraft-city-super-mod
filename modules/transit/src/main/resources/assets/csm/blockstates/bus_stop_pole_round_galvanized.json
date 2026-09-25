@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/stops/pole_shaft_round_galvanized"
+      }
+    },
+    {
+      "when": {
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_cap_round_galvanized"
+      }
+    },
+    {
+      "when": {
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_base_round_galvanized"
+      }
+    }
+  ]
+}

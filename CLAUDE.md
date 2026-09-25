@@ -94,7 +94,7 @@ container per jar.
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, plantings and park amenities; two tabs, Trees & Plants and Parks |
-| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names); the Transit tab; see `assets/docs/TRANSIT_SYSTEM.md` |
+| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: stacking poles, agency flags with settable route plates, poster cases, the arrival display); the Transit tab; see `assets/docs/TRANSIT_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -400,7 +400,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/TRANSIT_SYSTEM.md` -- The Transit module: the fare gates (ticket, card and exit
   sensing, the gate's states, operator modes), the fare vending machine and its purchases, the
   ticket and stored-trip card, why the move from Technology kept every registry name, GUI id and
-  asset path, and what the module is to grow (bus stops, shelters, platforms, stations, boards)
+  asset path; the bus stops (a stop as a stack of pole lengths, fittings that take the pole's
+  style, settling the whole stack, the invented agencies, route plates set by clicking and drawn
+  from shared lists, the arrival display's made-up but steady countdown); and what the module is
+  to grow (shelters, platforms, stations, boards)
 - `assets/docs/HVAC_SYSTEM.md` -- Rooms that hold heat: the thermal simulation (flood-filled
   spaces split into regions, walls/openings/ground/neighbours, implicit step), model-based
   modulating control, vent throw and the thermostat trim, why a partly unloaded room freezes, the
@@ -737,6 +740,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   block (so placed machines keep their metadata) with ambient occlusion off, since its upper half
   sits in the air above its block; textures at 4 texels a unit, each face's uv exactly its drawn
   window; `--check`
+- `gen_transit_stops.py` -- the bus stops (Transit): pole lengths (round and square, galvanized
+  or painted) as shaft, cap and base models per pole style, picked by a multipart blockstate from
+  the stack's actual state; the four invented agencies' double-sided flags and their route plates;
+  the timetable and route map cases, the arrival display and the curb plaque. Faces carrying a
+  picture use a window of their texture at the face's own aspect. The pole styles are read from
+  `BusStopPoleStyle.java` and the run stops if the two lists differ; `--check`, `--fragments`
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/stops/pole_shaft_square_red"
+      }
+    },
+    {
+      "when": {
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_cap_square_red"
+      }
+    },
+    {
+      "when": {
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_base_square_red"
+      }
+    }
+  ]
+}

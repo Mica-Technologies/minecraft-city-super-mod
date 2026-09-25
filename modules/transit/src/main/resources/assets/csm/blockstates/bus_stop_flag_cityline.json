@@ -1,0 +1,312 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/stops/pole_shaft_round_galvanized"
+      },
+      "when": {
+        "pole": "round_galvanized"
+      }
+    },
+    {
+      "when": {
+        "pole": "round_galvanized",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_cap_round_galvanized"
+      }
+    },
+    {
+      "when": {
+        "pole": "round_galvanized",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_base_round_galvanized"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/stops/pole_shaft_square_galvanized"
+      },
+      "when": {
+        "pole": "square_galvanized"
+      }
+    },
+    {
+      "when": {
+        "pole": "square_galvanized",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_cap_square_galvanized"
+      }
+    },
+    {
+      "when": {
+        "pole": "square_galvanized",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_base_square_galvanized"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/stops/pole_shaft_round_teal"
+      },
+      "when": {
+        "pole": "round_teal"
+      }
+    },
+    {
+      "when": {
+        "pole": "round_teal",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_cap_round_teal"
+      }
+    },
+    {
+      "when": {
+        "pole": "round_teal",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_base_round_teal"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/stops/pole_shaft_square_navy"
+      },
+      "when": {
+        "pole": "square_navy"
+      }
+    },
+    {
+      "when": {
+        "pole": "square_navy",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_cap_square_navy"
+      }
+    },
+    {
+      "when": {
+        "pole": "square_navy",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_base_square_navy"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/stops/pole_shaft_round_green"
+      },
+      "when": {
+        "pole": "round_green"
+      }
+    },
+    {
+      "when": {
+        "pole": "round_green",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_cap_round_green"
+      }
+    },
+    {
+      "when": {
+        "pole": "round_green",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_base_round_green"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/stops/pole_shaft_square_red"
+      },
+      "when": {
+        "pole": "square_red"
+      }
+    },
+    {
+      "when": {
+        "pole": "square_red",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_cap_square_red"
+      }
+    },
+    {
+      "when": {
+        "pole": "square_red",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/pole_base_square_red"
+      }
+    },
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "route1": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route1"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "route1": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "route1": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "route1": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "route2": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route2"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "route2": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "route2": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "route2": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "route3": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route3"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "route3": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "route3": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "route3": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stops/flag_cityline_route3",
+        "y": 270
+      }
+    }
+  ]
+}

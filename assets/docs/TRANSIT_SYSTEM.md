@@ -5,8 +5,8 @@ for public transit. Like every module it pins Core to its own exact version and 
 itself: its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)`), is found by
 Core's tab scan, and every block and item keeps the `csm:` namespace.
 
-Today the module holds the working fare system, which it took over from Technology. What it is to
-grow into is at the end of this page.
+The module holds the working fare system, which it took over from Technology, and the bus stops.
+What it is to grow into is at the end of this page.
 
 | Block or item | Registry name | Class |
 |---|---|---|
@@ -16,6 +16,12 @@ grow into is at the end of this page.
 | Fare Gate (ADA, 3-Wide) | `csm:fare_gate_ada_3` | `transit.fare.BlockFareGateAda3` |
 | Fare Ticket (item) | `csm:fareticket` | `transit.fare.ItemFareTicket` |
 | Transit Card (item) | `csm:transitcard` | `transit.fare.ItemTransitCard` |
+| Bus Stop Pole (round and square; galvanized, teal, navy, green, red) | `csm:bus_stop_pole_<style>` | `transit.stop.BlockBusStopPole` |
+| Bus Stop Flag (CITYLINE, RIVERWAY, VERDANT, EMBERLINE) | `csm:bus_stop_flag_<agency>` | `transit.stop.BlockBusStopFlag` |
+| Bus Stop Timetable Case | `csm:bus_stop_timetable_case` | `transit.stop.BlockBusStopFitting` |
+| Bus Stop Route Map Case | `csm:bus_stop_route_map_case` | `transit.stop.BlockBusStopFitting` |
+| Bus Arrival Display | `csm:bus_stop_arrival_display` | `transit.stop.BlockBusArrivalDisplay` |
+| Bus Stop Curb Plaque | `csm:bus_stop_curb_plaque` | `transit.stop.BlockBusStopPlaque` |
 
 ---
 
@@ -99,14 +105,104 @@ equipment the price it had in Technology: a control board, sheet metal and a wir
 The textures come from `dev-env-utils/generate_fare_gate_textures.py` and
 `generate_fare_item_textures.py`, which find the Transit tree through `csm_layout.owner_of`.
 
+## Bus stops
+
+Everything on a stop is drawn by `gen_transit_stops.py` and lives in `transit.stop`.
+
+### A stop is a stack
+
+A stop is a column of `AbstractBlockBusStopStack` blocks, one block each: `BlockBusStopPole` is a
+length of pole, and `BlockBusStopFitting` is a length of pole with something clamped to it (the
+timetable and route map cases, and the base of the flag and the arrival display). A player builds
+a stop the way a real one goes up: a pole or two, then the fittings stacked on top, the flag last.
+A typical stop is pole, timetable case, arrival display, flag: four blocks, the flag at 3 to 4 m.
+
+Each block draws its length of pole from three models per pole style: the shaft (no ends), the cap
+(a sleeve and a dome, drawn only when nothing of the stack is above, `cap`) and the base (a flange
+with four bolts and a collar, only when nothing is below, `base`). A fitting draws the shaft in the
+style of the nearest pole below it (or above, for a fitting at the bottom), `pole`, so one timetable
+case serves every pole. All three are actual state read by `BusStopStack`; the metadata holds only
+the facing. The blockstates are multipart: the pole parts by `pole`, `cap` and `base`, the fitting
+by `facing`. Shafts are drawn without end faces, so stacked lengths meet with no seam to fight
+over, and the cap and base are wider than the shaft, so none of their faces is coplanar with it.
+
+The pole styles are `BusStopPoleStyle`'s constants. The generator reads them from the Java and
+stops if its own list differs, since the blockstates name each style's models.
+
+**Settling.** The whole stack settles onto the surface under its bottom block, by that block's
+`RoadSurfaceHeight` offset, and every block of it moves by the same amount (`getOffset`, the
+bounding box and both renderers), or the pole would come apart at the first joint. The blocks are
+`ICsmRoadSurfaceAware`, so nothing settles onto a stop.
+
+### Flags and route plates
+
+Four invented agencies, each with its own flag layout so they read as four agencies and not one in
+four colours: **CITYLINE** (teal and yellow, the fare machine's livery), **RIVERWAY** (navy and
+orange), **VERDANT** (green and white) and **EMBERLINE** (red and graphite). A flag stands out
+sideways from the pole like a real stop flag and is printed on both faces (the south face uses the
+same art uv, which reads the right way round from behind). Each carries the bus pictogram, BUS
+STOP, the agency's name and the accessibility symbol, all drawn by the generator in its pixel font
+and pixel art.
+
+Under the flag hang up to three route plates. `TileEntityBusStopFlag` keeps their numbers (0 for
+no plate, 1 to 99; saved as a three-byte array under `r`). Clicking a plate steps its number up and
+a sneaking click steps it down, the aisle sign's pattern; a click on the flag itself steps the top
+plate. The plate is chosen from the hit's height less the settling, split halfway between plate
+middles, and the action bar says which plate now shows what. Which plates are there is actual state
+(`route1` to `route3`), so the plates are baked; the numbers are drawn by
+`TileEntityBusStopFlagRenderer`, white, on both faces, each number compiled once into a display
+list shared by every flag (`CsmSharedDisplayLists`, keyed on the number) and replayed under each
+plate's transform. The atlas, colour and depth mask are set outside the lists; the numbers take
+the block's own light, since they are printed, not lit. A new number rebuilds the chunk section
+only when a plate appears or goes (`getBakedModelKey` is the mask of plates).
+
+The plate middles, the plate's x middle and its two face depths are constants in
+`BlockBusStopFlag` (`PLATE_MIDDLE_Y` and the rest) that must match `BULLET_TOPS`, `BULLET_HT`,
+`PX0`/`PX1` and `BZ0`/`BZ1` in the generator.
+
+### Cases, the arrival display and the plaque
+
+The **timetable case** and **route map case** are poster cases clamped to the front of the pole
+with two bands: a shallow graphite box whose front is the poster, a frame standing proud of it,
+and a faint glass sheen printed into the poster. The timetable is invented and the map a generic
+diagram (a river, a park, three coloured lines, an interchange and a "you are here" dot) with no
+place names.
+
+The **arrival display** (`BlockBusArrivalDisplay`, `TileEntityBusArrivalDisplay`,
+`TileEntityBusArrivalDisplayRenderer`) is a small LED panel under a hood. Its housing and dark
+screen are baked; the renderer draws three amber dot-matrix lines a page, "12 DOWNTOWN 3 MIN",
+fullbright, turning the page every 5 seconds. It lists the routes on its own stop's flag (the
+nearest flag up or down the stack), or routes 12 and 40 on a stop with none. Each route's headway
+(6 to 16 minutes) and destination are fixed by its number, from a list of generic destinations
+(DOWNTOWN, HARBOR, CITY HALL and so on), so a route goes to the same place everywhere; its phase
+comes from the world clock and the stop's position, so neighbouring stops differ while every player
+at one stop sees the same countdown, a minute each real minute. The next two buses of each route
+are listed, soonest first; under a minute reads DUE. The route numbers, destinations and readings
+are one shared display list each (99, 16 and 33 at most), already laid out in their column, so a
+line is three list calls. The display saves nothing: the routes, the facing and the settling are
+looked up once a second (`AbstractTileEntityBusStopFitting.refreshView`), not every frame.
+
+The **curb plaque** (`BlockBusStopPlaque`) is a cast bronze plate reading BUS STOP to the player
+who placed it, settling onto the surface below like the Streetscape fixtures. Its texture is
+stored turned 180 degrees, because the top face shows it that way to the placer. A plate and not
+paint: road markings belong to the external road mod.
+
+A bus stop bench or bin is Parks'; Transit adds none.
+
+### Prices
+
+`TransitFabricatorRules` prices a stop by what it is made of: a pole length is a pole section; a
+flag a sign blank and a fastener kit; a case a sign blank and sheet metal; the arrival display an
+LED module, a control board and sheet metal; the plaque sheet metal. `audit_fabricator_costs.py`
+mirrors the branches.
+
 ## Where the module is going
 
-Transit is planned to grow, in order: bus stops (the stop pole and flag sign, route plates,
-timetable cases), glass-and-steel bus shelters that join along their length, rail and subway
-platforms (platform edges with tactile warning strips, tactile paving, platform furniture),
-stations (a subway entrance headhouse built to size, ticket validators that use the fare code,
-station wayfinding), and working departure boards configured through a screen, drawn by a baked
-renderer, with announcements through Text to Speech only when that module is installed.
+Transit is planned to grow, in order: glass-and-steel bus shelters that join along their length,
+rail and subway platforms (platform edges with tactile warning strips, tactile paving, platform
+furniture), stations (a subway entrance headhouse built to size, ticket validators that use the
+fare code, station wayfinding), and working departure boards configured through a screen, drawn by
+a baked renderer, with announcements through Text to Speech only when that module is installed.
 
 Two rules hold throughout: every agency, livery and route bullet is invented, never a real transit
 brand; and an advertising panel in a shelter is Signage's board, set into the shelter by the

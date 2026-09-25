@@ -1,0 +1,137 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "pole": "csm:blocks/transit/stops/pole_square_red",
+    "clamp": "csm:blocks/transit/stops/clamp",
+    "particle": "csm:blocks/transit/stops/pole_square_red"
+  },
+  "elements": [
+    {
+      "from": [
+        6.85,
+        15,
+        6.85
+      ],
+      "to": [
+        9.15,
+        16,
+        9.15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pole",
+          "uv": [
+            6.85,
+            0,
+            9.15,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#pole",
+          "uv": [
+            6.85,
+            0,
+            9.15,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#pole",
+          "uv": [
+            6.85,
+            0,
+            9.15,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#pole",
+          "uv": [
+            6.85,
+            0,
+            9.15,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#pole",
+          "uv": [
+            6.85,
+            6.85,
+            9.15,
+            9.15
+          ]
+        },
+        "down": {
+          "texture": "#pole",
+          "uv": [
+            6.85,
+            6.85,
+            9.15,
+            9.15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.4,
+        16,
+        7.4
+      ],
+      "to": [
+        8.6,
+        16.3,
+        8.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pole",
+          "uv": [
+            7.4,
+            0,
+            8.6,
+            0.01
+          ]
+        },
+        "south": {
+          "texture": "#pole",
+          "uv": [
+            7.4,
+            0,
+            8.6,
+            0.01
+          ]
+        },
+        "east": {
+          "texture": "#pole",
+          "uv": [
+            7.4,
+            0,
+            8.6,
+            0.01
+          ]
+        },
+        "west": {
+          "texture": "#pole",
+          "uv": [
+            7.4,
+            0,
+            8.6,
+            0.01
+          ]
+        },
+        "up": {
+          "texture": "#pole",
+          "uv": [
+            7.4,
+            7.4,
+            8.6,
+            8.6
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -358,7 +358,18 @@ def cost_for(registry, info, ancestors):
     if tab == "tabtechnology":
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtransit":
-        # Mirrors TransitFabricatorRules: the fare equipment kept its Technology price.
+        # Mirrors TransitFabricatorRules: the bus stops by what they are made of, and the fare
+        # equipment at the price it kept from Technology.
+        if registry.startswith("bus_stop_pole_"):
+            return ("POLE_SECTION",)
+        if registry.startswith("bus_stop_flag_"):
+            return ("SIGN_BLANK", "FASTENER_KIT")
+        if registry.startswith("bus_stop_") and registry.endswith("_case"):
+            return ("SIGN_BLANK", "SHEET_METAL")
+        if registry == "bus_stop_arrival_display":
+            return ("LED_MODULE", "CONTROL_BOARD", "SHEET_METAL")
+        if registry == "bus_stop_curb_plaque":
+            return ("SHEET_METAL",)
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtrafficaccessories":
         return ("SHEET_METAL", "FASTENER_KIT")
