@@ -408,6 +408,28 @@ def _wine_foils():
 TEXTURES["wine_bottles"] = _wine_bottles
 
 
+@texture("wine_necks")
+def _wine_necks():
+    """A bottle's neck and foil capsule as one box: a cell per glass (row) and foil (column)
+    pairing, 8 x 8, on a square sheet (Minecraft refuses a non-square texture that is not an
+    animation). Rows 0-2 split across u, glass on the right (the back) and foil on the left
+    (the front), for the neck's sides; rows 3-5 split down v, foil on top (the front), for its top
+    and bottom. The shares match the old boxes: 0.9 of glass, 0.9 of foil."""
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 255))
+    for g, gc in enumerate(WINE_GLASS):
+        for f, fc in enumerate(WINE_FOILS):
+            x0, y0 = f * 8, g * 8
+            rect(img, x0 + 4, y0, x0 + 8, y0 + 8, gc)
+            rect(img, x0 + 5, y0, x0 + 6, y0 + 8, shade(gc, 1.9))
+            rect(img, x0, y0, x0 + 4, y0 + 8, fc)
+            rect(img, x0 + 1, y0, x0 + 2, y0 + 8, shade(fc, 1.5))
+            y1 = 24 + g * 8
+            rect(img, x0, y1, x0 + 8, y1 + 4, fc)
+            rect(img, x0, y1 + 4, x0 + 8, y1 + 8, gc)
+            rect(img, x0 + 1, y1 + 4, x0 + 2, y1 + 8, shade(gc, 1.9))
+    return img
+
+
 @texture("keg")
 def _keg():
     """A stainless keg seen side on: brushed steel with two rolling rings."""
@@ -836,18 +858,26 @@ def winerack():
         fu, fv = (f % 2) * 8, (f // 2) * 8
         els.append(B([x - 0.55, y - 0.55, 9.0], [x + 0.55, y + 0.55, 9.5], "wine_glass",
                      faces=("north", "east", "west", "up", "down"), uv=[gu, gv, gu + 8, gv + 8]))
-        els.append(B([x - 0.3, y - 0.3, 8.1], [x + 0.3, y + 0.3, 9.0], "wine_glass",
-                     faces=("east", "west", "up", "down"), uv=[gu, gv, gu + 8, gv + 8]))
-        els.append(B([x - 0.33, y - 0.33, 7.2], [x + 0.33, y + 0.33, 8.1], "wine_foils",
-                     faces=("north", "east", "west", "up", "down"),
-                     uv=[fu, fv, fu + 8, fv + 8]))
+        # the neck and its foil capsule are one box: its sides and ends wear a wine_necks cell,
+        # glass behind and foil in front, so one box does what two did
+        # a model's uv spans 0..16 over the whole 64 x 64 texture: an 8 px cell is 2 across
+        hu, hv = f * 2, g * 2           # foil on the left, glass on the right, across u
+        vu, vv = f * 2, 6 + g * 2       # the same split down v, for the top and bottom
+        els.append(B([x - 0.33, y - 0.33, 7.2], [x + 0.33, y + 0.33, 9.0], "wine_necks",
+                     faces=("north", "east", "west", "up", "down"), per={"north": "wine_foils"},
+                     uv={"north": [fu, fv, fu + 8, fv + 8],
+                         "east": [hu + 2, hv, hu, hv + 2],
+                         "west": [hu, hv, hu + 2, hv + 2],
+                         "up": [vu, vv + 2, vu + 2, vv],
+                         "down": [vu, vv, vu + 2, vv + 2]}))
     half = 10.4
     for ang in (45, -45):
         els.append(B([8 - half, 7.6, z0 + 0.2], [8 + half, 8.4, z1 - 1], "oak",
                      faces=("north", "up", "down"),
                      uv={"north": [0, 7.6, 16, 8.4], "up": [0, 0, 16, 7], "down": [0, 0, 16, 7]},
                      rot=("z", ang, [8, 8, 12])))
-    return model(tx("oak", "oak_v", "wine_bottles", "wine_glass", "wine_foils"), els)
+    return model(tx("oak", "oak_v", "wine_bottles", "wine_glass", "wine_foils", "wine_necks"),
+                 els)
 
 
 add("winerack", "nsewud", winerack())

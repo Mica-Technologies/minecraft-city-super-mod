@@ -6,6 +6,7 @@
     "wine_bottles": "csm:blocks/furniture/gameroom/wine_bottles",
     "wine_glass": "csm:blocks/furniture/gameroom/wine_glass",
     "wine_foils": "csm:blocks/furniture/gameroom/wine_foils",
+    "wine_necks": "csm:blocks/furniture/gameroom/wine_necks",
     "particle": "csm:blocks/furniture/gameroom/oak"
   },
   "elements": [
@@ -361,56 +362,6 @@
     },
     {
       "from": [
-        6.074,
-        7.7,
-        8.1
-      ],
-      "to": [
-        6.674,
-        8.3,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         6.044,
         7.67,
         7.2
@@ -418,7 +369,7 @@
       "to": [
         6.704,
         8.33,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -431,39 +382,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            2,
             0,
-            0,
-            8,
-            8
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            2,
+            2,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            10,
+            2,
             8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            10
           ]
         }
       }
@@ -529,56 +480,6 @@
     },
     {
       "from": [
-        5.013,
-        8.761,
-        8.1
-      ],
-      "to": [
-        5.613,
-        9.361,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         4.983,
         8.731,
         7.2
@@ -586,7 +487,7 @@
       "to": [
         5.643,
         9.391,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -599,39 +500,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             0,
-            8,
-            8,
-            16
+            4,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            4,
             0,
-            8,
-            8,
-            16
+            6,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
+            4,
             8,
-            8,
-            16
+            6,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            6,
+            6,
+            8
           ]
         }
       }
@@ -697,56 +598,6 @@
     },
     {
       "from": [
-        3.952,
-        9.821,
-        8.1
-      ],
-      "to": [
-        4.552,
-        10.421,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         3.922,
         9.791,
         7.2
@@ -754,7 +605,7 @@
       "to": [
         4.582,
         10.451,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -767,39 +618,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            4,
+            6,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            4,
             8,
-            8,
-            16,
-            16
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            12,
             8,
-            8,
-            16,
-            16
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            12
           ]
         }
       }
@@ -865,56 +716,6 @@
     },
     {
       "from": [
-        2.892,
-        10.882,
-        8.1
-      ],
-      "to": [
-        3.492,
-        11.482,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         2.862,
         10.852,
         7.2
@@ -922,7 +723,7 @@
       "to": [
         3.522,
         11.512,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -935,39 +736,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             0,
-            8,
-            8,
-            16
+            4,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            4,
             0,
-            8,
-            8,
-            16
+            6,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
+            4,
             8,
-            8,
-            16
+            6,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            6,
+            6,
+            8
           ]
         }
       }
@@ -1033,56 +834,6 @@
     },
     {
       "from": [
-        1.831,
-        11.943,
-        8.1
-      ],
-      "to": [
-        2.431,
-        12.543,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         1.801,
         11.913,
         7.2
@@ -1090,7 +841,7 @@
       "to": [
         2.461,
         12.573,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -1103,39 +854,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             0,
-            8,
-            8,
-            16
+            4,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            4,
             0,
-            8,
-            8,
-            16
+            6,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
+            4,
             8,
-            8,
-            16
+            6,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            6,
+            6,
+            8
           ]
         }
       }
@@ -1201,56 +952,6 @@
     },
     {
       "from": [
-        5.013,
-        6.639,
-        8.1
-      ],
-      "to": [
-        5.613,
-        7.239,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         4.983,
         6.609,
         7.2
@@ -1258,7 +959,7 @@
       "to": [
         5.643,
         7.269,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -1271,39 +972,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            4,
+            6,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            4,
             8,
-            8,
-            16,
-            16
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            12,
             8,
-            8,
-            16,
-            16
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            12
           ]
         }
       }
@@ -1369,56 +1070,6 @@
     },
     {
       "from": [
-        3.952,
-        7.7,
-        8.1
-      ],
-      "to": [
-        4.552,
-        8.3,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         3.922,
         7.67,
         7.2
@@ -1426,7 +1077,7 @@
       "to": [
         4.582,
         8.33,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -1439,38 +1090,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             0,
             0,
-            8,
-            8
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
             0,
-            8,
-            8
+            2,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            6,
+            2,
             8
           ]
         }
@@ -1537,56 +1188,6 @@
     },
     {
       "from": [
-        2.892,
-        8.761,
-        8.1
-      ],
-      "to": [
-        3.492,
-        9.361,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         2.862,
         8.731,
         7.2
@@ -1594,7 +1195,7 @@
       "to": [
         3.522,
         9.391,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -1607,39 +1208,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            4,
+            4,
+            2,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            4,
+            4,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            12,
+            4,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            10,
+            4,
+            12
           ]
         }
       }
@@ -1705,56 +1306,6 @@
     },
     {
       "from": [
-        1.831,
-        9.821,
-        8.1
-      ],
-      "to": [
-        2.431,
-        10.421,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         1.801,
         9.791,
         7.2
@@ -1762,7 +1313,7 @@
       "to": [
         2.461,
         10.451,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -1775,39 +1326,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            6,
+            4,
+            4,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            4,
+            6,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            12,
+            6,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            10,
+            6,
+            12
           ]
         }
       }
@@ -1873,56 +1424,6 @@
     },
     {
       "from": [
-        3.952,
-        5.579,
-        8.1
-      ],
-      "to": [
-        4.552,
-        6.179,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         3.922,
         5.549,
         7.2
@@ -1930,7 +1431,7 @@
       "to": [
         4.582,
         6.209,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -1943,39 +1444,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             0,
-            8,
-            8,
-            16
+            4,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            4,
             0,
-            8,
-            8,
-            16
+            6,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
+            4,
             8,
-            8,
-            16
+            6,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            6,
+            6,
+            8
           ]
         }
       }
@@ -2041,56 +1542,6 @@
     },
     {
       "from": [
-        2.892,
-        6.639,
-        8.1
-      ],
-      "to": [
-        3.492,
-        7.239,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         2.862,
         6.609,
         7.2
@@ -2098,7 +1549,7 @@
       "to": [
         3.522,
         7.269,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -2111,39 +1562,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            4,
+            6,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            4,
             8,
-            8,
-            16,
-            16
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            12,
             8,
-            8,
-            16,
-            16
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            12
           ]
         }
       }
@@ -2209,56 +1660,6 @@
     },
     {
       "from": [
-        1.831,
-        7.7,
-        8.1
-      ],
-      "to": [
-        2.431,
-        8.3,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         1.801,
         7.67,
         7.2
@@ -2266,7 +1667,7 @@
       "to": [
         2.461,
         8.33,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -2279,39 +1680,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            4,
             0,
-            0,
-            8,
-            8
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            4,
+            2,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            12,
+            2,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            10,
+            2,
+            12
           ]
         }
       }
@@ -2377,56 +1778,6 @@
     },
     {
       "from": [
-        2.892,
-        4.518,
-        8.1
-      ],
-      "to": [
-        3.492,
-        5.118,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         2.862,
         4.488,
         7.2
@@ -2434,7 +1785,7 @@
       "to": [
         3.522,
         5.148,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -2447,39 +1798,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            4,
             0,
-            0,
-            8,
-            8
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            4,
+            2,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            12,
+            2,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            10,
+            2,
+            12
           ]
         }
       }
@@ -2545,56 +1896,6 @@
     },
     {
       "from": [
-        1.831,
-        5.579,
-        8.1
-      ],
-      "to": [
-        2.431,
-        6.179,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         1.801,
         5.549,
         7.2
@@ -2602,7 +1903,7 @@
       "to": [
         2.461,
         6.209,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -2615,39 +1916,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            6,
+            4,
+            4,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            4,
+            6,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            12,
+            6,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            10,
+            6,
+            12
           ]
         }
       }
@@ -2713,56 +2014,6 @@
     },
     {
       "from": [
-        1.831,
-        3.457,
-        8.1
-      ],
-      "to": [
-        2.431,
-        4.057,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         1.801,
         3.427,
         7.2
@@ -2770,7 +2021,7 @@
       "to": [
         2.461,
         4.087,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -2783,39 +2034,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            6,
+            2,
+            4,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            2,
+            6,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            10,
+            6,
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
+            4,
             8,
-            8,
-            16
+            6,
+            10
           ]
         }
       }
@@ -2881,56 +2132,6 @@
     },
     {
       "from": [
-        7.7,
-        6.074,
-        8.1
-      ],
-      "to": [
-        8.3,
-        6.674,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         7.67,
         6.044,
         7.2
@@ -2938,7 +2139,7 @@
       "to": [
         8.33,
         6.704,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -2951,38 +2152,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            4,
             0,
-            16,
-            8
+            2,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            2,
             0,
-            16,
-            8
+            4,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             8,
-            0,
-            16,
-            8
+            4,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
+            2,
+            6,
+            4,
             8
           ]
         }
@@ -3049,56 +2250,6 @@
     },
     {
       "from": [
-        8.761,
-        5.013,
-        8.1
-      ],
-      "to": [
-        9.361,
-        5.613,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         8.731,
         4.983,
         7.2
@@ -3106,7 +2257,7 @@
       "to": [
         9.391,
         5.643,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -3119,39 +2270,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            4,
+            6,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            4,
             8,
-            8,
-            16,
-            16
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            12,
             8,
-            8,
-            16,
-            16
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            12
           ]
         }
       }
@@ -3217,56 +2368,6 @@
     },
     {
       "from": [
-        9.821,
-        3.952,
-        8.1
-      ],
-      "to": [
-        10.421,
-        4.552,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         9.791,
         3.922,
         7.2
@@ -3274,7 +2375,7 @@
       "to": [
         10.451,
         4.582,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -3287,38 +2388,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             0,
             0,
-            8,
-            8
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
             0,
-            8,
-            8
+            2,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            6,
+            2,
             8
           ]
         }
@@ -3385,56 +2486,6 @@
     },
     {
       "from": [
-        10.882,
-        2.892,
-        8.1
-      ],
-      "to": [
-        11.482,
-        3.492,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         10.852,
         2.862,
         7.2
@@ -3442,7 +2493,7 @@
       "to": [
         11.512,
         3.522,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -3455,39 +2506,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            2,
             0,
-            0,
-            8,
-            8
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            2,
+            2,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            10,
+            2,
             8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            10
           ]
         }
       }
@@ -3553,56 +2604,6 @@
     },
     {
       "from": [
-        11.943,
-        1.831,
-        8.1
-      ],
-      "to": [
-        12.543,
-        2.431,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         11.913,
         1.801,
         7.2
@@ -3610,7 +2611,7 @@
       "to": [
         12.573,
         2.461,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -3623,39 +2624,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            4,
+            4,
+            2,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            4,
+            4,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            12,
+            4,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            10,
+            4,
+            12
           ]
         }
       }
@@ -3721,56 +2722,6 @@
     },
     {
       "from": [
-        6.639,
-        5.013,
-        8.1
-      ],
-      "to": [
-        7.239,
-        5.613,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         6.609,
         4.983,
         7.2
@@ -3778,7 +2729,7 @@
       "to": [
         7.269,
         5.643,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -3791,39 +2742,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            4,
             0,
-            0,
-            8,
-            8
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            4,
+            2,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            12,
+            2,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            10,
+            2,
+            12
           ]
         }
       }
@@ -3889,56 +2840,6 @@
     },
     {
       "from": [
-        7.7,
-        3.952,
-        8.1
-      ],
-      "to": [
-        8.3,
-        4.552,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         7.67,
         3.922,
         7.2
@@ -3946,7 +2847,7 @@
       "to": [
         8.33,
         4.582,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -3959,39 +2860,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            4,
+            4,
+            2,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            4,
+            4,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            12,
+            4,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            10,
+            4,
+            12
           ]
         }
       }
@@ -4057,56 +2958,6 @@
     },
     {
       "from": [
-        8.761,
-        2.892,
-        8.1
-      ],
-      "to": [
-        9.361,
-        3.492,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         8.731,
         2.862,
         7.2
@@ -4114,7 +2965,7 @@
       "to": [
         9.391,
         3.522,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -4127,38 +2978,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            4,
             0,
-            16,
-            8
+            2,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            2,
             0,
-            16,
-            8
+            4,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             8,
-            0,
-            16,
-            8
+            4,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
+            2,
+            6,
+            4,
             8
           ]
         }
@@ -4225,56 +3076,6 @@
     },
     {
       "from": [
-        9.821,
-        1.831,
-        8.1
-      ],
-      "to": [
-        10.421,
-        2.431,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         9.791,
         1.801,
         7.2
@@ -4282,7 +3083,7 @@
       "to": [
         10.451,
         2.461,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -4295,39 +3096,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            2,
+            6,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            2,
             8,
-            8,
-            16,
-            16
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            10
           ]
         }
       }
@@ -4393,56 +3194,6 @@
     },
     {
       "from": [
-        5.579,
-        3.952,
-        8.1
-      ],
-      "to": [
-        6.179,
-        4.552,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         5.549,
         3.922,
         7.2
@@ -4450,7 +3201,7 @@
       "to": [
         6.209,
         4.582,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -4463,39 +3214,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            2,
+            6,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            2,
             8,
-            8,
-            16,
-            16
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            10
           ]
         }
       }
@@ -4561,56 +3312,6 @@
     },
     {
       "from": [
-        6.639,
-        2.892,
-        8.1
-      ],
-      "to": [
-        7.239,
-        3.492,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         6.609,
         2.862,
         7.2
@@ -4618,7 +3319,7 @@
       "to": [
         7.269,
         3.522,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -4631,39 +3332,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            4,
+            6,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            4,
             8,
-            8,
-            16,
-            16
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            12,
             8,
-            8,
-            16,
-            16
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            12
           ]
         }
       }
@@ -4729,56 +3430,6 @@
     },
     {
       "from": [
-        7.7,
-        1.831,
-        8.1
-      ],
-      "to": [
-        8.3,
-        2.431,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         7.67,
         1.801,
         7.2
@@ -4786,7 +3437,7 @@
       "to": [
         8.33,
         2.461,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -4799,39 +3450,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            2,
             0,
-            0,
-            8,
-            8
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            2,
+            2,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            10,
+            2,
             8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            10
           ]
         }
       }
@@ -4897,56 +3548,6 @@
     },
     {
       "from": [
-        4.518,
-        2.892,
-        8.1
-      ],
-      "to": [
-        5.118,
-        3.492,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         4.488,
         2.862,
         7.2
@@ -4954,7 +3555,7 @@
       "to": [
         5.148,
         3.522,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -4967,39 +3568,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            6,
+            2,
+            4,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            2,
+            6,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            10,
+            6,
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
+            4,
             8,
-            8,
-            16
+            6,
+            10
           ]
         }
       }
@@ -5065,56 +3666,6 @@
     },
     {
       "from": [
-        5.579,
-        1.831,
-        8.1
-      ],
-      "to": [
-        6.179,
-        2.431,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         5.549,
         1.801,
         7.2
@@ -5122,7 +3673,7 @@
       "to": [
         6.209,
         2.461,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -5135,38 +3686,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             0,
             0,
-            8,
-            8
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
             0,
-            8,
-            8
+            2,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            6,
+            2,
             8
           ]
         }
@@ -5233,56 +3784,6 @@
     },
     {
       "from": [
-        3.457,
-        1.831,
-        8.1
-      ],
-      "to": [
-        4.057,
-        2.431,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         3.427,
         1.801,
         7.2
@@ -5290,7 +3791,7 @@
       "to": [
         4.087,
         2.461,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -5303,39 +3804,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            2,
+            6,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            2,
             8,
-            8,
-            16,
-            16
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            10
           ]
         }
       }
@@ -5401,56 +3902,6 @@
     },
     {
       "from": [
-        7.7,
-        9.326,
-        8.1
-      ],
-      "to": [
-        8.3,
-        9.926,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         7.67,
         9.296,
         7.2
@@ -5458,7 +3909,7 @@
       "to": [
         8.33,
         9.956,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -5471,39 +3922,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            4,
+            6,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            4,
             8,
-            8,
-            16,
-            16
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            12,
             8,
-            8,
-            16,
-            16
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            12
           ]
         }
       }
@@ -5569,56 +4020,6 @@
     },
     {
       "from": [
-        6.639,
-        10.387,
-        8.1
-      ],
-      "to": [
-        7.239,
-        10.987,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         6.609,
         10.357,
         7.2
@@ -5626,7 +4027,7 @@
       "to": [
         7.269,
         11.017,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -5639,39 +4040,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            0,
+            6,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            0,
             8,
-            8,
-            16,
-            16
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            6,
             8,
-            8,
-            16,
-            16
+            8
           ]
         }
       }
@@ -5737,56 +4138,6 @@
     },
     {
       "from": [
-        5.579,
-        11.448,
-        8.1
-      ],
-      "to": [
-        6.179,
-        12.048,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         5.549,
         11.418,
         7.2
@@ -5794,7 +4145,7 @@
       "to": [
         6.209,
         12.078,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -5807,39 +4158,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            0,
+            6,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            0,
             8,
-            8,
-            16,
-            16
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            6,
             8,
-            8,
-            16,
-            16
+            8
           ]
         }
       }
@@ -5905,56 +4256,6 @@
     },
     {
       "from": [
-        4.518,
-        12.508,
-        8.1
-      ],
-      "to": [
-        5.118,
-        13.108,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         4.488,
         12.478,
         7.2
@@ -5962,7 +4263,7 @@
       "to": [
         5.148,
         13.138,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -5975,39 +4276,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            6,
+            4,
+            4,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            4,
+            6,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            12,
+            6,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            10,
+            6,
+            12
           ]
         }
       }
@@ -6073,56 +4374,6 @@
     },
     {
       "from": [
-        3.457,
-        13.569,
-        8.1
-      ],
-      "to": [
-        4.057,
-        14.169,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         3.427,
         13.539,
         7.2
@@ -6130,7 +4381,7 @@
       "to": [
         4.087,
         14.199,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -6143,38 +4394,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            4,
             0,
-            16,
-            8
+            2,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            2,
             0,
-            16,
-            8
+            4,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             8,
-            0,
-            16,
-            8
+            4,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
+            2,
+            6,
+            4,
             8
           ]
         }
@@ -6241,56 +4492,6 @@
     },
     {
       "from": [
-        8.761,
-        10.387,
-        8.1
-      ],
-      "to": [
-        9.361,
-        10.987,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         8.731,
         10.357,
         7.2
@@ -6298,7 +4499,7 @@
       "to": [
         9.391,
         11.017,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -6311,38 +4512,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             0,
             0,
-            8,
-            8
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
             0,
-            8,
-            8
+            2,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            6,
+            2,
             8
           ]
         }
@@ -6409,56 +4610,6 @@
     },
     {
       "from": [
-        7.7,
-        11.448,
-        8.1
-      ],
-      "to": [
-        8.3,
-        12.048,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         7.67,
         11.418,
         7.2
@@ -6466,7 +4617,7 @@
       "to": [
         8.33,
         12.078,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -6479,38 +4630,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            4,
             0,
-            16,
-            8
+            2,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            2,
             0,
-            16,
-            8
+            4,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             8,
-            0,
-            16,
-            8
+            4,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
+            2,
+            6,
+            4,
             8
           ]
         }
@@ -6577,56 +4728,6 @@
     },
     {
       "from": [
-        6.639,
-        12.508,
-        8.1
-      ],
-      "to": [
-        7.239,
-        13.108,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         6.609,
         12.478,
         7.2
@@ -6634,7 +4735,7 @@
       "to": [
         7.269,
         13.138,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -6647,39 +4748,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            4,
+            4,
+            2,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            4,
+            4,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            12,
+            4,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            10,
+            4,
+            12
           ]
         }
       }
@@ -6745,56 +4846,6 @@
     },
     {
       "from": [
-        5.579,
-        13.569,
-        8.1
-      ],
-      "to": [
-        6.179,
-        14.169,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         5.549,
         13.539,
         7.2
@@ -6802,7 +4853,7 @@
       "to": [
         6.209,
         14.199,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -6815,38 +4866,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            4,
             0,
-            16,
-            8
+            2,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            2,
             0,
-            16,
-            8
+            4,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             8,
-            0,
-            16,
-            8
+            4,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
+            2,
+            6,
+            4,
             8
           ]
         }
@@ -6913,56 +4964,6 @@
     },
     {
       "from": [
-        9.821,
-        11.448,
-        8.1
-      ],
-      "to": [
-        10.421,
-        12.048,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         9.791,
         11.418,
         7.2
@@ -6970,7 +4971,7 @@
       "to": [
         10.451,
         12.078,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -6983,39 +4984,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            4,
+            2,
+            2,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            2,
+            4,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
+            2,
+            10,
+            4,
             8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             8,
-            0,
-            16,
-            8
+            4,
+            10
           ]
         }
       }
@@ -7081,56 +5082,6 @@
     },
     {
       "from": [
-        8.761,
-        12.508,
-        8.1
-      ],
-      "to": [
-        9.361,
-        13.108,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         8.731,
         12.478,
         7.2
@@ -7138,7 +5089,7 @@
       "to": [
         9.391,
         13.138,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -7151,39 +5102,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            0,
+            6,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            0,
             8,
-            8,
-            16,
-            16
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            6,
             8,
-            8,
-            16,
-            16
+            8
           ]
         }
       }
@@ -7249,56 +5200,6 @@
     },
     {
       "from": [
-        7.7,
-        13.569,
-        8.1
-      ],
-      "to": [
-        8.3,
-        14.169,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         7.67,
         13.539,
         7.2
@@ -7306,7 +5207,7 @@
       "to": [
         8.33,
         14.199,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -7319,39 +5220,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            6,
+            2,
+            4,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            2,
+            6,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            10,
+            6,
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
+            4,
             8,
-            8,
-            16
+            6,
+            10
           ]
         }
       }
@@ -7417,56 +5318,6 @@
     },
     {
       "from": [
-        10.882,
-        12.508,
-        8.1
-      ],
-      "to": [
-        11.482,
-        13.108,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         10.852,
         12.478,
         7.2
@@ -7474,7 +5325,7 @@
       "to": [
         11.512,
         13.138,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -7487,39 +5338,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            2,
+            6,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            2,
             8,
-            8,
-            16,
-            16
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            10
           ]
         }
       }
@@ -7585,56 +5436,6 @@
     },
     {
       "from": [
-        9.821,
-        13.569,
-        8.1
-      ],
-      "to": [
-        10.421,
-        14.169,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         9.791,
         13.539,
         7.2
@@ -7642,7 +5443,7 @@
       "to": [
         10.451,
         14.199,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -7655,39 +5456,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            2,
+            6,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            2,
             8,
-            8,
-            16,
-            16
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            10
           ]
         }
       }
@@ -7753,56 +5554,6 @@
     },
     {
       "from": [
-        11.943,
-        13.569,
-        8.1
-      ],
-      "to": [
-        12.543,
-        14.169,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         11.913,
         13.539,
         7.2
@@ -7810,7 +5561,7 @@
       "to": [
         12.573,
         14.199,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -7823,39 +5574,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            2,
+            6,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            2,
             8,
-            8,
-            16,
-            16
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            10
           ]
         }
       }
@@ -7921,56 +5672,6 @@
     },
     {
       "from": [
-        9.326,
-        7.7,
-        8.1
-      ],
-      "to": [
-        9.926,
-        8.3,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         9.296,
         7.67,
         7.2
@@ -7978,7 +5679,7 @@
       "to": [
         9.956,
         8.33,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -7991,39 +5692,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            2,
+            6,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            2,
             8,
-            8,
-            16,
-            16
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            10
           ]
         }
       }
@@ -8089,56 +5790,6 @@
     },
     {
       "from": [
-        10.387,
-        6.639,
-        8.1
-      ],
-      "to": [
-        10.987,
-        7.239,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         10.357,
         6.609,
         7.2
@@ -8146,7 +5797,7 @@
       "to": [
         11.017,
         7.269,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -8159,39 +5810,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            2,
             0,
-            0,
-            8,
-            8
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            2,
+            2,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            10,
+            2,
             8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            10
           ]
         }
       }
@@ -8257,56 +5908,6 @@
     },
     {
       "from": [
-        11.448,
-        5.579,
-        8.1
-      ],
-      "to": [
-        12.048,
-        6.179,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         11.418,
         5.549,
         7.2
@@ -8314,7 +5915,7 @@
       "to": [
         12.078,
         6.209,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -8327,39 +5928,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             8,
-            8,
-            16,
-            16
+            2,
+            6,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            2,
             8,
-            8,
-            16,
-            16
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
+            10,
             8,
-            8,
-            16,
-            16
+            8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             8,
             8,
-            16,
-            16
+            10
           ]
         }
       }
@@ -8425,56 +6026,6 @@
     },
     {
       "from": [
-        12.508,
-        4.518,
-        8.1
-      ],
-      "to": [
-        13.108,
-        5.118,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         12.478,
         4.488,
         7.2
@@ -8482,7 +6033,7 @@
       "to": [
         13.138,
         5.148,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -8495,39 +6046,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            2,
             0,
-            0,
-            8,
-            8
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            2,
+            2,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            10,
+            2,
             8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            10
           ]
         }
       }
@@ -8593,56 +6144,6 @@
     },
     {
       "from": [
-        13.569,
-        3.457,
-        8.1
-      ],
-      "to": [
-        14.169,
-        4.057,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         13.539,
         3.427,
         7.2
@@ -8650,7 +6151,7 @@
       "to": [
         14.199,
         4.087,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -8663,39 +6164,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            4,
+            4,
+            2,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            4,
+            4,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            12,
+            4,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            10,
+            4,
+            12
           ]
         }
       }
@@ -8761,56 +6262,6 @@
     },
     {
       "from": [
-        10.387,
-        8.761,
-        8.1
-      ],
-      "to": [
-        10.987,
-        9.361,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         10.357,
         8.731,
         7.2
@@ -8818,7 +6269,7 @@
       "to": [
         11.017,
         9.391,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -8831,39 +6282,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            4,
             0,
-            0,
-            8,
-            8
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            4,
+            2,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            12,
+            2,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            10,
+            2,
+            12
           ]
         }
       }
@@ -8929,56 +6380,6 @@
     },
     {
       "from": [
-        11.448,
-        7.7,
-        8.1
-      ],
-      "to": [
-        12.048,
-        8.3,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         11.418,
         7.67,
         7.2
@@ -8986,7 +6387,7 @@
       "to": [
         12.078,
         8.33,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -8999,39 +6400,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            6,
             0,
-            8,
-            8,
-            16
+            4,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            4,
             0,
-            8,
-            8,
-            16
+            6,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
+            4,
             8,
-            8,
-            16
+            6,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            6,
+            6,
+            8
           ]
         }
       }
@@ -9097,56 +6498,6 @@
     },
     {
       "from": [
-        12.508,
-        6.639,
-        8.1
-      ],
-      "to": [
-        13.108,
-        7.239,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         12.478,
         6.609,
         7.2
@@ -9154,7 +6505,7 @@
       "to": [
         13.138,
         7.269,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -9167,39 +6518,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            4,
             0,
-            0,
-            8,
-            8
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            4,
+            2,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            12,
+            2,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            10,
+            2,
+            12
           ]
         }
       }
@@ -9265,56 +6616,6 @@
     },
     {
       "from": [
-        13.569,
-        5.579,
-        8.1
-      ],
-      "to": [
-        14.169,
-        6.179,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         13.539,
         5.549,
         7.2
@@ -9322,7 +6623,7 @@
       "to": [
         14.199,
         6.209,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -9335,39 +6636,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            6,
+            4,
+            4,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            4,
+            6,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            12,
+            6,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            10,
+            6,
+            12
           ]
         }
       }
@@ -9433,56 +6734,6 @@
     },
     {
       "from": [
-        11.448,
-        9.821,
-        8.1
-      ],
-      "to": [
-        12.048,
-        10.421,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         11.418,
         9.791,
         7.2
@@ -9490,7 +6741,7 @@
       "to": [
         12.078,
         10.451,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -9503,39 +6754,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            4,
             0,
-            0,
-            8,
-            8
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            4,
+            2,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            12,
+            2,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            10,
+            2,
+            12
           ]
         }
       }
@@ -9601,56 +6852,6 @@
     },
     {
       "from": [
-        12.508,
-        8.761,
-        8.1
-      ],
-      "to": [
-        13.108,
-        9.361,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         12.478,
         8.731,
         7.2
@@ -9658,7 +6859,7 @@
       "to": [
         13.138,
         9.391,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -9671,38 +6872,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            4,
             0,
-            16,
-            8
+            2,
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
+            2,
             0,
-            16,
-            8
+            4,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             8,
-            0,
-            16,
-            8
+            4,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
+            2,
+            6,
+            4,
             8
           ]
         }
@@ -9769,56 +6970,6 @@
     },
     {
       "from": [
-        13.569,
-        7.7,
-        8.1
-      ],
-      "to": [
-        14.169,
-        8.3,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         13.539,
         7.67,
         7.2
@@ -9826,7 +6977,7 @@
       "to": [
         14.199,
         8.33,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -9839,39 +6990,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
+            4,
             0,
-            0,
-            8,
-            8
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            4,
+            2,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            12,
+            2,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
-            8
+            10,
+            2,
+            12
           ]
         }
       }
@@ -9937,56 +7088,6 @@
     },
     {
       "from": [
-        12.508,
-        10.882,
-        8.1
-      ],
-      "to": [
-        13.108,
-        11.482,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            8,
-            0,
-            16,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         12.478,
         10.852,
         7.2
@@ -9994,7 +7095,7 @@
       "to": [
         13.138,
         11.512,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -10007,39 +7108,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            4,
+            2,
+            2,
+            4
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
-            8
+            2,
+            2,
+            4,
+            4
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            8,
-            0,
-            16,
+            2,
+            10,
+            4,
             8
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             8,
-            0,
-            16,
-            8
+            4,
+            10
           ]
         }
       }
@@ -10105,56 +7206,6 @@
     },
     {
       "from": [
-        13.569,
-        9.821,
-        8.1
-      ],
-      "to": [
-        14.169,
-        10.421,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            8,
-            8,
-            16
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         13.539,
         9.791,
         7.2
@@ -10162,7 +7213,7 @@
       "to": [
         14.199,
         10.451,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -10175,39 +7226,39 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            6,
+            4,
+            4,
+            6
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            4,
+            6,
+            6
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            12,
+            6,
+            10
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
-            0,
-            8,
-            8,
-            16
+            4,
+            10,
+            6,
+            12
           ]
         }
       }
@@ -10273,56 +7324,6 @@
     },
     {
       "from": [
-        13.569,
-        11.943,
-        8.1
-      ],
-      "to": [
-        14.169,
-        12.543,
-        9.0
-      ],
-      "faces": {
-        "east": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "west": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "up": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        },
-        "down": {
-          "texture": "#wine_glass",
-          "uv": [
-            0,
-            0,
-            8,
-            8
-          ]
-        }
-      }
-    },
-    {
-      "from": [
         13.539,
         11.913,
         7.2
@@ -10330,7 +7331,7 @@
       "to": [
         14.199,
         12.573,
-        8.1
+        9.0
       ],
       "faces": {
         "north": {
@@ -10343,38 +7344,38 @@
           ]
         },
         "east": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
+            2,
             0,
             0,
-            8,
-            8
+            2
           ]
         },
         "west": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
             0,
-            8,
-            8
+            2,
+            2
           ]
         },
         "up": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
             8,
-            8
+            2,
+            6
           ]
         },
         "down": {
-          "texture": "#wine_foils",
+          "texture": "#wine_necks",
           "uv": [
             0,
-            0,
-            8,
+            6,
+            2,
             8
           ]
         }
