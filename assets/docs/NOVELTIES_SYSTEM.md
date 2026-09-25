@@ -182,6 +182,22 @@ drawn by `gen_furniture_residential.py`, in the `furniture.residential` package:
   an `ItemStackHandler` exposed as a capability (hoppers work), drops on break, gives a comparator
   signal; the screen is served by `NoveltiesGuiProvider`.
 
+**Coplanar faces.** Every furniture generator (`gen_furniture_*.py`) ends its `generate` with
+`furniture_depth.py`, which finds faces that z-fight and moves them apart. A piece is built of
+boxes, and two of them often put a face on one plane: a detail laid flush on a body (a clock
+face, a door window, a checkout's end panel over its cabinet), or a round part's square and the
+same square turned 45 degrees sharing a top. For each set of models a blockstate the generator
+wrote draws at once (every combination of its multipart properties), the pass takes faces facing
+the same way on planes under 0.2 px apart (`SignFaceDepthTest`'s rule, which a 24-bit depth
+buffer holds to about 100 blocks), samples both textures where they overlap, and where both are
+opaque and differ moves the smaller face along its normal by growing its box, so nothing else
+moves. A face keeps the order it was drawn in (out if it was level or in front, back if it was
+a little behind), is placed against every face it overlaps at once so a stack fans out rather
+than trading places, stays within the -16..32 a model may hold, and is only moved in a model
+the generator itself wrote. Moves are 0.05 to 0.65 px. So: draw a detail flush and let the pass
+separate it; do not hand-nudge coordinates to dodge z-fighting, or the pass will measure the
+nudge as the design.
+
 The kitchen follows in the same tab, drawn by `gen_furniture_kitchen.py`:
 
 - `BlockKitchenCabinet` (a `BlockResidentialStorage`): base cabinets (two doors, drawer bank,

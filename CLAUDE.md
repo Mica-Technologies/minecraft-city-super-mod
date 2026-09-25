@@ -704,6 +704,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   `--check`, `--fragments` (the whole tab body, moved crates included).
   `gen_furniture_sounds.py` synthesises the card terminal beep, the scanner beep and the cash
   drawer
+- `furniture_depth.py` -- run by every `gen_furniture_*.py` at the end of `generate`: finds the
+  coplanar faces that z-fight among the models a blockstate draws at once (under 0.2 px apart,
+  opaque, different pixels where they overlap, measured off the textures) and moves the smaller
+  face out along its normal by growing its box, in models that generator wrote only. Draw a
+  detail flush and let it separate it; see Residential Furniture in `NOVELTIES_SYSTEM.md`
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

@@ -2356,6 +2356,7 @@ def generate(assets):
     dump("blockstates/vf915.json", verifone_state())
     R.write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in R.LOCALES]
+    R.separate_faces(assets, written)
     return written
 
 

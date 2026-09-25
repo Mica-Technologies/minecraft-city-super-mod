@@ -1021,6 +1021,7 @@ def generate(assets):
              {"parent": "item/generated", "textures": {"layer0": ITEM_TEX + reg}})
     R.write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in R.LOCALES]
+    R.separate_faces(assets, written)
     return written
 
 
