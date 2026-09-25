@@ -1,0 +1,40 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/platforms/platform_validator"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "light": {
+      "0": {
+        "textures": {
+          "screen": "csm:blocks/transit/platforms/validator_idle"
+        }
+      },
+      "1": {
+        "textures": {
+          "screen": "csm:blocks/transit/platforms/validator_ok"
+        }
+      },
+      "2": {
+        "textures": {
+          "screen": "csm:blocks/transit/platforms/validator_no"
+        }
+      }
+    }
+  }
+}

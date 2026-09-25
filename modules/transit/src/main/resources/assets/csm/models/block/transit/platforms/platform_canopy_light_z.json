@@ -1,0 +1,54 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "soffit": "csm:blocks/transit/platforms/soffit",
+    "roof": "csm:blocks/transit/platforms/roof",
+    "fascia": "csm:blocks/transit/platforms/fascia",
+    "lamp": "csm:blocks/transit/platforms/lamp_on",
+    "particle": "csm:blocks/transit/platforms/fascia"
+  },
+  "elements": [
+    {
+      "from": [
+        6.8,
+        -0.4,
+        0
+      ],
+      "to": [
+        9.2,
+        0,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            6.8,
+            0,
+            9.2,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            0.4
+          ]
+        },
+        "west": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            0.4
+          ]
+        }
+      },
+      "shade": false
+    }
+  ]
+}

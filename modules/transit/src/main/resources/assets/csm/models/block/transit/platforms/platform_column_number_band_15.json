@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/platforms/platform_column_number_band_1",
+  "textures": {
+    "band": "csm:blocks/transit/platforms/column_number_15",
+    "particle": "csm:blocks/transit/platforms/tile_white"
+  }
+}

@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * The CSM: Transit module: the fare gates, the fare vending machine and the tickets and cards
- * they take, the bus stops and the bus shelters.
+ * they take, the bus stops, the bus shelters and the station and platform fit-out.
  *
  * <p>A module's mod container exists so that Forge serves the module jar's {@code assets/csm}
  * resources and shows it in the mod list. Content registration is entirely Core's: the creative
@@ -77,6 +77,7 @@ public class CsmTransit {
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
 
     CsmGuiRegistry.register(new TransitGuiProvider());
+    TransitSounds.registerSounds();
 
     // Safe here: Fabricator costs are first read at post-initialization and thereafter only
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.

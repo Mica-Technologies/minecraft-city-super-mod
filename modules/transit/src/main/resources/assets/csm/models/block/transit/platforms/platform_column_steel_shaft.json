@@ -1,0 +1,157 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "tile": "csm:blocks/transit/platforms/tile_white",
+    "plinth": "csm:blocks/transit/platforms/plinth",
+    "paint": "csm:blocks/transit/platforms/column_paint",
+    "particle": "csm:blocks/transit/platforms/column_paint"
+  },
+  "elements": [
+    {
+      "from": [
+        5.0,
+        0.0,
+        6.757
+      ],
+      "to": [
+        11.0,
+        16.0,
+        9.243
+      ],
+      "faces": {
+        "east": {
+          "texture": "#paint",
+          "uv": [
+            6.757,
+            0,
+            9.243,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#paint",
+          "uv": [
+            6.757,
+            0,
+            9.243,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.757,
+        -0.004,
+        5.0
+      ],
+      "to": [
+        9.243,
+        16.004,
+        11.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paint",
+          "uv": [
+            6.757,
+            0,
+            9.243,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#paint",
+          "uv": [
+            6.757,
+            0,
+            9.243,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.0,
+        -0.008,
+        6.757
+      ],
+      "to": [
+        11.0,
+        16.008,
+        9.243
+      ],
+      "faces": {
+        "east": {
+          "texture": "#paint",
+          "uv": [
+            6.757,
+            0,
+            9.243,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#paint",
+          "uv": [
+            6.757,
+            0,
+            9.243,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        6.757,
+        -0.012,
+        5.0
+      ],
+      "to": [
+        9.243,
+        16.012,
+        11.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paint",
+          "uv": [
+            6.757,
+            0,
+            9.243,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#paint",
+          "uv": [
+            6.757,
+            0,
+            9.243,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

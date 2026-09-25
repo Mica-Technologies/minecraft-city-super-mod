@@ -1,0 +1,61 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "tile": "csm:blocks/transit/platforms/tile_white",
+    "plinth": "csm:blocks/transit/platforms/plinth",
+    "paint": "csm:blocks/transit/platforms/column_paint",
+    "particle": "csm:blocks/transit/platforms/tile_white"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        16,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tile",
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#tile",
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#tile",
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#tile",
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

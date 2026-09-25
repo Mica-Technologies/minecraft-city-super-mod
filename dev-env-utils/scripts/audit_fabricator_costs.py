@@ -358,8 +358,8 @@ def cost_for(registry, info, ancestors):
     if tab == "tabtechnology":
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtransit":
-        # Mirrors TransitFabricatorRules: the bus stops by what they are made of, and the fare
-        # equipment at the price it kept from Technology.
+        # Mirrors TransitFabricatorRules: the bus stops and the station fit-out by what they
+        # are made of, and the fare equipment at the price it kept from Technology.
         if registry.startswith("bus_stop_flag_"):
             return ("SIGN_BLANK", "FASTENER_KIT")
         if registry.startswith("bus_stop_") and registry.endswith("_case"):
@@ -368,6 +368,26 @@ def cost_for(registry, info, ancestors):
             return ("LED_MODULE", "CONTROL_BOARD", "SHEET_METAL")
         if registry == "bus_stop_curb_plaque":
             return ("SHEET_METAL",)
+        if registry.startswith("tactile_") or registry.startswith("station_tile_"):
+            return ("CONCRETE_MIX",)
+        if registry in ("platform_help_point", "station_emergency_point"):
+            return ("CONTROL_BOARD", "SOUNDER_DRIVER", "SHEET_METAL")
+        if registry.startswith("platform_cctv_"):
+            return ("OPTICAL_SENSOR", "SHEET_METAL")
+        if registry == "platform_validator":
+            return ("CONTROL_BOARD", "LED_MODULE", "SHEET_METAL")
+        if registry == "platform_clock":
+            return ("CONTROL_BOARD", "SHEET_METAL")
+        if registry == "platform_canopy":
+            return ("SHEET_METAL x2", "LED_MODULE")
+        if registry.startswith("platform_column_"):
+            return ("POLE_SECTION", "CONCRETE_MIX")
+        if (registry.startswith("platform_sign_") or registry.startswith("station_name_")
+                or registry in ("platform_number_sign", "platform_gap_sign",
+                                "station_network_map")):
+            return ("SIGN_BLANK", "FASTENER_KIT")
+        if registry.startswith("platform_"):
+            return ("SHEET_METAL x2", "FASTENER_KIT")
         if registry.startswith("bus_shelter_glass_"):
             return ("POLE_SECTION", "SHEET_METAL x2", "glass_pane x4", "LED_MODULE")
         if registry.startswith("bus_shelter_cantilever_"):

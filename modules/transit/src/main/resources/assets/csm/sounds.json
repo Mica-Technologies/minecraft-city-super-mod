@@ -1,0 +1,29 @@
+{
+  "help_point_chime": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:help_point_chime",
+        "stream": false
+      }
+    ]
+  },
+  "validator_accept": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:validator_accept",
+        "stream": false
+      }
+    ]
+  },
+  "validator_deny": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:validator_deny",
+        "stream": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,248 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "tile": "csm:blocks/transit/platforms/tile_white",
+    "plinth": "csm:blocks/transit/platforms/plinth",
+    "band": "csm:blocks/transit/platforms/column_number_1",
+    "edge": "csm:blocks/transit/platforms/graphite",
+    "particle": "csm:blocks/transit/platforms/tile_white"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        16,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tile",
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#tile",
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#tile",
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#tile",
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.6,
+        0,
+        2.6
+      ],
+      "to": [
+        13.4,
+        1.8,
+        13.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            14.2,
+            13.4,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            14.2,
+            13.4,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            14.2,
+            13.4,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            14.2,
+            13.4,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            2.6,
+            13.4,
+            13.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.6,
+        14.6,
+        2.6
+      ],
+      "to": [
+        13.4,
+        16,
+        13.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            0,
+            13.4,
+            1.4
+          ]
+        },
+        "south": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            0,
+            13.4,
+            1.4
+          ]
+        },
+        "east": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            0,
+            13.4,
+            1.4
+          ]
+        },
+        "west": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            0,
+            13.4,
+            1.4
+          ]
+        },
+        "down": {
+          "texture": "#plinth",
+          "uv": [
+            2.6,
+            2.6,
+            13.4,
+            13.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.7,
+        8.0,
+        2.7
+      ],
+      "to": [
+        13.3,
+        13.0,
+        13.3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#band",
+          "uv": [
+            0,
+            0,
+            16.0,
+            7.5
+          ]
+        },
+        "south": {
+          "texture": "#band",
+          "uv": [
+            0,
+            0,
+            16.0,
+            7.5
+          ]
+        },
+        "east": {
+          "texture": "#band",
+          "uv": [
+            0,
+            0,
+            16.0,
+            7.5
+          ]
+        },
+        "west": {
+          "texture": "#band",
+          "uv": [
+            0,
+            0,
+            16.0,
+            7.5
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            2.7,
+            2.7,
+            13.3,
+            13.3
+          ]
+        },
+        "down": {
+          "texture": "#edge",
+          "uv": [
+            2.7,
+            2.7,
+            13.3,
+            13.3
+          ]
+        }
+      }
+    }
+  ]
+}

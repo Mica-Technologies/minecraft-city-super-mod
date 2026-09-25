@@ -17,8 +17,12 @@ import net.minecraft.block.Block;
  * panel with its board, the curb plaque a casting of sheet metal; the sign posts they stand on
  * are Roads', priced by Roads. A shelter is a pole section's worth of posts, sheet metal for its
  * roof and frame and an LED module for its roof light; the glass shelter adds glass panes and a
- * second sheet, the cantilever's canopy a second sheet. {@code audit_fabricator_costs.py} mirrors
- * these branches.</p>
+ * second sheet, the cantilever's canopy a second sheet. The station fit-out: tactile paving and
+ * wall tile a concrete mix; the help and emergency points a board, a sounder and sheet metal;
+ * CCTV an optical sensor; the validator a board, an LED module and sheet metal; the clock a board;
+ * the canopy sheet metal and an LED module; a column a pole section and a concrete mix; the
+ * signs a sign blank and fixings; the bench, the perch and the bin sheet metal and fixings.
+ * {@code audit_fabricator_costs.py} mirrors these branches.</p>
  *
  * @since 2026.9
  */
@@ -73,6 +77,48 @@ public final class TransitFabricatorRules {
     }
     if (registryName.equals("bus_stop_curb_plaque")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    // The station and platform fit-out
+    if (registryName.startsWith("tactile_") || registryName.startsWith("station_tile_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
+    }
+    if (registryName.equals("platform_help_point")
+        || registryName.equals("station_emergency_point")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("platform_cctv_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.equals("platform_validator")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.equals("platform_clock")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.equals("platform_canopy")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
+    if (registryName.startsWith("platform_column_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+          FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
+    }
+    if (registryName.startsWith("platform_sign_") || registryName.startsWith("station_name_")
+        || registryName.equals("platform_number_sign") || registryName.equals("platform_gap_sign")
+        || registryName.equals("station_network_map")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("platform_")) {
+      // the bench, the perch and the litter bin
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }
     return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
         FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),

@@ -1,0 +1,238 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/transit/platforms/steel",
+    "seat": "csm:blocks/transit/platforms/seat",
+    "pad": "csm:blocks/transit/platforms/pad",
+    "particle": "csm:blocks/transit/platforms/seat"
+  },
+  "elements": [
+    {
+      "from": [
+        0.5,
+        4,
+        8.5
+      ],
+      "to": [
+        1,
+        5.5,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            15,
+            10.5,
+            15.5,
+            12.0
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0.5,
+            10.5,
+            1.0,
+            12.0
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            0.5,
+            8.5,
+            1.0,
+            10.0
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            0.5,
+            6,
+            1.0,
+            7.5
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            8.5,
+            10.5,
+            10.0,
+            12.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.4,
+        7.75,
+        4.2
+      ],
+      "to": [
+        1.2,
+        10.4,
+        5.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            14.8,
+            5.6,
+            15.6,
+            8.25
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0.4,
+            5.6,
+            1.2,
+            8.25
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            11.0,
+            5.6,
+            11.8,
+            8.25
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            4.2,
+            5.6,
+            5.0,
+            8.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.4,
+        5.5,
+        8.6
+      ],
+      "to": [
+        1.2,
+        10.4,
+        9.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            14.8,
+            5.6,
+            15.6,
+            10.5
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0.4,
+            5.6,
+            1.2,
+            10.5
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            6.2,
+            5.6,
+            7.4,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            8.6,
+            5.6,
+            9.8,
+            10.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.2,
+        10.4,
+        3.6
+      ],
+      "to": [
+        1.4,
+        11.1,
+        10.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pad",
+          "uv": [
+            14.6,
+            4.9,
+            15.8,
+            5.6
+          ]
+        },
+        "south": {
+          "texture": "#pad",
+          "uv": [
+            0.2,
+            4.9,
+            1.4,
+            5.6
+          ]
+        },
+        "east": {
+          "texture": "#pad",
+          "uv": [
+            6.0,
+            4.9,
+            12.4,
+            5.6
+          ]
+        },
+        "west": {
+          "texture": "#pad",
+          "uv": [
+            3.6,
+            4.9,
+            10.0,
+            5.6
+          ]
+        },
+        "up": {
+          "texture": "#pad",
+          "uv": [
+            0.2,
+            3.6,
+            1.4,
+            10.0
+          ]
+        },
+        "down": {
+          "texture": "#pad",
+          "uv": [
+            0.2,
+            6.0,
+            1.4,
+            12.4
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,897 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_shaft"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_shaft",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_shaft",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_shaft",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_base"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_base",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_base",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_base",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_cap"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_cap",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_cap",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_cap",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_9"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_10"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_11"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_12"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_13"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_13",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_13",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_13",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_14"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_14",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_14",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_14",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_15"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_15",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_15",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_15",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_16"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_16",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_16",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_16",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_17"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_17",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_17",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_17",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_18"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_18",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_18",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_18",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_19"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_19",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_19",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_19",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_20"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_20",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_20",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_column_number_band_20",
+        "y": 270
+      }
+    }
+  ]
+}

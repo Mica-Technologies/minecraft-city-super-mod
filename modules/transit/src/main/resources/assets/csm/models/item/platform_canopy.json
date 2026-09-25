@@ -1,0 +1,358 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "soffit": "csm:blocks/transit/platforms/soffit",
+    "roof": "csm:blocks/transit/platforms/roof",
+    "fascia": "csm:blocks/transit/platforms/fascia",
+    "lamp": "csm:blocks/transit/platforms/lamp_on",
+    "particle": "csm:blocks/transit/platforms/fascia"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        -0.8,
+        0
+      ],
+      "to": [
+        16,
+        3.2,
+        0.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0.0,
+            16,
+            4.0
+          ]
+        },
+        "south": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0.0,
+            16,
+            4.0
+          ]
+        },
+        "east": {
+          "texture": "#fascia",
+          "uv": [
+            15.4,
+            0.0,
+            16.0,
+            4.0
+          ]
+        },
+        "west": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0.0,
+            0.6,
+            4.0
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            0,
+            16,
+            0.6
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            15.4,
+            16,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        -0.8,
+        15.4
+      ],
+      "to": [
+        16,
+        3.2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0.0,
+            16,
+            4.0
+          ]
+        },
+        "south": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0.0,
+            16,
+            4.0
+          ]
+        },
+        "east": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0.0,
+            0.6,
+            4.0
+          ]
+        },
+        "west": {
+          "texture": "#fascia",
+          "uv": [
+            15.4,
+            0.0,
+            16.0,
+            4.0
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            15.4,
+            16,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0,
+            16,
+            0.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        -0.8,
+        0
+      ],
+      "to": [
+        0.6,
+        3.2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fascia",
+          "uv": [
+            15.4,
+            0.0,
+            16.0,
+            4.0
+          ]
+        },
+        "south": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0.0,
+            0.6,
+            4.0
+          ]
+        },
+        "east": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0.0,
+            16,
+            4.0
+          ]
+        },
+        "west": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0.0,
+            16,
+            4.0
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            0,
+            0.6,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0,
+            0.6,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.4,
+        -0.8,
+        0
+      ],
+      "to": [
+        16,
+        3.2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0.0,
+            0.6,
+            4.0
+          ]
+        },
+        "south": {
+          "texture": "#fascia",
+          "uv": [
+            15.4,
+            0.0,
+            16.0,
+            4.0
+          ]
+        },
+        "east": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0.0,
+            16,
+            4.0
+          ]
+        },
+        "west": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0.0,
+            16,
+            4.0
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            15.4,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            15.4,
+            0,
+            16.0,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        -0.4,
+        6.8
+      ],
+      "to": [
+        16,
+        0,
+        9.2
+      ],
+      "faces": {
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            6.8,
+            16,
+            9.2
+          ]
+        },
+        "north": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            0.4
+          ]
+        },
+        "south": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            0.4
+          ]
+        }
+      },
+      "shade": false
+    }
+  ]
+}

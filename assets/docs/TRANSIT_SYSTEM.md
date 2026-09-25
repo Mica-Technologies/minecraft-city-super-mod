@@ -4,11 +4,12 @@ CSM: Transit (`csm_transit`, tree `modules/transit`, Java package `transit`) is 
 for public transit. Like every module it pins Core to its own exact version and registers nothing
 itself. It also **requires Roads & Traffic** (`required-after:csm_roads`), because its bus stop
 signs are road signs (below); like Text to Speech on Technology, that is the one other module it
-may name. Its creative tab, its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)`), is found by
+may name. Its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)`), is found by
 Core's tab scan, and every block and item keeps the `csm:` namespace.
 
-The module holds the working fare system, which it took over from Technology, and the bus stops.
-What it is to grow into is at the end of this page.
+The module holds the working fare system, which it took over from Technology, the bus stops and
+shelters, and the station and platform fit-out, made to complement the stations of RCMC, the
+author's train mod. What it is to grow into is at the end of this page.
 
 | Block or item | Registry name | Class |
 |---|---|---|
@@ -24,6 +25,7 @@ What it is to grow into is at the end of this page.
 | Bus Arrival Display | `csm:bus_stop_arrival_display` | `transit.stop.BlockBusArrivalDisplay` |
 | Bus Stop Curb Plaque | `csm:bus_stop_curb_plaque` | `transit.stop.BlockBusStopPlaque` |
 | Bus Shelter (Glass, Cantilever, Flat Roof; four agencies each) | `csm:bus_shelter_<style>_<agency>` | `transit.shelter.BlockBusShelter` |
+| Station and platform fit-out (29 blocks) | see Station and platform fit-out, below | `transit.platform` |
 
 ---
 
@@ -319,12 +321,160 @@ graphite frame.
 an LED module; the cantilever a pole section, two sheet metal and an LED module; the flat roof a
 pole section, one sheet metal and an LED module. `audit_fabricator_costs.py` mirrors them.
 
+## Station and platform fit-out
+
+Twenty-nine blocks in `transit.platform`, all drawn by `gen_transit_platforms.py`, with three
+sounds from `gen_transit_sounds.py`.
+
+### Made to complement RCMC
+
+The set is designed to fit out stations for **RCMC** (Rails & Coasters: Minecraft), the author's
+own train mod, and never to repeat it. RCMC already has the station itself: its **Station
+Platform** and **Platform Edge** blocks (decking laid at exactly a metro car's floor height, the
+edge carrying its own tactile strip), the Station Line Map sign, the Arrival Board, the Station
+Speaker, the operator panel and line desk, and spline track with catenary, switches and
+signalling. So Transit has no platform or edge block, no speaker, no arrival board for platforms
+(its own departure boards, to come, are for bus stops and station concourses), and nothing laid
+along the track: RCMC's track is splines, not blocks, and a block-aligned third-rail cover or
+buffer stop would clash with it. What is here is the fit-out an RCMC station lacks.
+
+**Clearance.** A metro car in RCMC is 3.8 blocks wide (1.9 either side of the track's centre)
+and its roof stands about four blocks above the platform surface. Keep furniture (benches, bins,
+help points, validators, columns) at least a block back from the platform edge, hang signs and
+clocks over the platform rather than the track, and keep a canopy over the platform: nothing here
+checks, so a sign hung over the track will be driven through. The tactile paving is the one piece
+meant for the edge itself: a one-pixel overlay, below any car.
+
+| Block | Registry name | Class |
+|---|---|---|
+| Tactile Paving (Warning or Guidance; Yellow or Grey) | `csm:tactile_warning_yellow` and the other three | `BlockTactilePaving` |
+| Platform Bench | `csm:platform_bench` | `BlockPlatformBench` |
+| Platform Perch | `csm:platform_perch` | `BlockPlatformRun` |
+| Help Point | `csm:platform_help_point` | `BlockPlatformHelpPoint` |
+| Station Emergency Point | `csm:station_emergency_point` | `BlockPlatformHelpPoint` |
+| CCTV Dome Camera, CCTV Camera (Wall Bracket) | `csm:platform_cctv_dome`, `csm:platform_cctv_camera` | `BlockPlatformFixture` |
+| Platform Clock | `csm:platform_clock` | `BlockPlatformClock` |
+| Platform Litter Bin (Clear Bag) | `csm:platform_litter_bin` | `BlockPlatformFixture` |
+| Platform Number Sign | `csm:platform_number_sign` | `BlockPlatformNumberSign` |
+| Hanging Sign (To Trains, Exit, Line Bullets) | `csm:platform_sign_to_trains`, `_exit`, `_lines` | `BlockPlatformFixture` |
+| Gap Warning Sign | `csm:platform_gap_sign` | `BlockPlatformFixture` |
+| Station Name Sign | `csm:station_name_sign` | `BlockStationNameSign` |
+| Network Map Board | `csm:station_network_map` | `BlockPlatformFixture` |
+| Station Wall Tile (White, and a Band in each agency's colour) | `csm:station_tile_white`, `csm:station_tile_band_<agency>` | `BlockStationTile` |
+| Platform Column (Tiled, Steel) | `csm:platform_column_tile`, `csm:platform_column_steel` | `BlockPlatformColumn` |
+| Platform Column (Number Band) | `csm:platform_column_number` | `BlockPlatformColumnNumber` |
+| Platform Canopy | `csm:platform_canopy` | `BlockPlatformCanopy` |
+| Ticket Validator | `csm:platform_validator` | `BlockPlatformValidator` |
+
+### Tactile paving
+
+One-pixel overlays laid on any solid floor, as vanilla carpet is, RCMC's platform decking
+included: truncated warning domes and directional guidance bars, in yellow and in grey with
+stainless studs. The class follows Building's floor finish, copied rather than shared (a module
+names only Core and the modules it requires): it stores only `axis`, the way the player faced,
+and comes up when its floor goes.
+
+A floor of it shows no repeat. Each texture is drawn twice, every dome or bar a little different,
+and the blockstate picks one of the two drawings and a turn per block position. The domes sit
+centred in 2 px cells on a square grid, so a quarter turn leaves the grid where it was; the bars
+run the way they were laid and turn only end for end, their segments on a 32-texel period that
+divides the texture, so a run of blocks has no seam.
+
+### Furniture
+
+Every piece faces the player who places it; a wall piece has the wall behind it.
+
+- **Bench** (`BlockPlatformBench`): two perforated steel seats a block on a beam on one
+  pedestal, with armrests between and at the ends. Benches side by side facing the same way join
+  (`left`, `right`, actual state): the beam runs through, an armrest stands at every joint, and
+  the end armrests are drawn only at the bench's ends. A click sits the player in the nearer seat
+  through Core's `EntityCsmSeat`, one person a seat. It is a platform bench, not Parks' timber
+  park bench.
+- **Perch** (`BlockPlatformRun`): a lean rail, a padded bar tilted forward over a stainless rail
+  on one post a block, joining the same way, capped only at its ends.
+- **Help point** (`BlockPlatformHelpPoint`): a column two blocks tall under a lit HELP POINT
+  header (light 4), with a green information button over a speaker grille and a guarded red
+  emergency button. A click plays `help_point_chime`, three struck bars rising, and says on the
+  action bar who is answering; a click on the front below 12.6 px (`HELP_SPLIT_Y`) is the
+  emergency button, and its chime is pitched lower. Both buttons are in the column's lower block
+  on purpose: a click reaches only the block the player's aim passes through, so anything drawn
+  in the space above (the header) cannot be clicked. The **emergency point** is a red wall cabinet
+  (a lit EMERGENCY header, a phone handset, an extinguisher behind glass) whose every click is an
+  emergency call. Nothing is sent anywhere: a help point is a place, not a service.
+- **CCTV**: a dome on a short pipe from the ceiling, and a bullet camera on a wall bracket tilted
+  down the platform. Decoration.
+- **Clock** (`BlockPlatformClock`, `TileEntityPlatformClock`,
+  `TileEntityPlatformClockRenderer`): a double-faced clock hung from the ceiling, its drum and
+  dials baked, its hands the renderer's -- the world's time on both dials, four untextured quads
+  a frame, the Residential wall clock's approach. The dials stand the same distance either side
+  of the block's middle, so the back dial is the front one turned half round.
+- **Litter bin**: the clear-bag bin stations use, a steel hoop on a post holding a see-through
+  bag (translucent layer) under a lid ring.
+
+### Signs
+
+- **Platform number sign** (`BlockPlatformNumberSign`): PLATFORM over a big number, hung on two
+  rods, printed on both faces. A click steps the number 1 to 20 and round, a sneaking click back;
+  the action bar says the new number. The number is kept by `TileEntityPlatformSign` and read as
+  actual state (`number`), and the blockstate swaps the face texture: the aisle sign's pattern,
+  shared with the column band and the name sign through `PlatformSigns`.
+- **Hanging wayfinding signs**: TO TRAINS and EXIT with an arrow, and a strip of line bullets
+  (1, 4, 7 and E, in the four agencies' colours). The back face is read mirrored so it reads the
+  right way round, and a sign with an arrow has its own back art with the arrow reversed, so from
+  either side it points the same way in the world.
+- **Gap warning**: a yellow wall sign, CAUTION, a figure stepping from the platform into the car,
+  STEP OVER THE GAP. The wording is invented, as every phrase here is.
+- **Station name sign** (`BlockStationNameSign`): a porcelain-enamel panel, white on navy, set on
+  the wall. A click steps through ten invented names (Alder Park, Civic Square, Foundry Row,
+  Harbor Lights, Kestrel Hill, Lantern Quay, Millstone, Orchard End, Saxton Cross, Willow Bend),
+  kept in the same order in `BlockStationNameSign.NAMES` and the generator's `STATION_NAMES`.
+- **Network map board**: a framed wall map of a generic network, four lines in the agencies'
+  colours over a river and a park, interchanges, a "you are here" dot and a legend of bullets,
+  with no place names: the city is whatever the player builds.
+
+### Architecture
+
+- **Station wall tile** (`BlockStationTile`): full blocks of glazed subway tile in running bond,
+  plain white, or with a frieze course in CITYLINE teal, RIVERWAY orange, VERDANT green or
+  EMBERLINE red between two dark liners, on the sides at the same height on every block, so a
+  row is one unbroken band.
+- **Columns** (`BlockPlatformColumn`): tiled square or painted steel octagon, one block of shaft
+  at a time. Stacked, they read as one column: `up` and `down` (actual state) draw the plinth
+  only at the foot and the capital only at the head. The **number band column**
+  (`BlockPlatformColumnNumber`) is the tiled column with a navy band carrying PLATFORM and its
+  number on all four faces, stepped by clicking like the number sign; its band is one model per
+  number (children of band 1 naming their texture), picked by the multipart blockstate.
+- **Canopy** (`BlockPlatformCanopy`): a steel roof one block at a time, set on columns (the deck
+  lies at the foot of its block, so it rests on the column below). Canopies join on all four
+  sides, the fascia drawn only round the outside (world sides, actual state); a light strip on the
+  white soffit runs along `axis`, the way the player faced, and gives light 11.
+
+### The ticket validator
+
+`BlockPlatformValidator` is a tap post for a platform or a station without gates. Held to it, a
+Fare Ticket is used up and a Transit Card gives up one trip, exactly as at a fare gate (the same
+items and `ItemTransitCard.consumeTrip`); the screen shows a green tick and `validator_accept`
+beeps, or a red cross and `validator_deny` sounds for a card with no trips or anything else, and
+the action bar says why. The screen (`light`: 0 idle, 1 accepted, 2 refused, stored in the two
+bits above the facing) goes back to idle after 30 ticks by a scheduled tick; lit, it gives light
+5. Validating opens nothing: pairing a validator with a gate or RCMC's doors is the builder's
+business.
+
+### Prices
+
+`TransitFabricatorRules`: tactile paving and wall tile a concrete mix; the help and emergency
+points a control board, a sounder driver and sheet metal; CCTV an optical sensor and sheet metal;
+the validator a control board, an LED module and sheet metal; the clock a control board and sheet
+metal; the canopy two sheet metal and an LED module; a column a pole section and a concrete mix;
+the signs a sign blank and a fastener kit; the bench, perch and bin two sheet metal and a
+fastener kit. `audit_fabricator_costs.py` mirrors the branches.
+
 ## Where the module is going
 
-Transit is planned to grow, in order: rail and subway platforms (platform edges with tactile warning strips, tactile paving, platform
-furniture), stations (a subway entrance headhouse built to size, ticket validators that use the
-fare code, station wayfinding), and working departure boards configured through a screen, drawn by
-a baked renderer, with announcements through Text to Speech only when that module is installed.
+Transit is planned to grow, in order: stations (a subway entrance headhouse built to size, and
+more station wayfinding), and working departure boards configured through a screen, drawn by a
+baked renderer, with announcements through Text to Speech only when that module is installed --
+for bus stops and station concourses, since RCMC's arrival boards already serve its platforms.
 
 Two rules hold throughout: every agency, livery and route bullet is invented, never a real transit
 brand; and an advertising panel in a shelter is Signage's board, set into the shelter by the

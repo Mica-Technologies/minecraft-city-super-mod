@@ -1,0 +1,61 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/transit/platforms/steel",
+    "seat": "csm:blocks/transit/platforms/seat",
+    "pad": "csm:blocks/transit/platforms/pad",
+    "particle": "csm:blocks/transit/platforms/seat"
+  },
+  "elements": [
+    {
+      "from": [
+        15,
+        4,
+        8.5
+      ],
+      "to": [
+        16,
+        5.5,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            10.5,
+            1,
+            12.0
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            15,
+            10.5,
+            16,
+            12.0
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            15,
+            8.5,
+            16,
+            10.0
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            15,
+            6,
+            16,
+            7.5
+          ]
+        }
+      }
+    }
+  ]
+}

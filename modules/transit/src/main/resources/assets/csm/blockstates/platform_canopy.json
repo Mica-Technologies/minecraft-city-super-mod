@@ -1,0 +1,57 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/platforms/platform_canopy_deck"
+      }
+    },
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_canopy_fascia_north"
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_canopy_fascia_south"
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_canopy_fascia_west"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_canopy_fascia_east"
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_canopy_light_x"
+      }
+    },
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/platform_canopy_light_z"
+      }
+    }
+  ]
+}

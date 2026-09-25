@@ -1,0 +1,71 @@
+{
+  "variants": {
+    "axis=x": [
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey"
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey",
+        "y": 90
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey",
+        "y": 180
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey",
+        "y": 270
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey_b"
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey_b",
+        "y": 90
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey_b",
+        "y": 180
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey_b",
+        "y": 270
+      }
+    ],
+    "axis=z": [
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey"
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey",
+        "y": 90
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey",
+        "y": 180
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey",
+        "y": 270
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey_b"
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey_b",
+        "y": 90
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey_b",
+        "y": 180
+      },
+      {
+        "model": "csm:transit/platforms/tactile_warning_grey_b",
+        "y": 270
+      }
+    ],
+    "inventory": {
+      "model": "csm:transit/platforms/tactile_warning_grey"
+    }
+  }
+}

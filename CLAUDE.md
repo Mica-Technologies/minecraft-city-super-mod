@@ -94,7 +94,7 @@ container per jar.
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, plantings and park amenities; two tabs, Trees & Plants and Parks |
-| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque) and shelters; the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
+| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -124,7 +124,8 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 ├── parks/           (modules/parks) trees/ (log and leaves kit), planting/ (the tool and its
 │                    generators), landscape/ (plantings), amenities/ (the Parks tab)
 ├── technology/       # Modern tech: servers, routers, TVs
-├── transit/         (modules/transit) fare/ (fare gates, vending machine, tickets, cards)
+├── transit/         (modules/transit) fare/ (fare gates, vending machine, tickets, cards),
+│                    stop/, shelter/, platform/ (station and platform fit-out)
 ├── tts/              (modules/tts)
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
 ├── trafficaccessories/
@@ -402,8 +403,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   ticket and stored-trip card, why the move from Technology kept every registry name, GUI id and
   asset path; the bus stops (a stop as a stack of pole lengths, fittings that take the pole's
   style, settling the whole stack, the invented agencies, route plates set by clicking and drawn
-  from shared lists, the arrival display's made-up but steady countdown); and what the module is
-  to grow (shelters, platforms, stations, boards)
+  from shared lists, the arrival display's made-up but steady countdown); the shelters; the
+  station and platform fit-out made to complement RCMC (tactile paving, furniture, signs, tile,
+  columns, canopy, validator, and keeping clear of a train at the platform edge); and what the
+  module is to grow (stations, boards)
 - `assets/docs/HVAC_SYSTEM.md` -- Rooms that hold heat: the thermal simulation (flood-filled
   spaces split into regions, walls/openings/ground/neighbours, implicit step), model-based
   modulating control, vent throw and the thermostat trim, why a partly unloaded room freezes, the
@@ -754,6 +757,15 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   agency's `frame` and `fascia` textures. The glass shelter's back row stops 1.25 px short of its
   left end, the empty frame Signage's shelter ad panel is set against; the collision boxes in
   `BusShelterStyle.java` share its numbers; `--check`, `--fragments`
+- `gen_transit_platforms.py` -- the station and platform fit-out (Transit), made to complement
+  RCMC's stations rather than repeat them (no platform, edge, speaker, board or track piece):
+  tactile paving overlays (domes and bars, two drawings and a turn per block like
+  `gen_flooring.py`), the joining platform bench and perch, the help point and emergency point,
+  CCTV, the hanging clock (hands by renderer), the clear-bag bin, the stepped number and station
+  name signs (a texture per value), hanging wayfinding signs with mirrored arrows on their backs,
+  the gap warning and network map, subway tile with agency frieze bands, stacking columns, the
+  four-way canopy and the ticket validator; `--check`, `--fragments`.
+  `gen_transit_sounds.py` synthesises the help point chime and the validator's tones
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

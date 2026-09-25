@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:transit/platforms/station_tile_band_cityline"
+    },
+    "inventory": {
+      "model": "csm:transit/platforms/station_tile_band_cityline"
+    }
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/transit/platforms/steel",
+    "pad": "csm:blocks/transit/platforms/pad",
+    "stainless": "csm:blocks/transit/platforms/stainless",
+    "particle": "csm:blocks/transit/platforms/pad"
+  },
+  "elements": [
+    {
+      "from": [
+        0.4,
+        10.5,
+        6
+      ],
+      "to": [
+        1,
+        11.6,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pad",
+          "uv": [
+            15,
+            4.4,
+            15.6,
+            5.5
+          ]
+        },
+        "south": {
+          "texture": "#pad",
+          "uv": [
+            0.4,
+            4.4,
+            1.0,
+            5.5
+          ]
+        },
+        "up": {
+          "texture": "#pad",
+          "uv": [
+            0.4,
+            6,
+            1.0,
+            11.5
+          ]
+        },
+        "down": {
+          "texture": "#pad",
+          "uv": [
+            0.4,
+            4.5,
+            1.0,
+            10.0
+          ]
+        },
+        "west": {
+          "texture": "#pad",
+          "uv": [
+            6,
+            4.4,
+            11.5,
+            5.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          11,
+          8.5
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    },
+    {
+      "from": [
+        0.6,
+        9.2,
+        8.2
+      ],
+      "to": [
+        1,
+        10.1,
+        9.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stainless",
+          "uv": [
+            15,
+            5.9,
+            15.4,
+            6.8
+          ]
+        },
+        "south": {
+          "texture": "#stainless",
+          "uv": [
+            0.6,
+            5.9,
+            1.0,
+            6.8
+          ]
+        },
+        "up": {
+          "texture": "#stainless",
+          "uv": [
+            0.6,
+            8.2,
+            1.0,
+            9.2
+          ]
+        },
+        "down": {
+          "texture": "#stainless",
+          "uv": [
+            0.6,
+            6.8,
+            1.0,
+            7.8
+          ]
+        },
+        "west": {
+          "texture": "#stainless",
+          "uv": [
+            8.2,
+            5.9,
+            9.2,
+            6.8
+          ]
+        }
+      }
+    }
+  ]
+}
