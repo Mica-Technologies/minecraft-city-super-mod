@@ -391,6 +391,38 @@ def cost_for(registry, info, ancestors):
         if registry.startswith("platform_"):
             return ("SHEET_METAL x2", "FASTENER_KIT")
         if registry.startswith("airport_"):
+            airside = {
+                "airport_runway_edge_light": ("LENS_ASSEMBLY", "LED_MODULE", "FASTENER_KIT"),
+                "airport_approach_light_bar": ("LENS_ASSEMBLY x2", "LED_MODULE x2", "SHEET_METAL"),
+                "airport_beacon": ("LENS_ASSEMBLY x2", "LED_MODULE", "CONTROL_BOARD"),
+                "airport_wind_sock": ("POLE_SECTION", "LENS_ASSEMBLY", "FASTENER_KIT"),
+                "airport_antenna_mast": ("POLE_SECTION", "WIRING_HARNESS", "LENS_ASSEMBLY"),
+                "airport_taxiway_location_sign": ("SIGN_BLANK", "LED_MODULE", "FASTENER_KIT"),
+                "airport_stand_sign": ("SIGN_BLANK", "FASTENER_KIT"),
+                "airport_airfield_mast": ("POLE_SECTION", "FASTENER_KIT"),
+                "airport_wheel_chocks": ("SHEET_METAL",),
+                "airport_ground_power_unit": ("ENCLOSURE_SHELL", "CONTROL_BOARD",
+                                              "WIRING_HARNESS x2"),
+                "airport_baggage_tug": ("SHEET_METAL x3", "CONTROL_BOARD", "WIRING_HARNESS"),
+                "airport_baggage_cart": ("SHEET_METAL x2", "FASTENER_KIT"),
+                "airport_air_stairs": ("SHEET_METAL x3", "FASTENER_KIT"),
+                "airport_jet_bridge_cab": ("SHEET_METAL x3", "CONTROL_BOARD", "FASTENER_KIT"),
+                "airport_jet_bridge_rotunda": ("SHEET_METAL x4", "FASTENER_KIT x2"),
+                "airport_jet_bridge_drive": ("POLE_SECTION x2", "WIRING_HARNESS"),
+                "airport_jet_bridge_column": ("CONCRETE_MIX x2",),
+            }
+            for same, as_ in (("airport_taxiway_edge_light", "airport_runway_edge_light"),
+                              ("airport_runway_threshold_light", "airport_runway_edge_light"),
+                              ("airport_runway_centreline_light", "airport_runway_edge_light"),
+                              ("airport_taxiway_centreline_light", "airport_runway_edge_light"),
+                              ("airport_stop_bar_light", "airport_runway_edge_light"),
+                              ("airport_taxiway_direction_sign", "airport_taxiway_location_sign"),
+                              ("airport_runway_holding_sign", "airport_taxiway_location_sign"),
+                              ("airport_runway_distance_sign", "airport_taxiway_location_sign"),
+                              ("airport_jet_bridge_tunnel", "airport_air_stairs")):
+                airside[same] = airside[as_]
+            if registry in airside:
+                return airside[registry]
             if registry in ("airport_checkin_desk", "airport_gate_desk"):
                 return ("SHEET_METAL x2", "CONTROL_BOARD", "FASTENER_KIT")
             if registry == "airport_checkin_scale":

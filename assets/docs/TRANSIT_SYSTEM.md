@@ -9,7 +9,7 @@ Core's tab scan, and every block and item keeps the `csm:` namespace.
 
 The module holds the working fare system, which it took over from Technology, the bus stops and
 shelters, the bus station departure boards, the station and platform fit-out, made to complement the stations of RCMC, the
-author's train mod, and an airport terminal's pieces. What it is to grow into is at the end of
+author's train mod, and an airport's terminal and airside pieces. What it is to grow into is at the end of
 this page.
 
 | Block or item | Registry name | Class |
@@ -29,6 +29,7 @@ this page.
 | Bus Departure Board, Bus Bay Display | `csm:bus_departure_board`, `csm:bus_bay_display` | `transit.board.BlockBusBoard` |
 | Station and platform fit-out (29 blocks) | see Station and platform fit-out, below | `transit.platform` |
 | Airport terminal pieces (25 blocks) and the Boarding Pass (item) | see Airports, below | `transit.airport` |
+| Airport airside pieces (26 blocks) | see Airports, Airside, below | `transit.airport` |
 
 ---
 
@@ -620,8 +621,8 @@ invented, and every pictogram generic (a plane, a suitcase, a bus, a taxi).
 ### Terminal only
 
 These are the pieces inside a terminal: check-in, the queue, security, the gate, the boards,
-baggage claim and carts. There are no aircraft, and nothing airside: jet bridges, ground equipment
-and airfield lights are for later. Two things a terminal needs come from other modules rather
+baggage claim and carts. There are no aircraft; the airside pieces (jet bridges, ground equipment
+and airfield lights) are below, under Airside. Two things a terminal needs come from other modules rather
 than being drawn again:
 
 - **The walk-through metal detector** is Life Safety's (`metal_detector`, in Emergency Services),
@@ -824,11 +825,151 @@ fastener kit; a stanchion a pole section and a fastener kit; trays and the cart 
 fastener kit; the signs a sign blank and a fastener kit; the rollers, divesting table, seating and
 cart rack two sheet metal and a fastener kit. `audit_fabricator_costs.py` mirrors the branches.
 
+### Airside
+
+Twenty-six more blocks in `transit.airport`, all drawn by `gen_transit_airside.py`: the airfield's
+lights and signs, the masts they stand on, the stand sign, ground equipment and the jet bridge.
+**There are no aircraft of any kind**, static or otherwise, so nothing docks or taxis: a jet
+bridge is a corridor to walk out along and ground equipment stands where it was parked. Apron and
+runway paint is the external road mod's road paint, and cones are Roads' work-zone cones, so
+neither is drawn here. No exit or emergency-exit signs either: Life Safety has them.
+
+| Block | Registry name | Class |
+|---|---|---|
+| Runway Edge Light, Taxiway Edge Light, Runway Threshold Light | `csm:airport_runway_edge_light`, `_taxiway_edge_light`, `_runway_threshold_light` | `BlockAirfieldLight` |
+| Runway Centreline Light, Taxiway Centreline Light, Stop Bar Light (inset) | `csm:airport_runway_centreline_light`, `_taxiway_centreline_light`, `_stop_bar_light` | `BlockAirfieldLight` |
+| Approach Light Bar, Airport Beacon | `csm:airport_approach_light_bar`, `csm:airport_beacon` | `BlockAirfieldLight` |
+| Wind Sock, Antenna Mast (obstruction lit) | `csm:airport_wind_sock`, `csm:airport_antenna_mast` | `BlockAirfieldLight` |
+| Taxiway Location, Taxiway Direction, Runway Holding Position and Runway Distance Remaining Signs | `csm:airport_taxiway_location_sign` and the rest | `BlockAirfieldSign` |
+| Airfield Mast | `csm:airport_airfield_mast` | `transit.platform.BlockPlatformColumn` |
+| Stand Sign | `csm:airport_stand_sign` | `BlockStandSign` |
+| Wheel Chocks, Ground Power Unit, Baggage Tug, Baggage Cart, Air Stairs | `csm:airport_wheel_chocks` and the rest | Roads' `streetscape.BlockUtilityBox` |
+| Jet Bridge (Tunnel, Cab, Rotunda) | `csm:airport_jet_bridge_tunnel`, `_cab`, `_rotunda` | `BlockJetBridge` |
+| Jet Bridge (Drive Leg, Rotunda Column) | `csm:airport_jet_bridge_drive`, `_column` | `transit.platform.BlockPlatformColumn` |
+
+**Airfield lights are simple on purpose.** The lights live in Transit rather than Lighting, and
+Transit may name only Core and Roads, so none of Lighting's light logic (the 4-state control, the
+light-up air) is used. A light is lit or not (`lit`, in its metadata beside the facing, with
+`powered` above it): the blockstate swaps each lens for its lit texture, which has an `_e`
+companion for OptiFine's emissive rendering, the lens faces are unshaded, and a lit light gives
+block light (runway edge and threshold 12, runway centreline 11, taxiway lights and signs 10,
+approach and beacon 15, obstruction 9), bright enough for a lit lens to read at night without
+OptiFine. There is no
+renderer, no tile entity (except the signs'), and nothing ticks.
+
+**Lights switch a circuit at a time.** A real airfield switches its runway and taxiway lighting
+as circuits, and a runway may have a hundred lights, so one lever per light would be useless.
+Every light carries a circuit (`runway`: edge, threshold, centreline and approach; `taxiway`:
+blue edge, green centreline, the stop bar and the signs; `beacon`; `obstruction`), and all the
+lights of one circuit within eight blocks across and two up or down of another are one circuit,
+found by a flood fill (at most 512 lights). A click with an empty hand on any light, or a change
+of redstone power at any light (on when power comes, off when it goes, the shelters' rule),
+switches the whole circuit; the action bar says how many lights it reached. A light placed next
+to a lit circuit comes on with it. Keep two runways' lights more than eight blocks apart if they
+are to switch separately.
+
+**The beacon rotates by texture.** Its lens band is an octagon whose eight sides each take their
+own eight-frame animated strip, the frames a step apart from side to side: a side flashes white
+when the beam passes it and green half a turn later. So the flash runs round the lens with no
+renderer, and every beacon in the world turns in step.
+
+**Signs** stand on two frangible legs, the legend on the front and a dark back: taxiway location
+(yellow on black, A to H), direction (black on yellow, a letter and an arrow either side of it),
+runway holding position (white on red: 4-22, 9-27, 13-31, 18-36, ILS) and distance remaining
+(white on black, 1 to 9). What a sign reads is one value in the platform signs'
+`TileEntityPlatformSign`, read as `legend` (which swaps the face's texture) and, on the direction
+sign, `arrow` (which picks one of two models, the arrow's cell on that side). A click steps the
+legend; a sneaking click turns the arrow round, or steps any other sign back. Every sign's
+`legend` runs 1 to 9, so one class serves all four; the labels the action bar shows are passed in
+the tab line from the generator, the one list of what the textures say. Signs are on the
+taxiway circuit.
+
+**The airfield mast** is a slim galvanised pole that stacks (the platform column's rule: a plinth
+where nothing is below, a cap where nothing is above), the same thickness as the posts of the
+approach light bar, the wind sock and the stand sign, so each of them stands on it and reads as
+one pole. The **stand sign** is the gate sign twice the size on a post, with the gate sign's
+cells, tile entity and clicks (1 to 20, sneaking A to D); only its message says "Stand".
+
+**Ground equipment** is placed through Roads' `BlockUtilityBox`, which Transit may use because it
+requires Roads: it settles onto a road surface (an apron built from the external road mod's
+surfaces), and a piece two blocks long is placed whole or not at all, drawn by its root, with
+Roads' invisible `utility_box_part` filling the other cells and breaking the whole. The tug, the
+covered baggage cart, the ground power unit and the towable air stairs are one block wide, two
+long and up to two tall, at about two thirds of real size. They are props: their collision is the
+whole unit's box, so the air stairs cannot be climbed.
+
+**The jet bridge** is a corridor two blocks wide and two tall (outside), centred on a line of
+blocks: the player walks down the middle of the line with the walls half a block out either side
+and 29 sixteenths between floor and ceiling, a hair over a player's height. Three ways were
+weighed. A build-to-size shell like the job trailer (walls, floor and roof of one block, inside or
+outside worked out from the neighbours) would be walkable and any size, but it is that block's
+render updater, beads and rays for a corridor that only ever runs straight; the garage doors' build-to-size
+opening does not fit a corridor at all. Invisible part blocks (the bounce castle) would stop other
+blocks being placed inside the walls, but every tunnel would then place and break five blocks.
+One block drawing and colliding past its cell was the simplest that looks right: a model may reach
+a block past its cell, and the game looks a block past an entity's box for collision boxes, so
+the walls and roof are solid with nothing else placed. What the player aims at is only the floor,
+so inside the corridor everything else can still be clicked.
+
+- **Tunnel**: carpet, panelled walls with a window a block, a lit strip down the ceiling, steel
+  outside with a navy band. Tunnels facing along the same axis join; a frame closes each end
+  that does not continue (`ahead`, `behind`, actual state).
+- **Cab**: wider, with big windows, a console, the canopy's bellows round the open front, a
+  hazard-striped bumper and a yellow safety bar that collides to a fence's height, so the open end
+  cannot be walked off.
+- **Rotunda**: an octagonal room three blocks across on its block, open north and south to the
+  corridor's width, with a collar out to the edge of its three blocks, so a tunnel two blocks from
+  it joins it. Chamfered corners are walls turned 45 degrees; their floor is a turned square a
+  hair below the floor.
+- **Drive leg** and **rotunda column** (`BlockPlatformColumn`): the leg's two posts stand under
+  the tunnel's walls, with a yoke under the floor where nothing stacks above and the wheel bogie
+  where nothing stacks below; the column is a thick round pier with a plinth and a head. Build the
+  bridge up on them to the terminal's upper floor. The bridge is level: there are no sloping
+  pieces.
+
+Each piece gives light 9 inside. The facing is the way to the aircraft (the model's north), the
+same for every piece of one bridge.
+
+#### Traps
+
+- **The jet bridge's numbers are in two places.** `BlockJetBridge`'s collision boxes and floors
+  and the generator's `JB_*`, `CAB_*` and `ROT` share the section; change one, change both.
+- **An element may not reach past -16 or 32**, so the corridor stops at two blocks tall, the
+  rotunda at three across, and its chamfer walls are sized so that their unturned box stays inside
+  the limit. A long diagonal (the air stairs' rails and stringers) is several short pieces turned
+  45 degrees.
+- **A beacon's side is known by its bearing.** An octagon's four boxes have plain sides and sides
+  turned 45 degrees (a positive turn about y takes east to north-east); `airfield_lights` gives
+  each side the strip for its bearing. Get the table wrong and the flash jumps about instead of
+  running round.
+- **The wheel chocks' lower half is in the ground.** Each chock is a square prism turned 45
+  degrees about x with its centre on the ground, so only the triangle above shows; on a partial
+  road surface the utility box settles the chock down onto it.
+- **A sign's legend must not outrun its textures.** `legend` runs 1 to 9 on every sign; the
+  blockstate gives values past a sign's own count its last face, and the Java clamps the stored
+  value to the sign's count.
+- **Circuits are found by distance, not wiring.** Two circuits of the same kind closer than eight
+  blocks are one; that is the rule to tell a builder.
+
+#### Prices
+
+`TransitFabricatorRules.airside`: a light a lens assembly, an LED module and a fastener kit (the
+approach bar two of each and sheet metal, the beacon two lenses, an LED and a control board); a
+lit sign a sign blank, an LED and a fastener kit; the stand sign a sign blank and a fastener kit;
+the masts a pole section; the wind sock and antenna mast a pole section and a lens; the tug three
+sheet metal, a control board and a wiring harness; the ground power unit an enclosure shell, a
+control board and two harnesses; the cart two sheet metal; the stairs and a tunnel three sheet
+metal; the cab adds a control board; the rotunda four sheet metal; the drive leg two pole
+sections and a harness; the column two concrete mix; the chocks one sheet metal.
+`audit_fabricator_costs.py` mirrors the branch.
+
 ## Where the module is going
 
-Transit is planned to grow, in order: stations (a subway entrance headhouse built to size, and
-more station wayfinding) and an airport's airside pieces (a jet bridge, ground equipment, stand
-signs and airfield lights switched by redstone). The bus departure boards are done (above); there
+Transit is planned to grow next into stations (a subway entrance headhouse built to size, and
+more station wayfinding). The airport's airside pieces are done (above); what was left out of
+them is a control tower's glazed cab (Building's glazing builds one; the beacon and antenna mast
+top it), a PAPI (its colour depends on the angle it is seen from, which a texture cannot do),
+sloping jet bridge pieces, and any aircraft. The bus departure boards are done (above); there
 will be no train departure board, since RCMC's arrival boards already serve its platforms.
 
 Two rules hold throughout: every agency, livery and route bullet is invented, never a real transit

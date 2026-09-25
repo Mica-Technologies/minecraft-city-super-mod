@@ -1,0 +1,39 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/airside/airport_runway_edge_light"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "lit": {
+      "true": {
+        "textures": {
+          "lens": "csm:blocks/transit/airside/lens_white_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "lens": "csm:blocks/transit/airside/lens_white_off"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

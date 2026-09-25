@@ -1,0 +1,1162 @@
+#!/usr/bin/env python3
+"""Every asset the Transit tab's airport airside pieces ship: the airfield lights and signs, the
+wind sock and beacon, the stand sign, ground equipment and the jet bridge.
+
+    python dev-env-utils/scripts/gen_transit_airside.py
+    python dev-env-utils/scripts/gen_transit_airside.py --check
+    python dev-env-utils/scripts/gen_transit_airside.py --fragments   # tab lines to paste
+
+The terminal's pieces are gen_transit_airport.py's; this is the other side of the gate. There are
+no aircraft of any kind, so nothing here docks, taxis or moves: the jet bridge is a corridor to
+walk out along, the ground equipment stands where it is parked. What is here, and the class that
+places each (package transit.airport unless another is named):
+
+- **Airfield lights** (BlockAirfieldLight): elevated runway and taxiway edge lights, the
+  runway threshold light (green to the approach, red to the runway), inset runway and taxiway
+  centreline lights and the stop bar, the approach light bar, the airport beacon and the
+  obstruction-lit wind sock and antenna mast. Each is lit or not (`lit`, in its metadata, with
+  `powered` beside it) and glows by a lit lens texture and its block light, never a renderer.
+  Lights of one circuit within eight blocks of each other switch together, from a click or a
+  change of redstone power at any of them, so one lever lights a runway.
+- **Airfield signs** (BlockAirfieldSign): taxiway location (yellow on black), direction (black
+  on yellow, the arrow either side), runway holding position (white on red) and distance
+  remaining (white on black) signs, lit with the taxiway lights. What a sign says is its
+  `legend` (and a direction sign's `arrow`), kept in the platform signs' tile entity; the
+  blockstate swaps the face's texture.
+- **The airfield mast** (transit.platform.BlockPlatformColumn): a slim galvanised pole that
+  stacks, for the approach light bar, the wind sock, the beacon and the stand sign to stand on.
+- **The stand sign** (BlockStandSign): the stand's letter and number on a post, clicked like the
+  gate sign, whose cell textures it borrows.
+- **Ground equipment** (Roads' streetscape.BlockUtilityBox, so it settles onto a road surface and
+  a piece two blocks long is placed and broken whole): wheel chocks, a ground power unit, a
+  baggage tug, a covered baggage cart and towable air stairs. Cones are Roads' work-zone cones.
+- **The jet bridge** (BlockJetBridge): tunnel lengths two blocks wide that join into one
+  corridor, an octagonal rotunda three blocks across that the tunnel meets, and a cab with its
+  canopy and a safety bar; the drive leg and the rotunda's column (BlockPlatformColumn) stack
+  under them.
+
+Every model faces north, as the terminal's do: a light's lens, a sign's legend, a vehicle's nose
+and the jet bridge's aircraft end look north. The element helpers are gen_transit_platforms.py's,
+and the stand sign's cells gen_transit_airport.py's.
+"""
+import math
+import os
+import sys
+
+from PIL import Image
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import life_safety_gen_common as lc  # noqa: E402
+import gen_transit_platforms as gp  # noqa: E402
+import gen_transit_airport as ga  # noqa: E402
+
+REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+ASSETS = os.path.join(REPO, "modules", "transit", "src", "main", "resources", "assets", "csm")
+
+C = lc.Catalogue("gen_transit_airside.py", "transit/airside", "transit/airside", assets=ASSETS)
+TAB = "CsmTabTransit"
+
+B, win, flip = gp.B, gp.win, gp.flip
+ALL, SIDES = gp.ALL, gp.SIDES
+names_of, box_java, gui_display = gp.names_of, gp.box_java, gp.gui_display
+FACINGS = gp.FACINGS
+
+WHITE = gp.WHITE
+BLACK = gp.BLACK
+YELLOW = (250, 196, 24)
+RED = (196, 30, 34)
+GALV = (150, 156, 160)
+GSE_YELLOW = (236, 178, 22)
+GSE_WHITE = (226, 228, 226)
+JB_SKIN = (200, 204, 208)
+JB_BAND = (22, 44, 92)
+
+
+def grain(size, colour, amount, seed, alpha=255):
+    return lc.fill(colour, size, amount, seed, alpha)
+
+
+def rect(img, x0, y0, x1, y1, colour):
+    lc.rect(img, int(round(x0)), int(round(y0)), int(round(x1)), int(round(y1)), colour)
+
+
+def noshade(els):
+    """Marks elements unshaded, as a lamp's lens is: lit the same from every side."""
+    for e in els:
+        e["shade"] = False
+    return els
+
+
+def post(cx, cz, r, y0, y1, tex, top=True, bottom=True):
+    return gp.octagon_y(cx, cz, r, y0, y1, tex, top=top, bottom=bottom)
+
+
+# ------------------------------------------------------------------------------------------
+# Textures
+# ------------------------------------------------------------------------------------------
+# lit and unlit lens colours: (lit, unlit)
+LENSES = {
+    "white": ((255, 244, 208), (118, 116, 106)),
+    "blue": ((78, 136, 255), (32, 46, 92)),
+    "green": ((88, 255, 128), (26, 84, 44)),
+    "red": ((255, 64, 52), (92, 26, 24)),
+}
+
+
+def lens(colour, lit, seed):
+    """A lamp's lens: lit, a bright glass with a hot core; unlit, dim tinted glass."""
+    img = grain(16, colour, 3 if lit else 5, seed)
+    if lit:
+        lc.disc(img, 8, 8, 4, lc.clamp(tuple(v * 0.6 + 255 * 0.4 for v in colour)))
+        lc.disc(img, 8, 8, 1.6, lc.clamp(tuple(v * 0.3 + 255 * 0.7 for v in colour)))
+    else:
+        lc.disc(img, 6, 6, 2, lc.shade(colour, 1.35))
+    return img
+
+
+def inset_ring():
+    img = grain(16, (126, 130, 134), 5, 811)
+    lc.frame(img, 0, 0, 16, 16, (96, 98, 102))
+    for x, y in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        rect(img, x, y, x + 1, y + 1, (70, 72, 76))
+    return img
+
+
+# --- the airfield signs --------------------------------------------------------------------
+SIGN_TEX = 128
+SIGN_K = 8                # texels a unit on a sign's face
+SIGN_X0, SIGN_X1 = 1.0, 15.0
+SIGN_Y0, SIGN_Y1 = 5.0, 13.0
+SIGN_Z0, SIGN_Z1 = 6.8, 9.2
+FACE_W = int((SIGN_X1 - SIGN_X0) * SIGN_K)     # 112
+FACE_H = int((SIGN_Y1 - SIGN_Y0) * SIGN_K)     # 64
+CELL_W = FACE_W // 2                            # a direction sign's half: 56
+
+LOCATIONS = "ABCDEFGH"
+HOLDING = ["4-22", "9-27", "13-31", "18-36", "ILS"]
+DISTANCES = [str(n) for n in range(1, 10)]
+LEGENDS = 9               # BlockAirfieldSign.LEGEND runs 1 to 9 whatever the sign
+
+
+def sign_location(ch):
+    img = Image.new("RGBA", (SIGN_TEX, SIGN_TEX), BLACK + (255,))
+    lc.frame(img, 5, 5, FACE_W - 5, FACE_H - 5, YELLOW, 3)
+    lc.draw_text_centred(img, ch, FACE_W / 2.0, (FACE_H - 45) // 2, YELLOW, 9)
+    return img
+
+
+def sign_direction_letter(ch):
+    img = Image.new("RGBA", (64, 64), YELLOW + (255,))
+    lc.draw_text_centred(img, ch, CELL_W / 2.0, (FACE_H - 45) // 2, BLACK, 9)
+    return img
+
+
+def sign_direction_arrow(right):
+    img = Image.new("RGBA", (64, 64), YELLOW + (255,))
+    gp.arrow(img, 8, 18, CELL_W - 16, 28, BLACK, right=right)
+    return img
+
+
+def outlined_text(img, text, cx, y, colour, outline, scale):
+    for dx in (-2, -1, 0, 1, 2):
+        for dy in (-2, -1, 0, 1, 2):
+            if dx or dy:
+                x = int(round(cx - lc.text_width(text, scale) / 2)) + dx
+                lc.draw_text(img, text, x, y + dy, outline, scale)
+    lc.draw_text_centred(img, text, cx, y, colour, scale)
+
+
+def sign_holding(text):
+    img = Image.new("RGBA", (SIGN_TEX, SIGN_TEX), RED + (255,))
+    outlined_text(img, text, FACE_W / 2.0, (FACE_H - 25) // 2, WHITE, BLACK, 5)
+    return img
+
+
+def sign_distance(text):
+    img = Image.new("RGBA", (SIGN_TEX, SIGN_TEX), BLACK + (255,))
+    lc.draw_text_centred(img, text, FACE_W / 2.0, (FACE_H - 45) // 2, WHITE, 9)
+    return img
+
+
+# --- the beacon ----------------------------------------------------------------------------
+BEACON_FRAMES = 8
+
+
+def beacon_strip(phase, emissive=False):
+    """One side of the beacon's lens, frame by frame: it flashes white when the beam sweeps
+    past it and green half a turn later, dark otherwise. The eight sides are a frame apart, so
+    the flash runs round the lens as a rotating beacon's does."""
+    img = Image.new("RGBA", (16, 16 * BEACON_FRAMES), (0, 0, 0, 0))
+    for f in range(BEACON_FRAMES):
+        step = (f - phase) % BEACON_FRAMES
+        colour = {0: (255, 252, 236), 4: (96, 255, 140)}.get(step)
+        if colour is None:
+            if not emissive:
+                img.paste(grain(16, (34, 58, 44), 3, 820 + f), (0, 16 * f))
+            continue
+        tile = grain(16, colour, 3, 830 + f)
+        lc.disc(tile, 8, 8, 4, (255, 255, 255))
+        img.paste(tile, (0, 16 * f))
+    return img
+
+
+# --- the wind sock -------------------------------------------------------------------------
+def sock(colour, seed):
+    img = grain(16, colour, 4, seed)
+    for y in (3, 11):
+        rect(img, 0, y, 16, y + 1, lc.shade(colour, 0.88))
+    return img
+
+
+# --- ground equipment ----------------------------------------------------------------------
+def diamond_plate():
+    img = grain(16, (150, 154, 158), 3, 841)
+    for y in range(0, 16, 4):
+        for x in range(0, 16, 4):
+            ox = 2 if (y // 4) % 2 else 0
+            rect(img, x + ox, y + 1, x + ox + 2, y + 2, (196, 200, 204))
+    return img
+
+
+def tug_grille():
+    img = grain(16, GSE_YELLOW, 3, 842)
+    rect(img, 2, 3, 14, 12, (30, 30, 32))
+    for y in range(4, 12, 2):
+        rect(img, 2, y, 14, y + 1, (70, 70, 74))
+    rect(img, 1, 13, 4, 15, (255, 236, 170))
+    rect(img, 12, 13, 15, 15, (255, 236, 170))
+    return img
+
+
+def gpu_side():
+    img = grain(32, (214, 216, 212), 3, 843)
+    lc.frame(img, 2, 3, 30, 29, lc.shade((214, 216, 212), 0.78))
+    for y in range(7, 17, 2):
+        rect(img, 5, y, 16, y + 1, (86, 88, 90))
+    rect(img, 20, 6, 21, 25, lc.shade((214, 216, 212), 0.7))
+    rect(img, 0, 27, 32, 30, GSE_YELLOW)
+    rect(img, 18, 14, 20, 17, (60, 62, 64))
+    return img
+
+
+def gpu_panel():
+    img = grain(32, (214, 216, 212), 3, 844)
+    rect(img, 5, 5, 27, 22, (48, 50, 54))
+    rect(img, 7, 7, 17, 12, (40, 110, 70))
+    lc.draw_text(img, "400HZ", 7, 14, (230, 230, 230))
+    lc.disc(img, 22, 10, 2.5, (40, 180, 70))
+    lc.disc(img, 22, 17, 2.5, (200, 40, 36))
+    rect(img, 0, 27, 32, 30, GSE_YELLOW)
+    return img
+
+
+def canvas():
+    img = grain(16, (34, 70, 140), 4, 845)
+    for x in (0, 8):
+        rect(img, x, 0, x + 1, 16, (26, 54, 110))
+    return img
+
+
+def suitcase(colour, seed):
+    img = grain(16, colour, 4, seed)
+    lc.frame(img, 0, 0, 16, 16, lc.shade(colour, 0.7))
+    rect(img, 6, 1, 10, 2, (30, 30, 32))
+    return img
+
+
+def hazard():
+    img = Image.new("RGBA", (16, 16), YELLOW + (255,))
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            if ((x + y) // 4) % 2:
+                px[x, y] = (24, 24, 26, 255)
+    return img
+
+
+# --- the jet bridge -------------------------------------------------------------------------
+JB_K = 2                  # texels a unit on the jet bridge's walls
+JB_WALL_H = 29            # floor 1.5 to ceiling 30.5
+WALL_WIN = win(16 * JB_K, JB_WALL_H * JB_K, 64)
+
+
+def jb_wall(outside, cab=False):
+    """A wall 16 long by 29 tall, 2 texels a unit: panels with a seam at the block's end, a
+    band near the floor and a window at eye level (a bigger one on the cab)."""
+    w, h = 16 * JB_K, JB_WALL_H * JB_K
+    base = JB_SKIN if outside else (222, 214, 196)
+    img = grain(64, base, 3, 850 if outside else 851)
+    if outside:
+        for y in range(0, h, 6):
+            rect(img, 0, y, w, y + 1, lc.shade(base, 0.93))
+        rect(img, 0, h - 14, w, h - 8, JB_BAND)
+        rect(img, 0, 0, 1, h, lc.shade(base, 0.72))
+    else:
+        rect(img, 0, h - 8, w, h, (70, 72, 78))
+        rect(img, 0, h - 26, w, h - 25, (150, 146, 136))
+    top, bottom = (h - 2 * 25, h - 2 * 12) if not cab else (h - 2 * 27, h - 2 * 9)
+    x0, x1 = (8, 24) if not cab else (3, 29)
+    rect(img, x0 - 1, top - 1, x1 + 1, bottom + 1, (60, 62, 66))
+    rect(img, x0, top, x1, bottom, (40, 56, 70))
+    rect(img, x0 + 1, top + 1, x0 + 4, top + 3, (110, 130, 146))
+    return img
+
+
+def jb_floor():
+    img = grain(64, (70, 78, 96), 6, 852)
+    return img
+
+
+def jb_ceiling():
+    """The ceiling at 1 texel a unit: a light strip down the middle of the corridor's 32."""
+    img = grain(64, (232, 232, 226), 2, 853)
+    rect(img, 13, 0, 19, 64, (255, 250, 228))
+    return img
+
+
+def jb_bellows():
+    img = grain(16, (28, 28, 30), 3, 854)
+    for y in range(0, 16, 3):
+        rect(img, 0, y, 16, y + 1, (60, 60, 64))
+    return img
+
+
+def jb_console():
+    img = grain(16, (60, 62, 68), 2, 855)
+    rect(img, 2, 3, 14, 9, (20, 30, 40))
+    for x in (3, 7, 11):
+        rect(img, x, 11, x + 2, 13, (220, 180, 40))
+    return img
+
+
+def register_textures():
+    tex = {
+        "can": lambda: grain(16, (176, 180, 184), 3, 801),
+        "frangible": lambda: grain(16, YELLOW, 3, 802),
+        "inset_ring": inset_ring,
+        "lamp_body": lambda: grain(16, (60, 64, 68), 2, 803),
+        "sign_back": lambda: grain(16, (40, 42, 46), 2, 804),
+        "sign_case": lambda: grain(16, (168, 172, 176), 3, 805),
+        "mast": lambda: grain(16, GALV, 4, 806),
+        "plinth": lambda: grain(16, (150, 150, 144), 6, 807),
+        "beacon_housing": lambda: grain(16, (40, 76, 52), 3, 808),
+        "beacon_off": lambda: grain(16, (34, 58, 44), 3, 809),
+        "sock_orange": lambda: sock((240, 110, 24), 810),
+        "sock_white": lambda: sock((236, 236, 230), 812),
+        "sock_inside": lambda: grain(16, (120, 60, 20), 3, 813),
+        "dish": lambda: grain(16, (230, 232, 230), 2, 814),
+        "gse_yellow": lambda: grain(16, GSE_YELLOW, 3, 815),
+        "gse_white": lambda: grain(16, GSE_WHITE, 3, 816),
+        "gse_steel": lambda: grain(16, (110, 114, 118), 3, 817),
+        "gse_black": lambda: grain(16, (32, 32, 34), 2, 818),
+        "tyre": lambda: grain(16, (26, 26, 28), 3, 819),
+        "amber": lambda: grain(16, (230, 140, 20), 3, 821),
+        "diamond_plate": diamond_plate,
+        "tug_grille": tug_grille,
+        "gpu_side": gpu_side,
+        "gpu_panel": gpu_panel,
+        "canvas": canvas,
+        "bag_red": lambda: suitcase((160, 36, 40), 822),
+        "bag_blue": lambda: suitcase((40, 70, 150), 823),
+        "bag_grey": lambda: suitcase((96, 98, 104), 824),
+        "chock": lambda: grain(16, YELLOW, 4, 825),
+        "rope": lambda: grain(16, (40, 40, 44), 3, 826),
+        "hazard": hazard,
+        "jb_skin": lambda: jb_wall(True),
+        "jb_inner": lambda: jb_wall(False),
+        "jb_cab": lambda: jb_wall(True, cab=True),
+        "jb_cab_inner": lambda: jb_wall(False, cab=True),
+        "jb_floor": jb_floor,
+        "jb_ceiling": jb_ceiling,
+        "jb_roof": lambda: grain(64, (120, 124, 128), 4, 856),
+        "jb_under": lambda: grain(64, (70, 72, 76), 3, 857),
+        "jb_frame": lambda: grain(16, (54, 56, 60), 2, 858),
+        "jb_bellows": jb_bellows,
+        "jb_console": jb_console,
+        "jb_leg": lambda: grain(16, (160, 164, 168), 3, 859),
+        "jb_column": lambda: grain(16, (176, 176, 170), 4, 860),
+    }
+    for i, (colour, (lit, unlit)) in enumerate(sorted(LENSES.items())):
+        tex["lens_%s_on" % colour] = (lambda c=lit, i=i: lens(c, True, 870 + i))
+        tex["lens_%s_on_e" % colour] = (lambda c=lit, i=i: lens(c, True, 870 + i))
+        tex["lens_%s_off" % colour] = (lambda c=unlit, i=i: lens(c, False, 880 + i))
+    for ch in LOCATIONS:
+        tex["sign_location_" + ch.lower()] = (lambda ch=ch: sign_location(ch))
+        tex["sign_direction_" + ch.lower()] = (lambda ch=ch: sign_direction_letter(ch))
+    tex["sign_arrow_left"] = lambda: sign_direction_arrow(False)
+    tex["sign_arrow_right"] = lambda: sign_direction_arrow(True)
+    for i, text in enumerate(HOLDING, 1):
+        tex["sign_holding_%d" % i] = (lambda t=text: sign_holding(t))
+    for i, text in enumerate(DISTANCES, 1):
+        tex["sign_distance_%d" % i] = (lambda t=text: sign_distance(t))
+    for p in range(BEACON_FRAMES):
+        tex["beacon_%d" % p] = (lambda p=p: beacon_strip(p))
+        tex["beacon_%d_e" % p] = (lambda p=p: beacon_strip(p, emissive=True))
+    for name, draw in tex.items():
+        C.texture(name)(draw)
+    for p in range(BEACON_FRAMES):
+        for suffix in ("", "_e"):
+            C.extra["textures/blocks/transit/airside/beacon_%d%s.png.mcmeta" % (p, suffix)] = \
+                '{\n  "animation": {\n    "frametime": 4\n  }\n}\n'
+
+
+# ------------------------------------------------------------------------------------------
+# Blockstates
+# ------------------------------------------------------------------------------------------
+def light_state(model, lens_keys, colour, extra=None):
+    """A facing blockstate whose `lit` swaps each lens texture for the lit one; `powered` only
+    remembers the redstone, so it draws nothing."""
+    lit = {"true": {"textures": {k: C.T("lens_%s_on" % c) for k, c in lens_keys.items()}},
+           "false": {"textures": {k: C.T("lens_%s_off" % c) for k, c in lens_keys.items()}}}
+    variants = {"lit": lit, "powered": {"true": {}, "false": {}}}
+    if extra:
+        variants.update(extra)
+    return lc.facing_state(C.M(model), variants)
+
+
+def light(reg, java, names, els, tex, lens_keys, display, extra=None):
+    m = lc.model(tex, els, ao=False)
+    m["display"] = display
+    C.add(reg, java, names, {reg: m}, light_state(reg, lens_keys, None, extra), tab=TAB)
+
+
+def light_java(reg, box, circuit, level):
+    return 'new BlockAirfieldLight("%s", %s, "%s", %d)' % (reg, box_java(box), circuit, level)
+
+
+def multipart(parts, prefix, textures, facings=True, ao=True):
+    models = {}
+    rules = []
+    for name, cond, els in parts:
+        mname = "%s_%s" % (prefix, name)
+        models[mname] = lc.model(textures, els, ao=ao)
+        for f, y in (FACINGS if facings else ((None, 0),)):
+            when = {"facing": f} if f else {}
+            for k, v in cond.items():
+                when[k] = ("true" if v else "false") if isinstance(v, bool) else str(v)
+            apply = {"model": C.M(mname)}
+            if y:
+                apply["y"] = y
+            rules.append({"when": when, "apply": apply} if when else {"apply": apply})
+    return models, {"multipart": rules}
+
+
+def item_of(parts, textures, keep=lambda cond: all(v is False for v in cond.values()),
+            display=None):
+    els = []
+    for name, cond, e in parts:
+        if keep(cond):
+            els += e
+    m = lc.model(textures, els, ao=False)
+    if display:
+        m["display"] = display
+    return m
+
+
+# ------------------------------------------------------------------------------------------
+# Airfield lights
+# ------------------------------------------------------------------------------------------
+def elevated(lens_parts):
+    """An elevated edge light: a base can, a yellow frangible coupling, a stalk and the lens
+    under a cap."""
+    return (post(8, 8, 2.2, 0, 2.4, "can")
+            + post(8, 8, 0.9, 2.4, 3.6, "frangible", top=False, bottom=False)
+            + post(8, 8, 0.6, 3.6, 9, "can", top=False, bottom=False)
+            + lens_parts
+            + post(8, 8, 1.3, 12.2, 12.8, "can", bottom=False))
+
+
+def airfield_lights():
+    box = (5.8, 0, 5.8, 10.2, 12.8, 10.2)
+    for reg, colour, circuit, level, names in (
+            ("airport_runway_edge_light", "white", "runway", 12,
+             names_of("Runway Edge Light", "Pistenrandfeuer", "Luz de Borde de Pista",
+                      "Banlampa")),
+            ("airport_taxiway_edge_light", "blue", "taxiway", 10,
+             names_of("Taxiway Edge Light", "Rollwegrandfeuer", "Luz de Borde de Calle de Rodaje",
+                      "Taxibanans kantljus"))):
+        els = elevated(noshade(post(8, 8, 1.7, 9, 12.2, "lens", top=False, bottom=False)))
+        tex = {"can": C.T("can"), "frangible": C.T("frangible"),
+               "lens": C.T("lens_%s_off" % colour), "particle": C.T("can")}
+        light(reg, light_java(reg, box, circuit, level), names, els, tex, {"lens": colour},
+              gui_display(1.1, 1.0))
+
+    # the threshold light: green to the approach (the model's north), red back up the runway
+    reg = "airport_runway_threshold_light"
+    lens = noshade([B((6.3, 9, 6.3), (9.7, 12.2, 8), "green", ("north", "east", "west")),
+                    B((6.3, 9, 8), (9.7, 12.2, 9.7), "red", ("south", "east", "west"))])
+    els = elevated(lens)
+    tex = {"can": C.T("can"), "frangible": C.T("frangible"), "green": C.T("lens_green_off"),
+           "red": C.T("lens_red_off"), "particle": C.T("can")}
+    light(reg, light_java(reg, box, "runway", 12),
+          names_of("Runway Threshold Light", "Schwellenfeuer", "Luz de Umbral de Pista",
+                   "Tröskelljus"),
+          els, tex, {"green": "green", "red": "red"}, gui_display(1.1, 1.0))
+
+    # inset lights, flush in the pavement: a steel ring and a raised lens
+    for reg, colour, circuit, level, names in (
+            ("airport_runway_centreline_light", "white", "runway", 11,
+             names_of("Runway Centreline Light", "Pistenmittellinienfeuer",
+                      "Luz de Eje de Pista", "Banans mittlinjeljus")),
+            ("airport_taxiway_centreline_light", "green", "taxiway", 10,
+             names_of("Taxiway Centreline Light", "Rollwegmittellinienfeuer",
+                      "Luz de Eje de Calle de Rodaje", "Taxibanans mittlinjeljus")),
+            ("airport_stop_bar_light", "red", "taxiway", 10,
+             names_of("Stop Bar Light", "Haltebalkenfeuer", "Luz de Barra de Parada",
+                      "Stopprampsljus"))):
+        els = (post(8, 8, 4.2, 0, 0.6, "ring", bottom=False)
+               + noshade(post(8, 8, 2.0, 0.6, 1.3, "lens", bottom=False)))
+        tex = {"ring": C.T("inset_ring"), "lens": C.T("lens_%s_off" % colour),
+               "particle": C.T("inset_ring")}
+        light(reg, light_java(reg, (3.8, 0, 3.8, 12.2, 1.3, 12.2), circuit, level), names, els,
+              tex, {"lens": colour}, gui_display(1.4, 3.0))
+
+    # the approach light bar: five lamps on a crossbar two blocks wide, facing the approach
+    reg = "airport_approach_light_bar"
+    els = post(8, 8, 1.2, 0, 10, "mast", bottom=False)
+    els += [B((-8, 10, 7), (24, 11.4, 9), "mast", ALL, uv={
+        "north": [0, 4, 16, 5.4], "south": [0, 4, 16, 5.4], "up": [0, 7, 16, 9],
+        "down": [0, 7, 16, 9]})]
+    lamps = []
+    for x in (-4.8, 1.6, 8.0, 14.4, 20.8):
+        els += [B((x - 0.4, 11.4, 7.4), (x + 0.4, 12.2, 8.6), "body", SIDES),
+                B((x - 1.6, 12.2, 6.2), (x + 1.6, 15.4, 9.4), "body",
+                  ("south", "east", "west", "up", "down"))]
+        lamps.append(B((x - 1.6, 12.2, 6.2), (x + 1.6, 15.4, 6.2), "lens", ("north",),
+                       uv={"north": [2, 2, 14, 14]}))
+    els += noshade(lamps)
+    tex = {"mast": C.T("mast"), "body": C.T("lamp_body"), "lens": C.T("lens_white_off"),
+           "particle": C.T("mast")}
+    light(reg, light_java(reg, (-8, 0, 6.2, 24, 15.4, 9.4), "runway", 15),
+          names_of("Approach Light Bar", "Anflugfeuerbalken", "Barra de Luces de Aproximación",
+                   "Inflygningsljusbom"),
+          els, tex, {"lens": "white"}, gui_display(0.5, 0.0))
+
+    # the airport beacon: a lens band whose eight sides flash in turn, white then green
+    reg = "airport_beacon"
+    els = [B((3, 0, 3), (13, 1, 13), "housing", SIDES + ("up", "down"))] \
+        + post(8, 8, 1.4, 1, 2.2, "housing", top=False, bottom=False) \
+        + post(8, 8, 3.8, 2.2, 3.2, "housing") + post(8, 8, 3.8, 9.2, 10.2, "housing") \
+        + post(8, 8, 2.6, 10.2, 11.2, "housing", bottom=False) \
+        + post(8, 8, 0.6, 11.2, 12.4, "housing", bottom=False)
+    band = noshade(post(8, 8, 3.4, 3.2, 9.2, "b0", top=False, bottom=False))
+    # sides by compass bearing: an element's east/west side is east/west, turned 45 degrees
+    # (about y, positive) it looks north-east/south-west; north/south turned look north-west/
+    # south-east
+    bearing = {(False, "north"): 0, (False, "east"): 2, (False, "south"): 4, (False, "west"): 6,
+               (True, "east"): 1, (True, "south"): 3, (True, "west"): 5, (True, "north"): 7}
+    for e in band:
+        turned = "rotation" in e
+        for f, face in e["faces"].items():
+            face["texture"] = "#b%d" % bearing[(turned, f)]
+            face["uv"] = [0, 0, 16, 16]
+    els += band
+    tex = {"housing": C.T("beacon_housing"), "particle": C.T("beacon_housing")}
+    tex.update({"b%d" % p: C.T("beacon_off") for p in range(BEACON_FRAMES)})
+    m = lc.model(tex, els, ao=False)
+    m["display"] = gui_display(0.9, 0.0)
+    state = lc.facing_state(C.M(reg), {
+        "lit": {"true": {"textures": {"b%d" % p: C.T("beacon_%d" % p)
+                                      for p in range(BEACON_FRAMES)}},
+                "false": {"textures": {"b%d" % p: C.T("beacon_off")
+                                       for p in range(BEACON_FRAMES)}}},
+        "powered": {"true": {}, "false": {}}})
+    C.add(reg, light_java(reg, (3, 0, 3, 13, 12.4, 13), "beacon", 15),
+          names_of("Airport Beacon", "Flughafen-Leuchtfeuer", "Faro de Aeródromo",
+                   "Flygplatsfyr"),
+          {reg: m}, state, tab=TAB)
+
+
+# ------------------------------------------------------------------------------------------
+# The wind sock and the antenna mast (obstruction lit)
+# ------------------------------------------------------------------------------------------
+def wind_sock():
+    """A wind sock on its pivot, blowing north: a square hoop at the mouth and five tapering
+    bands, orange and white, drooping a little; a red obstruction light on the pivot."""
+    reg = "airport_wind_sock"
+    els = post(8, 8, 1.2, 0, 12, "mast", bottom=False)
+    els += post(8, 8, 1.7, 12, 14.4, "frame", bottom=True, top=True)
+    els += [B((7.6, 12.6, 5.4), (8.4, 13.4, 8), "frame", ("east", "west", "up", "down"))]
+    # the hoop, a square round the mouth at z 5..5.8
+    cy, r0 = 12.4, 4.0
+    els += [B((8 - r0 - 0.6, cy - r0 - 0.6, 4.8), (8 + r0 + 0.6, cy - r0, 5.6), "frame"),
+            B((8 - r0 - 0.6, cy + r0, 4.8), (8 + r0 + 0.6, cy + r0 + 0.6, 5.6), "frame"),
+            B((8 - r0 - 0.6, cy - r0, 4.8), (8 - r0, cy + r0, 5.6), "frame"),
+            B((8 + r0, cy - r0, 4.8), (8 + r0 + 0.6, cy + r0, 5.6), "frame")]
+    # five bands, from the mouth (z 5) out to the tip (z -15)
+    for i in range(5):
+        z1 = 5.0 - 4.18 * i
+        z0 = z1 - 4.18
+        r = r0 - 0.46 * (i + 0.5)
+        y = cy - 0.45 * (i + 0.5)
+        colour = "orange" if i % 2 == 0 else "white"
+        seg = lc._octagon("z", 8, y, r, z0, z1, colour, i in (0, 4),
+                          cap_front=(i == 4), cap_back=(i == 0))
+        for e in seg:
+            if i == 0 and "south" in e["faces"]:
+                e["faces"]["south"]["texture"] = "#inside"
+        els += seg
+    els += noshade(post(8, 8, 1.0, 14.4, 16, "lens", bottom=False))
+    tex = {"mast": C.T("mast"), "frame": C.T("mast"), "orange": C.T("sock_orange"),
+           "white": C.T("sock_white"), "inside": C.T("sock_inside"),
+           "lens": C.T("lens_red_off"), "particle": C.T("sock_orange")}
+    light(reg, light_java(reg, (3.8, 0, -16, 12.2, 16, 8), "obstruction", 9),
+          names_of("Wind Sock", "Windsack", "Manga de Viento", "Vindstrut"),
+          els, tex, {"lens": "red"}, gui_display(0.55, 0.0, rot=(30, 135, 0)))
+
+    reg = "airport_antenna_mast"
+    els = [B((4.5, 0, 4.5), (11.5, 0.8, 11.5), "mast", SIDES + ("up",))]
+    els += post(8, 8, 0.8, 0.8, 15, "mast", bottom=False, top=True)
+    els += [B((2, 6, 7.6), (14, 6.6, 8.4), "mast", ALL),
+            B((7.6, 10, 2), (8.4, 10.6, 14), "mast", ALL),
+            B((3.6, 0.8, 3.6), (4.2, 13, 4.2), "dish", SIDES + ("up",)),
+            B((11.8, 0.8, 11.8), (12.4, 11, 12.4), "dish", SIDES + ("up",)),
+            B((8.8, 3.2, 7.6), (10, 4.4, 8.4), "mast", ALL)]
+    els += gp.octagon_z(10, 3.8, 2.4, 3.2, 3.8, "dish", front=True, back=True)
+    els += noshade(post(8, 8, 0.9, 15, 17, "lens", bottom=False))
+    tex = {"mast": C.T("mast"), "dish": C.T("dish"), "lens": C.T("lens_red_off"),
+           "particle": C.T("mast")}
+    light(reg, light_java(reg, (2, 0, 2, 14, 17, 14), "obstruction", 9),
+          names_of("Antenna Mast", "Antennenmast", "Mástil de Antenas", "Antennmast"),
+          els, tex, {"lens": "red"}, gui_display(0.8, 0.0))
+
+
+# ------------------------------------------------------------------------------------------
+# Airfield signs
+# ------------------------------------------------------------------------------------------
+def sign_frame():
+    """The sign's case on two frangible legs, without its face."""
+    els = []
+    for x in (3.5, 12.5):
+        els += post(x, 8, 0.6, 0, 1, "case", bottom=False, top=False)
+        els += post(x, 8, 0.75, 1, 1.8, "frangible", bottom=False, top=False)
+        els += post(x, 8, 0.6, 1.8, SIGN_Y0, "case", bottom=False, top=False)
+    els.append(B((SIGN_X0, SIGN_Y0, SIGN_Z0), (SIGN_X1, SIGN_Y1, SIGN_Z1), "case",
+                 ("south", "east", "west", "up", "down"), per={"south": "back"}))
+    return els
+
+
+SIGN_BOX = (SIGN_X0, 0, SIGN_Z0, SIGN_X1, SIGN_Y1, SIGN_Z1)
+
+
+def sign_java(reg, labels, arrows):
+    """BlockAirfieldSign's line: what each legend reads, for the action bar, in the order of
+    the blockstate's legend textures."""
+    return 'new BlockAirfieldSign("%s", %s, new String[]{%s}, %s)' % (
+        reg, box_java(SIGN_BOX), ", ".join('"%s"' % t for t in labels),
+        "true" if arrows else "false")
+
+
+def airfield_signs():
+    base_tex = {"case": C.T("sign_case"), "frangible": C.T("frangible"),
+                "back": C.T("sign_back"), "particle": C.T("sign_back")}
+    face_uv = win(FACE_W, FACE_H, SIGN_TEX)
+    for reg, prefix, labels, texts, names in (
+            ("airport_taxiway_location_sign", "sign_location_",
+             [c.lower() for c in LOCATIONS], list(LOCATIONS),
+             names_of("Taxiway Location Sign", "Rollweg-Positionsschild",
+                      "Letrero de Posición de Calle de Rodaje", "Taxibanans lägesskylt")),
+            ("airport_runway_holding_sign", "sign_holding_",
+             [str(i) for i in range(1, len(HOLDING) + 1)], HOLDING,
+             names_of("Runway Holding Position Sign", "Rollhalteort-Schild",
+                      "Letrero de Punto de Espera de Pista", "Skylt för väntläge")),
+            ("airport_runway_distance_sign", "sign_distance_",
+             [str(i) for i in range(1, len(DISTANCES) + 1)], DISTANCES,
+             names_of("Runway Distance Remaining Sign", "Restlängenschild",
+                      "Letrero de Distancia Restante", "Skylt för återstående banlängd"))):
+        els = sign_frame() + [B((SIGN_X0, SIGN_Y0, SIGN_Z0), (SIGN_X1, SIGN_Y1, SIGN_Z0),
+                                "face", ("north",), uv={"north": face_uv})]
+        tex = dict(base_tex, face=C.T(prefix + labels[0]))
+        m = lc.model(tex, els)
+        m["display"] = gui_display(0.8, 0.0)
+        legend = {str(v): {"textures": {"face": C.T(prefix + labels[min(v, len(labels)) - 1])}}
+                  for v in range(1, LEGENDS + 1)}
+        state = lc.facing_state(C.M(reg), {
+            "legend": legend, "arrow": {"left": {}, "right": {}},
+            "lit": {"true": {}, "false": {}}, "powered": {"true": {}, "false": {}}})
+        C.add(reg, sign_java(reg, texts, False), names, {reg: m}, state, tab=TAB)
+
+    # the direction sign: a letter cell and an arrow cell, the arrow on the side it points
+    reg = "airport_taxiway_direction_sign"
+    cell_uv = win(CELL_W, FACE_H, 64)
+    mid = (SIGN_X0 + SIGN_X1) / 2
+    models = {}
+    for side in ("left", "right"):
+        # seen from the north, high x is on the left
+        left_tex, right_tex = ("arrow", "legend") if side == "left" else ("legend", "arrow")
+        els = sign_frame() + [
+            B((mid, SIGN_Y0, SIGN_Z0), (SIGN_X1, SIGN_Y1, SIGN_Z0), left_tex, ("north",),
+              uv={"north": cell_uv}),
+            B((SIGN_X0, SIGN_Y0, SIGN_Z0), (mid, SIGN_Y1, SIGN_Z0), right_tex, ("north",),
+              uv={"north": cell_uv})]
+        tex = dict(base_tex, legend=C.T("sign_direction_a"), arrow=C.T("sign_arrow_" + side))
+        m = lc.model(tex, els)
+        m["display"] = gui_display(0.8, 0.0)
+        models["%s_%s" % (reg, side)] = m
+    legend = {str(v): {"textures": {"legend": C.T("sign_direction_" + LOCATIONS[
+        min(v, len(LOCATIONS)) - 1].lower())}} for v in range(1, LEGENDS + 1)}
+    state = lc.facing_state(C.M(reg + "_left"), {
+        "legend": legend,
+        "arrow": {"left": {"model": C.M(reg + "_left")}, "right": {"model": C.M(reg + "_right")}},
+        "lit": {"true": {}, "false": {}}, "powered": {"true": {}, "false": {}}})
+    C.add(reg, sign_java(reg, list(LOCATIONS), True),
+          names_of("Taxiway Direction Sign", "Rollweg-Richtungsschild",
+                   "Letrero de Dirección de Calle de Rodaje", "Taxibanans riktningsskylt"),
+          models, state, tab=TAB)
+
+
+# ------------------------------------------------------------------------------------------
+# The airfield mast and the stand sign
+# ------------------------------------------------------------------------------------------
+MAST_R = 1.2
+
+
+def column(reg, java, names, shaft, base, cap, tex, display):
+    parts = [("shaft", {}, shaft), ("base", {"down": False}, base), ("cap", {"up": False}, cap)]
+    models, state = multipart(parts, reg, tex)
+    C.add(reg, java, names, models, state, item=item_of(parts, tex, display=display), tab=TAB)
+
+
+def airfield_mast():
+    reg = "airport_airfield_mast"
+    tex = {"mast": C.T("mast"), "plinth": C.T("plinth"), "particle": C.T("mast")}
+    column(reg, 'new BlockPlatformColumn("%s", %s)' % (reg, box_java((6.5, 0, 6.5, 9.5, 16,
+                                                                      9.5))),
+           names_of("Airfield Mast", "Flugfeldmast", "Mástil de Aeródromo", "Flygfältsmast"),
+           post(8, 8, MAST_R, 0, 16, "mast", top=False, bottom=False),
+           [B((4.5, 0, 4.5), (11.5, 1.2, 11.5), "plinth", SIDES + ("up",))]
+           + post(8, 8, 1.8, 1.2, 2.2, "mast", bottom=False),
+           post(8, 8, 1.5, 15.2, 16, "mast", bottom=False), tex, gui_display(0.9, 0.0))
+
+
+def stand_sign():
+    """The stand's letter and number, twice the gate sign's size, on a post as tall as the
+    airfield mast is thick, so it stands on one. Cells are the gate sign's textures, laid out as
+    the gate sign lays them out (the back mirrored so it reads the same)."""
+    reg = "airport_stand_sign"
+    x0, x1, y0, y1 = -4.0, 20.0, 5.0, 15.0
+    z0, z1 = 7.2, 8.8
+    lw = ga.GATE_LETTER_W * 2
+    k = ga.GATE_K / 2.0
+    letter_uv = [0, 0, lw * k * 16.0 / 64, (y1 - y0) * k * 16.0 / 64]
+    number_uv = [0, 0, (x1 - x0 - lw) * k * 16.0 / 64, (y1 - y0) * k * 16.0 / 64]
+    fx = x1 - lw          # the front's letter is on its left: high x
+    lx = x0 + lw          # the back's on the other side
+    els = [B((x0, y0, z0), (x1, y1, z1), "edge", ("east", "west", "up", "down"),
+             uv={"up": [0, 7, 16, 8.6], "down": [0, 7, 16, 8.6], "east": [7, 1, 8.6, 11],
+                 "west": [7, 1, 8.6, 11]}),
+           B((fx, y0, z0), (x1, y1, z0), "letter", ("north",), uv={"north": letter_uv}),
+           B((x0, y0, z0), (fx, y1, z0), "number", ("north",), uv={"north": number_uv}),
+           B((x0, y0, z1), (lx, y1, z1), "letter", ("south",), uv={"south": letter_uv}),
+           B((lx, y0, z1), (x1, y1, z1), "number", ("south",), uv={"south": number_uv})]
+    els += post(8, 8, MAST_R, 0, y0, "steel", top=False, bottom=True)
+    tex = {"edge": ga.C.T("graphite"), "letter": ga.C.T("gate_letter_a"),
+           "number": ga.C.T("gate_number_1"), "steel": C.T("mast"),
+           "particle": ga.C.T("gate_label")}
+    extra = {"letter": {ch.lower(): {"textures": {"letter": ga.C.T("gate_letter_" + ch.lower())}}
+                        for ch in ga.GATE_LETTERS},
+             "number": {str(n): {"textures": {"number": ga.C.T("gate_number_%d" % n)}}
+                        for n in range(1, ga.GATE_NUMBERS + 1)}}
+    m = lc.model(tex, els)
+    m["display"] = gui_display(0.5, 0.0)
+    C.add(reg, 'new BlockStandSign("%s", %s)' % (reg, box_java((-4, 0, 7, 20, 15, 9))),
+          names_of("Stand Sign", "Standplatzschild", "Letrero de Puesto de Estacionamiento",
+                   "Uppställningsplatsskylt"),
+          {reg: m}, lc.facing_state(C.M(reg), extra), tab=TAB)
+
+
+# ------------------------------------------------------------------------------------------
+# Ground equipment (Roads' BlockUtilityBox: settles, two-block pieces placed whole)
+# ------------------------------------------------------------------------------------------
+def gse(reg, els, tex, width, depth, height, unit, names, display):
+    m = lc.model(tex, els)
+    m["display"] = display
+    java = ('new BlockUtilityBox("%s", new UtilityBoxSpec(%d, %d, %d, new AxisAlignedBB(%s), '
+            'null))' % (reg, width, depth, height, ", ".join("%g" % v for v in unit)))
+    C.add(reg, java, names, {reg: m}, lc.facing_state(C.M(reg)), tab=TAB)
+
+
+def ground_equipment():
+    # wheel chocks: a pair of yellow wedges on a rope
+    els = []
+    # each chock a square prism turned 45 about x with its lower half in the ground: a
+    # triangular wedge, ridge up, 3.2 tall and 6.4 long
+    h = 3.2
+    for x0 in (2.0, 10.0):
+        els += [B((x0, -h / math.sqrt(2), 8 - h / math.sqrt(2)),
+                  (x0 + 4, h / math.sqrt(2), 8 + h / math.sqrt(2)), "chock", ALL,
+                  uv={f: [0, 0, 16, 16] for f in ("east", "west")},
+                  rot=("x", 45, (x0, 0, 8)))]
+    els += [B((6, 0.4, 7.7), (10, 0.9, 8.3), "rope", ("up", "north", "south", "down"))]
+    gse("airport_wheel_chocks", els, {"chock": C.T("chock"), "rope": C.T("rope"),
+                                      "particle": C.T("chock")},
+        1, 1, 1, (0.125, 0, 0.28, 0.875, 0.25, 0.72),
+        names_of("Wheel Chocks", "Bremskeile", "Calzos", "Hjulklossar"), gui_display(1.1, 2.0))
+
+    # the ground power unit: a trailer with louvred sides, its control panel at the back, a
+    # cable coiled on its side and a towbar at the front
+    els = [B((1.5, 3.2, 3), (14.5, 5, 29), "steel", ALL),
+           B((1.5, 5, 3), (14.5, 19, 29), "body", ALL,
+             per={"north": "panel_front", "south": "panel", "up": "top"},
+             uv={"east": [0, 0, 16, 7], "west": [0, 0, 16, 7], "south": [0, 0, 16, 16],
+                 "north": [0, 0, 16, 16], "up": [0, 0, 6.5, 13]}),
+           B((3, 19, 22), (4.2, 22, 23.2), "black", SIDES + ("up",)),
+           B((7.3, 3.6, -4), (8.7, 4.6, 3), "steel", ("east", "west", "up", "down", "north")),
+           B((6.8, 3.2, -5.2), (9.2, 4.8, -3.8), "steel")]
+    els += lc.pipe_x(10, 12, 3.2, 14.5, 16, "cable")
+    for cz in (6, 26):
+        els += lc.pipe_x(2.6, cz, 2.6, 0.6, 2.6, "tyre") + lc.pipe_x(2.6, cz, 2.6, 13.4, 15.4,
+                                                                    "tyre")
+    gse("airport_ground_power_unit", els,
+        {"steel": C.T("gse_steel"), "body": C.T("gpu_side"), "panel": C.T("gpu_panel"),
+         "panel_front": C.T("gse_white"), "top": C.T("gse_white"), "black": C.T("gse_black"),
+         "cable": C.T("gse_black"), "tyre": C.T("tyre"), "particle": C.T("gse_white")},
+        1, 2, 2, (0, 0, 0, 1, 1.4, 2),
+        names_of("Ground Power Unit", "Bodenstromaggregat", "Grupo Eléctrico de Tierra",
+                 "Markströmsaggregat"), gui_display(0.5, 0.0))
+
+    # the baggage tug: a low tractor with a grille, a seat under a canopy, a tow hitch at the
+    # back and an amber beacon on the roof
+    els = [B((1.5, 3, 1), (14.5, 7, 31), "paint", ALL),
+           B((1, 2.4, 0), (15, 5.6, 1.2), "black"),
+           B((2, 7, 1.2), (14, 12, 11), "paint", ALL, per={"north": "grille"},
+             uv={"north": [0, 0, 16, 16]}),
+           B((2, 7, 11), (14, 15, 12), "paint", ALL),
+           B((2, 7, 22), (14, 13, 31), "paint", ALL),
+           B((5, 7, 16.5), (11, 10, 21), "seat"),
+           B((5, 10, 20), (11, 16, 21.5), "seat"),
+           B((7.5, 12, 12.5), (8.5, 15, 13.5), "black", SIDES),
+           B((5.8, 15, 12), (10.2, 15.6, 14), "black"),
+           B((7, 3.6, 31), (9, 5.4, 32), "black")]
+    for x in (2.0, 13.2):
+        els += [B((x, 12, 11.2), (x + 0.8, 28, 12), "paint", SIDES),
+                B((x, 13, 29.2), (x + 0.8, 28, 30), "paint", SIDES)]
+    els += [B((1.5, 28, 10.4), (14.5, 29, 30.8), "paint", ALL, uv={"up": [0, 0, 13, 16],
+                                                                 "down": [0, 0, 13, 16]}),
+            B((7, 29, 26), (9, 31, 28), "amber", SIDES + ("up",))]
+    for cz in (6, 25):
+        els += lc.pipe_x(3.2, cz, 3.2, 0.5, 3.5, "tyre") + lc.pipe_x(3.2, cz, 3.2, 12.5, 15.5,
+                                                                    "tyre")
+    gse("airport_baggage_tug", els,
+        {"paint": C.T("gse_yellow"), "black": C.T("gse_black"), "grille": C.T("tug_grille"),
+         "seat": C.T("gse_black"), "amber": C.T("amber"), "tyre": C.T("tyre"),
+         "particle": C.T("gse_yellow")},
+        1, 2, 2, (0, 0, 0, 1, 1.9, 2),
+        names_of("Baggage Tug", "Gepäckschlepper", "Tractor de Equipajes", "Bagagetraktor"),
+        gui_display(0.5, 0.0))
+
+    # the covered baggage cart: a deck on four wheels under a canvas roof, the curtain down on
+    # one side and rolled up on the other, bags aboard, a towbar at the front
+    els = [B((1, 4, 1), (15, 6, 31), "steel", ALL),
+           B((1.2, 6, 1.2), (14.8, 6.6, 30.8), "steel", ("up",), per={"up": "deck"},
+             uv={"up": [0, 0, 16, 16]}),
+           B((7.3, 4.4, -5), (8.7, 5.4, 1), "steel", ("east", "west", "up", "down", "north")),
+           B((6.8, 4, -6.2), (9.2, 5.6, -4.8), "steel")]
+    for x, z in ((1, 1), (14.2, 1), (1, 30.2), (14.2, 30.2)):
+        els.append(B((x, 6.6, z), (x + 0.8, 26, z + 0.8), "steel", SIDES))
+    els += [B((0.6, 26, 0.6), (15.4, 27.2, 31.4), "canvas", ALL,
+              uv={"up": [0, 0, 14.8, 16], "down": [0, 0, 14.8, 16]}),
+            B((0.8, 8, 1.8), (1.3, 26, 30.2), "canvas", ("east", "west")),
+            B((14.6, 23.4, 1.8), (15.6, 26, 30.2), "canvas", ("east", "west", "down")),
+            B((1.8, 8, 1), (14.2, 26, 1.6), "canvas", ("north", "south")),
+            B((1.8, 8, 30.4), (14.2, 26, 31), "canvas", ("north", "south"))]
+    for x0, y0, z0, x1, y1, z1, t in ((2.5, 6.6, 3, 9, 11.6, 12, "bag_red"),
+                                      (9.5, 6.6, 3, 14, 13.6, 10, "bag_grey"),
+                                      (2.5, 6.6, 13, 8, 13.6, 22, "bag_blue"),
+                                      (8.5, 6.6, 12, 14, 10.6, 20, "bag_red"),
+                                      (3, 6.6, 23, 13.5, 11.6, 29, "bag_grey"),
+                                      (4, 11.6, 23.5, 12, 15.6, 28.5, "bag_blue")):
+        els.append(B((x0, y0, z0), (x1, y1, z1), t))
+    for cz in (4, 28):
+        els += lc.pipe_x(2.2, cz, 2.2, 1, 3, "tyre") + lc.pipe_x(2.2, cz, 2.2, 13, 15, "tyre")
+    gse("airport_baggage_cart", els,
+        {"steel": C.T("gse_steel"), "deck": C.T("diamond_plate"), "canvas": C.T("canvas"),
+         "bag_red": C.T("bag_red"), "bag_blue": C.T("bag_blue"), "bag_grey": C.T("bag_grey"),
+         "tyre": C.T("tyre"), "particle": C.T("canvas")},
+        1, 2, 2, (0, 0, 0, 1, 1.7, 2),
+        names_of("Baggage Cart", "Gepäckanhänger", "Carro de Equipajes", "Bagagevagn (Släp)"),
+        gui_display(0.5, 0.0))
+
+    # towable air stairs: a platform at the front (north), seven steps down at 45 degrees to
+    # the back, handrails both sides
+    top, foot = 18.0, 4.0
+    els = [B((1, 3, 2), (15, 5.5, 30), "steel", ALL),
+           B((1, top - 1, 0.5), (15, top, 8), "white", ALL, per={"up": "tread"},
+             uv={"up": [0, 0, 14, 7.5]})]
+    for x in (1.5, 13.3):
+        els += [B((x, 5.5, 2), (x + 1.2, top - 1, 3.2), "white", SIDES),
+                B((x, 5.5, 6.4), (x + 1.2, top - 1, 7.6), "white", SIDES)]
+    steps = 6
+    run = (top - foot) / steps
+    for i in range(steps):
+        z0 = 8 + i * run
+        y = top - (i + 1) * run
+        els.append(B((2.6, y, z0), (13.4, y + 0.8, z0 + run + 0.4), "white", ALL,
+                     per={"up": "tread"}))
+    # stringers and rails in lengths short enough to stay within an element's limits once
+    # turned 45 degrees about x (down towards the back)
+    drop = top - foot
+    seg = drop * math.sqrt(2) / 3
+    for x0, x1 in ((1.8, 2.6), (13.4, 14.2)):
+        for j in range(3):
+            cz = 8 + drop * (j + 0.5) / 3
+            cy = top - drop * (j + 0.5) / 3
+            for dy, t, h in ((-1.0, "white", 1.6), (12.6, "rail", 0.7)):
+                els.append(B((x0 if t == "white" else x0 + 0.1, cy + dy - h / 2, cz - seg / 2),
+                             (x1 if t == "white" else x1 - 0.1, cy + dy + h / 2, cz + seg / 2),
+                             t, ("east", "west", "up", "down"), rot=("x", 45, (8, cy + dy, cz))))
+        # the platform's side rails and posts
+        els += [B((x0, top, 0.8), (x1, top + 13, 1.6), "rail", SIDES),
+                B((x0, top, 7.6), (x1, top + 13, 8.4), "rail", SIDES),
+                B((x0 + 0.1, top + 12.3, 0.8), (x1 - 0.1, top + 13, 8.4), "rail",
+                  ("east", "west", "up", "down")),
+                B((x0 + 0.1, top + 6, 1.6), (x1 - 0.1, top + 6.6, 7.6), "rail",
+                  ("east", "west", "up", "down"))]
+    for cz in (5, 27):
+        els += lc.pipe_x(2.4, cz, 2.4, 0.6, 2.6, "tyre") + lc.pipe_x(2.4, cz, 2.4, 13.4, 15.4,
+                                                                    "tyre")
+    gse("airport_air_stairs", els,
+        {"steel": C.T("gse_steel"), "white": C.T("gse_white"), "tread": C.T("diamond_plate"),
+         "rail": C.T("gse_yellow"), "tyre": C.T("tyre"), "particle": C.T("gse_white")},
+        1, 2, 2, (0, 0, 0, 1, 1.95, 2),
+        names_of("Air Stairs", "Fluggasttreppe", "Escalerilla de Embarque", "Flygplanstrappa"),
+        gui_display(0.5, 0.0))
+
+
+# ------------------------------------------------------------------------------------------
+# The jet bridge
+# ------------------------------------------------------------------------------------------
+# BlockJetBridge: the corridor's section, in sixteenths, centred on the block's middle (x 8)
+JB_X0, JB_X1 = -8.0, 24.0        # the tunnel's outside
+JB_WT = 1.5                      # its walls' thickness
+JB_FLOOR = 1.5                   # the floor's top
+JB_CEIL = 30.5                   # the ceiling
+JB_ROOF = 31.6                   # the roof's top
+CAB_X0, CAB_X1 = -10.0, 26.0     # the cab's outside
+ROT = 22.0                       # the rotunda's half width, from the block's middle
+ROT_C = 6.0                      # its chamfered corners
+
+
+def floor_uv(w, d):
+    """A floor or ceiling face w x d units at 1 texel a unit on a 64 texture (the carpet,
+    ceiling and roof textures repeat nothing across a block, so a face may take any window)."""
+    return [0, 0, round(w * 16.0 / 64, 4), round(d * 16.0 / 64, 4)]
+
+
+def slab(x0, x1, z0, z1, y0, y1, up, down, sides="frame", faces=("up", "down")):
+    w, d = x1 - x0, z1 - z0
+    return B((x0, y0, z0), (x1, y1, z1), sides, faces, per={"up": up, "down": down},
+             uv={"up": floor_uv(w, d), "down": floor_uv(w, d)})
+
+
+def wall_x(x0, x1, z0, z1, outer, inner, outside_west):
+    """A wall along z between x0 and x1: its outside face west or east, its window of the
+    wall texture as long as the wall (a block's length holds one window)."""
+    faces = {"west": outer, "east": inner} if outside_west else {"east": outer, "west": inner}
+    uv = win(min(64, (z1 - z0) * JB_K), JB_WALL_H * JB_K, 64)
+    return B((x0, JB_FLOOR, z0), (x1, JB_CEIL, z1), outer, ("east", "west"), per=faces,
+             uv={"east": uv, "west": uv})
+
+
+def tunnel_section(z0, z1, x0=JB_X0, x1=JB_X1, skin="skin", inner="inner"):
+    """Floor, walls and roof of a length of corridor from z0 to z1."""
+    els = [slab(x0, x1, z0, z1, 0, JB_FLOOR, "floor", "under", faces=("up", "down", "east",
+                                                                      "west")),
+           wall_x(x0, x0 + JB_WT, z0, z1, skin, inner, True),
+           wall_x(x1 - JB_WT, x1, z0, z1, skin, inner, False),
+           slab(x0, x1, z0, z1, JB_CEIL, JB_ROOF, "roof", "ceiling",
+                faces=("up", "down", "east", "west"))]
+    for e in els:
+        for f in ("east", "west"):
+            if f in e["faces"] and e["faces"][f]["texture"] == "#frame":
+                e["faces"][f]["uv"] = [0, 0, 16, 1.5]
+    return els
+
+
+def end_ring(z0, z1, x0=JB_X0, x1=JB_X1):
+    """The frame round an open end of the corridor, standing a little proud of it."""
+    o = 0.6
+    return [B((x0 - o, -0.4, z0), (x0 + 2, 32, z1), "frame"),
+            B((x1 - 2, -0.4, z0), (x1 + o, 32, z1), "frame"),
+            B((x0 + 2, JB_CEIL - 0.8, z0), (x1 - 2, 32, z1), "frame",
+              ("north", "south", "up", "down"), uv={"up": [0, 0, 16, 1.6],
+                                                     "down": [0, 0, 16, 1.6],
+                                                     "north": [0, 0, 16, 2.3],
+                                                     "south": [0, 0, 16, 2.3]}),
+            B((x0 + 2, -0.4, z0), (x1 - 2, JB_FLOOR + 0.3, z1), "frame",
+              ("north", "south", "up", "down"), uv={"up": [0, 0, 16, 1.6],
+                                                     "down": [0, 0, 16, 1.6],
+                                                     "north": [0, 0, 16, 2.2],
+                                                     "south": [0, 0, 16, 2.2]})]
+
+
+JB_TEX = {"floor": C.T("jb_floor"), "under": C.T("jb_under"), "skin": C.T("jb_skin"),
+          "inner": C.T("jb_inner"), "roof": C.T("jb_roof"), "ceiling": C.T("jb_ceiling"),
+          "frame": C.T("jb_frame"), "particle": C.T("jb_skin")}
+
+
+def jet_bridge():
+    # the tunnel: one block of corridor, a frame at each end that nothing continues from
+    reg = "airport_jet_bridge_tunnel"
+    parts = [("body", {}, tunnel_section(0, 16)),
+             ("end_ahead", {"ahead": False}, end_ring(-0.6, 1.0)),
+             ("end_behind", {"behind": False}, end_ring(15.0, 16.6))]
+    models, state = multipart(parts, reg, JB_TEX, ao=False)
+    C.add(reg, 'new BlockJetBridge("%s", BlockJetBridge.Kind.TUNNEL)' % reg,
+          names_of("Jet Bridge (Tunnel)", "Fluggastbrücke (Tunnel)",
+                   "Pasarela de Embarque (Túnel)", "Flygbrygga (Tunnel)"),
+          models, state, item=item_of(parts, JB_TEX, display=gui_display(0.32, 0.0)), tab=TAB)
+
+    # the cab: wider, with big windows, a console, the canopy's bellows round the open front,
+    # a hazard-striped bumper and a safety bar across it
+    reg = "airport_jet_bridge_cab"
+    tex = dict(JB_TEX, cab=C.T("jb_cab"), cab_inner=C.T("jb_cab_inner"),
+               bellows=C.T("jb_bellows"), hazard=C.T("hazard"), console=C.T("jb_console"),
+               rail=C.T("gse_yellow"))
+    body = tunnel_section(0, 16, CAB_X0, CAB_X1, "cab", "cab_inner")
+    # where the narrower tunnel meets the cab's back: the step between the two walls
+    body += [B((CAB_X0 + JB_WT, JB_FLOOR, 15.2), (JB_X0 + JB_WT, JB_CEIL, 16), "frame",
+               ("north",), uv={"north": [0, 0, 3, 16]}),
+             B((JB_X1 - JB_WT, JB_FLOOR, 15.2), (CAB_X1 - JB_WT, JB_CEIL, 16), "frame",
+               ("north",), uv={"north": [0, 0, 3, 16]}),
+             B((-7.6, JB_FLOOR, 1.2), (-2.4, 11, 4.6), "frame", ALL, per={"up": "console"},
+               uv={"up": [0, 0, 16, 16]})]
+    front = []
+    for i, (inset, z1) in enumerate(((0.0, 0.0), (0.6, -1.8), (1.2, -3.6))):
+        z0 = z1 - 1.8
+        x0, x1 = CAB_X0 - 0.6 + inset, CAB_X1 + 0.6 - inset
+        top = 32 - inset
+        front += [B((x0, 0, z0), (x0 + 2.2, top, z1), "bellows", ALL,
+                    uv={"north": [0, 0, 2.2, 16], "south": [0, 0, 2.2, 16]}),
+                  B((x1 - 2.2, 0, z0), (x1, top, z1), "bellows", ALL,
+                    uv={"north": [0, 0, 2.2, 16], "south": [0, 0, 2.2, 16]}),
+                  B((x0 + 2.2, top - 2.2, z0), (x1 - 2.2, top, z1), "bellows",
+                    ("north", "south", "up", "down"),
+                    uv={f: [0, 0, 16, 2.2] for f in ("north", "south", "up", "down")})]
+    front += [slab(-7.8, 23.8, -5.4, 0, 0, JB_FLOOR, "hazard", "under",
+                   faces=("up", "down", "north")),
+              B((-7.8, 17, -4.8), (23.8, 18.2, -3.8), "rail", ALL,
+                uv={f: [0, 0, 16, 1.2] for f in ("north", "south", "up", "down")}),
+              B((-7.8, 9, -4.8), (23.8, 10.2, -3.8), "rail", ALL,
+                uv={f: [0, 0, 16, 1.2] for f in ("north", "south", "up", "down")})]
+    body[0]["faces"]["up"]["uv"] = floor_uv(CAB_X1 - CAB_X0, 16)
+    for e in front:
+        if e["faces"].get("up", {}).get("texture") == "#hazard":
+            e["faces"]["up"]["uv"] = [0, 0, 16, 2.7]
+            e["faces"]["north"]["uv"] = [0, 0, 16, 0.75]
+    parts = [("body", {}, body + front),
+             ("end_behind", {"behind": False}, end_ring(15.0, 16.6, CAB_X0, CAB_X1))]
+    models, state = multipart(parts, reg, tex, ao=False)
+    C.add(reg, 'new BlockJetBridge("%s", BlockJetBridge.Kind.CAB)' % reg,
+          names_of("Jet Bridge (Cab)", "Fluggastbrücke (Kabine)",
+                   "Pasarela de Embarque (Cabina)", "Flygbrygga (Hytt)"),
+          models, state, item=item_of(parts, tex, display=gui_display(0.3, 0.0)), tab=TAB)
+
+    # the rotunda: an octagonal room three blocks across on the block's middle, its two open
+    # sides (north and south) the corridor's width, each with a collar out to the edge of the
+    # three blocks, where the next tunnel meets it
+    reg = "airport_jet_bridge_rotunda"
+    lo, hi = 8 - ROT, 8 + ROT          # -14, 30
+    a0, a1 = JB_X0, JB_X1               # the straight sides' ends: -8, 24
+    els = []
+    for y0, y1, up, down in ((0, JB_FLOOR, "floor", "under"), (JB_CEIL, JB_ROOF, "roof",
+                                                                  "ceiling")):
+        els += [slab(a0, a1, lo, hi, y0, y1, up, down),
+                slab(lo, a0, a0, a1, y0, y1, up, down),
+                slab(a1, hi, a0, a1, y0, y1, up, down)]
+        # the four chamfered corners' floor and roof, a square turned 45 a little inside
+        for cx, cz in ((a0, a0), (a1, a0), (a0, a1), (a1, a1)):
+            h = ROT_C / math.sqrt(2)
+            yy = (y0 - 0.3, y1 - 0.3) if up == "floor" else (y0 + 0.3, y1 + 0.3)
+            els.append(B((cx - h, yy[0], cz - h), (cx + h, yy[1], cz + h), "frame",
+                         ("up",) if up == "floor" else ("down",), per={"up": up, "down": down},
+                         uv={"up": [0, 0, 2, 2], "down": [0, 0, 2, 2]},
+                         rot=("y", 45, (cx, yy[0], cz))))
+    # the straight east and west walls
+    els += [wall_x(lo, lo + JB_WT, a0, a1, "skin", "inner", True),
+            wall_x(hi - JB_WT, hi, a0, a1, "skin", "inner", False)]
+    # chamfers: a wall's length centred on each corner's diagonal, turned 45
+    diag = ROT_C * math.sqrt(2)
+    inset = JB_WT / 2 / math.sqrt(2)
+    for sx, sz in ((-1, -1), (1, -1), (-1, 1), (1, 1)):
+        cx = 8 + sx * (ROT - ROT_C / 2) - sx * inset
+        cz = 8 + sz * (ROT - ROT_C / 2) - sz * inset
+        angle = 45 if sx == sz else -45
+        # a box long along x; turned, its north face looks north-west (45) or north-east (-45)
+        outer = "north" if sz < 0 else "south"
+        inner = "south" if sz < 0 else "north"
+        els.append(B((cx - diag / 2, JB_FLOOR, cz - JB_WT / 2), (cx + diag / 2, JB_CEIL,
+                                                                  cz + JB_WT / 2),
+                     "skin", (outer, inner), per={outer: "skin", inner: "inner"},
+                     uv={outer: [0, 0, diag * JB_K * 16.0 / 64, 14.5],
+                         inner: [0, 0, diag * JB_K * 16.0 / 64, 14.5]},
+                     rot=("y", angle, (cx, JB_FLOOR, cz))))
+    # the collars to the edge of the three blocks, and a cap on the roof
+    els += tunnel_section(-16, lo) + tunnel_section(hi, 32)
+    els += [B((0, JB_ROOF, 0), (16, 32, 16), "roof", ("up", "north", "south", "east",
+                                                                "west"),
+              uv={"up": [0, 0, 16, 16]})]
+    parts = [("body", {}, els),
+             ("end_ahead", {"ahead": False}, end_ring(-16.0, -14.6)),
+             ("end_behind", {"behind": False}, end_ring(30.6, 32.0))]
+    models, state = multipart(parts, reg, JB_TEX, ao=False)
+    C.add(reg, 'new BlockJetBridge("%s", BlockJetBridge.Kind.ROTUNDA)' % reg,
+          names_of("Jet Bridge (Rotunda)", "Fluggastbrücke (Rotunde)",
+                   "Pasarela de Embarque (Rotonda)", "Flygbrygga (Rotunda)"),
+          models, state, item=item_of(parts, JB_TEX, keep=lambda c: True,
+                                      display=gui_display(0.22, 0.0)), tab=TAB)
+
+    # the drive leg under a tunnel: two legs under its walls, a yoke under the floor where no
+    # leg continues above, the wheel bogie where none continues below
+    reg = "airport_jet_bridge_drive"
+    tex = {"leg": C.T("jb_leg"), "tyre": C.T("tyre"), "particle": C.T("jb_leg")}
+    legs = []
+    for x in (-5.0, 21.0):
+        legs.append(B((x - 1.5, 0, 6.5), (x + 1.5, 16, 9.5), "leg", SIDES))
+    beam_uv = {"north": [0, 0, 16, 2.6], "south": [0, 0, 16, 2.6], "up": [0, 0, 16, 4.8],
+               "down": [0, 0, 16, 4.8]}
+    yoke = [B((-7, 13.4, 5.6), (23, 16, 10.4), "leg", ALL, uv=beam_uv)]
+    bogie = [B((-7, 5.4, 5.6), (23, 7.8, 10.4), "leg", ALL, uv=beam_uv)]
+    for x in (-5.0, 21.0):
+        bogie += lc.pipe_x(2.7, 8, 2.7, x - 2.4, x + 2.4, "tyre")
+    column(reg, 'new BlockPlatformColumn("%s", %s)' % (reg, box_java((-7, 0, 5.6, 23, 16,
+                                                                      10.4))),
+           names_of("Jet Bridge (Drive Leg)", "Fluggastbrücke (Fahrwerk)",
+                    "Pasarela de Embarque (Tren de Rodaje)", "Flygbrygga (Drivben)"),
+           legs, bogie, yoke, tex, gui_display(0.35, 0.0))
+
+    # the rotunda's column: thick, round, with a plinth and a head
+    reg = "airport_jet_bridge_column"
+    tex = {"column": C.T("jb_column"), "plinth": C.T("plinth"), "particle": C.T("jb_column")}
+    column(reg, 'new BlockPlatformColumn("%s", %s)' % (reg, box_java((2, 0, 2, 14, 16, 14))),
+           names_of("Jet Bridge (Rotunda Column)", "Fluggastbrücke (Rotundensäule)",
+                    "Pasarela de Embarque (Columna de Rotonda)", "Flygbrygga (Rotundapelare)"),
+           post(8, 8, 5.0, 0, 16, "column", top=False, bottom=False),
+           [B((1.5, 0, 1.5), (14.5, 1.6, 14.5), "plinth", SIDES + ("up",))],
+           [B((1, 14.4, 1), (15, 16, 15), "column", ALL)], tex,
+           gui_display(0.6, 0.0))
+
+
+# ------------------------------------------------------------------------------------------
+# Lang the Java reads
+# ------------------------------------------------------------------------------------------
+C.add_lang("csm.transit.stand", ("Stand %s", "Standplatz %s", "Puesto %s", "Plats %s"))
+C.add_lang("csm.transit.airfield_sign", ("Sign reads: %s", "Schild zeigt: %s",
+                                         "El letrero dice: %s", "Skylten visar: %s"))
+C.add_lang("csm.transit.airfield_lights", (
+    "Airfield lights %s (%s on this circuit)", "Flugfeldbefeuerung %s (%s in diesem Kreis)",
+    "Luces del aeródromo %s (%s en este circuito)", "Flygfältsljus %s (%s i denna krets)"))
+C.add_lang("csm.transit.airfield_lights.on", ("on", "ein", "encendidas", "på"))
+C.add_lang("csm.transit.airfield_lights.off", ("off", "aus", "apagadas", "av"))
+
+register_textures()
+airfield_lights()
+wind_sock()
+airfield_signs()
+airfield_mast()
+stand_sign()
+ground_equipment()
+jet_bridge()
+
+if __name__ == "__main__":
+    sys.exit(C.main())

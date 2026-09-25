@@ -94,7 +94,7 @@ container per jar.
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, plantings and park amenities; two tabs, Trees & Plants and Parks |
-| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, bus station departure boards and bay displays (`transit.board`: listing the stops around them, paging across a bank, spoken call-outs only through Core's TTS service), and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
+| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, bus station departure boards and bay displays (`transit.board`: listing the stops around them, paging across a bank, spoken call-outs only through Core's TTS service), and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass) and airside pieces (the same package: airfield lights and signs switched a circuit at a time by redstone, the wind sock, beacon and masts, the stand sign, ground equipment on Roads' utility box, and a walk-through jet bridge; no aircraft); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -785,6 +785,16 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   (letter and number cells, 24 textures for 80 gates) and five hanging wayfinding signs with
   generic pictograms; airlines listed as `FlightSchedule.java` lists them; `--check`,
   `--fragments`. `gen_transit_sounds.py` synthesises the kiosk's printer
+- `gen_transit_airside.py` -- the airport airside pieces (Transit; no aircraft of any kind),
+  importing the terminal's and the platforms' generators: elevated and inset airfield lights, the
+  approach light bar, the beacon (eight lens sides, each an animated strip a frame apart, so the
+  flash runs round it) and the obstruction-lit wind sock and antenna mast, each with a lit and an
+  unlit lens swapped by `lit` and an `_e` companion for the lit one; the four lit airfield signs
+  (legend textures swapped by `legend`, the direction sign's two models by `arrow`); the stacking
+  airfield mast; the stand sign on the gate sign's cells; ground equipment for Roads'
+  `BlockUtilityBox` (two blocks long, drawn whole by the root); and the jet bridge (tunnel, cab,
+  rotunda, drive leg, rotunda column) drawn up to a block past its cell, its section numbers
+  shared with `BlockJetBridge`'s collision boxes; `--check`, `--fragments`
 - `gen_transit_boards.py` -- the bus departure board and bay display (Transit; bus only, rail
   boards are RCMC's): the monitor and its screen texture (header with a bus pictogram, column
   heads' and rows' bands; every word is `TileEntityBusDepartureBoardRenderer`'s, which shares its

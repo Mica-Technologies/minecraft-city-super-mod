@@ -1,0 +1,117 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_body"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_end_ahead"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_end_ahead",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_end_ahead",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_end_ahead",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_end_behind"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_end_behind",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_end_behind",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_rotunda_end_behind",
+        "y": 270
+      }
+    }
+  ]
+}

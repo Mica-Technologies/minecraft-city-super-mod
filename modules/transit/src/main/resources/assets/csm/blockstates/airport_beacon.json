@@ -1,0 +1,53 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/airside/airport_beacon"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "lit": {
+      "true": {
+        "textures": {
+          "b0": "csm:blocks/transit/airside/beacon_0",
+          "b1": "csm:blocks/transit/airside/beacon_1",
+          "b2": "csm:blocks/transit/airside/beacon_2",
+          "b3": "csm:blocks/transit/airside/beacon_3",
+          "b4": "csm:blocks/transit/airside/beacon_4",
+          "b5": "csm:blocks/transit/airside/beacon_5",
+          "b6": "csm:blocks/transit/airside/beacon_6",
+          "b7": "csm:blocks/transit/airside/beacon_7"
+        }
+      },
+      "false": {
+        "textures": {
+          "b0": "csm:blocks/transit/airside/beacon_off",
+          "b1": "csm:blocks/transit/airside/beacon_off",
+          "b2": "csm:blocks/transit/airside/beacon_off",
+          "b3": "csm:blocks/transit/airside/beacon_off",
+          "b4": "csm:blocks/transit/airside/beacon_off",
+          "b5": "csm:blocks/transit/airside/beacon_off",
+          "b6": "csm:blocks/transit/airside/beacon_off",
+          "b7": "csm:blocks/transit/airside/beacon_off"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

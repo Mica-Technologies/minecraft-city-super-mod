@@ -1,0 +1,41 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/airside/airport_runway_threshold_light"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "lit": {
+      "true": {
+        "textures": {
+          "green": "csm:blocks/transit/airside/lens_green_on",
+          "red": "csm:blocks/transit/airside/lens_red_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "green": "csm:blocks/transit/airside/lens_green_off",
+          "red": "csm:blocks/transit/airside/lens_red_off"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

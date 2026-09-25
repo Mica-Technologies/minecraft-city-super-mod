@@ -1,0 +1,82 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/airside/airport_taxiway_location_sign"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "legend": {
+      "1": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_location_a"
+        }
+      },
+      "2": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_location_b"
+        }
+      },
+      "3": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_location_c"
+        }
+      },
+      "4": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_location_d"
+        }
+      },
+      "5": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_location_e"
+        }
+      },
+      "6": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_location_f"
+        }
+      },
+      "7": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_location_g"
+        }
+      },
+      "8": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_location_h"
+        }
+      },
+      "9": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_location_h"
+        }
+      }
+    },
+    "arrow": {
+      "left": {},
+      "right": {}
+    },
+    "lit": {
+      "true": {},
+      "false": {}
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

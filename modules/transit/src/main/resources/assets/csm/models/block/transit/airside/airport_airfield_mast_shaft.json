@@ -1,0 +1,156 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "mast": "csm:blocks/transit/airside/mast",
+    "plinth": "csm:blocks/transit/airside/plinth",
+    "particle": "csm:blocks/transit/airside/mast"
+  },
+  "elements": [
+    {
+      "from": [
+        6.8,
+        0.0,
+        7.503
+      ],
+      "to": [
+        9.2,
+        16.0,
+        8.497
+      ],
+      "faces": {
+        "east": {
+          "texture": "#mast",
+          "uv": [
+            7.503,
+            0,
+            8.497,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#mast",
+          "uv": [
+            7.503,
+            0,
+            8.497,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.503,
+        -0.004,
+        6.8
+      ],
+      "to": [
+        8.497,
+        16.004,
+        9.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#mast",
+          "uv": [
+            7.503,
+            0,
+            8.497,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#mast",
+          "uv": [
+            7.503,
+            0,
+            8.497,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.8,
+        -0.008,
+        7.503
+      ],
+      "to": [
+        9.2,
+        16.008,
+        8.497
+      ],
+      "faces": {
+        "east": {
+          "texture": "#mast",
+          "uv": [
+            7.503,
+            0,
+            8.497,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#mast",
+          "uv": [
+            7.503,
+            0,
+            8.497,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        7.503,
+        -0.012,
+        6.8
+      ],
+      "to": [
+        8.497,
+        16.012,
+        9.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#mast",
+          "uv": [
+            7.503,
+            0,
+            8.497,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#mast",
+          "uv": [
+            7.503,
+            0,
+            8.497,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

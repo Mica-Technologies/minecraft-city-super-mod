@@ -1,0 +1,82 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/airside/airport_runway_distance_sign"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "legend": {
+      "1": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_distance_1"
+        }
+      },
+      "2": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_distance_2"
+        }
+      },
+      "3": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_distance_3"
+        }
+      },
+      "4": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_distance_4"
+        }
+      },
+      "5": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_distance_5"
+        }
+      },
+      "6": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_distance_6"
+        }
+      },
+      "7": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_distance_7"
+        }
+      },
+      "8": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_distance_8"
+        }
+      },
+      "9": {
+        "textures": {
+          "face": "csm:blocks/transit/airside/sign_distance_9"
+        }
+      }
+    },
+    "arrow": {
+      "left": {},
+      "right": {}
+    },
+    "lit": {
+      "true": {},
+      "false": {}
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

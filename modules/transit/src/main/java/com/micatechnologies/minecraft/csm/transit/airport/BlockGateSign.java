@@ -101,9 +101,18 @@ public class BlockGateSign extends BlockPlatformFixture implements ICsmTileEntit
     sign.setValue(next);
     world.playSound(null, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS,
         0.3F, 0.8F);
-    player.sendStatusMessage(new TextComponentTranslation("csm.transit.gate",
+    player.sendStatusMessage(new TextComponentTranslation(getMessageKey(),
         FlightSchedule.gateName(next)), true);
     return true;
+  }
+
+  /**
+   * The action bar message a click shows, given the gate (or stand) it now reads, as "B12".
+   *
+   * @return a lang key with one {@code %s}
+   */
+  protected String getMessageKey() {
+    return "csm.transit.gate";
   }
 
   @Override

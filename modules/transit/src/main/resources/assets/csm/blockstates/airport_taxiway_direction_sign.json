@@ -1,0 +1,86 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/airside/airport_taxiway_direction_sign_left"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "legend": {
+      "1": {
+        "textures": {
+          "legend": "csm:blocks/transit/airside/sign_direction_a"
+        }
+      },
+      "2": {
+        "textures": {
+          "legend": "csm:blocks/transit/airside/sign_direction_b"
+        }
+      },
+      "3": {
+        "textures": {
+          "legend": "csm:blocks/transit/airside/sign_direction_c"
+        }
+      },
+      "4": {
+        "textures": {
+          "legend": "csm:blocks/transit/airside/sign_direction_d"
+        }
+      },
+      "5": {
+        "textures": {
+          "legend": "csm:blocks/transit/airside/sign_direction_e"
+        }
+      },
+      "6": {
+        "textures": {
+          "legend": "csm:blocks/transit/airside/sign_direction_f"
+        }
+      },
+      "7": {
+        "textures": {
+          "legend": "csm:blocks/transit/airside/sign_direction_g"
+        }
+      },
+      "8": {
+        "textures": {
+          "legend": "csm:blocks/transit/airside/sign_direction_h"
+        }
+      },
+      "9": {
+        "textures": {
+          "legend": "csm:blocks/transit/airside/sign_direction_h"
+        }
+      }
+    },
+    "arrow": {
+      "left": {
+        "model": "csm:transit/airside/airport_taxiway_direction_sign_left"
+      },
+      "right": {
+        "model": "csm:transit/airside/airport_taxiway_direction_sign_right"
+      }
+    },
+    "lit": {
+      "true": {},
+      "false": {}
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

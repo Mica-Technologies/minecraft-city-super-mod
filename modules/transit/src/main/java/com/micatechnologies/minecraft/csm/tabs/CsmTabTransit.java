@@ -2,16 +2,20 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.transit.airport.BlockAirfieldLight;
+import com.micatechnologies.minecraft.csm.transit.airport.BlockAirfieldSign;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockAirportCounter;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockBaggageCarousel;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockBoardingPassScanner;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockCheckinDesk;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockFlightBoard;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockGateSign;
+import com.micatechnologies.minecraft.csm.transit.airport.BlockJetBridge;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockQueueStanchion;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSecurityLine;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSecurityTray;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSelfCheckinKiosk;
+import com.micatechnologies.minecraft.csm.transit.airport.BlockStandSign;
 import com.micatechnologies.minecraft.csm.transit.airport.ItemBoardingPass;
 import com.micatechnologies.minecraft.csm.transit.board.BlockBusBoard;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGate;
@@ -35,11 +39,14 @@ import com.micatechnologies.minecraft.csm.transit.platform.BlockStationTile;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockTactilePaving;
 import com.micatechnologies.minecraft.csm.transit.shelter.BlockBusShelter;
 import com.micatechnologies.minecraft.csm.transit.shelter.BusShelterStyle;
+import com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBox;
+import com.micatechnologies.minecraft.csm.streetscape.UtilityBoxSpec;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockTrafficSign;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusArrivalDisplay;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopFlag;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopPlaque;
 import net.minecraft.block.Block;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -49,7 +56,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * display, and the station and platform fit-out
  * (tactile paving, platform furniture, station signs, tile, columns, the canopy and the ticket
  * validator), and the airport terminal pieces (check-in, the queue, security, the gate, the flight
- * information boards, baggage claim, luggage carts and wayfinding) with the boarding pass.
+ * information boards, baggage claim, luggage carts and wayfinding) with the boarding pass, and
+ * the airside pieces (airfield lights and signs, the mast, the stand sign, ground equipment on
+ * Roads' utility box and the jet bridge).
  *
  * @version 1.0
  * @since 2026.9
@@ -210,5 +219,34 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockPlatformFixture("airport_luggage_cart", new double[]{3, 0, 1, 13, 15.4, 14.8}));
     initTabBlock(new BlockPlatformRun("airport_cart_rack", new double[]{0, 0, 2.4, 16, 15.4, 13.6}));
     initTabItem(new ItemBoardingPass());
+
+    // Airport airside (gen_transit_airside.py --fragments): airfield lights and signs, the
+    // mast, the stand sign, ground equipment and the jet bridge
+    initTabBlock(new BlockAirfieldLight("airport_runway_edge_light", new double[]{5.8, 0, 5.8, 10.2, 12.8, 10.2}, "runway", 12));
+    initTabBlock(new BlockAirfieldLight("airport_taxiway_edge_light", new double[]{5.8, 0, 5.8, 10.2, 12.8, 10.2}, "taxiway", 10));
+    initTabBlock(new BlockAirfieldLight("airport_runway_threshold_light", new double[]{5.8, 0, 5.8, 10.2, 12.8, 10.2}, "runway", 12));
+    initTabBlock(new BlockAirfieldLight("airport_runway_centreline_light", new double[]{3.8, 0, 3.8, 12.2, 1.3, 12.2}, "runway", 11));
+    initTabBlock(new BlockAirfieldLight("airport_taxiway_centreline_light", new double[]{3.8, 0, 3.8, 12.2, 1.3, 12.2}, "taxiway", 10));
+    initTabBlock(new BlockAirfieldLight("airport_stop_bar_light", new double[]{3.8, 0, 3.8, 12.2, 1.3, 12.2}, "taxiway", 10));
+    initTabBlock(new BlockAirfieldLight("airport_approach_light_bar", new double[]{-8, 0, 6.2, 24, 15.4, 9.4}, "runway", 15));
+    initTabBlock(new BlockAirfieldLight("airport_beacon", new double[]{3, 0, 3, 13, 12.4, 13}, "beacon", 15));
+    initTabBlock(new BlockAirfieldLight("airport_wind_sock", new double[]{3.8, 0, -16, 12.2, 16, 8}, "obstruction", 9));
+    initTabBlock(new BlockAirfieldLight("airport_antenna_mast", new double[]{2, 0, 2, 14, 17, 14}, "obstruction", 9));
+    initTabBlock(new BlockAirfieldSign("airport_taxiway_location_sign", new double[]{1, 0, 6.8, 15, 13, 9.2}, new String[]{"A", "B", "C", "D", "E", "F", "G", "H"}, false));
+    initTabBlock(new BlockAirfieldSign("airport_runway_holding_sign", new double[]{1, 0, 6.8, 15, 13, 9.2}, new String[]{"4-22", "9-27", "13-31", "18-36", "ILS"}, false));
+    initTabBlock(new BlockAirfieldSign("airport_runway_distance_sign", new double[]{1, 0, 6.8, 15, 13, 9.2}, new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9"}, false));
+    initTabBlock(new BlockAirfieldSign("airport_taxiway_direction_sign", new double[]{1, 0, 6.8, 15, 13, 9.2}, new String[]{"A", "B", "C", "D", "E", "F", "G", "H"}, true));
+    initTabBlock(new BlockPlatformColumn("airport_airfield_mast", new double[]{6.5, 0, 6.5, 9.5, 16, 9.5}));
+    initTabBlock(new BlockStandSign("airport_stand_sign", new double[]{-4, 0, 7, 20, 15, 9}));
+    initTabBlock(new BlockUtilityBox("airport_wheel_chocks", new UtilityBoxSpec(1, 1, 1, new AxisAlignedBB(0.125, 0, 0.28, 0.875, 0.25, 0.72), null)));
+    initTabBlock(new BlockUtilityBox("airport_ground_power_unit", new UtilityBoxSpec(1, 2, 2, new AxisAlignedBB(0, 0, 0, 1, 1.4, 2), null)));
+    initTabBlock(new BlockUtilityBox("airport_baggage_tug", new UtilityBoxSpec(1, 2, 2, new AxisAlignedBB(0, 0, 0, 1, 1.9, 2), null)));
+    initTabBlock(new BlockUtilityBox("airport_baggage_cart", new UtilityBoxSpec(1, 2, 2, new AxisAlignedBB(0, 0, 0, 1, 1.7, 2), null)));
+    initTabBlock(new BlockUtilityBox("airport_air_stairs", new UtilityBoxSpec(1, 2, 2, new AxisAlignedBB(0, 0, 0, 1, 1.95, 2), null)));
+    initTabBlock(new BlockJetBridge("airport_jet_bridge_tunnel", BlockJetBridge.Kind.TUNNEL));
+    initTabBlock(new BlockJetBridge("airport_jet_bridge_cab", BlockJetBridge.Kind.CAB));
+    initTabBlock(new BlockJetBridge("airport_jet_bridge_rotunda", BlockJetBridge.Kind.ROTUNDA));
+    initTabBlock(new BlockPlatformColumn("airport_jet_bridge_drive", new double[]{-7, 0, 5.6, 23, 16, 10.4}));
+    initTabBlock(new BlockPlatformColumn("airport_jet_bridge_column", new double[]{2, 0, 2, 14, 16, 14}));
   }
 }

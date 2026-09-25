@@ -1,0 +1,156 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "column": "csm:blocks/transit/airside/jb_column",
+    "plinth": "csm:blocks/transit/airside/plinth",
+    "particle": "csm:blocks/transit/airside/jb_column"
+  },
+  "elements": [
+    {
+      "from": [
+        3.0,
+        0.0,
+        5.929
+      ],
+      "to": [
+        13.0,
+        16.0,
+        10.071
+      ],
+      "faces": {
+        "east": {
+          "texture": "#column",
+          "uv": [
+            5.929,
+            0,
+            10.071,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#column",
+          "uv": [
+            5.929,
+            0,
+            10.071,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.929,
+        -0.004,
+        3.0
+      ],
+      "to": [
+        10.071,
+        16.004,
+        13.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#column",
+          "uv": [
+            5.929,
+            0,
+            10.071,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#column",
+          "uv": [
+            5.929,
+            0,
+            10.071,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.0,
+        -0.008,
+        5.929
+      ],
+      "to": [
+        13.0,
+        16.008,
+        10.071
+      ],
+      "faces": {
+        "east": {
+          "texture": "#column",
+          "uv": [
+            5.929,
+            0,
+            10.071,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#column",
+          "uv": [
+            5.929,
+            0,
+            10.071,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        5.929,
+        -0.012,
+        3.0
+      ],
+      "to": [
+        10.071,
+        16.012,
+        13.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#column",
+          "uv": [
+            5.929,
+            0,
+            10.071,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#column",
+          "uv": [
+            5.929,
+            0,
+            10.071,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

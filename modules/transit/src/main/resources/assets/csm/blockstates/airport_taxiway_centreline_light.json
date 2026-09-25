@@ -1,0 +1,39 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/airside/airport_taxiway_centreline_light"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "lit": {
+      "true": {
+        "textures": {
+          "lens": "csm:blocks/transit/airside/lens_green_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "lens": "csm:blocks/transit/airside/lens_green_off"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

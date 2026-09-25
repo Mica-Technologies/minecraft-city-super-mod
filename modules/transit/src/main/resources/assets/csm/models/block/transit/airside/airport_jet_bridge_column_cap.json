@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "column": "csm:blocks/transit/airside/jb_column",
+    "plinth": "csm:blocks/transit/airside/plinth",
+    "particle": "csm:blocks/transit/airside/jb_column"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        14.4,
+        1
+      ],
+      "to": [
+        15,
+        16,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#column",
+          "uv": [
+            1,
+            0,
+            15,
+            1.6
+          ]
+        },
+        "south": {
+          "texture": "#column",
+          "uv": [
+            1,
+            0,
+            15,
+            1.6
+          ]
+        },
+        "east": {
+          "texture": "#column",
+          "uv": [
+            1,
+            0,
+            15,
+            1.6
+          ]
+        },
+        "west": {
+          "texture": "#column",
+          "uv": [
+            1,
+            0,
+            15,
+            1.6
+          ]
+        },
+        "up": {
+          "texture": "#column",
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#column",
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ]
+        }
+      }
+    }
+  ]
+}

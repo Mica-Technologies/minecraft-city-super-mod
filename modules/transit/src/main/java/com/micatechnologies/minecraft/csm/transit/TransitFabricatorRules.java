@@ -139,6 +139,10 @@ public final class TransitFabricatorRules {
    * a reader or a sensor, sheet metal and fittings for the furniture, a sign blank for a sign.
    */
   private static List<FabricatorIngredient> airport(String registryName) {
+    List<FabricatorIngredient> airside = airside(registryName);
+    if (airside != null) {
+      return airside;
+    }
     switch (registryName) {
       case "airport_checkin_desk":
       case "airport_gate_desk":
@@ -188,6 +192,86 @@ public final class TransitFabricatorRules {
         // the security rollers and divesting table, the seating and the cart rack
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+  }
+
+  /**
+   * Prices an airside piece: a lens and an LED for each light, a sign blank and an LED for a lit
+   * sign, pole sections for the masts and legs, and sheet metal (with a control board where it
+   * has a motor or a panel) for the ground equipment and the jet bridge. Null for a terminal
+   * piece.
+   */
+  private static List<FabricatorIngredient> airside(String registryName) {
+    switch (registryName) {
+      case "airport_runway_edge_light":
+      case "airport_taxiway_edge_light":
+      case "airport_runway_threshold_light":
+      case "airport_runway_centreline_light":
+      case "airport_taxiway_centreline_light":
+      case "airport_stop_bar_light":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_approach_light_bar":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 2),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 2),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "airport_beacon":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 2),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      case "airport_wind_sock":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+            FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_antenna_mast":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
+            FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1));
+      case "airport_taxiway_location_sign":
+      case "airport_taxiway_direction_sign":
+      case "airport_runway_holding_sign":
+      case "airport_runway_distance_sign":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_stand_sign":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_airfield_mast":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_wheel_chocks":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "airport_ground_power_unit":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 2));
+      case "airport_baggage_tug":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "airport_baggage_cart":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_air_stairs":
+      case "airport_jet_bridge_tunnel":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_jet_bridge_cab":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "airport_jet_bridge_rotunda":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 4),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 2));
+      case "airport_jet_bridge_drive":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "airport_jet_bridge_column":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 2));
+      default:
+        return null;
     }
   }
 }
