@@ -120,16 +120,20 @@ public class Csm {
 
     // Output start of pre-initialization
     logger.info("Pre-initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION);
-    ProgressManager.ProgressBar progressBar = ProgressManager.push("City Super Mod (Pre-Init)", 7);
+    // Each step is taken before its work and named for it: the loading screen shows the message
+    // of the last step taken, so a step named after finished work would stand on screen for the
+    // whole of the next one (the block building ran under "Network Messages Registration").
+    ProgressManager.ProgressBar progressBar = ProgressManager.push("City Super Mod (Pre-Init)", 5);
 
     try {
       // Load the mod configuration file
+      progressBar.step("Loading Configuration");
       logger.info("Loading configuration file");
       CsmConfig.init(event.getSuggestedConfigurationFile());
       logger.info("Finished loading configuration file");
-      progressBar.step("Configuration File Loaded");
 
       // Register the mod's event bus
+      progressBar.step("Registering Event Handlers, World Generator and Network Messages");
       logger.info("Registering event bus");
       MinecraftForge.EVENT_BUS.register(this);
       MinecraftForge.EVENT_BUS.register(
@@ -139,7 +143,6 @@ public class Csm {
       MinecraftForge.EVENT_BUS.register(
           new com.micatechnologies.minecraft.csm.codeutils.CsmDeferredSync.Flusher());
       logger.info("Finished registering event bus");
-      progressBar.step("Event Bus Registration");
 
       // Register Core's GUI provider. Every other provider registers from its own module's
       // pre-initialization; Forge runs all pre-initialization before any initialization, and
@@ -152,7 +155,6 @@ public class Csm {
       GameRegistry.registerWorldGenerator(csmWorldGenerator,
           CsmWorldGenerator.WORLD_GENERATION_WEIGHT);
       logger.info("Finished registering world generator");
-      progressBar.step("World Generator Registration");
 
       // Register Core's network message(s). Every module registers its own packets on its
       // own channel from its pre-initialization, so a packet's discriminator depends only on
@@ -167,20 +169,20 @@ public class Csm {
           com.micatechnologies.minecraft.csm.materials.CsmFabricateHandler.class,
           com.micatechnologies.minecraft.csm.materials.CsmFabricatePacket.class, Side.SERVER);
       logger.info("Finished registering network message(s)");
-      progressBar.step("Network Messages Registration");
 
-      // Build the mod's tabs and elements
+      // Build the mod's tabs and elements: every block and item of every loaded module, by far
+      // the longest step (its own bar names the tab being built)
+      progressBar.step("Building Blocks and Items");
       logger.info("Building mod tabs and elements");
       CsmTab.initTabs(event);
       logger.info("Finished building mod tabs and elements");
-      progressBar.step("Tabs and Elements Initialization");
 
       // Call pre-initialization of the proxy (client or server/common)
+      progressBar.step("Proxy Pre-Initialization");
       String side = event.getSide().isClient() ? "client" : "server";
       logger.info("Calling pre-initialization of proxy ({})", side);
       proxy.preInit(event);
       logger.info("Finished pre-initialization of proxy ({})", side);
-      progressBar.step("Proxy Pre-Initialization");
 
       // Output completion of pre-initialization
       logger.info(

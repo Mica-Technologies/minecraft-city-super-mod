@@ -15,6 +15,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -237,11 +238,25 @@ public abstract class CsmTab {
       return Integer.compare(order1, order2);
     });
 
-    // Initialize the sorted tabs
-    for (Class<? extends CsmTab> csmTabClass : tabClasses) {
-      CsmTab tab = csmTabClass.getDeclaredConstructor().newInstance();
-      TABS.put(csmTabClass, tab);
-      tab.initTabElements(fmlPreInitializationEvent);
+    // Initialize the sorted tabs, naming each on the loading screen as it is built: building a
+    // tab constructs every block in it, which is most of pre-initialization
+    ProgressManager.ProgressBar bar = ProgressManager.push("City Super Mod (Blocks)",
+        tabClasses.size());
+    try {
+      for (Class<? extends CsmTab> csmTabClass : tabClasses) {
+        bar.step(csmTabClass.getSimpleName());
+        CsmTab tab = csmTabClass.getDeclaredConstructor().newInstance();
+        TABS.put(csmTabClass, tab);
+        tab.initTabElements(fmlPreInitializationEvent);
+      }
+    } finally {
+      // Forge refuses to pop a bar short of its steps; after a failure the pop must not bury
+      // the real exception
+      try {
+        ProgressManager.pop(bar);
+      } catch (RuntimeException ignored) {
+        // only reached when a tab failed part way, which is already propagating
+      }
     }
   }
 
