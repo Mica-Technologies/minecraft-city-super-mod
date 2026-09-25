@@ -1,0 +1,51 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/market/base/receipt_printer_floor",
+    "textures": {
+      "case": "csm:blocks/furniture/market/case_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/market/base/receipt_printer_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/market/base/receipt_printer_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/market/base/receipt_printer_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/market/base/receipt_printer_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/market/base/receipt_printer_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/market/base/receipt_printer_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/market/base/receipt_printer_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/market/base/receipt_printer_item"
+      }
+    ]
+  }
+}

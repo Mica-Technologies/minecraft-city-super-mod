@@ -26,8 +26,8 @@ world ever sees is namespaced with them.
 | HVAC | `csm_hvac` | CSM: HVAC | `…-hvac-<version>.jar` | `hvac` | HVAC (2) | 45 |
 | Lighting | `csm_lighting` | CSM: Lighting | `…-lighting-<version>.jar` | `lighting` | Lighting (4), hidden (−9) | 140 |
 | Power Grid | `csm_powergrid` | CSM: Power Grid | `…-powergrid-<version>.jar` | `powergrid` | Power Grid (6) | 46 |
-| Technology | `csm_technology` | CSM: Technology | `…-technology-<version>.jar` | `technology` | Technology (8) | 36 |
-| Furniture & Novelties | `csm_furnishings` | CSM: Furniture & Novelties | `…-furnishings-<version>.jar` | `furniture`, `novelties` | Novelties (5), Furniture (12), Gaming (13) | 115 |
+| Technology | `csm_technology` | CSM: Technology | `…-technology-<version>.jar` | `technology` | Technology (8) | 48 |
+| Furniture & Novelties | `csm_furnishings` | CSM: Furniture & Novelties | `…-furnishings-<version>.jar` | `furniture`, `novelties` | Novelties (5), Furniture (12), Gaming (13), Residential (24), Commercial & Office (25), Market & Store (26), hidden (−7) | 509 |
 | Building Materials | `csm_building` | CSM: Building Materials | `…-building-<version>.jar` | `buildingmaterials` | Building Materials (1) | 87 |
 | Text to Speech | `csm_tts` | CSM: Text to Speech | `…-tts-<version>.jar` | `tts` | none — its blocks appear in Technology | 1 block + 1 item |
 | Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage`, hidden (−8) | Signage & Advertising (18) | 13 |

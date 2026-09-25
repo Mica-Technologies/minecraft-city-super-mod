@@ -4,10 +4,10 @@ The kitchen's cabinet doors, drawers and refrigerator door, and its appliances' 
 toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and jar lid, and the
 bathroom's toilet flush and shower spray, the laundry's washing machine, dryer and steam iron, the
 office's copier and school locker door, the living room's doorbell chime and fireplace crackle,
-and the backyard's grill sizzle and trampoline boing
-(the locker sounds replace ones of unknown origin the mod shipped unused since its first
-version), made here from filtered noise, decaying sines and envelopes, never recorded or taken from a sound
-library. Each entry in SOUNDS names a function returning mono samples in -1..1 at RATE and the level
+the backyard's grill sizzle and trampoline boing, and the store's card terminal beep, checkout
+scanner and cash drawer (the locker sounds and the card terminal's beep replace recordings of
+unknown origin the mod used to ship), made here from filtered noise, decaying sines and envelopes,
+never recorded or taken from a sound library. Each entry in SOUNDS names a function returning mono samples in -1..1 at RATE and the level
 (RMS, of 32767) it is normalised to; the script writes modules/furnishings/src/main/resources/assets/csm/sounds/<name>.ogg through
 ffmpeg and adds a "<name>" entry to that module's sounds.json if it has none. The event still
 needs its constant in FurnishingsSounds; CsmSoundsTest fails the build until it has one.
@@ -444,6 +444,39 @@ def trampoline_boing():
     return place(total, [(0.0, 0.7 * spring, 1.0), (0.0, thump, 0.9)])
 
 
+def piezo(seconds, freq):
+    """A piezo buzzer's tone: a square-ish wave (odd harmonics) with soft edges, as a card
+    terminal or a scanner sounds."""
+    x = tone(seconds, freq, ((1, 1.0), (3, 0.28), (5, 0.1)))
+    return x * env_ad(len(x), 0.004, 0.018)
+
+
+def verifone_mx915():
+    """A card terminal approving a payment: two short piezo beeps, the second a fourth higher
+    and a little longer."""
+    return place(0.42, [(0.0, piezo(0.09, 2350), 1.0), (0.14, piezo(0.16, 3130), 1.0)])
+
+
+def scanner_beep():
+    """A checkout scanner reading a barcode: one clean, short beep near 1.9 kHz, softer-edged than
+    a card terminal's."""
+    b = tone(0.12, 1880, ((1, 1.0), (2, 0.08), (3, 0.05)))
+    return place(0.2, [(0.0, b * env_ad(len(b), 0.006, 0.04), 1.0)])
+
+
+def register_drawer():
+    """A cash register opening: the key's clack, the bell struck as the drawer releases -- the
+    ka-ching -- ringing down, and the drawer running out on its rollers to its stop."""
+    t = t_of(1.1)
+    bell = (np.sin(2 * np.pi * 2780 * t) + 0.5 * np.sin(2 * np.pi * 5620 * t) * np.exp(-t * 4)
+            + 0.3 * np.sin(2 * np.pi * 4130 * t) * np.exp(-t * 2)) * np.exp(-t * 3.4)
+    bell *= env_ad(len(t), 0.002, 0.08)
+    key = knock(0.08, [(1500, 1.0), (3100, 0.4)], 70, 131, click=0.7)
+    run = slide(0.26, 132, rumble=58, lo=400, hi=3200)
+    stop = knock(0.2, [(210, 1.0), (430, 0.5), (900, 0.2)], 30, 133, click=0.5)
+    return place(1.2, [(0.0, key, 0.6), (0.05, bell, 0.8), (0.1, run, 0.45), (0.36, stop, 0.9)])
+
+
 SOUNDS = {
     'cabinet_open': (cabinet_open, 2600),
     'cabinet_close': (cabinet_close, 3600),
@@ -471,6 +504,9 @@ SOUNDS = {
     'fireplace_crackle': (fireplace_crackle, 1800),
     'grill_sizzle': (grill_sizzle, 1600),
     'trampoline_boing': (trampoline_boing, 2600),
+    'verifone_mx915': (verifone_mx915, 2600),
+    'scanner_beep': (scanner_beep, 2400),
+    'register_drawer': (register_drawer, 3000),
 }
 
 

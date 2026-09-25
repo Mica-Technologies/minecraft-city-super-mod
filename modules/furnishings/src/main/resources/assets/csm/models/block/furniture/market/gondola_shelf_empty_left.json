@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/market/base/gondola_left",
+  "textures": {
+    "shelf": "csm:blocks/furniture/market/steel_white"
+  }
+}

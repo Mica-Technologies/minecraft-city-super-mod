@@ -1,0 +1,32 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "sign": "csm:blocks/furniture/market/corral_sign",
+    "particle": "#sign"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        10.25,
+        1.35
+      ],
+      "to": [
+        14,
+        14.75,
+        1.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#sign",
+          "uv": [
+            0,
+            4.5,
+            16,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

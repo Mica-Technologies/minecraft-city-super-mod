@@ -1,0 +1,152 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "case": "csm:blocks/furniture/market/case_black",
+    "chrome": "csm:blocks/furniture/residential/chrome",
+    "paper": "csm:blocks/furniture/office/paper",
+    "particle": "#case"
+  },
+  "elements": [
+    {
+      "from": [
+        5.0,
+        -1.5,
+        4.5
+      ],
+      "to": [
+        11.0,
+        2.0,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#case",
+          "uv": [
+            5,
+            12.5,
+            11,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#case",
+          "uv": [
+            5,
+            12.5,
+            11,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#case",
+          "uv": [
+            4.5,
+            12.5,
+            11.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#case",
+          "uv": [
+            4.5,
+            12.5,
+            11.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#case",
+          "uv": [
+            5,
+            4.5,
+            11,
+            11.5
+          ]
+        },
+        "down": {
+          "texture": "#case",
+          "uv": [
+            5,
+            4.5,
+            11,
+            11.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        2.0,
+        6.0
+      ],
+      "to": [
+        10.5,
+        2.1,
+        6.4
+      ],
+      "faces": {
+        "up": {
+          "texture": "#chrome",
+          "uv": [
+            5.5,
+            6,
+            10.5,
+            6.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.0,
+        2.0,
+        6.5
+      ],
+      "to": [
+        10.0,
+        4.5,
+        6.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            6,
+            10,
+            10,
+            12.5
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            6,
+            10,
+            10,
+            12.5
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            6,
+            6.5,
+            10,
+            6.7
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          2.0,
+          6.5
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    }
+  ]
+}

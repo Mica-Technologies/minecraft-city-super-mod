@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.furniture.market.MarketFabricatorRules;
 import com.micatechnologies.minecraft.csm.furniture.office.OfficeFabricatorRules;
 import com.micatechnologies.minecraft.csm.furniture.outdoor.Bounce;
 import com.micatechnologies.minecraft.csm.furniture.residential.BedSleepClientHandler;
@@ -84,6 +85,9 @@ public class CsmFurnishings {
     // So is the Commercial & Office tab.
     CsmFabricatorCosts.registerRule(OfficeFabricatorRules.TAB_ID,
         OfficeFabricatorRules::price);
+    // And the Market & Store tab.
+    CsmFabricatorCosts.registerRule(MarketFabricatorRules.TAB_ID,
+        MarketFabricatorRules::price);
 
     // Trampolines, the bounce castle and the diving board: a jump off one goes higher. Both
     // sides, since a player's movement is the client's and a mob's the server's.

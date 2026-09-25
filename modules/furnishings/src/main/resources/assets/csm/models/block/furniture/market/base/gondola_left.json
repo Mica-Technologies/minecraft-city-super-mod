@@ -1,0 +1,92 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "shelf": "csm:blocks/furniture/market/steel_white",
+    "particle": "#shelf"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        14.75
+      ],
+      "to": [
+        1,
+        16,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#kick",
+          "uv": [
+            14.75,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#kick",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#kick",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        6.25
+      ],
+      "to": [
+        0.5,
+        16,
+        14.75
+      ],
+      "faces": {
+        "west": {
+          "texture": "#shelf",
+          "uv": [
+            6.25,
+            0,
+            14.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#shelf",
+          "uv": [
+            1.25,
+            0,
+            9.75,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#shelf",
+          "uv": [
+            15.5,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

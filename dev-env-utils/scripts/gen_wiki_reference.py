@@ -122,6 +122,10 @@ TABS = {
                       "detectors."),
     "tablighting": ("lighting", "Lighting",
                     "Street lights, floodlights, pendants and sconces, all switchable."),
+    "tabmarketstore": ("market-store", "Market & Store",
+                       "Grocery stores and shops: stocked refrigerated displays, gondola "
+                       "shelving, produce, the checkout lane and its registers and card "
+                       "terminals, carts, aisle signs and the shop floor's fixtures."),
     "tabmaterials": ("materials", "Materials",
                      "The CSM Fabricator, which turns vanilla ingots into CSM blocks."),
     "tabnovelties": ("novelties", "Novelties",
@@ -166,7 +170,8 @@ TABS = {
 
 PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsite", "tabfurniture", "tabgaming",
               "tabemergencyservices", "tabexitsemergency", "tabfireprotection",
-              "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmaterials",
+              "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmarketstore",
+              "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtreesplants",
               "tabnone"]

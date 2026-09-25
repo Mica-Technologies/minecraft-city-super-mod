@@ -1,0 +1,15 @@
+{
+  "parent": "csm:block/furniture/market/base/reach_in_freezer_right_lower",
+  "textures": {
+    "shell": "csm:blocks/furniture/market/case_white",
+    "frame": "csm:blocks/furniture/market/case_white",
+    "liner": "csm:blocks/furniture/market/liner",
+    "trim": "csm:blocks/furniture/residential/stainless_dark",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "stock_a": "csm:blocks/furniture/market/stock_frozen",
+    "stock_a_top": "csm:blocks/furniture/market/stock_frozen_top",
+    "stock_b": "csm:blocks/furniture/market/stock_frozen_b",
+    "stock_b_top": "csm:blocks/furniture/market/stock_frozen_b_top",
+    "glass": "csm:blocks/furniture/market/glass_frost"
+  }
+}

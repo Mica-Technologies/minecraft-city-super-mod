@@ -2,7 +2,7 @@
 
 Servers, routers, screens and consumer electronics.
 
-!!! info "50 blocks in this tab"
+!!! info "49 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -60,6 +60,5 @@ Servers, routers, screens and consumer electronics.
 | Valcom Speaker 7 | `csm:vcs7` |  |  |  |  |
 | Valcom Speaker 8 | `csm:vcs8` |  |  |  |  |
 | Valcom Speaker 9 | `csm:vcs9` |  |  |  |  |
-| Verifone MX915 | `csm:vf915` | 2 | 10 | pickaxe | 1 |
 
 </div>

@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/market/base/produce_stand_body",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "produce": "csm:blocks/furniture/produce/bed_tomato"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/shared_models/verifone_mx_915",
+    "textures": {
+      "all": "csm:blocks/technology/verifone_mx_915",
+      "particle": "csm:blocks/technology/verifone_mx_915",
+      "0": "csm:blocks/technology/verifone_mx_915"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "counter": {
+        "model": "csm:furniture/market/base/vf915_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/market/base/vf915_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/market/base/vf915_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/market/base/vf915_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/market/base/vf915_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/market/base/vf915_coffee_table"
+      },
+      "floor": {
+        "model": "csm:technology/shared_models/verifone_mx_915"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:technology/shared_models/verifone_mx_915"
+      }
+    ]
+  }
+}

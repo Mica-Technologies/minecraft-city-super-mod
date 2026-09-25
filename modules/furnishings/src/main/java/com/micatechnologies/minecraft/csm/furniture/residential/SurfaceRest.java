@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.furniture.market.BlockMarketRun;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -21,12 +22,16 @@ public enum SurfaceRest implements IStringSerializable {
   FLOOR(0),
   /**
    * A kitchen countertop, an island, the range, the dishwasher, the chest freezer's lid, a
-   * bathroom vanity, the washing machine and dryer, the ironing board.
+   * bathroom vanity, the washing machine and dryer, the ironing board, a checkout's belt and
+   * scanner counters.
    */
   COUNTER(1.5),
   /** A sideboard, a dresser. */
   SIDEBOARD(2),
-  /** A dining table, a cafe table, a desk, an office desk, a conference table. */
+  /**
+   * A dining table, a cafe table, a desk, an office desk, a conference table, a checkout's
+   * bagging end.
+   */
   TABLE(4),
   /** A side table, a nightstand. */
   SIDE_TABLE(7),
@@ -74,6 +79,15 @@ public enum SurfaceRest implements IStringSerializable {
         default:
           return COUNTER;
       }
+    }
+    if (block instanceof BlockMarketRun) {
+      // The checkout lane: the belt and scanner counters are a countertop's height, the bagging
+      // end a table's. Other store fixtures are not stood on.
+      String name = ((BlockMarketRun) block).getBlockRegistryName();
+      if (name.startsWith("checkout_bagging_")) {
+        return TABLE;
+      }
+      return name.startsWith("checkout_") ? COUNTER : FLOOR;
     }
     if (block instanceof BlockBuiltInAppliance) {
       BlockBuiltInAppliance appliance = (BlockBuiltInAppliance) block;

@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/market/base/impulse_rack",
+    "textures": {
+      "stock_a": "csm:blocks/furniture/market/stock_candy",
+      "stock_a_top": "csm:blocks/furniture/market/stock_candy_top",
+      "stock_b": "csm:blocks/furniture/market/stock_candy",
+      "stock_b_top": "csm:blocks/furniture/market/stock_candy_top",
+      "mesh": "csm:blocks/furniture/market/mesh_black",
+      "case": "csm:blocks/furniture/market/case_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

@@ -4,8 +4,10 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextComponentString;
@@ -37,6 +39,10 @@ public class FareVendingPurchaseHandler
 
   /** Maximum squared distance the player may be from the vending machine when purchasing. */
   private static final double MAX_INTERACT_DIST_SQ = 36.0; // 6 blocks
+
+  /** The card terminal's approval beep, shipped by the Furniture &amp; Novelties module. */
+  private static final ResourceLocation APPROVED_BEEP = new ResourceLocation("csm",
+      "verifone_mx915");
 
   @Override
   public IMessage onMessage(FareVendingPurchasePacket message, MessageContext ctx) {
@@ -118,18 +124,19 @@ public class FareVendingPurchaseHandler
       sendInfo(player, summary);
     }
 
-    // Audible feedback at the machine: reuse the existing transaction-approved chime so
-    // the vending machine and the Verifone terminal feel like they're part of the same
-    // payment ecosystem.
-    SoundEvent chime =
-        TechnologySounds.VERIFONE_MX915.getSoundEvent();
-    if (chime != null) {
-      world.playSound(null,
-          message.getVendingPos().getX() + 0.5,
-          message.getVendingPos().getY() + 1.0,
-          message.getVendingPos().getZ() + 0.5,
-          chime, SoundCategory.BLOCKS, 0.7F, 1.0F);
+    // Audible feedback at the machine: the card terminal's approval beep, so the vending
+    // machine and the checkout's terminal sound like one payment system. The terminal is the
+    // Furniture & Novelties module's now, so its sound is found by name; without that module
+    // installed a plain chime plays instead.
+    SoundEvent chime = SoundEvent.REGISTRY.getObject(APPROVED_BEEP);
+    if (chime == null) {
+      chime = SoundEvents.BLOCK_NOTE_PLING;
     }
+    world.playSound(null,
+        message.getVendingPos().getX() + 0.5,
+        message.getVendingPos().getY() + 1.0,
+        message.getVendingPos().getZ() + 0.5,
+        chime, SoundCategory.BLOCKS, 0.7F, 1.0F);
 
     // Refresh the inventory on the client so emerald counts update visibly.
     player.inventoryContainer.detectAndSendChanges();

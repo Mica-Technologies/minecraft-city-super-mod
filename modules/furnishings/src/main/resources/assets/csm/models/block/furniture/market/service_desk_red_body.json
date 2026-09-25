@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/office/base/reception_desk_body",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/market/laminate_red",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "frame": "csm:blocks/furniture/residential/metal_black",
+    "sign": "csm:blocks/furniture/market/service_sign_red"
+  }
+}

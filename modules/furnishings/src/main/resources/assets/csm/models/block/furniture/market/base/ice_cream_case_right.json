@@ -1,0 +1,156 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "glass": "csm:blocks/furniture/market/glass_clear",
+    "shell": "csm:blocks/furniture/market/case_black",
+    "particle": "#shell"
+  },
+  "elements": [
+    {
+      "from": [
+        15.5,
+        0,
+        2.5
+      ],
+      "to": [
+        16,
+        11.5,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            4.5,
+            13.5,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            4.5,
+            0.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#shell",
+          "uv": [
+            15.5,
+            2.5,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#shell",
+          "uv": [
+            15.5,
+            4.5,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.6,
+        11,
+        2.6
+      ],
+      "to": [
+        15.9,
+        13.5,
+        10.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#glass",
+          "uv": [
+            5.5,
+            2.5,
+            13.4,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#glass",
+          "uv": [
+            2.6,
+            2.5,
+            10.5,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.6,
+        13.5,
+        2.6
+      ],
+      "to": [
+        15.9,
+        16.272,
+        10.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#glass",
+          "uv": [
+            5.5,
+            0,
+            13.4,
+            2.772
+          ]
+        },
+        "west": {
+          "texture": "#glass",
+          "uv": [
+            2.6,
+            0,
+            10.5,
+            2.772
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.6,
+        16.272,
+        3.748
+      ],
+      "to": [
+        15.9,
+        18.747,
+        10.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#glass",
+          "uv": [
+            5.5,
+            0,
+            12.252,
+            2.475
+          ]
+        },
+        "west": {
+          "texture": "#glass",
+          "uv": [
+            3.748,
+            0,
+            10.5,
+            2.475
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -349,5 +349,32 @@
         "stream": false
       }
     ]
+  },
+  "verifone_mx915": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:verifone_mx915",
+        "stream": false
+      }
+    ]
+  },
+  "scanner_beep": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:scanner_beep",
+        "stream": false
+      }
+    ]
+  },
+  "register_drawer": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:register_drawer",
+        "stream": false
+      }
+    ]
   }
 }

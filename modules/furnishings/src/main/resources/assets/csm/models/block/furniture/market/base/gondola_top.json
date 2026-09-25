@@ -1,0 +1,50 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shelf": "csm:blocks/furniture/market/steel_white",
+    "particle": "#shelf"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        15.5,
+        14.5
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shelf",
+          "uv": [
+            0,
+            0,
+            16,
+            0.5
+          ]
+        },
+        "up": {
+          "texture": "#shelf",
+          "uv": [
+            0,
+            14.5,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#shelf",
+          "uv": [
+            0,
+            0,
+            16,
+            0.5
+          ]
+        }
+      }
+    }
+  ]
+}

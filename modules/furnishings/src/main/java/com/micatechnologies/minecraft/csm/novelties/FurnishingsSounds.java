@@ -8,8 +8,9 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
  * loops, the record players and radios, the kitchen's cabinet, drawer and refrigerator doors
  * and its appliances' beeps, whirrs and whistles, the bathroom's flush and shower and the
  * laundry's washing machine, dryer and iron, the office copier's run, the school locker's door,
- * and the living room's doorbell chime and fireplace crackle (synthesised by
- * {@code gen_furniture_sounds.py}), and the other furnishing sounds.
+ * the living room's doorbell chime and fireplace crackle, and the store's card terminal beep,
+ * cash drawer and checkout scanner (synthesised by {@code gen_furniture_sounds.py}), and the
+ * other furnishing sounds.
  *
  * <p>Each constant's name is the sound's {@code sounds.json} key and the path of its registry
  * name, so a sound event stays {@code csm:&lt;key&gt;} and nothing that refers to one by
@@ -58,7 +59,10 @@ public enum FurnishingsSounds implements ICsmSound {
   DOORBELL_CHIME("doorbell_chime"),
   FIREPLACE_CRACKLE("fireplace_crackle"),
   GRILL_SIZZLE("grill_sizzle"),
-  TRAMPOLINE_BOING("trampoline_boing");
+  TRAMPOLINE_BOING("trampoline_boing"),
+  VERIFONE_MX915("verifone_mx915"),
+  REGISTER_DRAWER("register_drawer"),
+  SCANNER_BEEP("scanner_beep");
 
   /**
    * The name of the sound.

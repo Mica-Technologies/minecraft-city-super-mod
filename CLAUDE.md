@@ -89,7 +89,7 @@ container per jar.
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
 | `modules/powergrid` | `csm_powergrid` | CSM: Power Grid | `powergrid` |
 | `modules/technology` | `csm_technology` | CSM: Technology | `technology` |
-| `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties` |
+| `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology) |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
@@ -688,6 +688,22 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   parts carry its floor and walls), a diving board, a kiddie pool, float rings, pet furniture, a
   hose reel with a working tap and an outdoor wall light; `--check`, `--fragments`.
   `gen_furniture_sounds.py` synthesises the grill sizzle and the trampoline boing
+- `gen_furniture_market.py` -- the Market & Store tab, importing the residential, kitchen,
+  bedroom, appliance and office generators and the Life Safety pixel font: refrigerated displays
+  (two-block reach-in coolers and freezers and the open dairy case, cut at the block line with
+  their explicit UVs kept; the island freezer and the curved-glass ice cream, deli and bakery
+  cases, three facets at 0/22.5/45 degrees), all stocked from product sheets (four product
+  columns a 32 px sheet, drawn bottom-aligned at their true height, and a sheet of their tops)
+  and lit, the lit parts written twice (lit and unlit copies) for the multipart; gondola
+  shelving stocked six ways and bare (bookcase-style stacking); produce stands (the produce
+  crates' beds on a tilted board), the scale, bulk bins; the checkout lane (animated belt with
+  its `.mcmeta`), registers, printer, card terminal, self-checkout, the customer service desk
+  (the office's reception desk parts in store colours plus a sign), candy rack; carts, the cart
+  corral, basket stacks, security gates, the numbered aisle sign, magazine rack, bottle return;
+  and the moved Verifone's blockstate with its model dropped onto each counter height;
+  `--check`, `--fragments` (the whole tab body, moved crates included).
+  `gen_furniture_sounds.py` synthesises the card terminal beep, the scanner beep and the cash
+  drawer
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

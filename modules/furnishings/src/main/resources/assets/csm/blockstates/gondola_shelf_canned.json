@@ -1,0 +1,234 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_body"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_plinth"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_stacked"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_top"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_left"
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_plinth",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_stacked",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_plinth",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_stacked",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_plinth",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_stacked",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_canned_right",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shell": "csm:blocks/furniture/market/case_black",
+    "particle": "#shell"
+  },
+  "elements": [
+    {
+      "from": [
+        15.5,
+        0,
+        2
+      ],
+      "to": [
+        16,
+        16.0,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            0.0,
+            14,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            0.0,
+            0.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            15.5,
+            0,
+            16,
+            14
+          ]
+        }
+      }
+    }
+  ]
+}

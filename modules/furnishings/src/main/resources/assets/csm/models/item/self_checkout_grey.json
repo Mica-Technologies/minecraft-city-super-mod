@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/market/base/self_checkout_item",
+  "textures": {
+    "shell": "csm:blocks/furniture/market/plastic_grey",
+    "screen": "csm:blocks/furniture/market/screen_kiosk"
+  }
+}

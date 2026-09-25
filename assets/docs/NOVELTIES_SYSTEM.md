@@ -513,6 +513,93 @@ laminate on a dark frame) and `_walnut`; seating in `_charcoal`, `_navy` and `_r
 panels in `_charcoal`, `_navy` and `_oatmeal`. The tab is priced by `OfficeFabricatorRules`
 (registered by `CsmFurnishings.preInit`, mirrored in `audit_fabricator_costs.py`).
 
+## Market & Store
+
+The Market & Store tab (`CsmTabMarketStore`, `tabmarketstore`, order 26) holds a grocery store and
+a shop floor, drawn by `gen_furniture_market.py` (textures and models under `furniture/market/`),
+in the `furniture.market` package and on the Residential classes. The produce crates moved to it
+from the Furniture tab, and the Verifone MX915 from the Technology module (below); both kept their
+classes' registry names, so placed ones load as they were.
+
+- **Stock is art, not contents.** What is on a shelf or behind glass is part of the model: each
+  kind of stock is a 32 px sheet of four product columns (cans in tiers, bottles, cereal boxes,
+  crisp bags, jugs, spray bottles, kitchen roll, cartons, shampoo, ice cream tubs, frozen meals,
+  milk, yoghurt, cheese, sweets, loaves and pastries) drawn standing on the sheet's bottom at
+  their true height, and a second sheet of their tops. A shelf's `stock_row` lays groups four
+  pixels wide across it, each group one column as tall as its product, its front set a little in
+  or out so the groups read apart. The packaging is invented: colours and shapes, no names.
+  Cutout texels (a bottle's neck, the gap between cans) show the shelf behind.
+- **Refrigerated displays.** `BlockDisplayCooler` (a `BlockCloset`: two blocks tall, joining into
+  a line, 27 slots in the lower half, the refrigerator's door sounds) is the glass-door reach-in
+  cooler and freezer and the open multideck dairy case. A cooler's mullion is drawn half in each
+  block, so a line of doors has one between each pair; its door is a translucent pane, so the
+  block draws in the translucent layer. `BlockDisplayCase` (a `BlockResidentialStorage` run,
+  27 slots) is the island freezer (sliding glass lids, stock lying flat, double-sided), the ice
+  cream dipping cabinet and the deli case (curved glass: three facets at 0, 22.5 and 45 degrees,
+  since an element turns only by 22.5, and a flat top back to a light canopy over the server's
+  side; the end glass steps back with the curve) and the bakery case (straight glass on an oak
+  base, two tiers). All are lit when placed (`LIT`, light 10): a sneaking click with an empty
+  hand switches them, and so does a change of redstone power (`LampSwitching`; they are
+  `ISwitchable`, so a linked light switch works a whole aisle). The one-block case keeps `LIT` and
+  `POWERED` in its metadata; the two-block one keeps `LIT` in both halves and remembers the power
+  in its lower half's `TileEntityDisplayCase` (a `TileEntityResidentialStorage` with one more
+  flag), its metadata being full. The generator writes each part that has a lamp or a header
+  sign twice, lit and unlit (`<part>_on`, `<part>_off`), and the multipart picks by `lit`.
+- **Gondola shelving** (`BlockGondola`, a `BlockBookcase` in the cutout layer): a pegboard back at
+  +Z, a shelf at the half with a price strip on its edge, stock on it and below it; the base deck
+  only at the bottom of a stack, the top cap only at its head, uprights and end panels only at a
+  run's ends. It joins and stacks with any gondola, whatever its stock, so canned goods beside
+  cereal over snacks is one run; two runs set back to back make an island gondola. Stocked with
+  canned goods, cereal, snacks, bottled drinks, household, health and beauty, or empty. A stock
+  group's side on the block's edge is left off: an end panel covers it there, and the next
+  block's stock continues it anywhere else.
+- **Produce.** `BlockMarketRun` is a `BlockResidentialStorage` run that joins any block of its
+  *group*, not only itself. The produce stand (group `produce_stand`) is oak with its bed tilted
+  22.5 degrees towards the shopper, the produce crates' own beds (`furniture/produce/bed_*`) on
+  it, and a price card on its lip: apples, oranges, lettuce, tomatoes, potatoes and bananas side
+  by side are one stand. The bulk bins (translucent: clear fronts) hold nuts and grains or sweets;
+  the produce scale hangs from the block above (`BlockBathroomFixture`).
+- **Checkout.** The belt counter, the scanner counter and the bagging end are one group,
+  `checkout`, so they join into one lane with end panels only where it stops. The belt is an
+  animated 32 px texture (four frames, two ticks each, a ridge every eighth of a metre moving a
+  texel a frame); the scanner counter's flatbed and tower (its window facing the cashier) beep on
+  click (`SCANNER_BEEP`); the bagging end is lower, with a rack of bags, and holds 9 slots.
+  `SurfaceRest` knows them: the belt and scanner counters are a countertop's height, the bagging
+  end a table's, so counter pieces stand on them. `BlockCashRegister` (a `BlockCounterPiece` with
+  a nine-slot drawer, `IResidentialStorage`) is the POS terminal and the old brass register; the
+  drawer opens with a synthesised bell and slide (`REGISTER_DRAWER`) and closes with the drawer
+  sound. The receipt printer (the copier's sound, faster), the card terminal on its swivel stand
+  (the card beep) and the bagging carousel are counter pieces. The self-checkout
+  (`BlockMarketTall`, two blocks, its screen and lane light giving light 7 from the upper half)
+  beeps on click. The customer service desk is a `BlockKitchenCabinet` on the office's
+  `KitchenLine.RECEPTION`, drawn from the reception desk's own parts in store colours with a
+  CUSTOMER SERVICE sign on the block at the run's customer-left end. The candy rack is a wire
+  rack of chocolate displays on stepped shelves.
+- **The Verifone MX915** (`furniture.market.BlockVerifoneMx915`, `vf915`) moved here from the
+  Technology module: the class, its blockstate, its hand-made model and texture (still at
+  `models/block/technology/shared_models/verifone_mx_915.json` and
+  `textures/blocks/technology/verifone_mx_915.png`, now in this module's tree) and its lang line.
+  Its sound, a recording of unknown origin, is replaced by a synthesised two-beep approval under
+  the same key (`verifone_mx915`, now `FurnishingsSounds`). Lying flat it now rests on what is
+  under it (`REST`, actual state): the generator writes its model dropped to each surface height
+  and the blockstate that picks one. The Technology module's fare vending machine still plays the
+  same beep on a purchase: it finds `csm:verifone_mx915` by name and plays a note block's chime if
+  this module is not installed.
+- **Store fixtures**: shopping carts in three colours (wire mesh as a 32 px cutout), the cart
+  corral (group `cart_corral`: rails along the run, a closed hoop with a CART RETURN sign at its
+  left end, open at its right), shopping basket stacks, the security gate pedestal (chirps on
+  click), the magazine rack, and the bottle return machine (`BlockMarketTall`, decorative). The
+  aisle sign (`BlockAisleSign`) hangs from the ceiling with its number on both faces: a click
+  steps it 1 to 16 and round, a sneaking click steps back; the number lives in a
+  `TileEntityAisleSign` (the metadata holds the facing) whose baked-model key is the number, and
+  the blockstate swaps the face texture for it.
+
+The tab is priced by `MarketFabricatorRules` (registered by `CsmFurnishings.preInit`, mirrored in
+`audit_fabricator_costs.py`): displays are sheet steel and glass with their controls and lights,
+gondolas steel, stands and counters timber (the belt with a wiring harness for its motor, the
+scanner with an optical sensor), terminals electronics, carts and racks iron; the moved crates
+and the Verifone cost what they did in their old tabs.
+
 ## Sound Assets
 
 All custom sounds are declared in `FurnishingsSounds.java` (handed to Core's registrar by `CsmFurnishings.preInit`) and defined in `sounds.json`. Every
@@ -546,6 +633,9 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:grill_sizzle` | `GRILL_SIZZLE` | the gas and charcoal grills while they cook (a 2 s loop every 40 ticks) | synthesised |
 | `csm:trampoline_boing` | `TRAMPOLINE_BOING` | a fall of more than a block onto the trampoline, the bounce castle or the diving board, quietly | synthesised |
 | `csm:locker_door_open`, `csm:locker_door_close` | `LOCKER_DOOR_OPEN`, `LOCKER_DOOR_CLOSE` | lockers | synthesised (replacing the unused sounds of unknown origin the first version shipped under these names) |
+| `csm:verifone_mx915` | `VERIFONE_MX915` | the Verifone MX915 and the card terminal on its stand (click); the Technology module's fare vending machine, by name | synthesised: two piezo beeps, the second higher (replacing a recording of unknown origin that came with the terminal from Technology) |
+| `csm:scanner_beep` | `SCANNER_BEEP` | the checkout scanner counter and the self-checkout (click) | synthesised |
+| `csm:register_drawer` | `REGISTER_DRAWER` | the POS terminal and the cash register opening | synthesised: key, bell, drawer run and stop |
 
 The xylophone, water dispensers/bubblers and the kitchen sink use only vanilla sounds (filling an
 appliance's tank with a bucket or bottle does too)

@@ -1,0 +1,127 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "chrome": "csm:blocks/furniture/residential/chrome",
+    "particle": "#chrome"
+  },
+  "elements": [
+    {
+      "from": [
+        15.25,
+        0,
+        1.25
+      ],
+      "to": [
+        16,
+        12.25,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chrome",
+          "uv": [
+            0,
+            3.75,
+            0.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#chrome",
+          "uv": [
+            15.25,
+            3.75,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#chrome",
+          "uv": [
+            14,
+            3.75,
+            14.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#chrome",
+          "uv": [
+            1.25,
+            3.75,
+            2,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#chrome",
+          "uv": [
+            15.25,
+            1.25,
+            16,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.25,
+        0,
+        14
+      ],
+      "to": [
+        16,
+        12.25,
+        14.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chrome",
+          "uv": [
+            0,
+            3.75,
+            0.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#chrome",
+          "uv": [
+            15.25,
+            3.75,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#chrome",
+          "uv": [
+            1.25,
+            3.75,
+            2,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#chrome",
+          "uv": [
+            14,
+            3.75,
+            14.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#chrome",
+          "uv": [
+            15.25,
+            14,
+            16,
+            14.75
+          ]
+        }
+      }
+    }
+  ]
+}

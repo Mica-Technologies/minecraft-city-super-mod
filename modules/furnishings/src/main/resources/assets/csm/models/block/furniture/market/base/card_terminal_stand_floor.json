@@ -1,0 +1,273 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "case": "csm:blocks/furniture/market/case_black",
+    "terminal": "csm:blocks/furniture/market/screen_terminal",
+    "particle": "#case"
+  },
+  "elements": [
+    {
+      "from": [
+        5.5,
+        0,
+        5.5
+      ],
+      "to": [
+        10.5,
+        0.5,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#case",
+          "uv": [
+            5.5,
+            15.5,
+            10.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#case",
+          "uv": [
+            5.5,
+            15.5,
+            10.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#case",
+          "uv": [
+            5.5,
+            15.5,
+            10.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#case",
+          "uv": [
+            5.5,
+            15.5,
+            10.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#case",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        },
+        "down": {
+          "texture": "#case",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.5,
+        0.5,
+        7.5
+      ],
+      "to": [
+        8.5,
+        5,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#case",
+          "uv": [
+            7.5,
+            11,
+            8.5,
+            15.5
+          ]
+        },
+        "south": {
+          "texture": "#case",
+          "uv": [
+            7.5,
+            11,
+            8.5,
+            15.5
+          ]
+        },
+        "east": {
+          "texture": "#case",
+          "uv": [
+            7.5,
+            11,
+            8.5,
+            15.5
+          ]
+        },
+        "west": {
+          "texture": "#case",
+          "uv": [
+            7.5,
+            11,
+            8.5,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        5,
+        7
+      ],
+      "to": [
+        9,
+        5.75,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#case",
+          "uv": [
+            7,
+            10.25,
+            9,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#case",
+          "uv": [
+            7,
+            10.25,
+            9,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#case",
+          "uv": [
+            7,
+            10.25,
+            9,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#case",
+          "uv": [
+            7,
+            10.25,
+            9,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#case",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#case",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        5.5,
+        5.5
+      ],
+      "to": [
+        11,
+        6.75,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#case",
+          "uv": [
+            5,
+            9.25,
+            11,
+            10.5
+          ]
+        },
+        "south": {
+          "texture": "#case",
+          "uv": [
+            5,
+            9.25,
+            11,
+            10.5
+          ]
+        },
+        "east": {
+          "texture": "#case",
+          "uv": [
+            5,
+            9.25,
+            10.5,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#case",
+          "uv": [
+            5.5,
+            9.25,
+            11,
+            10.5
+          ]
+        },
+        "up": {
+          "texture": "#terminal",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#case",
+          "uv": [
+            5,
+            5,
+            11,
+            10.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          5.5,
+          8
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    }
+  ]
+}

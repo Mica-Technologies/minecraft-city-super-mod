@@ -1,0 +1,12 @@
+{
+  "parent": "csm:block/furniture/market/base/bulk_bins_left",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "bulk_1": "csm:blocks/furniture/market/bulk_almond",
+    "bulk_2": "csm:blocks/furniture/market/bulk_peanut",
+    "bulk_3": "csm:blocks/furniture/market/bulk_trail",
+    "bulk_4": "csm:blocks/furniture/market/bulk_oats"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/market/base/checkout_belt_body",
+  "textures": {
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "wood_v": "csm:blocks/furniture/office/laminate_grey",
+    "edge": "csm:blocks/furniture/office/laminate_grey_edge",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "plastic": "csm:blocks/furniture/market/plastic_grey"
+  }
+}

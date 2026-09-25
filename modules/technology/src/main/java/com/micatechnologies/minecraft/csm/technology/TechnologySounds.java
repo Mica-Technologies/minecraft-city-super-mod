@@ -4,8 +4,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmSoundRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 
 /**
- * The sounds shipped by the CSM: Technology module: the speaker's ambient music and the payment
- * terminal's confirmation tone.
+ * The sounds shipped by the CSM: Technology module: the speaker's ambient music. (The payment
+ * terminal and its tone moved to the Furniture &amp; Novelties module's Market &amp; Store tab.)
  *
  * <p>Each constant's name is the sound's {@code sounds.json} key and the path of its registry
  * name, so a sound event stays {@code csm:&lt;key&gt;} and nothing that refers to one by
@@ -16,8 +16,7 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
  * @since 2026.9
  */
 public enum TechnologySounds implements ICsmSound {
-  MII_CHANNEL_REMIX("mii_channel_remix"),
-  VERIFONE_MX915("verifone_mx915");
+  MII_CHANNEL_REMIX("mii_channel_remix");
 
   /**
    * The name of the sound.

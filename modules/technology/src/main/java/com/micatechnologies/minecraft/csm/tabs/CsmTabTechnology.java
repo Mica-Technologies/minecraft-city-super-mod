@@ -13,7 +13,6 @@ import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda2;
 import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda3;
 import com.micatechnologies.minecraft.csm.technology.BlockFareVendingMachine;
 import com.micatechnologies.minecraft.csm.technology.BlockSpeakerFactory;
-import com.micatechnologies.minecraft.csm.technology.BlockVerifoneMx915;
 import com.micatechnologies.minecraft.csm.technology.ItemApplePencil;
 import com.micatechnologies.minecraft.csm.technology.ItemFareTicket;
 import com.micatechnologies.minecraft.csm.technology.ItemTransitCard;
@@ -131,7 +130,6 @@ public class CsmTabTechnology extends CsmTab {
     initTabBlock(new BlockSpeakerFactory("vcs7", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
     initTabBlock(new BlockSpeakerFactory("vcs8", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
     initTabBlock(new BlockSpeakerFactory("vcs9", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
-    initTabBlock(BlockVerifoneMx915.class, fmlPreInitializationEvent);
     initTabBlock(new BlockRotatableNSEWUDFactory("waptpl225", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("wapac", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("wapn", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));

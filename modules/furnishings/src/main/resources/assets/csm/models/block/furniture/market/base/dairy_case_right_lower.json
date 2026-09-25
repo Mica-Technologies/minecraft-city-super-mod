@@ -1,0 +1,115 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "glass": "csm:blocks/furniture/market/glass_clear",
+    "shell": "csm:blocks/furniture/market/case_black",
+    "particle": "#shell"
+  },
+  "elements": [
+    {
+      "from": [
+        15.5,
+        0,
+        0.5
+      ],
+      "to": [
+        16,
+        8,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            8,
+            15.5,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            8,
+            0.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#shell",
+          "uv": [
+            15.5,
+            0.5,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.5,
+        8,
+        9
+      ],
+      "to": [
+        16,
+        16.0,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            0.0,
+            7,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            0.0,
+            0.5,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.6,
+        8,
+        2
+      ],
+      "to": [
+        15.9,
+        16.0,
+        9
+      ],
+      "faces": {
+        "east": {
+          "texture": "#glass",
+          "uv": [
+            7,
+            0.0,
+            14,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#glass",
+          "uv": [
+            2,
+            0.0,
+            9,
+            8
+          ]
+        }
+      }
+    }
+  ]
+}

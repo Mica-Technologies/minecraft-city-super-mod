@@ -691,6 +691,71 @@ def cost_for(registry, info, ancestors):
         if registry.startswith("green_screen_"):
             return ("wool x2", "iron_ingot")
         return ("planks x2", "FASTENER_KIT")
+    if tab == "tabmarketstore":
+        # Mirrors MarketFabricatorRules (Furniture & Novelties module). The produce
+        # crates keep the Furniture tab's cost, the Verifone the Technology tab's.
+        if registry in ("applecrate", "bananacrate", "beetcrate", "carrotbarrel", "carrotcrate",
+                        "corncrate", "goldenapples", "greenapplecrate", "largecrate",
+                        "lettucecrate", "onioncrate", "orangecrate", "pearcrate", "potatoecrate",
+                        "tomatoecrate"):
+            return ("planks x2", "FASTENER_KIT")
+        if registry == "vf915":
+            return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
+        if registry.startswith(("reach_in_cooler_", "reach_in_freezer_")):
+            return ("SHEET_METAL x3", "glass_pane x3", "CONTROL_BOARD", "LED_MODULE")
+        if registry.startswith("dairy_case_"):
+            return ("SHEET_METAL x4", "CONTROL_BOARD", "LED_MODULE")
+        if registry.startswith("island_freezer_"):
+            return ("SHEET_METAL x3", "glass_pane x2", "CONTROL_BOARD")
+        if registry.startswith(("ice_cream_case_", "deli_case_")):
+            return ("SHEET_METAL x2", "glass_pane x3", "CONTROL_BOARD")
+        if registry.startswith("bakery_case_"):
+            return ("planks x2", "glass_pane x3", "LED_MODULE")
+        if registry.startswith("gondola_shelf_"):
+            return ("SHEET_METAL x2", "FASTENER_KIT")
+        if registry.startswith("produce_stand_"):
+            return ("planks x3", "FASTENER_KIT")
+        if registry.startswith("produce_scale_"):
+            return ("SHEET_METAL", "iron_ingot")
+        if registry.startswith("bulk_bins_"):
+            return ("planks x2", "glass_pane x2")
+        if registry.startswith("checkout_belt_"):
+            return ("planks x3", "SHEET_METAL", "WIRING_HARNESS")
+        if registry.startswith("checkout_scanner_"):
+            return ("planks x3", "SHEET_METAL", "OPTICAL_SENSOR")
+        if registry.startswith("checkout_bagging_"):
+            return ("planks x3", "SHEET_METAL")
+        if registry.startswith("pos_terminal_"):
+            return ("CONTROL_BOARD", "LED_MODULE", "SHEET_METAL")
+        if registry.startswith("cash_register_"):
+            return ("SHEET_METAL x2", "gold_nugget x2", "FASTENER_KIT")
+        if registry.startswith("receipt_printer_"):
+            return ("CONTROL_BOARD", "paper")
+        if registry.startswith("card_terminal_stand_"):
+            return ("CONTROL_BOARD", "LED_MODULE")
+        if registry.startswith("bag_carousel_"):
+            return ("iron_ingot", "paper x2")
+        if registry.startswith("self_checkout_"):
+            return ("SHEET_METAL x2", "CONTROL_BOARD", "LED_MODULE", "OPTICAL_SENSOR")
+        if registry.startswith("service_desk_"):
+            return ("planks x5", "FASTENER_KIT")
+        if registry.startswith("impulse_rack_"):
+            return ("iron_ingot x2", "paper")
+        if registry.startswith("shopping_cart_"):
+            return ("iron_ingot x3",)
+        if registry.startswith("cart_corral_"):
+            return ("iron_ingot x3",)
+        if registry.startswith("basket_stack_"):
+            return ("paper x2", "dye", "iron_ingot")
+        if registry.startswith("security_gate_"):
+            return ("SHEET_METAL", "WIRING_HARNESS")
+        if registry.startswith("aisle_sign_"):
+            return ("SIGN_BLANK",)
+        if registry.startswith("magazine_rack_"):
+            return ("iron_ingot", "paper x3")
+        if registry.startswith("bottle_return_machine_"):
+            return ("SHEET_METAL x3", "CONTROL_BOARD", "OPTICAL_SENSOR")
+        return ("planks x2", "FASTENER_KIT")
     # Any other tab is a module's own, priced by the rule the module registers
     # (e.g. ParksFabricatorRules), which this audit does not mirror; this is the generic cost
     # such a rule falls back to.

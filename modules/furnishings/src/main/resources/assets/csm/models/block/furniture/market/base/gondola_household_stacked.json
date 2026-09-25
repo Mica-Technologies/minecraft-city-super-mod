@@ -1,0 +1,267 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shelf": "csm:blocks/furniture/market/steel_white",
+    "stock_b": "csm:blocks/furniture/market/stock_drinks_b",
+    "stock_b_top": "csm:blocks/furniture/market/stock_drinks_b_top",
+    "strip": "csm:blocks/furniture/market/price_strip",
+    "particle": "#shelf"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        7
+      ],
+      "to": [
+        16,
+        0.5,
+        15
+      ],
+      "faces": {
+        "up": {
+          "texture": "#shelf",
+          "uv": [
+            0,
+            7,
+            16,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#shelf",
+          "uv": [
+            0,
+            1,
+            16,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        -0.25,
+        6.75
+      ],
+      "to": [
+        16,
+        0.5,
+        7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#strip",
+          "uv": [
+            0,
+            4,
+            16,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#strip",
+          "uv": [
+            0,
+            6.75,
+            16,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#strip",
+          "uv": [
+            0,
+            9,
+            16,
+            9.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0.5,
+        7.75
+      ],
+      "to": [
+        4.0,
+        6.0,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stock_b",
+          "uv": [
+            12.0,
+            10.5,
+            16.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#stock_b_top",
+          "uv": [
+            12,
+            0,
+            16.0,
+            7.25
+          ]
+        },
+        "east": {
+          "texture": "#stock_b",
+          "uv": [
+            12,
+            10.5,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.0,
+        0.5,
+        7.25
+      ],
+      "to": [
+        8.0,
+        3.5,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stock_b",
+          "uv": [
+            0.0,
+            13,
+            4.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#stock_b_top",
+          "uv": [
+            0,
+            0,
+            4.0,
+            7.75
+          ]
+        },
+        "east": {
+          "texture": "#stock_b",
+          "uv": [
+            0,
+            13,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#stock_b",
+          "uv": [
+            0,
+            13,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8.0,
+        0.5,
+        7.25
+      ],
+      "to": [
+        12.0,
+        6.0,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stock_b",
+          "uv": [
+            12.0,
+            10.5,
+            16.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#stock_b_top",
+          "uv": [
+            12,
+            0,
+            16.0,
+            7.75
+          ]
+        },
+        "east": {
+          "texture": "#stock_b",
+          "uv": [
+            12,
+            10.5,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#stock_b",
+          "uv": [
+            12,
+            10.5,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        12.0,
+        0.5,
+        7.25
+      ],
+      "to": [
+        16.0,
+        3.5,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stock_b",
+          "uv": [
+            0.0,
+            13,
+            4.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#stock_b_top",
+          "uv": [
+            0,
+            0,
+            4.0,
+            7.75
+          ]
+        },
+        "west": {
+          "texture": "#stock_b",
+          "uv": [
+            0,
+            13,
+            4,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

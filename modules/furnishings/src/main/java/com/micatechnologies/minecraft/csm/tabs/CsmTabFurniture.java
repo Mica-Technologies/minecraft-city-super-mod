@@ -3,39 +3,24 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.furniture.BlockAppleCrate;
-import com.micatechnologies.minecraft.csm.furniture.BlockBananaCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockBarbedWire;
 import com.micatechnologies.minecraft.csm.furniture.BlockBeerRack;
 import com.micatechnologies.minecraft.csm.furniture.BlockBeertap;
-import com.micatechnologies.minecraft.csm.furniture.BlockBeetCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockBirdhouse;
 import com.micatechnologies.minecraft.csm.furniture.BlockBoardedWoodPlanks;
-import com.micatechnologies.minecraft.csm.furniture.BlockCarrotBarrel;
-import com.micatechnologies.minecraft.csm.furniture.BlockCarrotCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockChains;
 import com.micatechnologies.minecraft.csm.furniture.BlockCoatrack;
-import com.micatechnologies.minecraft.csm.furniture.BlockCornCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockCsmJukebox;
 import com.micatechnologies.minecraft.csm.furniture.BlockCsmRadiator;
 import com.micatechnologies.minecraft.csm.furniture.BlockDoghouse;
-import com.micatechnologies.minecraft.csm.furniture.BlockGoldenApples;
 import com.micatechnologies.minecraft.csm.furniture.BlockGrandPiano;
 import com.micatechnologies.minecraft.csm.furniture.BlockGrandfatherClock;
-import com.micatechnologies.minecraft.csm.furniture.BlockGreenAppleCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockHottub;
-import com.micatechnologies.minecraft.csm.furniture.BlockLargeCrate;
-import com.micatechnologies.minecraft.csm.furniture.BlockLettuceCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockOfficeChair;
-import com.micatechnologies.minecraft.csm.furniture.BlockOnionCrate;
-import com.micatechnologies.minecraft.csm.furniture.BlockOrangeCrate;
-import com.micatechnologies.minecraft.csm.furniture.BlockPearCrate;
-import com.micatechnologies.minecraft.csm.furniture.BlockPotatoeCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockRestroomSignFemale;
 import com.micatechnologies.minecraft.csm.furniture.BlockRestroomSignMale;
 import com.micatechnologies.minecraft.csm.furniture.BlockSwingchair;
 import com.micatechnologies.minecraft.csm.furniture.BlockTallWallMirror;
-import com.micatechnologies.minecraft.csm.furniture.BlockTomatoeCrate;
 import com.micatechnologies.minecraft.csm.furniture.BlockWaterPump;
 import com.micatechnologies.minecraft.csm.furniture.BlockWineRack;
 import net.minecraft.block.Block;
@@ -46,7 +31,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
- * The tab for furniture and household blocks.
+ * The tab for furniture and household blocks. (The produce crates moved to the Market &amp;
+ * Store tab.)
  *
  * @version 1.0
  */
@@ -97,23 +83,6 @@ public class CsmTabFurniture extends CsmTab {
     initTabBlock(BlockBirdhouse.class, fmlPreInitializationEvent); // Birdhouse
     initTabBlock(BlockDoghouse.class, fmlPreInitializationEvent); // Doghouse
     initTabBlock(BlockWaterPump.class, fmlPreInitializationEvent); // Water Pump
-
-    // Storage & Produce
-    initTabBlock(BlockAppleCrate.class, fmlPreInitializationEvent); // Apple Crate
-    initTabBlock(BlockBananaCrate.class, fmlPreInitializationEvent); // Banana Crate
-    initTabBlock(BlockBeetCrate.class, fmlPreInitializationEvent); // Beet Crate
-    initTabBlock(BlockCarrotBarrel.class, fmlPreInitializationEvent); // Carrot Barrel
-    initTabBlock(BlockCarrotCrate.class, fmlPreInitializationEvent); // Carrot Crate
-    initTabBlock(BlockCornCrate.class, fmlPreInitializationEvent); // Corn Crate
-    initTabBlock(BlockGoldenApples.class, fmlPreInitializationEvent); // Golden Apples
-    initTabBlock(BlockGreenAppleCrate.class, fmlPreInitializationEvent); // Green Apple Crate
-    initTabBlock(BlockLargeCrate.class, fmlPreInitializationEvent); // Large Crate
-    initTabBlock(BlockLettuceCrate.class, fmlPreInitializationEvent); // Lettuce Crate
-    initTabBlock(BlockOnionCrate.class, fmlPreInitializationEvent); // Onion Crate
-    initTabBlock(BlockOrangeCrate.class, fmlPreInitializationEvent); // Orange Crate
-    initTabBlock(BlockPearCrate.class, fmlPreInitializationEvent); // Pear Crate
-    initTabBlock(BlockPotatoeCrate.class, fmlPreInitializationEvent); // Potato Crate
-    initTabBlock(BlockTomatoeCrate.class, fmlPreInitializationEvent); // Tomato Crate
 
     // Miscellaneous
     initTabBlock(BlockBoardedWoodPlanks.class, fmlPreInitializationEvent); // Boarded Wood Planks

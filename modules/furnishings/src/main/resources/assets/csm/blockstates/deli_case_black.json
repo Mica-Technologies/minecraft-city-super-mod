@@ -1,0 +1,160 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_body_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_body_off"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_left"
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_body_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_body_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_body_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_body_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_body_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_body_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/deli_case_black_right",
+        "y": 270
+      }
+    }
+  ]
+}

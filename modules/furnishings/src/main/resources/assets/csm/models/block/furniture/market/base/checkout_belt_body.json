@@ -1,0 +1,298 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "belt": "csm:blocks/furniture/market/belt",
+    "bumper": "csm:blocks/furniture/market/bumper",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "plastic": "csm:blocks/furniture/market/plastic_red",
+    "steel": "csm:blocks/furniture/residential/stainless",
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "wood_v": "csm:blocks/furniture/office/laminate_grey",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        1,
+        3
+      ],
+      "to": [
+        16,
+        13.75,
+        3.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood_v",
+          "uv": [
+            0,
+            2.25,
+            16,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        3.5
+      ],
+      "to": [
+        16,
+        1,
+        13.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#kick",
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#kick",
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        1,
+        13.25
+      ],
+      "to": [
+        16,
+        13.75,
+        14
+      ],
+      "faces": {
+        "south": {
+          "texture": "#wood_v",
+          "uv": [
+            0,
+            2.25,
+            16,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        12.75,
+        2.4
+      ],
+      "to": [
+        16,
+        13.75,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bumper",
+          "uv": [
+            0,
+            2.25,
+            16,
+            3.25
+          ]
+        },
+        "up": {
+          "texture": "#bumper",
+          "uv": [
+            0,
+            2.4,
+            16,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#bumper",
+          "uv": [
+            0,
+            13,
+            16,
+            13.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        13.75,
+        2.25
+      ],
+      "to": [
+        16,
+        14.5,
+        4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            1.5,
+            16,
+            2.25
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            2.25,
+            16,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            12,
+            16,
+            13.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        13.75,
+        12.25
+      ],
+      "to": [
+        16,
+        14.5,
+        14
+      ],
+      "faces": {
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            1.5,
+            16,
+            2.25
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            12.25,
+            16,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            2,
+            16,
+            3.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        13.75,
+        4
+      ],
+      "to": [
+        16,
+        14.25,
+        12.25
+      ],
+      "faces": {
+        "up": {
+          "texture": "#belt",
+          "uv": [
+            0,
+            4,
+            16,
+            12.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        14.25,
+        4.5
+      ],
+      "to": [
+        4.75,
+        14.9,
+        11.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plastic",
+          "uv": [
+            11.25,
+            1.1,
+            12,
+            1.75
+          ]
+        },
+        "south": {
+          "texture": "#plastic",
+          "uv": [
+            4,
+            1.1,
+            4.75,
+            1.75
+          ]
+        },
+        "east": {
+          "texture": "#plastic",
+          "uv": [
+            4.25,
+            1.1,
+            11.5,
+            1.75
+          ]
+        },
+        "west": {
+          "texture": "#plastic",
+          "uv": [
+            4.5,
+            1.1,
+            11.75,
+            1.75
+          ]
+        },
+        "up": {
+          "texture": "#plastic",
+          "uv": [
+            4,
+            4.5,
+            4.75,
+            11.75
+          ]
+        }
+      }
+    }
+  ]
+}
