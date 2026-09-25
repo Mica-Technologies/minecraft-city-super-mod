@@ -143,23 +143,34 @@ class SignFaceDepthTest {
     return !"z".equals(rotation.get("axis").getAsString());
   }
 
+  /**
+   * Every road sign model file, in any module: the model folders and file-name prefixes are those
+   * {@link SignShiftModelTest#SIGN_MODEL_PREFIXES} names, so the two tests hold the same models.
+   */
   private static List<File> signModels() throws IOException, URISyntaxException {
     List<File> out = new ArrayList<>();
     Set<File> seen = new LinkedHashSet<>();
-    Enumeration<URL> roots = SignFaceDepthTest.class.getClassLoader()
-        .getResources("assets/csm/models/block/trafficsigns");
-    while (roots.hasMoreElements()) {
-      URL root = roots.nextElement();
-      if (!"file".equals(root.getProtocol())) {
-        continue;
-      }
-      File[] files = new File(root.toURI()).listFiles();
-      if (files == null) {
-        continue;
-      }
-      for (File file : files) {
-        if (file.getName().endsWith(".json") && seen.add(file)) {
-          out.add(file);
+    for (String prefix : SignShiftModelTest.SIGN_MODEL_PREFIXES) {
+      String path = prefix.substring("csm:".length());
+      int slash = path.lastIndexOf('/');
+      String folder = path.substring(0, slash);
+      String namePrefix = path.substring(slash + 1);
+      Enumeration<URL> roots = SignFaceDepthTest.class.getClassLoader()
+          .getResources("assets/csm/models/block/" + folder);
+      while (roots.hasMoreElements()) {
+        URL root = roots.nextElement();
+        if (!"file".equals(root.getProtocol())) {
+          continue;
+        }
+        File[] files = new File(root.toURI()).listFiles();
+        if (files == null) {
+          continue;
+        }
+        for (File file : files) {
+          if (file.getName().startsWith(namePrefix) && file.getName().endsWith(".json")
+              && seen.add(file)) {
+            out.add(file);
+          }
         }
       }
     }

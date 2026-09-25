@@ -550,6 +550,19 @@ FHWA series rather than lifted from the book, because the book's are 24 x 6 -- f
 wide as they are tall -- and no plate in the mod is that shape; squeezing the drawing onto the
 2:1 plaque stretched the legend.
 
+## Road Signs in Other Modules: the Bus Stop
+
+Transit's bus stop flags (`bus_stop_flag_<agency>`), arrival display and timetable and route map
+cases are road signs that live in the Transit module, which requires Roads for exactly this: each
+is a `BlockTrafficSign` (the flag and the display subclasses of it, with a tile entity each) on the
+standard sign post, with its own three shift models, so a stop stands on these sign posts, stacks
+with them, sets back beside a signal arm, hangs from a span and pairs back to back like any sign
+here. Their models are `csm:transit/stops/sign_*`, which `SignShiftModelTest` and
+`SignFaceDepthTest` check alongside `csm:trafficsigns/`. Two details differ, deliberately: the
+back-to-back models sit at 28.3 rather than 28.5, so the face clears the partner's post end by the
+depth test's 0.2 with no art sliver, and the post's end caps paint one texel so the generator's
+depth pass leaves them level. See [TRANSIT_SYSTEM.md](TRANSIT_SYSTEM.md), "Bus stops".
+
 ## LED-Enhanced Flashing Signs
 
 `signpoststopsignflashingled`, `signpoststopsignflashingleddense`, `signwrongwayflashingled`,

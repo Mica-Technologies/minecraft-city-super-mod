@@ -109,14 +109,14 @@ public class TileEntityBusArrivalDisplayRenderer
     int first = (int) ((time / PAGE_TICKS) % pages) * LINES;
 
     GlStateManager.pushMatrix();
-    GlStateManager.translate(x + 0.5, y + te.getViewOffset(), z + 0.5);
-    GlStateManager.rotate(TileEntityBusStopFlagRenderer.rotationOf(te), 0, 1, 0);
-    GlStateManager.translate(-0.5, 0.0, -0.5);
-    GlStateManager.scale(0.0625, 0.0625, 0.0625);
-    // the screen is on the north face, read by someone looking south: text runs toward -x
-    GlStateManager.translate(BlockBusArrivalDisplay.SCREEN_MIDDLE_X,
-        BlockBusArrivalDisplay.SCREEN_MIDDLE_Y, BlockBusArrivalDisplay.SCREEN_Z - LIFT);
-    GlStateManager.rotate(180, 0, 1, 0);
+    GlStateManager.translate(x + 0.5, y, z + 0.5);
+    TileEntityBusStopFlagRenderer.enterSignFrame(te);
+    // the screen at the depth the sign system's shift draws the display, in the sign frame
+    // (model z at 16 - z), read with +x to the reader's right
+    GlStateManager.translate(16.0f - BlockBusArrivalDisplay.SCREEN_MIDDLE_X,
+        BlockBusArrivalDisplay.SCREEN_MIDDLE_Y,
+        16.0f - (BlockBusArrivalDisplay.SCREEN_Z + BusStopSigns.shiftZ(te.getViewShift()))
+            + LIFT);
     GlStateManager.scale(scale, -scale, scale);
 
     float lastX = OpenGlHelper.lastBrightnessX;

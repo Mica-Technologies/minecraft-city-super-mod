@@ -59,6 +59,14 @@ class SignShiftModelTest {
   private static final double ONE_BLOCK = 16.0;
 
   /**
+   * Where road sign models live: Roads' own, and the road signs other modules build on Roads'
+   * sign system -- Transit's bus stop flag, arrival display and poster cases, whose models it
+   * names {@code sign_*} so they are held to the same rules. A blockstate is a road sign's when
+   * its default model starts with one of these.
+   */
+  static final String[] SIGN_MODEL_PREFIXES = {"csm:trafficsigns/", "csm:transit/stops/sign_"};
+
+  /**
    * Signs whose {@code shift} entries are allowed to name the same model three times, because
    * back-to-back genuinely has no meaning for them.
    */
@@ -115,6 +123,11 @@ class SignShiftModelTest {
     Map<String, JsonObject> blockstates = readSignBlockstates();
     assertTrue(blockstates.size() > 500,
         "expected the whole road sign catalogue, found " + blockstates.size());
+    for (String prefix : SIGN_MODEL_PREFIXES) {
+      assertTrue(blockstates.values().stream().anyMatch(json -> json.getAsJsonObject("defaults")
+              .get("model").getAsString().startsWith(prefix)),
+          "no road sign blockstate uses a model under " + prefix + ": the resources moved");
+    }
 
     List<String> problems = new ArrayList<>();
     for (Map.Entry<String, JsonObject> entry : blockstates.entrySet()) {
@@ -228,7 +241,7 @@ class SignShiftModelTest {
   // region: reading the resources
 
   /**
-   * Reads every blockstate in the mod whose default model is a road sign model.
+   * Reads every blockstate in the mod whose default model is a road sign model, in any module.
    *
    * @return blockstate JSON by registry name
    *
@@ -261,13 +274,29 @@ class SignShiftModelTest {
           continue;
         }
         String model = defaults.get("model").getAsString();
-        if (model.startsWith("csm:trafficsigns/")) {
+        if (isSignModel(model)) {
           String name = file.getName().substring(0, file.getName().length() - ".json".length());
           signs.put(name, json);
         }
       }
     }
     return signs;
+  }
+
+  /**
+   * Whether a model reference is a road sign model.
+   *
+   * @param model the model reference
+   *
+   * @return true under one of {@link #SIGN_MODEL_PREFIXES}
+   */
+  static boolean isSignModel(String model) {
+    for (String prefix : SIGN_MODEL_PREFIXES) {
+      if (model.startsWith(prefix)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

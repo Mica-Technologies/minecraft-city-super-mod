@@ -32,7 +32,7 @@ world ever sees is namespaced with them.
 | Text to Speech | `csm_tts` | CSM: Text to Speech | `…-tts-<version>.jar` | `tts` | none — its blocks appear in Technology | 1 block + 1 item |
 | Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage`, hidden (−8) | Signage & Advertising (18) | 13 |
 | Parks & Greenery | `csm_parks` | CSM: Parks & Greenery | `…-parks-<version>.jar` | `parks` | Trees & Plants (19), Parks (20) | 160 + 1 item |
-| Transit | `csm_transit` | CSM: Transit | `…-transit-<version>.jar` | `transit` | Transit (27) | 4 + 2 items |
+| Transit | `csm_transit` | CSM: Transit | `…-transit-<version>.jar` | `transit` | Transit (27) | 24 + 2 items |
 
 Block counts are blockstates shipped in that tree, so they include hidden (retiring) blocks and the
 itemless `*_slab_double` states.

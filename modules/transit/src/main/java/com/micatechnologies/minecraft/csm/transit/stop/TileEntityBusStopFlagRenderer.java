@@ -14,7 +14,10 @@ import org.lwjgl.opengl.GL11;
 /**
  * Draws the route numbers on a bus stop flag's route plates, on both faces.
  *
- * <p>The plates themselves are baked; only the numbers are drawn here. Each number, 1 to 99, is
+ * <p>The plates themselves are baked; only the numbers are drawn here, on the front and the back
+ * of each plate, at the depth the sign system's shift puts the sign ({@link BusStopSigns#SHIFT_Z})
+ * and at the plate's own shade, since a tile entity renderer gets none of the diffuse shading a
+ * baked face carries. Each number, 1 to 99, is
  * compiled once into a display list shared by every flag ({@link CsmSharedDisplayLists}, keyed
  * on the number), centred on the origin in the font atlas, and replayed under each plate's own
  * transform: a flag's six numbers cost six list calls. Nothing position-dependent is in a list:
@@ -28,8 +31,8 @@ import org.lwjgl.opengl.GL11;
 public class TileEntityBusStopFlagRenderer
     extends TileEntitySpecialRenderer<TileEntityBusStopFlag> {
 
-  /** How tall the numbers are, in sixteenths (a plate is 1.8). */
-  private static final float TEXT_HEIGHT = 1.25f;
+  /** How tall the numbers are, in sixteenths (a plate is 2.5). */
+  private static final float TEXT_HEIGHT = 1.6f;
 
   /** How far in front of each face the numbers sit, in sixteenths. */
   private static final float LIFT = 0.03f;
@@ -65,12 +68,16 @@ public class TileEntityBusStopFlagRenderer
     // Fetched before any list is opened, so its lazy constructor cannot bind during a compile.
     CsmFontRenderer fr = CsmFontRenderer.highwayGothic();
     float scale = TEXT_HEIGHT / fr.FONT_HEIGHT;
+    float shift = BusStopSigns.shiftZ(te.getViewShift());
+    // the sign frame puts a face the model has at z at 16 - z
+    float front = 16.0f - (BlockBusStopFlag.FACE_FRONT_Z + shift) + LIFT;
+    float back = 16.0f - (BlockBusStopFlag.FACE_BACK_Z + shift) - LIFT;
+    float numberX = BlockBusStopFlag.NUMBER_FROM_LEFT - BlockBusStopFlag.PLATE_WIDTH / 2.0f;
+    float shade = BusStopSigns.shade(te.getViewFacing());
 
     GlStateManager.pushMatrix();
-    GlStateManager.translate(x + 0.5, y + te.getViewOffset(), z + 0.5);
-    GlStateManager.rotate(rotationOf(te), 0, 1, 0);
-    GlStateManager.translate(-0.5, 0.0, -0.5);
-    GlStateManager.scale(0.0625, 0.0625, 0.0625);
+    GlStateManager.translate(x + 0.5, y, z + 0.5);
+    enterSignFrame(te);
 
     GlStateManager.disableLighting();
     GlStateManager.disableCull();
@@ -79,7 +86,7 @@ public class TileEntityBusStopFlagRenderer
     GlStateManager.enableTexture2D();
     GlStateManager.depthMask(false);
     fr.bindAtlas();
-    GlStateManager.color(0.96f, 0.96f, 0.94f, 1.0f);
+    GlStateManager.color(0.96f * shade, 0.96f * shade, 0.94f * shade, 1.0f);
 
     for (int i = 0; i < TileEntityBusStopFlag.PLATES; i++) {
       int route = te.getRoute(i);
@@ -87,18 +94,17 @@ public class TileEntityBusStopFlagRenderer
         continue;
       }
       float midY = BlockBusStopFlag.PLATE_MIDDLE_Y[i];
-      // the north face, read by someone looking south: text runs toward -x
+      // the front, read with +x to the reader's right
       GlStateManager.pushMatrix();
-      GlStateManager.translate(BlockBusStopFlag.PLATE_MIDDLE_X, midY,
-          BlockBusStopFlag.PLATE_NORTH_Z - LIFT);
-      GlStateManager.rotate(180, 0, 1, 0);
+      GlStateManager.translate(8.0f + numberX, midY, front);
       GlStateManager.scale(scale, -scale, scale);
       drawNumber(fr, route);
       GlStateManager.popMatrix();
-      // the south face
+      // the back, read from behind: turned a half turn about the plate's middle
       GlStateManager.pushMatrix();
-      GlStateManager.translate(BlockBusStopFlag.PLATE_MIDDLE_X, midY,
-          BlockBusStopFlag.PLATE_SOUTH_Z + LIFT);
+      GlStateManager.translate(8.0f, midY, back);
+      GlStateManager.rotate(180, 0, 1, 0);
+      GlStateManager.translate(numberX, 0.0f, 0.0f);
       GlStateManager.scale(scale, -scale, scale);
       drawNumber(fr, route);
       GlStateManager.popMatrix();
@@ -113,20 +119,18 @@ public class TileEntityBusStopFlagRenderer
   }
 
   /**
-   * The rotation, about the block's middle, that turns a north-facing drawing to the block's
-   * facing: the blockstate's y rotation is clockwise from above, GL's is counter-clockwise.
+   * Turns the GL frame to the sign's facing and scales it to sixteenths, the way
+   * {@code TileEntityDynamicRouteMarkerSignRenderer} does: the blockstate's turn, plus a half turn
+   * that puts the reader in front of the sign with +x to their right. A point the model has at
+   * {@code (x, y, z)} is at {@code (16 - x, y, 16 - z)} here. Call with the origin at the middle
+   * of the block's bottom.
+   *
+   * @param te the sign's tile entity, its view already refreshed
    */
-  static float rotationOf(AbstractTileEntityBusStopFitting te) {
-    switch (te.getViewFacing()) {
-      case EAST:
-        return 270;
-      case SOUTH:
-        return 180;
-      case WEST:
-        return 90;
-      default:
-        return 0;
-    }
+  static void enterSignFrame(AbstractTileEntityBusStopSign te) {
+    GlStateManager.rotate(180.0f + te.getViewFacing().getRotationDegrees(), 0.0f, 1.0f, 0.0f);
+    GlStateManager.scale(0.0625, 0.0625, 0.0625);
+    GlStateManager.translate(-8.0, 0.0, -8.0);
   }
 
   private static void drawNumber(CsmFontRenderer fr, int route) {

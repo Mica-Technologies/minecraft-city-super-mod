@@ -2,7 +2,9 @@
 
 CSM: Transit (`csm_transit`, tree `modules/transit`, Java package `transit`) is the optional module
 for public transit. Like every module it pins Core to its own exact version and registers nothing
-itself: its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)`), is found by
+itself. It also **requires Roads & Traffic** (`required-after:csm_roads`), because its bus stop
+signs are road signs (below); like Text to Speech on Technology, that is the one other module it
+may name. Its creative tab, its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)`), is found by
 Core's tab scan, and every block and item keeps the `csm:` namespace.
 
 The module holds the working fare system, which it took over from Technology, and the bus stops.
@@ -16,10 +18,9 @@ What it is to grow into is at the end of this page.
 | Fare Gate (ADA, 3-Wide) | `csm:fare_gate_ada_3` | `transit.fare.BlockFareGateAda3` |
 | Fare Ticket (item) | `csm:fareticket` | `transit.fare.ItemFareTicket` |
 | Transit Card (item) | `csm:transitcard` | `transit.fare.ItemTransitCard` |
-| Bus Stop Pole (round and square; galvanized, teal, navy, green, red) | `csm:bus_stop_pole_<style>` | `transit.stop.BlockBusStopPole` |
 | Bus Stop Flag (CITYLINE, RIVERWAY, VERDANT, EMBERLINE) | `csm:bus_stop_flag_<agency>` | `transit.stop.BlockBusStopFlag` |
-| Bus Stop Timetable Case | `csm:bus_stop_timetable_case` | `transit.stop.BlockBusStopFitting` |
-| Bus Stop Route Map Case | `csm:bus_stop_route_map_case` | `transit.stop.BlockBusStopFitting` |
+| Bus Stop Timetable Case | `csm:bus_stop_timetable_case` | Roads' `trafficsigns.BlockTrafficSign` |
+| Bus Stop Route Map Case | `csm:bus_stop_route_map_case` | Roads' `trafficsigns.BlockTrafficSign` |
 | Bus Arrival Display | `csm:bus_stop_arrival_display` | `transit.stop.BlockBusArrivalDisplay` |
 | Bus Stop Curb Plaque | `csm:bus_stop_curb_plaque` | `transit.stop.BlockBusStopPlaque` |
 | Bus Shelter (Glass, Cantilever, Flat Roof; four agencies each) | `csm:bus_shelter_<style>_<agency>` | `transit.shelter.BlockBusShelter` |
@@ -75,7 +76,8 @@ feet if their inventory is full.
 
 A purchase plays the checkout card terminal's approval beep, `csm:verifone_mx915`. That sound
 belongs to the Furniture & Novelties module, so the handler looks it up by name and plays a note
-block's chime when that module is not installed. Transit depends on nothing but Core.
+block's chime when that module is not installed. Transit requires Roads, and nothing else but
+Core.
 
 The **Fare Ticket** is a plain single-use item. The **Transit Card** stacks to one, because every
 card carries its own balance (`trips` in its NBT) and its tooltip shows it.
@@ -110,78 +112,118 @@ The textures come from `dev-env-utils/generate_fare_gate_textures.py` and
 
 Everything on a stop is drawn by `gen_transit_stops.py` and lives in `transit.stop`.
 
-### A stop is a stack
+### A stop is a signed post
 
-A stop is a column of `AbstractBlockBusStopStack` blocks, one block each: `BlockBusStopPole` is a
-length of pole, and `BlockBusStopFitting` is a length of pole with something clamped to it (the
-timetable and route map cases, and the base of the flag and the arrival display). A player builds
-a stop the way a real one goes up: a pole or two, then the fittings stacked on top, the flag last.
-A typical stop is pole, timetable case, arrival display, flag: four blocks, the flag at 3 to 4 m.
+A bus stop is built on the road sign system, not beside it. The flag, the arrival display and the
+two poster cases are **road signs**: subclasses of Roads' `BlockTrafficSign` (and so of
+`AbstractBlockSign`), each one block of Roads' sign post with its piece on the front of the post,
+exactly as every road sign's model is a length of post with a plate on it. A player builds a stop
+the way a signed post goes up:
 
-Each block draws its length of pole from three models per pole style: the shaft (no ends), the cap
-(a sleeve and a dome, drawn only when nothing of the stack is above, `cap`) and the base (a flange
-with four bolts and a collar, only when nothing is below, `base`). A fitting draws the shaft in the
-style of the nearest pole below it (or above, for a fitting at the bottom), `pole`, so one timetable
-case serves every pole. All three are actual state read by `BusStopStack`; the metadata holds only
-the facing. The blockstates are multipart: the pole parts by `pole`, `cap` and `base`, the fitting
-by `facing`. Shafts are drawn without end faces, so stacked lengths meet with no seam to fight
-over, and the cap and base are wider than the shaft, so none of their faces is coplanar with it.
+1. **Sign posts** (`signpost`, in Roads' Road Signs tab) from the ground, one or two.
+2. **The poster cases and the arrival display**, stacked on the posts in any order.
+3. **The flag** on top. It takes the facing of the sign below it, as every road sign does, so only
+   the bottom post needs turning.
 
-The pole styles are `BusStopPoleStyle`'s constants. The generator reads them from the Java and
-stops if its own list differs, since the blockstates name each style's models.
+A typical stop is post, timetable case, arrival display, flag: four blocks, the flag's top at about
+4.3 m. Because every piece is a road sign, the sign system gives it everything a road sign has, with
+no code of Transit's own:
 
-**Settling.** The whole stack settles onto the surface under its bottom block, by that block's
-`RoadSurfaceHeight` offset, and every block of it moves by the same amount (`getOffset`, the
-bounding box and both renderers), or the pole would come apart at the first joint. The blocks are
-`ICsmRoadSurfaceAware`, so nothing settles onto a stop.
+- **Eight facings**, and the facing passed up from the sign or post below.
+- **The extension post** (`downward`) onto a slab or down through a guardrail.
+- **Setback** (`shift=setback`): in front of a signal arm or hung from a span wire, the piece and
+  its post move 12.5 back, into line with the arm's hardware, like any sign on a signal pole.
+- **Back to back** (`shift=backtoback`): two flags (or a flag and any road sign) facing opposite
+  ways, one on the post and one hanging in the block behind it, share the one post: the hanging one
+  is drawn on the far side of the post. `AbstractBlockSign.getShouldBackToBack` picks which moves.
+- **Span wires**: a flag hangs from a span like any sign.
+
+Nothing settles onto the road any more: a road sign stands where its post is, and a slab or a
+guardrail below is what the extension post is for.
+
+### The models, and the rules they follow
+
+Each piece has the three shift models every road sign has, written by the generator from one
+drawing: `sign_<piece>` as drawn (the piece on the front of the post, the post at z 0.5 to 3.5),
+`_setback` (all of it 12.5 back) and `_back_to_back` (the piece alone, no post, 28.3 back). The
+post is the same five bars every road sign's model carries, so a stop's pieces and the sign posts
+between them read as one post. The blockstates are Forge format, like the road signs': facing by
+`transform`, `downward` by the `sign_pole` submodel, `shift` by model.
+
+Two differences from Roads' own signs, both deliberate:
+
+- **Back to back is 28.3, not 28.5.** The road signs' convention puts a shifted plate's front at
+  28.5, level with the end of the partner's post, and paints the art on a sliver a hundredth of a
+  unit in front of it. Here the whole piece stops 0.2 short, so its face stands the depth test's
+  gap clear of the post end and needs no sliver. It still pairs with every road sign: the
+  partner's post is where it always is.
+- **The post's end caps each paint one texel.** The five bars' ends are coplanar by design, and
+  `model_depth.separate` would otherwise stair-step them past the block into the next post.
+
+`SignShiftModelTest` and `SignFaceDepthTest` (Roads' tests, run in the one suite) hold these models
+to the same rules as Roads' own: they take a blockstate whose default model is under
+`csm:transit/stops/sign_` as a road sign, as well as one under `csm:trafficsigns/`.
 
 ### Flags and route plates
 
 Four invented agencies, each with its own flag layout so they read as four agencies and not one in
 four colours: **CITYLINE** (teal and yellow, the fare machine's livery), **RIVERWAY** (navy and
-orange), **VERDANT** (green and white) and **EMBERLINE** (red and graphite). A flag stands out
-sideways from the pole like a real stop flag and is printed on both faces (the south face uses the
-same art uv, which reads the right way round from behind). Each carries the bus pictogram, BUS
-STOP, the agency's name and the accessibility symbol, all drawn by the generator in its pixel font
-and pixel art.
+orange), **VERDANT** (green and white) and **EMBERLINE** (red and graphite). Each carries the bus
+pictogram, BUS STOP, the agency's name and the accessibility symbol, all drawn by the generator in
+its pixel font and pixel art. The flag is a 10 x 13 plate printed on both faces (the back uses the
+same art uv, which reads the right way round from behind); it stands on the top of its block and
+above it, as the road signs' tall plates do, so the route plates can hang under it inside the
+block, where a click reaches them.
 
-Under the flag hang up to three route plates. `TileEntityBusStopFlag` keeps their numbers (0 for
-no plate, 1 to 99; saved as a three-byte array under `r`). Clicking a plate steps its number up and
-a sneaking click steps it down, the aisle sign's pattern; a click on the flag itself steps the top
-plate. The plate is chosen from the hit's height less the settling, split halfway between plate
-middles, and the action bar says which plate now shows what. Which plates are there is actual state
-(`route1` to `route3`), so the plates are baked; the numbers are drawn by
-`TileEntityBusStopFlagRenderer`, white, on both faces, each number compiled once into a display
-list shared by every flag (`CsmSharedDisplayLists`, keyed on the number) and replayed under each
-plate's transform. The atlas, colour and depth mask are set outside the lists; the numbers take
-the block's own light, since they are printed, not lit. A new number rebuilds the chunk section
-only when a plate appears or goes (`getBakedModelKey` is the mask of plates).
+Under the flag hang up to three route plates, 10 x 2.5, each in the agency's colour with a white
+rim and a small bus. `TileEntityBusStopFlag` keeps their numbers (0 for no plate, 1 to 99; saved as
+a three-byte array under `r`). Clicking a plate steps its number up and a sneaking click steps it
+down, the aisle sign's pattern; a click on the flag itself steps the top plate. The plate is chosen
+from the hit's height, split halfway between plate middles, and the action bar says which plate now
+shows what.
 
-The plate middles, the plate's x middle and its two face depths are constants in
-`BlockBusStopFlag` (`PLATE_MIDDLE_Y` and the rest) that must match `BULLET_TOPS`, `BULLET_HT`,
-`PX0`/`PX1` and `BZ0`/`BZ1` in the generator.
+Which plates are there is actual state (`route1` to `route3`), and it does not pick a model: the
+four agencies share one flag model per shift, whose plate faces paint texture slots `p1` to `p3`,
+and the blockstate fills a slot with the agency's plate while the plate is there and with a clear
+texture while it is not. So the plates are baked in all three shift models without a model for
+every combination. A new number rebuilds the chunk section only when a plate appears or goes
+(`getBakedModelKey` is the mask of plates).
+
+The numbers are drawn by `TileEntityBusStopFlagRenderer`, white, on both faces, each number compiled
+once into a display list shared by every flag (`CsmSharedDisplayLists`, keyed on the number) and
+replayed under each plate's transform. The renderer works in the route marker sign's frame (the
+facing's turn plus a half turn, the reader in front with +x to the right), at the depth of the
+shift the sign system has put the flag in (`BusStopSigns.SHIFT_Z`), and multiplies the white by
+the plate's diffuse shade (0.8, or 0.6 facing due east or west), which a baked face carries and a
+renderer does not. The facing and the shift are looked up once a second
+(`AbstractTileEntityBusStopSign.refreshView`), not every frame.
+
+The plate middles, the numbers' place on a plate and the plate faces' depth are constants in
+`BlockBusStopFlag` (`PLATE_MIDDLE_Y` and the rest) that must match `PLATE_TOPS`, `PLATE_HT`,
+`PX0`/`PX1` and `PZ0`/`PZ1` in the generator.
 
 ### Cases, the arrival display and the plaque
 
-The **timetable case** and **route map case** are poster cases clamped to the front of the pole
-with two bands: a shallow graphite box whose front is the poster, a frame standing proud of it,
+The **timetable case** and **route map case** are poster cases on the front of the post with two
+bands round it: a shallow graphite box whose front is the poster, a frame standing proud of it,
 and a faint glass sheen printed into the poster. The timetable is invented and the map a generic
 diagram (a river, a park, three coloured lines, an interchange and a "you are here" dot) with no
-place names.
+place names. They are plain `BlockTrafficSign`s with their own models.
 
 The **arrival display** (`BlockBusArrivalDisplay`, `TileEntityBusArrivalDisplay`,
-`TileEntityBusArrivalDisplayRenderer`) is a small LED panel under a hood. Its housing and dark
-screen are baked; the renderer draws three amber dot-matrix lines a page, "12 DOWNTOWN 3 MIN",
-fullbright, turning the page every 5 seconds. It lists the routes on its own stop's flag (the
-nearest flag up or down the stack), or routes 12 and 40 on a stop with none. Each route's headway
-(6 to 16 minutes) and destination are fixed by its number, from a list of generic destinations
-(DOWNTOWN, HARBOR, CITY HALL and so on), so a route goes to the same place everywhere; its phase
-comes from the world clock and the stop's position, so neighbouring stops differ while every player
-at one stop sees the same countdown, a minute each real minute. The next two buses of each route
-are listed, soonest first; under a minute reads DUE. The route numbers, destinations and readings
-are one shared display list each (99, 16 and 33 at most), already laid out in their column, so a
-line is three list calls. The display saves nothing: the routes, the facing and the settling are
-looked up once a second (`AbstractTileEntityBusStopFitting.refreshView`), not every frame.
+`TileEntityBusArrivalDisplayRenderer`) is a small LED panel under a hood, clamped to the front of
+the post. Its housing and dark screen are baked; the renderer draws three amber dot-matrix lines a
+page, "12 DOWNTOWN 3 MIN", fullbright, turning the page every 5 seconds, on the screen at the depth
+of the display's shift. It lists the routes on its own stop's flag -- the nearest bus stop flag up
+or down its post, walking through the signs and posts of the column (`BusStopSigns.flagNear`) --
+or routes 12 and 40 on a post with none. Each route's headway (6 to 16 minutes) and destination are
+fixed by its number, from a list of generic destinations (DOWNTOWN, HARBOR, CITY HALL and so on),
+so a route goes to the same place everywhere; its phase comes from the world clock and the stop's
+position, so neighbouring stops differ while every player at one stop sees the same countdown, a
+minute each real minute. The next two buses of each route are listed, soonest first; under a minute
+reads DUE. The route numbers, destinations and readings are one shared display list each (99, 16
+and 33 at most), already laid out in their column, so a line is three list calls. The display saves
+nothing: the routes, the facing and the shift are looked up once a second, not every frame.
 
 The **curb plaque** (`BlockBusStopPlaque`) is a cast bronze plate reading BUS STOP to the player
 who placed it, settling onto the surface below like the Streetscape fixtures. Its texture is
@@ -192,10 +234,20 @@ A bus stop bench or bin is Parks'; Transit adds none.
 
 ### Prices
 
-`TransitFabricatorRules` prices a stop by what it is made of: a pole length is a pole section; a
-flag a sign blank and a fastener kit; a case a sign blank and sheet metal; the arrival display an
-LED module, a control board and sheet metal; the plaque sheet metal. `audit_fabricator_costs.py`
-mirrors the branches.
+`TransitFabricatorRules` prices a stop by what it is made of: a flag a sign blank and a fastener
+kit; a case a sign blank and sheet metal; the arrival display an LED module, a control board and
+sheet metal; the plaque sheet metal. The sign posts are Roads', priced by Roads.
+`audit_fabricator_costs.py` mirrors the branches.
+
+### Why there is no bus stop pole
+
+The first bus stops had a pole family of their own: six pole blocks (round and square, galvanized
+and painted) that the flag, cases and display stacked on, settling onto the road. They were
+removed before any release, because a transit sign is a road sign: a stop built on Roads' sign
+posts stands next to a signal arm, hangs from a span wire, pairs back to back with a street name
+blade or a NO PARKING sign and matches every other post on the street, and a second pole family
+could do none of that without copying the sign system. The registry names of the flags, cases and
+display were kept.
 
 ## Shelters
 
@@ -276,4 +328,4 @@ a baked renderer, with announcements through Text to Speech only when that modul
 
 Two rules hold throughout: every agency, livery and route bullet is invented, never a real transit
 brand; and an advertising panel in a shelter is Signage's board, set into the shelter by the
-player, since a module may reference only Core.
+player, since a module may reference only Core and the modules it requires (for Transit, Roads).

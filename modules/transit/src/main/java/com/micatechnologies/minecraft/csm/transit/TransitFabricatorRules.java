@@ -12,13 +12,13 @@ import net.minecraft.block.Block;
  *
  * <p>The fare equipment is a powered cabinet with a reader, a board and its wiring. It costs what
  * it cost in the Technology tab it came from (a control board, sheet metal and a wiring harness),
- * so moving it changed no price. The bus stops are priced by what they are made of: a pole length
- * is a pole section, a flag a sign blank and its fixings, a poster case a sign blank in sheet
- * metal, the arrival display an LED panel with its board, the curb plaque a casting of sheet
- * metal. A shelter is a pole section's worth of posts, sheet metal for its roof and frame and
- * an LED module for its roof light; the glass shelter adds glass panes and a second sheet, the
- * cantilever's canopy a second sheet. {@code audit_fabricator_costs.py} mirrors these
- * branches.</p>
+ * so moving it changed no price. The bus stops are priced by what they are made of: a flag a sign
+ * blank and its fixings, a poster case a sign blank in sheet metal, the arrival display an LED
+ * panel with its board, the curb plaque a casting of sheet metal; the sign posts they stand on
+ * are Roads', priced by Roads. A shelter is a pole section's worth of posts, sheet metal for its
+ * roof and frame and an LED module for its roof light; the glass shelter adds glass panes and a
+ * second sheet, the cantilever's canopy a second sheet. {@code audit_fabricator_costs.py} mirrors
+ * these branches.</p>
  *
  * @since 2026.9
  */
@@ -42,9 +42,6 @@ public final class TransitFabricatorRules {
    */
   @Nullable
   public static List<FabricatorIngredient> price(Block block, String registryName) {
-    if (registryName.startsWith("bus_stop_pole_")) {
-      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1));
-    }
     if (registryName.startsWith("bus_stop_flag_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));

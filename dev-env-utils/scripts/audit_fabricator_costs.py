@@ -360,8 +360,6 @@ def cost_for(registry, info, ancestors):
     if tab == "tabtransit":
         # Mirrors TransitFabricatorRules: the bus stops by what they are made of, and the fare
         # equipment at the price it kept from Technology.
-        if registry.startswith("bus_stop_pole_"):
-            return ("POLE_SECTION",)
         if registry.startswith("bus_stop_flag_"):
             return ("SIGN_BLANK", "FASTENER_KIT")
         if registry.startswith("bus_stop_") and registry.endswith("_case"):

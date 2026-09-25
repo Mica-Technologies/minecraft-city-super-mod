@@ -10,7 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
  *
  * @since 2026.9
  */
-public class TileEntityBusStopFlag extends AbstractTileEntityBusStopFitting {
+public class TileEntityBusStopFlag extends AbstractTileEntityBusStopSign {
 
   /** How many route plates a flag has. */
   public static final int PLATES = 3;

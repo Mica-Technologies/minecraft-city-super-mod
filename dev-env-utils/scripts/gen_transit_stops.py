@@ -1,55 +1,59 @@
 #!/usr/bin/env python3
-"""Every asset the Transit tab's bus stops ship: the stop poles, the agency flag signs with their
-route plates, the timetable and route map cases, the real-time arrival display and the curb
-plaque.
+"""Every asset the Transit tab's bus stops ship: the agency flag signs with their route plates,
+the timetable and route map cases, the real-time arrival display and the curb plaque.
 
     python dev-env-utils/scripts/gen_transit_stops.py
     python dev-env-utils/scripts/gen_transit_stops.py --check
     python dev-env-utils/scripts/gen_transit_stops.py --fragments   # tab lines to paste
 
-A stop is a stack. The pole block (BlockBusStopPole) is a length of pole; everything that clamps
-to a pole (BlockBusStopFitting: the flag, the cases, the arrival display) is a length of pole too,
-with its fitting on it, so a stop is built by stacking them: pole, timetable case, arrival
-display, flag. Each draws the pole from three parts per pole style -- the shaft, the cap (only
-where nothing of the stack is above) and the base (only where nothing is below) -- and a fitting
-takes its pole style from the pole below it, so a flag on a square red pole has a square red
-shaft. Those are actual state (`pole`, `cap`, `base`), picked by a multipart blockstate.
+A stop is built on the road sign system, which is why Transit requires Roads: the flag, the
+arrival display and the two poster cases are road signs (Roads' AbstractBlockSign, through
+BlockTrafficSign), each a length of Roads' sign post -- the same five bars every road sign's
+model carries, at z 0.5 to 3.5 behind the front of the block -- with its piece on the front of
+it. A player builds a stop as a signed post: sign posts, then a case and the display, the flag on
+top. The sign system gives them all the rest: the facing taken from the sign below, the extension
+post onto a slab, and the three shift models every road sign has, which this script writes for
+each piece:
 
-The pole styles are the constants of BusStopPoleStyle.java, in its order; the generator reads
-them from there and stops if the two lists differ.
+    none          as drawn below: the piece on the front of the post
+    setback       the whole model 12.5 back, the post reaching the back of the block, to stand in
+                  line with a signal arm's hardware or a span wire
+    back_to_back  the piece alone, 28.3 back, on the far side of the partner sign's post
+
+28.3 rather than the 28.5 the other road signs use: this way the face stands 0.2 clear of the end
+of the partner's post (SignFaceDepthTest's gap) instead of a hundredth of a unit in front of it,
+and needs no separate art sliver. SignShiftModelTest holds these models to the same rules as
+Roads' own (their models are named sign_*).
 
 Every agency is invented: CITYLINE (teal and yellow, the fare machine's livery), RIVERWAY,
-VERDANT and EMBERLINE. A flag is double-sided and stands out sideways from the pole like a real
-stop flag. Its three route plates hang under it; each is shown only while it carries a number
-(`route1`..`route3`, from TileEntityBusStopFlag), and the number itself is drawn by
-TileEntityBusStopFlagRenderer on both faces, at the plate centres written into the Java below
-(BULLET_*). The arrival display's screen is dark in the model; its text is the renderer's.
+VERDANT and EMBERLINE. The flag is printed on both faces and stands on top of its block and
+above it, like the road signs' tall plates; its three route plates hang under it in the block,
+where a click reaches them. The flag models are shared by the four agencies: the blockstate
+fills slot 1 with the agency's flag, and each route plate's slot (p1..p3) with the agency's plate
+while it carries a number (`route1`..`route3`, from TileEntityBusStopFlag) or with a clear
+texture while it does not -- so the plates are baked in every shift model without a model per
+combination. The number itself is drawn by TileEntityBusStopFlagRenderer on both faces, at the
+plate middles written into BlockBusStopFlag (PLATE_*). The arrival display's screen is dark in
+the model; its text is the renderer's.
 
 Faces that carry a picture use a window of their texture at the face's own aspect, so a texel is
-square: the flag art is 49 x 64 texels on a 7 x 9.2 plate.
+square: the flag art is 49 x 64 texels on a 10 x 13 plate.
 """
-import copy
 import os
-import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import life_safety_gen_common as lc  # noqa: E402
-import gen_streetscape_utility as gu  # noqa: E402
 
 REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 ASSETS = os.path.join(REPO, "modules", "transit", "src", "main", "resources", "assets", "csm")
-JAVA = os.path.join(REPO, "modules", "transit", "src", "main", "java", "com", "micatechnologies",
-                    "minecraft", "csm", "transit", "stop")
 
 C = lc.Catalogue("gen_transit_stops.py", "transit/stops", "transit/stops", assets=ASSETS)
 TAB = "CsmTabTransit"
 box = lc.box
-post = lc.post
 
 WHITE = (240, 242, 240)
 BLACK = (18, 20, 22)
-GALV = (158, 164, 162)
 STEEL = (122, 128, 132)
 GRAPHITE = (48, 52, 56)
 CHARCOAL = (34, 36, 40)
@@ -57,7 +61,7 @@ ISA_BLUE = (18, 82, 160)
 LED_OFF = (40, 26, 8)
 
 # ------------------------------------------------------------------------------------------
-# Agencies and pole styles
+# Agencies
 # ------------------------------------------------------------------------------------------
 AGENCIES = [
     # id, name on the flag, primary, accent, layout
@@ -74,42 +78,6 @@ AGENCIES = [
      ("Bus Stop Flag (EMBERLINE)", "Bushaltestellenschild (EMBERLINE)",
       "Señal de Parada de Autobús (EMBERLINE)", "Busshållplatsskylt (EMBERLINE)")),
 ]
-
-# name, shape, paint colour, names
-STYLES = [
-    ("round_galvanized", "round", GALV,
-     ("Bus Stop Pole (Round, Galvanized)", "Haltestellenmast (Rund, Verzinkt)",
-      "Poste de Parada (Redondo, Galvanizado)", "Hållplatsstolpe (Rund, Galvaniserad)")),
-    ("square_galvanized", "square", GALV,
-     ("Bus Stop Pole (Square, Galvanized)", "Haltestellenmast (Eckig, Verzinkt)",
-      "Poste de Parada (Cuadrado, Galvanizado)", "Hållplatsstolpe (Fyrkantig, Galvaniserad)")),
-    ("round_teal", "round", (14, 94, 111),
-     ("Bus Stop Pole (Round, Teal)", "Haltestellenmast (Rund, Petrol)",
-      "Poste de Parada (Redondo, Verde Azulado)", "Hållplatsstolpe (Rund, Petrol)")),
-    ("square_navy", "square", (31, 58, 115),
-     ("Bus Stop Pole (Square, Navy)", "Haltestellenmast (Eckig, Marineblau)",
-      "Poste de Parada (Cuadrado, Azul Marino)", "Hållplatsstolpe (Fyrkantig, Marinblå)")),
-    ("round_green", "round", (36, 116, 60),
-     ("Bus Stop Pole (Round, Green)", "Haltestellenmast (Rund, Grün)",
-      "Poste de Parada (Redondo, Verde)", "Hållplatsstolpe (Rund, Grön)")),
-    ("square_red", "square", (176, 36, 32),
-     ("Bus Stop Pole (Square, Red)", "Haltestellenmast (Eckig, Rot)",
-      "Poste de Parada (Cuadrado, Rojo)", "Hållplatsstolpe (Fyrkantig, Röd)")),
-]
-
-
-def check_styles_against_java():
-    """The pole styles must be BusStopPoleStyle's constants, in its order: the blockstate's
-    `pole` values are those constants' names."""
-    path = os.path.join(JAVA, "BusStopPoleStyle.java")
-    text = open(path, encoding="utf-8").read()
-    start = text.index("{", text.index("enum BusStopPoleStyle"))
-    body = text[start + 1:text.index(";", start)]
-    names = [m.lower() for m in re.findall(r"^\s*([A-Z_]+)\s*\(", body, re.M)]
-    ours = [s[0] for s in STYLES]
-    if names != ours:
-        raise SystemExit("BusStopPoleStyle.java has %s, this generator %s" % (names, ours))
-
 
 # ------------------------------------------------------------------------------------------
 # Pixel art
@@ -215,7 +183,7 @@ def flag_art(agency):
     return img
 
 
-BULLET_W, BULLET_H = 64, 16  # a route plate's window: 7 x 1.8 units
+BULLET_W, BULLET_H = 64, 16  # a route plate's window: 10 x 2.5 units
 
 
 def bullet_art(agency):
@@ -226,18 +194,6 @@ def bullet_art(agency):
     lc.frame(img, 0, 0, BULLET_W, BULLET_H, WHITE)
     small_bus(img, 4, 5, WHITE, primary)
     lc.rect(img, 15, 3, 16, 13, lc.shade(WHITE, 0.9))
-    return img
-
-
-def galvanised(seed, size=16):
-    """Hot-dip zinc: a pale grey with the faint spangle of the coating."""
-    img = lc.fill(GALV, size, 5, seed)
-    px = img.load()
-    import random
-    rng = random.Random(seed)
-    for _ in range(size * size // 6):
-        x, y = rng.randrange(size), rng.randrange(size)
-        px[x, y] = lc.shade(GALV, rng.choice((0.88, 1.1, 1.16))) + (255,)
     return img
 
 
@@ -354,10 +310,15 @@ def plaque():
     return img.transpose(Image.ROTATE_180)
 
 
+def clear():
+    """A texture with nothing in it: the route plate slots take it while the plate is not there."""
+    from PIL import Image
+    return Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+
+
 def register_textures():
     tex = {
         "clamp": lc.fill(STEEL, 16, 4, 5),
-        "edge": lc.fill((196, 200, 202), 16, 3, 6),
         "case": lc.fill(GRAPHITE, 16, 3, 7),
         "timetable": timetable(),
         "route_map": route_map(),
@@ -366,9 +327,7 @@ def register_textures():
         "plaque": plaque(),
         "plaque_edge": lc.fill(lc.shade(PLAQUE, 0.8), 16, 4, 9),
     }
-    for i, (name, _, colour, _) in enumerate(STYLES):
-        tex["pole_" + name] = galvanised(20 + i) if colour == GALV else lc.fill(colour, 16, 4,
-                                                                                 20 + i)
+    tex["none"] = clear()
     for a in AGENCIES:
         tex["flag_" + a[0]] = flag_art(a)
         tex["route_" + a[0]] = bullet_art(a)
@@ -377,49 +336,13 @@ def register_textures():
 
 
 # ------------------------------------------------------------------------------------------
-# Geometry (every fitting faces north, the pole at the middle of the block)
+# Geometry (every piece faces north, on the road sign post at the front of the block)
 # ------------------------------------------------------------------------------------------
-R_ROUND = 1.0     # the round pole's inradius
-H_SQUARE = 0.9    # half the square pole's width
-SIDES = ("north", "south", "east", "west")
-
-
-def shaft(shape):
-    """A block's length of pole, with no ends: stacked lengths meet, and an open end is covered
-    by the cap or the base."""
-    if shape == "round":
-        return post(8, 8, R_ROUND, 0, 16, "pole", top=False, bottom=False)
-    return [box([8 - H_SQUARE, 0, 8 - H_SQUARE], [8 + H_SQUARE, 16, 8 + H_SQUARE], "pole",
-                faces=SIDES)]
-
-
-def cap(shape):
-    """The top of a pole: a sleeve over its last sixteenth and a low dome on it."""
-    if shape == "round":
-        return (post(8, 8, 1.25, 15, 16, "pole")
-                + post(8, 8, 0.75, 16, 16.4, "pole", bottom=False))
-    return [box([6.85, 15, 6.85], [9.15, 16, 9.15], "pole"),
-            box([7.4, 16, 7.4], [8.6, 16.3, 8.6], "pole", faces=SIDES + ("up",))]
-
-
-def base(shape):
-    """Where a pole meets the ground: a flange with four bolts and a collar."""
-    if shape == "round":
-        els = post(8, 8, 2.1, 0, 0.3, "pole", bottom=False) + post(8, 8, 1.3, 0.3, 1.4, "pole",
-                                                                  bottom=False)
-    else:
-        els = [box([5.9, 0, 5.9], [10.1, 0.3, 10.1], "pole", faces=SIDES + ("up",)),
-               box([6.7, 0.3, 6.7], [9.3, 1.4, 9.3], "pole", faces=SIDES + ("up",))]
-    for x, z in ((6.4, 6.4), (9.2, 6.4), (6.4, 9.2), (9.2, 9.2)):
-        els.append(box([x, 0.3, z], [x + 0.4, 0.6, z + 0.4], "clamp",
-                       faces=SIDES + ("up",)))
-    return els
-
-
-def band(y0, y1, front=True):
-    """A clamp band round the pole, big enough for either pole shape."""
-    faces = SIDES + ("up", "down") if front else ("south", "east", "west", "up", "down")
-    return box([6.7, y0, 6.7], [9.3, y1, 9.3], "clamp", faces=faces)
+POST_TEX = "csm:blocks/trafficsigns/absolutely_nothing_sign"   # every road sign's post and metal
+SIGN_POLE = "csm:trafficsigns/sign_pole"                       # the extension post below a sign
+SHIFTS = (("", 0.0), ("_setback", 12.5), ("_back_to_back", 28.3))   # BusStopSigns.SHIFT_Z
+FACINGS = (("n", 0), ("nw", 45), ("w", 90), ("sw", 135),
+           ("s", 180), ("se", 225), ("e", 270), ("ne", 315))
 
 
 def face(tex, uv):
@@ -431,61 +354,154 @@ def win(w_px, h_px):
     return [0, 0, round(w_px / 4.0, 4), round(h_px / 4.0, 4)]
 
 
-def mirrored(uv):
-    return [uv[2], uv[1], uv[0], uv[3]]
+def sign_post():
+    """The road sign post, the five nested bars every road sign's model stands on, its front at
+    z 0.5 -- the same bars gen_route_markers.py copies from the shared sign models, so a bus stop
+    piece stands on exactly the post its neighbours in the column do.
 
-
-# --- the flag -------------------------------------------------------------------------------
-PX0, PX1 = 9.6, 16.6            # the plate, sticking out east of the pole
-PY0, PY1 = 6.4, 15.6
-PZ0, PZ1 = 7.8, 8.2
-BULLET_TOPS = (6.1, 4.1, 2.1)   # each route plate's top; it is 1.8 tall
-BULLET_HT = 1.8
-BZ0, BZ1 = 7.85, 8.15
-
-
-def flag_elements():
-    """The flag plate, art on both faces, and its two brackets to the pole."""
-    art = win(FLAG_W, FLAG_H)
-    els = [{"from": [PX0, PY0, PZ0], "to": [PX1, PY1, PZ1], "faces": {
-        "north": face("art", art),
-        # seen from the south the plate is on the viewer's right: the same art, read the same way
-        "south": face("art", art),
-        "east": face("edge", [0, 0, 0.4, 9.2]), "west": face("edge", [0, 0, 0.4, 9.2]),
-        "up": face("edge", [0, 0, 7, 0.4]), "down": face("edge", [0, 0, 7, 0.4])}}]
-    for y in (14.3, 7.4):
-        els.append(band(y, y + 0.8))
-        els.append(box([9.3, y + 0.15, 7.65], [PX0, y + 0.65, 8.35], "clamp",
-                       faces=("north", "south", "up", "down")))
+    One difference: the bars' ends all lie on the block's top and bottom, and there every bar
+    paints one texel of the metal rather than its own stretch of it. The ends are coplanar by
+    design (the post is one solid), and painted alike model_depth has nothing to separate;
+    painted differently it would stair-step them past the block, into the post of the sign
+    above and below."""
+    bars = ((7.25, 8.75, 0.75, 3.25, None), (7.0, 9.0, 1.0, 3.0, None),
+            (6.5, 9.5, 1.5, 2.5, None), (6.75, 9.25, 1.25, 2.75, None),
+            (7.5, 8.5, 0.5, 3.5, "north"))
+    els = []
+    for x0, x1, z0, z1, drop in bars:
+        faces = {}
+        for side in ("north", "east", "south", "west", "up", "down"):
+            if side == drop:
+                continue
+            uv = [1, 1, 1.01, 1.01] if side in ("up", "down") else [0, 0, 4, 16]
+            faces[side] = {"uv": uv, "texture": "#0"}
+        els.append({"from": [x0, 0, z0], "to": [x1, 16, z1], "faces": faces})
     return els
 
 
-def bullet_elements(i):
-    top = BULLET_TOPS[i]
-    y0 = top - BULLET_HT
-    art = win(BULLET_W, BULLET_H)
-    return [
-        {"from": [PX0, y0, BZ0], "to": [PX1, top, BZ1], "faces": {
-            "north": face("art", art), "south": face("art", art),
-            "east": face("edge", [0, 0, 0.3, 1.8]), "west": face("edge", [0, 0, 0.3, 1.8]),
-            "up": face("edge", [0, 0, 7, 0.3]), "down": face("edge", [0, 0, 7, 0.3])}},
-        box([8.9, y0 + 0.6, 7.75], [PX0, y0 + 1.2, 8.25], "clamp",
-            faces=("north", "south", "up", "down")),
-    ]
+def band(y0, y1):
+    """A clamp band round the sign post, 0.3 clear of it at the sides and front and 0.25 at the
+    back."""
+    return box([6.2, y0, 0.2], [9.8, y1, 3.75], "clamp")
+
+
+def shifted(els, dz):
+    """Elements moved dz back, and held inside the z 32 an element may reach: back to back, a
+    band's back comes to 32.05 and is drawn to 32, still clear of the partner's post."""
+    out = []
+    for el in els:
+        el = dict(el, **{"from": [el["from"][0], el["from"][1],
+                                  min(32.0, round(el["from"][2] + dz, 4))],
+                         "to": [el["to"][0], el["to"][1], min(32.0, round(el["to"][2] + dz, 4))]})
+        out.append(el)
+    return out
+
+
+def shift_models(name, textures, piece, display=None):
+    """The three shift models of one piece: the piece and the post as drawn, both 12.5 back,
+    and the piece alone 28.3 back."""
+    models = {}
+    for suffix, dz in SHIFTS:
+        els = shifted(piece, dz)
+        if suffix != "_back_to_back":
+            els += shifted(sign_post(), dz)
+        m = lc.model(textures, els)
+        if display and not suffix:
+            m["display"] = display
+        models[name + suffix] = m
+    return models
+
+
+def sign_state(model, textures, extra=None):
+    """A road sign's Forge blockstate: the eight facings, the extension post below, the three
+    shift models; plus any other property's variants."""
+    facing = {}
+    for f, angle in FACINGS:
+        if angle:
+            facing[f] = {"transform": {"rotation": [{"x": 0}, {"y": angle}, {"z": 0}]}}
+        else:
+            facing[f] = {}
+    variants = {
+        "facing": facing,
+        "inventory": [{}],
+        "downward": {"false": {}, "true": {"submodel": {"extension": {
+            "model": SIGN_POLE, "transform": {"translation": [0.0, -1.0, 0.0]}}}}},
+        "shift": {"none": {}, "setback": {"model": model + "_setback"},
+                  "backtoback": {"model": model + "_back_to_back"}},
+    }
+    variants.update(extra or {})
+    variants["normal"] = [{}]
+    return {"forge_marker": 1, "defaults": {"model": model, "textures": textures},
+            "variants": variants}
+
+
+def gui(scale=0.625, y=0.0):
+    return {"gui": {"rotation": [0, 180, 0], "translation": [0, y, 0],
+                    "scale": [scale, scale, scale]}}
+
+
+# --- the flag -------------------------------------------------------------------------------
+PX0, PX1 = 3.0, 13.0            # the flag and its plates, centred on the post
+FLAG_Y0, FLAG_Y1 = 8.3, 21.3    # the flag, on the top of the block and above it: 10 x 13
+PLATE_TOPS = (7.9, 5.2, 2.5)    # each route plate's top; it is PLATE_HT tall
+PLATE_HT = 2.5
+PZ0, PZ1 = 0.0, 0.5             # every plate's two faces: BlockBusStopFlag.FACE_*_Z
+
+
+def flag_elements():
+    """The flag and its three route plates, each printed on both faces. The flag's edges are the
+    sign metal; a plate's edges are its own white rim, so a plate that is not there (its slot
+    given the clear texture) takes its edges with it."""
+    art = win(FLAG_W, FLAG_H)
+    h = FLAG_Y1 - FLAG_Y0
+    els = [{"from": [PX0, FLAG_Y0, PZ0], "to": [PX1, FLAG_Y1, PZ1], "faces": {
+        "north": face("1", art),
+        # seen from behind the plate is the same art, read the same way round
+        "south": face("1", art),
+        "east": face("0", [0, 0, 0.5, h]), "west": face("0", [0, 0, 0.5, h]),
+        "up": face("0", [0, 0, 10, 0.5]), "down": face("0", [0, 0, 10, 0.5])}}]
+    plate = win(BULLET_W, BULLET_H)
+    for i, top in enumerate(PLATE_TOPS):
+        slot = "p%d" % (i + 1)
+        els.append({"from": [PX0, top - PLATE_HT, PZ0], "to": [PX1, top, PZ1], "faces": {
+            "north": face(slot, plate), "south": face(slot, plate),
+            "east": face(slot, [0, 0, 0.25, 4]), "west": face(slot, [0, 0, 0.25, 4]),
+            "up": face(slot, [0, 0, 16, 0.25]), "down": face(slot, [0, 0, 16, 0.25])}})
+    return els
+
+
+def flags():
+    textures = {"0": POST_TEX, "1": C.T("flag_cityline"), "p1": C.T("route_cityline"),
+                "p2": C.T("none"), "p3": C.T("none"), "particle": C.T("flag_cityline")}
+    # the flag reaches from y 0 to 21.3: shrunk and brought down to sit in the slot
+    models = shift_models("sign_flag", textures, flag_elements(), gui(0.58, -1.5))
+    for i, a in enumerate(AGENCIES):
+        aid, _, _, _, _, names = a
+        reg = "bus_stop_flag_" + aid
+        tex = {"0": POST_TEX, "1": C.T("flag_" + aid), "p1": C.T("route_" + aid),
+               "p2": C.T("none"), "p3": C.T("none"), "particle": C.T("flag_" + aid)}
+        routes = {}
+        for k in range(3):
+            slot = "p%d" % (k + 1)
+            routes["route%d" % (k + 1)] = {"true": {"textures": {slot: C.T("route_" + aid)}},
+                                           "false": {"textures": {slot: C.T("none")}}}
+        state = sign_state(C.M("sign_flag"), tex, routes)
+        java = 'new BlockBusStopFlag("%s")' % reg
+        C.add(reg, java, names, models if i == 0 else {}, state, tab=TAB)
 
 
 # --- the cases -------------------------------------------------------------------------------
 def case_elements(x0, x1, y0, y1, poster_w, poster_h):
-    """A poster case clamped to the front of the pole: a shallow box whose front is the poster,
-    a frame standing proud of it, two bands round the pole behind."""
-    z0, z1 = 5.8, 6.6
+    """A poster case on the front of the post: a shallow box whose front is the poster, a frame
+    standing proud of it, two bands round the post behind."""
+    z0, z1 = -0.6, 0.5
     rim = 0.35
     els = [{"from": [x0, y0, z0], "to": [x1, y1, z1], "faces": {
-        "north": face("art", win(poster_w, poster_h)),
+        "north": face("1", win(poster_w, poster_h)),
         "south": face("case", [x0, 16 - y1, x1, 16 - y0]),
-        "east": face("case", [z0, 16 - y1, z1, 16 - y0]),
-        "west": face("case", [z0, 16 - y1, z1, 16 - y0]),
-        "up": face("case", [x0, z0, x1, z1]), "down": face("case", [x0, z0, x1, z1])}}]
+        "east": face("case", [0, 16 - y1, z1 - z0, 16 - y0]),
+        "west": face("case", [0, 16 - y1, z1 - z0, 16 - y0]),
+        "up": face("case", [x0, 0, x1, z1 - z0]), "down": face("case", [x0, 0, x1, z1 - z0])}}]
     fz0 = z0 - 0.3
     rims = [([x0, y1 - rim, fz0], [x1, y1, z0]), ([x0, y0, fz0], [x1, y0 + rim, z0]),
             ([x0, y0 + rim, fz0], [x0 + rim, y1 - rim, z0]),
@@ -493,143 +509,8 @@ def case_elements(x0, x1, y0, y1, poster_w, poster_h):
     for frm, to in rims:
         els.append(box(frm, to, "case", faces=("north", "east", "west", "up", "down")))
     for y in (y0 + 1.5, y1 - 2.3):
-        els.append(band(y, y + 0.8, front=False))
+        els.append(band(y, y + 0.8))
     return els
-
-
-# --- the arrival display ------------------------------------------------------------------
-DX0, DX1, DY0, DY1, DZ0, DZ1 = 1.0, 15.0, 5.6, 12.0, 4.6, 6.6
-
-
-def display_elements():
-    els = [{"from": [DX0, DY0, DZ0], "to": [DX1, DY1, DZ1], "faces": {
-        "north": face("front", win(DISPLAY_W, DISPLAY_H)),
-        "south": face("housing", [DX0, 16 - DY1, DX1, 16 - DY0]),
-        "east": face("housing", [DZ0, 16 - DY1, DZ1, 16 - DY0]),
-        "west": face("housing", [DZ0, 16 - DY1, DZ1, 16 - DY0]),
-        "up": face("housing", [DX0, DZ0, DX1, DZ1]),
-        "down": face("housing", [DX0, DZ0, DX1, DZ1])}}]
-    # a hood over the screen, and the bracket plate behind
-    els.append(box([DX0 - 0.3, DY1, DZ0 - 0.9], [DX1 + 0.3, DY1 + 0.4, DZ1], "housing"))
-    els.append(box([6.2, DY0 + 0.8, DZ1], [9.8, DY1 - 0.8, 6.7], "clamp",
-                   faces=("east", "west", "up", "down")))
-    for y in (DY0 + 1.0, DY1 - 1.8):
-        els.append(band(y, y + 0.8, front=False))
-    return els
-
-
-# ------------------------------------------------------------------------------------------
-# Blockstates and catalogue
-# ------------------------------------------------------------------------------------------
-FACINGS = (("north", 0), ("east", 90), ("south", 180), ("west", 270))
-
-
-def pole_parts(when=None):
-    """The multipart rules that draw the pole: for a pole block its own style (when=None), for
-    a fitting the style its `pole` property names."""
-    rules = []
-    for name, _, _, _ in STYLES:
-        cond = {} if when == name else {"pole": name}
-        if when is not None and when != name:
-            continue
-        rules.append(dict({"apply": {"model": C.M("pole_shaft_" + name)}},
-                          **({"when": cond} if cond else {})))
-        rules.append({"when": dict(cond, cap="true"), "apply": {"model": C.M("pole_cap_" + name)}})
-        rules.append({"when": dict(cond, base="true"),
-                      "apply": {"model": C.M("pole_base_" + name)}})
-    return rules
-
-
-def facing_parts(model, extra=None):
-    rules = []
-    for f, y in FACINGS:
-        cond = dict({"facing": f}, **(extra or {}))
-        apply = {"model": model}
-        if y:
-            apply["y"] = y
-        rules.append({"when": cond, "apply": apply})
-    return rules
-
-
-def textures_for(tex):
-    t = {k: C.T(v) for k, v in tex.items()}
-    t["particle"] = t[list(tex)[0]]
-    return t
-
-
-def model(tex, els, ao=True):
-    return lc.model(textures_for(tex), els, ao=ao)
-
-
-def item_model(tex, els, display=None):
-    m = lc.model(textures_for(tex), els)
-    if display:
-        m["display"] = display
-    return m
-
-
-def bounds(els):
-    x0, y0, z0, x1, y1, z1 = gu.bounds(els)
-    clip = lambda v: max(0.0, min(16.0, round(v, 2)))  # noqa: E731
-    return [clip(x0), clip(y0), clip(z0), clip(x1), clip(y1), clip(z1)]
-
-
-def jbox(b):
-    return "new double[]{%s}" % ", ".join("%s" % (int(v) if v == int(v) else v) for v in b)
-
-
-def poles():
-    for name, shape, _, names in STYLES:
-        reg = "bus_stop_pole_" + name
-        tex = {"pole": "pole_" + name, "clamp": "clamp"}
-        models = {"pole_shaft_" + name: model(tex, shaft(shape)),
-                  "pole_cap_" + name: model(tex, cap(shape)),
-                  "pole_base_" + name: model(tex, base(shape))}
-        state = {"multipart": pole_parts(when=name)}
-        item = item_model(tex, base(shape) + shaft(shape) + cap(shape))
-        java = 'new BlockBusStopPole("%s", BusStopPoleStyle.%s)' % (reg, name.upper())
-        C.add(reg, java, names, models, state, item=item, tab=TAB)
-
-
-def fitting_item(tex, els):
-    """A fitting's item: its fitting on a length of galvanized round pole with a cap."""
-    t = dict(tex, pole="pole_round_galvanized")
-    return item_model(t, shaft("round") + cap("round") + els)
-
-
-def flags():
-    for a in AGENCIES:
-        aid, _, _, _, _, names = a
-        reg = "bus_stop_flag_" + aid
-        tex = {"art": "flag_" + aid, "edge": "edge", "clamp": "clamp"}
-        rtex = {"art": "route_" + aid, "edge": "edge", "clamp": "clamp"}
-        models = {"flag_" + aid: model(tex, flag_elements())}
-        for i in range(3):
-            models["flag_%s_route%d" % (aid, i + 1)] = model(rtex, bullet_elements(i))
-        rules = pole_parts() + facing_parts(C.M("flag_" + aid))
-        for i in range(3):
-            rules += facing_parts(C.M("flag_%s_route%d" % (aid, i + 1)),
-                                  {"route%d" % (i + 1): "true"})
-        # the item: pole, flag and one route plate, moved west so the whole sits in the slot
-        els = copy.deepcopy(shaft("round") + cap("round") + flag_elements()
-                            + bullet_elements(0))
-        item_tex = {"pole": "pole_round_galvanized", "art": "flag_" + aid, "edge": "edge",
-                    "clamp": "clamp"}
-        # the route plate's art is a different texture: give its faces their own key
-        for el in els[-2:]:
-            for f in el["faces"].values():
-                if f["texture"] == "#art":
-                    f["texture"] = "#route"
-        item_tex["route"] = "route_" + aid
-        for el in els:
-            el["from"][0] = round(el["from"][0] - 4.3, 4)
-            el["to"][0] = round(el["to"][0] - 4.3, 4)
-            if "rotation" in el:
-                el["rotation"]["origin"][0] = round(el["rotation"]["origin"][0] - 4.3, 4)
-        item = item_model(item_tex, els)
-        b = bounds(shaft("round") + flag_elements() + bullet_elements(2))
-        java = 'new BlockBusStopFlag("%s", %s)' % (reg, jbox(b))
-        C.add(reg, java, names, models, {"multipart": rules}, item=item, tab=TAB)
 
 
 def cases():
@@ -642,35 +523,54 @@ def cases():
           "Linjekartsskåp")),
     ]
     for reg, poster, (x0, x1, y0, y1), (pw, ph), names in specs:
-        els = case_elements(x0, x1, y0, y1, pw, ph)
-        tex = {"art": poster, "case": "case", "clamp": "clamp"}
-        models = {reg: model(tex, els)}
-        rules = pole_parts() + facing_parts(C.M(reg))
-        java = 'new BlockBusStopFitting("%s", %s)' % (reg, jbox(bounds(shaft("round") + els)))
-        C.add(reg, java, names, models, {"multipart": rules}, item=fitting_item(tex, els),
-              tab=TAB)
+        name = "sign_" + reg[len("bus_stop_"):]
+        tex = {"0": POST_TEX, "1": C.T(poster), "case": C.T("case"), "clamp": C.T("clamp"),
+               "particle": C.T("case")}
+        models = shift_models(name, tex, case_elements(x0, x1, y0, y1, pw, ph), gui())
+        C.add(reg, 'new BlockTrafficSign("%s")' % reg, names, models,
+              sign_state(C.M(name), tex), tab=TAB)
+
+
+# --- the arrival display ------------------------------------------------------------------
+# BlockBusArrivalDisplay.SCREEN_*: the housing's front at DZ0, the screen in its middle
+DX0, DX1, DY0, DY1, DZ0, DZ1 = 1.0, 15.0, 5.6, 12.0, -0.9, 0.5
+
+
+def display_elements():
+    els = [{"from": [DX0, DY0, DZ0], "to": [DX1, DY1, DZ1], "faces": {
+        "north": face("1", win(DISPLAY_W, DISPLAY_H)),
+        "south": face("housing", [DX0, 16 - DY1, DX1, 16 - DY0]),
+        "east": face("housing", [0, 16 - DY1, DZ1 - DZ0, 16 - DY0]),
+        "west": face("housing", [0, 16 - DY1, DZ1 - DZ0, 16 - DY0]),
+        "up": face("housing", [DX0, 0, DX1, DZ1 - DZ0]),
+        "down": face("housing", [DX0, 0, DX1, DZ1 - DZ0])}}]
+    # a hood over the screen
+    els.append(box([DX0 - 0.3, DY1, DZ0 - 0.6], [DX1 + 0.3, DY1 + 0.4, DZ1], "housing"))
+    for y in (DY0 + 1.0, DY1 - 1.8):
+        els.append(band(y, y + 0.8))
+    return els
 
 
 def display():
     reg = "bus_stop_arrival_display"
-    els = display_elements()
-    tex = {"front": "display_front", "housing": "display_housing", "clamp": "clamp"}
-    models = {reg: model(tex, els)}
-    rules = pole_parts() + facing_parts(C.M(reg))
-    java = 'new BlockBusArrivalDisplay("%s", %s)' % (reg, jbox(bounds(shaft("round") + els)))
-    C.add(reg, java, ("Bus Arrival Display", "Abfahrtsanzeige (Bus)",
-                      "Pantalla de Llegadas de Autobús", "Avgångsskylt (Buss)"),
-          models, {"multipart": rules}, item=fitting_item(tex, els), tab=TAB)
+    tex = {"0": POST_TEX, "1": C.T("display_front"), "housing": C.T("display_housing"),
+           "clamp": C.T("clamp"), "particle": C.T("display_housing")}
+    models = shift_models("sign_arrival_display", tex, display_elements(), gui())
+    C.add(reg, 'new BlockBusArrivalDisplay("%s")' % reg,
+          ("Bus Arrival Display", "Abfahrtsanzeige (Bus)", "Pantalla de Llegadas de Autobús",
+           "Avgångsskylt (Buss)"),
+          models, sign_state(C.M("sign_arrival_display"), tex), tab=TAB)
 
 
+# --- the curb plaque ------------------------------------------------------------------------
 def curb_plaque():
     reg = "bus_stop_curb_plaque"
     els = [{"from": [4, 0, 4], "to": [12, 0.4, 12], "faces": {
         "up": face("art", [0, 0, 16, 16]),
         "north": face("edge", [4, 15.6, 12, 16]), "south": face("edge", [4, 15.6, 12, 16]),
         "east": face("edge", [4, 15.6, 12, 16]), "west": face("edge", [4, 15.6, 12, 16])}}]
-    tex = {"art": "plaque", "edge": "plaque_edge"}
-    m = model(tex, els)
+    m = lc.model({"art": C.T("plaque"), "edge": C.T("plaque_edge"), "particle": C.T("plaque")},
+                 els)
     m["display"] = {
         # face up to the viewer, turned back the half turn the texture is stored in
         "gui": {"rotation": [90, 180, 0], "translation": [0, 0, 0], "scale": [1.3, 1.3, 1.3]},
@@ -696,12 +596,10 @@ C.add_lang("csm.transit.flag.route_none", ("Route plate %s: none", "Linienschild
                                            "Placa de ruta %s: ninguna", "Linjeskylt %s: ingen"))
 
 register_textures()
-poles()
 flags()
 cases()
 display()
 curb_plaque()
 
 if __name__ == "__main__":
-    check_styles_against_java()
     sys.exit(C.main())

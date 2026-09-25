@@ -94,7 +94,7 @@ container per jar.
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, plantings and park amenities; two tabs, Trees & Plants and Parks |
-| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: stacking poles, agency flags with settable route plates, poster cases, the arrival display); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
+| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque) and shelters; the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -740,12 +740,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   block (so placed machines keep their metadata) with ambient occlusion off, since its upper half
   sits in the air above its block; textures at 4 texels a unit, each face's uv exactly its drawn
   window; `--check`
-- `gen_transit_stops.py` -- the bus stops (Transit): pole lengths (round and square, galvanized
-  or painted) as shaft, cap and base models per pole style, picked by a multipart blockstate from
-  the stack's actual state; the four invented agencies' double-sided flags and their route plates;
-  the timetable and route map cases, the arrival display and the curb plaque. Faces carrying a
-  picture use a window of their texture at the face's own aspect. The pole styles are read from
-  `BusStopPoleStyle.java` and the run stops if the two lists differ; `--check`, `--fragments`
+- `gen_transit_stops.py` -- the bus stops (Transit), built on the road sign system: the four
+  invented agencies' double-sided flags with their three route plates, the timetable and route map
+  cases and the arrival display, each a length of Roads' sign post with its piece on the front and
+  the three shift models every road sign has (`sign_*`, `_setback`, `_back_to_back` at 28.3, which
+  `SignShiftModelTest` and `SignFaceDepthTest` check), in Forge sign blockstates; the flag models
+  are shared by the agencies, the blockstate filling the plate slots with the plate or a clear
+  texture from `route1`..`route3`. Also the curb plaque; `--check`, `--fragments`
 - `gen_transit_shelters.py` -- the bus shelters (Transit): glass and steel, cantilever canopy and
   flat roof, two blocks tall, joining along their length and front to back from actual state
   (`left`, `right`, `ahead`, `behind`). Every part is written once in shelter coordinates (y 0 to

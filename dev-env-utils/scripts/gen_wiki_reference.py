@@ -156,9 +156,10 @@ TABS = {
     "tabtechnology": ("technology", "Technology",
                       "Servers, routers, screens and consumer electronics."),
     "tabtransit": ("transit", "Transit",
-                   "Public transit: bus stop poles, flags, timetable and map cases and the "
-                   "arrival display, fare gates, the fare vending machine, and the tickets and "
-                   "cards they take."),
+                   "Public transit: bus stop flags, timetable and map cases and the arrival "
+                   "display (road signs, stood on the Road Signs tab's sign posts), bus "
+                   "shelters, fare gates, the fare vending machine, and the tickets and cards "
+                   "they take."),
     "tabtrafficaccessories": ("traffic-accessories", "Traffic Accessories",
                               "Poles, mounts, mast arms, span wire hardware, backplates and "
                               "cameras."),

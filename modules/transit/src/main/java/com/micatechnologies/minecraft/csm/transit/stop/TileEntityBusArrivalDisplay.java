@@ -2,14 +2,15 @@ package com.micatechnologies.minecraft.csm.transit.stop;
 
 /**
  * An arrival display's tile entity. It saves nothing: what the display lists is the routes on its
- * stop's flag, looked up on the renderer's schedule ({@link #refreshView}) rather than every
- * frame, and the arrivals follow from those and the world's clock.
+ * stop's flag (the nearest bus stop flag up or down its post), looked up on the renderer's
+ * schedule ({@link #refreshView}) rather than every frame, and the arrivals follow from those and
+ * the world's clock.
  *
  * @since 2026.9
  */
-public class TileEntityBusArrivalDisplay extends AbstractTileEntityBusStopFitting {
+public class TileEntityBusArrivalDisplay extends AbstractTileEntityBusStopSign {
 
-  /** The routes a display lists on a stop with no flag. */
+  /** The routes a display lists on a post with no flag. */
   private static final int[] STOCK_ROUTES = {12, 40};
 
   private final int[] routes = new int[TileEntityBusStopFlag.PLATES];
@@ -18,7 +19,7 @@ public class TileEntityBusArrivalDisplay extends AbstractTileEntityBusStopFittin
   @Override
   protected void refreshMore() {
     routeCount = 0;
-    TileEntityBusStopFlag flag = BusStopStack.flagNear(world, pos);
+    TileEntityBusStopFlag flag = BusStopSigns.flagNear(world, pos);
     if (flag != null) {
       for (int i = 0; i < TileEntityBusStopFlag.PLATES; i++) {
         int route = flag.getRoute(i);
