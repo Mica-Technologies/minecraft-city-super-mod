@@ -32,7 +32,9 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  *       bare {@code name} (treated as {@code minecraft:name})</li>
  *   <li>{@code /csm poleignore remove <block>} — removes a block id</li>
  *   <li>{@code /csm memstats [dump]} — what every block costs in memory (states, neighbour
- *       tables and, on a client, baked models and quads); {@code dump} writes the full report</li>
+ *       tables and, on a client, baked models and quads); {@code dump} writes the full report;
+ *       {@code variants} counts, on a client, how many blockstate variants and baked models
+ *       repeat another's content</li>
  *   <li>{@code /csm statecheck} — checks every CSM block's state container against vanilla's,
  *       state by state (see {@code CsmStateCheck}); read only</li>
  * </ul>
@@ -44,7 +46,8 @@ public class CommandCsm extends CommandBase {
 
   private static final String USAGE =
       "/csm <reloadconfig|poleignore <list|add|remove> [block]"
-          + "|renderpass <list|skip|draw|reset> [pass]|displaylists|memstats [dump]|statecheck>";
+          + "|renderpass <list|skip|draw|reset> [pass]|displaylists"
+          + "|memstats [dump|variants]|statecheck>";
 
   @Override
   public String getName() {
@@ -152,6 +155,16 @@ public class CommandCsm extends CommandBase {
    */
   private static void handleMemStats(MinecraftServer server, ICommandSender sender,
       String[] args) {
+    if (args.length > 1 && "variants".equalsIgnoreCase(args[1])) {
+      sendInfo(sender, "Counting duplicate variants and baked models...");
+      Csm.proxy.runMemStatsVariants(lines -> {
+        for (String line : lines) {
+          Csm.getLogger().info("[memstats] {}", line);
+          sendSuccess(sender, line);
+        }
+      });
+      return;
+    }
     boolean dump = args.length > 1 && "dump".equalsIgnoreCase(args[1]);
     File out = server.getFile("csm-memstats");
     sendInfo(sender, "Measuring" + (dump ? " and writing the report" : "") + "...");
@@ -276,7 +289,7 @@ public class CommandCsm extends CommandBase {
           "displaylists", "memstats", "statecheck");
     }
     if (args.length == 2 && "memstats".equalsIgnoreCase(args[0])) {
-      return getListOfStringsMatchingLastWord(args, "dump");
+      return getListOfStringsMatchingLastWord(args, "dump", "variants");
     }
     if (args.length == 2 && "poleignore".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "list", "add", "remove");

@@ -80,4 +80,15 @@ public interface ICsmProxy {
   default void runMemStats(File outRoot, boolean dump, Consumer<List<String>> reply) {
     reply.accept(CsmMemStats.run(outRoot, dump, dump, null));
   }
+
+  /**
+   * Runs {@code /csm memstats variants}: how many of CSM's blockstate variants and baked models
+   * repeat another's content. Client only; a server replies that there are no models to count.
+   *
+   * @param reply receives the chat lines when the count is done
+   */
+  default void runMemStatsVariants(Consumer<List<String>> reply) {
+    reply.accept(java.util.Collections.singletonList(
+        "memstats variants: models exist only on a client"));
+  }
 }

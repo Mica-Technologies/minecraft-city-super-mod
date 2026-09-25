@@ -121,6 +121,12 @@ public class CsmClientProxy implements ICsmProxy {
         CsmMemStats.run(outRoot, dump, dump, new CsmMemStatsModels())));
   }
 
+  @Override
+  public void runMemStatsVariants(Consumer<List<String>> reply) {
+    Minecraft.getMinecraft().addScheduledTask(() -> reply.accept(
+        com.micatechnologies.minecraft.csm.codeutils.CsmMemStatsVariants.run()));
+  }
+
   @SubscribeEvent
   public void onEntityJoinWorld(EntityJoinWorldEvent event) {
     if (event.getWorld().isRemote
