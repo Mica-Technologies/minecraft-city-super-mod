@@ -540,7 +540,12 @@ classes' registry names, so placed ones load as they were.
   side; the end glass steps back with the curve) and the bakery case (straight glass on an oak
   base, two tiers). All are lit when placed (`LIT`, light 10): a sneaking click with an empty
   hand switches them, and so does a change of redstone power (`LampSwitching`; they are
-  `ISwitchable`, so a linked light switch works a whole aisle). The one-block case keeps `LIT` and
+  `ISwitchable`, so a linked light switch works them). Either switches the display and the
+  displays joined to it in its line, up to five (`DisplayLine.REACH`, taken alternately from each
+  side, so a switch at the end of a row works the next four and one in the middle two either
+  way); a longer row takes a second switch, and the cap keeps one change of power from walking an
+  arbitrarily long row. Only the switched display records the power, so the others switching sets
+  off nothing further. The one-block case keeps `LIT` and
   `POWERED` in its metadata; the two-block one keeps `LIT` in both halves and remembers the power
   in its lower half's `TileEntityDisplayCase` (a `TileEntityResidentialStorage` with one more
   flag), its metadata being full. The generator writes each part that has a lamp or a header

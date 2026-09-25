@@ -29,8 +29,9 @@ import net.minecraft.world.World;
  *
  * <p>Its lights are on when placed ({@link #LIT}), and it gives light while they are; a
  * sneak-free click on the case opens it, so the lights are switched by redstone
- * ({@link LampSwitching}: a change of power switches them, so a light switch, linked or beside
- * it, works a whole aisle) or by clicking it with an empty hand while sneaking. {@link #LIT} is
+ * ({@link LampSwitching}: a change of power switches them) or by clicking it with an empty hand
+ * while sneaking. Either switches the case and the cases joined to it in its line, up to
+ * {@link DisplayLine#REACH}, so one light switch, linked or beside it, works a row. {@link #LIT} is
  * stored in the bit above the facing, {@link LampSwitching#POWERED} in the top bit. The glass is
  * a translucent texture, so the case draws in the translucent layer.</p>
  *
@@ -105,7 +106,7 @@ public class BlockDisplayCase extends BlockResidentialStorage implements ISwitch
       }
       if (!world.isRemote) {
         boolean lit = !state.getValue(LIT);
-        world.setBlockState(pos, state.withProperty(LIT, lit), 3);
+        setLineLit(world, pos, state, lit);
         world.playSound(null, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS,
             0.3F, lit ? 0.6F : 0.5F);
       }
@@ -115,15 +116,41 @@ public class BlockDisplayCase extends BlockResidentialStorage implements ISwitch
   }
 
   /**
-   * A change of redstone power switches the lights: on when power comes, off when it goes
-   * ({@link LampSwitching}).
+   * A change of redstone power switches the lights of its line: on when power comes, off when it
+   * goes ({@link LampSwitching}).
    */
   @Override
   @SuppressWarnings("deprecation")
   public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block,
       BlockPos fromPos) {
     super.neighborChanged(state, world, pos, block, fromPos);
-    LampSwitching.follow(world, pos, state, LIT);
+    if (world.isRemote) {
+      return;
+    }
+    boolean powered = world.isBlockPowered(pos);
+    if (powered != state.getValue(LampSwitching.POWERED)) {
+      IBlockState remembered = state.withProperty(LampSwitching.POWERED, powered);
+      world.setBlockState(pos, remembered, 3);
+      setLineLit(world, pos, remembered, powered);
+    }
+  }
+
+  /**
+   * Switches the lights of the case at {@code pos} and of the cases it reaches in its line
+   * ({@link DisplayLine}). The others keep their own record of power, so switching them sets off
+   * nothing further.
+   */
+  private void setLineLit(World world, BlockPos pos, IBlockState state, boolean lit) {
+    EnumFacing facing = state.getValue(FACING);
+    for (BlockPos p : DisplayLine.reach(pos, facing, q -> {
+      IBlockState s = world.getBlockState(q);
+      return s.getBlock() == this && s.getValue(FACING) == facing;
+    })) {
+      IBlockState s = p.equals(pos) ? state : world.getBlockState(p);
+      if (s.getValue(LIT) != lit) {
+        world.setBlockState(p, s.withProperty(LIT, lit), 3);
+      }
+    }
   }
 
   @Override

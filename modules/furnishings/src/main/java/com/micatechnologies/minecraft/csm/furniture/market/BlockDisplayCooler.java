@@ -32,8 +32,9 @@ import net.minecraft.world.World;
  *
  * <p>Its lights ({@link BlockDisplayCase#LIT}) are on when placed and both halves give light
  * while they are. A click opens it; a sneaking click with an empty hand switches the lights, and
- * so does a change of redstone power at either half, as a lamp's does, so a light switch works a
- * whole line of coolers. {@code LIT} is stored in both halves, in the bit above
+ * so does a change of redstone power at either half, as a lamp's does. Either switches the
+ * cooler and the coolers joined to it in its line, up to {@link DisplayLine#REACH} doors, so one
+ * light switch works a row and a long row takes more than one. {@code LIT} is stored in both halves, in the bit above
  * {@code UPPER}; whether it was powered is kept by the lower half's
  * {@link TileEntityDisplayCase}, the metadata being full. The glass is translucent, so it draws
  * in the translucent layer.</p>
@@ -112,7 +113,7 @@ public class BlockDisplayCooler extends BlockCloset implements ISwitchable {
       if (!world.isRemote) {
         BlockPos lower = state.getValue(UPPER) ? pos.down() : pos;
         boolean lit = !state.getValue(BlockDisplayCase.LIT);
-        setLit(world, lower, lit);
+        setLineLit(world, lower, lit);
         world.playSound(null, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS,
             0.3F, lit ? 0.6F : 0.5F);
       }
@@ -122,8 +123,8 @@ public class BlockDisplayCooler extends BlockCloset implements ISwitchable {
   }
 
   /**
-   * A change of redstone power at either half switches the lights: on when power comes, off when
-   * it goes.
+   * A change of redstone power at either half switches the lights of its line: on when power
+   * comes, off when it goes.
    */
   @Override
   @SuppressWarnings("deprecation")
@@ -142,12 +143,31 @@ public class BlockDisplayCooler extends BlockCloset implements ISwitchable {
     boolean powered = isPowered(world, lower);
     if (powered != memory.wasPowered()) {
       memory.setPowered(powered);
-      setLit(world, lower, powered);
+      setLineLit(world, lower, powered);
     }
   }
 
   private boolean isPowered(World world, BlockPos lower) {
     return world.isBlockPowered(lower) || world.isBlockPowered(lower.up());
+  }
+
+  /**
+   * Switches the lights of the cooler at {@code lower} and of the coolers it reaches in its line
+   * ({@link DisplayLine}). The others keep their own record of power, so switching them sets off
+   * nothing further.
+   */
+  private void setLineLit(World world, BlockPos lower, boolean lit) {
+    IBlockState base = world.getBlockState(lower);
+    if (base.getBlock() != this) {
+      return;
+    }
+    EnumFacing facing = base.getValue(FACING);
+    for (BlockPos door : DisplayLine.reach(lower, facing, p -> {
+      IBlockState s = world.getBlockState(p);
+      return s.getBlock() == this && s.getValue(FACING) == facing && !s.getValue(UPPER);
+    })) {
+      setLit(world, door, lit);
+    }
   }
 
   /** Switches both halves' lights. */
