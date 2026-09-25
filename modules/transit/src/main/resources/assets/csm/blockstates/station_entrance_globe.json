@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/stations/station_entrance_globe"
+  },
+  "variants": {
+    "colour": {
+      "green": {
+        "textures": {
+          "globe": "csm:blocks/transit/stations/globe_green"
+        }
+      },
+      "red": {
+        "textures": {
+          "globe": "csm:blocks/transit/stations/globe_red"
+        }
+      },
+      "white": {
+        "textures": {
+          "globe": "csm:blocks/transit/stations/globe_white"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

@@ -1,0 +1,344 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_post"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_arm"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "1"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_1"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "1"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_2"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_3"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "4"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_4"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "4"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "5"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_5"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "5"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "6"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_6"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "6"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "7"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_7"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "7"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "8"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_8"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "8"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "9"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_9"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "9"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "10"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_10"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "10"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "11"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_11"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "11"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true",
+        "legend": "12"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_12"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false",
+        "legend": "12"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_plate_12",
+        "y": 90
+      }
+    }
+  ]
+}

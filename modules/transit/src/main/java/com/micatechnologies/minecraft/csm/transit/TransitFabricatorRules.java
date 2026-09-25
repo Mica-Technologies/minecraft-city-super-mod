@@ -121,6 +121,10 @@ public final class TransitFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }
+    List<FabricatorIngredient> station = station(registryName);
+    if (station != null) {
+      return station;
+    }
     if (registryName.startsWith("airport_")) {
       return airport(registryName);
     }
@@ -132,6 +136,52 @@ public final class TransitFabricatorRules {
     return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
         FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
         FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+  }
+
+  /**
+   * Prices a station piece: the kiosk's glass a sheet of steel and panes, its roof steel and a
+   * light, the globe lamp a post, a lens and an LED, a railing steel and fittings (a sign blank
+   * more with a plate), the service gate twice the steel, a line bullet a sign blank, the booth
+   * counter steel, panes and fittings.
+   *
+   * @return the cost, or null if the block is not a station piece
+   */
+  @Nullable
+  private static List<FabricatorIngredient> station(String registryName) {
+    switch (registryName) {
+      case "station_entrance_glass":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.any(MC_GLASS_PANE, 2));
+      case "station_entrance_globe":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1),
+            FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+      case "station_entrance_railing":
+      case "station_fare_railing":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "station_entrance_railing_sign":
+      case "station_fare_railing_sign":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1),
+            FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+      case "station_service_gate":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "station_line_bullet":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+      case "station_booth_counter":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.any(MC_GLASS_PANE, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      default:
+        break;
+    }
+    if (registryName.startsWith("station_entrance_roof_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
+    return null;
   }
 
   /**

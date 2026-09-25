@@ -1,0 +1,39 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/stations/station_service_gate_closed"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "open": {
+      "false": {
+        "model": "csm:transit/stations/station_service_gate_closed"
+      },
+      "true": {
+        "model": "csm:transit/stations/station_service_gate_open"
+      }
+    },
+    "in_wall": {
+      "true": {},
+      "false": {}
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

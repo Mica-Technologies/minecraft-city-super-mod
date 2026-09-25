@@ -1,0 +1,70 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "glass": "csm:blocks/transit/stations/glass",
+    "frame": "csm:blocks/transit/stations/frame",
+    "kick": "csm:blocks/transit/stations/kick",
+    "particle": "csm:blocks/transit/stations/frame"
+  },
+  "elements": [
+    {
+      "from": [
+        6.8,
+        0,
+        6.8
+      ],
+      "to": [
+        9.2,
+        2.2,
+        9.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#kick",
+          "uv": [
+            6.8,
+            13.8,
+            9.2,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#kick",
+          "uv": [
+            6.8,
+            13.8,
+            9.2,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#kick",
+          "uv": [
+            6.8,
+            13.8,
+            9.2,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#kick",
+          "uv": [
+            6.8,
+            13.8,
+            9.2,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#kick",
+          "uv": [
+            6.8,
+            6.8,
+            9.2,
+            9.2
+          ]
+        }
+      }
+    }
+  ]
+}

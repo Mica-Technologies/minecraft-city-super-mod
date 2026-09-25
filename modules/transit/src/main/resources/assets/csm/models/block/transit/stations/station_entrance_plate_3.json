@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/stations/station_entrance_plate_1",
+  "textures": {
+    "face": "csm:blocks/transit/stations/legend_3",
+    "particle": "csm:blocks/transit/stations/legend_3"
+  }
+}

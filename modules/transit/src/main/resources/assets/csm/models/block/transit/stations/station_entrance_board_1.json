@@ -1,0 +1,69 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "legend": "csm:blocks/transit/stations/legend_1",
+    "edge": "csm:blocks/transit/stations/board_edge",
+    "particle": "csm:blocks/transit/stations/legend_1"
+  },
+  "elements": [
+    {
+      "from": [
+        1.0,
+        -1.35,
+        -0.4
+      ],
+      "to": [
+        15.0,
+        3.35,
+        0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#legend",
+          "uv": [
+            0,
+            0,
+            16.0,
+            5.375
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            0.0,
+            0.4,
+            4.7
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            15.6,
+            0.0,
+            16.0,
+            4.7
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            1.0,
+            15.6,
+            15.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#edge",
+          "uv": [
+            1.0,
+            0,
+            15.0,
+            0.4
+          ]
+        }
+      }
+    }
+  ]
+}

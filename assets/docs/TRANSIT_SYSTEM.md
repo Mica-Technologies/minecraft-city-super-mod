@@ -8,7 +8,7 @@ may name. Its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)
 Core's tab scan, and every block and item keeps the `csm:` namespace.
 
 The module holds the working fare system, which it took over from Technology, the bus stops and
-shelters, the bus station departure boards, the station and platform fit-out, made to complement the stations of RCMC, the
+shelters, the bus station departure boards, the station and platform fit-out and the stations' entrances and fare lines, made to complement the stations of RCMC, the
 author's train mod, and an airport's terminal and airside pieces. What it is to grow into is at the end of
 this page.
 
@@ -28,6 +28,7 @@ this page.
 | Bus Shelter (Glass, Cantilever, Flat Roof; four agencies each) | `csm:bus_shelter_<style>_<agency>` | `transit.shelter.BlockBusShelter` |
 | Bus Departure Board, Bus Bay Display | `csm:bus_departure_board`, `csm:bus_bay_display` | `transit.board.BlockBusBoard` |
 | Station and platform fit-out (29 blocks) | see Station and platform fit-out, below | `transit.platform` |
+| Station entrances, the fare line, line bullets, the booth counter (13 blocks) | see Stations, below | `transit.station` |
 | Airport terminal pieces (25 blocks) and the Boarding Pass (item) | see Airports, below | `transit.airport` |
 | Airport airside pieces (26 blocks) | see Airports, Airside, below | `transit.airport` |
 
@@ -654,6 +655,137 @@ metal; the canopy two sheet metal and an LED module; a column a pole section and
 the signs a sign blank and a fastener kit; the bench, perch and bin two sheet metal and a
 fastener kit. `audit_fabricator_costs.py` mirrors the branches.
 
+## Stations
+
+Thirteen blocks in `transit.station`, all drawn by `gen_transit_stations.py`: a subway entrance
+built to size, an open stair entrance with lit globe lamps, the fare line's railing and service
+gate, line bullets and the station agent's booth counter. No sounds. Like the platform fit-out,
+the set complements RCMC rather than repeating it.
+
+| Block | Registry name | Class |
+|---|---|---|
+| Station Entrance Glass | `csm:station_entrance_glass` | `BlockStationGlass` |
+| Station Entrance Roof (CITYLINE, RIVERWAY, VERDANT, EMBERLINE) | `csm:station_entrance_roof_<agency>` | `BlockStationEntranceRoof` |
+| Station Entrance Globe Lamp | `csm:station_entrance_globe` | `BlockStationGlobe` |
+| Station Entrance Railing, and with a Name Plate | `csm:station_entrance_railing`, `_railing_sign` | `BlockStationRailing`, `BlockStationRailingSign` |
+| Fare Line Railing, and with a Paid Area Plate | `csm:station_fare_railing`, `_railing_sign` | `BlockStationRailing` |
+| Fare Line Service Gate | `csm:station_service_gate` | `BlockStationGate` |
+| Line Bullet | `csm:station_line_bullet` | `BlockStationLineBullet` |
+| Station Agent Booth Counter | `csm:station_booth_counter` | `BlockStationBoothCounter` |
+
+### What RCMC already has, and what is left out
+
+RCMC has its stations' platforms and edges, the Station Line Map sign (a post-mounted diagram of
+one line's stops, drawn from its line registry), arrival boards, station speakers, the coaster
+operator panel and the metro line desk. So there is **no line diagram strip** here: it was on the
+list, and it would be RCMC's line map sign drawn again without the data behind it. There are
+**no "to trains" or "to street" signs** either: the platform fit-out's hanging TO TRAINS and EXIT
+signs already say both, and the author asked for no more exit signage (Life Safety has plenty).
+The **booth counter** is kept because RCMC's panel and desk run the trains; a booth is where a
+station sells and checks fares, and RCMC has no block for that.
+
+### The entrance: a kiosk from pieces, and an open stair
+
+Two entrances, because the two real kinds are built differently and each is simple:
+
+- **The kiosk** is built block by block from two pieces, in the container's pattern
+  (`BlockSiteShell`: each block draws its outside only where its neighbour is not part of the
+  same thing), not the job trailer's. The trailer has to tell inside from outside by looking up
+  and down eight blocks for a floor and a roof, because its walls look different on each side. A
+  kiosk's walls do not: glass is glass from both sides, and a roof's only outside is its edge. So
+  nothing looks further than the next block, nothing is stored but the name board, and no render
+  updater is needed.
+  - **Glass** (`BlockStationGlass`) joins as a pane does, toward more glass, a booth counter whose
+    run lies that way, or a solid face (`north`..`west`, actual state). A slim post stands at
+    every block, a mullion a metre, which is how a kiosk's framing reads. `up` and `down` say
+    whether the wall carries on, so the head rail and the stainless kick plate are drawn only
+    where it stops: two blocks of glass are one pane. A lone block is drawn as a panel along x.
+    Translucent layer. Collision is the pane's, post and arms, a block tall.
+  - **The roof** (`BlockStationEntranceRoof`, one per agency) follows the platform canopy's rule:
+    a deck at the foot of its block, so it rests on the glass below, joining on all four sides,
+    with the agency's fascia (its colour and accent line) drawn only round the outside. It joins a
+    roof of any agency. A square soffit light is always on (light 11).
+  - **The name board**: a click with an empty hand steps a roof block's board through none,
+    SUBWAY, METRO and the station name sign's ten names (`StationLegends`); a sneaking click
+    goes back. The board stands on the fascia on every outside side of that block, so set the
+    middle of the front to the station's name and the corners to SUBWAY. The value is the
+    platform signs' `TileEntityPlatformSign`, read as `legend` (1 is no board). The roof has no
+    facing: which side is the front is only which side a board is wanted on.
+  - The **stair** is vanilla stairs dug down under the kiosk: the walls stand on the rim of the
+    stair well, open at the front.
+- **The open stair** has no roof at all, only a railing round the well and a lamp either side of
+  the mouth. The **railing** (`BlockStationRailing`) is a vanilla fence (it joins other iron
+  railings, the service gate, the globe lamp and solid faces, collides a fence's 1.5 high, and
+  takes a lead), painted cast iron with a ball on each post. The **name plate** railing
+  (`BlockStationRailingSign`) is the same with a plate on both faces, stepped through the same
+  legends (SUBWAY first). The plate is drawn only on a straight run, since a plate across a
+  corner has nowhere to hang.
+- **The globe lamp** (`BlockStationGlobe`) serves both: a cast-iron post with an opal globe, two
+  blocks tall from one block, always lit. Transit may not use Lighting's light logic, so, like the
+  airfield lights, the globe glows from its texture (an `_e` companion for OptiFine, faces
+  unshaded) and the block gives light 14. A click steps it green, red, white (in the metadata).
+
+### The fare line
+
+- **Fare line railing**: the same fence class in brushed stainless at 16, the fare gates' cabinet
+  height, with rails and balusters on two-pixel centres. It **joins the fare gates**. A gate stands
+  one block up with its cabinet drawn down into the floor-level cell, which is air, so the railing
+  looks past it for a gate whose box reaches down over that cell, directly above it or up to two
+  further along (the ADA gates reach past their cell), and whose lane runs across the railing.
+- **Paid Area plate**: the stainless railing with a yellow PAID AREA / FARE REQUIRED plate on
+  both faces, again only on a straight run. No floor marking was made: a stencil on one block does
+  not read, and floor paint is the road mod's business.
+- **Service gate** (`BlockStationGate`): a vanilla fence gate, in the picket gate's pattern. A
+  click opens it away from the player, redstone opens it, open it is walked through, and the
+  railings join it. It is stainless with a SERVICE GATE plate on both faces; open, the leaf swings
+  a quarter about its hinge and reaches past its block, as a real leaf does. It checks no fare:
+  which side is paid is the builder's business. It is not labelled as an exit (no exit wording,
+  as above).
+
+### Line bullets
+
+`BlockStationLineBullet`: a round enamel plate on the wall, a disc in the line's colour with a
+white rim and its letter or number. A click steps through sixteen invented lines, a sneaking click
+back (`PlatformSigns`, the value in `TileEntityPlatformSign`). The first four are the platform line
+strip's (1, 4, 7, E in the agencies' colours), each with a sister line in the same colour (2, 5, 8,
+F), then A and C (blue), K (purple), M (magenta), S (grey), T (brown), X (yellow, black glyph)
+and Z (navy). The plate is an octagon set in a little behind a round face texture whose corners
+are clear, so it reads round; its edge reads a patch of the disc's own colour.
+
+### The booth counter
+
+`BlockStationBoothCounter`, facing the player who placed it (the customer's side): a stainless
+front with the STATION AGENT plate, a ledge with the deal tray, glass from the ledge up with a
+speaking grille, and the agent's shelf behind. It is one straight run across its block, in line
+with the entrance glass, so glass stacked on it is the booth's window and glass beside it the
+booth's walls; a roof (or a ceiling) and a door close it. It does nothing: the fare machine sells.
+
+### Traps
+
+- **A plate on a railing must be thicker than the post.** The first plates were thinner than the
+  entrance railing's post, which cut through the middle of the name ("SU|BWAY"). They are 2.6
+  thick now, round a 2.2 post.
+- **The lists are written twice.** `StationLegends.LEGENDS` (built from
+  `BlockStationNameSign.NAMES`) and the generator's `LEGENDS` (from `STATION_NAMES`) must agree in
+  order; so must `BlockStationLineBullet.LINES` and the generator's `LINES`, and
+  `BlockStationGlobe.Colour` and `GLOBES`.
+- **The roof's `legend` counts one more than the railing's.** Roof 1 is no board and 2 is
+  SUBWAY; railing 1 is SUBWAY. The generator's board and plate models are numbered by legend, the
+  rules by value.
+- **The swung gate keeps its plate's uv.** The open leaf's faces take their uv from their new
+  place, except the plate's picture, which keeps its window (north turns to west, whose u runs the
+  same way over the swung leaf).
+- **A fascia's top reads one flat texel.** Two fascias overlap at a roof's corner; reading one
+  texel makes the overlap one colour, so it cannot be seen to fight (the octagon caps' trick).
+
+### Prices
+
+`TransitFabricatorRules.station`: glass a sheet metal and two glass panes; a roof two sheet metal
+and an LED module; the globe lamp a pole section, a lens assembly and an LED module; a railing a
+sheet metal and a fastener kit, with a sign blank more for a plate; the service gate two sheet
+metal and a fastener kit; a line bullet a sign blank; the booth counter two sheet metal, two glass
+panes and a fastener kit. `audit_fabricator_costs.py` mirrors the branch.
+
 ## Airports
 
 Twenty-five blocks and one item in `transit.airport`, all drawn by `gen_transit_airport.py`, with
@@ -1007,8 +1139,8 @@ sections and a harness; the column two concrete mix; the chocks one sheet metal.
 
 ## Where the module is going
 
-Transit is planned to grow next into stations (a subway entrance headhouse built to size, and
-more station wayfinding). The airport's airside pieces are done (above); what was left out of
+The stations are done (above); what was left out of them is a line diagram strip (RCMC's line
+map sign is that) and direction signs beyond the platform fit-out's TO TRAINS and EXIT. The airport's airside pieces are done (above); what was left out of
 them is a control tower's glazed cab (Building's glazing builds one; the beacon and antenna mast
 top it), a PAPI (its colour depends on the angle it is seen from, which a texture cannot do),
 sloping jet bridge pieces, and any aircraft. The bus departure boards are done (above); there

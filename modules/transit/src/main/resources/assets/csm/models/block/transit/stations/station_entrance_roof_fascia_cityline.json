@@ -1,0 +1,62 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "fascia": "csm:blocks/transit/stations/fascia_cityline",
+    "frame": "csm:blocks/transit/stations/frame",
+    "roof": "csm:blocks/transit/stations/roof",
+    "soffit": "csm:blocks/transit/stations/soffit",
+    "particle": "csm:blocks/transit/stations/fascia_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        -2.0,
+        0
+      ],
+      "to": [
+        16,
+        4.0,
+        0.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0,
+            16,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0.0,
+            16,
+            6.0
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            1,
+            1,
+            1.5,
+            1.5
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            1,
+            1,
+            1.5,
+            1.5
+          ]
+        }
+      }
+    }
+  ]
+}

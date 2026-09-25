@@ -1,0 +1,105 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/stations/station_line_bullet"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "line": {
+      "1": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_1"
+        }
+      },
+      "2": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_2"
+        }
+      },
+      "3": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_3"
+        }
+      },
+      "4": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_4"
+        }
+      },
+      "5": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_5"
+        }
+      },
+      "6": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_6"
+        }
+      },
+      "7": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_7"
+        }
+      },
+      "8": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_8"
+        }
+      },
+      "9": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_9"
+        }
+      },
+      "10": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_10"
+        }
+      },
+      "11": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_11"
+        }
+      },
+      "12": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_12"
+        }
+      },
+      "13": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_13"
+        }
+      },
+      "14": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_14"
+        }
+      },
+      "15": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_15"
+        }
+      },
+      "16": {
+        "textures": {
+          "face": "csm:blocks/transit/stations/bullet_16"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,512 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_roof_deck"
+      }
+    },
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_roof_fascia_cityline"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_roof_fascia_cityline",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_roof_fascia_cityline",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_roof_fascia_cityline",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_1"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_2"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "4"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_3"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "5"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_4"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "6"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_5"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "7"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_6"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "8"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_7"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "9"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_8"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "10"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_9"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "11"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_10"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "12"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_11"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "legend": "13"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_12"
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "4"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "5"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "6"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "7"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "8"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "9"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "10"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "11"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "12"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "legend": "13"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "4"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "5"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "6"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "7"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "8"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "9"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "10"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "11"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "12"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "legend": "13"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "4"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "5"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "6"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "7"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "8"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "9"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "10"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "11"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "12"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "legend": "13"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_board_12",
+        "y": 270
+      }
+    }
+  ]
+}

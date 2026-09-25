@@ -388,6 +388,23 @@ def cost_for(registry, info, ancestors):
                 or registry in ("platform_number_sign", "platform_gap_sign",
                                 "station_network_map")):
             return ("SIGN_BLANK", "FASTENER_KIT")
+        if registry.startswith("station_") and registry not in (
+                "station_emergency_point", "station_network_map"):
+            station = {
+                "station_entrance_glass": ("SHEET_METAL", "glass_pane x2"),
+                "station_entrance_globe": ("POLE_SECTION", "LENS_ASSEMBLY", "LED_MODULE"),
+                "station_entrance_railing_sign": ("SHEET_METAL", "FASTENER_KIT", "SIGN_BLANK"),
+                "station_fare_railing_sign": ("SHEET_METAL", "FASTENER_KIT", "SIGN_BLANK"),
+                "station_service_gate": ("SHEET_METAL x2", "FASTENER_KIT"),
+                "station_line_bullet": ("SIGN_BLANK",),
+                "station_booth_counter": ("SHEET_METAL x2", "glass_pane x2", "FASTENER_KIT"),
+            }
+            if registry in station:
+                return station[registry]
+            if registry.startswith("station_entrance_roof_"):
+                return ("SHEET_METAL x2", "LED_MODULE")
+            if registry.endswith("_railing"):
+                return ("SHEET_METAL", "FASTENER_KIT")
         if registry.startswith("platform_"):
             return ("SHEET_METAL x2", "FASTENER_KIT")
         if registry.startswith("airport_"):

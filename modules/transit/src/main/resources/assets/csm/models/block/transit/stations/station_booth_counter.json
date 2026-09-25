@@ -1,0 +1,500 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "stainless": "csm:blocks/transit/stations/stainless",
+    "counter": "csm:blocks/transit/stations/counter",
+    "tray": "csm:blocks/transit/stations/deal_tray",
+    "plate": "csm:blocks/transit/stations/agent_plate",
+    "glass": "csm:blocks/transit/stations/glass",
+    "grille": "csm:blocks/transit/stations/grille",
+    "particle": "csm:blocks/transit/stations/stainless"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        7.2
+      ],
+      "to": [
+        16,
+        13.6,
+        8.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stainless",
+          "uv": [
+            0,
+            2.4,
+            16,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#stainless",
+          "uv": [
+            0,
+            2.4,
+            16,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#stainless",
+          "uv": [
+            0,
+            7.2,
+            16,
+            8.8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.4,
+        13.6,
+        3.6
+      ],
+      "to": [
+        15.6,
+        14.4,
+        9.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#counter",
+          "uv": [
+            0.4,
+            1.6,
+            15.6,
+            2.4
+          ]
+        },
+        "south": {
+          "texture": "#counter",
+          "uv": [
+            0.4,
+            1.6,
+            15.6,
+            2.4
+          ]
+        },
+        "east": {
+          "texture": "#counter",
+          "uv": [
+            6.6,
+            1.6,
+            12.4,
+            2.4
+          ]
+        },
+        "west": {
+          "texture": "#counter",
+          "uv": [
+            3.6,
+            1.6,
+            9.4,
+            2.4
+          ]
+        },
+        "up": {
+          "texture": "#counter",
+          "uv": [
+            0.4,
+            3.6,
+            15.6,
+            9.4
+          ]
+        },
+        "down": {
+          "texture": "#counter",
+          "uv": [
+            0.4,
+            6.6,
+            15.6,
+            12.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.2,
+        14.4,
+        4.2
+      ],
+      "to": [
+        10.8,
+        14.6,
+        8.6
+      ],
+      "faces": {
+        "up": {
+          "texture": "#tray",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.4,
+        12.2,
+        7.0
+      ],
+      "to": [
+        15.6,
+        13.6,
+        7.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stainless",
+          "uv": [
+            0.4,
+            2.4,
+            15.6,
+            3.8
+          ]
+        },
+        "down": {
+          "texture": "#stainless",
+          "uv": [
+            0.4,
+            8.8,
+            15.6,
+            9.0
+          ]
+        },
+        "east": {
+          "texture": "#stainless",
+          "uv": [
+            8.8,
+            2.4,
+            9.0,
+            3.8
+          ]
+        },
+        "west": {
+          "texture": "#stainless",
+          "uv": [
+            7.0,
+            2.4,
+            7.2,
+            3.8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        9.0,
+        6.8
+      ],
+      "to": [
+        13.5,
+        11.5,
+        7.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            0,
+            16.0,
+            3.625
+          ]
+        },
+        "east": {
+          "texture": "#stainless",
+          "uv": [
+            8.8,
+            4.5,
+            9.2,
+            7.0
+          ]
+        },
+        "west": {
+          "texture": "#stainless",
+          "uv": [
+            6.8,
+            4.5,
+            7.2,
+            7.0
+          ]
+        },
+        "up": {
+          "texture": "#stainless",
+          "uv": [
+            2.5,
+            6.8,
+            13.5,
+            7.2
+          ]
+        },
+        "down": {
+          "texture": "#stainless",
+          "uv": [
+            2.5,
+            8.8,
+            13.5,
+            9.2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14.4,
+        7.9
+      ],
+      "to": [
+        16,
+        16,
+        8.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            1.6
+          ]
+        },
+        "south": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            1.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        14.4,
+        7.7
+      ],
+      "to": [
+        9.5,
+        16,
+        8.3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grille",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#grille",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#grille",
+          "uv": [
+            7.75,
+            0,
+            8.25,
+            1.6
+          ]
+        },
+        "west": {
+          "texture": "#grille",
+          "uv": [
+            7.75,
+            0,
+            8.25,
+            1.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.4,
+        11.4,
+        8.8
+      ],
+      "to": [
+        15.6,
+        12.2,
+        13.8
+      ],
+      "faces": {
+        "up": {
+          "texture": "#counter",
+          "uv": [
+            0.4,
+            8.8,
+            15.6,
+            13.8
+          ]
+        },
+        "down": {
+          "texture": "#counter",
+          "uv": [
+            0.4,
+            2.2,
+            15.6,
+            7.2
+          ]
+        },
+        "south": {
+          "texture": "#counter",
+          "uv": [
+            0.4,
+            3.8,
+            15.6,
+            4.6
+          ]
+        },
+        "east": {
+          "texture": "#counter",
+          "uv": [
+            2.2,
+            3.8,
+            7.2,
+            4.6
+          ]
+        },
+        "west": {
+          "texture": "#counter",
+          "uv": [
+            8.8,
+            3.8,
+            13.8,
+            4.6
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0.0,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0.0,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    }
+  }
+}

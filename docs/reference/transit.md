@@ -2,7 +2,7 @@
 
 Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, fare gates, the fare vending machine, and the tickets and cards they take.
 
-!!! info "106 blocks in this tab"
+!!! info "119 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -57,6 +57,9 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Fare Gate | `csm:fare_gate` | 2 | 10 | pickaxe | 1 |
 | Fare Gate (ADA, 2-Wide) | `csm:fare_gate_ada_2` | 2 | 10 | pickaxe | 1 |
 | Fare Gate (ADA, 3-Wide) | `csm:fare_gate_ada_3` | 2 | 10 | pickaxe | 1 |
+| Fare Line Railing | `csm:station_fare_railing` | 3.0 | 10.0 | pickaxe | 1 |
+| Fare Line Railing (Paid Area Plate) | `csm:station_fare_railing_sign` | 3.0 | 10.0 | pickaxe | 1 |
+| Fare Line Service Gate | `csm:station_service_gate` |  |  |  |  |
 | Fare Vending Machine | `csm:farevend` | 2 | 10 | pickaxe | 1 |
 | Flight Information Board (Arrivals) | `csm:airport_flight_board_arrivals` | 2.0 | 6.0 | pickaxe | 1 |
 | Flight Information Board (Departures) | `csm:airport_flight_board_departures` | 2.0 | 6.0 | pickaxe | 1 |
@@ -73,6 +76,7 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Jet Bridge (Rotunda Column) | `csm:airport_jet_bridge_column` | 2.0 | 6.0 | pickaxe | 1 |
 | Jet Bridge (Rotunda) | `csm:airport_jet_bridge_rotunda` | 2.0 | 6.0 | pickaxe | 1 |
 | Jet Bridge (Tunnel) | `csm:airport_jet_bridge_tunnel` | 2.0 | 6.0 | pickaxe | 1 |
+| Line Bullet | `csm:station_line_bullet` | 2.0 | 6.0 | pickaxe | 1 |
 | Luggage Cart | `csm:airport_luggage_cart` | 2.0 | 6.0 | pickaxe | 1 |
 | Luggage Cart Rack | `csm:airport_cart_rack` | 2.0 | 6.0 | pickaxe | 1 |
 | Network Map Board | `csm:station_network_map` | 2.0 | 6.0 | pickaxe | 1 |
@@ -98,7 +102,16 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Security X-Ray Scanner | `csm:airport_xray_scanner` | 2.0 | 6.0 | pickaxe | 1 |
 | Self Check-In Kiosk | `csm:airport_self_checkin_kiosk` | 2.0 | 6.0 | pickaxe | 1 |
 | Stand Sign | `csm:airport_stand_sign` | 2.0 | 6.0 | pickaxe | 1 |
+| Station Agent Booth Counter | `csm:station_booth_counter` | 2.0 | 6.0 | pickaxe | 1 |
 | Station Emergency Point | `csm:station_emergency_point` | 2.0 | 6.0 | pickaxe | 1 |
+| Station Entrance Glass | `csm:station_entrance_glass` | 1.5 | 6.0 | pickaxe | 0 |
+| Station Entrance Globe Lamp | `csm:station_entrance_globe` | 3.0 | 10.0 | pickaxe | 1 |
+| Station Entrance Railing | `csm:station_entrance_railing` | 3.0 | 10.0 | pickaxe | 1 |
+| Station Entrance Railing (Name Plate) | `csm:station_entrance_railing_sign` | 3.0 | 10.0 | pickaxe | 1 |
+| Station Entrance Roof (CITYLINE) | `csm:station_entrance_roof_cityline` | 2.5 | 8.0 | pickaxe | 1 |
+| Station Entrance Roof (EMBERLINE) | `csm:station_entrance_roof_emberline` | 2.5 | 8.0 | pickaxe | 1 |
+| Station Entrance Roof (RIVERWAY) | `csm:station_entrance_roof_riverway` | 2.5 | 8.0 | pickaxe | 1 |
+| Station Entrance Roof (VERDANT) | `csm:station_entrance_roof_verdant` | 2.5 | 8.0 | pickaxe | 1 |
 | Station Name Sign | `csm:station_name_sign` | 2.0 | 6.0 | pickaxe | 1 |
 | Station Wall Tile (Band, CITYLINE Teal) | `csm:station_tile_band_cityline` | 1.5 | 6.0 | pickaxe | 0 |
 | Station Wall Tile (Band, EMBERLINE Red) | `csm:station_tile_band_emberline` | 1.5 | 6.0 | pickaxe | 0 |

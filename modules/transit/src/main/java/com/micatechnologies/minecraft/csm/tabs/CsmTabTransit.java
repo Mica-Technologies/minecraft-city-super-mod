@@ -39,6 +39,14 @@ import com.micatechnologies.minecraft.csm.transit.platform.BlockStationTile;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockTactilePaving;
 import com.micatechnologies.minecraft.csm.transit.shelter.BlockBusShelter;
 import com.micatechnologies.minecraft.csm.transit.shelter.BusShelterStyle;
+import com.micatechnologies.minecraft.csm.transit.station.BlockStationBoothCounter;
+import com.micatechnologies.minecraft.csm.transit.station.BlockStationEntranceRoof;
+import com.micatechnologies.minecraft.csm.transit.station.BlockStationGate;
+import com.micatechnologies.minecraft.csm.transit.station.BlockStationGlass;
+import com.micatechnologies.minecraft.csm.transit.station.BlockStationGlobe;
+import com.micatechnologies.minecraft.csm.transit.station.BlockStationLineBullet;
+import com.micatechnologies.minecraft.csm.transit.station.BlockStationRailing;
+import com.micatechnologies.minecraft.csm.transit.station.BlockStationRailingSign;
 import com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBox;
 import com.micatechnologies.minecraft.csm.streetscape.UtilityBoxSpec;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockTrafficSign;
@@ -55,7 +63,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * Roads' sign posts, and the curb plaque), the bus shelters, the bus departure board and bay
  * display, and the station and platform fit-out
  * (tactile paving, platform furniture, station signs, tile, columns, the canopy and the ticket
- * validator), and the airport terminal pieces (check-in, the queue, security, the gate, the flight
+ * validator), the stations (the entrance kiosk and open stair entrance with globe lamps, the fare
+ * line railing and service gate, line bullets, the agent's booth counter), and the airport terminal pieces (check-in, the queue, security, the gate, the flight
  * information boards, baggage claim, luggage carts and wayfinding) with the boarding pass, and
  * the airside pieces (airfield lights and signs, the mast, the stand sign, ground equipment on
  * Roads' utility box and the jet bridge).
@@ -190,6 +199,23 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockPlatformColumnNumber("platform_column_number", new double[]{2.5, 0, 2.5, 13.5, 16, 13.5}));
     initTabBlock(new BlockPlatformCanopy("platform_canopy"));
     initTabBlock(new BlockPlatformValidator("platform_validator", new double[]{5, 0, 5, 11, 15, 11}));
+
+    // Stations (gen_transit_stations.py --fragments): the entrance kiosk and the open stair
+    // entrance with its globe lamps, the fare line railing and service gate, line bullets and
+    // the agent's booth counter
+    initTabBlock(new BlockStationGlass("station_entrance_glass"));
+    initTabBlock(new BlockStationEntranceRoof("station_entrance_roof_cityline"));
+    initTabBlock(new BlockStationEntranceRoof("station_entrance_roof_riverway"));
+    initTabBlock(new BlockStationEntranceRoof("station_entrance_roof_verdant"));
+    initTabBlock(new BlockStationEntranceRoof("station_entrance_roof_emberline"));
+    initTabBlock(new BlockStationGlobe("station_entrance_globe"));
+    initTabBlock(new BlockStationRailing("station_entrance_railing", false));
+    initTabBlock(new BlockStationRailingSign("station_entrance_railing_sign"));
+    initTabBlock(new BlockStationRailing("station_fare_railing", true));
+    initTabBlock(new BlockStationRailing("station_fare_railing_sign", true));
+    initTabBlock(new BlockStationGate("station_service_gate"));
+    initTabBlock(new BlockStationLineBullet("station_line_bullet", new double[]{2, 2, 15, 14, 14, 16}));
+    initTabBlock(new BlockStationBoothCounter("station_booth_counter", new double[]{0, 0, 3.6, 16, 16, 13.8}));
 
     // Airport terminal (gen_transit_airport.py --fragments): check-in, the queue, security, the
     // gate, the flight information boards, baggage claim, carts and wayfinding

@@ -1,0 +1,202 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_post"
+      }
+    },
+    {
+      "when": {
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_post_head"
+      }
+    },
+    {
+      "when": {
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_post_foot"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm_head"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm_foot"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "true"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "up": "false",
+            "east": "true"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "false",
+            "up": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm_head",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "down": "false",
+            "east": "true"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "false",
+            "down": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm_foot",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm_head",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm_foot",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "west": "true"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "up": "false",
+            "west": "true"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "false",
+            "up": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm_head",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "down": "false",
+            "west": "true"
+          },
+          {
+            "north": "false",
+            "east": "false",
+            "south": "false",
+            "west": "false",
+            "down": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_glass_arm_foot",
+        "y": 270
+      }
+    }
+  ]
+}

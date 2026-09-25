@@ -1,0 +1,67 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/stations/station_fare_railing_post"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_fare_railing_arm"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_fare_railing_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_fare_railing_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_fare_railing_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "true",
+        "south": "false",
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_fare_plate"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "false",
+        "south": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_fare_plate",
+        "y": 90
+      }
+    }
+  ]
+}

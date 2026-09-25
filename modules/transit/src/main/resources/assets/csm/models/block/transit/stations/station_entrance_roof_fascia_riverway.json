@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/stations/station_entrance_roof_fascia_cityline",
+  "textures": {
+    "fascia": "csm:blocks/transit/stations/fascia_riverway",
+    "particle": "csm:blocks/transit/stations/fascia_riverway"
+  }
+}

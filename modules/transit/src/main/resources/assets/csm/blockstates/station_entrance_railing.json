@@ -1,0 +1,44 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_post"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_arm"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:transit/stations/station_entrance_railing_arm",
+        "y": 270
+      }
+    }
+  ]
+}
