@@ -50,9 +50,9 @@ public class AdBoardConfigHandler implements IMessageHandler<AdBoardConfigPacket
     board.setAds(adId, rotation, category, message.interval, AdFit.fromOrdinal(message.fit),
         AdLight.fromOrdinal(message.light));
     IBlockState state = world.getBlockState(controller);
-    boolean cabinet = state.getBlock() instanceof AbstractBlockAdBoard
-        && ((AbstractBlockAdBoard) state.getBlock()).kind().isCabinet();
-    board.setBack(cabinet ? AdBack.fromOrdinal(message.back) : AdBack.NONE);
+    boolean twoSided = state.getBlock() instanceof AbstractBlockAdBoard
+        && ((AbstractBlockAdBoard) state.getBlock()).kind().isDoubleSided();
+    board.setBack(twoSided ? AdBack.fromOrdinal(message.back) : AdBack.NONE);
     board.setTransition(AdTransition.fromOrdinal(message.transition));
 
     ITextComponent problem = AdBoards.resize(world, controller, player, message.width,

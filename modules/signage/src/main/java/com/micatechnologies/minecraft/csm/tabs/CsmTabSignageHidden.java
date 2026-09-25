@@ -44,5 +44,6 @@ public class CsmTabSignageHidden extends CsmTab {
     initTabBlock(new BlockAdBoardPart("ad_kiosk_service")); // Ad Kiosk
     initTabBlock(new BlockAdBoardPart("ad_kiosk_large_part")); // Large Ad Kiosk
     initTabBlock(new BlockAdBoardPart("ad_kiosk_large_service")); // Large Ad Kiosk
+    initTabBlock(new BlockAdBoardPart("ad_shelter_panel_part")); // Bus Shelter Ad Panel
   }
 }

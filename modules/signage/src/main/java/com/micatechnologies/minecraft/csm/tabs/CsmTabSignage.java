@@ -8,7 +8,8 @@ import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
- * The tab for advertising: street ad kiosks, wall poster boards and billboards.
+ * The tab for advertising: street ad kiosks, wall poster boards, billboards and the ad panel
+ * set into a bus shelter.
  *
  * @version 1.0
  */
@@ -77,5 +78,6 @@ public class CsmTabSignage extends CsmTab {
     initTabBlock(new BlockAdBoard("ad_digital_billboard")); // Digital Billboard
     initTabBlock(new BlockAdBoard("ad_kiosk")); // Ad Kiosk
     initTabBlock(new BlockAdBoard("ad_kiosk_large")); // Large Ad Kiosk
+    initTabBlock(new BlockAdBoard("ad_shelter_panel")); // Bus Shelter Ad Panel
   }
 }

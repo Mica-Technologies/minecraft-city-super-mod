@@ -308,8 +308,13 @@ public final class CsmFabricatorCosts {
 
       // Advertising: a printed face on a sheet metal cabinet. The boards built to size cost one
       // of these for every block of them, taken when they are built. A kiosk is bought whole:
-      // a backlit cabinet on a post.
+      // a backlit cabinet on a post; so is a bus shelter's ad panel, a slim lightbox.
       case TAB_SIGNAGE:
+        if (CsmBlockDisplayNames.hasWord(registryName, "shelter")) {
+          return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+              FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+              FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+        }
         if (CsmBlockDisplayNames.hasWord(registryName, "kiosk")) {
           return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
               FabricatorIngredient.part(CsmParts.LED_MODULE, 1),

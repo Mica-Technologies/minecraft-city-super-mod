@@ -13,6 +13,7 @@ Traffic.
 | Digital Billboard | `ad_digital_billboard` | 1 x 1 to 40 x 40 | its screen | always lit (screen) |
 | Ad Kiosk | `ad_kiosk` | 2 x 4 | itself, on placing | always lit (backlit) |
 | Large Ad Kiosk | `ad_kiosk_large` | 4 x 8 | itself, on placing | always lit (backlit) |
+| Bus Shelter Ad Panel | `ad_shelter_panel` | 1 x 2 | itself, on placing | always lit (backlit) |
 
 Every block of a board but the one placed is a hidden part (`<name>_part`, and `<name>_service`
 for a billboard's catwalk row and a kiosk's post), registered in `CsmTabSignageHidden`.
@@ -74,6 +75,30 @@ fading, LED grid) and 50 kiosks, all in view, cost **0.32 ms of render work a fr
 with the scene, 0.68 ms with it removed, in one session, three 10 s samples each side agreeing
 within 0.02 ms. About 5 microseconds a board.
 
+## The bus shelter panel
+
+`AdBoardKind.SHELTER_PANEL` is the ad panel a Transit glass shelter carries at one end. It was
+measured against the kiosks first: the small kiosk is 2 x 4 with a 2 x 3 face on a post, a block
+too wide for a shelter's end wall, which is one block deep, so it is a kind of its own sized to the
+shelter's slot: one block wide, two tall, fixed size, built whole as it is placed.
+
+- **Slim, not a cabinet.** A lightbox 3 px deep with a 1.5 px aluminium frame lip standing a
+  pixel proud front and back. Double-sided like a cabinet (`isDoubleSided`; the back shows the
+  next ad by default), with the back face just behind the box (`depthPx - facePx`), which is the
+  pixel inside the shelter's frame. It is not an opaque cube.
+- **A sill.** The face starts 7.5 px above the bottom frame (`getSillPx`), as a real panel's does.
+  That also brings the face to about 13 x 21.5 px, 0.6 wide to 1 tall, so the portrait ads (2:3)
+  lose little to the cover crop; a full-height face would have been under 0.45.
+- **Set against, not facing the player** (`isPlacedAgainst`): placed against the side of a block
+  it turns its back to that block, so a player outside a shelter's end clicking its frame gets
+  the panel in the frame whichever way they stand; placed on the ground it faces them. Its item,
+  `ItemBlockAdBoardAgainst`, places it a block lower when the click was on the upper half of what
+  it is set against and the space under the target is open, so a click at eye level on the
+  shelter's frame still builds the panel up from the ground.
+- It knows nothing about shelters and a shelter nothing about it: set against a wall it is a slim
+  double-sided lightbox like any other board. It is priced whole, like a kiosk: sheet metal, an
+  LED module and a sign blank.
+
 ## What a board shows
 
 `AdLibrary` reads `assets/csm/ads/<source>.json` off the classpath, so the server knows the same
@@ -130,8 +155,8 @@ Nothing on either side is trusted:
 - **A vintage ad:** add the Commons file to `fetch_vintage_ads.py`'s `CATALOGUE`; the script
   refuses anything not recorded as public domain.
 - **A board kind:** an `AdBoardKind` entry, a `KINDS` entry in `gen_ad_boards.py`, tab and hidden
-  tab lines, lang in all four files. Fixed-size, service rows and cabinet or wall are all flags on
-  the kind.
+  tab lines, lang in all four files. Fixed-size, service rows, cabinet, wall or slim, double-sided,
+  sill and set-against are all flags on the kind.
 
 ## Traps
 

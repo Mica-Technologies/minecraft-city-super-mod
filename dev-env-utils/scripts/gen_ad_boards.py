@@ -18,6 +18,12 @@ overlap and z-fight.
 
 Numbers that must match AdBoardKind: the frame width (1 px), the depth (2.5 px). The face the
 renderer draws sits at 1.5 px, between the backing (1 px) and the front of the frame.
+
+The bus shelter's ad panel is a third shape, "slim": a lightbox 3 px deep whose back is against
+the block's north side, with a frame lip standing a pixel proud of it front and back (the back
+lip reaches into the cell behind, the shelter's end frame, which leaves that pixel clear) and a
+sill across the bottom block 7.5 px up, where the face starts (AdBoardKind.SHELTER_PANEL: frame
+1.5, depth 3, sill 7.5).
 """
 
 import argparse
@@ -57,6 +63,9 @@ KINDS = {
     "ad_kiosk_large": dict(prefix="kiosklarge", frame=3.0, cabinet=True, post_half=4,
                            frame_tex="board_kiosk_bezel", back_tex="board_kiosk_body",
                            icon_ad="tundra_creamery_portrait", icon_frame=(52, 55, 60)),
+    "ad_shelter_panel": dict(prefix="shelterpanel", frame=1.5, slim=True, depth=3.0, sill=7.5,
+                             frame_tex="board_frame_aluminium", back_tex="board_kiosk_body",
+                             icon_ad="cube_burger_portrait", icon_frame=(200, 204, 212)),
 }
 
 # How far a cabinet board's frame stands proud of its box, front and back.
@@ -255,6 +264,45 @@ def cabinet_models(kind):
     return out
 
 
+def slim_models(kind):
+    """The shelter panel: a lightbox d deep against the back of the block, the frame lips
+    standing proud of it front and back as a cabinet board's do, and in the bottom block a sill
+    lip across the face where the ad starts (drawn with the bottom frame, down=false)."""
+    k = KINDS[kind]
+    f, d, sill = k["frame"], k["depth"], k["sill"]
+    textures = {"frame": "csm:blocks/signage/" + k["frame_tex"],
+                "back": "csm:blocks/signage/" + k["back_tex"],
+                "particle": "csm:blocks/signage/" + k["frame_tex"]}
+    pieces = {"back": [_box((0, 0, 0), (16, 16, d), "#back")]}
+    front = _lips(f, d, d + LIP, "#frame")
+    rear = _lips(f, -LIP, 0, "#frame")
+    for name in front:
+        pieces[name] = [front[name], rear[name]]
+    pieces["frame_bottom"] += [_box((f, sill, d), (16 - f, sill + f, d + LIP), "#frame"),
+                               _box((f, sill, -LIP), (16 - f, sill + f, 0), "#frame")]
+    out = {}
+    for name, elements in pieces.items():
+        for element in elements:
+            _fit_uvs(element)
+        out["%s_%s" % (k["prefix"], name)] = {"textures": textures, "elements": elements}
+    return out
+
+
+def icon_panel(ad_name, frame_colour):
+    """The shelter panel's item icon: a portrait ad in a tall aluminium frame, the plain panel
+    under it where a real panel's sill is."""
+    image = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
+    for x in range(9, 23):
+        for y in range(1, 31):
+            image.putpixel((x, y), frame_colour + (255,))
+    for x in range(10, 22):
+        for y in range(24, 30):
+            image.putpixel((x, y), (60, 64, 70, 255))
+    ad = Image.open(os.path.join(ADS_DIR, ad_name + ".png")).convert("RGBA")
+    image.paste(ad.resize((12, 21), Image.LANCZOS), (10, 2))
+    return image
+
+
 def service_pieces():
     """A printed billboard's service row, the bottom row of its blocks: the cabinet above stops
     at the top of the cell, and under it hangers drop to a catwalk deck that runs back under the
@@ -408,7 +456,8 @@ def outputs():
     files[os.path.join(TEX_DIR, "board_kiosk_bezel.png")] = _png(flat(20260927, (44, 47, 52), 2))
     files[os.path.join(TEX_DIR, "board_kiosk_body.png")] = _png(flat(20260928, (60, 64, 70)))
     for kind, k in KINDS.items():
-        kind_models = cabinet_models(kind) if k.get("cabinet") else models(kind)
+        kind_models = (cabinet_models(kind) if k.get("cabinet")
+                       else slim_models(kind) if k.get("slim") else models(kind))
         for name, model in kind_models.items():
             files[os.path.join(MODEL_DIR, name + ".json")] = _json(model)
         if k.get("post_half"):
@@ -438,6 +487,9 @@ def outputs():
         if k.get("post_half"):
             files[os.path.join(ITEM_TEX_DIR, kind + ".png")] = _png(
                 icon_kiosk(k["icon_ad"], k["icon_frame"]))
+        elif k.get("slim"):
+            files[os.path.join(ITEM_TEX_DIR, kind + ".png")] = _png(
+                icon_panel(k["icon_ad"], k["icon_frame"]))
         else:
             files[os.path.join(ITEM_TEX_DIR, kind + ".png")] = _png(icon(
                 k["icon_ad"], k.get("icon_frame", (200, 204, 212)), wide=k.get("cabinet", False)))

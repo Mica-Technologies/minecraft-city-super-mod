@@ -374,6 +374,8 @@ def cost_for(registry, info, ancestors):
     if tab == "tabtrafficaccessories":
         return ("SHEET_METAL", "FASTENER_KIT")
     if tab == "tabsignage":
+        if has_word(registry, "shelter"):
+            return ("SHEET_METAL", "LED_MODULE", "SIGN_BLANK")
         if has_word(registry, "kiosk"):
             return ("SHEET_METAL x2", "LED_MODULE", "SIGN_BLANK")
         return ("SIGN_BLANK", "SHEET_METAL")

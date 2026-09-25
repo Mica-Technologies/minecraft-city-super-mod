@@ -139,7 +139,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
     lightButton = add(new GuiButton(BTN_LIGHT, left, y, COL, H, ""));
     y += ROW;
     backButton = add(new GuiButton(BTN_BACK, left, y, COL, H, ""));
-    backButton.visible = kind.isCabinet();
+    backButton.visible = kind.isDoubleSided();
     y += ROW;
     transitionButton = add(new GuiButton(BTN_TRANSITION, left, y, COL, H, ""));
     // A kiosk has one size and grows nowhere: its screen is only what it shows.
@@ -340,8 +340,7 @@ public class GuiAdBoard extends GuiScreen implements GuiSlider.ISlider {
         : previewPool().get(rotation.select(previewPool(), te.getWorld().getTotalWorldTime(),
             interval.getValueInt(), TileEntityAdBoard.seed(controller))));
     double faceW = boardWidth() - 2 * kind.getFramePx() / 16.0;
-    double faceH = boardHeight() - kind.getServiceRows()
-        - 2 * kind.getFramePx() / 16.0;
+    double faceH = boardHeight() - kind.getFaceBottom() - kind.getFramePx() / 16.0;
     double aspect = faceW / faceH;
     int boxW = COL;
     int boxH = PREVIEW_H;

@@ -51,7 +51,7 @@ public class TileEntityAdBoardRenderer extends TileEntitySpecialRenderer<TileEnt
 
     double frame = kind.getFramePx() / 16.0;
     int column = te.getControllerColumn();
-    Face face = new Face(-column + frame, kind.getServiceRows() + frame,
+    Face face = new Face(-column + frame, kind.getFaceBottom(),
         te.getWidth() - column - frame, te.getHeight() - frame);
     if (face.top <= face.bottom || face.right <= face.left) {
       // A billboard's controller on its own, before its screen has built it: all service row.
@@ -75,7 +75,7 @@ public class TileEntityAdBoardRenderer extends TileEntitySpecialRenderer<TileEnt
     long time = world.getTotalWorldTime();
     double front = kind.getFacePx() / 16.0;
     double back = kind.getBackFacePx() / 16.0;
-    boolean hasBack = kind.isCabinet() && te.getBack() != AdBack.NONE;
+    boolean hasBack = kind.isDoubleSided() && te.getBack() != AdBack.NONE;
     if (screen && !lit) {
       // A screen that is off is black, not an ad lit by the day.
       blank(face, front, false);

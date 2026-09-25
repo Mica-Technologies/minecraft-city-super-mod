@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -30,13 +31,19 @@ public class BlockAdBoard extends AbstractBlockAdBoard implements ICsmTileEntity
     super(registryName);
   }
 
-  /** The ad faces the player who places it, with its back to the wall they placed it on. */
+  /**
+   * The ad faces the player who places it, with its back to the wall they placed it on. A board
+   * {@link AdBoardKind#isPlacedAgainst() set against} something -- the shelter panel, set into a
+   * shelter's frame -- instead turns its back to the side of the block it was placed on, so it
+   * sits in the frame whichever way the player stands; placed on the ground it faces them.
+   */
   @Override
   @Nonnull
   public IBlockState getStateForPlacement(@Nonnull World worldIn, @Nonnull BlockPos pos,
       @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ, int meta,
       @Nonnull EntityLivingBase placer) {
-    EnumFacing face = placer.getHorizontalFacing().getOpposite();
+    EnumFacing face = kind().isPlacedAgainst() && facing.getAxis().isHorizontal() ? facing
+        : placer.getHorizontalFacing().getOpposite();
     return getDefaultState().withProperty(FACING, face)
         .withProperty(TAG, AdBoards.freeTag(worldIn, kind(), face, pos));
   }
@@ -75,6 +82,16 @@ public class BlockAdBoard extends AbstractBlockAdBoard implements ICsmTileEntity
     if (te instanceof TileEntityAdBoard) {
       ((TileEntityAdBoard) te).setPowered(worldIn.isBlockPowered(pos));
     }
+  }
+
+  /**
+   * A board set against something is placed from its bottom block, wherever on the thing it is
+   * set against the player clicked ({@link ItemBlockAdBoardAgainst}). Called from the
+   * constructor, where {@link #kind()} already answers.
+   */
+  @Override
+  protected ItemBlock createItemBlock() {
+    return kind().isPlacedAgainst() ? new ItemBlockAdBoardAgainst(this) : super.createItemBlock();
   }
 
   @Nullable

@@ -52,7 +52,17 @@ public enum AdBoardKind {
   KIOSK("ad_kiosk", 2, 4, new int[][]{{2, 4}}, 2.0, 16.25, 16.0, true, Service.POST, 1, true),
   /** The same kiosk well over life size: 4 x 6 blocks of face on a two-block post. */
   KIOSK_LARGE("ad_kiosk_large", 4, 8, new int[][]{{4, 8}}, 3.0, 16.25, 16.0, true, Service.POST,
-      2, true);
+      2, true),
+  /**
+   * The ad panel of a bus shelter, the "6-sheet" lightbox a shelter carries at one end: one block
+   * wide and two tall, backlit, an ad on each side. Not a cabinet but a slim box 3 px deep, set
+   * against whatever it was placed on -- a shelter's empty end frame -- with its back ad just
+   * outside the block, in the frame. The face starts {@link #getSillPx() 7.5 px} up, as a real
+   * panel's does, which also brings it to about 0.6 wide to 1 tall, near the portrait ads' 2:3.
+   * Fixed size, built whole as it is placed.
+   */
+  SHELTER_PANEL("ad_shelter_panel", 1, 2, new int[][]{{1, 2}}, 1.5, 3.25, 3.0, false,
+      Service.NONE, 0, true, true, 7.5, true);
 
   /** What stands in a board's service rows. */
   public enum Service {
@@ -79,10 +89,20 @@ public enum AdBoardKind {
   private final Service service;
   private final int serviceRows;
   private final boolean fixed;
+  private final boolean doubleSided;
+  private final double sillPx;
+  private final boolean placedAgainst;
 
   AdBoardKind(String registryName, int maxWidth, int maxHeight, int[][] presets, double framePx,
       double facePx, double depthPx, boolean cabinet, Service service, int serviceRows,
       boolean fixed) {
+    this(registryName, maxWidth, maxHeight, presets, framePx, facePx, depthPx, cabinet, service,
+        serviceRows, fixed, cabinet, 0.0, false);
+  }
+
+  AdBoardKind(String registryName, int maxWidth, int maxHeight, int[][] presets, double framePx,
+      double facePx, double depthPx, boolean cabinet, Service service, int serviceRows,
+      boolean fixed, boolean doubleSided, double sillPx, boolean placedAgainst) {
     this.registryName = registryName;
     this.maxWidth = maxWidth;
     this.maxHeight = maxHeight;
@@ -94,6 +114,9 @@ public enum AdBoardKind {
     this.service = service;
     this.serviceRows = serviceRows;
     this.fixed = fixed;
+    this.doubleSided = doubleSided;
+    this.sillPx = sillPx;
+    this.placedAgainst = placedAgainst;
   }
 
   /** The controller's registry name: the block the player places. */
@@ -154,9 +177,39 @@ public enum AdBoardKind {
     return facePx;
   }
 
-  /** Where a double-sided board's back face is: just outside the back of the block. */
+  /**
+   * Where a double-sided board's back face is: just outside the back of the block, as far behind
+   * it as the front face is in front of the box ({@code 16 - facePx} for a cabinet).
+   */
   public double getBackFacePx() {
-    return 16.0 - facePx;
+    return depthPx - facePx;
+  }
+
+  /** Whether the board carries an ad on its back as well: a cabinet, or the shelter panel. */
+  public boolean isDoubleSided() {
+    return doubleSided;
+  }
+
+  /**
+   * How far above the bottom frame the face starts: the frame's width more of plain panel under
+   * the ad, zero for every board but the shelter panel.
+   */
+  public double getSillPx() {
+    return sillPx;
+  }
+
+  /** Where the face starts, in blocks up from the board's bottom: above the frame and sill. */
+  public double getFaceBottom() {
+    return serviceRows + (framePx + sillPx) / 16.0;
+  }
+
+  /**
+   * Whether the board is turned by the side of the block it is placed against, its back to that
+   * block, rather than to face the player: the shelter panel, which is set into a shelter's
+   * frame.
+   */
+  public boolean isPlacedAgainst() {
+    return placedAgainst;
   }
 
   /** How deep the board is: what is clicked and collided with. */
