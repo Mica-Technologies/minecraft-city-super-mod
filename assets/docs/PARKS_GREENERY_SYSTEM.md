@@ -416,7 +416,7 @@ renderer.
 - **Faces on one plane z-fight, and the generators separate them.** A bench's end frame over its
   seat, a raised bed's post over its side: two boxes putting different pixels on one plane flicker
   in game. `gen_park_plantings.py`, `gen_park_amenities.py` and `gen_park_legacy_amenities.py` end
-  their `generate` with `furniture_depth.py`, which moves the smaller face along its normal until
+  their `generate` with `model_depth.py`, which moves the smaller face along its normal until
   the planes are 0.2 px apart (see Residential Furniture in `NOVELTIES_SYSTEM.md`). Draw details
   flush and let it do so; hand-nudged offsets are measured as the design.
 - **The `Block` constructor asks before your fields exist.** `isOpaqueCube` and `createBlockState`

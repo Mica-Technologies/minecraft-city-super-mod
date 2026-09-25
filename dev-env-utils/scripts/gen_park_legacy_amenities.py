@@ -53,7 +53,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen_park_plantings as pp  # noqa: E402
-import furniture_depth  # noqa: E402
+import model_depth  # noqa: E402
 import gen_pedestal_pole as pole  # noqa: E402
 import gen_trees  # noqa: E402
 
@@ -658,7 +658,7 @@ def generate(assets):
         with open(path, "w", newline="\n", encoding="utf-8") as fh:
             fh.write(text())
         written.append(rel)
-    furniture_depth.separate(assets, written, pp.dump)
+    model_depth.separate(assets, written, pp.dump)
     return written
 
 

@@ -31,6 +31,7 @@ from PIL import Image
 import gen_cmu
 import gen_logistics
 import gen_scaffold as sc
+import model_depth  # noqa: E402
 
 REPO = sc.REPO
 MODULE = sc.MODULE
@@ -332,6 +333,7 @@ def write_all(tex_dir, model_dir, state_dir):
         for model, body in sorted(gen_cmu.models(name, TEX_REF, top_suffix=suffix).items()):
             gen_cmu._write_json(os.path.join(set_model_dir, model + ".json"), body)
             written.append(("setmodel", model + ".json"))
+    model_depth.separate_dirs([(tex_dir, TEX_DIR), (model_dir, MODEL_DIR), (state_dir, STATE_DIR)], written, gen_cmu._write_json)
     return written
 
 

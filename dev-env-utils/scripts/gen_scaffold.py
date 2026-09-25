@@ -44,6 +44,7 @@ from PIL import Image
 
 import gen_cmu
 import gen_framing
+import model_depth  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MODULE = os.path.join(REPO, "modules", "building", "src", "main", "resources", "assets", "csm")
@@ -611,6 +612,7 @@ def write_all(tex_dir, model_dir, state_dir, item_tex_dir, item_model_dir):
         written.append(("model", name + ".json"))
     gen_cmu._write_json(os.path.join(state_dir, NAME + ".json"), blockstate())
     written.append(("state", NAME + ".json"))
+    model_depth.separate_dirs([(tex_dir, TEX_DIR), (model_dir, MODEL_DIR), (state_dir, STATE_DIR), (item_tex_dir, ITEM_TEX_DIR), (item_model_dir, ITEM_MODEL_DIR)], written, gen_cmu._write_json)
     return written
 
 

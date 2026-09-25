@@ -1,4 +1,4 @@
-"""Separates the furniture generators' coplanar faces, which z-fight in game.
+"""Separates the coplanar faces in generated JSON block models, which z-fight in game.
 
 A generated piece is built of boxes, and two of them often put a face on the same plane: a detail
 laid flush on a body (a clock face, a door window, a checkout's end panel over its cabinet), or a
@@ -6,14 +6,15 @@ round part's square and the same square turned 45 degrees sharing a top. Where t
 the same pixels it does not matter; where they paint different ones the depth buffer cannot tell
 which is in front, and the surface flickers between them as the camera moves.
 
-``separate`` is run by each furniture generator at the end of ``generate``, over the files it has
-just written. For every blockstate it wrote, it takes each set of models the blockstate can draw at
-once (every combination of the properties its multipart rules name, facing north), finds faces that
-face the same way on planes closer than ``GAP``, samples both faces' textures where they overlap,
-and where both are opaque and differ, moves the smaller face out along its normal until the planes
-are ``GAP`` apart -- by growing that face's box outward, so nothing else moves. Only models the generator
-itself wrote are changed, so a generator never rewrites another's files, and the pass is
-deterministic, so ``--check`` still compares like with like.
+``separate`` is run by the JSON-model generators at the end of ``generate``, over the files each
+has just written. For every blockstate it wrote, it takes each set of models the blockstate can
+draw at once (every combination of the properties its multipart rules name, facing north), finds
+faces that face the same way on planes closer than ``GAP``, samples both faces' textures where
+they overlap, and where both are opaque and differ, moves one of them -- the smaller, the detail --
+along its normal until it stands ``GAP`` clear of every face it overlaps, by growing or shrinking
+that face's box, so nothing else moves. Only models the generator itself wrote are changed, so a
+generator never rewrites another's files, and the pass is deterministic, so ``--check`` still
+compares like with like.
 
 ``GAP`` is ``SignFaceDepthTest``'s rule: 0.2 of a pixel, which a 24-bit depth buffer behind
 Minecraft's near plane holds apart to about 100 blocks.
@@ -81,12 +82,16 @@ def _corners(fn, f, t):
 class _Store:
     """The generator's output root first, then the repository's asset trees."""
 
-    def __init__(self, root):
+    def __init__(self, root, overlay=None):
         self.root = root
+        self.overlay = overlay or {}
         self.models = {}
         self.images = {}
 
     def find(self, rel):
+        rel = os.path.normpath(rel)
+        if rel in self.overlay:
+            return self.overlay[rel]
         for base in [self.root] + _TREES:
             p = os.path.join(base, rel)
             if os.path.exists(p):
@@ -349,60 +354,271 @@ def _movable(face):
     return not (r and r.get("rescale"))
 
 
-def separate(root, written, dump):
+HAND_MAX = 0.45
+GEN_MAX = 0.65
+
+
+def _prism_caps(a, b):
+    """Whether two faces are the end caps of slices of one round or cross-shaped solid: boxes
+    with the same extent along the faces' axis, each turned only about that axis (or not at all).
+    Their caps must share a plane, and separating them would stair-step the solid's end."""
+    axis = _FACES[a.fn][0]
+    if _FACES[b.fn][0] != axis:
+        return False
+    for f in (a, b):
+        r = f.el.get("rotation")
+        if r and r.get("angle") and "xyz".index(r["axis"]) != axis:
+            return False
+    return (abs(a.el["from"][axis] - b.el["from"][axis]) < 1e-3
+            and abs(a.el["to"][axis] - b.el["to"][axis]) < 1e-3)
+
+
+def _units(states):
+    """Every model, and every pair of models, some blockstate draws at once. Checking these once
+    each, rather than every combination of properties, keeps a 70,000-state blockstate cheap."""
+    units = set()
+    for state in states:
+        for names in _model_sets(state):
+            keyed = sorted({(n, tuple(sorted(o.items()))) for n, o in names})
+            for k in keyed:
+                units.add((k,))
+            for pair in combinations(keyed, 2):
+                units.add(pair)
+    return sorted(units)
+
+
+def _near_pairs(faces_a, faces_b=None):
+    """Pairs of faces facing the same way on planes under GAP apart: within one list, or one
+    from each of two lists. Faces are bucketed by normal and sorted by plane, so a model of
+    thousands of faces is not compared all against all."""
+    def key(f):
+        return tuple(round(x, 3) for x in f.n)
+    buckets = {}
+    for side, faces in ((0, faces_a), (1, faces_b if faces_b is not None else [])):
+        for f in faces:
+            buckets.setdefault(key(f), []).append((f.d, side, f))
+    for items in buckets.values():
+        items.sort(key=lambda t: t[0])
+        for i, (d1, s1, f1) in enumerate(items):
+            for d2, s2, f2 in items[i + 1:]:
+                if d2 - d1 >= GAP - 1e-3:
+                    break
+                if faces_b is not None and s1 == s2:
+                    continue
+                if (f1.rel, f1.idx) == (f2.rel, f2.idx):
+                    continue
+                yield f1, f2
+
+
+def separate(root, written, dump, hand_made=False, overlay=None):
     """Separates clashing faces among the models under ``root`` that ``written`` names.
 
     :param root:    the generator's output root (the assets tree, or a temporary copy)
     :param written: the paths the generator wrote, relative to ``root``
     :param dump:    the generator's JSON writer, ``dump(path, data)``
+    :param hand_made: the conservative rules for hand-made models: leave the end caps of a
+                    sliced round shape alone (``_prism_caps``) and move no face more than
+                    ``HAND_MAX`` in all -- fanning out a stack of caps would step a pole's end.
+                    A generated model's faces move at most ``GEN_MAX`` in all; a clash that
+                    needs more is left, since a bigger step shows more than the flicker
     :return: how many faces were moved
     """
     owned = {os.path.normpath(w) for w in written}
-    states = sorted(w for w in owned if w.startswith("blockstates" + os.sep))
-    store = _Store(root)
+    store = _Store(root, overlay)
+    states = [json.load(open(store.find(rel), encoding="utf-8"))
+              for rel in sorted(w for w in owned if w.startswith("blockstates" + os.sep))]
+    units = _units(states)
     changed = set()
     moved = 0
+    dirty = None  # after the first round, only pairs with a model just moved need a look
+    cap = HAND_MAX if hand_made else GEN_MAX
+    total = {}  # how far each face has moved so far, over every round
     for _ in range(24):
         moves = {}
         touched = set()  # boxes this round already moves or measures against
-        for rel in states:
-            state = json.load(open(os.path.join(root, rel), encoding="utf-8"))
-            for names in _model_sets(state):
-                faces = []
-                for name, over in names:
-                    erel, els, tex = store.chain(name)
-                    if over:
-                        tex = dict(tex, **over)
-                    for i, el in enumerate(els):
-                        for fn in sorted(el.get("faces", {})):
-                            faces.append(_Face(store, erel, i, el, fn, tex))
-                for a, b in combinations(faces, 2):
-                    if (a.rel, a.idx) == (b.rel, b.idx):
+        cache = {}
+
+        def faces_of(key):
+            if key not in cache:
+                name, over = key
+                erel, els, tex = store.chain(name)
+                if over:
+                    tex = dict(tex, **dict(over))
+                cache[key] = [_Face(store, erel, i, el, fn, tex)
+                              for i, el in enumerate(els) for fn in sorted(el.get("faces", {}))]
+            return cache[key]
+        for unit in units:
+            if dirty is not None and not any(store.chain(k[0])[0] in dirty for k in unit):
+                continue
+            if len(unit) == 1:
+                faces = faces_of(unit[0])
+                pairs = _near_pairs(faces)
+            else:
+                fa, fb = faces_of(unit[0]), faces_of(unit[1])
+                faces = fa + fb
+                pairs = _near_pairs(fa, fb)
+            for a, b in pairs:
+                if (a.rel, a.idx) in touched or (b.rel, b.idx) in touched:
+                    continue
+                if hand_made and _prism_caps(a, b):
+                    continue
+                if not _clash(a, b):
+                    continue
+                # move the detail -- the smaller face, else the later box -- if this
+                # generator wrote it: to the nearest place clear of every face it overlaps
+                order = sorted((a, b), key=lambda q: (q.area(), -q.idx))
+                for q in order:
+                    if os.path.normpath(q.rel) not in owned or not _movable(q):
                         continue
-                    if sum(x * y for x, y in zip(a.n, b.n)) < 0.999 or abs(a.d - b.d) >= GAP - 1e-3:
-                        continue
-                    if (a.rel, a.idx) in touched or (b.rel, b.idx) in touched:
-                        continue
-                    if not _clash(a, b):
-                        continue
-                    # move the detail -- the smaller face, else the later box -- if this
-                    # generator wrote it: to the nearest place clear of every face it overlaps
-                    order = sorted((a, b), key=lambda q: (q.area(), -q.idx))
-                    for q in order:
-                        if os.path.normpath(q.rel) not in owned or not _movable(q):
-                            continue
-                        by = _place(q, faces)
-                        if by is not None:
-                            moves[(q.rel, q.idx, q.fn)] = by
-                            touched.update({(a.rel, a.idx), (b.rel, b.idx)})
-                            break
+                    by = _place(q, faces)
+                    if by is not None and abs(total.get((q.rel, q.idx, q.fn), 0) + by) > cap:
+                        by = None
+                    if by is not None:
+                        moves[(q.rel, q.idx, q.fn)] = by
+                        touched.update({(a.rel, a.idx), (b.rel, b.idx)})
+                        break
         if not moves:
             break
+        dirty = {rel for rel, _i in touched}  # moved boxes and the ones they were measured against
         for (rel, idx, fn), by in sorted(moves.items()):
+            total[(rel, idx, fn)] = total.get((rel, idx, fn), 0) + by
             el = store.models[rel]["elements"][idx]
             _grow(el, fn, by)
             changed.add(rel)
             moved += 1
     for rel in sorted(changed):
-        dump(os.path.join(root, rel), store.models[rel])
+        dump(store.find(rel), store.models[rel])
     return moved
+
+
+def separate_dirs(dirs, written, dump):
+    """``separate`` for the generators that write each kind of file to its own folder
+    (``write_all(tex_dir, model_dir, state_dir, ...)``) and, under ``--check``, to temporary
+    copies of those folders.
+
+    :param dirs:    (folder written to, the real folder it stands for) pairs, block models,
+                    blockstates and textures included, item folders marked by an "item" or
+                    "items" in the real path
+    :param written: the ``(kind, filename)`` pairs ``write_all`` returns
+    :param dump:    the generator's JSON writer
+    """
+    def assets_of(path):
+        parts = os.path.normpath(path).split(os.sep)
+        for i in range(len(parts) - 1):
+            if parts[i] == "assets" and parts[i + 1] == "csm":
+                return os.sep.join(parts[:i + 2])
+        raise ValueError(path)
+    root = assets_of(dirs[0][1])
+
+    def pick(kind):
+        kind = kind.lower()
+        want_item = kind.startswith("i") and not kind.startswith("int") or "item" in kind
+        want_shared = kind == "shared"
+        for actual, real in dirs:
+            rel = os.path.relpath(real, root)
+            is_item = rel.startswith(os.path.join("textures", "items")) or rel.startswith(
+                os.path.join("models", "item"))
+            is_shared = "shared_models" in rel.split(os.sep)
+            if "state" in kind and rel == "blockstates":
+                return actual, rel
+            if "tex" in kind and rel.startswith("textures") and is_item == want_item:
+                return actual, rel
+            if (("model" in kind or want_shared) and rel.startswith("models")
+                    and is_item == want_item and is_shared == want_shared):
+                return actual, rel
+        return None
+    overlay, rels = {}, []
+    for kind, name in written:
+        hit = pick(kind)
+        if hit is None:
+            continue
+        actual, rel_dir = hit
+        rel = os.path.normpath(os.path.join(rel_dir, name))
+        if os.path.exists(os.path.join(actual, name)):  # else it went to another tree
+            overlay[rel] = os.path.join(actual, name)
+            rels.append(rel)
+    return separate(root, rels, dump, overlay=overlay)
+
+
+_ARRAY = None
+
+
+def _num(v):
+    return str(int(v)) if float(v).is_integer() else repr(round(float(v), 4))
+
+
+def rewrite_numbers(path, data):
+    """Writes a moved model back into a hand-made file by changing only the ``from`` and ``to``
+    numbers that moved, leaving every other byte -- a Blockbench export's tabs and one-line
+    arrays, its line endings -- as it was. Refuses (raises) unless the file's ``from``/``to``
+    arrays pair up one-to-one with its elements, so it can never edit the wrong numbers."""
+    import re
+    global _ARRAY
+    if _ARRAY is None:
+        _ARRAY = re.compile(r'"(from|to)"(\s*:\s*)\[([^\]]*)\]')
+    raw = open(path, encoding="utf-8", newline="").read()
+    old = json.loads(raw)
+    els_old, els_new = old.get("elements", []), data.get("elements", [])
+    matches = list(_ARRAY.finditer(raw))
+    if len(matches) != 2 * len(els_old) or len(els_old) != len(els_new):
+        raise ValueError("%s: from/to arrays do not pair with elements" % path)
+    out, pos = [], 0
+    for i, m in enumerate(matches):
+        el_old, el_new = els_old[i // 2], els_new[i // 2]
+        key = m.group(1)
+        vals = [float(x) for x in m.group(3).split(",")]
+        if vals != [float(v) for v in el_old[key]] or ("from" if i % 2 == 0 else "to") != key:
+            raise ValueError("%s: array %d is not element %d's %s" % (path, i, i // 2, key))
+        out.append(raw[pos:m.start()])
+        if el_new[key] == el_old[key]:
+            out.append(m.group(0))
+        else:
+            parts = m.group(3).split(",")
+            new = []
+            for part, v_old, v_new in zip(parts, el_old[key], el_new[key]):
+                if v_old == v_new:
+                    new.append(part)
+                else:
+                    lead = part[:len(part) - len(part.lstrip())]
+                    trail = part[len(part.rstrip()):]
+                    new.append(lead + _num(v_new) + trail)
+            out.append('"%s"%s[%s]' % (key, m.group(2), ",".join(new)))
+        pos = m.end()
+    out.append(raw[pos:])
+    text = "".join(out)
+    if json.loads(text) != data:
+        raise ValueError("%s: rewrite does not reproduce the moved model" % path)
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        fh.write(text)
+
+
+def main(argv):
+    """``model_depth.py <module> [--apply]``: separates the hand-made models of one module (the
+    models no generator writes), writing only the numbers that move. Without --apply it reports."""
+    import argparse
+    ap = argparse.ArgumentParser(description=main.__doc__)
+    ap.add_argument("module", help="a module folder under modules/, or 'core'")
+    ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--models", nargs="*", help="limit to these model paths (under the module's "
+                                                "assets/csm); default: every model")
+    args = ap.parse_args(argv)
+    root = (os.path.join(_REPO, "src", "main", "resources", "assets", "csm") if args.module == "core"
+            else os.path.join(_REPO, "modules", args.module, "src", "main", "resources", "assets",
+                              "csm"))
+    states = [os.path.relpath(p, root) for p in glob.glob(os.path.join(root, "blockstates", "*.json"))]
+    models = args.models or [os.path.relpath(p, root) for p in glob.glob(
+        os.path.join(root, "models", "**", "*.json"), recursive=True)]
+    written = []
+
+    def dump(path, data):
+        written.append(path)
+        if args.apply:
+            rewrite_numbers(path, data)
+    n = separate(root, states + [os.path.normpath(m) for m in models], dump, hand_made=True)
+    print("%s %d faces in %d models" % ("moved" if args.apply else "would move", n, len(written)))
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main(sys.argv[1:]))

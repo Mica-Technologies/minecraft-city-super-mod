@@ -43,6 +43,7 @@ from PIL import Image, ImageDraw
 
 import gen_cmu
 import gen_scaffold as sc
+import model_depth  # noqa: E402
 
 REPO = sc.REPO
 TEX_DIR = sc.TEX_DIR
@@ -383,6 +384,7 @@ def write_all(tex_dir, model_dir, state_dir):
                         {"variants": {"normal": {"model": MODEL_REF % HEAD},
                                       "inventory": {"model": MODEL_REF % HEAD}}})
     written += [("state", NAME + ".json"), ("state", LARGE + ".json"), ("state", HEAD + ".json")]
+    model_depth.separate_dirs([(tex_dir, TEX_DIR), (model_dir, MODEL_DIR), (state_dir, STATE_DIR)], written, gen_cmu._write_json)
     return written
 
 

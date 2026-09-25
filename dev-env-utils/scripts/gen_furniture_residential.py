@@ -50,7 +50,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
-import furniture_depth  # noqa: E402
+import model_depth  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ASSETS = os.path.join(REPO, "modules", "furnishings", "src", "main", "resources", "assets", "csm")
@@ -748,8 +748,8 @@ def dump(path, data):
 
 def separate_faces(assets, written):
     """Moves the coplanar faces this generator wrote apart, so they do not z-fight
-    ({@code furniture_depth}); run by every furniture generator at the end of generate."""
-    furniture_depth.separate(assets, written, dump)
+    ({@code model_depth}); run by every furniture generator at the end of generate."""
+    model_depth.separate(assets, written, dump)
 
 
 def single_state(piece, ftex):

@@ -38,6 +38,7 @@ import sys
 import tempfile
 
 from PIL import Image
+import model_depth  # noqa: E402
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 ROADS = os.path.join(REPO, "modules", "roads", "src", "main", "resources", "assets", "csm")
@@ -261,6 +262,7 @@ def write_all(tex_dir, model_dir, state_dir):
         written.append(("model", name + ".json"))
     _write_json(os.path.join(state_dir, REGISTRY + ".json"), blockstate())
     written.append(("state", REGISTRY + ".json"))
+    model_depth.separate_dirs([(tex_dir, TEX_DIR), (model_dir, MODEL_DIR), (state_dir, STATE_DIR)], written, _write_json)
     return written
 
 

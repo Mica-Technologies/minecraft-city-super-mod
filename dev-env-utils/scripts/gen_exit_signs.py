@@ -42,6 +42,7 @@ import tempfile
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
+import model_depth  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MODULE = os.path.join(REPO, "modules", "lifesafety", "src", "main", "resources", "assets", "csm")
@@ -1056,6 +1057,8 @@ def write_all(roots):
             written.append(("item", name + ".json"))
         _write_json(os.path.join(roots["state"], style["block"] + ".json"), blockstate(style))
         written.append(("state", style["block"] + ".json"))
+    model_depth.separate_dirs([(roots[k], ROOTS[k]) for k in ("tex", "model", "state")],
+                              written, _write_json)
     return written
 
 

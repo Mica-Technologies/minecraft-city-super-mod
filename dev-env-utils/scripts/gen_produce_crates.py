@@ -30,7 +30,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import furniture_depth  # noqa: E402
+import model_depth  # noqa: E402
 
 from PIL import Image
 
@@ -1031,7 +1031,7 @@ def generate(assets):
         rel = "blockstates/%s.json" % name
         dump(os.path.join(assets, rel), blockstate(name))
         written.append(rel)
-    furniture_depth.separate(assets, written, dump)
+    model_depth.separate(assets, written, dump)
     return written
 
 
