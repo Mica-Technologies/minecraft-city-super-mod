@@ -1,0 +1,7 @@
+itemGroup.tabtransit=CSM: Nahverkehr
+tile.farevend.name=Fahrscheinautomat
+item.fareticket.name=Fahrschein
+item.transitcard.name=Chipkarte
+tile.fare_gate.name=Fahrscheinsperre
+tile.fare_gate_ada_2.name=Fahrscheinsperre (ADA, 2-spurig)
+tile.fare_gate_ada_3.name=Fahrscheinsperre (ADA, 3-spurig)

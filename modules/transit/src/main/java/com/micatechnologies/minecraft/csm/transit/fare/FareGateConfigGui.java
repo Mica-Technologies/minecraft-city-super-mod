@@ -1,5 +1,6 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.transit.fare;
 
+import com.micatechnologies.minecraft.csm.transit.CsmTransit;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -96,7 +97,7 @@ public class FareGateConfigGui extends GuiScreen {
     }
     int idx = button.id - BUTTON_ID_BASE;
     FareGateOpMode mode = FareGateOpMode.fromOrdinal(idx);
-    CsmTechnology.NETWORK.sendToServer(new FareGateOpModePacket(gatePos, mode));
+    CsmTransit.NETWORK.sendToServer(new FareGateOpModePacket(gatePos, mode));
     this.mc.displayGuiScreen(null);
   }
 

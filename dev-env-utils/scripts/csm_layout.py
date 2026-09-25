@@ -73,6 +73,7 @@ MODULE_OF_TAB = {
     "tabtechnology": "technology",
     "tabsignage": "signage",
     "tabsignagehidden": "signage",
+    "tabtransit": "transit",
     "tabmaterials": CORE,
 }
 

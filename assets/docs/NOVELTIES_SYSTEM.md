@@ -608,7 +608,7 @@ classes' registry names, so placed ones load as they were.
   Its sound, a recording of unknown origin, is replaced by a synthesised two-beep approval under
   the same key (`verifone_mx915`, now `FurnishingsSounds`). Lying flat it now rests on what is
   under it (`REST`, actual state): the generator writes its model dropped to each surface height
-  and the blockstate that picks one. The Technology module's fare vending machine still plays the
+  and the blockstate that picks one. The Transit module's fare vending machine still plays the
   same beep on a purchase: it finds `csm:verifone_mx915` by name and plays a note block's chime if
   this module is not installed.
 - **Store fixtures**: shopping carts in three colours (wire mesh as a 32 px cutout), the cart
@@ -659,7 +659,7 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:grill_sizzle` | `GRILL_SIZZLE` | the gas and charcoal grills while they cook (a 2 s loop every 40 ticks) | synthesised |
 | `csm:trampoline_boing` | `TRAMPOLINE_BOING` | a fall of more than a block onto the trampoline, the bounce castle or the diving board, quietly | synthesised |
 | `csm:locker_door_open`, `csm:locker_door_close` | `LOCKER_DOOR_OPEN`, `LOCKER_DOOR_CLOSE` | lockers | synthesised (replacing the unused sounds of unknown origin the first version shipped under these names) |
-| `csm:verifone_mx915` | `VERIFONE_MX915` | the Verifone MX915 and the card terminal on its stand (click); the Technology module's fare vending machine, by name | synthesised: two piezo beeps, the second higher (replacing a recording of unknown origin that came with the terminal from Technology) |
+| `csm:verifone_mx915` | `VERIFONE_MX915` | the Verifone MX915 and the card terminal on its stand (click); the Transit module's fare vending machine, by name | synthesised: two piezo beeps, the second higher (replacing a recording of unknown origin that came with the terminal from Technology) |
 | `csm:scanner_beep` | `SCANNER_BEEP` | the checkout scanner counter and the self-checkout (click) | synthesised |
 | `csm:register_drawer` | `REGISTER_DRAWER` | the POS terminal and the cash register opening | synthesised: key, bell, drawer run and stop |
 

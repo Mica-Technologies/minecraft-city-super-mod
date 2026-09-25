@@ -17,7 +17,7 @@ install fails at startup on purpose.
 Download the jars you want from the
 [latest release](https://github.com/Mica-Technologies/minecraft-city-super-mod/releases/latest)
 and drop them into your Forge 1.12.2 `mods` folder. Want everything the mod has ever had? Take all
-twelve.
+thirteen.
 
 | Jar | What it adds |
 |---|---|
@@ -27,12 +27,13 @@ twelve.
 | CSM: HVAC | Thermostats, air handlers, ducting |
 | CSM: Lighting | Street and area luminaires, pendants and sconces |
 | CSM: Power Grid | Utility poles, insulators, cross arms, electrical infrastructure |
-| CSM: Technology | Computers, servers, televisions, speakers, transit fare equipment |
+| CSM: Technology | Computers, servers, televisions, speakers |
 | CSM: Furniture & Novelties | Indoor and outdoor furniture, arcade cabinets, decorative novelties |
 | CSM: Building Materials | Block, stair, slab and fence sets |
 | CSM: Text to Speech | The speech engine and the Redstone TTS block — **also requires CSM: Technology** |
 | CSM: Signage & Advertising | Street ad kiosks, wall poster boards and billboards built to size |
 | CSM: Parks & Greenery | Street trees built from blocks, a planting tool, hedges and plantings, benches, playgrounds, fountains, irrigation |
+| CSM: Transit | Working fare gates, a fare vending machine, fare tickets and transit cards |
 
 Installing a subset only removes that content — nothing about the blocks you keep changes. Removing
 a module from a world that already uses its blocks is the usual missing-mod situation, though:
@@ -460,7 +461,7 @@ The `assets/docs/` directory contains the deeper, implementation-level notes for
 subsystems:
 
 - **[MODULE_SYSTEM.md](assets/docs/MODULE_SYSTEM.md)** -- How the mod is split into a mandatory
-  Core jar and eleven optional module jars: what each owns, how registration still runs through
+  Core jar and twelve optional module jars: what each owns, how registration still runs through
   Core, the service registries a module registers with, adding a module, and the traps.
 - **[BLOCK_AND_ITEM_BASE_CLASSES.md](assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md)** --
   Comprehensive reference for every abstract block, item, and tile entity class. Covers

@@ -10,8 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The CSM: Technology module — computers, servers, routers, televisions, speakers and the transit
- * fare equipment.
+ * The CSM: Technology module — computers, servers, routers, televisions and speakers.
  *
  * <p>A module's mod container exists so that Forge serves the module jar's {@code assets/csm}
  * resources and shows it in the mod list. Content registration is entirely Core's: the creative
@@ -75,14 +74,6 @@ public class CsmTechnology {
         SpeakerAmbientPacketHandler.class,
         SpeakerAmbientPacket.class,
         Side.CLIENT);
-    NETWORK.registerMessage(
-        FareVendingPurchaseHandler.class,
-        FareVendingPurchasePacket.class,
-        Side.SERVER);
-    NETWORK.registerMessage(
-        FareGateOpModeHandler.class,
-        FareGateOpModePacket.class,
-        Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
     // pre-initialization before it fires the sound registry event, so Core sees the complete

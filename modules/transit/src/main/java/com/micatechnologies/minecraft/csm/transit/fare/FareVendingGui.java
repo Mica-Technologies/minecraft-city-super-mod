@@ -1,5 +1,6 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.transit.fare;
 
+import com.micatechnologies.minecraft.csm.transit.CsmTransit;
 import java.io.IOException;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.Minecraft;
@@ -158,7 +159,7 @@ public class FareVendingGui extends GuiScreen {
     if (p == null) {
       return;
     }
-    CsmTechnology.NETWORK.sendToServer(new FareVendingPurchasePacket(vendingPos, p));
+    CsmTransit.NETWORK.sendToServer(new FareVendingPurchasePacket(vendingPos, p));
   }
 
   @Override

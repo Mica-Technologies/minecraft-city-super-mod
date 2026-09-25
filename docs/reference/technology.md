@@ -2,7 +2,7 @@
 
 Servers, routers, screens and consumer electronics.
 
-!!! info "49 blocks in this tab"
+!!! info "45 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -34,10 +34,6 @@ Servers, routers, screens and consumer electronics.
 | Cable STB | `csm:stbox` |  |  |  |  |
 | Enterasys Wireless AC AP | `csm:wapac` |  |  |  |  |
 | Enterasys Wireless N AP | `csm:wapn` |  |  |  |  |
-| Fare Gate | `csm:fare_gate` | 2 | 10 | pickaxe | 1 |
-| Fare Gate (ADA, 2-Wide) | `csm:fare_gate_ada_2` | 2 | 10 | pickaxe | 1 |
-| Fare Gate (ADA, 3-Wide) | `csm:fare_gate_ada_3` | 2 | 10 | pickaxe | 1 |
-| Fare Vending Machine | `csm:farevend` | 2 | 10 | pickaxe | 1 |
 | FourJay Speaker 1 | `csm:fjs1` |  |  |  |  |
 | FourJay Speaker 2 | `csm:fjs2` |  |  |  |  |
 | JBL Control Speaker (Black) | `csm:jblc2` |  |  |  |  |

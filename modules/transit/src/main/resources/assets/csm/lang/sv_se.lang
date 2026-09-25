@@ -1,0 +1,7 @@
+itemGroup.tabtransit=CSM: Kollektivtrafik
+tile.farevend.name=Biljettautomat
+item.fareticket.name=Biljett
+item.transitcard.name=Reskort
+tile.fare_gate.name=Biljettspärr
+tile.fare_gate_ada_2.name=Biljettspärr (ADA, 2-Bred)
+tile.fare_gate_ada_3.name=Biljettspärr (ADA, 3-Bred)

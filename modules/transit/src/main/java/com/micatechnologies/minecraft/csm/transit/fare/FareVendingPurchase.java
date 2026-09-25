@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.transit.fare;
 
 /**
  * Catalogue of purchase options offered by the {@link BlockFareVendingMachine}. Each entry

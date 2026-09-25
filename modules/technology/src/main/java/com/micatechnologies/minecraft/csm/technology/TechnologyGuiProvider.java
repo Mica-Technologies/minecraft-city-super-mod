@@ -8,8 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * Supplies the technology package's GUI screens: the computer, the fare vending machine and the
- * fare gate.
+ * Supplies the technology package's GUI screen: the computer.
  *
  * <p>GUI id 0 — the Redstone TTS Module — is not here. That block ships in the Text to Speech
  * module, which registers its own provider for that id.</p>
@@ -31,11 +30,6 @@ public class TechnologyGuiProvider implements ICsmGuiProvider {
     Object returnValue = null;
     if (id == 15 && tileEntity instanceof TileEntityComputer) {
       returnValue = new ComputerGui((TileEntityComputer) tileEntity);
-    } else if (id == 16
-        && world.getBlockState(pos).getBlock() instanceof BlockFareVendingMachine) {
-      returnValue = new FareVendingGui(pos);
-    } else if (id == 17 && tileEntity instanceof TileEntityFareGate) {
-      returnValue = new FareGateConfigGui((TileEntityFareGate) tileEntity);
     }
     return returnValue;
   }

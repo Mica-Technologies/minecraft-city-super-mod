@@ -2,7 +2,7 @@
   {
     "modid": "${modid}",
     "name": "${modname}",
-    "description": "Computers, servers, televisions and speakers for the City Super Mod. Requires CSM: Core.",
+    "description": "Public transit for the City Super Mod: working fare gates (standard and ADA wide), a fare vending machine, and the tickets and stored-trip cards they take. Requires CSM: Core.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",

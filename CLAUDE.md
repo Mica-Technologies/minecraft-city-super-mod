@@ -75,7 +75,7 @@ CSM adds nothing to world generation. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
 ### Modules
 
-The mod ships as a mandatory **CSM: Core** jar (`csm`) plus eleven optional module jars, all built
+The mod ships as a mandatory **CSM: Core** jar (`csm`) plus twelve optional module jars, all built
 from this repository and released together at the same version. Every module pins Core to that
 exact version, and **all content keeps the `csm:` namespace** — module ids only give Forge a
 container per jar.
@@ -94,6 +94,7 @@ container per jar.
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, plantings and park amenities; two tabs, Trees & Plants and Parks |
+| `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names); the Transit tab; see `assets/docs/TRANSIT_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -123,6 +124,7 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 ├── parks/           (modules/parks) trees/ (log and leaves kit), planting/ (the tool and its
 │                    generators), landscape/ (plantings), amenities/ (the Parks tab)
 ├── technology/       # Modern tech: servers, routers, TVs
+├── transit/         (modules/transit) fare/ (fare gates, vending machine, tickets, cards)
 ├── tts/              (modules/tts)
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
 ├── trafficaccessories/
@@ -305,7 +307,7 @@ Voice evac sound volume target: ~4,500 RMS.
 ## In-Depth System Documentation
 
 See `assets/docs/` for detailed technical documentation on major subsystems:
-- `assets/docs/MODULE_SYSTEM.md` -- Core plus eleven optional module jars: what each owns, how
+- `assets/docs/MODULE_SYSTEM.md` -- Core plus twelve optional module jars: what each owns, how
   registration still works across jars, the Core service registries, adding a module, the traps
 - `assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md` -- Every abstract class, constructors, rotation, meta encoding, registration
 - `assets/docs/FRAMING_SYSTEM.md` -- Stud walls, joists, deck and structural steel: why a wall is
@@ -395,6 +397,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   palm crowns, the Tree Planting Tool and its six generator shapes (street clearance, one volume
   check, presets appended by ordinal), the plantings and amenities (why nothing shares a trunk's
   cell, bench runs, the irrigation controller and sprinklers), and the traps
+- `assets/docs/TRANSIT_SYSTEM.md` -- The Transit module: the fare gates (ticket, card and exit
+  sensing, the gate's states, operator modes), the fare vending machine and its purchases, the
+  ticket and stored-trip card, why the move from Technology kept every registry name, GUI id and
+  asset path, and what the module is to grow (bus stops, shelters, platforms, stations, boards)
 - `assets/docs/HVAC_SYSTEM.md` -- Rooms that hold heat: the thermal simulation (flood-filled
   spaces split into regions, walls/openings/ground/neighbours, implicit step), model-based
   modulating control, vent throw and the thermostat trim, why a partly unloaded room freezes, the

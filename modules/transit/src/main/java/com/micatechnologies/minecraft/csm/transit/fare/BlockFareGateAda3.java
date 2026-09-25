@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.transit.fare;
 
 /**
  * Three-cell-wide ADA fare gate. Extends one cell in EACH horizontal direction from the

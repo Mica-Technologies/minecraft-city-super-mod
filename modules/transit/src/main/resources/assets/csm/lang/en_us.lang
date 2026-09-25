@@ -1,0 +1,7 @@
+itemGroup.tabtransit=CSM: Transit
+tile.farevend.name=Fare Vending Machine
+item.fareticket.name=Fare Ticket
+item.transitcard.name=Transit Card
+tile.fare_gate.name=Fare Gate
+tile.fare_gate_ada_2.name=Fare Gate (ADA, 2-Wide)
+tile.fare_gate_ada_3.name=Fare Gate (ADA, 3-Wide)

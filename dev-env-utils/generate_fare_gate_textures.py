@@ -25,7 +25,9 @@ PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 sys.path.insert(0, os.path.join(SCRIPT_DIR, "scripts"))
 import csm_layout as layout  # noqa: E402
 
-TEX_DIR = layout.asset_dir_for_write(layout.owner_of_folder("technology"),
+# The fare gate ships in Transit, though its textures keep the technology folder they were first
+# drawn into: that path is what the models name.
+TEX_DIR = layout.asset_dir_for_write(layout.owner_of("fare_gate"),
                                      "textures/blocks/technology")
 
 SIZE = 16

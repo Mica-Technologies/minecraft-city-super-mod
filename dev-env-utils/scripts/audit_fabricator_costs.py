@@ -357,6 +357,9 @@ def cost_for(registry, info, ancestors):
         return ("SHEET_METAL x2", "FASTENER_KIT")
     if tab == "tabtechnology":
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
+    if tab == "tabtransit":
+        # Mirrors TransitFabricatorRules: the fare equipment kept its Technology price.
+        return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtrafficaccessories":
         return ("SHEET_METAL", "FASTENER_KIT")
     if tab == "tabsignage":

@@ -1,0 +1,7 @@
+itemGroup.tabtransit=CSM: Transporte público
+tile.farevend.name=Máquina Expendedora de Tarifas
+item.fareticket.name=Billete de Tarifa
+item.transitcard.name=Tarjeta de Transporte
+tile.fare_gate.name=Torniquete de Tarifa
+tile.fare_gate_ada_2.name=Torniquete de Tarifa (ADA, Doble Ancho)
+tile.fare_gate_ada_3.name=Torniquete de Tarifa (ADA, Triple Ancho)

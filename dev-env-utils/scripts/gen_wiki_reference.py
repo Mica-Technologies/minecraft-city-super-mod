@@ -155,6 +155,9 @@ TABS = {
                             "them, and structural steel."),
     "tabtechnology": ("technology", "Technology",
                       "Servers, routers, screens and consumer electronics."),
+    "tabtransit": ("transit", "Transit",
+                   "Public transit: fare gates, the fare vending machine, and the tickets and "
+                   "cards they take."),
     "tabtrafficaccessories": ("traffic-accessories", "Traffic Accessories",
                               "Poles, mounts, mast arms, span wire hardware, backplates and "
                               "cameras."),
@@ -173,7 +176,8 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmarketstore",
               "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",
-              "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtreesplants",
+              "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
+              "tabtreesplants",
               "tabnone"]
 
 

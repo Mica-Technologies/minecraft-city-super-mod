@@ -8,14 +8,8 @@ import com.micatechnologies.minecraft.csm.technology.BlockImac;
 import com.micatechnologies.minecraft.csm.technology.BlockImacPro;
 import com.micatechnologies.minecraft.csm.technology.BlockMacBookPro;
 import com.micatechnologies.minecraft.csm.technology.BlockDeskDeviceFactory;
-import com.micatechnologies.minecraft.csm.technology.BlockFareGate;
-import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda2;
-import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda3;
-import com.micatechnologies.minecraft.csm.technology.BlockFareVendingMachine;
 import com.micatechnologies.minecraft.csm.technology.BlockSpeakerFactory;
 import com.micatechnologies.minecraft.csm.technology.ItemApplePencil;
-import com.micatechnologies.minecraft.csm.technology.ItemFareTicket;
-import com.micatechnologies.minecraft.csm.technology.ItemTransitCard;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -106,10 +100,6 @@ public class CsmTabTechnology extends CsmTab {
     initTabBlock(new BlockSpeakerFactory("polk_audio_speaker_black", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
     initTabBlock(new BlockSpeakerFactory("fjs1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
     initTabBlock(new BlockSpeakerFactory("fjs2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
-    initTabBlock(BlockFareVendingMachine.class, fmlPreInitializationEvent);
-    initTabBlock(BlockFareGate.class, fmlPreInitializationEvent);
-    initTabBlock(BlockFareGateAda2.class, fmlPreInitializationEvent);
-    initTabBlock(BlockFareGateAda3.class, fmlPreInitializationEvent);
     initTabBlock(BlockImac.class, fmlPreInitializationEvent);
     initTabBlock(BlockImacPro.class, fmlPreInitializationEvent);
     initTabBlock(new BlockSpeakerFactory("jblc1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
@@ -145,8 +135,6 @@ public class CsmTabTechnology extends CsmTab {
         "com.micatechnologies.minecraft.csm.tts.BlockRedstoneTTS", fmlPreInitializationEvent);
     initTabItemIfLoaded("csm_tts",
         "com.micatechnologies.minecraft.csm.tts.ItemTtsLinker", fmlPreInitializationEvent);
-    initTabItem(ItemFareTicket.class, fmlPreInitializationEvent);
-    initTabItem(ItemTransitCard.class, fmlPreInitializationEvent);
     initTabItem(new ItemDecorativeFactory("appleipadpro", "This iPad does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appleiphonese2020", "This iPhone does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appleiphonexr", "This iPhone does nothing and is only for looks!"));

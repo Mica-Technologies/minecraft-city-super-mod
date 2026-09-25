@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.transit.fare;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;

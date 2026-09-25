@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.transit.fare;
 
 /**
  * Operator-controlled override mode for {@link BlockFareGate}. Selected from the
