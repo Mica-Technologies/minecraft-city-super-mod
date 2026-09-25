@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
@@ -62,7 +63,7 @@ public class BlockControllableRrfb extends AbstractBlockControllableSignal
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, COLOR, HOUSING, DOUBLE_SIDED);
+    return new CsmBlockStateContainer(this, FACING, COLOR, HOUSING, DOUBLE_SIDED);
   }
 
   @Override

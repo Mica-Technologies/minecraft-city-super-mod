@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.streetscape;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -33,7 +34,7 @@ public class BlockMailboxCurbside extends BlockMailbox {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, FLAG);
+    return new CsmBlockStateContainer(this, FACING, FLAG);
   }
 
   @Override

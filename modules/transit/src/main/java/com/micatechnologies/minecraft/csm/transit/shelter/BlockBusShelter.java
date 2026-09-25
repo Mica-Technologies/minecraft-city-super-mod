@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.shelter;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -125,7 +126,7 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UPPER, LIT, POWERED, LEFT, RIGHT, AHEAD,
+    return new CsmBlockStateContainer(this, FACING, UPPER, LIT, POWERED, LEFT, RIGHT, AHEAD,
         BEHIND);
   }
 

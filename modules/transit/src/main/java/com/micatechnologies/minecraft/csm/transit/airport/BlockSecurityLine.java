@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.airport;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformFixture;
 import java.util.List;
@@ -53,7 +54,7 @@ public class BlockSecurityLine extends BlockPlatformFixture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LEFT, RIGHT);
+    return new CsmBlockStateContainer(this, FACING, LEFT, RIGHT);
   }
 
   @Override

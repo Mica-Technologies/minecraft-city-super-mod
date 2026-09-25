@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -53,7 +54,7 @@ public class BlockGuardrailBoxBeam extends BlockGuardrail {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, POST,
+    return new CsmBlockStateContainer(this, FACING, POST,
         WorkZoneJoins.CONNECT_LEFT, WorkZoneJoins.CONNECT_RIGHT, WorkZoneJoins.DIAG_FILL,
         GuardrailJoins.SLOPE, STACKED);
   }

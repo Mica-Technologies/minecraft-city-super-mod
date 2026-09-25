@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.powergrid.fe;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -73,7 +74,7 @@ public class BlockForgeEnergyToRedstone extends AbstractBlock implements ICsmTil
 
   @Override
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, POWERED);
+    return new CsmBlockStateContainer(this, POWERED);
   }
 
   @Override

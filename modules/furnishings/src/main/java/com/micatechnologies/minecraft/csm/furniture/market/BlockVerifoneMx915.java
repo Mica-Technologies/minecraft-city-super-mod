@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterPiece;
 import com.micatechnologies.minecraft.csm.furniture.residential.SurfaceRest;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
@@ -53,7 +54,7 @@ public class BlockVerifoneMx915 extends AbstractBlockRotatableNSEWUD {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, BlockCounterPiece.REST);
+    return new CsmBlockStateContainer(this, FACING, BlockCounterPiece.REST);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety.stations;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.lifesafety.LifeSafetySounds;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
 import javax.annotation.Nonnull;
@@ -40,7 +41,7 @@ public class BlockStationBell extends BlockFireProtectionProp {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, POWERED);
+    return new CsmBlockStateContainer(this, FACING, POWERED);
   }
 
   @Override

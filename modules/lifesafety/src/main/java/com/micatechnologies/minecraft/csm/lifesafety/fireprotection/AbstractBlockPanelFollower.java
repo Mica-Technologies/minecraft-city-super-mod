@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.lifesafety.fireprotection;
 
 import com.micatechnologies.minecraft.csm.api.firealarm.CsmFireAlarmQuery;
 import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmPanelRegistry;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.lifesafety.IFireAlarmPanelFollower;
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmSensor;
@@ -47,7 +48,7 @@ public abstract class AbstractBlockPanelFollower extends BlockFireProtectionProp
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, ALARM);
+    return new CsmBlockStateContainer(this, FACING, ALARM);
   }
 
   @Override

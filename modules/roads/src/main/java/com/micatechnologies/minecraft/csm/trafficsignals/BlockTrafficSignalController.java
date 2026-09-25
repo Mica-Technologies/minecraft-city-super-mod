@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -219,7 +220,7 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
 
   @Override
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, POWERED);
+    return new CsmBlockStateContainer(this, POWERED);
   }
 
   @Override

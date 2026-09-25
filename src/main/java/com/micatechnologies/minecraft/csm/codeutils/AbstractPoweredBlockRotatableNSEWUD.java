@@ -227,7 +227,7 @@ public abstract class AbstractPoweredBlockRotatableNSEWUD extends AbstractBlock 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, POWERED);
+    return new CsmBlockStateContainer(this, FACING, POWERED);
   }
 
   /**

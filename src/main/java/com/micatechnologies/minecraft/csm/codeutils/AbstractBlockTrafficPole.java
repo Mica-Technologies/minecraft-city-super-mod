@@ -245,7 +245,7 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN,
+    return new CsmBlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN,
         EXTEND_DOWN);
   }
 

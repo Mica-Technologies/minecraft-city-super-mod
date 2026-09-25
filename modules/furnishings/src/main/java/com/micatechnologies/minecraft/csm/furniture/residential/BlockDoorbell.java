@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -51,7 +52,7 @@ public class BlockDoorbell extends BlockResidentialFurniture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, POWERED);
+    return new CsmBlockStateContainer(this, FACING, POWERED);
   }
 
   @Override

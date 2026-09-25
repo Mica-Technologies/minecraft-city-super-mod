@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.station;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.transit.platform.PlatformSigns;
 import com.micatechnologies.minecraft.csm.transit.platform.TileEntityPlatformSign;
@@ -81,7 +82,7 @@ public class BlockStationEntranceRoof extends AbstractBlock implements ICsmTileE
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, NORTH, EAST, SOUTH, WEST, LEGEND);
+    return new CsmBlockStateContainer(this, NORTH, EAST, SOUTH, WEST, LEGEND);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety.stations;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmLinker;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
@@ -43,7 +44,7 @@ public class BlockSirenController extends BlockFireProtectionProp implements
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, POWERED);
+    return new CsmBlockStateContainer(this, FACING, POWERED);
   }
 
   @Override

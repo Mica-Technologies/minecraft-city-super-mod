@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -105,7 +106,7 @@ public class BlockJobTrailer extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, NORTH, EAST, SOUTH, WEST, UP, DOWN, UPPER, TOPPED);
+    return new CsmBlockStateContainer(this, NORTH, EAST, SOUTH, WEST, UP, DOWN, UPPER, TOPPED);
   }
 
   @Override

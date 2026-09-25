@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -52,7 +53,7 @@ public class BlockPostShore extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, UP, DOWN);
+    return new CsmBlockStateContainer(this, UP, DOWN);
   }
 
   @Override

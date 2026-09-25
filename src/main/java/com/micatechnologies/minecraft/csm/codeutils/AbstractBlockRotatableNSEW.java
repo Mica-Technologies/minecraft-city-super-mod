@@ -203,7 +203,7 @@ public abstract class AbstractBlockRotatableNSEW extends AbstractBlock {
   @Override
   @Nonnull
   protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-    return new net.minecraft.block.state.BlockStateContainer(this,
+    return new CsmBlockStateContainer(this,
         CsmPoleFit.properties(this, FACING));
   }
 

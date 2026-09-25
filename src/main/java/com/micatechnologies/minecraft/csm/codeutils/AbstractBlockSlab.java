@@ -306,9 +306,9 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
   @Override
   protected BlockStateContainer createBlockState() {
     if (!this.isDouble()) {
-      return new BlockStateContainer(AbstractBlockSlab.this, VARIANT, HALF);
+      return new CsmBlockStateContainer(AbstractBlockSlab.this, VARIANT, HALF);
     }
-    return new BlockStateContainer(AbstractBlockSlab.this, VARIANT);
+    return new CsmBlockStateContainer(AbstractBlockSlab.this, VARIANT);
   }
 
   /**

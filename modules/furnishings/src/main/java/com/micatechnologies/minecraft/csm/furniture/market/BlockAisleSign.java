@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialFurniture;
 import com.micatechnologies.minecraft.csm.furniture.residential.FixtureMaterial;
@@ -52,7 +53,7 @@ public class BlockAisleSign extends BlockResidentialFurniture implements ICsmTil
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, NUMBER);
+    return new CsmBlockStateContainer(this, FACING, NUMBER);
   }
 
   @Override

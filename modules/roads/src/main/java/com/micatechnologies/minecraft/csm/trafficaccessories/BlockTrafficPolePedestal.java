@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
@@ -158,7 +159,7 @@ public class BlockTrafficPolePedestal extends AbstractBlockTrafficPole {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN,
+    return new CsmBlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN,
         END_NORTH, END_SOUTH);
   }
 

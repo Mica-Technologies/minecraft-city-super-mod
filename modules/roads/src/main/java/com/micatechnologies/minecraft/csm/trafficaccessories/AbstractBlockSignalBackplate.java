@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
@@ -68,7 +69,7 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
 
   @Override
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, MODEL_VARIANT);
+    return new CsmBlockStateContainer(this, FACING, MODEL_VARIANT);
   }
 
   /**

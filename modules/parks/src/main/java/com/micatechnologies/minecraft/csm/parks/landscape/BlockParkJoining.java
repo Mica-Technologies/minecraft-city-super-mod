@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.landscape;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -110,7 +111,7 @@ public class BlockParkJoining extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, NORTH, EAST, SOUTH, WEST);
+    return new CsmBlockStateContainer(this, NORTH, EAST, SOUTH, WEST);
   }
 
   @Override

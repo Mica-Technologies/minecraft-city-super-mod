@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.furniture.residential.WidePieces.IWidePiece;
 import com.micatechnologies.minecraft.csm.furniture.residential.WidePieces.ItemWidePiece;
@@ -86,7 +87,7 @@ public class BlockTelevision extends BlockCounterPiece
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, REST, WidePieces.PART, CHANNEL);
+    return new CsmBlockStateContainer(this, FACING, REST, WidePieces.PART, CHANNEL);
   }
 
   @Override

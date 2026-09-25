@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
@@ -46,7 +47,7 @@ public abstract class AbstractBlockRailroadCrossing extends AbstractBlockRotatab
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, POWERED);
+    return new CsmBlockStateContainer(this, FACING, POWERED);
   }
 
   @Override

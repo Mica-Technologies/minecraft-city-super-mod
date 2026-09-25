@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.outdoor;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.furniture.residential.LampSwitching;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -47,7 +48,7 @@ public class BlockChimney extends BlockFirePit {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIT,
+    return new CsmBlockStateContainer(this, FACING, LIT,
         LampSwitching.POWERED, UP);
   }
 

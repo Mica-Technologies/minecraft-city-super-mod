@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.office;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -152,7 +153,7 @@ public class BlockCubiclePanel extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, NORTH, EAST, SOUTH, WEST, UP, ALONG_X, SHELF);
+    return new CsmBlockStateContainer(this, NORTH, EAST, SOUTH, WEST, UP, ALONG_X, SHELF);
   }
 
   @Override

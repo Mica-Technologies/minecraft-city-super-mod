@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -66,7 +67,7 @@ public class BlockSwitchRelay extends AbstractBlock implements ICsmTileEntityPro
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING);
+    return new CsmBlockStateContainer(this, FACING);
   }
 
   @Override

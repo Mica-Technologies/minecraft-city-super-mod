@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -212,9 +213,9 @@ public class BlockGarageDoor extends AbstractBlock implements ICsmTileEntityProv
   protected BlockStateContainer createBlockState() {
     // Runs inside the super constructor, before the fields are set: kind() reads the pending name.
     if (kind() == Kind.SECTIONAL) {
-      return new BlockStateContainer(this, FACING, MOTION, CCW, CW, UP, DOWN, DEPTH);
+      return new CsmBlockStateContainer(this, FACING, MOTION, CCW, CW, UP, DOWN, DEPTH);
     }
-    return new BlockStateContainer(this, FACING, MOTION, CCW, CW, UP, DOWN);
+    return new CsmBlockStateContainer(this, FACING, MOTION, CCW, CW, UP, DOWN);
   }
 
   private boolean hasDepth() {

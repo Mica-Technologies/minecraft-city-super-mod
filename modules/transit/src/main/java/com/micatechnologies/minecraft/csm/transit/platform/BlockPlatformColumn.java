@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.platform;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockFaceShape;
@@ -39,7 +40,7 @@ public class BlockPlatformColumn extends BlockPlatformFixture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UP, DOWN);
+    return new CsmBlockStateContainer(this, FACING, UP, DOWN);
   }
 
   @Override

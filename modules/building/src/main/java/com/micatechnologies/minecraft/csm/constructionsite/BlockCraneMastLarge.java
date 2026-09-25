@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,7 +53,7 @@ public class BlockCraneMastLarge extends BlockCraneMast {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, LIVERY, DOWN, CORNER, HALF);
+    return new CsmBlockStateContainer(this, LIVERY, DOWN, CORNER, HALF);
   }
 
   @Override

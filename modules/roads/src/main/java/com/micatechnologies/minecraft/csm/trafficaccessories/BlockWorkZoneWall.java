@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
@@ -69,7 +70,7 @@ public class BlockWorkZoneWall extends BlockWorkZoneDeviceDiagonal {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, CONNECT_LEFT, CONNECT_RIGHT, DIAG_FILL);
+    return new CsmBlockStateContainer(this, FACING, CONNECT_LEFT, CONNECT_RIGHT, DIAG_FILL);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
@@ -154,7 +155,7 @@ public class BlockWindowTreatment extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, STATE, LEFT, RIGHT, UP, DOWN);
+    return new CsmBlockStateContainer(this, FACING, STATE, LEFT, RIGHT, UP, DOWN);
   }
 
   @Override

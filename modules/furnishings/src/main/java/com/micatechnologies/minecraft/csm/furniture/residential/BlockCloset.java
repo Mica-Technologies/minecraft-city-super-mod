@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,7 +38,7 @@ public class BlockCloset extends BlockResidentialTall {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UPPER, BlockResidentialRun.LEFT,
+    return new CsmBlockStateContainer(this, FACING, UPPER, BlockResidentialRun.LEFT,
         BlockResidentialRun.RIGHT);
   }
 

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.ISwitchable;
 import com.micatechnologies.minecraft.csm.furniture.residential.LampSwitching;
@@ -60,7 +61,7 @@ public class BlockDisplayCase extends BlockResidentialStorage implements ISwitch
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LEFT, RIGHT, LIT, LampSwitching.POWERED);
+    return new CsmBlockStateContainer(this, FACING, LEFT, RIGHT, LIT, LampSwitching.POWERED);
   }
 
   @Override

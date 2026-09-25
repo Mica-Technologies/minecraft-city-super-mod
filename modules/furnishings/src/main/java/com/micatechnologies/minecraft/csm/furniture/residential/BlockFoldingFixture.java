@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -48,7 +49,7 @@ public class BlockFoldingFixture extends BlockBathroomFixture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, OPEN);
+    return new CsmBlockStateContainer(this, FACING, OPEN);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,7 +56,7 @@ public class BlockCeilingFan extends BlockResidentialFurniture
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIGHT, FAN);
+    return new CsmBlockStateContainer(this, FACING, LIGHT, FAN);
   }
 
   @Override

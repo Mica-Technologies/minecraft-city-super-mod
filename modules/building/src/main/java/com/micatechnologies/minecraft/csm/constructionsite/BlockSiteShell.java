@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -99,7 +100,7 @@ public class BlockSiteShell extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN);
+    return new CsmBlockStateContainer(this, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
 import com.micatechnologies.minecraft.csm.Csm;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
 import net.minecraft.block.properties.PropertyBool;
@@ -63,8 +64,8 @@ public class BlockSpanWireHangerMount extends BlockTrafficAccessoryNSEWUD
   @Override
   protected BlockStateContainer createBlockState() {
     return hidesModelWhenLinked()
-        ? new BlockStateContainer(this, FACING, LINKED)
-        : new BlockStateContainer(this, FACING);
+        ? new CsmBlockStateContainer(this, FACING, LINKED)
+        : new CsmBlockStateContainer(this, FACING);
   }
 
   @Override

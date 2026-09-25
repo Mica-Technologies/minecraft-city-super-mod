@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
@@ -101,7 +102,7 @@ public class BlockFireAlarmSounderStrobeMetaSoundFactory extends AbstractBlockFi
 
   @Override
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, SOUND);
+    return new CsmBlockStateContainer(this, FACING, SOUND);
   }
 
   @Override

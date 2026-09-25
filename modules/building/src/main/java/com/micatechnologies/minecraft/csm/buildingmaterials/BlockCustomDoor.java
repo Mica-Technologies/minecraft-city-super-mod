@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.buildingmaterials.CustomDoorSettings.Movement;
 import com.micatechnologies.minecraft.csm.buildingmaterials.CustomDoorSettings.Redstone;
+import com.micatechnologies.minecraft.csm.codeutils.CsmExtendedBlockState;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -123,7 +124,7 @@ public class BlockCustomDoor extends BlockBuildingDoor {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new ExtendedBlockState(this,
+    return new CsmExtendedBlockState(this,
         new IProperty[]{HALF, FACING, OPEN, HINGE, CLOSER, SWING, REVERSED},
         new IUnlistedProperty[]{SETTINGS, PAIRED, HIDDEN});
   }

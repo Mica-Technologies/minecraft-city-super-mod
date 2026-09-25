@@ -33,6 +33,8 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  *   <li>{@code /csm poleignore remove <block>} — removes a block id</li>
  *   <li>{@code /csm memstats [dump]} — what every block costs in memory (states, neighbour
  *       tables and, on a client, baked models and quads); {@code dump} writes the full report</li>
+ *   <li>{@code /csm statecheck} — checks every CSM block's state container against vanilla's,
+ *       state by state (see {@code CsmStateCheck}); read only</li>
  * </ul>
  * <p>
  * Mutations made through this command are persisted to the config file immediately, so they
@@ -42,7 +44,7 @@ public class CommandCsm extends CommandBase {
 
   private static final String USAGE =
       "/csm <reloadconfig|poleignore <list|add|remove> [block]"
-          + "|renderpass <list|skip|draw|reset> [pass]|displaylists|memstats [dump]>";
+          + "|renderpass <list|skip|draw|reset> [pass]|displaylists|memstats [dump]|statecheck>";
 
   @Override
   public String getName() {
@@ -86,6 +88,12 @@ public class CommandCsm extends CommandBase {
         return;
       case "memstats":
         handleMemStats(server, sender, args);
+        return;
+      case "statecheck":
+        for (String line : com.micatechnologies.minecraft.csm.codeutils.CsmStateCheck.run()) {
+          Csm.getLogger().info("[statecheck] {}", line);
+          sendSuccess(sender, line);
+        }
         return;
       default:
         throw new WrongUsageException(USAGE);
@@ -265,7 +273,7 @@ public class CommandCsm extends CommandBase {
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
       return getListOfStringsMatchingLastWord(args, "reloadconfig", "poleignore", "renderpass",
-          "displaylists", "memstats");
+          "displaylists", "memstats", "statecheck");
     }
     if (args.length == 2 && "memstats".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "dump");

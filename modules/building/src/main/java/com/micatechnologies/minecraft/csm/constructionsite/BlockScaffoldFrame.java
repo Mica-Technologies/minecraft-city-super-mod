@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -159,7 +160,7 @@ public class BlockScaffoldFrame extends AbstractBlock implements ICsmSiteClimbab
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, AXIS, LADDER, NETTED, CASTERS, NORTH, EAST, SOUTH, WEST,
+    return new CsmBlockStateContainer(this, AXIS, LADDER, NETTED, CASTERS, NORTH, EAST, SOUTH, WEST,
         UP, DOWN);
   }
 

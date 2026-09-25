@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.platform;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,7 +47,7 @@ public class BlockStationNameSign extends BlockPlatformFixture implements ICsmTi
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, NAME);
+    return new CsmBlockStateContainer(this, FACING, NAME);
   }
 
   @Override

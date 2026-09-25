@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.outdoor;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialFurniture;
 import com.micatechnologies.minecraft.csm.furniture.residential.ISwitchable;
 import com.micatechnologies.minecraft.csm.furniture.residential.LampSwitching;
@@ -73,7 +74,7 @@ public class BlockFirePit extends BlockResidentialFurniture implements ISwitchab
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIT, LampSwitching.POWERED);
+    return new CsmBlockStateContainer(this, FACING, LIT, LampSwitching.POWERED);
   }
 
   @Override

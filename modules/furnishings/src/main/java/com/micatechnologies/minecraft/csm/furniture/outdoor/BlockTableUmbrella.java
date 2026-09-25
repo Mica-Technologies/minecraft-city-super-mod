@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.outdoor;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialFurniture;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
@@ -39,7 +40,7 @@ public class BlockTableUmbrella extends BlockResidentialFurniture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, OPEN);
+    return new CsmBlockStateContainer(this, FACING, OPEN);
   }
 
   @Override

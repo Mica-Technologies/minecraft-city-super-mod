@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.parks.landscape;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -31,7 +32,7 @@ public class BlockParkColumn extends BlockParkProp {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, BASE, CAP);
+    return new CsmBlockStateContainer(this, BASE, CAP);
   }
 
   @Override

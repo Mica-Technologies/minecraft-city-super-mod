@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.signage;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -159,7 +160,7 @@ public abstract class AbstractBlockAdBoard extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, TAG, LEFT, RIGHT, UP, DOWN, LAMP);
+    return new CsmBlockStateContainer(this, FACING, TAG, LEFT, RIGHT, UP, DOWN, LAMP);
   }
 
   @Override

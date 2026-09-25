@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.station;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.transit.platform.PlatformSigns;
 import com.micatechnologies.minecraft.csm.transit.platform.TileEntityPlatformSign;
@@ -44,7 +45,7 @@ public class BlockStationRailingSign extends BlockStationRailing implements
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, NORTH, EAST, WEST, SOUTH, LEGEND);
+    return new CsmBlockStateContainer(this, NORTH, EAST, WEST, SOUTH, LEGEND);
   }
 
   @Override

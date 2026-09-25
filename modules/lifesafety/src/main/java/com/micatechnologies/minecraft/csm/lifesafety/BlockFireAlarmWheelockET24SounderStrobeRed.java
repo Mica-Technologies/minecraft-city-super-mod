@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
@@ -102,7 +103,7 @@ public class BlockFireAlarmWheelockET24SounderStrobeRed extends AbstractBlockFir
 
   @Override
   protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-    return new net.minecraft.block.state.BlockStateContainer(this, FACING, SOUND);
+    return new CsmBlockStateContainer(this, FACING, SOUND);
   }
 
   @Override

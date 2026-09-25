@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -46,7 +47,7 @@ public abstract class AbstractBlockTrafficSignalSensorAngled extends AbstractBlo
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, ANGLE);
+    return new CsmBlockStateContainer(this, FACING, ANGLE);
   }
 
   @Override

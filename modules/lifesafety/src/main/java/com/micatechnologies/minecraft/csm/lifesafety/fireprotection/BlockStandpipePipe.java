@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety.fireprotection;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -170,7 +171,7 @@ public class BlockStandpipePipe extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, NORTH, SOUTH, EAST, WEST, UP, DOWN, JOINT, FLOOR,
+    return new CsmBlockStateContainer(this, NORTH, SOUTH, EAST, WEST, UP, DOWN, JOINT, FLOOR,
         CEILING);
   }
 

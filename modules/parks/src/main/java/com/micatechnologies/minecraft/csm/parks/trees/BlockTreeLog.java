@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.trees;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmExtendedBlockState;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -132,7 +133,7 @@ public class BlockTreeLog extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new ExtendedBlockState(this, new net.minecraft.block.properties.IProperty[]{AXIS},
+    return new CsmExtendedBlockState(this, new net.minecraft.block.properties.IProperty[]{AXIS},
         new IUnlistedProperty[]{CONNECTIONS});
   }
 

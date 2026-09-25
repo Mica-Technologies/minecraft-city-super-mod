@@ -54,7 +54,7 @@ public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTraf
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN,
+    return new CsmBlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN,
         MOUNT_NORTH, MOUNT_SOUTH);
   }
 

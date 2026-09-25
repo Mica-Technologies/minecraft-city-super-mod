@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.station;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -79,7 +80,7 @@ public class BlockStationGlobe extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, COLOUR);
+    return new CsmBlockStateContainer(this, COLOUR);
   }
 
   @Override

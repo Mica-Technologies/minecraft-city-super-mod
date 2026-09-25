@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyBool;
@@ -50,7 +51,7 @@ public class BlockKitchenLight extends BlockResidentialFurniture implements ISwi
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIT, LampSwitching.POWERED);
+    return new CsmBlockStateContainer(this, FACING, LIT, LampSwitching.POWERED);
   }
 
   @Override

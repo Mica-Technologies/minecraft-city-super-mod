@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety.stations;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
 import javax.annotation.Nonnull;
@@ -55,7 +56,7 @@ public class BlockWarningSiren extends BlockFireProtectionProp implements ICsmTi
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, ACTIVE, HEAD);
+    return new CsmBlockStateContainer(this, FACING, ACTIVE, HEAD);
   }
 
   @Override

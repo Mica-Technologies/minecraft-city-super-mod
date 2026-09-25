@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.constructionsite.BuildingGuiProvider;
 import java.util.List;
@@ -116,7 +117,7 @@ public class BlockGarageDoorControl extends AbstractBlock implements ICsmTileEnt
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING);
+    return new CsmBlockStateContainer(this, FACING);
   }
 
   @Override

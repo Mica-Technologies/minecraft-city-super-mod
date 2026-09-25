@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.station;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformFixture;
 import com.micatechnologies.minecraft.csm.transit.platform.PlatformSigns;
@@ -50,7 +51,7 @@ public class BlockStationLineBullet extends BlockPlatformFixture implements
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LINE);
+    return new CsmBlockStateContainer(this, FACING, LINE);
   }
 
   @Override

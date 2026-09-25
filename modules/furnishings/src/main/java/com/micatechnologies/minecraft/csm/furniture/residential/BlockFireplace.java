@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
 import java.util.Random;
@@ -72,7 +73,7 @@ public class BlockFireplace extends BlockResidentialWide
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, WidePieces.PART, LIT);
+    return new CsmBlockStateContainer(this, FACING, WidePieces.PART, LIT);
   }
 
   @Override

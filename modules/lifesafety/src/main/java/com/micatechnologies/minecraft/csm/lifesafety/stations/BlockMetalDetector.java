@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety.stations;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.lifesafety.LifeSafetySounds;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
 import java.util.List;
@@ -70,7 +71,7 @@ public class BlockMetalDetector extends BlockFireProtectionProp {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, ALARM);
+    return new CsmBlockStateContainer(this, FACING, ALARM);
   }
 
   @Override

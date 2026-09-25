@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -71,7 +72,7 @@ public class BlockTrenchBox extends AbstractBlockSiteAxial {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, AXIS, UP, SIDE_A, SIDE_B);
+    return new CsmBlockStateContainer(this, AXIS, UP, SIDE_A, SIDE_B);
   }
 
   @Override

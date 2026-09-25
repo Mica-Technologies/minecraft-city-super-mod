@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.stop;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockTrafficSign;
 import javax.annotation.Nonnull;
@@ -128,7 +129,7 @@ public class BlockBusStopFlag extends BlockTrafficSign implements ICsmTileEntity
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, DOWNWARD, SHIFT, HANG, ROUTE1, ROUTE2,
+    return new CsmBlockStateContainer(this, FACING, DOWNWARD, SHIFT, HANG, ROUTE1, ROUTE2,
         ROUTE3);
   }
 

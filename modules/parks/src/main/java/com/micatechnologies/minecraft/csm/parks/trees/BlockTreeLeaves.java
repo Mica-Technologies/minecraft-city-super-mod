@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.trees;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmExtendedBlockState;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -99,7 +100,7 @@ public class BlockTreeLeaves extends AbstractBlock implements ICsmTreeLeaves {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new ExtendedBlockState(this, new net.minecraft.block.properties.IProperty[0],
+    return new CsmExtendedBlockState(this, new net.minecraft.block.properties.IProperty[0],
         new IUnlistedProperty[]{SHAPE});
   }
 

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -131,7 +132,7 @@ public class BlockResidentialBed extends BlockResidentialFurniture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, partProperty());
+    return new CsmBlockStateContainer(this, FACING, partProperty());
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety.fireprotection;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -252,7 +253,7 @@ public class BlockStandpipeWallPipe extends AbstractBlockRotatableNSEW {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UP, DOWN, LEFT, RIGHT, FRONT, JOINT, FLOOR,
+    return new CsmBlockStateContainer(this, FACING, UP, DOWN, LEFT, RIGHT, FRONT, JOINT, FLOOR,
         CEILING, CORNER);
   }
 

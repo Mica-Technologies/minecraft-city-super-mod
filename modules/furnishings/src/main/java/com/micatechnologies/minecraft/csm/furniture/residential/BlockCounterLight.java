@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -59,7 +60,7 @@ public class BlockCounterLight extends BlockCounterPiece implements ISwitchable 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, REST, LIT, LampSwitching.POWERED);
+    return new CsmBlockStateContainer(this, FACING, REST, LIT, LampSwitching.POWERED);
   }
 
   @Override

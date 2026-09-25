@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -120,7 +121,7 @@ public class BlockTrafficAccessoryNSEW extends AbstractBlockRotatableNSEW
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, COLOR);
+    return new CsmBlockStateContainer(this, FACING, COLOR);
   }
 
   @Override

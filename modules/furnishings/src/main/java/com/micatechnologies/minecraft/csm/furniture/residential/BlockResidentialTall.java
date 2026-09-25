@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.Random;
@@ -102,7 +103,7 @@ public class BlockResidentialTall extends BlockResidentialFurniture
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UPPER);
+    return new CsmBlockStateContainer(this, FACING, UPPER);
   }
 
   @Override

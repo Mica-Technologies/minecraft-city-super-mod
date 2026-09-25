@@ -208,7 +208,7 @@ public abstract class AbstractBlockRotatableHZEight extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING);
+    return new CsmBlockStateContainer(this, FACING);
   }
 
   /**

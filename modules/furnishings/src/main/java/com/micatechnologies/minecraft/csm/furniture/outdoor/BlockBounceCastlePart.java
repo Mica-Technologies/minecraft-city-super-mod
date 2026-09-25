@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.outdoor;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -70,7 +71,7 @@ public class BlockBounceCastlePart extends AbstractBlock implements IBouncy {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, INDEX);
+    return new CsmBlockStateContainer(this, INDEX);
   }
 
   @Override

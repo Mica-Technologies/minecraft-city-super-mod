@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.board;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformFixture;
 import java.util.ArrayDeque;
@@ -80,7 +81,7 @@ public class BlockBusBoard extends BlockPlatformFixture implements ICsmTileEntit
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, HUNG);
+    return new CsmBlockStateContainer(this, FACING, HUNG);
   }
 
   @Override

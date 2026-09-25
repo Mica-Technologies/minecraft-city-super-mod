@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.Collections;
 import java.util.HashMap;
@@ -252,7 +253,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, HALF, FACING, OPEN, HINGE, CLOSER, SWING, REVERSED);
+    return new CsmBlockStateContainer(this, HALF, FACING, OPEN, HINGE, CLOSER, SWING, REVERSED);
   }
 
   /**

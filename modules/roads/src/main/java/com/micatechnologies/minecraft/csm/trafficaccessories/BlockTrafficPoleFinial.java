@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole.TRAFFIC_POLE_COLOR;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -146,7 +147,7 @@ public class BlockTrafficPoleFinial extends AbstractBlock implements ICsmTraffic
   @Override
   @NotNull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, STYLE, COLOR);
+    return new CsmBlockStateContainer(this, STYLE, COLOR);
   }
 
   @Override

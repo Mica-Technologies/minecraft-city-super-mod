@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole.TRAFFIC_POLE_COLOR;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyEnum;
@@ -30,7 +31,7 @@ public abstract class AbstractBrightLightPoleColored extends AbstractBrightLight
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, STATE, COLOR);
+    return new CsmBlockStateContainer(this, FACING, STATE, COLOR);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -39,7 +40,7 @@ public abstract class AbstractBlockSignalBackplateFitted extends AbstractBlockSi
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, MODEL_VARIANT, FITTED);
+    return new CsmBlockStateContainer(this, FACING, MODEL_VARIANT, FITTED);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.airport;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.transit.TransitSounds;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformFixture;
 import java.util.Random;
@@ -50,7 +51,7 @@ public class BlockBoardingPassScanner extends BlockPlatformFixture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIGHT);
+    return new CsmBlockStateContainer(this, FACING, LIGHT);
   }
 
   @Override

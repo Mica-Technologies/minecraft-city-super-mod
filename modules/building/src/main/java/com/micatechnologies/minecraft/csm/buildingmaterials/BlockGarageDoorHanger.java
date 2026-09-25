@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nonnull;
@@ -95,7 +96,7 @@ public class BlockGarageDoorHanger extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, POSITION, TOP, BOTTOM);
+    return new CsmBlockStateContainer(this, POSITION, TOP, BOTTOM);
   }
 
   @Override

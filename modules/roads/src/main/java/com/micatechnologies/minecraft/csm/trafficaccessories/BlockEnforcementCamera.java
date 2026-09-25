@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPoleFitted;
@@ -150,7 +151,7 @@ public abstract class BlockEnforcementCamera extends AbstractBlockRotatableNSEW
     @Override
     @Nonnull
     protected BlockStateContainer createBlockState() {
-      return new BlockStateContainer(this, FACING, ARM, CsmPoleFit.PROPERTY);
+      return new CsmBlockStateContainer(this, FACING, ARM, CsmPoleFit.PROPERTY);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -86,7 +87,7 @@ public class BlockCounterPiece extends BlockResidentialFurniture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, REST);
+    return new CsmBlockStateContainer(this, FACING, REST);
   }
 
   @Override

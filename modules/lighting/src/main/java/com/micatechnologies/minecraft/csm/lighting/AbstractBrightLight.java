@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -268,7 +269,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
   @Override
   @Nonnull
   protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-    return new net.minecraft.block.state.BlockStateContainer(this, FACING, STATE);
+    return new CsmBlockStateContainer(this, FACING, STATE);
   }
 
   /**

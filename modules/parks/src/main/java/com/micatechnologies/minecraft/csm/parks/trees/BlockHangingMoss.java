@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.trees;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -58,7 +59,7 @@ public class BlockHangingMoss extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, TIP);
+    return new CsmBlockStateContainer(this, TIP);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRoadSurfaceRotatableHZEight;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPostPassesThrough;
@@ -141,7 +142,7 @@ public class BlockCrashCushion extends AbstractBlockRoadSurfaceRotatableHZEight
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING,
+    return new CsmBlockStateContainer(this, FACING,
         WorkZoneJoins.CONNECT_LEFT, WorkZoneJoins.CONNECT_RIGHT, WorkZoneJoins.DIAG_FILL,
         GuardrailJoins.SLOPE);
   }

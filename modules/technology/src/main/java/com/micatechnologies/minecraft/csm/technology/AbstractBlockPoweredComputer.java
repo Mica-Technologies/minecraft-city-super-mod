@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import javax.annotation.Nonnull;
@@ -90,7 +91,7 @@ public abstract class AbstractBlockPoweredComputer extends AbstractBlock
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, POWERED);
+    return new CsmBlockStateContainer(this, FACING, POWERED);
   }
 
   @Override

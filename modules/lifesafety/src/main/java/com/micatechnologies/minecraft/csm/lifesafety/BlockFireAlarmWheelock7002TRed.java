@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -106,7 +107,7 @@ public class BlockFireAlarmWheelock7002TRed extends AbstractBlockFireAlarmSounde
 
   @Override
   protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-    return new net.minecraft.block.state.BlockStateContainer(this, FACING, SOUND);
+    return new CsmBlockStateContainer(this, FACING, SOUND);
   }
 
   @Override

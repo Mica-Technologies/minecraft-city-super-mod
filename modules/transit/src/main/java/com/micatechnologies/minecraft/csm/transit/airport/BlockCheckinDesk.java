@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.airport;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
@@ -42,7 +43,7 @@ public class BlockCheckinDesk extends BlockAirportCounter {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LEFT, RIGHT, AIRLINE);
+    return new CsmBlockStateContainer(this, FACING, LEFT, RIGHT, AIRLINE);
   }
 
   @Override

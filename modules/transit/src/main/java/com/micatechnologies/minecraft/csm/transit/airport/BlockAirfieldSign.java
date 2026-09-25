@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.airport;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.transit.platform.PlatformSigns;
 import com.micatechnologies.minecraft.csm.transit.platform.TileEntityPlatformSign;
@@ -83,7 +84,7 @@ public class BlockAirfieldSign extends BlockAirfieldLight implements ICsmTileEnt
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIT, POWERED, LEGEND, ARROW);
+    return new CsmBlockStateContainer(this, FACING, LIT, POWERED, LEGEND, ARROW);
   }
 
   private int values() {

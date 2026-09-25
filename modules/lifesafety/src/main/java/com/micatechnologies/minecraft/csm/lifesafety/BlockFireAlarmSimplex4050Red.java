@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -72,7 +73,7 @@ public class BlockFireAlarmSimplex4050Red extends AbstractBlockFireAlarmSounder 
 
   @Override
   protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-    return new net.minecraft.block.state.BlockStateContainer(this, FACING, SOUND);
+    return new CsmBlockStateContainer(this, FACING, SOUND);
   }
 
   @Override

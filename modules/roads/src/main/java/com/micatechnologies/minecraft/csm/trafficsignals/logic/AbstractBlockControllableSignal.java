@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import javax.annotation.Nonnull;
@@ -196,7 +197,7 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
 
   @Override
   protected @NotNull BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, COLOR);
+    return new CsmBlockStateContainer(this, FACING, COLOR);
   }
 
   @Override

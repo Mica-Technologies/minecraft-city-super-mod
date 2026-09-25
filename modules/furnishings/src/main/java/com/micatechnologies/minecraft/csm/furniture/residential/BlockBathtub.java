@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
 import java.util.Random;
@@ -69,7 +70,7 @@ public class BlockBathtub extends BlockResidentialFurniture implements IWaterTap
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, HEAD, WATER);
+    return new CsmBlockStateContainer(this, FACING, HEAD, WATER);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.platform;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +39,7 @@ public class BlockPlatformColumnNumber extends BlockPlatformColumn
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UP, DOWN, BlockPlatformNumberSign.NUMBER);
+    return new CsmBlockStateContainer(this, FACING, UP, DOWN, BlockPlatformNumberSign.NUMBER);
   }
 
   @Override

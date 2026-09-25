@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import net.minecraft.block.state.BlockStateContainer;
@@ -39,7 +40,7 @@ public class BlockShowerHead extends BlockBathroomFixture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, ShowerSpray.ON);
+    return new CsmBlockStateContainer(this, FACING, ShowerSpray.ON);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.platform;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.transit.TransitSounds;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemFareTicket;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemTransitCard;
@@ -51,7 +52,7 @@ public class BlockPlatformValidator extends BlockPlatformFixture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIGHT);
+    return new CsmBlockStateContainer(this, FACING, LIGHT);
   }
 
   @Override

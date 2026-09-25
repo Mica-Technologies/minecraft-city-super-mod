@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.airport;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformFixture;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -78,7 +79,7 @@ public class BlockAirfieldLight extends BlockPlatformFixture {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIT, POWERED);
+    return new CsmBlockStateContainer(this, FACING, LIT, POWERED);
   }
 
   @Override

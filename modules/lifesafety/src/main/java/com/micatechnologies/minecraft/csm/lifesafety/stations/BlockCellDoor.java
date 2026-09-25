@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety.stations;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -46,7 +47,7 @@ public class BlockCellDoor extends BlockFireProtectionProp {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, OPEN, POWERED);
+    return new CsmBlockStateContainer(this, FACING, OPEN, POWERED);
   }
 
   @Override

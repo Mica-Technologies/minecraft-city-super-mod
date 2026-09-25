@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.furniture.residential.WidePieces.IWidePiece;
 import com.micatechnologies.minecraft.csm.furniture.residential.WidePieces.ItemWidePiece;
 import java.util.Random;
@@ -67,7 +68,7 @@ public class BlockResidentialWide extends BlockResidentialFurniture implements I
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, WidePieces.PART);
+    return new CsmBlockStateContainer(this, FACING, WidePieces.PART);
   }
 
   @Override

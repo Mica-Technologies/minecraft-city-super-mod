@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -38,7 +39,7 @@ public class BlockBookcase extends BlockResidentialRun {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LEFT, RIGHT, UP, DOWN);
+    return new CsmBlockStateContainer(this, FACING, LEFT, RIGHT, UP, DOWN);
   }
 
   @Override

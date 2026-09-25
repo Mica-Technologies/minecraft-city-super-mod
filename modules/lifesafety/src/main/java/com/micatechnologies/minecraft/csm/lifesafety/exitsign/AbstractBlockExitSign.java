@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.lifesafety.exitsign;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.lifesafety.IEmergencyLightBlock;
 import com.micatechnologies.minecraft.csm.lifesafety.LifeSafetyGuiProvider;
@@ -100,7 +101,7 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
       properties.add(POWERED);
     }
     properties.addAll(getSpec().properties());
-    return new BlockStateContainer(this, properties.toArray(new IProperty<?>[0]));
+    return new CsmBlockStateContainer(this, properties.toArray(new IProperty<?>[0]));
   }
 
   @Override

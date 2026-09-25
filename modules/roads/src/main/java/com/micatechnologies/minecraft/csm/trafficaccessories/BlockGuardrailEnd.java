@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRoadSurfaceRotatableHZEight;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPostPassesThrough;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
@@ -125,7 +126,7 @@ public class BlockGuardrailEnd extends AbstractBlockRoadSurfaceRotatableHZEight
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, MIRRORED);
+    return new CsmBlockStateContainer(this, FACING, MIRRORED);
   }
 
   /**

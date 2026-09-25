@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.furniture.appliance.ApplianceHelper;
 import com.micatechnologies.minecraft.csm.furniture.appliance.ApplianceSpec;
@@ -56,7 +57,7 @@ public class BlockCounterAppliance extends BlockCounterPiece
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, REST, RUNNING);
+    return new CsmBlockStateContainer(this, FACING, REST, RUNNING);
   }
 
   @Override

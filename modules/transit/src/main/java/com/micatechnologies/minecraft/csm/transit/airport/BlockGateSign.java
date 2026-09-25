@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.airport;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformFixture;
 import com.micatechnologies.minecraft.csm.transit.platform.PlatformSigns;
@@ -65,7 +66,7 @@ public class BlockGateSign extends BlockPlatformFixture implements ICsmTileEntit
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LETTER, NUMBER);
+    return new CsmBlockStateContainer(this, FACING, LETTER, NUMBER);
   }
 
   @Override

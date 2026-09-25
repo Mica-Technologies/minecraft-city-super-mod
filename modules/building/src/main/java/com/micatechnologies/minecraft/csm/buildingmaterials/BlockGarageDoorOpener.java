@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -79,7 +80,7 @@ public class BlockGarageDoorOpener extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LENGTH, TOP);
+    return new CsmBlockStateContainer(this, FACING, LENGTH, TOP);
   }
 
   @Override

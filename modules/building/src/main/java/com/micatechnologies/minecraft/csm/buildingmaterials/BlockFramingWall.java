@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
@@ -140,7 +141,7 @@ public abstract class BlockFramingWall extends AbstractBlock implements ICsmFram
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, INSULATION,
+    return new CsmBlockStateContainer(this, FACING, INSULATION,
         FramingJoins.NORTH, FramingJoins.EAST, FramingJoins.SOUTH, FramingJoins.WEST,
         FramingJoins.UP, FramingJoins.DOWN);
   }

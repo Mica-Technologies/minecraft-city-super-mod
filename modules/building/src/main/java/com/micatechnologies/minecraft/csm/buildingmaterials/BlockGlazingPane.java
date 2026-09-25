@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -122,7 +123,7 @@ public class BlockGlazingPane extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, POST);
+    return new CsmBlockStateContainer(this, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, POST);
   }
 
   @Override

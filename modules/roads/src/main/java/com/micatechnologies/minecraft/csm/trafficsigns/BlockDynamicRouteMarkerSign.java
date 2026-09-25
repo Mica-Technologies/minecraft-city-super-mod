@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
 import com.micatechnologies.minecraft.csm.Csm;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
 import javax.annotation.Nonnull;
@@ -95,7 +96,7 @@ public class BlockDynamicRouteMarkerSign extends AbstractBlockSign
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, DOWNWARD, SHIFT, SHIELD);
+    return new CsmBlockStateContainer(this, FACING, DOWNWARD, SHIFT, SHIELD);
   }
 
   /**

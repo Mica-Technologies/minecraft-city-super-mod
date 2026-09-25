@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.amenities;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,7 +49,7 @@ public class BlockSprinkler extends AbstractBlock implements ICsmTileEntityProvi
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, POWERED);
+    return new CsmBlockStateContainer(this, POWERED);
   }
 
   @Override

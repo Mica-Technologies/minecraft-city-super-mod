@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
@@ -139,7 +140,7 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
   protected BlockStateContainer createBlockState() {
     MastArmCurveProfile pending =
         profile != null ? profile : (MastArmCurveProfile) PENDING.get()[1];
-    return new BlockStateContainer(this, FACING, shapeProperty(pending.getShapeCount()));
+    return new CsmBlockStateContainer(this, FACING, shapeProperty(pending.getShapeCount()));
   }
 
   /**

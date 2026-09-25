@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -81,7 +82,7 @@ public class BlockCraneMast extends AbstractBlock implements ICsmSiteClimbable {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, LIVERY, DOWN);
+    return new CsmBlockStateContainer(this, LIVERY, DOWN);
   }
 
   @Override

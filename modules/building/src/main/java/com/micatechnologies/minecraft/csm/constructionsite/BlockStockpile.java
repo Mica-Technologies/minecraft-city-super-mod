@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -89,7 +90,7 @@ public class BlockStockpile extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, LAYERS);
+    return new CsmBlockStateContainer(this, LAYERS);
   }
 
   @Override

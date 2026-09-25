@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.fare;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -146,7 +147,7 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, STATE);
+    return new CsmBlockStateContainer(this, FACING, STATE);
   }
 
   @Override

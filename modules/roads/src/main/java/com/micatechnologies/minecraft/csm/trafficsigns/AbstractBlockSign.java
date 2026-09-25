@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsigns;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPostPassesThrough;
@@ -446,7 +447,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, DOWNWARD, SHIFT);
+    return new CsmBlockStateContainer(this, FACING, DOWNWARD, SHIFT);
   }
 
   /*

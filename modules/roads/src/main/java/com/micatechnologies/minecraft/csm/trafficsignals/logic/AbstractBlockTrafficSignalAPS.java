@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSensorZoneTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalConfigurationTool;
@@ -151,7 +152,7 @@ public abstract class AbstractBlockTrafficSignalAPS extends
 
   @Override
   protected @NotNull BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, COLOR, ARROW_ORIENTATION);
+    return new CsmBlockStateContainer(this, FACING, COLOR, ARROW_ORIENTATION);
   }
 
   @Override

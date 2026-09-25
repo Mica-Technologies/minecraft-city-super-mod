@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.SignShift;
 import javax.annotation.Nonnull;
@@ -51,7 +52,7 @@ public abstract class AbstractBlockPoweredSign extends AbstractBlockSign {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, DOWNWARD, SHIFT, POWERED);
+    return new CsmBlockStateContainer(this, FACING, DOWNWARD, SHIFT, POWERED);
   }
 
   @Override

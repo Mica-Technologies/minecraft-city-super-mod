@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.platform;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,7 +45,7 @@ public class BlockPlatformNumberSign extends BlockPlatformFixture
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, NUMBER);
+    return new CsmBlockStateContainer(this, FACING, NUMBER);
   }
 
   @Override

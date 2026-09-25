@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.InRoadwayLightLens;
@@ -67,7 +68,7 @@ public class BlockInRoadwayWarningLight extends AbstractBlockControllableSignal
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, COLOR, LENS);
+    return new CsmBlockStateContainer(this, FACING, COLOR, LENS);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.amenities;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -86,7 +87,7 @@ public class BlockParkBench extends AbstractBlockRotatableNSEW {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LEFT, RIGHT);
+    return new CsmBlockStateContainer(this, FACING, LEFT, RIGHT);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -95,7 +96,7 @@ public class BlockCornerGuard extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, EDGE);
+    return new CsmBlockStateContainer(this, FACING, EDGE);
   }
 
   @Override

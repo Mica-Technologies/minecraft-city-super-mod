@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -78,7 +79,7 @@ public class BlockPortableToilet extends BlockSiteFacingProp {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UPPER);
+    return new CsmBlockStateContainer(this, FACING, UPPER);
   }
 
   @Override

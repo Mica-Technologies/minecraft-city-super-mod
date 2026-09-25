@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import java.util.List;
 import java.util.Random;
@@ -71,7 +72,7 @@ public class BlockShower extends BlockResidentialTall {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UPPER, ShowerSpray.ON);
+    return new CsmBlockStateContainer(this, FACING, UPPER, ShowerSpray.ON);
   }
 
   @Override

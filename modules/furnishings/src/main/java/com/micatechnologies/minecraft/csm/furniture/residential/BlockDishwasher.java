@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.furniture.appliance.ApplianceSpec;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyEnum;
@@ -38,7 +39,7 @@ public class BlockDishwasher extends BlockBuiltInAppliance {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, RUNNING, COUNTER);
+    return new CsmBlockStateContainer(this, FACING, RUNNING, COUNTER);
   }
 
   @Override

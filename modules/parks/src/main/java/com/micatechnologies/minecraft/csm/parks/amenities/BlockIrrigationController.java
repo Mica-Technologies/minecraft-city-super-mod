@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.amenities;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -69,7 +70,7 @@ public class BlockIrrigationController extends AbstractBlockRotatableNSEW {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, POWERED, MANUAL);
+    return new CsmBlockStateContainer(this, FACING, POWERED, MANUAL);
   }
 
   @Override

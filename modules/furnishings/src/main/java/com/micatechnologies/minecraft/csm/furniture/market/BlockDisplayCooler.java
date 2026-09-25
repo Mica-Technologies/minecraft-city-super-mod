@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCloset;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialRun;
 import com.micatechnologies.minecraft.csm.furniture.residential.ISwitchable;
@@ -57,7 +58,7 @@ public class BlockDisplayCooler extends BlockCloset implements ISwitchable {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, UPPER, BlockResidentialRun.LEFT,
+    return new CsmBlockStateContainer(this, FACING, UPPER, BlockResidentialRun.LEFT,
         BlockResidentialRun.RIGHT, BlockDisplayCase.LIT);
   }
 
