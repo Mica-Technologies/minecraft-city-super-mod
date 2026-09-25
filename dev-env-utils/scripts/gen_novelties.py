@@ -42,6 +42,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import life_safety_gen_common as lc  # noqa: E402
 import gen_trees  # noqa: E402
+import furniture_depth  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ASSETS = os.path.join(REPO, "modules", "furnishings", "src", "main", "resources", "assets", "csm")
@@ -581,6 +582,12 @@ def blockstate(model, lo, hi, textures=None, obj=False, zoom=1.0):
 # ==========================================================================================
 # Catalogue
 # ==========================================================================================
+def _dump_json(path, data):
+    """Writes a model the way the catalogue does, for furniture_depth's moves."""
+    with open(path, "w", newline="\n", encoding="utf-8") as fh:
+        fh.write(json.dumps(data, indent=2) + "\n")
+
+
 class Catalogue(object):
     def __init__(self, script, sub):
         self.script = script
@@ -638,6 +645,7 @@ class Catalogue(object):
             with open(path, "w", newline="\n", encoding="utf-8") as fh:
                 fh.write(text)
             written.append(rel)
+        furniture_depth.separate(assets, written, _dump_json)
         return written
 
     def box_lines(self):

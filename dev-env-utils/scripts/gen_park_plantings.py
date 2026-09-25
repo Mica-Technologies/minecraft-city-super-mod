@@ -47,6 +47,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
 import gen_trees  # noqa: E402
+import furniture_depth  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ASSETS = os.path.join(REPO, "modules", "parks", "src", "main", "resources", "assets", "csm")
@@ -661,6 +662,7 @@ def generate(assets):
             written.append(rel)
     gen_trees.write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in LOCALES]
+    furniture_depth.separate(assets, written, dump)
     return written
 
 

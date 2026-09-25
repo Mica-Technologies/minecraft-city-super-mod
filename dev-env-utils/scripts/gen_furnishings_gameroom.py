@@ -40,6 +40,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import life_safety_gen_common as lsc  # noqa: E402
+import furniture_depth  # noqa: E402
 import gen_trees  # noqa: E402
 
 REPO = lsc.REPO
@@ -1349,6 +1350,7 @@ def generate(assets):
         rel = "models/block/%s/%s.json" % (SUB, name)
         lsc.dump(os.path.join(assets, rel), mdl)
         written.append(rel)
+    furniture_depth.separate(assets, written, lsc.dump)
     return written
 
 

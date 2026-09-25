@@ -704,11 +704,14 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   `--check`, `--fragments` (the whole tab body, moved crates included).
   `gen_furniture_sounds.py` synthesises the card terminal beep, the scanner beep and the cash
   drawer
-- `furniture_depth.py` -- run by every `gen_furniture_*.py` at the end of `generate`: finds the
-  coplanar faces that z-fight among the models a blockstate draws at once (under 0.2 px apart,
-  opaque, different pixels where they overlap, measured off the textures) and moves the smaller
-  face out along its normal by growing its box, in models that generator wrote only. Draw a
-  detail flush and let it separate it; see Residential Furniture in `NOVELTIES_SYSTEM.md`
+- `furniture_depth.py` -- run at the end of `generate` by every `gen_furniture_*.py`, the
+  Furniture & Novelties rebuild generators (produce crates, game room, novelties, seasonal) and
+  the Parks generators (plantings, amenities, legacy amenities): finds the coplanar faces that
+  z-fight among the models a blockstate draws at once (under 0.2 px apart, opaque, different
+  pixels where they overlap, measured off the textures) and moves the smaller face along its
+  normal by growing its box, in models that generator wrote only. Draw a detail flush and let
+  it separate it; see Residential Furniture in `NOVELTIES_SYSTEM.md`. A new JSON-model
+  generator should call it too (`furniture_depth.separate(assets, written, dump)`)
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

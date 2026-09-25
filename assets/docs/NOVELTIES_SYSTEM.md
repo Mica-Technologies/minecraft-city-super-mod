@@ -183,7 +183,12 @@ drawn by `gen_furniture_residential.py`, in the `furniture.residential` package:
   signal; the screen is served by `NoveltiesGuiProvider`.
 
 **Coplanar faces.** Every furniture generator (`gen_furniture_*.py`) ends its `generate` with
-`furniture_depth.py`, which finds faces that z-fight and moves them apart. A piece is built of
+`furniture_depth.py`, which finds faces that z-fight and moves them apart; so do the rebuild
+generators (`gen_produce_crates.py`, `gen_furnishings_gameroom.py`, `gen_novelties.py` and
+`gen_novelties_seasonal.py` through its catalogue) and the Parks generators. The four hand-made
+models no generator writes (the player statue, air hockey table, old record player and ping pong
+table) were separated once by the same pass, run over just those files; an edit to one of them
+should be checked the same way. A piece is built of
 boxes, and two of them often put a face on one plane: a detail laid flush on a body (a clock
 face, a door window, a checkout's end panel over its cabinet), or a round part's square and the
 same square turned 45 degrees sharing a top. For each set of models a blockstate the generator

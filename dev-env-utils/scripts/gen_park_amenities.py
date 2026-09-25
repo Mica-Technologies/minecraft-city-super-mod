@@ -37,6 +37,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen_park_plantings as pp  # noqa: E402
 import gen_trees  # noqa: E402
+import furniture_depth  # noqa: E402
 
 ASSETS = pp.ASSETS
 LOCALES = pp.LOCALES
@@ -838,6 +839,7 @@ def generate(assets):
         written.append(rel)
     gen_trees.write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in LOCALES]
+    furniture_depth.separate(assets, written, pp.dump)
     return written
 
 
