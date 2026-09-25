@@ -54,15 +54,6 @@
             16
           ]
         },
-        "up": {
-          "texture": "#wood_v",
-          "uv": [
-            6.5,
-            6.5,
-            9.5,
-            9.5
-          ]
-        },
         "down": {
           "texture": "#wood_v",
           "uv": [
@@ -191,15 +182,6 @@
           ]
         },
         "up": {
-          "texture": "#wood",
-          "uv": [
-            7,
-            7,
-            9,
-            9
-          ]
-        },
-        "down": {
           "texture": "#wood",
           "uv": [
             7,

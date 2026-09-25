@@ -515,15 +515,6 @@
             10.5
           ]
         },
-        "up": {
-          "texture": "#metal_black",
-          "uv": [
-            5,
-            5,
-            11,
-            11
-          ]
-        },
         "down": {
           "texture": "#metal_black",
           "uv": [
@@ -869,24 +860,6 @@
             0.75
           ]
         },
-        "east": {
-          "texture": "#metal_black",
-          "uv": [
-            2.5,
-            0,
-            3.25,
-            0.75
-          ]
-        },
-        "west": {
-          "texture": "#metal_black",
-          "uv": [
-            12.75,
-            0,
-            13.5,
-            0.75
-          ]
-        },
         "up": {
           "texture": "#metal_black",
           "uv": [
@@ -934,24 +907,6 @@
             4.25,
             6.5,
             11.75,
-            7
-          ]
-        },
-        "east": {
-          "texture": "#metal_black",
-          "uv": [
-            2.5,
-            6.5,
-            3.25,
-            7
-          ]
-        },
-        "west": {
-          "texture": "#metal_black",
-          "uv": [
-            12.75,
-            6.5,
-            13.5,
             7
           ]
         },

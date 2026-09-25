@@ -34,15 +34,6 @@
             16
           ]
         },
-        "east": {
-          "texture": "#guard",
-          "uv": [
-            15.25,
-            0,
-            16.0,
-            16
-          ]
-        },
         "west": {
           "texture": "#guard",
           "uv": [

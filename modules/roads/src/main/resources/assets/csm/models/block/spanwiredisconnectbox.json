@@ -15,7 +15,6 @@
         "south": {"texture": "#metal", "uv": [4, 4, 12, 14]},
         "east": {"texture": "#metal", "uv": [5, 4, 11, 14]},
         "west": {"texture": "#metal", "uv": [5, 4, 11, 14]},
-        "up": {"texture": "#metal", "uv": [4, 5, 12, 11]},
         "down": {"texture": "#metal", "uv": [4, 5, 12, 11]}
       }
     },

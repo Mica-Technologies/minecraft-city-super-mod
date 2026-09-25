@@ -96,15 +96,6 @@
             6
           ]
         },
-        "south": {
-          "texture": "#open",
-          "uv": [
-            7,
-            4,
-            9,
-            6
-          ]
-        },
         "east": {
           "texture": "#open",
           "uv": [
@@ -164,15 +155,6 @@
             9
           ]
         },
-        "south": {
-          "texture": "#close",
-          "uv": [
-            7,
-            7,
-            9,
-            9
-          ]
-        },
         "east": {
           "texture": "#close",
           "uv": [
@@ -224,15 +206,6 @@
       ],
       "faces": {
         "north": {
-          "texture": "#stop",
-          "uv": [
-            6.5,
-            9.75,
-            9.5,
-            12.25
-          ]
-        },
-        "south": {
           "texture": "#stop",
           "uv": [
             6.5,

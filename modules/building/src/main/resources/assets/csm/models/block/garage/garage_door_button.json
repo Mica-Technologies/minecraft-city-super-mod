@@ -94,15 +94,6 @@
             9.5
           ]
         },
-        "south": {
-          "texture": "#lamp",
-          "uv": [
-            6.5,
-            6.5,
-            9.5,
-            9.5
-          ]
-        },
         "east": {
           "texture": "#lamp",
           "uv": [

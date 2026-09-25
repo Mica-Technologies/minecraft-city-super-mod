@@ -451,15 +451,6 @@
             9.25
           ]
         },
-        "south": {
-          "texture": "#metal",
-          "uv": [
-            7.6,
-            8.75,
-            8.4,
-            9.25
-          ]
-        },
         "east": {
           "texture": "#metal",
           "uv": [

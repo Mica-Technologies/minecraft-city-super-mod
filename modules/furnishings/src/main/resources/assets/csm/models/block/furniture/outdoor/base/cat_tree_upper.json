@@ -322,15 +322,6 @@
         10.937
       ],
       "faces": {
-        "north": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
-        },
         "south": {
           "texture": "#carpet",
           "uv": [
@@ -359,15 +350,6 @@
           ]
         },
         "up": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
-        },
-        "down": {
           "texture": "#carpet",
           "uv": [
             0,
@@ -443,15 +425,6 @@
             16,
             16
           ]
-        },
-        "down": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
         }
       }
     },
@@ -467,15 +440,6 @@
         10.937
       ],
       "faces": {
-        "north": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
-        },
         "south": {
           "texture": "#carpet",
           "uv": [
@@ -504,15 +468,6 @@
           ]
         },
         "up": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
-        },
-        "down": {
           "texture": "#carpet",
           "uv": [
             0,
@@ -621,15 +576,6 @@
             16
           ]
         },
-        "south": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
-        },
         "east": {
           "texture": "#carpet",
           "uv": [
@@ -649,15 +595,6 @@
           ]
         },
         "up": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
-        },
-        "down": {
           "texture": "#carpet",
           "uv": [
             0,
@@ -733,15 +670,6 @@
             16,
             16
           ]
-        },
-        "down": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
         }
       }
     },
@@ -758,15 +686,6 @@
       ],
       "faces": {
         "north": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
-        },
-        "south": {
           "texture": "#carpet",
           "uv": [
             0,
@@ -794,15 +713,6 @@
           ]
         },
         "up": {
-          "texture": "#carpet",
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ]
-        },
-        "down": {
           "texture": "#carpet",
           "uv": [
             0,

@@ -56,15 +56,6 @@
             16
           ]
         },
-        "up": {
-          "texture": "#anchor",
-          "uv": [
-            2,
-            2,
-            14,
-            14
-          ]
-        },
         "down": {
           "texture": "#anchor",
           "uv": [

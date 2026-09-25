@@ -84,15 +84,6 @@
         2
       ],
       "faces": {
-        "north": {
-          "texture": "#strap",
-          "uv": [
-            8.5,
-            0,
-            9.25,
-            11.5
-          ]
-        },
         "south": {
           "texture": "#strap",
           "uv": [

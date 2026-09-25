@@ -173,15 +173,6 @@
             8
           ]
         },
-        "up": {
-          "texture": "#body",
-          "uv": [
-            0,
-            3,
-            12,
-            13
-          ]
-        },
         "down": {
           "texture": "#body",
           "uv": [

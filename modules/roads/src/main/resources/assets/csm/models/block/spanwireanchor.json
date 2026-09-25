@@ -88,24 +88,6 @@
         5.7
       ],
       "faces": {
-        "north": {
-          "texture": "#metal",
-          "uv": [
-            7,
-            3,
-            9,
-            5
-          ]
-        },
-        "south": {
-          "texture": "#metal",
-          "uv": [
-            7,
-            3,
-            9,
-            5
-          ]
-        },
         "east": {
           "texture": "#metal",
           "uv": [

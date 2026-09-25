@@ -519,15 +519,6 @@
             6.5
           ]
         },
-        "south": {
-          "texture": "#steel",
-          "uv": [
-            10.5,
-            4,
-            13,
-            6.5
-          ]
-        },
         "east": {
           "texture": "#steel",
           "uv": [

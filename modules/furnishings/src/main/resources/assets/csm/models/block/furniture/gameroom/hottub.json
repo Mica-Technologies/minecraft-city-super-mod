@@ -30,15 +30,6 @@
             16,
             5.5
           ]
-        },
-        "up": {
-          "texture": "#cedar_slats",
-          "uv": [
-            0,
-            0,
-            16,
-            5.5
-          ]
         }
       }
     },
@@ -55,15 +46,6 @@
       ],
       "faces": {
         "south": {
-          "texture": "#cedar_slats",
-          "uv": [
-            0,
-            0,
-            16,
-            5.5
-          ]
-        },
-        "up": {
           "texture": "#cedar_slats",
           "uv": [
             0,
@@ -94,15 +76,6 @@
             16,
             5.5
           ]
-        },
-        "up": {
-          "texture": "#cedar_slats",
-          "uv": [
-            0,
-            0,
-            16,
-            5.5
-          ]
         }
       }
     },
@@ -119,15 +92,6 @@
       ],
       "faces": {
         "east": {
-          "texture": "#cedar_slats",
-          "uv": [
-            0,
-            0,
-            16,
-            5.5
-          ]
-        },
-        "up": {
           "texture": "#cedar_slats",
           "uv": [
             0,
@@ -345,24 +309,6 @@
         22.3
       ],
       "faces": {
-        "north": {
-          "texture": "#spa_shell",
-          "uv": [
-            0,
-            0,
-            16,
-            2.2
-          ]
-        },
-        "south": {
-          "texture": "#spa_shell",
-          "uv": [
-            0,
-            0,
-            16,
-            2.2
-          ]
-        },
         "east": {
           "texture": "#spa_shell",
           "uv": [
@@ -413,24 +359,6 @@
         22.3
       ],
       "faces": {
-        "north": {
-          "texture": "#spa_shell",
-          "uv": [
-            0,
-            0,
-            16,
-            2.2
-          ]
-        },
-        "south": {
-          "texture": "#spa_shell",
-          "uv": [
-            0,
-            0,
-            16,
-            2.2
-          ]
-        },
         "east": {
           "texture": "#spa_shell",
           "uv": [
@@ -677,15 +605,6 @@
           ]
         },
         "up": {
-          "texture": "#black_plastic",
-          "uv": [
-            0,
-            0,
-            4.0,
-            1.6
-          ]
-        },
-        "down": {
           "texture": "#black_plastic",
           "uv": [
             0,

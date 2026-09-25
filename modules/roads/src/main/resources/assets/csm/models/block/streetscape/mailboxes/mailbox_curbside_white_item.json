@@ -206,15 +206,6 @@
             13.954
           ]
         },
-        "down": {
-          "texture": "#body",
-          "uv": [
-            6.757,
-            2.046,
-            9.243,
-            13.954
-          ]
-        },
         "north": {
           "texture": "#body",
           "uv": [
@@ -374,15 +365,6 @@
             0.01
           ]
         },
-        "south": {
-          "texture": "#body",
-          "uv": [
-            5.2,
-            0,
-            10.8,
-            0.01
-          ]
-        },
         "east": {
           "texture": "#body",
           "uv": [
@@ -434,15 +416,6 @@
       ],
       "faces": {
         "north": {
-          "texture": "#steel",
-          "uv": [
-            7.4,
-            0,
-            8.6,
-            0.01
-          ]
-        },
-        "south": {
           "texture": "#steel",
           "uv": [
             7.4,
@@ -569,24 +542,6 @@
         9.875
       ],
       "faces": {
-        "north": {
-          "texture": "#flag",
-          "uv": [
-            11.2,
-            0,
-            11.7,
-            0.01
-          ]
-        },
-        "south": {
-          "texture": "#flag",
-          "uv": [
-            4.3,
-            0,
-            4.8,
-            0.01
-          ]
-        },
         "east": {
           "texture": "#flag",
           "uv": [

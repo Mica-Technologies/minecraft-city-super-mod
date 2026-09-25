@@ -17,7 +17,6 @@
 				"east": {"uv": [0, 0, 16, 3], "texture": "#body"},
 				"south": {"uv": [0, 0, 6, 3], "texture": "#body"},
 				"west": {"uv": [0, 0, 16, 3], "texture": "#body"},
-				"up": {"uv": [0, 0, 6, 16], "texture": "#body"},
 				"down": {"uv": [0, 0, 6, 16], "texture": "#body"}
 			}
 		},
@@ -29,9 +28,7 @@
 				"north": {"uv": [6, 0, 0, 10], "texture": "#indicator"},
 				"east": {"uv": [0, 0, 16, 10], "texture": "#body"},
 				"south": {"uv": [0, 0, 6, 10], "texture": "#body"},
-				"west": {"uv": [0, 0, 16, 10], "texture": "#body"},
-				"up": {"uv": [0, 0, 6, 16], "texture": "#body"},
-				"down": {"uv": [0, 0, 6, 16], "texture": "#body"}
+				"west": {"uv": [0, 0, 16, 10], "texture": "#body"}
 			}
 		},
 		{
@@ -43,8 +40,7 @@
 				"east": {"uv": [0, 0, 16, 3], "texture": "#body"},
 				"south": {"uv": [0, 0, 6, 3], "texture": "#body"},
 				"west": {"uv": [0, 0, 16, 3], "texture": "#body"},
-				"up": {"uv": [0, 0, 6, 16], "texture": "#body"},
-				"down": {"uv": [0, 0, 6, 16], "texture": "#body"}
+				"up": {"uv": [0, 0, 6, 16], "texture": "#body"}
 			}
 		},
 		{
@@ -82,9 +78,7 @@
 				"north": {"uv": [0, 0, 1, 16], "texture": "#body"},
 				"east": {"uv": [0, 0, 1, 16], "texture": "#body"},
 				"south": {"uv": [0, 0, 1, 16], "texture": "#body"},
-				"west": {"uv": [0, 0, 1, 16], "texture": "#body"},
-				"up": {"uv": [0, 0, 1, 16], "texture": "#body"},
-				"down": {"uv": [0, 0, 1, 16], "texture": "#body"}
+				"west": {"uv": [0, 0, 1, 16], "texture": "#body"}
 			}
 		},
 		{
@@ -96,9 +90,7 @@
 				"north": {"uv": [0, 0, 1, 16], "texture": "#body"},
 				"east": {"uv": [0, 0, 1, 16], "texture": "#body"},
 				"south": {"uv": [0, 0, 1, 16], "texture": "#body"},
-				"west": {"uv": [0, 0, 1, 16], "texture": "#body"},
-				"up": {"uv": [0, 0, 1, 16], "texture": "#body"},
-				"down": {"uv": [0, 0, 1, 16], "texture": "#body"}
+				"west": {"uv": [0, 0, 1, 16], "texture": "#body"}
 			}
 		},
 		{
@@ -111,8 +103,7 @@
 				"east": {"uv": [0, 1.5, 3, 2], "texture": "#card_reader"},
 				"south": {"uv": [0, 1.5, 2, 2], "texture": "#card_reader"},
 				"west": {"uv": [0, 1.5, 3, 2], "texture": "#card_reader"},
-				"up": {"uv": [0, 0, 2, 3], "texture": "#card_reader"},
-				"down": {"uv": [0, 0, 2, 3], "texture": "#card_reader"}
+				"up": {"uv": [0, 0, 2, 3], "texture": "#card_reader"}
 			}
 		}
 	],

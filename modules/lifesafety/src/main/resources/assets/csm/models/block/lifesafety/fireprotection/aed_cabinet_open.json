@@ -99,15 +99,6 @@
             14
           ]
         },
-        "south": {
-          "texture": "#shell",
-          "uv": [
-            3,
-            2,
-            4,
-            14
-          ]
-        },
         "east": {
           "texture": "#shell",
           "uv": [
@@ -167,15 +158,6 @@
             14
           ]
         },
-        "south": {
-          "texture": "#shell",
-          "uv": [
-            12,
-            2,
-            13,
-            14
-          ]
-        },
         "east": {
           "texture": "#shell",
           "uv": [
@@ -232,33 +214,6 @@
             4,
             2,
             12,
-            3
-          ]
-        },
-        "south": {
-          "texture": "#shell",
-          "uv": [
-            4,
-            2,
-            12,
-            3
-          ]
-        },
-        "east": {
-          "texture": "#shell",
-          "uv": [
-            1,
-            2,
-            5.5,
-            3
-          ]
-        },
-        "west": {
-          "texture": "#shell",
-          "uv": [
-            10.5,
-            2,
-            15,
             3
           ]
         },
@@ -303,33 +258,6 @@
             14
           ]
         },
-        "south": {
-          "texture": "#shell",
-          "uv": [
-            4,
-            13,
-            12,
-            14
-          ]
-        },
-        "east": {
-          "texture": "#shell",
-          "uv": [
-            1,
-            13,
-            5.5,
-            14
-          ]
-        },
-        "west": {
-          "texture": "#shell",
-          "uv": [
-            10.5,
-            13,
-            15,
-            14
-          ]
-        },
         "up": {
           "texture": "#shell",
           "uv": [
@@ -364,15 +292,6 @@
       "faces": {
         "north": {
           "texture": "#aedf",
-          "uv": [
-            5,
-            6,
-            11,
-            12
-          ]
-        },
-        "south": {
-          "texture": "#aed",
           "uv": [
             5,
             6,
@@ -473,15 +392,6 @@
             13,
             9,
             14
-          ]
-        },
-        "down": {
-          "texture": "#black",
-          "uv": [
-            7,
-            2,
-            9,
-            3
           ]
         }
       }

@@ -106,15 +106,6 @@
             11.25
           ]
         },
-        "up": {
-          "texture": "#metal_black",
-          "uv": [
-            7,
-            5.5,
-            9,
-            10.5
-          ]
-        },
         "down": {
           "texture": "#metal_black",
           "uv": [

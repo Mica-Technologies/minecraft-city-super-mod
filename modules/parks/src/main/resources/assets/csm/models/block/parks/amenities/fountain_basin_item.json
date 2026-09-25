@@ -222,24 +222,6 @@
         13.5
       ],
       "faces": {
-        "north": {
-          "texture": "#stone",
-          "uv": [
-            13.5,
-            5,
-            16,
-            16
-          ]
-        },
-        "south": {
-          "texture": "#stone",
-          "uv": [
-            0,
-            5,
-            2.5,
-            16
-          ]
-        },
         "east": {
           "texture": "#stone",
           "uv": [
@@ -290,24 +272,6 @@
         13.5
       ],
       "faces": {
-        "north": {
-          "texture": "#stone",
-          "uv": [
-            0,
-            5,
-            2.5,
-            16
-          ]
-        },
-        "south": {
-          "texture": "#stone",
-          "uv": [
-            13.5,
-            5,
-            16,
-            16
-          ]
-        },
         "east": {
           "texture": "#stone",
           "uv": [

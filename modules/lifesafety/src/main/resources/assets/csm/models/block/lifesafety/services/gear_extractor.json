@@ -96,15 +96,6 @@
             15
           ]
         },
-        "south": {
-          "texture": "#silver",
-          "uv": [
-            2,
-            4,
-            14,
-            15
-          ]
-        },
         "east": {
           "texture": "#silver",
           "uv": [
@@ -157,15 +148,6 @@
       "faces": {
         "north": {
           "texture": "#panel",
-          "uv": [
-            1,
-            1,
-            15,
-            4
-          ]
-        },
-        "south": {
-          "texture": "#silver",
           "uv": [
             1,
             1,

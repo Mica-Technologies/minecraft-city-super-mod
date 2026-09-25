@@ -36,24 +36,6 @@
             2
           ]
         },
-        "east": {
-          "texture": "#case",
-          "uv": [
-            0,
-            0,
-            2.5,
-            2
-          ]
-        },
-        "west": {
-          "texture": "#case",
-          "uv": [
-            13.5,
-            0,
-            16,
-            2
-          ]
-        },
         "up": {
           "texture": "#case",
           "uv": [

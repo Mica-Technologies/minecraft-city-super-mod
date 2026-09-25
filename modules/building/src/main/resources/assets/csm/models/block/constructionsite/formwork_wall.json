@@ -24,24 +24,6 @@
         12
       ],
       "faces": {
-        "north": {
-          "texture": "#concrete",
-          "uv": [
-            0,
-            1,
-            16,
-            16
-          ]
-        },
-        "south": {
-          "texture": "#concrete",
-          "uv": [
-            0,
-            1,
-            16,
-            16
-          ]
-        },
         "east": {
           "texture": "#concrete",
           "uv": [
@@ -237,15 +219,6 @@
             13
           ]
         },
-        "south": {
-          "texture": "#lumber",
-          "uv": [
-            0,
-            11,
-            16,
-            13
-          ]
-        },
         "east": {
           "texture": "#lumber",
           "uv": [
@@ -296,15 +269,6 @@
         14.5
       ],
       "faces": {
-        "north": {
-          "texture": "#lumber",
-          "uv": [
-            0,
-            11,
-            16,
-            13
-          ]
-        },
         "south": {
           "texture": "#lumber",
           "uv": [
@@ -373,15 +337,6 @@
             12.5
           ]
         },
-        "south": {
-          "texture": "#clamp",
-          "uv": [
-            3.5,
-            11.5,
-            4.5,
-            12.5
-          ]
-        },
         "east": {
           "texture": "#clamp",
           "uv": [
@@ -432,15 +387,6 @@
         15.25
       ],
       "faces": {
-        "north": {
-          "texture": "#clamp",
-          "uv": [
-            11.5,
-            11.5,
-            12.5,
-            12.5
-          ]
-        },
         "south": {
           "texture": "#clamp",
           "uv": [
@@ -509,15 +455,6 @@
             12.5
           ]
         },
-        "south": {
-          "texture": "#clamp",
-          "uv": [
-            11.5,
-            11.5,
-            12.5,
-            12.5
-          ]
-        },
         "east": {
           "texture": "#clamp",
           "uv": [
@@ -568,15 +505,6 @@
         15.25
       ],
       "faces": {
-        "north": {
-          "texture": "#clamp",
-          "uv": [
-            3.5,
-            11.5,
-            4.5,
-            12.5
-          ]
-        },
         "south": {
           "texture": "#clamp",
           "uv": [
@@ -645,15 +573,6 @@
             5
           ]
         },
-        "south": {
-          "texture": "#lumber",
-          "uv": [
-            0,
-            3,
-            16,
-            5
-          ]
-        },
         "east": {
           "texture": "#lumber",
           "uv": [
@@ -704,15 +623,6 @@
         14.5
       ],
       "faces": {
-        "north": {
-          "texture": "#lumber",
-          "uv": [
-            0,
-            3,
-            16,
-            5
-          ]
-        },
         "south": {
           "texture": "#lumber",
           "uv": [
@@ -781,15 +691,6 @@
             4.5
           ]
         },
-        "south": {
-          "texture": "#clamp",
-          "uv": [
-            3.5,
-            3.5,
-            4.5,
-            4.5
-          ]
-        },
         "east": {
           "texture": "#clamp",
           "uv": [
@@ -840,15 +741,6 @@
         15.25
       ],
       "faces": {
-        "north": {
-          "texture": "#clamp",
-          "uv": [
-            11.5,
-            3.5,
-            12.5,
-            4.5
-          ]
-        },
         "south": {
           "texture": "#clamp",
           "uv": [
@@ -917,15 +809,6 @@
             4.5
           ]
         },
-        "south": {
-          "texture": "#clamp",
-          "uv": [
-            11.5,
-            3.5,
-            12.5,
-            4.5
-          ]
-        },
         "east": {
           "texture": "#clamp",
           "uv": [
@@ -976,15 +859,6 @@
         15.25
       ],
       "faces": {
-        "north": {
-          "texture": "#clamp",
-          "uv": [
-            3.5,
-            3.5,
-            4.5,
-            4.5
-          ]
-        },
         "south": {
           "texture": "#clamp",
           "uv": [

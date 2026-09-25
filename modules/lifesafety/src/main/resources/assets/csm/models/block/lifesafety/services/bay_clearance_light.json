@@ -95,15 +95,6 @@
             8.5
           ]
         },
-        "south": {
-          "texture": "#black",
-          "uv": [
-            4,
-            8,
-            12,
-            8.5
-          ]
-        },
         "east": {
           "texture": "#black",
           "uv": [
@@ -155,15 +146,6 @@
       ],
       "faces": {
         "north": {
-          "texture": "#black",
-          "uv": [
-            4,
-            1,
-            12,
-            1.5
-          ]
-        },
-        "south": {
           "texture": "#black",
           "uv": [
             4,

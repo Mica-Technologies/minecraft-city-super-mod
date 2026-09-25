@@ -200,15 +200,6 @@
         15.4
       ],
       "faces": {
-        "north": {
-          "texture": "#metal",
-          "uv": [
-            7.6,
-            3.6,
-            8.4,
-            4.4
-          ]
-        },
         "south": {
           "texture": "#metal",
           "uv": [

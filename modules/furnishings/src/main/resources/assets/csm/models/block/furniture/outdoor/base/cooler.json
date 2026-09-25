@@ -55,15 +55,6 @@
             16
           ]
         },
-        "up": {
-          "texture": "#shell",
-          "uv": [
-            2.5,
-            4.5,
-            13.5,
-            11.5
-          ]
-        },
         "down": {
           "texture": "#shell",
           "uv": [
@@ -173,15 +164,6 @@
             12
           ]
         },
-        "east": {
-          "texture": "#handle",
-          "uv": [
-            6.5,
-            11,
-            9.5,
-            12
-          ]
-        },
         "west": {
           "texture": "#handle",
           "uv": [
@@ -242,15 +224,6 @@
           ]
         },
         "east": {
-          "texture": "#handle",
-          "uv": [
-            6.5,
-            11,
-            9.5,
-            12
-          ]
-        },
-        "west": {
           "texture": "#handle",
           "uv": [
             6.5,

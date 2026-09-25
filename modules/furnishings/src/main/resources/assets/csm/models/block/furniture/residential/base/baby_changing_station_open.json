@@ -96,15 +96,6 @@
             15
           ]
         },
-        "south": {
-          "texture": "#plastic",
-          "uv": [
-            1,
-            14,
-            15,
-            15
-          ]
-        },
         "east": {
           "texture": "#plastic",
           "uv": [
@@ -214,15 +205,6 @@
         14
       ],
       "faces": {
-        "south": {
-          "texture": "#plastic",
-          "uv": [
-            1,
-            12.5,
-            2,
-            14
-          ]
-        },
         "east": {
           "texture": "#plastic",
           "uv": [
@@ -264,15 +246,6 @@
         14
       ],
       "faces": {
-        "south": {
-          "texture": "#plastic",
-          "uv": [
-            14,
-            12.5,
-            15,
-            14
-          ]
-        },
         "east": {
           "texture": "#plastic",
           "uv": [

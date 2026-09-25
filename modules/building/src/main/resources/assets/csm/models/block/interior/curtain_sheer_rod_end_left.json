@@ -85,15 +85,6 @@
         2.4
       ],
       "faces": {
-        "north": {
-          "texture": "#rod",
-          "uv": [
-            14.15,
-            1.22,
-            14.65,
-            1.7
-          ]
-        },
         "south": {
           "texture": "#rod",
           "uv": [

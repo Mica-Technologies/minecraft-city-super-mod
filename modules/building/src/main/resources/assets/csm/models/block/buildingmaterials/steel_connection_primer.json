@@ -92,12 +92,6 @@
         },
         "down": {
           "texture": "#body"
-        },
-        "north": {
-          "texture": "#body"
-        },
-        "south": {
-          "texture": "#body"
         }
       }
     },
@@ -125,9 +119,6 @@
         "down": {
           "texture": "#body"
         },
-        "north": {
-          "texture": "#body"
-        },
         "south": {
           "texture": "#body"
         }
@@ -155,9 +146,6 @@
           "texture": "#body"
         },
         "down": {
-          "texture": "#body"
-        },
-        "north": {
           "texture": "#body"
         },
         "south": {
@@ -189,9 +177,6 @@
         "down": {
           "texture": "#body"
         },
-        "north": {
-          "texture": "#body"
-        },
         "south": {
           "texture": "#body"
         }
@@ -221,9 +206,6 @@
         "down": {
           "texture": "#body"
         },
-        "north": {
-          "texture": "#body"
-        },
         "south": {
           "texture": "#body"
         }
@@ -251,9 +233,6 @@
           "texture": "#body"
         },
         "down": {
-          "texture": "#body"
-        },
-        "north": {
           "texture": "#body"
         },
         "south": {

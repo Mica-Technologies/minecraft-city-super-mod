@@ -527,15 +527,6 @@
         2
       ],
       "faces": {
-        "north": {
-          "texture": "#chrome",
-          "uv": [
-            2.3,
-            5.7,
-            2.9,
-            6.5
-          ]
-        },
         "south": {
           "texture": "#chrome",
           "uv": [
@@ -577,15 +568,6 @@
         2
       ],
       "faces": {
-        "north": {
-          "texture": "#chrome",
-          "uv": [
-            2.3,
-            0,
-            2.9,
-            0.8
-          ]
-        },
         "south": {
           "texture": "#chrome",
           "uv": [

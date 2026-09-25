@@ -374,15 +374,6 @@
         12
       ],
       "faces": {
-        "north": {
-          "texture": "#yellow",
-          "uv": [
-            12,
-            10,
-            13,
-            11
-          ]
-        },
         "south": {
           "texture": "#yellow",
           "uv": [

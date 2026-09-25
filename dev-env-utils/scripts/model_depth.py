@@ -18,6 +18,13 @@ compares like with like.
 
 ``GAP`` is ``SignFaceDepthTest``'s rule: 0.2 of a pixel, which a 24-bit depth buffer behind
 Minecraft's near plane holds apart to about 100 blocks.
+
+After separating, ``separate`` also runs ``prune``: every face that the model's own opaque boxes
+cover completely is removed, in every texture set the model is drawn with (child models and Forge
+blockstate textures included, so a box that turns see-through under one retexture never hides
+anything). A hidden face is never seen but is still baked into every chunk mesh the block is in.
+``model_depth.py <module> --apply --prune`` does both, once, for hand-made models, deleting only
+the removed entries from the file's text.
 """
 import glob
 import json
@@ -355,6 +362,7 @@ def _movable(face):
 
 
 HAND_MAX = 0.45
+PRUNE = True  # hidden-face pruning in generators (turned on after the render diff passed)
 GEN_MAX = 0.65
 
 
@@ -488,6 +496,8 @@ def separate(root, written, dump, hand_made=False, overlay=None):
             moved += 1
     for rel in sorted(changed):
         dump(store.find(rel), store.models[rel])
+    if PRUNE and not hand_made:
+        prune(root, written, dump, overlay)
     return moved
 
 
@@ -534,7 +544,10 @@ def separate_dirs(dirs, written, dump):
             continue
         actual, rel_dir = hit
         rel = os.path.normpath(os.path.join(rel_dir, name))
-        if os.path.exists(os.path.join(actual, name)):  # else it went to another tree
+        # only a file that is both where it was written and where it lives in this tree: a file
+        # that lives in another tree (Core) is left alike in write and --check runs
+        real = os.path.join(root, rel_dir, name)
+        if os.path.exists(os.path.join(actual, name)) and os.path.exists(real):
             overlay[rel] = os.path.join(actual, name)
             rels.append(rel)
     return separate(root, rels, dump, overlay=overlay)
@@ -599,6 +612,10 @@ def main(argv):
     ap = argparse.ArgumentParser(description=main.__doc__)
     ap.add_argument("module", help="a module folder under modules/, or 'core'")
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--prune", action="store_true",
+                    help="also remove the faces the models' own opaque boxes hide")
+    ap.add_argument("--prune-only", action="store_true",
+                    help="only remove hidden faces; move nothing (for models already separated)")
     ap.add_argument("--models", nargs="*", help="limit to these model paths (under the module's "
                                                 "assets/csm); default: every model")
     args = ap.parse_args(argv)
@@ -614,9 +631,304 @@ def main(argv):
         written.append(path)
         if args.apply:
             rewrite_numbers(path, data)
-    n = separate(root, states + [os.path.normpath(m) for m in models], dump, hand_made=True)
-    print("%s %d faces in %d models" % ("moved" if args.apply else "would move", n, len(written)))
+    if not args.prune_only:
+        n = separate(root, states + [os.path.normpath(m) for m in models], dump, hand_made=True)
+        print("%s %d faces in %d models" % ("moved" if args.apply else "would move", n,
+                                           len(written)))
+    if args.prune or args.prune_only:
+        pruned = []
+
+        def pdump(path, data):
+            pruned.append(path)
+            if args.apply:
+                rewrite_pruned(path, data)
+        g = prune(root, [os.path.normpath(m) for m in models], pdump)
+        print("%s %d hidden faces in %d models" % ("pruned" if args.apply else "would prune", g,
+                                                  len(pruned)))
     return 0
+
+
+
+# ------------------------------------------------------------------------------------------------
+# Hidden faces
+# ------------------------------------------------------------------------------------------------
+_PRUNE_STEP = 0.25   # sampling grid over a face, in pixels
+_PRUNE_EPS = 0.02    # how far in front of a face a sample is taken
+_USERS = {}
+
+
+def _inside_box(el, p):
+    lp = _rot(p, el.get("rotation"), -1)
+    f, t = el["from"], el["to"]
+    return all(min(f[k], t[k]) + 1e-4 < lp[k] < max(f[k], t[k]) - 1e-4 for k in range(3))
+
+
+def _opaque(store, el, tex):
+    """Whether every face texture of a box is fully opaque over the area it samples."""
+    for fn, face in el.get("faces", {}).items():
+        im = store.image(_resolve(tex, face.get("texture")))
+        if im is None:
+            return False
+        uv = face.get("uv") or _default_uv(fn, el["from"], el["to"])
+        w, h = im.size
+        x0, x1 = sorted((uv[0] / 16 * w, uv[2] / 16 * w))
+        y0, y1 = sorted((uv[1] / 16 * h, uv[3] / 16 * h))
+        box = (int(x0), int(y0), max(int(x0) + 1, int(round(x1))),
+               max(int(y0) + 1, int(round(y1))))
+        if im.crop(box).getchannel("A").getextrema()[0] < 250:
+            return False
+    return True
+
+
+def texture_users(root):
+    """{element model rel: [texture dicts it is drawn with]} over every model and blockstate in
+    ``root`` and the asset trees: each child model that inherits the elements, and each Forge
+    blockstate that lays textures over one. A face is only hidden if it is hidden in all of them."""
+    key = os.path.normcase(os.path.abspath(root))
+    if key in _USERS:
+        return _USERS[key]
+    store = _Store(root)
+    users = {}
+
+    def add(name, over):
+        erel, els, tex = store.chain(name)
+        if not els or erel is None:
+            return
+        t = dict(tex, **over) if over else tex
+        users.setdefault(os.path.normpath(erel), {})[tuple(sorted(t.items()))] = t
+    for base in [root] + _TREES:
+        for p in glob.glob(os.path.join(base, "models", "block", "**", "*.json"), recursive=True):
+            rel = os.path.relpath(p, os.path.join(base, "models", "block")).replace(os.sep, "/")
+            add("csm:" + rel[:-5], None)
+        for p in glob.glob(os.path.join(base, "blockstates", "*.json")):
+            try:
+                state = json.load(open(p, encoding="utf-8"))
+            except ValueError:
+                continue
+            if not isinstance(state, dict) or "multipart" in state:
+                continue
+            for names in _model_sets(state):
+                for name, over in names:
+                    if over:
+                        add(name, over)
+    _USERS[key] = {k: list(v.values()) for k, v in users.items()}
+    return _USERS[key]
+
+
+def hidden_in(store, rel, els, texsets):
+    """Faces (element index, face) of one model's elements hidden by its own closed, opaque boxes
+    under every texture set it is drawn with: every point just in front of the face lies inside
+    such a box, so no line of sight reaches it without crossing an opaque face."""
+    hidden = None
+    for tex in texsets:
+        # only a closed box hides what is inside it: a box's volume occludes nothing, its faces
+        # do, so a box missing a face (an open basin, a crate with no top) hides nothing
+        opaque = [i for i, el in enumerate(els)
+                  if len(el.get("faces", {})) == 6 and _opaque(store, el, tex)]
+        found = set()
+        if opaque:
+            for i, el in enumerate(els):
+                for fn in el.get("faces", {}):
+                    q = _Face(store, rel, i, el, fn, tex)
+                    us = [p[q.ax[0]] for p in q.pts]
+                    vs = [p[q.ax[1]] for p in q.pts]
+                    u0, u1, v0, v1 = min(us), max(us), min(vs), max(vs)
+                    if u1 - u0 < 1e-3 or v1 - v0 < 1e-3:
+                        continue
+                    nu = max(1, int((u1 - u0) / _PRUNE_STEP))
+                    nv = max(1, int((v1 - v0) / _PRUNE_STEP))
+                    covered, seen = True, False
+                    for a in range(nu + 1):
+                        u = u0 + (u1 - u0) * a / nu
+                        for b in range(nv + 1):
+                            v = v0 + (v1 - v0) * b / nv
+                            # pull edge samples a hair inside so the face's own rim counts
+                            uu = min(max(u, u0 + 1e-3), u1 - 1e-3)
+                            vv = min(max(v, v0 + 1e-3), v1 - 1e-3)
+                            p = [0.0, 0.0, 0.0]
+                            p[q.ax[0]], p[q.ax[1]] = uu, vv
+                            p[q.drop] = (q.d - sum(p[k] * q.n[k] for k in q.ax)) / q.n[q.drop]
+                            if not q.inside(p):
+                                continue
+                            seen = True
+                            front = [p[k] + q.n[k] * _PRUNE_EPS for k in range(3)]
+                            if not any(j != i and _inside_box(els[j], front) for j in opaque):
+                                covered = False
+                                break
+                        if not covered:
+                            break
+                    if covered and seen:
+                        found.add((i, fn))
+        hidden = found if hidden is None else hidden & found
+        if not hidden:
+            return set()
+    return hidden or set()
+
+
+def prune(root, written, dump, overlay=None):
+    """Removes, from the models ``written`` names that own elements, every face their own opaque
+    boxes hide in every texture set they are drawn with, and any box left with no faces (Minecraft
+    rejects a box without one). Returns how many faces went."""
+    owned = {os.path.normpath(w) for w in written}
+    store = _Store(root, overlay)
+    users = texture_users(root)
+    gone = 0
+    for rel in sorted(r for r in owned if r.startswith(os.path.join("models", "block")) and r.endswith(".json")):
+        path = store.find(rel)
+        if not path:
+            continue
+        data = json.load(open(path, encoding="utf-8"))
+        els = data.get("elements")
+        if not els:
+            continue
+        texsets = users.get(rel)
+        if not texsets:
+            continue
+        hid = hidden_in(store, rel, els, texsets)
+        if not hid:
+            continue
+        for i, fn in hid:
+            del els[i]["faces"][fn]
+        data["elements"] = [el for el in els if el.get("faces")]
+        dump(path, data)
+        gone += len(hid)
+    return gone
+
+
+def _spans(text):
+    """Parses JSON text into a tree of (kind, start, end, children): for an object, children are
+    [(key, key_start, value_node)]; for an array, [value_node]. Offsets into ``text``."""
+    import re
+    ws = re.compile(r"\s*")
+    strre = re.compile(r'"(?:[^"\\]|\\.)*"')
+    numre = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?")
+
+    def skip(i):
+        return ws.match(text, i).end()
+
+    def value(i):
+        i = skip(i)
+        c = text[i]
+        if c == "{":
+            start, kids = i, []
+            i = skip(i + 1)
+            if text[i] == "}":
+                return ("obj", start, i + 1, kids), i + 1
+            while True:
+                i = skip(i)
+                m = strre.match(text, i)
+                key = json.loads(m.group(0))
+                ks = i
+                i = skip(m.end())
+                assert text[i] == ":"
+                node, i = value(i + 1)
+                kids.append((key, ks, node))
+                i = skip(i)
+                if text[i] == ",":
+                    i += 1
+                    continue
+                assert text[i] == "}"
+                return ("obj", start, i + 1, kids), i + 1
+        if c == "[":
+            start, kids = i, []
+            i = skip(i + 1)
+            if text[i] == "]":
+                return ("arr", start, i + 1, kids), i + 1
+            while True:
+                node, i = value(i)
+                kids.append(node)
+                i = skip(i)
+                if text[i] == ",":
+                    i += 1
+                    continue
+                assert text[i] == "]"
+                return ("arr", start, i + 1, kids), i + 1
+        if c == '"':
+            m = strre.match(text, i)
+            return ("str", i, m.end(), None), m.end()
+        for lit in ("true", "false", "null"):
+            if text.startswith(lit, i):
+                return ("lit", i, i + len(lit), None), i + len(lit)
+        m = numre.match(text, i)
+        return ("num", i, m.end(), None), m.end()
+    node, _ = value(0)
+    return node
+
+
+def rewrite_pruned(path, data):
+    """Writes a pruned model back into a hand-made file by deleting only the removed face entries
+    and emptied boxes from the text, leaving every other byte as it was; refuses unless the result
+    parses to exactly ``data``."""
+    raw = open(path, encoding="utf-8", newline="").read()
+    old = json.loads(raw)
+    root = _spans(raw)
+    els_node = next(n for k, _ks, n in root[3] if k == "elements")
+    new_els = data["elements"]
+    # map old elements to new: an old element survives if some new element equals it minus faces
+    cuts = []  # (start, end) text ranges to delete
+    ni = 0
+    for oi, (el_old, el_node) in enumerate(zip(old["elements"], els_node[3])):
+        keep = ni < len(new_els) and all(new_els[ni].get(k) == el_old.get(k)
+                                         for k in el_old if k != "faces")
+        if keep and set(new_els[ni]["faces"]) <= set(el_old["faces"]) and new_els[ni]["faces"]:
+            gone = set(el_old["faces"]) - set(new_els[ni]["faces"])
+            if gone:
+                faces_node = next(n for k, _ks, n in el_node[3] if k == "faces")
+                entries = [(k, ks, n) for k, ks, n in faces_node[3]]
+                cuts += _entry_cuts(raw, [(ks, n[2]) for k, ks, n in entries],
+                                    [k in gone for k, ks, n in entries])
+            ni += 1
+        else:
+            cuts.append(("el", oi))
+    el_spans = [(n[1], n[2]) for n in els_node[3]]
+    drop = [False] * len(el_spans)
+    face_cuts = [c for c in cuts if c[0] != "el"]
+    for c in cuts:
+        if c[0] == "el":
+            drop[c[1]] = True
+    cuts = face_cuts + _entry_cuts(raw, el_spans, drop)
+    out, pos = [], 0
+    for s, e in sorted(cuts):
+        out.append(raw[pos:s])
+        pos = e
+    out.append(raw[pos:])
+    text = "".join(out)
+    if json.loads(text) != data:
+        raise ValueError("%s: pruned rewrite does not reproduce the model" % path)
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        fh.write(text)
+
+
+def _entry_cuts(raw, spans, drop):
+    """Text ranges to delete to remove the flagged entries of one object or array, whose entries
+    are ``spans`` [(start, end)] in order: each dropped entry goes with the comma that separates it
+    from a kept neighbour and the whitespace in between."""
+    cuts = []
+    n = len(spans)
+    for i in range(n):
+        if not drop[i]:
+            continue
+        s, e = spans[i]
+        # prefer eating the comma after it (up to the next entry); for the last kept-less tail,
+        # eat the comma before it instead
+        nxt = next((j for j in range(i + 1, n) if not drop[j]), None)
+        prv = next((j for j in range(i - 1, -1, -1) if not drop[j]), None)
+        if nxt is not None:
+            cuts.append((s, spans[i + 1][0]) if i + 1 < n else (s, e))
+        elif prv is not None:
+            # delete from the end of the previous entry (kept or dropped) through this one
+            cuts.append((spans[i - 1][1], e))
+        else:
+            cuts.append((s, e))
+    # merge overlapping cuts
+    cuts.sort()
+    merged = []
+    for s, e in cuts:
+        if merged and s <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(e, merged[-1][1]))
+        else:
+            merged.append((s, e))
+    return merged
 
 
 if __name__ == "__main__":

@@ -222,24 +222,6 @@
         14
       ],
       "faces": {
-        "north": {
-          "texture": "#wall",
-          "uv": [
-            14,
-            4,
-            16,
-            16
-          ]
-        },
-        "south": {
-          "texture": "#wall",
-          "uv": [
-            0,
-            4,
-            2,
-            16
-          ]
-        },
         "east": {
           "texture": "#wall",
           "uv": [
@@ -290,24 +272,6 @@
         14
       ],
       "faces": {
-        "north": {
-          "texture": "#wall",
-          "uv": [
-            0,
-            4,
-            2,
-            16
-          ]
-        },
-        "south": {
-          "texture": "#wall",
-          "uv": [
-            14,
-            4,
-            16,
-            16
-          ]
-        },
         "east": {
           "texture": "#wall",
           "uv": [

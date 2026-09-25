@@ -156,24 +156,6 @@
         14.0
       ],
       "faces": {
-        "north": {
-          "texture": "#tube",
-          "uv": [
-            0,
-            1.0,
-            1.0,
-            2.0
-          ]
-        },
-        "south": {
-          "texture": "#tube",
-          "uv": [
-            15.0,
-            1.0,
-            16.0,
-            2.0
-          ]
-        },
         "east": {
           "texture": "#tube",
           "uv": [
@@ -224,24 +206,6 @@
         14.0
       ],
       "faces": {
-        "north": {
-          "texture": "#tube",
-          "uv": [
-            0,
-            4.5,
-            1.0,
-            5.5
-          ]
-        },
-        "south": {
-          "texture": "#tube",
-          "uv": [
-            15.0,
-            4.5,
-            16.0,
-            5.5
-          ]
-        },
         "east": {
           "texture": "#tube",
           "uv": [

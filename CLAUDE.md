@@ -717,7 +717,15 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   output or over a model a generator reads (the silver pole parts `gen_concrete_poles.py` copies,
   the lamp models `gen_lighting_lit_atlases.py` reads, the sign plates `gen_official_faces.py`
   measures). Draw a detail flush and let it separate it; see Residential Furniture in
-  `NOVELTIES_SYSTEM.md`
+  `NOVELTIES_SYSTEM.md`. After separating it prunes: a face is removed when every point just in
+  front of it lies inside a closed box of the same model (all six faces present, every one opaque
+  in every texture set the model is drawn with, child models and Forge blockstate textures
+  included). A box's volume hides nothing, only its faces do, so an open box (a basin, a crate
+  with no top) never hides what is inside it. `--prune` / `--prune-only` do it once for hand-made
+  models, deleting only the removed entries from the file's text
+- `audit_model_weight.py` -- how heavy every JSON block model is: quads per model and module, the
+  heaviest models, and how many of their faces are hidden by the model's own closed opaque boxes
+  (what `model_depth.py`'s pruning would remove). Offline, a few seconds a module
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

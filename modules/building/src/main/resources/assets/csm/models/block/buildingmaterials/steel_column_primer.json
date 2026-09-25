@@ -92,12 +92,6 @@
         },
         "down": {
           "texture": "#body"
-        },
-        "north": {
-          "texture": "#body"
-        },
-        "south": {
-          "texture": "#body"
         }
       }
     }

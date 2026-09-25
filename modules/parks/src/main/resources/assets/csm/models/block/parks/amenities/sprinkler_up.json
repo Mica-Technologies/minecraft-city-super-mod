@@ -54,15 +54,6 @@
             16
           ]
         },
-        "up": {
-          "texture": "#riser",
-          "uv": [
-            7,
-            7,
-            9,
-            9
-          ]
-        },
         "down": {
           "texture": "#riser",
           "uv": [
@@ -155,15 +146,6 @@
       ],
       "faces": {
         "north": {
-          "texture": "#cap",
-          "uv": [
-            7.5,
-            11,
-            8.5,
-            11.5
-          ]
-        },
-        "south": {
           "texture": "#cap",
           "uv": [
             7.5,

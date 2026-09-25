@@ -515,15 +515,6 @@
             10.5
           ]
         },
-        "up": {
-          "texture": "#metal_black",
-          "uv": [
-            5,
-            5,
-            11,
-            11
-          ]
-        },
         "down": {
           "texture": "#metal_black",
           "uv": [

@@ -174,24 +174,6 @@
           "texture": "#sheet",
           "cullface": "south"
         },
-        "east": {
-          "uv": [
-            12,
-            10.5,
-            16,
-            14.5
-          ],
-          "texture": "#sheet"
-        },
-        "west": {
-          "uv": [
-            12,
-            10.5,
-            16,
-            14.5
-          ],
-          "texture": "#sheet"
-        },
         "up": {
           "uv": [
             12,
@@ -243,24 +225,6 @@
           "texture": "#sheet",
           "cullface": "south"
         },
-        "east": {
-          "uv": [
-            12,
-            10.5,
-            16,
-            14.5
-          ],
-          "texture": "#sheet"
-        },
-        "west": {
-          "uv": [
-            12,
-            10.5,
-            16,
-            14.5
-          ],
-          "texture": "#sheet"
-        },
         "up": {
           "uv": [
             12,
@@ -294,15 +258,6 @@
       ],
       "faces": {
         "north": {
-          "uv": [
-            12,
-            0,
-            16,
-            4
-          ],
-          "texture": "#trim"
-        },
-        "south": {
           "uv": [
             12,
             0,
@@ -370,15 +325,6 @@
           ],
           "texture": "#trim"
         },
-        "south": {
-          "uv": [
-            12,
-            0,
-            16,
-            4
-          ],
-          "texture": "#trim"
-        },
         "east": {
           "uv": [
             12,
@@ -438,15 +384,6 @@
           ],
           "texture": "#trim"
         },
-        "south": {
-          "uv": [
-            12,
-            0,
-            16,
-            4
-          ],
-          "texture": "#trim"
-        },
         "east": {
           "uv": [
             12,
@@ -498,15 +435,6 @@
       ],
       "faces": {
         "north": {
-          "uv": [
-            12,
-            0,
-            16,
-            4
-          ],
-          "texture": "#trim"
-        },
-        "south": {
           "uv": [
             12,
             0,
@@ -610,15 +538,6 @@
           ],
           "texture": "#sheet",
           "cullface": "up"
-        },
-        "down": {
-          "uv": [
-            12,
-            10.5,
-            16,
-            14.5
-          ],
-          "texture": "#sheet"
         }
       }
     },
@@ -679,15 +598,6 @@
           ],
           "texture": "#sheet",
           "cullface": "up"
-        },
-        "down": {
-          "uv": [
-            12,
-            10.5,
-            16,
-            14.5
-          ],
-          "texture": "#sheet"
         }
       }
     }

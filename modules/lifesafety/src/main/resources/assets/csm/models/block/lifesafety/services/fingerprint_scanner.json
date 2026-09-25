@@ -27,15 +27,6 @@
             16
           ]
         },
-        "south": {
-          "texture": "#body",
-          "uv": [
-            4,
-            13,
-            12,
-            16
-          ]
-        },
         "east": {
           "texture": "#body",
           "uv": [

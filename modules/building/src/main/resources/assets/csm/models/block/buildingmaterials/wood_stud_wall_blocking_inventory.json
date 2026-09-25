@@ -277,9 +277,6 @@
         "north": {
           "texture": "#track"
         },
-        "south": {
-          "texture": "#track"
-        },
         "east": {
           "texture": "#track"
         },
@@ -306,12 +303,6 @@
         11
       ],
       "faces": {
-        "north": {
-          "texture": "#track"
-        },
-        "south": {
-          "texture": "#track"
-        },
         "east": {
           "texture": "#track"
         },
@@ -338,9 +329,6 @@
         16
       ],
       "faces": {
-        "north": {
-          "texture": "#track"
-        },
         "south": {
           "texture": "#track"
         },

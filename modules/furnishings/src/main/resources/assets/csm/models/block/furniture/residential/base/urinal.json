@@ -97,15 +97,6 @@
             13
           ]
         },
-        "south": {
-          "texture": "#porcelain",
-          "uv": [
-            4.5,
-            9.5,
-            11.5,
-            13
-          ]
-        },
         "east": {
           "texture": "#porcelain",
           "uv": [

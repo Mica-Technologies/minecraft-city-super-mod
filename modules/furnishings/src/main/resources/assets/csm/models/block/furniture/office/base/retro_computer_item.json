@@ -132,15 +132,6 @@
             12,
             12.5
           ]
-        },
-        "down": {
-          "texture": "#plastic",
-          "uv": [
-            4,
-            3.5,
-            12,
-            10
-          ]
         }
       }
     },
@@ -156,15 +147,6 @@
         14.75
       ],
       "faces": {
-        "north": {
-          "texture": "#plastic",
-          "uv": [
-            5,
-            7.5,
-            11,
-            13
-          ]
-        },
         "east": {
           "texture": "#plastic",
           "uv": [

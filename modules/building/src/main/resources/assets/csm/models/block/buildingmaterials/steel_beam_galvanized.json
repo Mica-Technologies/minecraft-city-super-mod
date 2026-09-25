@@ -87,12 +87,6 @@
         "west": {
           "texture": "#body"
         },
-        "up": {
-          "texture": "#body"
-        },
-        "down": {
-          "texture": "#body"
-        },
         "north": {
           "texture": "#body"
         },

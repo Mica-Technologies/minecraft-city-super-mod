@@ -55,15 +55,6 @@
             16
           ]
         },
-        "up": {
-          "texture": "#side",
-          "uv": [
-            0,
-            5,
-            16,
-            16
-          ]
-        },
         "down": {
           "texture": "#side",
           "uv": [

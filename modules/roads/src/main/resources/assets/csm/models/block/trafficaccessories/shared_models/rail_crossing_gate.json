@@ -180,15 +180,6 @@
           ],
           "texture": "#hardware"
         },
-        "west": {
-          "uv": [
-            0,
-            9,
-            4,
-            13
-          ],
-          "texture": "#hardware"
-        },
         "up": {
           "uv": [
             0,
@@ -258,15 +249,6 @@
           "texture": "#hardware"
         },
         "up": {
-          "uv": [
-            0,
-            2,
-            4,
-            6
-          ],
-          "texture": "#hardware"
-        },
-        "down": {
           "uv": [
             0,
             2,

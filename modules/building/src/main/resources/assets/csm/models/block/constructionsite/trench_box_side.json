@@ -85,15 +85,6 @@
         2.1
       ],
       "faces": {
-        "north": {
-          "texture": "#panel",
-          "uv": [
-            7,
-            0,
-            9,
-            16
-          ]
-        },
         "south": {
           "texture": "#panel",
           "uv": [

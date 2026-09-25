@@ -43,15 +43,6 @@
             16
           ]
         },
-        "west": {
-          "texture": "#guard",
-          "uv": [
-            0,
-            0,
-            0.75,
-            16
-          ]
-        },
         "up": {
           "texture": "#guard",
           "uv": [
