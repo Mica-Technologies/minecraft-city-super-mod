@@ -1,0 +1,71 @@
+batch 1/63 done  15s  (13 types)  meanRenderWorkMs=0.96
+batch 2/63 done  30s  (17 types)  meanRenderWorkMs=1.06
+batch 3/63 done  44s  (12 types)  meanRenderWorkMs=0.9
+batch 4/63 done  60s  (16 types)  meanRenderWorkMs=0.82
+batch 5/63 done  75s  (19 types)  meanRenderWorkMs=0.84
+batch 6/63 done  93s  (14 types)  meanRenderWorkMs=1.45
+batch 7/63 done  108s  (13 types)  meanRenderWorkMs=0.87
+batch 8/63 done  123s  (12 types)  meanRenderWorkMs=0.79
+batch 9/63 done  138s  (12 types)  meanRenderWorkMs=0.81
+batch 10/63 done  153s  (13 types)  meanRenderWorkMs=0.82
+batch 11/63 done  171s  (13 types)  meanRenderWorkMs=0.75
+batch 12/63 done  186s  (15 types)  meanRenderWorkMs=0.72
+batch 13/63 done  201s  (0 types)  meanRenderWorkMs=0.62
+batch 14/63 done  215s  (0 types)  meanRenderWorkMs=0.59
+batch 15/63 done  230s  (0 types)  meanRenderWorkMs=0.64
+batch 16/63 done  245s  (1 types)  meanRenderWorkMs=0.67
+batch 17/63 done  260s  (7 types)  meanRenderWorkMs=0.68
+batch 18/63 done  274s  (9 types)  meanRenderWorkMs=0.62
+batch 19/63 done  289s  (4 types)  meanRenderWorkMs=0.61
+batch 20/63 done  304s  (3 types)  meanRenderWorkMs=0.56
+batch 21/63 done  319s  (10 types)  meanRenderWorkMs=0.57
+batch 22/63 done  334s  (12 types)  meanRenderWorkMs=0.56
+batch 23/63 done  349s  (12 types)  meanRenderWorkMs=0.6
+batch 24/63 done  367s  (12 types)  meanRenderWorkMs=0.62
+batch 25/63 done  382s  (12 types)  meanRenderWorkMs=0.66
+batch 26/63 done  397s  (12 types)  meanRenderWorkMs=0.6
+batch 27/63 done  412s  (6 types)  meanRenderWorkMs=0.94
+batch 28/63 done  427s  (0 types)  meanRenderWorkMs=0.53
+batch 29/63 done  442s  (0 types)  meanRenderWorkMs=0.52
+batch 30/63 done  457s  (5 types)  meanRenderWorkMs=0.65
+batch 31/63 done  472s  (12 types)  meanRenderWorkMs=0.77
+batch 32/63 done  487s  (12 types)  meanRenderWorkMs=0.78
+batch 33/63 done  502s  (12 types)  meanRenderWorkMs=0.78
+batch 34/63 done  516s  (12 types)  meanRenderWorkMs=0.86
+batch 35/63 done  531s  (12 types)  meanRenderWorkMs=0.79
+Traceback (most recent call last):
+  File "E:\gitRepos\minecraft-city-super-mod\assets\docs\benchmarks\block-inventory-2026-09-20\harness\inv.py", line 55, in <module>
+    r = C.call("client_profile_rendering", {"duration_seconds": 6, "top": 50})
+  File "E:\gitRepos\minecraft-city-super-mod\dev-env-utils\scripts\csm_bench.py", line 201, in call
+    raise McpError("%s returned an error: %s" % (name, " ".join(texts)[:300]))
+csm_bench.McpError: client_profile_rendering returned an error: Another client profile is already running; wait for it.
+batch 36/63 done  15s  (12 types)  meanRenderWorkMs=0.84
+batch 37/63 done  30s  (12 types)  meanRenderWorkMs=0.79
+batch 38/63 done  44s  (12 types)  meanRenderWorkMs=0.75
+batch 39/63 done  59s  (0 types)  meanRenderWorkMs=0.89
+batch 40/63 done  74s  (0 types)  meanRenderWorkMs=0.55
+batch 41/63 done  89s  (5 types)  meanRenderWorkMs=0.6
+batch 42/63 done  104s  (11 types)  meanRenderWorkMs=0.95
+batch 43/63 done  118s  (10 types)  meanRenderWorkMs=0.68
+batch 44/63 done  134s  (2 types)  meanRenderWorkMs=0.63
+batch 45/63 done  149s  (5 types)  meanRenderWorkMs=0.77
+batch 46/63 done  163s  (12 types)  meanRenderWorkMs=1.05
+batch 47/63 done  178s  (4 types)  meanRenderWorkMs=0.63
+batch 48/63 done  197s  (11 types)  meanRenderWorkMs=0.71
+batch 49/63 done  212s  (4 types)  meanRenderWorkMs=0.62
+batch 50/63 done  227s  (3 types)  meanRenderWorkMs=0.56
+batch 51/63 done  242s  (1 types)  meanRenderWorkMs=0.56
+batch 52/63 done  257s  (1 types)  meanRenderWorkMs=0.6
+batch 53/63 done  271s  (1 types)  meanRenderWorkMs=0.68
+batch 54/63 done  286s  (1 types)  meanRenderWorkMs=0.54
+batch 55/63 done  301s  (1 types)  meanRenderWorkMs=0.55
+batch 56/63 done  317s  (1 types)  meanRenderWorkMs=0.52
+batch 57/63 done  331s  (1 types)  meanRenderWorkMs=0.51
+batch 58/63 done  346s  (1 types)  meanRenderWorkMs=0.54
+batch 59/63 done  361s  (3 types)  meanRenderWorkMs=0.54
+Traceback (most recent call last):
+  File "E:\gitRepos\minecraft-city-super-mod\assets\docs\benchmarks\block-inventory-2026-09-20\harness\inv.py", line 55, in <module>
+    r = C.call("client_profile_rendering", {"duration_seconds": 6, "top": 50})
+  File "E:\gitRepos\minecraft-city-super-mod\dev-env-utils\scripts\csm_bench.py", line 201, in call
+    raise McpError("%s returned an error: %s" % (name, " ".join(texts)[:300]))
+csm_bench.McpError: client_profile_rendering returned an error: Another client profile is already running; wait for it.

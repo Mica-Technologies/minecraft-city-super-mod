@@ -1,0 +1,86 @@
+{
+ "csm:controllableverticalbikesignal": {
+  "class": "BlockControllableSignal",
+  "tab": "tabtrafficsignals",
+  "name": "Vertical Traffic Signal (Bike, Protected)",
+  "placed": 8,
+  "census": 10,
+  "rendered": 11,
+  "renderer": "TileEntityTrafficSignalHeadRenderer",
+  "us_total": 28.3,
+  "us_each": 2.57,
+  "us_worst": 3.5
+ },
+ "csm:controllableverticalbikesignalgray": {
+  "class": "BlockControllableSignal$Retiring",
+  "tab": null,
+  "name": "Vertical Bike Signal (Gray)",
+  "placed": 8,
+  "census": 6,
+  "rendered": 5,
+  "renderer": "TileEntityTrafficSignalHeadRenderer",
+  "us_total": 17.5,
+  "us_each": 3.5,
+  "us_worst": 6.2
+ },
+ "csm:tlborder5addongreenblack": {
+  "class": "BlockTrafficAccessoryBackplate",
+  "tab": "tabtrafficaccessories",
+  "name": "Vertical 5-Tall Add-On Signal Border (Green/Black)",
+  "placed": 8,
+  "census": 8,
+  "rendered": 8,
+  "renderer": "TileEntitySignalBackplateRenderer",
+  "us_total": 19.3,
+  "us_each": 2.41,
+  "us_worst": 2.9
+ },
+ "csm:tlborderblackpink": {
+  "class": "BlockTrafficAccessoryBackplate",
+  "tab": "tabtrafficaccessories",
+  "name": "Vertical Signal Border (Black/Pink)",
+  "placed": 8,
+  "census": 8,
+  "rendered": 8,
+  "renderer": "TileEntitySignalBackplateRenderer",
+  "us_total": 24.7,
+  "us_each": 3.09,
+  "us_worst": 10.3
+ },
+ "csm:tlborderpinkblack8inch": {
+  "class": "BlockTrafficAccessoryBackplate",
+  "tab": "tabtrafficaccessories",
+  "name": "Vertical Signal Border (Pink/Black) (8 Inch)",
+  "placed": 8,
+  "census": 8,
+  "rendered": 8,
+  "renderer": "TileEntitySignalBackplateRenderer",
+  "us_total": 17.0,
+  "us_each": 2.12,
+  "us_worst": 2.5
+ },
+ "csm:transformer_padmount_small": {
+  "class": "BlockUtilityBoxLabelled",
+  "tab": "tabstreetscape",
+  "name": "Pad-Mount Transformer (Small)",
+  "placed": 8,
+  "census": 8,
+  "rendered": 8,
+  "renderer": "TileEntityTattleTaleBeaconRenderer",
+  "us_total": 0.6,
+  "us_each": 0.07,
+  "us_worst": 0.2
+ },
+ "csm:parking_meter_mechanical_double": {
+  "class": "BlockParkingMeter",
+  "tab": "tabstreetscape",
+  "name": "Parking Meter (Mechanical, Double)",
+  "placed": 8,
+  "census": 8,
+  "rendered": 8,
+  "renderer": "TileEntityParkingMeterRenderer",
+  "us_total": 69.4,
+  "us_each": 8.68,
+  "us_worst": 11.7
+ }
+}

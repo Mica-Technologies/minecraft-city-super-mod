@@ -73,6 +73,33 @@ figures and carry the 5-7% restart noise.
   (`FIRE_ALARM_SYSTEM.md` § Channel System). Verified in game with two panels in alarm, one broken
   mid-alarm.
 
+## Re-run, 2026-09-24
+
+The warm per-block inventory (`harness/inv.py`, 8 copies a block, flat world, input locked) was run
+again after the fixes above: `benchmarks/block-inventory-2026-09-20/inventory-warm-2026-09-24.json`
+(708 of the tile-entity blocks; two batches stopped on MCMCP's "another client profile is already
+running" and were resumed; the rest are furnishings with no renderer).
+
+- Over the 367 blocks with a renderer in both runs, the per-block cost summed to **1,179 µs before
+  and 684 µs after (-42%)**. The largest single drops are the bakes: portable speed limit sign
+  138 -> 6.7 µs, portable message sign 133 -> 2.7, school zone beacon 83 -> 8.2, arrow board
+  39 -> 3.0, emergency lights 30 -> 0.07 and 29 -> 1.6, crossing gates 23 -> 1.2, mount kit
+  11.8 -> 1.9.
+- Two apparent regressions were placement noise, confirmed by a same-session recheck
+  (`recheck-2026-09-24.json`): the vertical bike signal (69.7 in the batch, 2.6 alone) and the
+  small padmount transformer (6.8 in the batch, 0.07 alone -- its first frame's label setup landed
+  in the window). The signal backplates read about 1 µs higher than on 09-21 (1.9 -> 2.1-3.1),
+  inside the cross-restart noise; not acted on.
+- New renderers since 09-21 (Streetscape, Life Safety, furniture): the costliest is the parking
+  meter, 8.7 µs for a double head, confirmed alone. It draws every rectangle as its own draw call
+  and sets its text every frame, per head. A candidate for the shared-list treatment (static
+  face per head size, text keyed on the string shown), not done: meters are few per street.
+
+**Chunk geometry.** `model_depth.py` now removes faces a model's own closed opaque boxes hide
+(`audit_model_weight.py` reports what is left): 6,011 quads from 656 models, 6-16% of each, most
+in the signal heads (about 220 of a head's 1,116). That is baked chunk-mesh geometry, so it saves
+memory and rebuild time wherever the blocks stand, not per-frame renderer time.
+
 ## Read this first
 
 - **One finding was a cliff, not a cost (now fixed).** `CsmDisplayListCache` held 1,024 positions
