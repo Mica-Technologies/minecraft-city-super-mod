@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +31,8 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  *   <li>{@code /csm poleignore add <block>} — adds a block id; accepts {@code modid:name} or a
  *       bare {@code name} (treated as {@code minecraft:name})</li>
  *   <li>{@code /csm poleignore remove <block>} — removes a block id</li>
+ *   <li>{@code /csm memstats [dump]} — what every block costs in memory (states, neighbour
+ *       tables and, on a client, baked models and quads); {@code dump} writes the full report</li>
  * </ul>
  * <p>
  * Mutations made through this command are persisted to the config file immediately, so they
@@ -39,7 +42,7 @@ public class CommandCsm extends CommandBase {
 
   private static final String USAGE =
       "/csm <reloadconfig|poleignore <list|add|remove> [block]"
-          + "|renderpass <list|skip|draw|reset> [pass]|displaylists>";
+          + "|renderpass <list|skip|draw|reset> [pass]|displaylists|memstats [dump]>";
 
   @Override
   public String getName() {
@@ -80,6 +83,9 @@ public class CommandCsm extends CommandBase {
         return;
       case "displaylists":
         handleDisplayLists(sender);
+        return;
+      case "memstats":
+        handleMemStats(server, sender, args);
         return;
       default:
         throw new WrongUsageException(USAGE);
@@ -124,6 +130,29 @@ public class CommandCsm extends CommandBase {
     long usedMb = (runtime.totalMemory() - runtime.freeMemory()) / (1024L * 1024L);
     long maxMb = runtime.maxMemory() / (1024L * 1024L);
     sendSuccess(sender, String.format("heap %d/%d MB", usedMb, maxMb));
+  }
+
+  /**
+   * Reports what every block costs in memory: its states and their neighbour tables and, on a
+   * client, the baked models and quads its states reach. {@code dump} writes the full report
+   * (CSV per block, property, module and base class, plus OBJ and item tables) under
+   * {@code csm-memstats/<timestamp>/} in the game folder. Read only; see {@code CsmMemStats}.
+   *
+   * @param server the server
+   * @param sender the command sender
+   * @param args   the full argument array
+   */
+  private static void handleMemStats(MinecraftServer server, ICommandSender sender,
+      String[] args) {
+    boolean dump = args.length > 1 && "dump".equalsIgnoreCase(args[1]);
+    File out = server.getFile("csm-memstats");
+    sendInfo(sender, "Measuring" + (dump ? " and writing the report" : "") + "...");
+    Csm.proxy.runMemStats(out, dump, lines -> {
+      for (String line : lines) {
+        Csm.getLogger().info("[memstats] {}", line);
+        sendSuccess(sender, line);
+      }
+    });
   }
 
   private static void handleRenderPass(ICommandSender sender, String[] args)
@@ -235,7 +264,11 @@ public class CommandCsm extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "reloadconfig", "poleignore");
+      return getListOfStringsMatchingLastWord(args, "reloadconfig", "poleignore", "renderpass",
+          "displaylists", "memstats");
+    }
+    if (args.length == 2 && "memstats".equalsIgnoreCase(args[0])) {
+      return getListOfStringsMatchingLastWord(args, "dump");
     }
     if (args.length == 2 && "poleignore".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "list", "add", "remove");

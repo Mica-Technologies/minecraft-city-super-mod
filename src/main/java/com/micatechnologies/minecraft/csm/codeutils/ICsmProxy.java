@@ -1,5 +1,8 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import java.io.File;
+import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -64,4 +67,17 @@ public interface ICsmProxy {
    * @since 1.0
    */
   void setCustomModelResourceLocation(Item item, int meta, String id);
+
+  /**
+   * Runs the {@code /csm memstats} report. On a server only the block states are measured, on the
+   * calling thread; the client proxy adds the baked models and runs on the client thread, where
+   * the model manager lives.
+   *
+   * @param outRoot the folder the report is written under
+   * @param dump    true to write the full report (and hash every quad for the duplicate figures)
+   * @param reply   receives the chat lines when the report is done
+   */
+  default void runMemStats(File outRoot, boolean dump, Consumer<List<String>> reply) {
+    reply.accept(CsmMemStats.run(outRoot, dump, dump, null));
+  }
 }

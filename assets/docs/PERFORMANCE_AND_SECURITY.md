@@ -53,6 +53,15 @@ fix list are in `PERFORMANCE_INVENTORY.md`.
 
 ### Memory
 
+**The figures in this section are out of date (2026-09-25).** With every module the client now
+holds about 4.0 GiB live at the main menu (157 MiB with Core only), which is more than the old
+generation a 6 GB ParallelGC heap gets, so it sits in constant full GC. What that heap is made of,
+block by block, comes from `/csm memstats [dump]`: every block's states and the estimated size of
+their neighbour tables, and on a client the baked models and quads its states reach, with the
+duplicates counted. `dump` writes CSV reports under `csm-memstats/` in the game folder. The
+command only reads; it never asks an OBJ model for its quads, since Forge builds those lazily and
+asking would build them all.
+
 **CSM needs about 2 GB of heap to start.** At 1 GB and at 1.5 GB it fails with an
 `OutOfMemoryError` in `ModelLoader.setupModelRegistry` -- baking the block model registry at
 startup, before any world exists. At 2 GB about 1.44 GB is resident at the main menu, and touring

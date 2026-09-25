@@ -1,10 +1,15 @@
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmMemStats;
+import com.micatechnologies.minecraft.csm.codeutils.CsmMemStatsModels;
 import com.micatechnologies.minecraft.csm.codeutils.CsmVersionChecker;
 import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
 import com.micatechnologies.minecraft.csm.codeutils.RenderCsmSeat;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
+import java.io.File;
+import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -94,6 +99,20 @@ public class CsmClientProxy implements ICsmProxy {
     //
     // Note: event bus registration moved to preInit() so ModelRegistryEvent is received.
     // The version check handler (onEntityJoinWorld) also benefits from that registration.
+  }
+
+  /**
+   * Runs the memory report on the client thread, with the baked model figures the server side
+   * cannot see.
+   *
+   * @param outRoot the folder the report is written under
+   * @param dump    true to write the full report
+   * @param reply   receives the chat lines when the report is done
+   */
+  @Override
+  public void runMemStats(File outRoot, boolean dump, Consumer<List<String>> reply) {
+    Minecraft.getMinecraft().addScheduledTask(() -> reply.accept(
+        CsmMemStats.run(outRoot, dump, dump, new CsmMemStatsModels())));
   }
 
   @SubscribeEvent
