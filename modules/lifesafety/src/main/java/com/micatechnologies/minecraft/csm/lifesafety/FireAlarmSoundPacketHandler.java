@@ -1,12 +1,9 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -23,7 +20,6 @@ public class FireAlarmSoundPacketHandler implements
     IMessageHandler<FireAlarmSoundPacket, IMessage> {
 
   private static final Map<String, FireAlarmVoiceEvacSound> activeSounds = new HashMap<>();
-  private static final Map<String, Set<BlockPos>> channelPositions = new HashMap<>();
 
   @Override
   public IMessage onMessage(FireAlarmSoundPacket message, MessageContext ctx) {
@@ -58,10 +54,8 @@ public class FireAlarmSoundPacketHandler implements
 
     stopChannel(channel);
 
-    // Track positions for this channel and register with strobe registry
-    Set<BlockPos> positions = new HashSet<>(message.getSpeakerPositions());
-    channelPositions.put(channel, positions);
-    ActiveStrobeRegistry.addPositions(positions);
+    // Register this channel's positions with the strobe registry
+    ActiveStrobeRegistry.setChannel(channel, message.getSpeakerPositions());
 
     // Strobe-only channels have an empty sound resource — register positions but skip sound
     String soundResource = message.getSoundResource();
@@ -85,10 +79,7 @@ public class FireAlarmSoundPacketHandler implements
       sound.stopPlaying();
       Minecraft.getMinecraft().getSoundHandler().stopSound(sound);
     }
-    Set<BlockPos> positions = channelPositions.remove(channel);
-    if (positions != null) {
-      ActiveStrobeRegistry.removePositions(positions);
-    }
+    ActiveStrobeRegistry.removeChannel(channel);
   }
 
   /**
@@ -101,7 +92,6 @@ public class FireAlarmSoundPacketHandler implements
       Minecraft.getMinecraft().getSoundHandler().stopSound(sound);
     }
     activeSounds.clear();
-    channelPositions.clear();
     ActiveStrobeRegistry.clearAll();
   }
 }

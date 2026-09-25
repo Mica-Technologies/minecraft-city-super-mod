@@ -67,8 +67,11 @@ figures and carry the 5-7% restart noise.
 - **A low-graphics mode.** It gives up part of the picture by design, so it is a separate, opt-in
   decision (see [Levers](#levers-for-a-low-graphics-mode)).
 - **The two fire alarm channel bugs.** These are correctness bugs, not cost: panels sharing the
-  strobe-only channel replace each other's positions, and a position stays active when the stop
-  packet never arrives. They are still open.
+  strobe-only channel replaced each other's positions, and a position stayed active when the stop
+  packet never arrived. Fixed 2026-09-24: channels are scoped per panel on the wire, a panel stops
+  its channels when broken or unloaded, and the client registry holds positions per channel
+  (`FIRE_ALARM_SYSTEM.md` § Channel System). Verified in game with two panels in alarm, one broken
+  mid-alarm.
 
 ## Read this first
 

@@ -244,6 +244,21 @@ TrueAlert horns running simultaneously would have channels `"csm:spectralert"` a
 `"csm:stahorn"` active at the same time, each with their own `MovingSound` instance on
 each player's client.
 
+**Channels are per panel on the wire.** The names above are what the panel keeps internally;
+every start and stop packet carries the name with the panel's position appended
+(`"voiceevac@12_64_-30"`, `TileEntityFireAlarmControlPanel.scoped`; the buzzer's channel already
+carries it). With shared names, two panels a player could hear would replace each other's
+positions on the client -- one panel's strobes flashing, the other's dark -- and one panel's stop
+would silence the other. For the same reason a panel stopping everything sends a stop per channel
+it runs, never the stop-all packet (an empty channel), which the client still honours but only
+its own disconnect cleanup uses. A panel stops its channels when it is broken or its chunk
+unloads (`invalidate`, `onChunkUnload`), since it never ticks again to do so; before, a broken
+panel's strobes kept flashing on every client that had them.
+
+`ActiveStrobeRegistry` holds positions per channel, and a strobe flashes while any running
+channel names it: a horn strobe is on its horn's channel and on the strobe channel at once, so
+stopping one must not put out a strobe the other still drives.
+
 ## How Sound Playback Works (Detailed Flow)
 
 ### Alarm Activation

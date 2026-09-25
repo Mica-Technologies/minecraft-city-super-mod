@@ -690,12 +690,14 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   @Override
   public void invalidate() {
+    stopEverythingOnRemoval();
     unregisterActiveAlarms();
     super.invalidate();
   }
 
   @Override
   public void onChunkUnload() {
+    stopEverythingOnRemoval();
     unregisterActiveAlarms();
     super.onChunkUnload();
   }
@@ -908,12 +910,13 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       if (inRange && !activePlayers.contains(playerId)) {
         // Player entered range - start their client-side MovingSound
         CsmLifeSafety.NETWORK.sendTo(
-            FireAlarmSoundPacket.start(channel, soundName, hearingRange, positions, glitchy),
+            FireAlarmSoundPacket.start(scoped(channel), soundName, hearingRange, positions,
+                glitchy),
             player);
         activePlayers.add(playerId);
       } else if (!inRange && activePlayers.contains(playerId)) {
         // Player left range - stop their client-side MovingSound for this channel
-        CsmLifeSafety.NETWORK.sendTo(FireAlarmSoundPacket.stop(channel), player);
+        CsmLifeSafety.NETWORK.sendTo(FireAlarmSoundPacket.stop(scoped(channel)), player);
         activePlayers.remove(playerId);
       }
     }
@@ -934,7 +937,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     if (activePlayers == null || activePlayers.isEmpty()) {
       return;
     }
-    FireAlarmSoundPacket stopPacket = FireAlarmSoundPacket.stop(channel);
+    FireAlarmSoundPacket stopPacket = FireAlarmSoundPacket.stop(scoped(channel));
     for (EntityPlayerMP player : players) {
       if (activePlayers.contains(player.getUniqueID())) {
         CsmLifeSafety.NETWORK.sendTo(stopPacket, player);
@@ -944,25 +947,40 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   /**
-   * Stops all channels: sends a stop-all packet to every player that has any active sound.
+   * Stops all of this panel's channels: a stop for each channel to every player it is playing
+   * for. Never the stop-all packet, which would also silence every other panel the player hears.
    */
   private void stopAllChannels(List<EntityPlayerMP> players) {
-    // Collect all players with any active channel
-    HashSet<UUID> allActive = new HashSet<>();
-    for (HashSet<UUID> active : channelActivePlayers.values()) {
-      allActive.addAll(active);
-    }
-    if (allActive.isEmpty()) {
-      return;
-    }
-    FireAlarmSoundPacket stopAllPacket = FireAlarmSoundPacket.stopAll();
-    for (EntityPlayerMP player : players) {
-      if (allActive.contains(player.getUniqueID())) {
-        CsmLifeSafety.NETWORK.sendTo(stopAllPacket, player);
-      }
+    for (String channel : new ArrayList<>(channelActivePlayers.keySet())) {
+      stopChannel(players, channel);
     }
     channelActivePlayers.clear();
     lastActiveChannels.clear();
+  }
+
+  /**
+   * The name a channel goes out under: the panel's position appended, so two panels that play
+   * the same sound (or both run strobes) keep separate channels on a client that hears both.
+   * Shared names let one panel's start replace the other's positions and its stop put the other's
+   * sound and strobes out. The buzzer's channel already carries the position.
+   */
+  private String scoped(String channel) {
+    if (channel.startsWith(CHANNEL_BUZZER_PREFIX)) {
+      return channel;
+    }
+    return channel + "@" + getPos().getX() + "_" + getPos().getY() + "_" + getPos().getZ();
+  }
+
+  /**
+   * Stops whatever this panel is playing when it goes away. A broken panel never ticks again,
+   * so without this its sounds kept playing and its strobes kept flashing on every client that
+   * had them, until a new panel reused the same positions.
+   */
+  private void stopEverythingOnRemoval() {
+    if (world == null || world.isRemote || channelActivePlayers.isEmpty()) {
+      return;
+    }
+    stopAllChannels(world.getPlayers(EntityPlayerMP.class, p -> true));
   }
 
   /**
