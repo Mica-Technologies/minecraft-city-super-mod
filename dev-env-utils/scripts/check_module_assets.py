@@ -2,8 +2,11 @@
 """Check that every module's assets resolve against that module plus Core, and nothing else.
 
 A player may install any subset of the optional module jars, so a module's own resources have to
-be self-contained apart from what Core always provides. This walks each module in isolation --
-only its own ``src/main/resources`` and Core's are visible -- and follows every reference it can:
+be self-contained apart from what Core always provides -- and apart from the modules it declares
+as required (``deps:`` in ``modules.gradle``: Text to Speech needs Technology, Transit needs
+Roads), which a working install always has beside it. This walks each module in isolation --
+only its own ``src/main/resources``, Core's and its required modules' are visible -- and follows
+every reference it can:
 
 * each blockstate to the models it names, in Forge and vanilla form, and on to their parents,
   an OBJ's ``mtllib``, that MTL's ``map_Kd`` and every inline texture map;
@@ -31,6 +34,38 @@ import partition_assets as pa  # noqa: E402
 
 CORE = pa.CORE
 
+_GRADLE = os.path.join(SCRIPT_DIR, "..", "..", "modules.gradle")
+
+
+def required_modules():
+    """{module: [modules it requires]}, from the ``deps:`` of each ``csmModules`` entry."""
+    out = {}
+    with io.open(_GRADLE, encoding="utf-8") as fh:
+        text = fh.read()
+    for line in text.splitlines():
+        line = line.strip()
+        if not line.startswith("[name:"):
+            continue
+        name = re.match(r"\[name:\s*'([a-z0-9_]+)'", line).group(1)
+        deps = re.search(r"deps:\s*\[([^\]]*)\]", line)
+        out[name] = re.findall(r"'([a-z0-9_]+)'", deps.group(1)) if deps else []
+    return out
+
+
+def trees_for(module):
+    """Core, the modules ``module`` requires (followed through), then the module itself."""
+    if module == CORE:
+        return [CORE]
+    deps = required_modules()
+    seen, todo = [], list(deps.get(module, []))
+    while todo:
+        dep = todo.pop(0)
+        if dep not in seen:
+            seen.append(dep)
+            todo += deps.get(dep, [])
+    return [CORE] + seen + [module]
+
+
 # A reference Minecraft could actually parse: an optional lower-case domain, then a path.
 _REF_RE = re.compile(r"^(?:[a-z0-9_.-]+:)?[a-z0-9_./-]+$")
 _REF_IN_FAILURE_RE = re.compile(r" -> (?:texture|model|parent|map_Kd|mtllib) (.+)$")
@@ -57,8 +92,9 @@ def visible_files(modules):
 
 
 def check(module):
-    """Resolve everything ``module`` ships against itself plus Core. Returns the failure list."""
-    trees = [CORE] if module == CORE else [CORE, module]
+    """Resolve everything ``module`` ships against itself, Core and the modules it requires.
+    Returns the failure list."""
+    trees = trees_for(module)
     where = visible_files(trees)
     resolver = pa.Resolver(where)
     own = set(pa.rel_files(module))

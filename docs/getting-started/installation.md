@@ -28,7 +28,7 @@ every module requires it. Beyond that, install only the subsystems you actually 
 | **CSM: Text to Speech** | The speech engine and the Redstone TTS block. **Also requires CSM: Technology** |
 | **CSM: Signage & Advertising** | Street ad kiosks, wall poster boards and billboards built to size. Road signs are in Roads & Traffic |
 | **CSM: Parks & Greenery** | Street trees built from blocks, the Tree Planting Tool, hedges and plantings, benches, playgrounds, fountains and irrigation |
-| **CSM: Transit** | Working fare gates, a fare vending machine, fare tickets and transit cards |
+| **CSM: Transit** | Working fare gates, a fare vending machine, fare tickets and transit cards, bus stop signs and bus shelters. **Also requires CSM: Roads & Traffic** |
 
 !!! warning "All from the same release, all the same version"
 

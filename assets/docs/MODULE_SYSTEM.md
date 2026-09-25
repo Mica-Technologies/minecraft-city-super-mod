@@ -39,9 +39,25 @@ itemless `*_slab_double` states.
 
 **Dependencies.** Every module declares `required-after:csm@[<its own version>]`, so all jars must
 come from the same release. That is deliberate: they are built from one tree, and a mixed install
-should fail loudly at startup rather than subtly later. Text to Speech additionally declares
-`required-after:csm_technology@[<version>]` — its block lives in the Technology creative tab and
-broadcasts through Technology's speaker tile entity.
+should fail loudly at startup rather than subtly later.
+
+Two modules also require another module, and the rule is the same for both: **a module may
+reference Core, and a module that declares a required module may reference that module too** —
+never the other way round, and never a module it does not declare.
+
+- **Text to Speech → Technology** (`required-after:csm_technology@[<version>]`): its block lives in
+  the Technology creative tab and broadcasts through Technology's speaker tile entity.
+- **Transit → Roads & Traffic** (`required-after:csm_roads@[<version>]`): its bus stop flags,
+  arrival display and poster cases are road signs, subclasses of Roads' `AbstractBlockSign`. A
+  bus stop is built on Roads' sign posts and takes the sign system's stacking, setback,
+  back-to-back pairing and extension post; a second pole family of Transit's own would have
+  duplicated all of it and could never stand on a sign post or next to a signal arm the way a
+  road sign does.
+
+Each is declared in three places that must agree: the `@Mod` `dependencies` string, the
+`mcmod.info` `dependencies` / `requiredMods` lists, and the `deps:` of the module's entry in
+`modules.gradle` (which is what puts the required module on the compile, reobfuscation and run
+classpaths).
 
 Mod ids are kept to 20 characters or fewer because each doubles as a network channel name, and
 vanilla's custom-payload packet caps a channel name there (`CsmNetwork.MAX_CHANNEL_NAME_LENGTH`).
@@ -87,7 +103,7 @@ That is why Building Materials is `csm_building` and not `csm_buildingmaterials`
 
 The compile classpath enforces the boundary: a module compiles against Minecraft and Core only
 (plus another module only where `modules.gradle` declares `deps:`, which today is Text to Speech →
-Technology). Core's compile classpath contains no module at all, so a Core → module reference does
+Technology and Transit → Roads & Traffic). Core's compile classpath contains no module at all, so a Core → module reference does
 not compile.
 
 Where Core genuinely has to recognise something a module owns, it does so through an interface in
@@ -187,6 +203,8 @@ For each entry in `modules.gradle`'s `csmModules` list it creates:
 
 `-PcsmRunModules` accepts `all` (the default), `core`, or a comma-separated list of module names;
 Core is always loaded, and an unknown name fails configuration rather than silently loading nothing.
+A module's `deps:` come with it: `-PcsmRunModules=transit` runs Core, Roads and Transit, and `tts`
+brings Technology, since either would otherwise stop FML at startup on its missing dependency.
 It applies to every run task, dev client and dev server alike.
 
 In IntelliJ the run-configuration dropdown is the chooser. The buildscript's own **2. Run Client**
@@ -211,7 +229,8 @@ of one entry's arguments.
    named after the module.
 3. **Add the entry** to `csmModules` in `modules.gradle`: `[name:, modId:, displayName:]`, plus
    `deps: ['other']` if it must compile against another module — and list the dependency **before**
-   the dependant, since the source set has to exist already.
+   the dependant, since the source set has to exist already. A `deps:` entry is a hard
+   requirement: name the module in the `@Mod` `dependencies` string and in `mcmod.info` too.
 4. **Write the mod class** from the template below (copy `CsmPowerGrid` for a content-only module,
    `CsmRoads` for one with packets, GUIs, sounds and hooks).
 5. **Write `mcmod.info`** at `modules/<name>/src/main/resources/mcmod.info`, with the `${…}` tokens,
@@ -362,7 +381,9 @@ walking the hierarchy of the class holding the reference -- which it can only do
 task's reference classpath. A module block reaches `Block` only through Core's `AbstractBlock`, so
 without Core on the classpath every inherited member kept its dev name, and the first real-launcher
 test crashed with `NoSuchFieldError: blockState`. `modules.gradle` gives each module's reobf task
-Core's classes, plus those of any module it depends on. **Neither the dev client nor a green build
+Core's classes, plus those of any module it depends on -- which matters as much: a Transit bus stop
+flag reaches `Block` through Roads' `AbstractBlockSign`, so Roads' classes are on Transit's reobf
+reference classpath exactly as Technology's are on Text to Speech's. **Neither the dev client nor a green build
 can show this class of bug** -- the dev client runs dev names. Before tagging a release, run
 `dev-env-utils/scripts/check_reobf_refs.py` with the previous release's jars as the baseline, and
 try the release jars in a real launcher.

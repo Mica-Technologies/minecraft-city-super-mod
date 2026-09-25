@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * The CSM: Transit module: the fare gates, the fare vending machine and the tickets and cards
- * they take.
+ * they take, the bus stops and the bus shelters.
  *
  * <p>A module's mod container exists so that Forge serves the module jar's {@code assets/csm}
  * resources and shows it in the mod list. Content registration is entirely Core's: the creative
@@ -27,16 +27,23 @@ import org.apache.logging.log4j.Logger;
  * registry-event listeners hand them to Forge under the {@code csm} namespace. Nothing here may
  * call a Forge registry directly.</p>
  *
- * <p>The dependency pins Core to this exact version. Every module jar is built from the same
- * tree and released together; a mismatch is a broken install and should fail at startup rather
- * than somewhere subtle later.</p>
+ * <p>This module also requires Roads &amp; Traffic: its bus stop flags, arrival display and poster
+ * cases are road signs, subclasses of Roads' {@code AbstractBlockSign}, so they stand on Roads'
+ * sign posts and take the sign system's setback, back-to-back pairing and extension post rather
+ * than a second pole family of their own. The dependency only ever points this way; Roads names
+ * nothing of this module's.</p>
+ *
+ * <p>The dependencies pin Core and Roads to this exact version. Every module jar is built from
+ * the same tree and released together; a mismatch is a broken install and should fail at startup
+ * rather than somewhere subtle later.</p>
  *
  * @since 2026.9
  */
 @Mod(modid = CsmTransit.MOD_ID,
      name = CsmTransit.MOD_NAME,
      version = Tags.VERSION,
-     dependencies = "required-after:csm@[" + Tags.VERSION + "]",
+     dependencies = "required-after:csm@[" + Tags.VERSION + "];"
+         + "required-after:csm_roads@[" + Tags.VERSION + "]",
      acceptedMinecraftVersions = "[1.12.2]")
 public class CsmTransit {
 

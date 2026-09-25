@@ -33,7 +33,7 @@ thirteen.
 | CSM: Text to Speech | The speech engine and the Redstone TTS block — **also requires CSM: Technology** |
 | CSM: Signage & Advertising | Street ad kiosks, wall poster boards and billboards built to size |
 | CSM: Parks & Greenery | Street trees built from blocks, a planting tool, hedges and plantings, benches, playgrounds, fountains, irrigation |
-| CSM: Transit | Working fare gates, a fare vending machine, fare tickets and transit cards |
+| CSM: Transit | Working fare gates, a fare vending machine, fare tickets and transit cards, bus stop signs, bus shelters — **also requires CSM: Roads & Traffic** |
 
 Installing a subset only removes that content — nothing about the blocks you keep changes. Removing
 a module from a world that already uses its blocks is the usual missing-mod situation, though:

@@ -2,7 +2,7 @@
   {
     "modid": "${modid}",
     "name": "${modname}",
-    "description": "Public transit for the City Super Mod: working fare gates (standard and ADA wide), a fare vending machine, and the tickets and stored-trip cards they take. Requires CSM: Core.",
+    "description": "Public transit for the City Super Mod: working fare gates (standard and ADA wide), a fare vending machine and the tickets and stored-trip cards they take, bus stop signs and fittings on the road sign posts, and bus shelters. Requires CSM: Core and CSM: Roads & Traffic.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
@@ -12,9 +12,9 @@
     "authorList": [
       "Mica Technologies"
     ],
-    "dependencies": ["csm"],
+    "dependencies": ["csm", "csm_roads"],
     "dependants": [],
-    "requiredMods": ["csm"],
+    "requiredMods": ["csm", "csm_roads"],
     "useDependencyInformation": "true"
   }
 ]

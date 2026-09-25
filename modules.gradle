@@ -29,7 +29,7 @@ def csmModules = [
     [name: 'tts', modId: 'csm_tts', displayName: 'CSM: Text to Speech', deps: ['technology'], shadow: true],
     [name: 'signage', modId: 'csm_signage', displayName: 'CSM: Signage & Advertising'],
     [name: 'parks', modId: 'csm_parks', displayName: 'CSM: Parks & Greenery'],
-    [name: 'transit', modId: 'csm_transit', displayName: 'CSM: Transit'],
+    [name: 'transit', modId: 'csm_transit', displayName: 'CSM: Transit', deps: ['roads']],
 ]
 
 // Core's archive base name is minecraft-city-super-mod-core (buildscript.properties), so module
@@ -66,6 +66,18 @@ csmRunModules.each { name ->
         throw new GradleException("csmRunModules names unknown module '${name}'; known: " + csmModules.collect { it.name })
     }
 }
+// A module that declares `deps:` cannot load without them (its @Mod says required-after), so a
+// subset naming it brings its dependencies along: `-PcsmRunModules=transit` runs Core, Roads and
+// Transit, and `tts` runs Technology too. Followed to a fixed point, so a chain resolves whole.
+def csmRunModulesClosed = new LinkedHashSet<String>(csmRunModules)
+def csmRunModulesGrew = true
+while (csmRunModulesGrew) {
+    csmRunModulesGrew = false
+    csmModules.findAll { csmRunModulesClosed.contains(it.name) }.each { m ->
+        (m.deps ?: []).each { depName -> csmRunModulesGrew |= csmRunModulesClosed.add(depName) }
+    }
+}
+csmRunModules = csmRunModulesClosed as List
 
 csmModules.each { m ->
     def cap = m.name.capitalize()
@@ -77,8 +89,9 @@ csmModules.each { m ->
     }
     // Minecraft + Core, nothing else: the compiler is the module boundary. A module that
     // declares `deps: ['other']` also sees that module's classes (Text to Speech compiles
-    // against Technology because its Redstone TTS block links to Technology's speakers); list
-    // dependencies before dependants in csmModules so the source set already exists.
+    // against Technology because its Redstone TTS block links to Technology's speakers; Transit
+    // against Roads because its bus stop flags are road signs); list dependencies before
+    // dependants in csmModules so the source set already exists.
     ss.compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
     ss.runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
     (m.deps ?: []).each { depName ->
