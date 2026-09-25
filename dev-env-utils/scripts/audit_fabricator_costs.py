@@ -366,6 +366,8 @@ def cost_for(registry, info, ancestors):
             return ("SIGN_BLANK", "SHEET_METAL")
         if registry == "bus_stop_arrival_display":
             return ("LED_MODULE", "CONTROL_BOARD", "SHEET_METAL")
+        if registry in ("bus_departure_board", "bus_bay_display"):
+            return ("LED_MODULE", "CONTROL_BOARD", "SHEET_METAL")
         if registry == "bus_stop_curb_plaque":
             return ("SHEET_METAL",)
         if registry.startswith("tactile_") or registry.startswith("station_tile_"):

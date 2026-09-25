@@ -68,6 +68,8 @@ public class BlockBusStopFlag extends BlockTrafficSign implements ICsmTileEntity
   static final float FACE_FRONT_Z = 0.0f;
   static final float FACE_BACK_Z = 0.5f;
 
+  private final BusAgency agency;
+
   /**
    * Constructs a flag.
    *
@@ -75,6 +77,16 @@ public class BlockBusStopFlag extends BlockTrafficSign implements ICsmTileEntity
    */
   public BlockBusStopFlag(String registryName) {
     super(registryName);
+    this.agency = BusAgency.ofRegistryName(registryName);
+  }
+
+  /**
+   * The agency whose flag this is, from the end of its registry name.
+   *
+   * @return the agency
+   */
+  public BusAgency getAgency() {
+    return agency;
   }
 
   @Override

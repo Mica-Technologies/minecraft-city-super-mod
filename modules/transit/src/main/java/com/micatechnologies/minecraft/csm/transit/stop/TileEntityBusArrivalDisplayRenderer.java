@@ -16,19 +16,20 @@ import org.lwjgl.opengl.GL11;
  * Draws a bus arrival display's text: three lines a page, each a route, where it is going and how
  * many minutes away it is, in amber dot-matrix, lit.
  *
- * <p><b>What is listed.</b> Each route the display lists ({@link TileEntityBusArrivalDisplay})
- * has a made-up headway of 6 to 16 minutes and a destination, both fixed by its number, so a
- * route goes to the same place at every stop; where in its cycle it is depends on the world's
- * clock and the stop's position, so neighbouring stops differ but every player at one stop sees
- * the same thing. The next two buses of each route are listed, soonest first, and the page turns
- * every {@link #PAGE_TICKS} ticks. A bus under a minute away reads DUE.</p>
+ * <p><b>What is listed.</b> The next two buses of each route the display lists
+ * ({@link TileEntityBusArrivalDisplay}), soonest first, from {@link BusDepartures}: a route's
+ * headway and destination are fixed by its number, and where in its cycle it is by the world's
+ * clock and the column of the stop's post, so the bay display over the same stop and the
+ * departure board across the concourse count down the same buses. The page turns every
+ * {@link #PAGE_TICKS} ticks. A bus under a minute away reads DUE.</p>
  *
  * <p><b>How it is drawn.</b> The route numbers, the destinations and the minute readings are each
  * compiled once into a display list shared by every display ({@link CsmSharedDisplayLists}), laid
  * out within its column (the reading already right-aligned), so a line is three list calls under
  * one translation, and a frame's text is at most nine. There are 99 routes, 16 destinations and
  * 33 readings, so the lists are bounded. The atlas, the colour, the fullbright lightmap and the
- * depth mask are set outside the lists, every frame.</p>
+ * depth mask are set outside the lists, every frame. {@link #drawPanel} is the whole panel, which
+ * the bay display ({@code transit.board}) draws on its own screen of the same size.</p>
  *
  * @since 2026.9
  */
@@ -36,12 +37,19 @@ public class TileEntityBusArrivalDisplayRenderer
     extends TileEntitySpecialRenderer<TileEntityBusArrivalDisplay> {
 
   /** How long a page shows, in ticks. */
-  static final int PAGE_TICKS = 100;
+  public static final int PAGE_TICKS = 100;
 
-  /** Ticks in a minute of the countdown: one real minute. */
-  private static final long TICKS_PER_MINUTE = 1200;
+  /** Lines a page. */
+  public static final int LINES = 3;
 
-  private static final int LINES = 3;
+  /**
+   * The panel's screen, in sixteenths: 12.8 wide and 4.4 high, the arrival display's
+   * ({@link BlockBusArrivalDisplay#SCREEN_WIDTH}). A screen that shares {@link #drawPanel} must be
+   * this size, because the shared lists are laid out for it.
+   */
+  public static final float PANEL_WIDTH = BlockBusArrivalDisplay.SCREEN_WIDTH;
+  public static final float PANEL_HEIGHT = BlockBusArrivalDisplay.SCREEN_HEIGHT;
+
   /** Text height, line pitch and the margins at the screen's sides and top, in sixteenths. */
   private static final float TEXT_HEIGHT = 1.2f;
   private static final float LINE_PITCH = 1.5f;
@@ -50,17 +58,8 @@ public class TileEntityBusArrivalDisplayRenderer
   /** How far in front of the screen the text sits, in sixteenths. */
   private static final float LIFT = 0.03f;
 
-  /** Invented, and generic on purpose: no real place is named. */
-  static final String[] DESTINATIONS = {
-      "DOWNTOWN", "UPTOWN", "HARBOR", "AIRPORT", "UNIVERSITY", "STADIUM", "HOSPITAL",
-      "RIVERSIDE", "OLD TOWN", "LAKESIDE", "TRANSIT CTR", "NORTH END", "SOUTH END", "WEST SIDE",
-      "EAST SIDE", "CITY HALL"};
-
-  /** The longest wait listed: the second bus of a route with the longest headway. */
-  private static final int MAX_MINUTES = 32;
-
   private static final String[] ROUTE_TEXT = new String[TileEntityBusStopFlag.MAX_ROUTE + 1];
-  private static final String[] MINUTE_TEXT = new String[MAX_MINUTES + 1];
+  private static final String[] MINUTE_TEXT = new String[BusDepartures.MAX_MINUTES + 1];
 
   static {
     for (int i = 0; i < ROUTE_TEXT.length; i++) {
@@ -80,8 +79,10 @@ public class TileEntityBusArrivalDisplayRenderer
       new CsmSharedDisplayLists("bus_arrival_minutes");
 
   /** The arrivals being drawn: scratch, render thread only. Two per route. */
-  private static final int[] ARRIVAL_ROUTE = new int[TileEntityBusStopFlag.PLATES * 2];
-  private static final int[] ARRIVAL_MINUTES = new int[TileEntityBusStopFlag.PLATES * 2];
+  private static final int[] ARRIVAL_ROUTE =
+      new int[TileEntityBusStopFlag.PLATES * BusDepartures.PER_ROUTE];
+  private static final int[] ARRIVAL_MINUTES =
+      new int[TileEntityBusStopFlag.PLATES * BusDepartures.PER_ROUTE];
 
   /** The layout in font units, worked out once the font exists. */
   private static float scale;
@@ -99,14 +100,8 @@ public class TileEntityBusArrivalDisplayRenderer
       return;
     }
     te.refreshView();
-    // Fetched before any list is opened, so its lazy constructor cannot bind during a compile.
-    CsmFontRenderer fr = CsmFontRenderer.electronicSign();
-    layout(fr);
-
     long time = te.getWorld().getTotalWorldTime();
-    int count = arrivals(te, time / TICKS_PER_MINUTE);
-    int pages = (count + LINES - 1) / LINES;
-    int first = (int) ((time / PAGE_TICKS) % pages) * LINES;
+    int count = arrivals(te, BusDepartures.minuteOf(time));
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x + 0.5, y, z + 0.5);
@@ -115,8 +110,34 @@ public class TileEntityBusArrivalDisplayRenderer
     // (model z at 16 - z), read with +x to the reader's right
     GlStateManager.translate(16.0f - BlockBusArrivalDisplay.SCREEN_MIDDLE_X,
         BlockBusArrivalDisplay.SCREEN_MIDDLE_Y,
-        16.0f - (BlockBusArrivalDisplay.SCREEN_Z + BusStopSigns.shiftZ(te.getViewShift()))
-            + LIFT);
+        16.0f - (BlockBusArrivalDisplay.SCREEN_Z + BusStopSigns.shiftZ(te.getViewShift())));
+    drawPanel(ARRIVAL_ROUTE, ARRIVAL_MINUTES, count, time);
+    GlStateManager.popMatrix();
+  }
+
+  /**
+   * Draws a panel of arrivals, three lines a page, turning the page every {@link #PAGE_TICKS}.
+   * The current matrix must be at the middle of a {@link #PANEL_WIDTH} x {@link #PANEL_HEIGHT}
+   * screen's face, in sixteenths, with +x to the reader's right, +y up and +z toward the reader.
+   * Leaves the GL state as a tile entity renderer found it.
+   *
+   * @param routes  each arrival's route, soonest first
+   * @param minutes each arrival's minutes
+   * @param count   how many arrivals there are
+   * @param time    the world's total time, which turns the pages
+   */
+  public static void drawPanel(int[] routes, int[] minutes, int count, long time) {
+    if (count <= 0) {
+      return;
+    }
+    // Fetched before any list is opened, so its lazy constructor cannot bind during a compile.
+    CsmFontRenderer fr = CsmFontRenderer.electronicSign();
+    layout(fr);
+    int pages = (count + LINES - 1) / LINES;
+    int first = (int) ((time / PAGE_TICKS) % pages) * LINES;
+
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(0, 0, LIFT);
     GlStateManager.scale(scale, -scale, scale);
 
     float lastX = OpenGlHelper.lastBrightnessX;
@@ -132,14 +153,16 @@ public class TileEntityBusArrivalDisplayRenderer
     GlStateManager.color(1.0f, 0.64f, 0.1f, 1.0f);
 
     for (int line = 0; line < LINES && first + line < count; line++) {
-      int route = ARRIVAL_ROUTE[first + line];
+      int route = routes[first + line];
+      int destination = BusDepartures.destinationOf(route);
+      int reading = Math.min(minutes[first + line], BusDepartures.MAX_MINUTES);
       GlStateManager.pushMatrix();
       GlStateManager.translate(left, top + line * lineStep, 0);
       draw(ROUTE_LISTS, route, fr, 0, route);
       GlStateManager.translate(destinationX, 0, 0);
-      draw(DESTINATION_LISTS, destinationOf(route), fr, 1, destinationOf(route));
+      draw(DESTINATION_LISTS, destination, fr, 1, destination);
       GlStateManager.translate(right - left - destinationX, 0, 0);
-      draw(MINUTE_LISTS, ARRIVAL_MINUTES[first + line], fr, 2, ARRIVAL_MINUTES[first + line]);
+      draw(MINUTE_LISTS, reading, fr, 2, reading);
       GlStateManager.popMatrix();
     }
 
@@ -153,44 +176,14 @@ public class TileEntityBusArrivalDisplayRenderer
   }
 
   /**
-   * Fills the scratch arrays with the next two buses of every route, soonest first.
+   * Fills the scratch arrays with the next two buses of every route, soonest first, counted at
+   * the display's own post: the flag it lists is on that post, in the same column.
    *
    * @return how many arrivals there are
    */
   private static int arrivals(TileEntityBusArrivalDisplay te, long minute) {
-    int seed = (te.getPos().getX() * 31 + te.getPos().getZ() * 17 + te.getPos().getY()) & 0xFFFF;
-    int n = 0;
-    for (int i = 0; i < te.getRouteCount(); i++) {
-      int route = te.getRoute(i);
-      int headway = headwayOf(route);
-      int phase = (int) ((minute + route * 13L + seed) % headway);
-      int next = headway - 1 - phase;
-      n = insert(n, route, next);
-      n = insert(n, route, next + headway);
-    }
-    return n;
-  }
-
-  private static int insert(int n, int route, int minutes) {
-    int at = n;
-    while (at > 0 && ARRIVAL_MINUTES[at - 1] > minutes) {
-      ARRIVAL_MINUTES[at] = ARRIVAL_MINUTES[at - 1];
-      ARRIVAL_ROUTE[at] = ARRIVAL_ROUTE[at - 1];
-      at--;
-    }
-    ARRIVAL_MINUTES[at] = minutes;
-    ARRIVAL_ROUTE[at] = route;
-    return n + 1;
-  }
-
-  /** A route's minutes between buses, 6 to 16, fixed by its number. */
-  static int headwayOf(int route) {
-    return 6 + (route * 5) % 11;
-  }
-
-  /** A route's destination, fixed by its number. */
-  static int destinationOf(int route) {
-    return (route * 7 + 3) % DESTINATIONS.length;
+    return BusDepartures.arrivals(te.getRoutes(), te.getRouteCount(), te.getPos().getX(),
+        te.getPos().getZ(), minute, ARRIVAL_ROUTE, ARRIVAL_MINUTES);
   }
 
   private static void layout(CsmFontRenderer fr) {
@@ -198,16 +191,16 @@ public class TileEntityBusArrivalDisplayRenderer
       return;
     }
     float s = TEXT_HEIGHT / fr.FONT_HEIGHT;
-    float width = BlockBusArrivalDisplay.SCREEN_WIDTH / s;
-    float height = BlockBusArrivalDisplay.SCREEN_HEIGHT / s;
+    float width = PANEL_WIDTH / s;
+    float height = PANEL_HEIGHT / s;
     left = -width / 2 + EDGE_X / s;
     right = width / 2 - EDGE_X / s;
     top = -height / 2 + EDGE_Y / s;
     lineStep = LINE_PITCH / s;
     float space = fr.getStringWidth(" ");
     destinationX = fr.getStringWidth("88") + space;
-    destinationWidth = right - left - destinationX - fr.getStringWidth(MINUTE_TEXT[MAX_MINUTES])
-        - space;
+    destinationWidth = right - left - destinationX
+        - fr.getStringWidth(MINUTE_TEXT[BusDepartures.MAX_MINUTES]) - space;
     scale = s;
   }
 
@@ -245,9 +238,9 @@ public class TileEntityBusArrivalDisplayRenderer
     if (kind == 0) {
       text = ROUTE_TEXT[value];
     } else if (kind == 1) {
-      text = fit(fr, DESTINATIONS[value], destinationWidth);
+      text = fit(fr, BusDepartures.DESTINATIONS[value], destinationWidth);
     } else {
-      text = MINUTE_TEXT[Math.min(value, MAX_MINUTES)];
+      text = MINUTE_TEXT[Math.min(value, BusDepartures.MAX_MINUTES)];
       x = -fr.getStringWidth(text);
     }
     Tessellator tess = Tessellator.getInstance();

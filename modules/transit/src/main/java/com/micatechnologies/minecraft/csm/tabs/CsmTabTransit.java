@@ -13,6 +13,7 @@ import com.micatechnologies.minecraft.csm.transit.airport.BlockSecurityLine;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSecurityTray;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSelfCheckinKiosk;
 import com.micatechnologies.minecraft.csm.transit.airport.ItemBoardingPass;
+import com.micatechnologies.minecraft.csm.transit.board.BlockBusBoard;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGate;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda2;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda3;
@@ -44,7 +45,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 /**
  * The tab for public transit: the fare gates, the fare vending machine and the tickets and cards
  * they take, the bus stops (agency flags, poster cases and the arrival display, all road signs on
- * Roads' sign posts, and the curb plaque), the bus shelters, and the station and platform fit-out
+ * Roads' sign posts, and the curb plaque), the bus shelters, the bus departure board and bay
+ * display, and the station and platform fit-out
  * (tactile paving, platform furniture, station signs, tile, columns, the canopy and the ticket
  * validator), and the airport terminal pieces (check-in, the queue, security, the gate, the flight
  * information boards, baggage claim, luggage carts and wayfinding) with the boarding pass.
@@ -142,6 +144,11 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockBusShelter("bus_shelter_flat_riverway", BusShelterStyle.FLAT));
     initTabBlock(new BlockBusShelter("bus_shelter_flat_verdant", BusShelterStyle.FLAT));
     initTabBlock(new BlockBusShelter("bus_shelter_flat_emberline", BusShelterStyle.FLAT));
+
+    // Bus departure displays (gen_transit_boards.py --fragments): the station board and the bay
+    // display, reading the stops around them
+    initTabBlock(new BlockBusBoard("bus_departure_board", new double[]{0, 2, 14.6, 16, 14, 16}, false));
+    initTabBlock(new BlockBusBoard("bus_bay_display", new double[]{0.5, 4, 13.8, 15.5, 12.2, 16}, true));
 
     // Station and platform fit-out (gen_transit_platforms.py --fragments), made to complement
     // RCMC's stations: tactile paving, furniture, signs, tile, columns, canopy, validator

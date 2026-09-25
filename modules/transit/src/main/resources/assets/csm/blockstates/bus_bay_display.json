@@ -1,0 +1,78 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:transit/boards/bus_bay_display_monitor"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:transit/boards/bus_bay_display_monitor",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:transit/boards/bus_bay_display_monitor",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:transit/boards/bus_bay_display_monitor",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "true"
+      },
+      "apply": {
+        "model": "csm:transit/boards/bus_bay_display_rods"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "true"
+      },
+      "apply": {
+        "model": "csm:transit/boards/bus_bay_display_rods",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "true"
+      },
+      "apply": {
+        "model": "csm:transit/boards/bus_bay_display_rods",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "true"
+      },
+      "apply": {
+        "model": "csm:transit/boards/bus_bay_display_rods",
+        "y": 270
+      }
+    }
+  ]
+}

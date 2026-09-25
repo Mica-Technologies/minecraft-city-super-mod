@@ -15,7 +15,8 @@ import net.minecraft.block.Block;
  * so moving it changed no price. The bus stops are priced by what they are made of: a flag a sign
  * blank and its fixings, a poster case a sign blank in sheet metal, the arrival display an LED
  * panel with its board, the curb plaque a casting of sheet metal; the sign posts they stand on
- * are Roads', priced by Roads. A shelter is a pole section's worth of posts, sheet metal for its
+ * are Roads', priced by Roads. The bus departure board and bay display are priced as the arrival
+ * display is: an LED module, a control board and sheet metal. A shelter is a pole section's worth of posts, sheet metal for its
  * roof and frame and an LED module for its roof light; the glass shelter adds glass panes and a
  * second sheet, the cantilever's canopy a second sheet. The station fit-out: tactile paving and
  * wall tile a concrete mix; the help and emergency points a board, a sounder and sheet metal;
@@ -55,6 +56,11 @@ public final class TransitFabricatorRules {
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }
     if (registryName.equals("bus_stop_arrival_display")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.equals("bus_departure_board") || registryName.equals("bus_bay_display")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));

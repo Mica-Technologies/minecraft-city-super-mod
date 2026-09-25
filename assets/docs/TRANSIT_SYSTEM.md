@@ -8,7 +8,7 @@ may name. Its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)
 Core's tab scan, and every block and item keeps the `csm:` namespace.
 
 The module holds the working fare system, which it took over from Technology, the bus stops and
-shelters, the station and platform fit-out, made to complement the stations of RCMC, the
+shelters, the bus station departure boards, the station and platform fit-out, made to complement the stations of RCMC, the
 author's train mod, and an airport terminal's pieces. What it is to grow into is at the end of
 this page.
 
@@ -26,6 +26,7 @@ this page.
 | Bus Arrival Display | `csm:bus_stop_arrival_display` | `transit.stop.BlockBusArrivalDisplay` |
 | Bus Stop Curb Plaque | `csm:bus_stop_curb_plaque` | `transit.stop.BlockBusStopPlaque` |
 | Bus Shelter (Glass, Cantilever, Flat Roof; four agencies each) | `csm:bus_shelter_<style>_<agency>` | `transit.shelter.BlockBusShelter` |
+| Bus Departure Board, Bus Bay Display | `csm:bus_departure_board`, `csm:bus_bay_display` | `transit.board.BlockBusBoard` |
 | Station and platform fit-out (29 blocks) | see Station and platform fit-out, below | `transit.platform` |
 | Airport terminal pieces (25 blocks) and the Boarding Pass (item) | see Airports, below | `transit.airport` |
 
@@ -222,12 +223,17 @@ of the display's shift. It lists the routes on its own stop's flag -- the neares
 or down its post, walking through the signs and posts of the column (`BusStopSigns.flagNear`) --
 or routes 12 and 40 on a post with none. Each route's headway (6 to 16 minutes) and destination are
 fixed by its number, from a list of generic destinations (DOWNTOWN, HARBOR, CITY HALL and so on),
-so a route goes to the same place everywhere; its phase comes from the world clock and the stop's
-position, so neighbouring stops differ while every player at one stop sees the same countdown, a
+so a route goes to the same place everywhere; its phase comes from the world clock and the column
+of the stop's post, so neighbouring stops differ while every player at one stop sees the same countdown, a
 minute each real minute. The next two buses of each route are listed, soonest first; under a minute
 reads DUE. The route numbers, destinations and readings are one shared display list each (99, 16
 and 33 at most), already laid out in their column, so a line is three list calls. The display saves
 nothing: the routes, the facing and the shift are looked up once a second, not every frame.
+
+The timetable is `BusDepartures`, shared with the departure board and the bay display (Departure
+boards, below): the phase is seeded by the column of the stop's post (its x and z, not its
+height), so the flag, the display on the same post and a board across the concourse, each looking
+at that one post, count down the same buses.
 
 The **curb plaque** (`BlockBusStopPlaque`) is a cast bronze plate reading BUS STOP to the player
 who placed it, settling onto the surface below like the Streetscape fixtures. Its texture is
@@ -322,6 +328,140 @@ graphite frame.
 `TransitFabricatorRules`: a glass shelter is a pole section, two sheet metal, four glass panes and
 an LED module; the cantilever a pole section, two sheet metal and an LED module; the flat roof a
 pole section, one sheet metal and an LED module. `audit_fabricator_costs.py` mirrors them.
+
+## Departure boards
+
+Two blocks in `transit.board`, both `BlockBusBoard`, drawn by `gen_transit_boards.py`: the **Bus
+Departure Board**, the big concourse board a bus station has, and the **Bus Bay Display**, a small
+amber LED sign hung over one bay. Bus only: a train's departure board is RCMC's, and the airport has
+its own flight information boards.
+
+### What a board lists, and why it agrees with the stops
+
+A board has nothing to be linked to. It looks for the stops around it (`BusStation`): every bus
+stop flag within two chunks of the board's chunk and twelve blocks above or below its sixteen-block
+band of height. Each flag is a **bay**, numbered 1 up in world order (west to east, then north to
+south, then bottom to top) so every board and bay display looking at the same stops numbers them
+alike, whichever way it faces; at most sixteen are kept. A board lists the next two buses of every
+route plate of every bay, soonest first (then by bay, then by route): route, destination, bay and
+minutes, DUE under a minute.
+
+The buses come from `BusDepartures`, the arrival display's timetable moved out of its renderer so
+the three share it: a route's headway and destination are fixed by its number, and its phase by the
+world clock and the column of the stop's post. So a board agrees to the minute with the flag's
+plates and with the arrival display on the same post, and a bay display with both. This was checked
+in game: at one moment the arrival display on bay 1's post read 12 RIVERSIDE 7 MIN, 40 NORTH END
+7 MIN, 40 NORTH END 15 MIN, and the board across the concourse listed the same three buses at bay 1.
+
+Invented throughout: the agencies are the flags' four, the destinations the arrival display's
+sixteen generic ones.
+
+### Banks, pages and cycling: the flight board's way, not build-to-size
+
+The plan proposed a build-to-size board, a controller with parts and no tile entity on the parts,
+as the ad boards are. It was not done. A departure board is a row of screens in life, and the flight
+information board had already shown the simpler way: every block is one monitor, and monitors of the
+same block facing the same way side by side and stacked are a **bank**, read like text, left to right
+and then down, each monitor showing the page after the one to its reader's left or above. That needs
+no controller, no part blocks, no rules for breaking a multi-block and no drawing one quad across
+blocks, and a bank of any shape grows or shrinks by placing or breaking a monitor. The cost is a
+small tile entity on every monitor, which saves two bytes (below). The two kinds of board behave
+alike, so a player who has built one has built the other.
+
+Eight departures a page. When a station has more departures than the bank has rows, the whole bank
+turns to the next set every ten seconds (`CYCLE_TICKS`), and each header shows which set ("2/3").
+
+### Setting a board up
+
+A click steps which agency the board lists: every agency, then CITYLINE, RIVERWAY, VERDANT and
+EMBERLINE; the title follows ("BUS DEPARTURES", "EMBERLINE DEPARTURES"). A sneaking click turns
+spoken announcements on or off. Either is set on every board of the bank at once (a flood fill, at
+most 64), and the action bar says what it now is. That is all a board has to set, so there is no
+screen. `TileEntityBusDepartureBoard` saves them as `f` (0 every agency, else 1 + the agency's
+ordinal) and `a`; the baked model reads neither, so a change never rebuilds the chunk section
+(`getBakedModelKey` is 0). The bay display has nothing to set.
+
+### Drawing
+
+Both follow the flight board. The **departure board** is a slim landscape monitor against the back
+of its block, on a wall or on two rods to the block above (`hung`, actual state: no solid face
+behind and no board above). The screen's texture (a header band with a bus pictogram on amber, the
+column heads' band and the rows' bands) is baked, and `TileEntityBusDepartureBoardRenderer` draws it
+again a hair in front, fullbright, so the board glows at night, and every word on it from display
+lists shared by every board (`CsmSharedDisplayLists`, one cache, `bus_board_text`): route numbers,
+destinations, bays, minute readings, the five titles, the column heads, the set count and the two
+empty-board notices ("NO BUS STOPS NEARBY", "NO DEPARTURES LISTED"), each laid out in its column in
+the font's units when compiled. A row is one translation and four list calls, the route in its
+agency's colour (`BusAgency.getTextColour`), the minutes in amber and DUE in green. The lists hold
+geometry only; the font atlas, the colours, the depth mask and the lightmap are set outside them,
+every frame ("Display lists: one texture, no cached state").
+
+The **bay display** is a black case with NEXT BUSES printed over a dark LED screen under a hood,
+hung on rods or on a wall. It lists the stop nearest it, a flag within four blocks across and six
+up or down, found through the same `BusStation`; with none that close it lists the arrival display's
+two stock routes. Its screen is exactly the arrival display's size, 12.8 x 4.4, so its renderer
+calls the arrival display's own panel (`TileEntityBusArrivalDisplayRenderer.drawPanel`) and the two
+share every list.
+
+Both tile entities look their facing, bank and stop up once a second, and `BusStation` walks the
+loaded chunks' tile entity maps (never block by block) once every five seconds per chunk and height
+band, shared by every board in it; the departures are sorted once a minute of the countdown for each
+filter.
+
+### Announcements
+
+With a board's announcements on and the Text to Speech module installed, the player hears "Route 12
+to Downtown is now departing from bay 3" as each bus becomes due. `BusBoardAnnouncer` (client only)
+speaks through Core's `CsmTts`, the service the Text to Speech module registers its engine with, so
+Transit never names that module. Without it the board is silent: nothing is said unless an engine is
+registered and loaded (`CsmTts.isReady()`), rather than falling back to the system narrator as a
+player-built Redstone TTS block would, because a board talks by itself. Once a second the first
+board of each announcing bank within 24 blocks of the player queues every due bus not yet called; a
+bus is known by its stop, route and minute, so two boards over the same stops do not both call it.
+The queue is read one message every six seconds, since the engine drops a message that arrives while
+it is still speaking, and a message older than thirty seconds is dropped rather than read late. The
+speech is English, as the voices are. Announcements are off on a new board.
+
+### Measurements
+
+Measured in one session in MKTNG: boards hung in an 8 x 8 grid two blocks apart facing the camera,
+every one listing the test scene's four bays (22 departures), daylight pinned, frame rate uncapped,
+samples in the order empty, 16, 64, empty, 64, 16, empty, eight seconds each. The empty frame was
+1.21-1.24 ms throughout.
+
+| Block | Frame at 16 | Frame at 64 | Per board from the frame | Profiler, per board |
+|---|---|---|---|---|
+| Bus departure board | 1.43 / 1.56 ms | 1.89 / 2.31 ms | 11-17 µs | 15.7 µs |
+| Flight information board (for comparison) | 1.39 / 1.45 ms | 2.00 / 2.07 ms | 12-13 µs | 12.0 µs |
+| Bus bay display | 1.27 / 1.30 ms | 1.48 / 1.58 ms | 4-6 µs | 3.5-4.6 µs |
+
+A departure board costs a little more than a flight board because it draws eight rows of four lists
+against the flight board's seven of two. Beyond 48 blocks nothing is drawn but the baked model.
+
+### Traps
+
+- **The screens stand 0.4 proud of their bezels** (`SCREEN_Z` 14.6), as the flight board's does, so
+  `model_depth.separate` leaves them where the renderers draw. See the Airports traps.
+- **The bay display's screen must stay 12.8 x 4.4.** The arrival display's panel lists are laid out
+  for that width; a bigger screen would need lists of its own.
+- **The countdown is seeded by the post's column, not the block.** A board works out a stop's buses
+  at its flag, and the arrival display at itself, lower down the same post; seeding by height would
+  put the two a few minutes apart.
+- **Bays are numbered among the stops a board can see.** Two boards far enough apart to see
+  different sets of stops (more than about two chunks) can number the same stop differently. Keep a
+  station's stops and boards within a couple of chunks of each other.
+- **The agency comes from the flag's registry name** (`BusAgency.ofRegistryName`, the suffix after
+  the last underscore); a new agency's flag must end in its id, and the enum keeps the generators'
+  order.
+- **The board and the generator share the screen's numbers.** `SCREEN_*`, `HEADER_H`, `COLHEAD_H`,
+  `ROW_PITCH`, `ROWS`, `TITLE_X` and the 256 x 189 window are in both
+  `TileEntityBusDepartureBoardRenderer` and `gen_transit_boards.py`; the bay display's `BAY_SCREEN_*`
+  in `TileEntityBusBayDisplayRenderer`. Change one, change both.
+
+### Prices
+
+`TransitFabricatorRules`: both as the arrival display, an LED module, a control board and sheet
+metal. `audit_fabricator_costs.py` mirrors the branch.
 
 ## Station and platform fit-out
 
@@ -687,10 +827,9 @@ cart rack two sheet metal and a fastener kit. `audit_fabricator_costs.py` mirror
 ## Where the module is going
 
 Transit is planned to grow, in order: stations (a subway entrance headhouse built to size, and
-more station wayfinding), an airport's airside pieces (a jet bridge, ground equipment, stand signs
-and airfield lights switched by redstone), and working departure boards configured through a screen, drawn by a
-baked renderer, with announcements through Text to Speech only when that module is installed --
-for bus stops and station concourses, since RCMC's arrival boards already serve its platforms.
+more station wayfinding) and an airport's airside pieces (a jet bridge, ground equipment, stand
+signs and airfield lights switched by redstone). The bus departure boards are done (above); there
+will be no train departure board, since RCMC's arrival boards already serve its platforms.
 
 Two rules hold throughout: every agency, livery and route bullet is invented, never a real transit
 brand; and an advertising panel in a shelter is Signage's board, set into the shelter by the

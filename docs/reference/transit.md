@@ -2,7 +2,7 @@
 
 Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, fare gates, the fare vending machine, and the tickets and cards they take.
 
-!!! info "78 blocks in this tab"
+!!! info "80 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -22,6 +22,8 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Baggage Carousel | `csm:airport_baggage_carousel` | 2.5 | 8.0 | pickaxe | 1 |
 | Boarding Pass Scanner | `csm:airport_boarding_pass_scanner` | 2.0 | 6.0 | pickaxe | 1 |
 | Bus Arrival Display | `csm:bus_stop_arrival_display` | 2 | 10 | pickaxe | 1 |
+| Bus Bay Display | `csm:bus_bay_display` | 2.0 | 6.0 | pickaxe | 1 |
+| Bus Departure Board | `csm:bus_departure_board` | 2.0 | 6.0 | pickaxe | 1 |
 | Bus Shelter (Cantilever, CITYLINE) | `csm:bus_shelter_cantilever_cityline` | 3.0 | 10.0 | pickaxe | 1 |
 | Bus Shelter (Cantilever, EMBERLINE) | `csm:bus_shelter_cantilever_emberline` | 3.0 | 10.0 | pickaxe | 1 |
 | Bus Shelter (Cantilever, RIVERWAY) | `csm:bus_shelter_cantilever_riverway` | 3.0 | 10.0 | pickaxe | 1 |

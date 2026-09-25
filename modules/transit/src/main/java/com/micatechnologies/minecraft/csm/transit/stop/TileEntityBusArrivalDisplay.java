@@ -45,6 +45,16 @@ public class TileEntityBusArrivalDisplay extends AbstractTileEntityBusStopSign {
   }
 
   /**
+   * The routes the display lists, as last looked up; the first {@link #getRouteCount()} are
+   * used. Shared, not a copy: read it, never change it.
+   *
+   * @return the routes
+   */
+  public int[] getRoutes() {
+    return routes;
+  }
+
+  /**
    * A route the display lists.
    *
    * @param i 0 to {@link #getRouteCount()} - 1
