@@ -141,6 +141,10 @@ public final class CsmMemStatsVariants {
         f[1]++;
       }
     }
+    if (variantModels == 0 && multipartModels == 0) {
+      out.add("variants: CSM's unbaked models were released after the bake; start the game with -D"
+          + CsmUnbakedModelRelease.KEEP_PROPERTY + "=true to count them");
+    }
     out.add(String.format(Locale.ROOT,
         "variants: %d csm variant models (%d variant entries), %d distinct by content (%.1f%%"
             + " duplicate); %d multipart models", variantModels, variantEntries,

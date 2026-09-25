@@ -11,11 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.renderer.block.model.BlockPart;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -48,6 +51,11 @@ import org.apache.commons.lang3.tuple.Pair;
  * variant's unbaked model again after the bake event; ask the model manager for the baked one,
  * or load the model file afresh through {@link ModelLoaderRegistry}.</p>
  *
+ * <p>Then it drops CSM's unbaked models themselves: the {@code csm:} entries of Forge's model
+ * cache and of the model loader's maps (see {@link #releaseUnbaked}). After that a CSM model
+ * cannot be loaded through Forge again until the next reload, so the rule is stricter still:
+ * <b>never ask {@link ModelLoaderRegistry} for a CSM model after the bake.</b></p>
+ *
  * @since 2026.9
  */
 @SideOnly(Side.CLIENT)
@@ -55,6 +63,9 @@ public final class CsmUnbakedModelRelease {
 
   private static final String WRAPPER =
       "net.minecraftforge.client.model.ModelLoader$VanillaModelWrapper";
+
+  /** Set to {@code true} to keep the unbaked models, for {@code /csm memstats variants}. */
+  public static final String KEEP_PROPERTY = "csm.keepUnbakedModels";
 
   private final Map<Class<?>, List<Field>> fieldCache = new HashMap<>();
 
@@ -132,6 +143,87 @@ public final class CsmUnbakedModelRelease {
     } finally {
       fieldCache.clear();
     }
+    if (!Boolean.getBoolean(KEEP_PROPERTY)) {
+      releaseUnbaked(event);
+    }
+  }
+
+  /**
+   * Drops CSM's unbaked models from Forge's model cache and the model loader's maps.
+   *
+   * <p>Forge keeps every model it loaded in {@code ModelLoaderRegistry}'s static cache until
+   * the next resource reload, and the {@link ModelLoader} that did the loading stays alive too:
+   * every baked vanilla-style model is an inner class of an unbaked {@code VanillaModelWrapper}
+   * ({@code this$1}), which is itself an inner class of the loader ({@code this$0}), and Forge's
+   * {@code VanillaLoader} and {@code VariantLoader} hold it statically. So its maps of every
+   * variant's unbaked model ({@code stateModels}), every parsed blockstate file
+   * ({@code blockDefinitions}) and every multipart definition stay reachable. For CSM that was
+   * about 240 MB. Nothing reads them once the bake is over: the loader's post-bake report reads
+   * only its exception maps, and a reload makes a new loader and clears the cache.</p>
+   *
+   * <p>Only {@code csm:} entries are removed; other mods' entries are left as Forge keeps them.
+   * If anything did ask {@link ModelLoaderRegistry#getModel} for a CSM model afterwards, a plain
+   * model or variant would be read again from its file; a multipart variant would not, since
+   * its definition is gone, which is why the rule is never to load a CSM model through Forge
+   * after the bake. Start the game with {@code -Dcsm.keepUnbakedModels=true} to keep them, for
+   * {@code /csm memstats variants}, which counts them.</p>
+   */
+  private void releaseUnbaked(ModelBakeEvent event) {
+    long start = System.nanoTime();
+    try {
+      Field cacheField = ModelLoaderRegistry.class.getDeclaredField("cache");
+      cacheField.setAccessible(true);
+      int cacheRemoved = removeCsmKeys(((Map<?, ?>) cacheField.get(null)).keySet());
+
+      ModelLoader loader = event.getModelLoader();
+      Map<?, ?> stateModels = (Map<?, ?>) field(ModelLoader.class, "stateModels").get(loader);
+      Map<?, ?> multipartDefinitions =
+          (Map<?, ?>) field(ModelLoader.class, "multipartDefinitions").get(loader);
+      Map<?, ?> multipartModels =
+          (Map<?, ?>) field(ModelLoader.class, "multipartModels").get(loader);
+      Map<?, ?> blockDefinitions = (Map<?, ?>) ObfuscationReflectionHelper
+          .findField(ModelBakery.class, "field_177614_t").get(loader);
+
+      // The multipart models built for CSM's definitions go with the definitions. By identity:
+      // the loader keys them by the very definition objects it parsed, and a definition's own
+      // hash code walks every variant in it.
+      ReferenceOpenHashSet<Object> csmDefinitions = new ReferenceOpenHashSet<>();
+      for (Map.Entry<?, ?> e : multipartDefinitions.entrySet()) {
+        if (isCsm(e.getKey())) {
+          csmDefinitions.add(e.getValue());
+        }
+      }
+      int multipartRemoved = multipartModels.size();
+      multipartModels.keySet().removeIf(csmDefinitions::contains);
+      multipartRemoved -= multipartModels.size();
+      int stateRemoved = removeCsmKeys(stateModels.keySet());
+      int definitionsRemoved = removeCsmKeys(multipartDefinitions.keySet())
+          + removeCsmKeys(blockDefinitions.keySet());
+      Csm.getLogger().info("Released CSM's unbaked models after baking: {} from Forge's model "
+              + "cache, {} variant models, {} blockstate and multipart definitions and {} "
+              + "multipart models from the model loader, {} ms", cacheRemoved, stateRemoved,
+          definitionsRemoved, multipartRemoved, (System.nanoTime() - start) / 1_000_000L);
+    } catch (Throwable t) {
+      // A Forge whose internals differ: keep them, which only costs memory.
+      Csm.getLogger().warn("Could not release CSM's unbaked models; models are unaffected", t);
+    }
+  }
+
+  private static boolean isCsm(Object key) {
+    return key instanceof ResourceLocation
+        && CsmConstants.MOD_NAMESPACE.equals(((ResourceLocation) key).getNamespace());
+  }
+
+  private static int removeCsmKeys(Collection<?> keys) {
+    int before = keys.size();
+    keys.removeIf(CsmUnbakedModelRelease::isCsm);
+    return before - keys.size();
+  }
+
+  private static Field field(Class<?> type, String name) throws NoSuchFieldException {
+    Field f = type.getDeclaredField(name);
+    f.setAccessible(true);
+    return f;
   }
 
   private void walk(Object node, Class<?> wrapperClass, ReferenceOpenHashSet<Object> seen,
