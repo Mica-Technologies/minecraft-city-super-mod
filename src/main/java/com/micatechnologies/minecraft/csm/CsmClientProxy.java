@@ -63,6 +63,9 @@ public class CsmClientProxy implements ICsmProxy {
     // Once baking is done, makes CSM's baked models share their identical quads.
     MinecraftForge.EVENT_BUS.register(
         new com.micatechnologies.minecraft.csm.codeutils.CsmQuadSharing());
+    // ...and lets go of the element copies Forge made to retexture them.
+    MinecraftForge.EVENT_BUS.register(
+        new com.micatechnologies.minecraft.csm.codeutils.CsmUnbakedModelRelease());
   }
 
   /**
