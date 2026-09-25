@@ -574,7 +574,7 @@ def crate(bed_tex):
     return els
 
 
-def heap(rng, piece, size, rows=3, cols=4, top=(2, 3)):
+def heap(rng, piece, size, rows=2, cols=4, top=(2, 3)):
     """Pieces laid on the bed in a jittered grid, and a smaller layer on top of them, so the
     crate is heaped rather than level. piece(x, y, z, rng) -> elements, (x, z) its centre and y
     its bottom."""
