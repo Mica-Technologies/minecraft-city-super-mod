@@ -122,8 +122,9 @@ Everything on a stop is drawn by `gen_transit_stops.py` and lives in `transit.st
 
 A bus stop is built on the road sign system, not beside it. The flag, the arrival display and the
 two poster cases are **road signs**: subclasses of Roads' `BlockTrafficSign` (and so of
-`AbstractBlockSign`), each one block of Roads' sign post with its piece on the front of the post,
-exactly as every road sign's model is a length of post with a plate on it. A player builds a stop
+`AbstractBlockSign`), each one block of Roads' sign post with its piece on the front of the post
+(the flag's across its front and off to one side), exactly as every road sign's model is a length
+of post with a plate on it. A player builds a stop
 the way a signed post goes up:
 
 1. **Sign posts** (`signpost`, in Roads' Road Signs tab) from the ground, one or two.
@@ -154,7 +155,8 @@ drawing: `sign_<piece>` as drawn (the piece on the front of the post, the post a
 `_setback` (all of it 12.5 back) and `_back_to_back` (the piece alone, no post, 28.3 back). The
 post is the same five bars every road sign's model carries, so a stop's pieces and the sign posts
 between them read as one post. The blockstates are Forge format, like the road signs': facing by
-`transform`, `downward` by the `sign_pole` submodel, `shift` by model.
+`transform`, `downward` by the `sign_pole` submodel, `shift` by model -- except the flag's, whose
+model `hang` picks (Flags and route plates, below).
 
 Two differences from Roads' own signs, both deliberate:
 
@@ -168,7 +170,9 @@ Two differences from Roads' own signs, both deliberate:
 
 `SignShiftModelTest` and `SignFaceDepthTest` (Roads' tests, run in the one suite) hold these models
 to the same rules as Roads' own: they take a blockstate whose default model is under
-`csm:transit/stops/sign_` as a road sign, as well as one under `csm:trafficsigns/`.
+`csm:transit/stops/sign_` as a road sign, as well as one under `csm:trafficsigns/`. For a
+blockstate with a `hang` variant block (the flag) `SignShiftModelTest` reads the three shift
+models from `hang` instead, once for each side.
 
 ### Flags and route plates
 
@@ -184,29 +188,67 @@ block, where a click reaches them.
 Under the flag hang up to three route plates, 10 x 2.5, each in the agency's colour with a white
 rim and a small bus. `TileEntityBusStopFlag` keeps their numbers (0 for no plate, 1 to 99; saved as
 a three-byte array under `r`). Clicking a plate steps its number up and a sneaking click steps it
-down, the aisle sign's pattern; a click on the flag itself steps the top plate. The plate is chosen
-from the hit's height, split halfway between plate middles, and the action bar says which plate now
-shows what.
+down, the aisle sign's pattern. The plate is chosen from the hit's height, split halfway between
+plate middles, and the action bar says which plate now shows what.
+
+**The flag hangs off the side of the post**, as New York's bus stop flags do: the post runs up one
+edge of the sign and the sign's edge is bolted across the post's front. With the post beside the
+sign rather than behind it, the back is as readable as the front. The player picks the side: a
+click on the flag itself (anything above y 8.1, between the top plate and the flag's bottom edge;
+sneaking or not) moves flag and plates to the other side, and the action bar says which. The
+default, and what every flag saved before the choice existed loads as, is reaching to the reader's
+right with the post at the sign's left edge. The side is saved under `l` (written only while
+left).
+
+- **Geometry.** The model faces north and the sign frame mirrors x, so the reader's right is the
+  model's *low* x: right is x -2 to 8, left 8 to 18 (`SIDES` in the generator,
+  `BlockBusStopFlag.FLAG_X_*`). The sign's inner edge ends at the post's middle. A unit further
+  across looked more bolted-on, but from behind the post (x 6.5 to 9.5) stands in front of the
+  back's inner edge, and there it hid 2.5 units of the ten -- the P of STOP and the end of a
+  two-digit route number. Ending at the middle it hides 1.5, the margin beside the art. Every face
+  past x 0..16 already names its uv.
+- **Why one property picks the model.** A Forge blockstate lets every property's variant name a
+  model, and when two do, the last one wins: `shift` and a separate side could never together say
+  "setback, reaching left". So the flag's `shift` variants are empty and an actual-state
+  `hang` property (`BusStopFlagHang`: `none_right`, `setback_right`, `backtoback_right` and the
+  three `_left`), worked out from the sign system's shift and the tile entity's side, names one
+  of six models: `sign_flag`, `sign_flag_setback`, `sign_flag_back_to_back` and the same three
+  as `sign_flag_left*`. The state count is facing 8 x downward 2 x shift 3 x hang 6 x routes 8,
+  2,304 a flag, of which only a third can occur; a custom state mapper ignoring `shift` would cut
+  it to 768 but would take the `shift` block out of the blockstate `SignShiftModelTest` reads.
+- **The box** is the road sign's, narrowed across to the flag and the post (x -2 to 9.5 or 6.5 to
+  18, reaching a little past the block on the flag's side) so the empty side of the post does not
+  take clicks; set back, the collision is the road sign's thin slab at the flag's plane, the same
+  width. It is read off `hang`, so it follows a flip.
+- **Back to back** each flag keeps its own side. Both at the default, right, they reach out on
+  opposite sides of the one post, as reading right from both faces means; flip one to put both on
+  the same side.
+- **The other pieces stay centred.** The timetable and route map cases and the arrival display are
+  in the blocks below the flag's, and the flag's lowest plate is in its own block, so nothing
+  meets; a case or display centred on the post under a flag hung to one side is how real stops
+  mount them.
 
 Which plates are there is actual state (`route1` to `route3`), and it does not pick a model: the
 four agencies share one flag model per shift, whose plate faces paint texture slots `p1` to `p3`,
 and the blockstate fills a slot with the agency's plate while the plate is there and with a clear
 texture while it is not. So the plates are baked in all three shift models without a model for
-every combination. A new number rebuilds the chunk section only when a plate appears or goes
-(`getBakedModelKey` is the mask of plates).
+every combination. A new number rebuilds the chunk section only when a plate appears or goes, or the
+flag changes side (`getBakedModelKey` is the mask of plates and the side).
 
 The numbers are drawn by `TileEntityBusStopFlagRenderer`, white, on both faces, each number compiled
 once into a display list shared by every flag (`CsmSharedDisplayLists`, keyed on the number) and
 replayed under each plate's transform. The renderer works in the route marker sign's frame (the
 facing's turn plus a half turn, the reader in front with +x to the right), at the depth of the
-shift the sign system has put the flag in (`BusStopSigns.SHIFT_Z`), and multiplies the white by
-the plate's diffuse shade (0.8, or 0.6 facing due east or west), which a baked face carries and a
-renderer does not. The facing and the shift are looked up once a second
+shift the sign system has put the flag in (`BusStopSigns.SHIFT_Z`), across the side it hangs
+(`BlockBusStopFlag.middleX`: a plate's middle at model x is at 16 - x in that frame, and the
+back's number turns a half turn about that middle, so it lands on the moved plate), and multiplies
+the white by the plate's diffuse shade (0.8, or 0.6 facing due east or west), which a baked face
+carries and a renderer does not. The facing and the shift are looked up once a second
 (`AbstractTileEntityBusStopSign.refreshView`), not every frame.
 
 The plate middles, the numbers' place on a plate and the plate faces' depth are constants in
-`BlockBusStopFlag` (`PLATE_MIDDLE_Y` and the rest) that must match `PLATE_TOPS`, `PLATE_HT`,
-`PX0`/`PX1` and `PZ0`/`PZ1` in the generator.
+`BlockBusStopFlag` (`PLATE_MIDDLE_Y`, `FLAG_X_*` and the rest) that must match `PLATE_TOPS`,
+`PLATE_HT`, `SIDES` and `PZ0`/`PZ1` in the generator.
 
 ### Cases, the arrival display and the plaque
 

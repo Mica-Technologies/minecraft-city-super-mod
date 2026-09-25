@@ -141,3 +141,5 @@ tile.airport_jet_bridge_cab.name=Fluggastbrücke (Kabine)
 tile.airport_jet_bridge_rotunda.name=Fluggastbrücke (Rotunde)
 tile.airport_jet_bridge_drive.name=Fluggastbrücke (Fahrwerk)
 tile.airport_jet_bridge_column.name=Fluggastbrücke (Rotundensäule)
+csm.transit.flag.side_right=Schild hängt rechts vom Mast
+csm.transit.flag.side_left=Schild hängt links vom Mast

@@ -8,6 +8,9 @@ import net.minecraft.nbt.NBTTagCompound;
  * plates are baked), and {@link TileEntityBusStopFlagRenderer} draws the numbers, so a new number
  * rebuilds the chunk section only when a plate appears or goes ({@link #getBakedModelKey}).
  *
+ * <p>It also keeps which side of the post the flag hangs off: to the reader's right (the default,
+ * and what a flag saved before the choice existed loads as, since it has no key) or left.</p>
+ *
  * @since 2026.9
  */
 public class TileEntityBusStopFlag extends AbstractTileEntityBusStopSign {
@@ -20,7 +23,35 @@ public class TileEntityBusStopFlag extends AbstractTileEntityBusStopSign {
 
   private static final String KEY_ROUTES = "r";
 
+  /** Set, and true, while the flag hangs to the reader's left of the post. */
+  private static final String KEY_LEFT = "l";
+
   private final int[] routes = {1, 0, 0};
+
+  private boolean left;
+
+  /**
+   * Whether the flag hangs to the reader's left of the post: the post at the sign's right edge.
+   *
+   * @return true for left, false for right (the default)
+   */
+  public boolean isLeft() {
+    return left;
+  }
+
+  /**
+   * Moves the flag to the other side of the post. Server side; tells the players in range.
+   *
+   * @return true if the flag now hangs to the left
+   */
+  public boolean flipSide() {
+    left = !left;
+    if (world != null && !world.isRemote) {
+      markDirty();
+      syncServerToClient(world);
+    }
+    return left;
+  }
 
   /**
    * The route number on a plate.
@@ -64,6 +95,7 @@ public class TileEntityBusStopFlag extends AbstractTileEntityBusStopSign {
         routes[i] = i < stored.length ? clamp(stored[i]) : 0;
       }
     }
+    left = compound.getBoolean(KEY_LEFT);
   }
 
   @Override
@@ -73,13 +105,18 @@ public class TileEntityBusStopFlag extends AbstractTileEntityBusStopSign {
       stored[i] = (byte) routes[i];
     }
     compound.setByteArray(KEY_ROUTES, stored);
+    if (left) {
+      compound.setBoolean(KEY_LEFT, true);
+    } else {
+      compound.removeTag(KEY_LEFT);
+    }
     return compound;
   }
 
-  /** Only which plates are there reaches the baked model. */
+  /** Only which plates are there, and the side, reach the baked model. */
   @Override
   protected long getBakedModelKey() {
-    long mask = 0;
+    long mask = left ? 1L << PLATES : 0;
     for (int i = 0; i < PLATES; i++) {
       if (routes[i] != 0) {
         mask |= 1L << i;

@@ -141,3 +141,5 @@ tile.airport_jet_bridge_cab.name=Pasarela de Embarque (Cabina)
 tile.airport_jet_bridge_rotunda.name=Pasarela de Embarque (Rotonda)
 tile.airport_jet_bridge_drive.name=Pasarela de Embarque (Tren de Rodaje)
 tile.airport_jet_bridge_column.name=Pasarela de Embarque (Columna de Rotonda)
+csm.transit.flag.side_right=Señal colgada a la derecha del poste
+csm.transit.flag.side_left=Señal colgada a la izquierda del poste

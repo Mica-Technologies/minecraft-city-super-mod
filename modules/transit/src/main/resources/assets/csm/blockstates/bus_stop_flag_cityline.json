@@ -142,12 +142,8 @@
     },
     "shift": {
       "none": {},
-      "setback": {
-        "model": "csm:transit/stops/sign_flag_setback"
-      },
-      "backtoback": {
-        "model": "csm:transit/stops/sign_flag_back_to_back"
-      }
+      "setback": {},
+      "backtoback": {}
     },
     "route1": {
       "true": {
@@ -183,6 +179,26 @@
         "textures": {
           "p3": "csm:blocks/transit/stops/none"
         }
+      }
+    },
+    "hang": {
+      "none_right": {
+        "model": "csm:transit/stops/sign_flag"
+      },
+      "setback_right": {
+        "model": "csm:transit/stops/sign_flag_setback"
+      },
+      "backtoback_right": {
+        "model": "csm:transit/stops/sign_flag_back_to_back"
+      },
+      "none_left": {
+        "model": "csm:transit/stops/sign_flag_left"
+      },
+      "setback_left": {
+        "model": "csm:transit/stops/sign_flag_left_setback"
+      },
+      "backtoback_left": {
+        "model": "csm:transit/stops/sign_flag_left_back_to_back"
       }
     },
     "normal": [

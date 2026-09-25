@@ -49,6 +49,12 @@ import org.junit.jupiter.api.Test;
  * bracket -- draws a fragment of the hardware floating in the block behind, which looks worse
  * than not shifting at all. Both are caught here, because neither is visible in the blockstate:
  * it takes measuring the models the blockstate points at.</p>
+ *
+ * <p>One sign picks its model by another property: Transit's bus stop flag hangs off either side
+ * of its post, and since two properties that both name a model clash in a Forge blockstate, its
+ * {@code shift} variants are empty and a {@code hang} property ({@code <shift>_right},
+ * {@code <shift>_left}) names the model. Such a sign's three shift models are read from
+ * {@code hang}, once per side, and held to the same rules.</p>
  */
 class SignShiftModelTest {
 
@@ -168,9 +174,47 @@ class SignShiftModelTest {
       }
     }
     String defaultModel = blockstate.getAsJsonObject("defaults").get("model").getAsString();
-    Geometry none = read(modelOf(shift, "none", defaultModel), name, problems);
-    Geometry setback = read(modelOf(shift, "setback", defaultModel), name, problems);
-    Geometry backToBack = read(modelOf(shift, "backtoback", defaultModel), name, problems);
+    JsonObject hang = variants.getAsJsonObject(HANG);
+    if (hang == null) {
+      checkShifts(name, shift, "", defaultModel, notApplicable, problems);
+      return;
+    }
+    for (String side : HANG_SIDES) {
+      for (String value : Arrays.asList("none", "setback", "backtoback")) {
+        if (!hang.has(value + side)) {
+          problems.add(name + ": hang has no " + value + side + " variant");
+          return;
+        }
+      }
+      checkShifts(name + " (" + HANG + side + ")", hang, side, defaultModel, notApplicable,
+          problems);
+    }
+  }
+
+  /** The property that picks a side-hung sign's model in place of {@code shift}. */
+  private static final String HANG = "hang";
+
+  /** Its values' suffixes, after the shift's name. */
+  private static final String[] HANG_SIDES = {"_right", "_left"};
+
+  /**
+   * Checks one set of three shift models.
+   *
+   * @param name          the sign's registry name, and the side, for the message
+   * @param shift         the variant block naming the models
+   * @param suffix        what follows the shift's name in that block's keys
+   * @param defaultModel  the blockstate's default model
+   * @param notApplicable whether back-to-back is exempt for this sign
+   * @param problems      collects one line per fault found
+   *
+   * @throws IOException if a model cannot be read
+   */
+  private void checkShifts(String name, JsonObject shift, String suffix, String defaultModel,
+      boolean notApplicable, List<String> problems) throws IOException {
+    Geometry none = read(modelOf(shift, "none" + suffix, defaultModel), name, problems);
+    Geometry setback = read(modelOf(shift, "setback" + suffix, defaultModel), name, problems);
+    Geometry backToBack =
+        read(modelOf(shift, "backtoback" + suffix, defaultModel), name, problems);
     if (none == null || setback == null || backToBack == null) {
       return;
     }

@@ -141,3 +141,5 @@ tile.airport_jet_bridge_cab.name=Jet Bridge (Cab)
 tile.airport_jet_bridge_rotunda.name=Jet Bridge (Rotunda)
 tile.airport_jet_bridge_drive.name=Jet Bridge (Drive Leg)
 tile.airport_jet_bridge_column.name=Jet Bridge (Rotunda Column)
+csm.transit.flag.side_right=Flag hangs to the right of the post
+csm.transit.flag.side_left=Flag hangs to the left of the post

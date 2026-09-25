@@ -755,9 +755,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   invented agencies' double-sided flags with their three route plates, the timetable and route map
   cases and the arrival display, each a length of Roads' sign post with its piece on the front and
   the three shift models every road sign has (`sign_*`, `_setback`, `_back_to_back` at 28.3, which
-  `SignShiftModelTest` and `SignFaceDepthTest` check), in Forge sign blockstates; the flag models
-  are shared by the agencies, the blockstate filling the plate slots with the plate or a clear
-  texture from `route1`..`route3`. Also the curb plaque; `--check`, `--fragments`
+  `SignShiftModelTest` and `SignFaceDepthTest` check), in Forge sign blockstates. The flag hangs
+  off the side of the post, reaching right or left, so it has those three models per side, picked
+  by its `hang` property (shift crossed with side) with its `shift` variants left empty; the flag
+  models are shared by the agencies, the blockstate filling the plate slots with the plate or a
+  clear texture from `route1`..`route3`. Also the curb plaque; `--check`, `--fragments`
 - `gen_transit_shelters.py` -- the bus shelters (Transit): glass and steel, cantilever canopy and
   flat roof, two blocks tall, joining along their length and front to back from actual state
   (`left`, `right`, `ahead`, `behind`). Every part is written once in shelter coordinates (y 0 to

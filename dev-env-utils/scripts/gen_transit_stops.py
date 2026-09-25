@@ -28,7 +28,9 @@ Roads' own (their models are named sign_*).
 Every agency is invented: CITYLINE (teal and yellow, the fare machine's livery), RIVERWAY,
 VERDANT and EMBERLINE. The flag is printed on both faces and stands on top of its block and
 above it, like the road signs' tall plates; its three route plates hang under it in the block,
-where a click reaches them. The flag models are shared by the four agencies: the blockstate
+where a click reaches them. Flag and plates hang off the side of the post, NYC style, reaching
+to the reader's right or left: six flag models (sign_flag and sign_flag_left, each with its two
+shifts), which the flag's `hang` property picks, its `shift` variants left empty. The flag models are shared by the four agencies: the blockstate
 fills slot 1 with the agency's flag, and each route plate's slot (p1..p3) with the agency's plate
 while it carries a number (`route1`..`route3`, from TileEntityBusStopFlag) or with a clear
 texture while it does not -- so the plates are baked in every shift model without a model per
@@ -412,9 +414,11 @@ def shift_models(name, textures, piece, display=None):
     return models
 
 
-def sign_state(model, textures, extra=None):
+def sign_state(model, textures, extra=None, shift_picks_model=True):
     """A road sign's Forge blockstate: the eight facings, the extension post below, the three
-    shift models; plus any other property's variants."""
+    shift models; plus any other property's variants. With shift_picks_model False the shift
+    variants are left empty, for a block whose model another property picks (the flag's hang):
+    two properties that both name a model clash, and the last one wins."""
     facing = {}
     for f, angle in FACINGS:
         if angle:
@@ -426,8 +430,9 @@ def sign_state(model, textures, extra=None):
         "inventory": [{}],
         "downward": {"false": {}, "true": {"submodel": {"extension": {
             "model": SIGN_POLE, "transform": {"translation": [0.0, -1.0, 0.0]}}}}},
-        "shift": {"none": {}, "setback": {"model": model + "_setback"},
-                  "backtoback": {"model": model + "_back_to_back"}},
+        "shift": ({"none": {}, "setback": {"model": model + "_setback"},
+                   "backtoback": {"model": model + "_back_to_back"}} if shift_picks_model
+                  else {"none": {}, "setback": {}, "backtoback": {}}),
     }
     variants.update(extra or {})
     variants["normal"] = [{}]
@@ -435,26 +440,37 @@ def sign_state(model, textures, extra=None):
             "variants": variants}
 
 
-def gui(scale=0.625, y=0.0):
-    return {"gui": {"rotation": [0, 180, 0], "translation": [0, y, 0],
+def gui(scale=0.625, y=0.0, x=0):
+    return {"gui": {"rotation": [0, 180, 0], "translation": [x, y, 0],
                     "scale": [scale, scale, scale]}}
 
 
 # --- the flag -------------------------------------------------------------------------------
-PX0, PX1 = 3.0, 13.0            # the flag and its plates, centred on the post
+# The flag and its plates hang off the side of the post, as NYC's bus stop flags do: the post runs
+# up one edge of the sign and the sign's edge is bolted across the post's front, ending at the
+# post's middle. The model faces north and the sign frame mirrors x, so the reader's right is the
+# model's LOW x: a flag reaching to the reader's right (the post at its left edge, the default)
+# is x -2 to 8, and one reaching left is 8 to 18. BlockBusStopFlag.FLAG_X_* match.
+#
+# Why the middle and not further across: from behind, the post (x 6.5 to 9.5) stands in front
+# of the back's inner edge. Ending at x 8 it hides 1.5 units of the ten, the margin beside the
+# art; ending a unit further across it hid 2.5 and cut the P off STOP and the end off a
+# two-digit route number.
+SIDES = (("right", -2.0, 8.0), ("left", 8.0, 18.0))
 FLAG_Y0, FLAG_Y1 = 8.3, 21.3    # the flag, on the top of the block and above it: 10 x 13
 PLATE_TOPS = (7.9, 5.2, 2.5)    # each route plate's top; it is PLATE_HT tall
 PLATE_HT = 2.5
 PZ0, PZ1 = 0.0, 0.5             # every plate's two faces: BlockBusStopFlag.FACE_*_Z
 
 
-def flag_elements():
-    """The flag and its three route plates, each printed on both faces. The flag's edges are the
-    sign metal; a plate's edges are its own white rim, so a plate that is not there (its slot
-    given the clear texture) takes its edges with it."""
+def flag_elements(px0, px1):
+    """The flag and its three route plates, each printed on both faces, spanning x px0 to px1.
+    The flag's edges are the sign metal; a plate's edges are its own white rim, so a plate that
+    is not there (its slot given the clear texture) takes its edges with it. Past the block's
+    x 0..16 every face already names its uv, so none is sampled from a neighbour sprite."""
     art = win(FLAG_W, FLAG_H)
     h = FLAG_Y1 - FLAG_Y0
-    els = [{"from": [PX0, FLAG_Y0, PZ0], "to": [PX1, FLAG_Y1, PZ1], "faces": {
+    els = [{"from": [px0, FLAG_Y0, PZ0], "to": [px1, FLAG_Y1, PZ1], "faces": {
         "north": face("1", art),
         # seen from behind the plate is the same art, read the same way round
         "south": face("1", art),
@@ -463,7 +479,7 @@ def flag_elements():
     plate = win(BULLET_W, BULLET_H)
     for i, top in enumerate(PLATE_TOPS):
         slot = "p%d" % (i + 1)
-        els.append({"from": [PX0, top - PLATE_HT, PZ0], "to": [PX1, top, PZ1], "faces": {
+        els.append({"from": [px0, top - PLATE_HT, PZ0], "to": [px1, top, PZ1], "faces": {
             "north": face(slot, plate), "south": face(slot, plate),
             "east": face(slot, [0, 0, 0.25, 4]), "west": face(slot, [0, 0, 0.25, 4]),
             "up": face(slot, [0, 0, 16, 0.25]), "down": face(slot, [0, 0, 16, 0.25])}})
@@ -473,8 +489,20 @@ def flag_elements():
 def flags():
     textures = {"0": POST_TEX, "1": C.T("flag_cityline"), "p1": C.T("route_cityline"),
                 "p2": C.T("none"), "p3": C.T("none"), "particle": C.T("flag_cityline")}
-    # the flag reaches from y 0 to 21.3: shrunk and brought down to sit in the slot
-    models = shift_models("sign_flag", textures, flag_elements(), gui(0.58, -1.5))
+    # the flag reaches from y 0 to 21.3: shrunk and brought down to sit in the slot. The slot
+    # shows the right-hanging flag, x -2 to 9.5 with the post, a block turned to face the viewer:
+    # moved 4.25 units back toward the middle, at the slot's scale.
+    models = {}
+    for side, px0, px1 in SIDES:
+        name = "sign_flag" if side == "right" else "sign_flag_" + side
+        models.update(shift_models(name, textures, flag_elements(px0, px1),
+                                   gui(0.58, -1.5, -2.5) if side == "right" else None))
+    hang = {}
+    for side, _, _ in SIDES:
+        base = C.M("sign_flag" if side == "right" else "sign_flag_" + side)
+        for shift, suffix in (("none", ""), ("setback", "_setback"),
+                              ("backtoback", "_back_to_back")):
+            hang["%s_%s" % (shift, side)] = {"model": base + suffix}
     for i, a in enumerate(AGENCIES):
         aid, _, _, _, _, names = a
         reg = "bus_stop_flag_" + aid
@@ -485,7 +513,8 @@ def flags():
             slot = "p%d" % (k + 1)
             routes["route%d" % (k + 1)] = {"true": {"textures": {slot: C.T("route_" + aid)}},
                                            "false": {"textures": {slot: C.T("none")}}}
-        state = sign_state(C.M("sign_flag"), tex, routes)
+        routes["hang"] = hang
+        state = sign_state(C.M("sign_flag"), tex, routes, shift_picks_model=False)
         java = 'new BlockBusStopFlag("%s")' % reg
         C.add(reg, java, names, models if i == 0 else {}, state, tab=TAB)
 
@@ -592,6 +621,14 @@ def curb_plaque():
 
 C.add_lang("csm.transit.flag.route", ("Route plate %s: %s", "Linienschild %s: %s",
                                       "Placa de ruta %s: %s", "Linjeskylt %s: %s"))
+C.add_lang("csm.transit.flag.side_right", ("Flag hangs to the right of the post",
+                                           "Schild hängt rechts vom Mast",
+                                           "Señal colgada a la derecha del poste",
+                                           "Skylten hänger till höger om stolpen"))
+C.add_lang("csm.transit.flag.side_left", ("Flag hangs to the left of the post",
+                                          "Schild hängt links vom Mast",
+                                          "Señal colgada a la izquierda del poste",
+                                          "Skylten hänger till vänster om stolpen"))
 C.add_lang("csm.transit.flag.route_none", ("Route plate %s: none", "Linienschild %s: keins",
                                            "Placa de ruta %s: ninguna", "Linjeskylt %s: ingen"))
 

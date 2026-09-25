@@ -15,8 +15,9 @@ import org.lwjgl.opengl.GL11;
  * Draws the route numbers on a bus stop flag's route plates, on both faces.
  *
  * <p>The plates themselves are baked; only the numbers are drawn here, on the front and the back
- * of each plate, at the depth the sign system's shift puts the sign ({@link BusStopSigns#SHIFT_Z})
- * and at the plate's own shade, since a tile entity renderer gets none of the diffuse shading a
+ * of each plate, at the depth the sign system's shift puts the sign ({@link BusStopSigns#SHIFT_Z}),
+ * across the side of the post the flag hangs off ({@link BlockBusStopFlag#middleX}) and at the
+ * plate's own shade, since a tile entity renderer gets none of the diffuse shading a
  * baked face carries. Each number, 1 to 99, is
  * compiled once into a display list shared by every flag ({@link CsmSharedDisplayLists}, keyed
  * on the number), centred on the origin in the font atlas, and replayed under each plate's own
@@ -73,6 +74,8 @@ public class TileEntityBusStopFlagRenderer
     float front = 16.0f - (BlockBusStopFlag.FACE_FRONT_Z + shift) + LIFT;
     float back = 16.0f - (BlockBusStopFlag.FACE_BACK_Z + shift) - LIFT;
     float numberX = BlockBusStopFlag.NUMBER_FROM_LEFT - BlockBusStopFlag.PLATE_WIDTH / 2.0f;
+    // the plates' middle across, where the model has it at x the frame has it at 16 - x
+    float middle = 16.0f - BlockBusStopFlag.middleX(te.isLeft());
     float shade = BusStopSigns.shade(te.getViewFacing());
 
     GlStateManager.pushMatrix();
@@ -96,13 +99,13 @@ public class TileEntityBusStopFlagRenderer
       float midY = BlockBusStopFlag.PLATE_MIDDLE_Y[i];
       // the front, read with +x to the reader's right
       GlStateManager.pushMatrix();
-      GlStateManager.translate(8.0f + numberX, midY, front);
+      GlStateManager.translate(middle + numberX, midY, front);
       GlStateManager.scale(scale, -scale, scale);
       drawNumber(fr, route);
       GlStateManager.popMatrix();
       // the back, read from behind: turned a half turn about the plate's middle
       GlStateManager.pushMatrix();
-      GlStateManager.translate(8.0f, midY, back);
+      GlStateManager.translate(middle, midY, back);
       GlStateManager.rotate(180, 0, 1, 0);
       GlStateManager.translate(numberX, 0.0f, 0.0f);
       GlStateManager.scale(scale, -scale, scale);

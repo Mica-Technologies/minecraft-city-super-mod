@@ -141,3 +141,5 @@ tile.airport_jet_bridge_cab.name=Flygbrygga (Hytt)
 tile.airport_jet_bridge_rotunda.name=Flygbrygga (Rotunda)
 tile.airport_jet_bridge_drive.name=Flygbrygga (Drivben)
 tile.airport_jet_bridge_column.name=Flygbrygga (Rotundapelare)
+csm.transit.flag.side_right=Skylten hänger till höger om stolpen
+csm.transit.flag.side_left=Skylten hänger till vänster om stolpen
