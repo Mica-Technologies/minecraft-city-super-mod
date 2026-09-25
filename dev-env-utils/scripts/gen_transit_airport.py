@@ -1107,7 +1107,7 @@ def seating_parts():
                  B((x0 + 0.4, 5.6, 3.2), (x1 - 0.4, 6.2, 9.4), "chrome", SIDES + ("down",)),
                  B((xc - 0.8, 4.6, 6.6), (xc + 0.8, 5.6, 9.2), "chrome", SIDES),
                  B((x0, 8.0, 9.6), (x1, 15.4, 11.0), "seat",
-                   rot=("x", -22.5, (xc, 8.0, 9.6)))]
+                   rot=("x", 22.5, (xc, 8.0, 9.6)))]
     body += armrest(8)
     return [("body", {}, body),
             ("join_left", {"left": T}, [B((0, 3.2, 8.2), (1, 4.6, 9.6), "beam", beam_faces)]
