@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:trafficsigns/bikes_use_ped_signal_sign",
     "textures": {
-      "all": "csm:blocks/trafficsigns/left_turn_on_green_arrow_only",
-      "particle": "csm:blocks/trafficsigns/left_turn_on_green_arrow_only",
+      "all": "csm:blocks/trafficsigns/left_on_green_arrow_only",
+      "particle": "csm:blocks/trafficsigns/left_on_green_arrow_only",
       "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-      "1": "csm:blocks/trafficsigns/left_turn_on_green_arrow_only"
+      "1": "csm:blocks/trafficsigns/left_on_green_arrow_only"
     }
   },
   "variants": {

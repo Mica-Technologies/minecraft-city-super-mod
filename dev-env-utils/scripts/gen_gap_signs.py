@@ -7,7 +7,7 @@ render_sign where the book has no sign at the mod's wording), the plain sign it 
 the creative tab, and its display name in the four shipped languages.
 From that the script writes:
 
-    textures/blocks/trafficsigns/<registry>.png          128 x 128, drawn at the plate's aspect
+    textures/blocks/trafficsigns/<registry>.png          square, drawn at the plate's aspect
     textures/blocks/trafficsigns/<registry>_back.png     silhouette signs only: the gray back
     blockstates/<registry>.json                          the shape sibling's, retextured
 
@@ -16,7 +16,9 @@ its sibling in CsmTabRoadSigns. Without --apply the lang and tab lines are print
 
 Plates and aspects. A sign texture is square but is stretched onto its model's plate, so the
 face is drawn at the plate's aspect and then squished to 128 x 128; in the world it comes back
-out at the right proportions. The shapes and the sibling whose blockstate is cloned for each:
+out at the right proportions. It is stored at the size sign_texture_size gives its plate
+(85.3 texels a block: 128 px up to 1.5 blocks, which is every shape but the landscape and
+ultratall ones, at 256). The shapes and the sibling whose blockstate is cloned for each:
 
     diamond    23 x 23  signbump            warning diamonds
     portrait   16 x 21  signspeed65         speed limits and other tall regulatory signs
@@ -44,6 +46,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
 import render_sign as rs  # noqa: E402
 import shs_signs as shs  # noqa: E402
+import sign_texture_size as sts  # noqa: E402
 
 SS = rs.SS
 SIZE = rs.SIZE  # supersampled square canvas
@@ -157,9 +160,10 @@ def _stretch(shape):
 
 
 def _size(shape):
-    # A 16 x 8 plaque squishes a 2:1 face into a square texture, leaving a small two-line
-    # legend 8 px per plate unit across; it blurs a few blocks away at 128, so plaques are 256
-    # The 1:3 paddle has it worse the other way: 5 px per unit down its 24-unit face
+    # The size a face is DRAWN at. A plaque's small two-line legend and the 1:3 paddle's are
+    # set at 256 so the strokes are crisp; the stored size is the plate's
+    # (sign_texture_size.fit in main), which brings the one-block plaque and paddle to 128
+    # and keeps the landscape and ultratall plates, two blocks and more, at 256
     return 256 if shape in ('plaque', 'paddle', 'landscape', 'ultratall') else shs.DEFAULT_TEX
 
 
@@ -726,8 +730,8 @@ def main():
     drift = []
     lang_lines, tab_lines = [], []
     for registry, names, shape, draw, after in CATALOGUE:
-        face = draw()
         png = os.path.join(TEX_DIR, registry + '.png')
+        face = sts.fit(draw(), png)   # at its plate's size, before it is compared or saved
         if check:
             if not os.path.exists(png):
                 drift.append(png)
@@ -735,6 +739,12 @@ def main():
                 cur = Image.open(png).convert('RGBA')
                 if cur.size != face.size or cur.tobytes() != face.tobytes():
                     drift.append(png)
+            if shape == 'silhouette':
+                back_png = os.path.join(TEX_DIR, registry + '_back.png')
+                back = gray_back(face)
+                cur = Image.open(back_png).convert('RGBA') if os.path.exists(back_png) else None
+                if cur is None or cur.size != back.size or cur.tobytes() != back.tobytes():
+                    drift.append(back_png)
             continue
         face.save(png)
         has_back = shape == 'silhouette'

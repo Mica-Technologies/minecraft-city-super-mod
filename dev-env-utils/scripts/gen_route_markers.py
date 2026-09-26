@@ -4,8 +4,8 @@ under, carrying any of the markers the dynamic highway guide sign offers.
 
 What it writes, all under the roads module:
 
-    textures/blocks/trafficsigns/route_marker_<shield>.png        the marker's face
-    textures/blocks/trafficsigns/route_marker_<shield>_back.png   its unpainted gray back
+    textures/blocks/trafficsigns/route_marker_<shield>.png        the marker's face, 128 px
+    textures/blocks/trafficsigns/route_marker_<shield>_back.png   its unpainted gray back, 64 px
     models/block/trafficsigns/route_marker_sign.json              plate + the standard sign post
     models/block/trafficsigns/route_marker_sign_setback.json      the same, 12.5 back
     models/block/trafficsigns/route_marker_sign_back_to_back.json the plate alone, 28.5 back
@@ -22,6 +22,13 @@ would show around a shield.
 Nothing here draws the route number. That is the tile entity's, painted over the plate by
 TileEntityDynamicRouteMarkerSignRenderer at the position each shield's own
 GuideSignShieldType entry gives, so one texture serves every route number.
+
+The face is stored at 128, the floor every sign face keeps (sign_texture_size), though its cell
+is 64: the game magnifies with GL_NEAREST, and a 64 px outline turns visibly blocky up close.
+The back is seen only from behind, carries no picture, and is stored at its 64 px source.
+Shields that share an outline share one texture: the face or back texture of the first shield
+in the enum that has those exact pixels is the one every such shield's variant names, and no
+file is written for the others (the atlas holds each distinct sprite once).
 
 Usage:
     python gen_route_markers.py            # write the tree
@@ -55,7 +62,8 @@ REGISTRY = "dynamic_route_marker_sign"
 TEX_PREFIX = "route_marker_"
 MODEL = "route_marker_sign"
 CELL = 64
-SIZE = 128                      # the mod's ordinary sign texture size
+SIZE = 128                      # the mod's ordinary sign texture size, the faces
+BACK_SIZE = CELL                # the backs: the outline at its source size
 BACK_GRAY = (150, 150, 150, 255)   # shs_signs.back_texture's unpainted gray
 
 TEX_REF = "csm:blocks/trafficsigns/%s"
@@ -107,10 +115,13 @@ def _atlas():
     return Image.open(ATLAS).convert("RGBA")
 
 
+def _cell(atlas, col, row):
+    return atlas.crop((col * CELL, row * CELL, (col + 1) * CELL, (row + 1) * CELL))
+
+
 def face_texture(atlas, col, row):
     """One marker, cut from its atlas cell and scaled to the mod's sign texture size."""
-    cell = atlas.crop((col * CELL, row * CELL, (col + 1) * CELL, (row + 1) * CELL))
-    return cell.resize((SIZE, SIZE), Image.LANCZOS)
+    return _cell(atlas, col, row).resize((SIZE, SIZE), Image.LANCZOS)
 
 
 def back_texture(face):
@@ -121,14 +132,31 @@ def back_texture(face):
     return back.transpose(Image.FLIP_LEFT_RIGHT)
 
 
-def textures():
+def _shared():
+    """Every shield's face and back image, and for each shield the texture names its variant
+    uses: {texture name: image} with one entry per distinct image, {shield: (face, back)}."""
     atlas = _atlas()
-    out = {}
+    images, first, names = {}, {}, {}
     for name, col, row in shields():
         face = face_texture(atlas, col, row)
-        out[TEX_PREFIX + name] = face
-        out[TEX_PREFIX + name + "_back"] = back_texture(face)
-    return out
+        back = back_texture(_cell(atlas, col, row))       # BACK_SIZE: straight from the cell
+        picked = []
+        for tex, img in ((TEX_PREFIX + name, face), (TEX_PREFIX + name + "_back", back)):
+            key = (tex.endswith("_back"), img.size, img.tobytes())
+            if key not in first:
+                first[key] = tex
+                images[tex] = img
+            picked.append(first[key])
+        names[name] = tuple(picked)
+    return images, names
+
+
+def textures():
+    return _shared()[0]
+
+
+def texture_names():
+    return _shared()[1]
 
 
 # --------------------------------------------------------------------------------------------
@@ -205,20 +233,22 @@ def blockstate():
         else:
             facing[name] = {}
     shield = {}
+    names = texture_names()
     for name, _col, _row in shields():
-        shield[name] = {"textures": {"1": TEX_REF % (TEX_PREFIX + name),
-                                     "2": TEX_REF % (TEX_PREFIX + name + "_back")}}
+        face, back = names[name]
+        shield[name] = {"textures": {"1": TEX_REF % face, "2": TEX_REF % back}}
     default = shields()[0][0]
+    default_face, default_back = names[default]
     return {
         "forge_marker": 1,
         "defaults": {
             "model": MODEL_REF % MODEL,
             "textures": {
-                "all": TEX_REF % (TEX_PREFIX + default),
-                "particle": TEX_REF % (TEX_PREFIX + default),
+                "all": TEX_REF % default_face,
+                "particle": TEX_REF % default_face,
                 "0": BLANK,
-                "1": TEX_REF % (TEX_PREFIX + default),
-                "2": TEX_REF % (TEX_PREFIX + default + "_back"),
+                "1": TEX_REF % default_face,
+                "2": TEX_REF % default_back,
             },
         },
         "variants": {
@@ -266,6 +296,14 @@ def write_all(tex_dir, model_dir, state_dir):
     return written
 
 
+def stale_textures(written):
+    """Route marker textures in the tree that the generator no longer writes (a shield whose
+    texture is now shared with an earlier one's)."""
+    keep = {f for kind, f in written if kind == "tex"}
+    return sorted(f for f in os.listdir(TEX_DIR)
+                  if f.startswith(TEX_PREFIX) and f.endswith(".png") and f not in keep)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -276,7 +314,10 @@ def main():
     roots = {"tex": TEX_DIR, "model": MODEL_DIR, "state": STATE_DIR}
     if not args.check:
         written = write_all(TEX_DIR, MODEL_DIR, STATE_DIR)
-        print("Wrote %d route marker files" % len(written))
+        stale = stale_textures(written)
+        for f in stale:
+            os.remove(os.path.join(TEX_DIR, f))
+        print("Wrote %d route marker files, removed %d no longer used" % (len(written), len(stale)))
         return 0
 
     tmp = tempfile.mkdtemp(prefix="csm_route_markers_")
@@ -291,6 +332,8 @@ def main():
             there = os.path.join(tmp_roots[kind], filename)
             if not os.path.exists(here) or not filecmp.cmp(here, there, shallow=False):
                 drifted.append(os.path.relpath(here, REPO))
+        drifted += [os.path.relpath(os.path.join(TEX_DIR, f), REPO) + " (no longer generated)"
+                    for f in stale_textures(written)]
         if drifted:
             print("DRIFT: %d file(s) differ from the generator:" % len(drifted))
             for path in drifted:

@@ -5,7 +5,9 @@ The catalogue below maps a registry name to the SHS page (or interim ZIP) its de
 drawn on. For each, the script reads the sign's own blockstate to find the plate model and
 the texture it paints (slot ``1``; the file is often not named after the registry), measures
 the plate's aspect off the model's elements, renders the drawing through
-``shs_signs.official_face`` and writes the texture -- nothing else. A silhouette sign whose
+``shs_signs.official_face``, brings it to the size its plate is given by
+``sign_texture_size`` (85.3 texels a block: 128 px up to 1.5 blocks, 256 up to 3) and writes
+the texture -- nothing else. A silhouette sign whose
 blockstate names a ``_back`` texture on slot ``2`` gets that regenerated too. Registration,
 lang and blockstates are never touched: this is a texture swap for signs that already exist,
 which is what makes ``--check`` a byte comparison and a batch reversible with
@@ -35,6 +37,7 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
 import shs_signs as shs  # noqa: E402
+import sign_texture_size as sts  # noqa: E402
 
 MATCH_TABLE = os.path.join(layout.REPO_ROOT, 'assets', 'docs', 'agent_progress', 'done', 'SHS_MATCH_TABLE.md')
 
@@ -2606,9 +2609,9 @@ def render(source, info):
         return shs.symbol_on_panel(face.symbol, face.colour, info['aspect'], size=256)
     if isinstance(face, ComposedFace):
         return face.fn(info['aspect'])
-    # a silhouette sign (one with a _back texture) IS its outline: never squash it to fill
-    # a 2:1 plaque squishes its legend to 8 px per plate unit across at 128; 256 keeps it
-    # readable a few blocks away
+    # a silhouette sign (one with a _back texture) IS its outline: never squash it to fill.
+    # A 2:1 plaque is DRAWN at 256 so its small legend is set crisply; the size it is stored
+    # at is the plate's, like every face's (sign_texture_size.fit in main: 128 on a 16 x 8)
     return shs.official_face(face, info['aspect'], mirror, palette,
                              size=256 if info['aspect'] >= 1.8 else shs.DEFAULT_TEX,
                              stretch_tol=0.0 if info['back'] else None)
@@ -2724,6 +2727,8 @@ def main():
             for name, img in composed.extras(info['aspect']).items():
                 targets.append((os.path.join(os.path.dirname(info['texture']), name), img))
         for path, img in targets:
+            # every face at its plate's size (sign_texture_size), before it is compared or saved
+            img = sts.fit(img, path)
             if check:
                 cur = Image.open(path).convert('RGBA') if os.path.exists(path) else None
                 if cur is None or cur.size != img.size or cur.tobytes() != img.tobytes():

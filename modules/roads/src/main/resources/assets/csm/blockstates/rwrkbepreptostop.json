@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:trafficsigns/absolutely_nothing_sign",
     "textures": {
-      "all": "csm:blocks/trafficsigns/road_work_be_prepared_to_stop",
-      "particle": "csm:blocks/trafficsigns/road_work_be_prepared_to_stop",
+      "all": "csm:blocks/trafficsigns/signbepreparedtostop",
+      "particle": "csm:blocks/trafficsigns/signbepreparedtostop",
       "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-      "1": "csm:blocks/trafficsigns/road_work_be_prepared_to_stop"
+      "1": "csm:blocks/trafficsigns/signbepreparedtostop"
     }
   },
   "variants": {

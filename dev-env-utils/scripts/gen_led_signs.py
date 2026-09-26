@@ -38,20 +38,31 @@ Writes:
 
 and prints the lang lines and the tab registrations, which are added by hand next to the
 plain sign's own (the tab is in creative order, not alphabetical, so a script cannot place
-them). Run from the repo root:  python dev-env-utils/scripts/gen_led_signs.py
+them). Run from the repo root:  python dev-env-utils/scripts/gen_led_signs.py [--check]
+
+The strip is drawn at its base face's size, which is the size its plate is given by
+sign_texture_size (a base larger than that is reduced first, with the same filter), so the
+dots are drawn crisply at the stored size rather than scaled down with the face. Re-run this
+whenever a base face changes: ``--check`` writes nothing and exits 1 if a strip, companion,
+.mcmeta or blockstate differs from what the current bases give.
 """
 
+import io
 import math
 import os
+import sys
 
 import numpy as np
 from PIL import Image, ImageDraw
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import sign_texture_size as sts  # noqa: E402
 
 ROADS = os.path.join('modules', 'roads', 'src', 'main', 'resources', 'assets', 'csm')
 TEXTURES = os.path.join(ROADS, 'textures', 'blocks', 'trafficsigns')
 BLOCKSTATES = os.path.join(ROADS, 'blockstates')
 
-SIZE = 128        # the face texture's side; set per sign by configure(), plaques and the paddle are 256
+SIZE = 128        # the face texture's side; set per sign by configure() from its base
 SS = 4            # supersampling for round dots at this resolution
 
 # One blink per second: a 20-tick cycle with the lit frame holding for 2 ticks (100 ms).
@@ -292,16 +303,15 @@ def draw_emissive(base, dots, aspect, colours):
     return Image.fromarray(px, 'RGBA')
 
 
-def write_mcmeta(path):
+def mcmeta_bytes():
     """The blink: a 20-tick cycle with the lit frame holding for LIT_TICKS of it."""
-    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
-        fh.write('{\n  "animation": {\n    "frames": [\n'
-                 '      {"index": 0, "time": %d},\n'
-                 '      {"index": 1, "time": %d}\n'
-                 '    ]\n  }\n}\n' % (CYCLE_TICKS - LIT_TICKS, LIT_TICKS))
+    return ('{\n  "animation": {\n    "frames": [\n'
+            '      {"index": 0, "time": %d},\n'
+            '      {"index": 1, "time": %d}\n'
+            '    ]\n  }\n}\n' % (CYCLE_TICKS - LIT_TICKS, LIT_TICKS)).encode('utf-8')
 
 
-def write_blockstate(name, base_name, base_texture):
+def blockstate_bytes(name, base_name, base_texture):
     """The plain sign's blockstate with every reference to its face texture pointed at the
     LED strip. Done as text so the file keeps its formatting and line endings."""
     src = os.path.join(BLOCKSTATES, base_name + '.json')
@@ -311,49 +321,88 @@ def write_blockstate(name, base_name, base_texture):
     new = '"csm:blocks/trafficsigns/%s"' % name
     if old not in text:
         raise SystemExit('%s does not reference %s' % (src, old))
-    dst = os.path.join(BLOCKSTATES, name + '.json')
-    with open(dst, 'wb') as fh:
-        fh.write(text.replace(old, new).encode('utf-8'))
-    return dst
+    return text.replace(old, new).encode('utf-8')
+
+
+def png_bytes(img):
+    buf = io.BytesIO()
+    img.save(buf, 'PNG')
+    return buf.getvalue()
+
+
+def outputs(name, base_name, base_texture, kind, aspect, colours):
+    """{path: bytes} for one LED sign, and the number of LEDs."""
+    base = Image.open(os.path.join(TEXTURES, base_texture + '.png')).convert('RGBA')
+    if base.size[0] != base.size[1]:
+        raise SystemExit('%s is %s, expected square' % (base_texture, base.size))
+    # the strip is stored at its plate's size; a base still above it is brought down first
+    base = sts.reduce(base, sts.target_size(name, base.size[0]))
+    configure(base.size[0])
+    mask = np.array(base)[:, :, 3] > 127
+    dots = layout(kind, mask, aspect)
+
+    strip = Image.new('RGBA', (SIZE, SIZE * 2), (0, 0, 0, 0))
+    strip.paste(draw_dots(base, dots, aspect, colours, False), (0, 0))
+    strip.paste(draw_dots(base, dots, aspect, colours, True), (0, SIZE))
+
+    # The emissive companion on the same clock: nothing while dark, the lit LEDs alone
+    # while lit.
+    emissive = Image.new('RGBA', (SIZE, SIZE * 2), (0, 0, 0, 0))
+    emissive.paste(draw_emissive(base, dots, aspect, colours), (0, SIZE))
+
+    png = os.path.join(TEXTURES, name + '.png')
+    png_e = os.path.join(TEXTURES, name + '_e.png')
+    return {
+        png: png_bytes(strip),
+        png + '.mcmeta': mcmeta_bytes(),
+        png_e: png_bytes(emissive),
+        png_e + '.mcmeta': mcmeta_bytes(),
+        os.path.join(BLOCKSTATES, name + '.json'): blockstate_bytes(name, base_name, base_texture),
+    }, len(dots)
+
+
+def _same(path, data):
+    if not os.path.exists(path):
+        return False
+    if path.endswith('.png'):
+        with Image.open(path) as cur:
+            new = Image.open(io.BytesIO(data))
+            return cur.size == new.size and \
+                cur.convert('RGBA').tobytes() == new.convert('RGBA').tobytes()
+    with open(path, 'rb') as fh:
+        return fh.read() == data
 
 
 def main():
     if not os.path.isdir(TEXTURES):
         raise SystemExit('run from the repo root: %s not found' % TEXTURES)
+    check = '--check' in sys.argv
 
-    lang, tab = [], []
+    lang, tab, drift = [], [], []
     for name, base_name, base_texture, kind, aspect, colours, display in CATALOGUE:
-        base = Image.open(os.path.join(TEXTURES, base_texture + '.png')).convert('RGBA')
-        if base.size[0] != base.size[1]:
-            raise SystemExit('%s is %s, expected square' % (base_texture, base.size))
-        configure(base.size[0])
-        mask = np.array(base)[:, :, 3] > 127
-        dots = layout(kind, mask, aspect)
-
-        strip = Image.new('RGBA', (SIZE, SIZE * 2), (0, 0, 0, 0))
-        strip.paste(draw_dots(base, dots, aspect, colours, False), (0, 0))
-        strip.paste(draw_dots(base, dots, aspect, colours, True), (0, SIZE))
-        png = os.path.join(TEXTURES, name + '.png')
-        strip.save(png)
-        write_mcmeta(png + '.mcmeta')
-
-        # The emissive companion on the same clock: nothing while dark, the lit LEDs alone
-        # while lit.
-        emissive = Image.new('RGBA', (SIZE, SIZE * 2), (0, 0, 0, 0))
-        emissive.paste(draw_emissive(base, dots, aspect, colours), (0, SIZE))
-        png_e = os.path.join(TEXTURES, name + '_e.png')
-        emissive.save(png_e)
-        write_mcmeta(png_e + '.mcmeta')
-
-        bs = write_blockstate(name, base_name, base_texture)
-        print('wrote %s (%d LEDs) + .mcmeta, %s + .mcmeta, %s'
-              % (png, len(dots), png_e, bs))
+        files, n_leds = outputs(name, base_name, base_texture, kind, aspect, colours)
+        if check:
+            drift += [p for p, data in files.items() if not _same(p, data)]
+            continue
+        for path, data in files.items():
+            with open(path, 'wb') as fh:
+                fh.write(data)
+        print('wrote %s (%d LEDs), its _e companion, both .mcmeta and the blockstate'
+              % (name, n_leds))
 
         lang.append('tile.%s.name=%s' % (name, display))
         tab.append('    initTabBlock(new BlockTrafficSign("%s"));  // after %s'
                    % (name, base_name))
 
     assert CYCLE_TICKS * 50 == 1000, 'the cycle must be one second'
+    if check:
+        if drift:
+            print('DRIFT: %d file(s) differ from the generator:' % len(drift))
+            for p in drift:
+                print('  ' + p)
+            sys.exit(1)
+        print('all %d LED signs match the generator' % len(CATALOGUE))
+        return
     print('\nlang (en_us.lang, next to the plain sign):\n' + '\n'.join(lang))
     print('\ntab (CsmTabRoadSigns.initTabElements):\n' + '\n'.join(tab))
 

@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:trafficsigns/absolutely_nothing_sign",
     "textures": {
-      "all": "csm:blocks/trafficsigns/hard_right_shift",
-      "particle": "csm:blocks/trafficsigns/hard_right_shift",
+      "all": "csm:blocks/trafficsigns/signreverseturnright",
+      "particle": "csm:blocks/trafficsigns/signreverseturnright",
       "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-      "1": "csm:blocks/trafficsigns/hard_right_shift"
+      "1": "csm:blocks/trafficsigns/signreverseturnright"
     }
   },
   "variants": {

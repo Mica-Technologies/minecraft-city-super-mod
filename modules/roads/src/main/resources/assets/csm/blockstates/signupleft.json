@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:trafficsigns/ahead_sign",
     "textures": {
-      "all": "csm:blocks/trafficsigns/ahead_plus_left",
-      "particle": "csm:blocks/trafficsigns/ahead_plus_left",
+      "all": "csm:blocks/trafficsigns/ahead_and_left",
+      "particle": "csm:blocks/trafficsigns/ahead_and_left",
       "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-      "1": "csm:blocks/trafficsigns/ahead_plus_left"
+      "1": "csm:blocks/trafficsigns/ahead_and_left"
     }
   },
   "variants": {

@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:trafficsigns/ahead_sign",
     "textures": {
-      "all": "csm:blocks/trafficsigns/end_sign_plaque",
-      "particle": "csm:blocks/trafficsigns/end_sign_plaque",
+      "all": "csm:blocks/trafficsigns/end",
+      "particle": "csm:blocks/trafficsigns/end",
       "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-      "1": "csm:blocks/trafficsigns/end_sign_plaque"
+      "1": "csm:blocks/trafficsigns/end"
     }
   },
   "variants": {
