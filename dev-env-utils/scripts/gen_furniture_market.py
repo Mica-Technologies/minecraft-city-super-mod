@@ -3135,6 +3135,21 @@ SEAFOOD_INSIDE = ([el([0, 8.5, 3.2], [16, 9.5, 12.2], "ice", ("up",), uv={"up": 
                   + price_cards(9.85, 3.8) + top_scale(SERVICE_TOP))
 SEAFOOD, SEAFOOD_END, _ = service_case(9, SERVICE_SEGS, 11, SEAFOOD_INSIDE, 11, 8.4)
 
+
+def _ice_bed_end(x, face, x_back):
+    """The end of the ice bed's pan at a run's end, seen through the end glass: the tilted
+    slab's own end, then the wedge between it and the end panel. The wedge's sloping side is a
+    band turned with the slab, ending where its back edge would leave the case behind the liner
+    wall; its back is square, a quarter unit further in, its top corner inside the slab's end so
+    the pan end in front hides it. Everything below y 9.5 is behind the end panel."""
+    return [el([x, 8.5, 3.2], [x, 9.5, 12.2], "liner", (face,), rot=_ICE_TILT),
+            el([x, 5.5, 3.2], [x, 8.5, 10.4], "liner", (face,), rot=_ICE_TILT),
+            el([x_back, 9.3, 9.0], [x_back, 11.94, 11.5], "liner", (face,))]
+
+
+SEAFOOD_RIGHT = mirror_x(SEAFOOD_END) + _ice_bed_end(15.5, "east", 15.25)
+SEAFOOD_END = SEAFOOD_END + _ice_bed_end(0.5, "west", 0.75)
+
 # The bread rack: three shelves stepping back as they rise, each with a lip, bagged and crusty
 # loaves on the outer two and the bakery's on the middle, a BREAD sign over the back.
 BREAD_LEVELS = ((1.5, 2.5), (6.5, 5.5), (11.5, 8.5))
@@ -4260,7 +4275,8 @@ add("butcher_case", "run", [fin("white", CASE_WHITE, *WHITE_N), fin("black", CAS
     "between parsley, a scale on top; joins the deli and seafood cases; 27 slots; lit")
 add("seafood_case", "run", [fin("white", CASE_WHITE, *WHITE_N), fin("black", CASE_BLACK, *BLACK_N)],
     ("Seafood Case", "Fischtheke", "Vitrina de pescadería", "Fiskdisk"),
-    {"body": SEAFOOD, "end": SEAFOOD_END, "glow": GLOW_ONLY, "particle": "shell",
+    {"body": SEAFOOD, "end": SEAFOOD_END, "end_right": SEAFOOD_RIGHT, "glow": GLOW_ONLY,
+     "particle": "shell",
      "java": SERVICE_JAVA % jbox(box_of(SEAFOOD))},
     "Butcher & Seafood",
     "Curved glass over a sloping ice bed of fish, fillets, shrimp, crab and mussels, a scale on "

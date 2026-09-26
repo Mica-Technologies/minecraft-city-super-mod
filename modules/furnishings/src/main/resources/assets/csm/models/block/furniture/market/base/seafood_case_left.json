@@ -2,6 +2,7 @@
   "parent": "block/block",
   "textures": {
     "glass": "csm:blocks/furniture/market/glass_clear",
+    "liner": "csm:blocks/furniture/market/liner",
     "shell": "csm:blocks/furniture/market/case_black",
     "particle": "#shell"
   },
@@ -148,6 +149,93 @@
             0,
             11.869,
             2.121
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        8.5,
+        3.2
+      ],
+      "to": [
+        0.5,
+        9.5,
+        12.2
+      ],
+      "faces": {
+        "west": {
+          "texture": "#liner",
+          "uv": [
+            3.2,
+            6.5,
+            12.2,
+            7.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          8.5,
+          3.2
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    },
+    {
+      "from": [
+        0.5,
+        5.5,
+        3.2
+      ],
+      "to": [
+        0.5,
+        8.5,
+        10.4
+      ],
+      "faces": {
+        "west": {
+          "texture": "#liner",
+          "uv": [
+            3.2,
+            7.5,
+            10.4,
+            10.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          8.5,
+          3.2
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    },
+    {
+      "from": [
+        0.75,
+        9.3,
+        9.0
+      ],
+      "to": [
+        0.75,
+        11.94,
+        11.5
+      ],
+      "faces": {
+        "west": {
+          "texture": "#liner",
+          "uv": [
+            9.0,
+            4.06,
+            11.5,
+            6.7
           ]
         }
       }

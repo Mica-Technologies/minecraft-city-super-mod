@@ -690,8 +690,14 @@ The traps:
 - **The rotisserie's glass is painted.** A counter appliance draws in the solid layer, so its
   door cannot be seen through; the spits of chickens are in the window texture, lit and unlit,
   as the oven's window is.
-- **The ice bed's sides are open.** It is a turned slab; at a run's end the wedge under it shows
-  through the end glass. The end glass is close to it and the ice is pale, so it was left.
+- **The ice bed's sides are open, so a run's ends close them.** It is a turned slab with only
+  its top drawn, and the wedge under it once showed through the end glass. The end models carry
+  the pan's end (`_ice_bed_end`): the slab's own end, a band turned with it under its slope, and
+  a square back a quarter unit further in whose top corner hides behind the slab's end. A
+  turned element cannot be mirrored (`mirror_x` refuses), so the seafood case names its right
+  end (`SEAFOOD_RIGHT`). A JSON face is a rectangle: fill a triangle with a turned band along
+  the slope and a square piece behind it, and keep every corner either behind something or
+  under the end panel's top.
 - **Atlas.** The departments added 27 sprites, 16 to 32 px except the two headers (64 px, lit
   and unlit: a sprite must be square and FRESH FLOWERS is 52 texels wide in the pixel font),
   and reuse the bakery stock, the reach-in's frame textures, the kitchen's lamps and the
