@@ -142,7 +142,7 @@ public class BlockItemIntegrityTool {
   private static final String[] SOUNDS_CLASS_FILE_PATHS_RELATIVE = {
       "trafficsignals/RoadsSounds.java", "lifesafety/LifeSafetySounds.java",
       "novelties/FurnishingsSounds.java", "technology/TechnologySounds.java",
-      "hvac/HvacSounds.java"};
+      "hvac/HvacSounds.java", "transit/TransitSounds.java"};
 
   private static final String SOUNDS_JSON_FILE = "sounds.json";
 
