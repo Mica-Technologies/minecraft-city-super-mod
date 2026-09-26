@@ -498,7 +498,6 @@ def _drip_tray():
 flat("handle_black", (26, 26, 28), grain=2, seed=32)
 flat("handle_red", (160, 30, 26), grain=3, seed=33)
 flat("handle_gold", (200, 160, 60), grain=3, seed=34)
-flat("handle_blue", (30, 70, 150), grain=3, seed=35)
 
 
 @texture("dartboard")
@@ -743,9 +742,6 @@ def _chain_link():
                 k = 1.0 + 0.35 * (-dx - dy) * 0.5
                 px[x, y] = shade((118, 118, 124), k) + (255,)
     return img
-
-
-flat("chain_side", (70, 70, 74), grain=3, seed=48)
 
 
 @texture("boards")

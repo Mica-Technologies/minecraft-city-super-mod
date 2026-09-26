@@ -346,7 +346,6 @@ TEXTURES = {
     "shower_glass": shower_glass,
     "shower_rose": rose,
     "towel_white": lambda: terry((244, 244, 240), 607),
-    "towel_blue": lambda: terry((96, 146, 198), 608),
     "toilet_paper": toilet_paper,
     "radiator_white": radiator,
     "soap_window": soap_window,

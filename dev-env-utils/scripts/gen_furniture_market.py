@@ -2345,7 +2345,6 @@ TEXTURES = {
     "case_black": lambda: noisy((40, 40, 44), 702, 16, 0.025),
     "case_white": lambda: noisy((232, 234, 234), 703, 16, 0.015),
     "liner": lambda: noisy((206, 210, 214), 704, 16, 0.02),
-    "liner_dark": lambda: noisy((70, 72, 76), 705, 16, 0.02),
     "steel_white": lambda: R.metal((226, 226, 222), 706),
     "steel_grey": lambda: R.metal((120, 122, 126), 707),
     "plastic_grey": lambda: noisy((168, 170, 172), 708, 16, 0.02),
@@ -4705,7 +4704,7 @@ def base_models():
                         + parts["right"])
                 out.append(("end_cap_%s_item" % v, geometry(item, p, display=big(item))))
         elif kind == "department":
-            for band in range(4):
+            for band in sorted({b for _d, _s, b in DEPARTMENTS}):
                 geo = department_sign(band)
                 out.append(("department_sign_%d" % band, geometry(geo, p, display=big(geo))))
         elif kind == "fitting":
