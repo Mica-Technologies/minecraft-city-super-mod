@@ -714,6 +714,24 @@ def cost_for(registry, info, ancestors):
             return ("iron_ingot", "paper")
         if registry.startswith("toilet_brush_"):
             return ("iron_ingot",)
+        if registry.startswith("toilet_partition_"):
+            return ("SHEET_METAL x2", "FASTENER_KIT")
+        if registry.startswith("urinal_screen_"):
+            return ("SHEET_METAL", "FASTENER_KIT")
+        if registry.startswith(("flushometer_toilet_", "flushometer_urinal_")):
+            return ("clay_ball x4", "SHEET_METAL")
+        if registry.startswith("waterless_urinal_"):
+            return ("clay_ball x3", "FASTENER_KIT")
+        if registry.startswith("wall_hung_lavatory_"):
+            return ("clay_ball x3", "SHEET_METAL")
+        if registry.startswith("trough_sink_"):
+            return ("stone x2", "SHEET_METAL")
+        if registry.startswith("hand_dryer_"):
+            return ("SHEET_METAL", "WIRING_HARNESS")
+        if registry.startswith(("jumbo_toilet_paper_dispenser_", "seat_cover_dispenser_")):
+            return ("SHEET_METAL", "paper")
+        if registry.startswith("sanitary_napkin_disposal_"):
+            return ("SHEET_METAL",)
         if registry.startswith(("toilet_", "urinal_")):
             return ("clay_ball x4", "FASTENER_KIT")
         if registry.startswith(("pedestal_sink_", "laundry_tub_")):

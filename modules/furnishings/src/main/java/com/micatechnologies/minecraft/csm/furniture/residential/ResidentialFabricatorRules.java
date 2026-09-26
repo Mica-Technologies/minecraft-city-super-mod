@@ -142,6 +142,48 @@ public final class ResidentialFabricatorRules {
     if (registryName.startsWith("toilet_brush_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1));
     }
+    // The commercial restroom: a flushometer fixture is porcelain and its valve; partitions and
+    // screens powder-coated or stainless sheet; dryers a motor in a shell.
+    if (registryName.startsWith("toilet_partition_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("urinal_screen_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("flushometer_toilet_")
+        || registryName.startsWith("flushometer_urinal_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 4),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("waterless_urinal_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("wall_hung_lavatory_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 3),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("trough_sink_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 2),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("hand_dryer_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("jumbo_toilet_paper_dispenser_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.any(MC_PAPER, 1));
+    }
+    if (registryName.startsWith("seat_cover_dispenser_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.any(MC_PAPER, 1));
+    }
+    if (registryName.startsWith("sanitary_napkin_disposal_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
     if (registryName.startsWith("toilet_") || registryName.startsWith("urinal_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY, 4),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));

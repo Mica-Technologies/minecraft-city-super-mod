@@ -40,6 +40,18 @@ public class BlockResidentialRun extends BlockResidentialFurniture {
   }
 
   /**
+   * Constructs a run piece of another material that is not sat on: a restroom's trough sink.
+   *
+   * @param registryName its registry name
+   * @param box          its box facing north, in sixteenths
+   * @param material     what it is made of
+   */
+  protected BlockResidentialRun(String registryName, int[] box, FixtureMaterial material) {
+    super(registryName, box, material.getMaterial(), material.getSound(),
+        material.getHardness());
+  }
+
+  /**
    * Constructs a run piece with a seat in every block.
    *
    * @param registryName  its registry name

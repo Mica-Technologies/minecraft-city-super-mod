@@ -38,6 +38,7 @@ import com.micatechnologies.minecraft.csm.furniture.residential.BlockDishwasher;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockDoorbell;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockFireplace;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockFoldingFixture;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockHandDryer;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCabinet;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCorner;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenLight;
@@ -53,6 +54,7 @@ import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidential
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialTall;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialWide;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockRug;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockSensorBasin;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockShower;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockShowerHead;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockSofa;
@@ -60,6 +62,9 @@ import com.micatechnologies.minecraft.csm.furniture.residential.BlockSofaCorner;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockStereo;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockTelevision;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockToilet;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockToiletPartition;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockToiletPartitionDoor;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockTroughSink;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockUprightPiano;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockWallClock;
 import com.micatechnologies.minecraft.csm.furniture.residential.FixtureMaterial;
@@ -501,6 +506,62 @@ public class CsmTabResidential extends CsmTab {
 
     // Baby Changing Station
     initTabBlock(new BlockFoldingFixture("baby_changing_station_grey", new int[]{1, 0, 12, 15, 16, 16}, new int[]{1, 0, 2, 15, 4, 16}, FixtureMaterial.PLASTIC));
+
+    // Flushometer Toilet
+    initTabBlock(new BlockToilet("flushometer_toilet_floor_manual_white", new int[]{4, 0, 2, 14, 15, 16}, 7.25, 1.0, FurnishingsSounds.FLUSHOMETER_FLUSH));
+    initTabBlock(new BlockToilet("flushometer_toilet_floor_sensor_white", new int[]{4, 0, 2, 14, 16, 16}, 7.25, 1.0, FurnishingsSounds.FLUSHOMETER_FLUSH));
+    initTabBlock(new BlockToilet("flushometer_toilet_wall_manual_white", new int[]{4, 2, 2, 14, 15, 16}, 7.25, 1.0, FurnishingsSounds.FLUSHOMETER_FLUSH));
+    initTabBlock(new BlockToilet("flushometer_toilet_wall_sensor_white", new int[]{4, 2, 2, 14, 16, 16}, 7.25, 1.0, FurnishingsSounds.FLUSHOMETER_FLUSH));
+
+    // Flushometer Urinal
+    initTabBlock(new BlockBathroomFixture("flushometer_urinal_manual_white", new int[]{4, 2, 7, 14, 16, 16}, FixtureMaterial.PORCELAIN, FurnishingsSounds.FLUSHOMETER_FLUSH, 1.15F));
+    initTabBlock(new BlockBathroomFixture("flushometer_urinal_sensor_white", new int[]{4, 2, 7, 14, 16, 16}, FixtureMaterial.PORCELAIN, FurnishingsSounds.FLUSHOMETER_FLUSH, 1.15F));
+
+    // Waterless Urinal
+    initTabBlock(new BlockBathroomFixture("waterless_urinal_white", new int[]{4, 2, 6, 12, 16, 16}, FixtureMaterial.PORCELAIN));
+
+    // Urinal Screen
+    initTabBlock(new BlockBathroomFixture("urinal_screen_beige", new int[]{7, 6, 8, 9, 16, 16}, FixtureMaterial.METAL));
+    initTabBlock(new BlockBathroomFixture("urinal_screen_grey", new int[]{7, 6, 8, 9, 16, 16}, FixtureMaterial.METAL));
+    initTabBlock(new BlockBathroomFixture("urinal_screen_stainless", new int[]{7, 6, 8, 9, 16, 16}, FixtureMaterial.METAL));
+
+    // Toilet Partition Door
+    initTabBlock(new BlockToiletPartitionDoor("toilet_partition_door_beige"));
+    initTabBlock(new BlockToiletPartitionDoor("toilet_partition_door_grey"));
+    initTabBlock(new BlockToiletPartitionDoor("toilet_partition_door_stainless"));
+
+    // Toilet Partition Pilaster
+    initTabBlock(new BlockToiletPartition("toilet_partition_pilaster_beige", BlockToiletPartition.Kind.PILASTER));
+    initTabBlock(new BlockToiletPartition("toilet_partition_pilaster_grey", BlockToiletPartition.Kind.PILASTER));
+    initTabBlock(new BlockToiletPartition("toilet_partition_pilaster_stainless", BlockToiletPartition.Kind.PILASTER));
+
+    // Toilet Partition Panel
+    initTabBlock(new BlockToiletPartition("toilet_partition_panel_beige", BlockToiletPartition.Kind.PANEL));
+    initTabBlock(new BlockToiletPartition("toilet_partition_panel_grey", BlockToiletPartition.Kind.PANEL));
+    initTabBlock(new BlockToiletPartition("toilet_partition_panel_stainless", BlockToiletPartition.Kind.PANEL));
+
+    // Wall-Hung Lavatory
+    initTabBlock(new BlockSensorBasin("wall_hung_lavatory_white", new int[]{2, 6, 3, 14, 16, 16}, FixtureMaterial.PORCELAIN, new double[]{8, 15.3, 10.85}));
+
+    // Trough Sink
+    initTabBlock(new BlockTroughSink("trough_sink_white", new int[]{0, 7, 3, 16, 16, 16}, new double[]{8, 15.55, 11.15}));
+    initTabBlock(new BlockTroughSink("trough_sink_stainless", new int[]{0, 7, 3, 16, 16, 16}, new double[]{8, 15.55, 11.15}));
+
+    // Hand Dryer
+    initTabBlock(new BlockHandDryer("hand_dryer_classic_white", new int[]{4, 8, 9, 12, 16, 16}, FurnishingsSounds.HAND_DRYER_RUN, new double[]{8, 8.4, 12.5}));
+    initTabBlock(new BlockHandDryer("hand_dryer_classic_stainless", new int[]{4, 8, 9, 12, 16, 16}, FurnishingsSounds.HAND_DRYER_RUN, new double[]{8, 8.4, 12.5}));
+    initTabBlock(new BlockHandDryer("hand_dryer_blade_grey", new int[]{3, 4, 9, 13, 16, 16}, FurnishingsSounds.HAND_DRYER_BLADE, new double[]{8, 12.5, 13}));
+    initTabBlock(new BlockHandDryer("hand_dryer_blade_stainless", new int[]{3, 4, 9, 13, 16, 16}, FurnishingsSounds.HAND_DRYER_BLADE, new double[]{8, 12.5, 13}));
+
+    // Jumbo Roll Toilet Paper Dispenser
+    initTabBlock(new BlockBathroomFixture("jumbo_toilet_paper_dispenser_stainless", new int[]{4, 3, 12, 12, 12, 16}, FixtureMaterial.METAL));
+    initTabBlock(new BlockBathroomFixture("jumbo_toilet_paper_dispenser_white", new int[]{4, 3, 12, 12, 12, 16}, FixtureMaterial.METAL));
+
+    // Toilet Seat Cover Dispenser
+    initTabBlock(new BlockBathroomFixture("seat_cover_dispenser_stainless", new int[]{2, 1, 14, 14, 8, 16}, FixtureMaterial.METAL));
+
+    // Sanitary Napkin Disposal
+    initTabBlock(new BlockResidentialStorage("sanitary_napkin_disposal_stainless", new int[]{4, 5, 12, 12, 14, 16}, 9, FurnishingsSounds.JAR_LID, null));
 
     // ---- Laundry ----
     // Washing Machine

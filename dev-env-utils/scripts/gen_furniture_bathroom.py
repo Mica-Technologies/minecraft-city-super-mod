@@ -5,8 +5,12 @@ Furniture & Novelties module: the toilet, toilet paper holder, pedestal sink, ba
 and mirror cabinet (in the three wood finishes), the two-block bathtub, the shower enclosure
 and a wall shower head, towel rails, the bathroom radiator, wastebaskets, a toiletries tray, a
 toilet brush and bath mats; for a commercial restroom the wall-hung urinal, soap and paper
-towel dispensers, a grab bar and the fold-down baby changing station; and for the laundry the
-washing machine and dryer, a steam iron and ironing board, laundry baskets and a laundry tub.
+towel dispensers, a grab bar and the fold-down baby changing station, flushometer toilets
+(floor-mounted and wall-hung, manual and sensor) and urinals, a waterless urinal, a urinal
+screen, toilet partitions (door, pilaster and panel fronts that join into a run of stalls), a
+wall-hung lavatory and a trough sink with sensor faucets, two hand dryers, the jumbo roll and
+seat cover dispensers and a sanitary napkin disposal bin; and for the laundry the washing
+machine and dryer, a steam iron and ironing board, laundry baskets and a laundry tub.
 
 Borrows gen_furniture_residential.py's element helpers, finishes and output, the kitchen's
 Shaker fronts, tap, stainless and white finishes and the cut of a two-block piece, the
@@ -29,7 +33,8 @@ Every model faces north with its back at +Z, against the wall, as in the rest of
 Real-world scale, 1 block = 1 m: a toilet seat at 0.42 m, a vanity top and the washing
 machine's top at a kitchen countertop's 0.91 m (so the small pieces rest on them), the bath's
 rim at 0.56 m. Wall pieces are drawn at the height they hang in the block they are placed in;
-the shower head and the baby changing station are meant for the block above the floor's.
+the shower head, the baby changing station and the seat cover dispenser are meant for the block
+above the floor's.
 
 What joins or changes (the Java classes compute joins as actual state; the rest is stored):
 
@@ -40,7 +45,11 @@ What joins or changes (the Java classes compute joins as actual state; the rest 
   * the shower enclosure is two blocks tall, cut like the refrigerator;
   * the changing station has a folded-up and a folded-down model;
   * the washing machine and dryer light their door windows while they run;
-  * bath mats join on all four sides like the bedroom's rugs.
+  * bath mats join on all four sides like the bedroom's rugs;
+  * the toilet partitions are two blocks tall, drawn whole and cut like the shower, their stall
+    panels drawn on the line between two blocks and reaching back into the toilet's block,
+    left and right from the neighbours, the door written out shut and swung open;
+  * the trough sink joins left and right like the vanity, end caps only where it stops.
 
 Usage:
     python gen_furniture_bathroom.py              # write everything
@@ -372,6 +381,101 @@ for _i, (_cid, (_f, _b, _a)) in enumerate(sorted(MAT_COLOURS.items())):
     TEXTURES["bath_mat_border_" + _cid] = (lambda f=_f, b=_b, a=_a, s=640 + _i:
                                            B.rug_border(b, a, f, s))
 
+
+
+# --- the commercial restroom's fittings: flushometers, partitions, lavatories, dryers ------
+def sensor_eye(size=16):
+    """An infrared sensor's window: glossy near-black with a deep red glow in its middle and
+    a glint at its top left, mapped whole onto a small face."""
+    img = blank(size)
+    px = img.load()
+    c = (size - 1) / 2.0
+    for y in range(size):
+        for x in range(size):
+            d = math.hypot((x - c) / 1.3, y - c)
+            col = R.shade((96, 22, 26), max(0.25, 1.0 - d / 8.0))
+            if math.hypot(x - 4, y - 4) < 1.8:
+                col = (190, 180, 184)
+            px[x, y] = col + (255,)
+    return img
+
+
+def powder_coat(base, seed, size=16):
+    """A powder-coated steel partition: flat colour with the faint orange-peel stipple of the
+    coating, even all over so that panels cut anywhere show no seam."""
+    rng = random.Random(seed)
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            k = 1.0 + rng.uniform(-0.018, 0.018)
+            if rng.random() < 0.08:
+                k -= 0.025
+            px[x, y] = R.shade(base, k) + (255,)
+    return img
+
+
+def seat_covers(size=16):
+    """A stack of paper seat covers seen through the dispenser's opening: white tissue with the
+    outline of the ring and the tear-out flap printed faintly on it."""
+    img = R.flat((244, 244, 240), 650, size, grain=2)
+    px = img.load()
+    c = (size - 1) / 2.0
+    for y in range(size):
+        for x in range(size):
+            d = math.hypot((x - c) / 1.15, (y - c) / 0.95)
+            if 5.6 < d < 6.3 and y > 2:
+                px[x, y] = (200, 202, 204, 255)
+            elif 2.6 < d < 3.2 and y > 5:
+                px[x, y] = (214, 216, 216, 255)
+    return img
+
+
+def smoke_window(size=16):
+    """A jumbo roll dispenser's sight window: smoked plastic with the white roll behind it."""
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            col = R.shade((210, 210, 204), 0.55 + 0.03 * (y % 3)) if 3 <= y <= 12 \
+                else (58, 60, 66)
+            if (x + y) % 16 in (4, 5):
+                col = R.shade(col, 1.25)
+            px[x, y] = col + (255,)
+    return img
+
+
+def cartridge(size=16):
+    """A waterless urinal's trap cartridge from above: a round dark grey cap with a ring of
+    drain slots, transparent round it so it shows round (the fitting draws in the cutout
+    layer)."""
+    img = blank(size)
+    px = img.load()
+    c = (size - 1) / 2.0
+    for y in range(size):
+        for x in range(size):
+            d = math.hypot(x - c, y - c)
+            if d > 7.6:
+                continue
+            col = (70, 74, 80)
+            if d > 6.8:
+                col = (120, 124, 130)
+            elif 3.2 < d < 5.4 and int(math.degrees(math.atan2(y - c, x - c)) // 30) % 2 == 0:
+                col = (26, 28, 30)
+            px[x, y] = col + (255,)
+    return img
+
+
+TEXTURES.update({
+    "sensor_eye": sensor_eye,
+    "partition_beige": lambda: powder_coat((214, 204, 180), 651),
+    "partition_grey": lambda: powder_coat((150, 154, 158), 652),
+    "seat_covers": seat_covers,
+    "smoke_window": smoke_window,
+    "urinal_cartridge": cartridge,
+    "dryer_grey": lambda: R.flat((116, 120, 126), 653, grain=2),
+})
+
 DEFAULT_TEX = dict(B.DEFAULT_TEX)
 DEFAULT_TEX.update({k: v for k, v in A.DEFAULT_TEX.items() if k not in DEFAULT_TEX})
 DEFAULT_TEX.update({
@@ -384,6 +488,9 @@ DEFAULT_TEX.update({
     "cover": T("ironing_cover_blue"), "iron": T("iron_blue"), "clothes": T("laundry_clothes"),
     "bottle_a": T("bottle_pink"), "bottle_b": T("bottle_teal"), "brush_a": T("ceramic_blue"),
     "brush_b": T("ceramic_red"),
+    "sensor": T("sensor_eye"), "partition": T("partition_beige"), "hardware": T("stainless"),
+    "covers": T("seat_covers"), "smoke": T("smoke_window"), "cartridge": T("urinal_cartridge"),
+    "solid": T("counter_quartz"),
 })
 
 
@@ -679,6 +786,289 @@ CHANGING_OPEN = [el([1, 0.5, 14], [15, 3.5, 16], "plastic"),
                  el([2, 2, 3.5], [14, 2.75, 14], "pad", ("up", "north")),
                  el([7.25, 2.75, 6], [8.75, 2.8, 11], "label", ("up",))]
 
+
+# --- round parts about a horizontal axis ----------------------------------------------------
+def octagon_z(cx, cy, r, z0, z1, tex, caps=("north",)):
+    """A regular octagon of inradius r about (cx, cy) whose axis runs along z: a disc on the
+    wall. Four rectangles, two turned 45 degrees about z, as octagon() builds an upright one."""
+    a = r * R.TAN_22_5
+    out = []
+    for k, (h1, h2, turned) in enumerate(((r, a, False), (a, r, False), (r, a, True),
+                                          (a, r, True))):
+        eps = 0.004 * k
+        frm = [cx - h1, cy - h2, z0 - eps]
+        to = [cx + h1, cy + h2, z1 + eps]
+        sides = ["east", "west"] if h1 == r else ["up", "down"]
+        rot = ("z", 45, [cx, cy, z0]) if turned else None
+        out.append(el(frm, to, tex, sides + list(caps), rot=rot))
+    return out
+
+
+# --- the flushometer: the exposed flush valve of a commercial toilet or urinal ----------------
+def flush_valve(y_spud, z_tube, sensor, x=8.0):
+    """A flushometer on the wall above a fixture, drawn from the spud where it enters the
+    fixture at y_spud: the flush tube and its vacuum breaker rising to the valve body, the
+    supply coming out of the wall on the right through its control stop, and either the lever
+    handle on the body's front (manual) or a sensor housing on its top with its window facing
+    forward and the override button on top (sensor)."""
+    yb = y_spud + 3.75
+    stop_z = 14.6
+    out = (octagon(x, z_tube, 0.7, y_spud, y_spud + 0.6, "chrome")
+           + octagon(x, z_tube, 0.42, y_spud + 0.6, yb - 1.2, "chrome", caps=())
+           + octagon(x, z_tube, 0.6, yb - 1.2, yb - 0.3, "chrome")
+           + octagon(x, z_tube, 0.4, yb - 0.3, yb, "chrome", caps=())
+           + octagon(x, z_tube, 1.0, yb, yb + 3.0, "chrome", caps=("down",) if sensor
+                     else ("up", "down"))
+           + [el([x + 0.9, yb + 1.9, z_tube - 0.3], [x + 3.5, yb + 2.5, z_tube + 0.3], "chrome",
+                 ("north", "south", "up", "down")),
+              el([x + 3.5, yb + 1.5, stop_z - 1.0], [x + 5.0, yb + 2.9, stop_z + 1.0], "chrome"),
+              el([x + 3.9, yb + 2.9, stop_z - 0.5], [x + 4.6, yb + 3.4, stop_z + 0.5], "chrome",
+                 NO_DOWN),
+              el([x + 3.9, yb + 1.85, stop_z + 1.0], [x + 4.6, yb + 2.55, 15.75], "chrome",
+                 ("east", "west", "up", "down")),
+              el([x + 3.25, yb + 1.2, 15.75], [x + 5.25, yb + 3.2, 16], "chrome",
+                 NO_DOWN + ("down",))])
+    if sensor:
+        out += [el([x - 1.4, yb + 3.0, z_tube - 1.6], [x + 1.4, yb + 4.6, z_tube + 1.3],
+                   "chrome"),
+                ALL_UV(el([x - 0.8, yb + 3.3, z_tube - 1.65], [x + 0.8, yb + 4.25,
+                                                              z_tube - 1.6], "sensor",
+                          ("north",)), ["north"]),
+                el([x - 0.35, yb + 4.6, z_tube - 0.5], [x + 0.35, yb + 4.85, z_tube + 0.2],
+                   "rubber", NO_DOWN)]
+    else:
+        out += (octagon(x, z_tube, 0.75, yb + 3.0, yb + 3.6, "chrome")
+                + [el([x - 0.6, yb + 0.45, z_tube - 1.3], [x + 0.6, yb + 1.65, z_tube - 0.9],
+                      "chrome", ("north", "east", "west", "up", "down")),
+                   el([x - 0.22, yb + 0.8, z_tube - 3.3], [x + 0.22, yb + 1.3, z_tube - 1.3],
+                      "chrome", ("east", "west", "up", "down")),
+                   el([x - 0.4, yb + 0.6, z_tube - 4.0], [x + 0.4, yb + 1.5, z_tube - 3.3],
+                      "chrome")])
+    return out
+
+
+# --- flushometer toilets: an elongated bowl with no cistern, an open-front seat with no lid,
+# the seat at 0.45 m; floor-mounted on a foot, or hung from the wall on a carrier ------------
+FT_SEAT = [el([4.75, 6.75, 3.25], [6.1, 7.25, 10.75], "seat"),
+           el([9.9, 6.75, 3.25], [11.25, 7.25, 10.75], "seat"),
+           el([4.75, 6.75, 10.75], [11.25, 7.25, 11.75], "seat"),
+           el([5.25, 6.75, 11.75], [6, 7.4, 12.25], "chrome", NO_DOWN),
+           el([10, 6.75, 11.75], [10.75, 7.4, 12.25], "chrome", NO_DOWN)]
+FT_BOWL = (rim(4.5, 11.5, 2.5, 15, 6, 10, 4, 11, 6, 6.75, "porcelain")
+           + bowl(6, 10, 4, 11, 4.9, 6.75, drain=False)
+           + [el([6, 5.3, 4], [10, 5.31, 11], "water", ("up",)),
+              # the inlet at the back of the rim, where the spud comes in
+              el([6.25, 6.75, 12.25], [9.75, 7.6, 14.5], "porcelain", NO_DOWN + ("down",))])
+FT_TUBE_Z = 13.4
+FLOOR_TOILET = ([el([5, 0, 4.5], [11, 0.75, 14], "porcelain", NO_DOWN),
+                 el([5.75, 0.75, 5], [10.25, 4.75, 13.75], "porcelain", SIDES),
+                 el([4.5, 4.75, 2.5], [11.5, 6, 15], "porcelain", SIDES + ("down",))]
+                + FT_BOWL + FT_SEAT)
+WALL_TOILET = ([el([5.5, 2.75, 5.5], [10.5, 4.75, 16], "porcelain", ("north", "east", "west",
+                                                                   "down")),
+                el([4.5, 4.75, 2.5], [11.5, 6, 16], "porcelain", ("north", "east", "west",
+                                                                 "down"))]
+               + rim(4.5, 11.5, 2.5, 16, 6, 10, 4, 11, 6, 6.75, "porcelain", back=False)
+               + FT_BOWL[4:] + FT_SEAT
+               # the carrier's two bolt caps either side of the bowl
+               + [el([4.25, 3.5, 13], [4.5, 4.25, 13.75], "porcelain", ("west", "north", "up")),
+                  el([11.5, 3.5, 13], [11.75, 4.25, 13.75], "porcelain", ("east", "north",
+                                                                          "up"))])
+FT_SPUD_Y = 7.6
+FLUSH_TOILETS = {
+    "floor_manual": FLOOR_TOILET + flush_valve(FT_SPUD_Y, FT_TUBE_Z, False),
+    "floor_sensor": FLOOR_TOILET + flush_valve(FT_SPUD_Y, FT_TUBE_Z, True),
+    "wall_manual": WALL_TOILET + flush_valve(FT_SPUD_Y, FT_TUBE_Z, False),
+    "wall_sensor": WALL_TOILET + flush_valve(FT_SPUD_Y, FT_TUBE_Z, True),
+}
+
+# --- flushometer urinal: a washout urinal, its lip at 0.44 m, the valve on the wall over it --
+FU_TOP = 17.5
+FLUSH_URINAL = [
+    el([4.25, 3, 11.5], [11.75, FU_TOP, 16], "porcelain", ALL, {"north": "porcelain_shade"}),
+    el([4.25, 2, 12], [11.75, 3, 16], "porcelain", ("north", "east", "west", "down")),
+    el([4.25, 3, 7], [11.75, 7, 11.5], "porcelain", ALL, {"up": "porcelain_shade"}),
+    el([4.25, 7, 7], [5.25, FU_TOP, 11.5], "porcelain", ("north", "east", "west", "up"),
+       {"east": "porcelain_shade"}),
+    el([10.75, 7, 7], [11.75, FU_TOP, 11.5], "porcelain", ("north", "east", "west", "up"),
+       {"west": "porcelain_shade"}),
+    el([5.25, FU_TOP - 1, 7], [10.75, FU_TOP, 11.5], "porcelain", ("north", "up", "down")),
+    ALL_UV(el([7.25, 7.01, 8.5], [8.75, 7.02, 10], "drain", ("up",)), ["up"])]
+FU_TUBE_Z = 13.6
+FLUSH_URINALS = {
+    "manual": FLUSH_URINAL + flush_valve(FU_TOP, FU_TUBE_Z, False),
+    "sensor": FLUSH_URINAL + flush_valve(FU_TOP, FU_TUBE_Z, True),
+}
+
+# --- waterless urinal: a sleeker bowl with no valve and no water, its trap a cartridge ---------
+WATERLESS_URINAL = [
+    el([4.5, 4, 10.5], [11.5, 15.5, 16], "porcelain", ALL, {"north": "porcelain_shade"}),
+    el([5.5, 2.25, 11.5], [10.5, 4, 16], "porcelain", ("north", "east", "west", "down")),
+    el([4.75, 4, 6.75], [11.25, 6.25, 10.5], "porcelain", ALL, {"up": "porcelain_shade"}),
+    el([4.5, 6.25, 6.75], [5.5, 15.5, 10.5], "porcelain", ("north", "east", "west", "up"),
+       {"east": "porcelain_shade"}),
+    el([10.5, 6.25, 6.75], [11.5, 15.5, 10.5], "porcelain", ("north", "east", "west", "up"),
+       {"west": "porcelain_shade"}),
+    el([5.5, 14.75, 6.75], [10.5, 15.5, 10.5], "porcelain", ("north", "up", "down")),
+    ALL_UV(el([6.9, 6.26, 7.4], [9.1, 6.27, 9.6], "cartridge", ("up",)), ["up"])]
+
+# --- urinal screen: a partition panel hung from the wall between urinals, 0.37 to 1.5 m up
+# and 0.47 m out from the wall, drawn a half block past its own ------------------------------
+URINAL_SCREEN = [el([7.6, 6, 8], [8.4, 24, 15.5], "partition"),
+                 el([7.1, 8, 15.25], [8.9, 9.5, 16], "hardware", NO_DOWN + ("down",)),
+                 el([7.1, 20.5, 15.25], [8.9, 22, 16], "hardware", NO_DOWN + ("down",))]
+
+# --- sensor faucet: a short deck-mounted spout with the sensor window in its body -----------
+def sensor_faucet(x, y, z):
+    return (octagon(x, z, 0.8, y, y + 0.3, "chrome")
+            + [el([x - 0.6, y + 0.3, z - 0.6], [x + 0.6, y + 2.6, z + 0.6], "chrome",
+                  SIDES + ("up",)),
+               el([x - 0.5, y + 2.0, z - 3.2], [x + 0.5, y + 2.6, z - 0.6], "chrome",
+                  ("north", "east", "west", "up", "down")),
+               el([x - 0.45, y + 1.6, z - 3.2], [x + 0.45, y + 2.0, z - 2.3], "chrome",
+                  ("north", "south", "east", "west", "down")),
+               ALL_UV(el([x - 0.4, y + 0.9, z - 0.65], [x + 0.4, y + 1.5, z - 0.6], "sensor",
+                         ("north",)), ["north"])])
+
+
+# --- wall-hung lavatory: a commercial basin on a concealed carrier, its rim at 0.86 m, the
+# trap and supplies exposed under it ------------------------------------------------------
+LAV_TAP = (8, 15.3, 10.85)  # the spout's outlet, where the water runs from
+LAVATORY = ([el([2.5, 10.75, 4], [13.5, 13, 16], "porcelain", ("north", "east", "west",
+                                                               "down"))]
+            + rim(2, 14, 3.5, 16, 4, 12, 5, 12, 13, 13.75, "porcelain")
+            + bowl(4, 12, 5, 12, 11.25, 13.75)
+            + octagon(8, 8.5, 0.45, 7.5, 10.75, "chrome", caps=())
+            + [el([7.55, 6.8, 8.05], [8.45, 7.5, 9.3], "chrome"),
+               el([7.55, 7.5, 8.8], [8.45, 8.3, 15.75], "chrome", ("north", "east", "west", "up",
+                                                                   "down")),
+               el([7, 7, 15.75], [9, 8.8, 16], "chrome", NO_DOWN + ("down",))]
+            + [s for x in (5.25, 10.75) for s in (
+                el([x - 0.5, 8, 14.5], [x + 0.5, 9, 16], "chrome"),
+                el([x - 0.2, 9, 14.8], [x + 0.2, 10.75, 15.2], "chrome", SIDES))]
+            + sensor_faucet(8, 13.75, 13.6))
+
+# --- trough sink: a solid surface trough on the wall, a sensor faucet over every block, one
+# trough along a run and end caps only where it stops -----------------------------------------
+TROUGH_TOP = 14.0
+TROUGH_BODY = ([el([0, 10.5, 3], [16, TROUGH_TOP, 4.25], "solid", ("north", "south", "up",
+                                                                   "down")),
+                el([0, 10.5, 4.25], [16, 11.5, 11.75], "solid", ("up", "down")),
+                el([0, 10.5, 11.75], [16, TROUGH_TOP, 16], "solid", ("north", "up", "down")),
+                ALL_UV(el([7.25, 11.51, 7.25], [8.75, 11.52, 8.75], "drain", ("up",)), ["up"]),
+                el([7.4, 7.5, 12.5], [8.6, 10.5, 16], "chrome", ("north", "east", "west",
+                                                               "down"))]
+               + sensor_faucet(8, TROUGH_TOP, 13.9))
+TROUGH_END = [el([0, 10.5, 3], [0.75, TROUGH_TOP, 16], "solid", ("west", "east", "north", "up",
+                                                                  "down"))]
+TROUGH = K.run_piece(TROUGH_BODY, TROUGH_END, None)
+
+# --- hand dryers: a classic warm-air dryer with a push button and a nozzle turned down, its
+# body at 0.66 to 1.19 m; and a hands-in blade dryer, the slot's lips at 1.03 m -----------------
+CLASSIC_DRYER = ([el([4, 10.5, 10.5], [12, 19, 16], "shell", NO_DOWN + ("down",)),
+                 el([4.5, 11, 10], [11.5, 18.5, 10.5], "shell", ("north", "east", "west", "up",
+                                                                 "down")),
+                 el([5, 10.49, 11], [11, 10.5, 15], "rubber", ("down",)),
+                 el([7, 9.25, 11.5], [9, 10.5, 13.5], "handle", SIDES + ("down",)),
+                 el([7.3, 8.5, 11.8], [8.7, 9.25, 13.2], "handle", SIDES + ("down",)),
+                 el([6.75, 13.5, 9.6], [9.25, 16, 10], "handle", ("north", "east", "west", "up",
+                                                                  "down"))]
+                 # the air intake's louvres across the front, under the button
+                 + [el([5.5, y, 9.9], [10.5, y + 0.4, 10], "rubber", ("north", "up", "down"))
+                    for y in (11.6, 12.3, 13.0)])
+CLASSIC_OUTLET = (8, 8.4, 12.5)
+BLADE_DRYER = [el([3, 4, 10], [13, 16.5, 11.75], "shell", ALL, {"south": "rubber"}),
+               el([3, 4, 14.25], [13, 16.5, 16], "shell", ALL, {"north": "rubber"}),
+               el([3, 4, 11.75], [13, 9, 14.25], "shell", ("east", "west", "down")),
+               el([3.75, 9, 11.75], [12.25, 9.01, 14.25], "rubber", ("up",)),
+               el([3, 9, 11.75], [3.75, 16.5, 14.25], "shell", ("east", "west", "up")),
+               el([12.25, 9, 11.75], [13, 16.5, 14.25], "shell", ("east", "west", "up")),
+               ALL_UV(el([7.25, 14, 9.95], [8.75, 14.6, 10], "sensor", ("north",)), ["north"])]
+BLADE_OUTLET = (8, 12.5, 13)
+
+# --- the stall's dispensers: a jumbo toilet roll under the grab bar's height, a seat cover
+# dispenser for the wall above the toilet (the block above the floor's), and the sanitary
+# napkin disposal bin, a box with a hinged lid ------------------------------------------------
+JUMBO_ROLL = (octagon_z(8, 8, 4, 12.5, 16, "shell")
+              + [ALL_UV(el([5.75, 7.5, 12.44], [10.25, 10, 12.49], "smoke", ("north",)),
+                        ["north"]),
+                 el([6, 3.7, 12.2], [10, 4.3, 13.5], "trim", ("north", "east", "west", "down")),
+                 el([6.5, 3.0, 12.85], [9.5, 3.7, 13.15], "paper", ("north", "south", "down")),
+                 el([7.6, 11.3, 12.35], [8.4, 11.8, 12.5], "handle", ("north", "up", "down"))])
+SEAT_COVER = [el([2.5, 1, 15], [13.5, 7.5, 16], "shell", NO_DOWN + ("down",)),
+              ALL_UV(el([3.5, 1.75, 14.95], [12.5, 6.25, 15], "covers", ("north",)), ["north"]),
+              el([3.5, 6.5, 14.7], [12.5, 7, 15], "trim", ("north", "up", "down", "east", "west"))]
+NAPKIN_BIN = [el([5, 5, 13], [11, 12.5, 16], "shell", NO_DOWN + ("down",)),
+              el([4.85, 12.5, 12.8], [11.15, 13.25, 16], "shell"),
+              el([6.5, 11.9, 12.5], [9.5, 12.75, 12.8], "trim", ("north", "east", "west",
+                                                                  "down")),
+              el([5.5, 12.6, 15.75], [10.5, 13.4, 16.1], "trim", ("up", "south", "east",
+                                                                  "west"))]
+
+# --- toilet partitions: a run of stalls placed as a row of fronts, each two blocks tall.
+# The front stands across the middle of its block (a stall 1.5 m deep with the toilet in the
+# block behind); the panel between two stalls runs from the front back to the wall behind the
+# toilet, a block and a half, on the line between two blocks, so that stalls are a block wide.
+# Panels and doors 0.31 to 1.81 m, pilasters floor to the headrail on stainless shoes. ------
+P_BOTTOM, P_TOP = 5.0, 29.0
+HEADRAIL = [el([0, P_TOP, 7.25], [16, 30.5, 8.75], "hardware")]
+PART_FRONT_DOOR = ([el([0, 1.5, 7.5], [2.25, P_TOP, 8.5], "partition"),
+                    el([13.75, 1.5, 7.5], [16, P_TOP, 8.5], "partition"),
+                    el([0, 0, 7.25], [2.25, 1.5, 8.75], "hardware", NO_DOWN),
+                    el([13.75, 0, 7.25], [16, 1.5, 8.75], "hardware", NO_DOWN),
+                    # the hinges' pilaster leaves, and the latch's keeper inside
+                    el([1.5, 8, 7.4], [2.5, 10, 8.6], "hardware", NO_DOWN + ("down",)),
+                    el([1.5, 24, 7.4], [2.5, 26, 8.6], "hardware", NO_DOWN + ("down",)),
+                    el([13.75, 17.25, 8.5], [14.5, 18.75, 9.1], "hardware", NO_DOWN
+                       + ("down",))]
+                   + HEADRAIL)
+PART_DOOR = [el([2.5, P_BOTTOM, 7.6], [13.5, P_TOP - 0.25, 8.4], "partition"),
+             el([2.5, 8, 7.4], [3.75, 10, 8.6], "hardware", ("north", "south", "east", "up",
+                                                             "down")),
+             el([2.5, 24, 7.4], [3.75, 26, 8.6], "hardware", ("north", "south", "east", "up",
+                                                              "down")),
+             # outside: the pull and the latch's occupancy indicator
+             el([11.75, 15.5, 7.1], [12.5, 17.5, 7.6], "hardware", NO_DOWN + ("down",)),
+             el([12.25, 18.25, 7.3], [13.25, 19.25, 7.6], "rubber", NO_DOWN + ("down",)),
+             # inside: the slide latch and a coat hook
+             el([11.25, 17.5, 8.4], [13.5, 18.5, 8.9], "hardware", ("south", "east", "west", "up",
+                                                                   "down")),
+             el([7.6, 24, 8.4], [8.4, 24.8, 9.7], "hardware", ("south", "east", "west", "up",
+                                                              "down")),
+             el([7.6, 24.8, 9.2], [8.4, 25.8, 9.7], "hardware", ("north", "south", "east",
+                                                                 "west", "up"))]
+PART_HINGE = (2.5, 8.4)  # the door's hinge line, facing north, in x and z
+
+
+def swung(specs, pivot=PART_HINGE):
+    """The door swung a quarter turn into the stall about its hinge line: what ran along x
+    from the hinge now runs back along z, its outside face turned to face the stall's far
+    side."""
+    px, pz = pivot
+    fm = {"north": "east", "east": "south", "south": "west", "west": "north"}
+    return [R._remap(s, lambda x, y, z: (px - (z - pz), y, pz + (x - px)), fm) for s in specs]
+
+
+PART_OPEN = swung(PART_DOOR)
+PART_FRONT_FIXED = ([el([0, 1.5, 7.5], [16, P_TOP, 8.5], "partition"),
+                     el([0, 0, 7.25], [16, 1.5, 8.75], "hardware", NO_DOWN)]
+                    + HEADRAIL)
+PART_DIVIDER = [el([-0.4, P_BOTTOM, 8.5], [0.4, P_TOP, 31.5], "partition"),
+                el([-0.9, 8, 30.25], [0.9, 9.5, 32], "hardware", NO_DOWN + ("down",)),
+                el([-0.9, 24.5, 30.25], [0.9, 26, 32], "hardware", NO_DOWN + ("down",)),
+                el([-0.9, 8, 8.5], [0.9, 9.5, 10], "hardware", ALL),
+                el([-0.9, 24.5, 8.5], [0.9, 26, 10], "hardware", ALL)]
+# A panel with no front ends at a slim pilaster of its own.
+PART_POST = [el([-0.75, 1.5, 7.5], [0.75, P_TOP, 8.5], "partition"),
+             el([-1, 0, 7.25], [1, 1.5, 8.75], "hardware", NO_DOWN),
+             el([-0.9, P_TOP, 7.35], [0.9, 29.75, 8.65], "hardware", NO_DOWN)]
+PARTITION_KINDS = {
+    "door": {"front": PART_FRONT_DOOR, "door": PART_DOOR, "open": PART_OPEN,
+             "divider": PART_DIVIDER},
+    "pilaster": {"front": PART_FRONT_FIXED, "divider": PART_DIVIDER},
+    "panel": {"divider": PART_DIVIDER + PART_POST},
+}
+
 # ------------------------------------------------------------------------------------------
 # Laundry
 # ------------------------------------------------------------------------------------------
@@ -777,6 +1167,17 @@ MATS = [("white", {}, "White", "Weiß", "blanca", "vit"),
         ("grey", {}, "Grey", "Grau", "gris", "grå")]
 MATS = [(cid, {"rug": T("bath_mat_" + cid), "rug_border": T("bath_mat_border_" + cid)}, *n)
         for cid, _t, *n in MATS]
+
+PARTITIONS = [fin("beige", {"partition": T("partition_beige")}, "Beige", "Beige", "beige",
+                  "beige"),
+              fin("grey", {"partition": T("partition_grey")}, "Grey", "Grau", "gris", "grå"),
+              fin("stainless", {"partition": T("stainless_v")}, *STAINLESS[2:])]
+TROUGHS = [fin("white", {"solid": T("counter_quartz")}, "White", "Weiß", "blanco", "vit"),
+           fin("stainless", {"solid": T("stainless")}, *STAINLESS[2:])]
+CLASSIC_WHITE = fin("white", {"shell": T("appliance_white"), "handle": T("chrome")}, "White",
+                    "Weiß", "blanco", "vit")
+BLADE_GREY = fin("grey", {"shell": T("dryer_grey")}, "Grey", "Grau", "gris", "grå")
+TROUGH_TAP = (8, 15.55, 11.15)  # the trough's spout outlet, facing north, in sixteenths
 
 DOORS = "FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE"
 PIECE_GLASS = "Material.GLASS, SoundType.GLASS, BlockRenderLayer.SOLID"
@@ -894,6 +1295,108 @@ PIECES = [
                                           "Cambiador de bebés", "Fällbart skötbord"),
                                    java='new BlockFoldingFixture("%s", new int[]{%s}, '
                                         'new int[]{%s}, FixtureMaterial.PLASTIC)')),
+    # ---- commercial restroom: flushometers, partitions, lavatories, dryers ----
+    *[("flushometer_toilet_" + v,
+       dict(kind="single", geo=FLUSH_TOILETS[v], particle="porcelain", finishes=[WHITE],
+            names=("Flushometer Toilet", "Druckspüler-WC", "Inodoro con fluxómetro",
+                   "Toalettstol med spolventil"),
+            variant=label,
+            java='new BlockToilet("%s", new int[]{%s}, 7.25, 1.0, '
+                 'FurnishingsSounds.FLUSHOMETER_FLUSH)'))
+      for v, label in (("floor_manual", ("Floor-Mounted, Manual", "Stand, manuell",
+                                         "de pie, manual", "golvstående, manuell")),
+                       ("floor_sensor", ("Floor-Mounted, Sensor", "Stand, Sensor",
+                                         "de pie, sensor", "golvstående, sensor")),
+                       ("wall_manual", ("Wall-Hung, Manual", "wandhängend, manuell",
+                                        "suspendido, manual", "vägghängd, manuell")),
+                       ("wall_sensor", ("Wall-Hung, Sensor", "wandhängend, Sensor",
+                                        "suspendido, sensor", "vägghängd, sensor")))],
+    *[("flushometer_urinal_" + v,
+       dict(kind="single", geo=FLUSH_URINALS[v], particle="porcelain", finishes=[WHITE],
+            big=True, names=("Flushometer Urinal", "Urinal mit Druckspüler",
+                             "Urinario con fluxómetro", "Urinoar med spolventil"),
+            variant=label,
+            java='new BlockBathroomFixture("%s", new int[]{%s}, FixtureMaterial.PORCELAIN, '
+                 'FurnishingsSounds.FLUSHOMETER_FLUSH, 1.15F)'))
+      for v, label in (("manual", ("Manual", "manuell", "manual", "manuell")),
+                       ("sensor", ("Sensor", "Sensor", "sensor", "sensor")))],
+    ("waterless_urinal", dict(kind="single", geo=WATERLESS_URINAL, particle="porcelain",
+                              finishes=[WHITE],
+                              names=("Waterless Urinal", "Wasserloses Urinal", "Urinario seco",
+                                     "Vattenfri urinoar"),
+                              java='new BlockBathroomFixture("%s", new int[]{%s}, '
+                                   'FixtureMaterial.PORCELAIN)')),
+    ("urinal_screen", dict(kind="single", geo=URINAL_SCREEN, particle="partition", big=True,
+                           finishes=PARTITIONS,
+                           names=("Urinal Screen", "Urinaltrennwand", "Mampara de urinario",
+                                  "Urinoarskärm"),
+                           java='new BlockBathroomFixture("%s", new int[]{%s}, '
+                                'FixtureMaterial.METAL)')),
+    ("toilet_partition_door", dict(kind="partition", part_kind="door", finishes=PARTITIONS,
+                                   names=("Toilet Partition Door", "WC-Trennwandtür",
+                                          "Puerta de cabina de aseo", "Toalettbåsdörr"),
+                                   java='new BlockToiletPartitionDoor("%s")')),
+    ("toilet_partition_pilaster", dict(kind="partition", part_kind="pilaster",
+                                       finishes=PARTITIONS,
+                                       names=("Toilet Partition Pilaster",
+                                              "WC-Trennwand-Frontelement",
+                                              "Pilastra de cabina de aseo",
+                                              "Toalettbåsfront"),
+                                       java='new BlockToiletPartition("%s", '
+                                            'BlockToiletPartition.Kind.PILASTER)')),
+    ("toilet_partition_panel", dict(kind="partition", part_kind="panel", finishes=PARTITIONS,
+                                    names=("Toilet Partition Panel", "WC-Trennwand",
+                                           "Panel de cabina de aseo", "Toalettbåsvägg"),
+                                    java='new BlockToiletPartition("%s", '
+                                         'BlockToiletPartition.Kind.PANEL)')),
+    ("wall_hung_lavatory", dict(kind="single", geo=LAVATORY, particle="porcelain",
+                                finishes=[WHITE],
+                                names=("Wall-Hung Lavatory", "Wand-Waschtisch", "Lavabo mural",
+                                       "Vägghängt tvättställ"),
+                                java='new BlockSensorBasin("%%s", new int[]{%%s}, '
+                                     'FixtureMaterial.PORCELAIN, new double[]{%s})'
+                                     % jbox(LAV_TAP))),
+    ("trough_sink", dict(kind="trough", finishes=TROUGHS,
+                         names=("Trough Sink", "Rinnenwaschtisch", "Lavabo corrido",
+                                "Tvättränna"),
+                         java='new BlockTroughSink("%%s", new int[]{%s}, new double[]{%s})'
+                              % (jbox(box(TROUGH_BODY)), jbox(TROUGH_TAP)))),
+    ("hand_dryer_classic", dict(kind="single", geo=CLASSIC_DRYER, particle="shell", big=True,
+                                finishes=[CLASSIC_WHITE, STAINLESS],
+                                names=("Hand Dryer", "Händetrockner", "Secamanos", "Handtork"),
+                                variant=("Classic", "klassisch", "clásico", "klassisk"),
+                                java='new BlockHandDryer("%%s", new int[]{%%s}, '
+                                     'FurnishingsSounds.HAND_DRYER_RUN, new double[]{%s})'
+                                     % jbox(CLASSIC_OUTLET))),
+    ("hand_dryer_blade", dict(kind="single", geo=BLADE_DRYER, particle="shell",
+                              finishes=[BLADE_GREY, STAINLESS],
+                              names=("Hand Dryer", "Händetrockner", "Secamanos", "Handtork"),
+                              variant=("Blade", "Luftklinge", "de cuchilla", "luftkniv"),
+                              java='new BlockHandDryer("%%s", new int[]{%%s}, '
+                                   'FurnishingsSounds.HAND_DRYER_BLADE, new double[]{%s})'
+                                   % jbox(BLADE_OUTLET))),
+    ("jumbo_toilet_paper_dispenser", dict(kind="single", geo=JUMBO_ROLL, particle="shell",
+                                          finishes=[STAINLESS, APPLIANCE_WHITE],
+                                          names=("Jumbo Roll Toilet Paper Dispenser",
+                                                 "Jumbo-Toilettenpapierspender",
+                                                 "Dispensador de papel higiénico jumbo",
+                                                 "Jumborullehållare"),
+                                          java='new BlockBathroomFixture("%s", new int[]{%s}, '
+                                               'FixtureMaterial.METAL)')),
+    ("seat_cover_dispenser", dict(kind="single", geo=SEAT_COVER, particle="shell",
+                                  finishes=[STAINLESS],
+                                  names=("Toilet Seat Cover Dispenser",
+                                         "Toilettensitzauflagenspender",
+                                         "Dispensador de cubreasientos",
+                                         "Toalettsitsskyddshållare"),
+                                  java='new BlockBathroomFixture("%s", new int[]{%s}, '
+                                       'FixtureMaterial.METAL)')),
+    ("sanitary_napkin_disposal", dict(kind="storage", geo=NAPKIN_BIN, particle="shell",
+                                      finishes=[STAINLESS],
+                                      names=("Sanitary Napkin Disposal", "Hygienebehälter",
+                                             "Contenedor higiénico", "Hygienbehållare"),
+                                      java='new BlockResidentialStorage("%s", new int[]{%s}, '
+                                           '9, FurnishingsSounds.JAR_LID, null)')),
     # ---- laundry ----
     ("washing_machine", dict(kind="laundry", geo=WASHER, glow="washer",
                              finishes=[APPLIANCE_WHITE, STAINLESS],
@@ -953,7 +1456,7 @@ def names_with(names, fnames):
 def java_for(piece, spec, reg):
     j = spec["java"]
     kind = spec["kind"]
-    if kind in ("vanity", "tub", "shower", "mat"):
+    if kind in ("vanity", "tub", "shower", "mat", "partition", "trough"):
         return j % reg
     if kind == "folding":
         return j % (reg, jbox(CHANGING_BOXES[0]), jbox(CHANGING_BOXES[1]))
@@ -964,9 +1467,18 @@ def entries():
     """Every block: (registry, piece, finish textures, names, java)."""
     out = []
     for piece, spec in PIECES:
+        variant = spec.get("variant")
         for fid, ftex, *fnames in spec["finishes"]:
             reg = "%s_%s" % (piece, fid)
-            out.append((reg, piece, dict(ftex), names_with(spec["names"], fnames),
+            # A piece in variants is named for its variant, and for its finish too where the
+            # variant comes in more than one: "Hand Dryer (Classic, White)".
+            if variant and len(spec["finishes"]) == 1:
+                labels = list(variant)
+            elif variant:
+                labels = ["%s, %s" % (v, f) for v, f in zip(variant, fnames)]
+            else:
+                labels = fnames
+            out.append((reg, piece, dict(ftex), names_with(spec["names"], labels),
                         java_for(piece, spec, reg)))
     return out
 
@@ -988,6 +1500,50 @@ SHOWER_LOWER, SHOWER_UPPER = K.split_y(SHOWER)
 VANITY = K.run_piece(VANITY_BODY, VANITY_END, None)
 
 
+def partition_parts(part_kind):
+    """A partition piece's parts, each cut at the block line into its lower and upper half:
+    {name: geometry}, the dividers as left (on the line at x 0) and right (at x 16)."""
+    parts = {}
+    for part, geo in PARTITION_KINDS[part_kind].items():
+        if part == "divider":
+            named = (("left", geo), ("right", R.mirror_x(geo)))
+        else:
+            named = ((part, geo),)
+        for name, specs in named:
+            lower, upper = K.split_y(specs)
+            parts[name + "_lower"] = lower
+            parts[name + "_upper"] = upper
+    return parts
+
+
+def partition_item(part_kind):
+    """The whole piece, closed, with both its dividers, centred on the block for its item."""
+    geo = []
+    for part, specs in PARTITION_KINDS[part_kind].items():
+        if part == "open":
+            continue
+        geo += specs + (R.mirror_x(specs) if part == "divider" else [])
+    return B.centred(geo)
+
+
+def partition_rules(part_kind):
+    """Each half's parts: the dividers where the block's actual state asks for them, the door
+    shut or swung open."""
+    rules = []
+    for half, upper in (("lower", "false"), ("upper", "true")):
+        for part in PARTITION_KINDS[part_kind]:
+            if part == "divider":
+                rules.append(("left_" + half, {"upper": upper, "left": "true"}))
+                rules.append(("right_" + half, {"upper": upper, "right": "true"}))
+            elif part == "door":
+                rules.append(("door_" + half, {"upper": upper, "open": "false"}))
+            elif part == "open":
+                rules.append(("open_" + half, {"upper": upper, "open": "true"}))
+            else:
+                rules.append((part + "_" + half, {"upper": upper}))
+    return R.faced(rules)
+
+
 def base_models():
     """Every base geometry model: (name, geometry json)."""
     out = []
@@ -1007,6 +1563,16 @@ def base_models():
                                                     centre=True)))
         elif kind == "laundry":
             out.append((piece, geometry(spec["geo"], "shell")))
+        elif kind == "partition":
+            pk = spec["part_kind"]
+            for name, geo in partition_parts(pk).items():
+                out.append(("%s_%s" % (piece, name), geometry(geo, "partition")))
+            item = partition_item(pk)
+            out.append(("%s_item" % piece, geometry(item, "partition",
+                                                    display=B.big_display(item))))
+    for part, geo in TROUGH["parts"].items():
+        out.append(("trough_sink_%s" % part, geometry(geo, "solid")))
+    out.append(("trough_sink_item", geometry(TROUGH["item"], "solid")))
     for part, geo in VANITY["parts"].items():
         out.append(("bathroom_vanity_%s" % part, geometry(geo, "counter")))
     out.append(("bathroom_vanity_item", geometry(VANITY["item"], "counter")))
@@ -1113,6 +1679,17 @@ def generate(assets):
                 copy_model(blk % part, "bathroom_vanity_%s" % part, ftex)
             copy_model(item, "bathroom_vanity_item", ftex)
             state = B.multipart_state(reg, VANITY["rules"])
+        elif kind == "partition":
+            pk = spec["part_kind"]
+            for name in partition_parts(pk):
+                copy_model(blk % name, "%s_%s" % (piece, name), ftex)
+            copy_model(item, "%s_item" % piece, ftex)
+            state = B.multipart_state(reg, partition_rules(pk))
+        elif kind == "trough":
+            for part in TROUGH["parts"]:
+                copy_model(blk % part, "trough_sink_%s" % part, ftex)
+            copy_model(item, "trough_sink_item", ftex)
+            state = B.multipart_state(reg, TROUGH["rules"])
         elif kind == "tub":
             for part in ("cell0", "cell1", "water0", "water1"):
                 copy_model(blk % part, "bathtub_%s" % part, ftex)
@@ -1141,13 +1718,15 @@ def fragments():
     lines = []
     last = None
     for reg, piece, _t, names, java in entries():
-        if piece != last:
+        # One heading for the variants of a piece (the four flushometer toilets).
+        title = names[0].split(" (")[0]
+        if title != last:
             if last is not None:
                 lines.append("")
             if piece in GROUPS:
                 lines.append("    // ---- %s ----" % GROUPS[piece])
-            lines.append("    // %s" % names[0].split(" (")[0])
-            last = piece
+            lines.append("    // %s" % title)
+            last = title
         lines.append("    initTabBlock(%s);" % java)
     return "\n".join(lines)
 

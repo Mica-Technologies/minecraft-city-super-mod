@@ -1,0 +1,187 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "hardware": "csm:blocks/furniture/residential/stainless",
+    "partition": "csm:blocks/furniture/residential/partition_beige",
+    "particle": "#partition"
+  },
+  "elements": [
+    {
+      "from": [
+        2.5,
+        5.0,
+        7.6
+      ],
+      "to": [
+        13.5,
+        16,
+        8.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#partition",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            11.0
+          ]
+        },
+        "south": {
+          "texture": "#partition",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            11.0
+          ]
+        },
+        "east": {
+          "texture": "#partition",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            11.0
+          ]
+        },
+        "west": {
+          "texture": "#partition",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            11.0
+          ]
+        },
+        "down": {
+          "texture": "#partition",
+          "uv": [
+            2.5,
+            7.6,
+            13.5,
+            8.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        8,
+        7.4
+      ],
+      "to": [
+        3.75,
+        10,
+        8.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            12.25,
+            6,
+            13.5,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            2.5,
+            6,
+            3.75,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#hardware",
+          "uv": [
+            7.4,
+            6,
+            8.6,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            2.5,
+            7.4,
+            3.75,
+            8.6
+          ]
+        },
+        "down": {
+          "texture": "#hardware",
+          "uv": [
+            2.5,
+            7.4,
+            3.75,
+            8.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        11.75,
+        15.5,
+        7.1
+      ],
+      "to": [
+        12.5,
+        16,
+        7.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            3.5,
+            0,
+            4.25,
+            0.5
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            11.75,
+            0,
+            12.5,
+            0.5
+          ]
+        },
+        "east": {
+          "texture": "#hardware",
+          "uv": [
+            8.4,
+            0,
+            8.9,
+            0.5
+          ]
+        },
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            7.1,
+            0,
+            7.6,
+            0.5
+          ]
+        },
+        "down": {
+          "texture": "#hardware",
+          "uv": [
+            11.75,
+            8.4,
+            12.5,
+            8.9
+          ]
+        }
+      }
+    }
+  ]
+}

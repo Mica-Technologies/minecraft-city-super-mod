@@ -63,7 +63,10 @@ public enum FurnishingsSounds implements ICsmSound {
   VERIFONE_MX915("verifone_mx915"),
   REGISTER_DRAWER("register_drawer"),
   SCANNER_BEEP("scanner_beep"),
-  CURTAIN_SLIDE("curtain_slide");
+  CURTAIN_SLIDE("curtain_slide"),
+  FLUSHOMETER_FLUSH("flushometer_flush"),
+  HAND_DRYER_RUN("hand_dryer_run"),
+  HAND_DRYER_BLADE("hand_dryer_blade");
 
   /**
    * The name of the sound.

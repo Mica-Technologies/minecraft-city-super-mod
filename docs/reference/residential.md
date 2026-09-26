@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard.
 
-!!! info "319 blocks in this tab"
+!!! info "349 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -135,15 +135,27 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Flat-Screen TV (Black) | `csm:flat_screen_tv_black` | 1.5 | 3.0 | axe | 0 |
 | Floor Lamp (Black) | `csm:floor_lamp_black` | 1.5 | 3.0 | axe | 0 |
 | Floor Lamp (Brass) | `csm:floor_lamp_brass` | 1.5 | 3.0 | axe | 0 |
+| Flushometer Toilet (Floor-Mounted, Manual) | `csm:flushometer_toilet_floor_manual_white` | 1.5 | 3.0 | axe | 0 |
+| Flushometer Toilet (Floor-Mounted, Sensor) | `csm:flushometer_toilet_floor_sensor_white` | 1.5 | 3.0 | axe | 0 |
+| Flushometer Toilet (Wall-Hung, Manual) | `csm:flushometer_toilet_wall_manual_white` | 1.5 | 3.0 | axe | 0 |
+| Flushometer Toilet (Wall-Hung, Sensor) | `csm:flushometer_toilet_wall_sensor_white` | 1.5 | 3.0 | axe | 0 |
+| Flushometer Urinal (Manual) | `csm:flushometer_urinal_manual_white` | 1.5 | 3.0 | axe | 0 |
+| Flushometer Urinal (Sensor) | `csm:flushometer_urinal_sensor_white` | 1.5 | 3.0 | axe | 0 |
 | Garden Hose Reel (Green) | `csm:hose_reel_green` | 1.5 | 3.0 | axe | 0 |
 | Gas Grill (Black) | `csm:gas_grill_black` | 1.5 | 3.0 | axe | 0 |
 | Gas Grill (Stainless Steel) | `csm:gas_grill_stainless` | 1.5 | 3.0 | axe | 0 |
 | Grab Bar (Stainless Steel) | `csm:grab_bar_stainless` | 1.5 | 3.0 | axe | 0 |
+| Hand Dryer (Blade, Grey) | `csm:hand_dryer_blade_grey` | 1.5 | 3.0 | axe | 0 |
+| Hand Dryer (Blade, Stainless Steel) | `csm:hand_dryer_blade_stainless` | 1.5 | 3.0 | axe | 0 |
+| Hand Dryer (Classic, Stainless Steel) | `csm:hand_dryer_classic_stainless` | 1.5 | 3.0 | axe | 0 |
+| Hand Dryer (Classic, White) | `csm:hand_dryer_classic_white` | 1.5 | 3.0 | axe | 0 |
 | Hanging Plant (White Pot) | `csm:hanging_plant_white` | 1.5 | 3.0 | axe | 0 |
 | Heated Towel Rail (Chrome) | `csm:heated_towel_rail_chrome` | 1.5 | 3.0 | axe | 0 |
 | Hi-Fi Stereo (Black) | `csm:stereo_black` | 1.5 | 3.0 | axe | 0 |
 | Ironing Board (Blue) | `csm:ironing_board_blue` | 1.5 | 3.0 | axe | 0 |
 | Ironing Board (Grey) | `csm:ironing_board_grey` | 1.5 | 3.0 | axe | 0 |
+| Jumbo Roll Toilet Paper Dispenser (Stainless Steel) | `csm:jumbo_toilet_paper_dispenser_stainless` | 1.5 | 3.0 | axe | 0 |
+| Jumbo Roll Toilet Paper Dispenser (White) | `csm:jumbo_toilet_paper_dispenser_white` | 1.5 | 3.0 | axe | 0 |
 | Kiddie Pool (Blue) | `csm:kiddie_pool_blue` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Charcoal) | `csm:bed_king_charcoal` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Navy) | `csm:bed_king_navy` | 1.5 | 3.0 | axe | 0 |
@@ -236,6 +248,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Rug (Navy) | `csm:rug_navy` | 0.2 | 0.4 | axe | 0 |
 | Rug (Oatmeal) | `csm:rug_oatmeal` | 0.2 | 0.4 | axe | 0 |
 | Rug (Red) | `csm:rug_red` | 0.2 | 0.4 | axe | 0 |
+| Sanitary Napkin Disposal (Stainless Steel) | `csm:sanitary_napkin_disposal_stainless` | 1.5 | 3.0 | axe | 0 |
 | Shower Enclosure (Chrome) | `csm:shower_enclosure_chrome` | 1.5 | 3.0 | axe | 0 |
 | Shower Head (Chrome) | `csm:shower_head_chrome` | 1.5 | 3.0 | axe | 0 |
 | Side Table (Light Oak) | `csm:side_table_oak` | 1.5 | 3.0 | axe | 0 |
@@ -288,10 +301,22 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Toilet (White) | `csm:toilet_white` | 1.5 | 3.0 | axe | 0 |
 | Toilet Brush (Stainless Steel) | `csm:toilet_brush_stainless` | 1.5 | 3.0 | axe | 0 |
 | Toilet Paper Holder (Chrome) | `csm:toilet_paper_holder_chrome` | 1.5 | 3.0 | axe | 0 |
+| Toilet Partition Door (Beige) | `csm:toilet_partition_door_beige` | 1.5 | 3.0 | axe | 0 |
+| Toilet Partition Door (Grey) | `csm:toilet_partition_door_grey` | 1.5 | 3.0 | axe | 0 |
+| Toilet Partition Door (Stainless Steel) | `csm:toilet_partition_door_stainless` | 1.5 | 3.0 | axe | 0 |
+| Toilet Partition Panel (Beige) | `csm:toilet_partition_panel_beige` | 1.5 | 3.0 | axe | 0 |
+| Toilet Partition Panel (Grey) | `csm:toilet_partition_panel_grey` | 1.5 | 3.0 | axe | 0 |
+| Toilet Partition Panel (Stainless Steel) | `csm:toilet_partition_panel_stainless` | 1.5 | 3.0 | axe | 0 |
+| Toilet Partition Pilaster (Beige) | `csm:toilet_partition_pilaster_beige` | 1.5 | 3.0 | axe | 0 |
+| Toilet Partition Pilaster (Grey) | `csm:toilet_partition_pilaster_grey` | 1.5 | 3.0 | axe | 0 |
+| Toilet Partition Pilaster (Stainless Steel) | `csm:toilet_partition_pilaster_stainless` | 1.5 | 3.0 | axe | 0 |
+| Toilet Seat Cover Dispenser (Stainless Steel) | `csm:seat_cover_dispenser_stainless` | 1.5 | 3.0 | axe | 0 |
 | Toiletries Tray (White) | `csm:toiletries_tray_white` | 1.5 | 3.0 | axe | 0 |
 | Towel Rail (Chrome) | `csm:towel_rail_chrome` | 1.5 | 3.0 | axe | 0 |
 | Trampoline (Blue) | `csm:trampoline_blue` | 1.5 | 3.0 | axe | 0 |
 | Trampoline (Green) | `csm:trampoline_green` | 1.5 | 3.0 | axe | 0 |
+| Trough Sink (Stainless Steel) | `csm:trough_sink_stainless` | 1.5 | 3.0 | axe | 0 |
+| Trough Sink (White) | `csm:trough_sink_white` | 1.5 | 3.0 | axe | 0 |
 | Tumble Dryer (Stainless Steel) | `csm:dryer_stainless` | 1.5 | 3.0 | axe | 0 |
 | Tumble Dryer (White) | `csm:dryer_white` | 1.5 | 3.0 | axe | 0 |
 | TV Stand (Light Oak) | `csm:tv_stand_oak` | 1.5 | 3.0 | axe | 0 |
@@ -302,6 +327,9 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Upright Piano (Black) | `csm:upright_piano_black` | 1.5 | 3.0 | axe | 0 |
 | Upright Piano (Walnut) | `csm:upright_piano_walnut` | 1.5 | 3.0 | axe | 0 |
 | Urinal (White) | `csm:urinal_white` | 1.5 | 3.0 | axe | 0 |
+| Urinal Screen (Beige) | `csm:urinal_screen_beige` | 1.5 | 3.0 | axe | 0 |
+| Urinal Screen (Grey) | `csm:urinal_screen_grey` | 1.5 | 3.0 | axe | 0 |
+| Urinal Screen (Stainless Steel) | `csm:urinal_screen_stainless` | 1.5 | 3.0 | axe | 0 |
 | Vanity Stool (Light Oak) | `csm:vanity_stool_oak` | 1.5 | 3.0 | axe | 0 |
 | Vanity Stool (Walnut) | `csm:vanity_stool_walnut` | 1.5 | 3.0 | axe | 0 |
 | Vanity Stool (White) | `csm:vanity_stool_white` | 1.5 | 3.0 | axe | 0 |
@@ -319,6 +347,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Wall Photo Frames (Light Oak) | `csm:wall_photo_frames_oak` | 1.5 | 3.0 | axe | 0 |
 | Wall Photo Frames (Walnut) | `csm:wall_photo_frames_walnut` | 1.5 | 3.0 | axe | 0 |
 | Wall Photo Frames (White) | `csm:wall_photo_frames_white` | 1.5 | 3.0 | axe | 0 |
+| Wall-Hung Lavatory (White) | `csm:wall_hung_lavatory_white` | 1.5 | 3.0 | axe | 0 |
 | Wall-Mounted TV (Black) | `csm:wall_tv_black` | 1.5 | 3.0 | axe | 0 |
 | Wardrobe (Light Oak) | `csm:wardrobe_oak` | 1.5 | 3.0 | axe | 0 |
 | Wardrobe (Walnut) | `csm:wardrobe_walnut` | 1.5 | 3.0 | axe | 0 |
@@ -327,6 +356,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Washing Machine (White) | `csm:washing_machine_white` | 1.5 | 3.0 | axe | 0 |
 | Wastebasket (Stainless Steel) | `csm:wastebasket_stainless` | 1.5 | 3.0 | axe | 0 |
 | Wastebasket (White) | `csm:wastebasket_white` | 1.5 | 3.0 | axe | 0 |
+| Waterless Urinal (White) | `csm:waterless_urinal_white` | 1.5 | 3.0 | axe | 0 |
 | Wide Wall Art (Abstract) | `csm:wide_wall_art_abstract` | 1.5 | 3.0 | axe | 0 |
 | Wide Wall Art (Geometric) | `csm:wide_wall_art_geometric` | 1.5 | 3.0 | axe | 0 |
 | Wide Wall Art (Landscape) | `csm:wide_wall_art_landscape` | 1.5 | 3.0 | axe | 0 |
