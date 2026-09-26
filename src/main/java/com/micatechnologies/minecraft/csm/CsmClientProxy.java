@@ -95,6 +95,9 @@ public class CsmClientProxy implements ICsmProxy {
         ((IHasModel) item).registerModels();
       }
     });
+    // Every state of a multipart block on one model location; see CsmMultipartStateMapper.
+    com.micatechnologies.minecraft.csm.codeutils.CsmMultipartStateMapper.register(
+        CsmRegistry.getBlocks());
   }
 
   /**
