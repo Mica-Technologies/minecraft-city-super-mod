@@ -53,14 +53,16 @@ fix list are in `PERFORMANCE_INVENTORY.md`.
 
 ### Memory
 
-**With every module the client holds about 620 MiB live** after a full GC (621 MiB at the main
-menu, 676 MiB in a flat world; 2026-09-25, `-Xmx6G`, ParallelGC). It was 4.0 GiB, more than the
-4 GiB old generation that heap gets, so the client sat in constant full GC and froze every few
-seconds. The first three fixes below took it to 1.7 GiB and launch to the main menu from a median
-of 58 s to 35 s (pre-init 13 s to 1.5 s, and the full GC that no longer happens); the next six took
-it to 0.86 GiB and left launch time where it was: a median of 37 s before them and 36 s after,
-measured interleaved, with the full GC during launch down from 3.3-3.8 s to 1.9-3.0 s. Baking each
-distinct model part once then took it to 0.62 GiB and launch from a median of 38 s to 31 s.
+**With every module the client holds about 600 MiB live** after a full GC (601 MiB at the main
+menu, 656 MiB in a flat world, and about the same in a built-up test city; 2026-09-25, `-Xmx6G`,
+ParallelGC). It was 4.0 GiB, more than the 4 GiB old generation that heap gets, so the client sat
+in constant full GC and froze every few seconds. The first three fixes below took it to 1.7 GiB and
+launch to the main menu from a median of 58 s to 35 s (pre-init 13 s to 1.5 s, and the full GC
+that no longer happens); the next six took it to 0.86 GiB and left launch time where it was: a
+median of 37 s before them and 36 s after, measured interleaved, with the full GC during launch
+down from 3.3-3.8 s to 1.9-3.0 s. Baking each distinct model part once then took it to 0.62 GiB
+and launch from a median of 38 s to 31 s, and one model location per multipart block to 0.60 GiB
+and about a second less.
 
 | | Main menu | Flat world | Launch (median of 3) | Full GC during launch |
 |---|---|---|---|---|
@@ -75,10 +77,26 @@ distinct model part once then took it to 0.62 GiB and launch from a median of 38
 | Empty quad and override lists shared | 941 MiB | 997 MiB | no change | 6 |
 | State property maps built on demand | 859 MiB | 915 MiB | no change | 6 |
 | Each distinct model part baked once | 621 MiB | 676 MiB | 38 -> 31 s | 5, ~2.6 s |
+| One model location per multipart block | 601 MiB | 656 MiB | 29 -> 28 s | 5, ~2.4 s |
 
-Launch times for the last seven rows were measured interleaved with the build before (A B A B A B),
+Launch times for the last eight rows were measured interleaved with the build before (A B A B A B),
 on a machine also running a game, so single runs varied by +-5 s; "no change" means the medians
-were within that. The six full GCs left in launch are Forge's own `System.gc()` calls.
+were within that. The full GCs left in launch are Forge's own `System.gc()` calls. The last two
+rows were measured in a later session on a quieter machine, which is why the same build launches
+in 29 s there and 31 s in the row above it.
+
+Where the launch time goes now, every module, medians of the interleaved runs (FML's progress bar
+times; "launch" is from process start to the main menu):
+
+| Phase | Before the sweep | Now | What it is now |
+|---|---|---|---|
+| Pre-initialization | ~12 s (CSM ~12) | 2.4 s (CSM ~1.5) | Block constructors and state containers |
+| ModelLoader: blocks | ~7.2 s | 4.9 s | One `WeightedRandomModel` per Forge-format variant (120 thousand), the blockstate JSON |
+| Texture stitching | ~6 s | ~4 s | Reading every sprite's pixels into the 8192 x 4096 atlas |
+| ModelLoader: baking | ~10.8 s | ~4.7 s | Distinct model parts only |
+| Model manager reload in all | ~29 s | ~17 s | The three above, the post-bake passes (~2 s) and items |
+| Full GC during launch | ~11 s | ~2.4 s | Forge's own `System.gc()` calls |
+| **Launch** | **54-58 s** | **28 s** | Core alone: 8 s |
 
 What the heap is made of, block by block, comes from `/csm memstats [dump]`: every block's states
 (and, for a block still on vanilla's container, the estimated size of its neighbour tables), and on
@@ -89,8 +107,8 @@ for its quads, since Forge builds those lazily and asking would build them all.
 model cache, which is released after the bake, so start the game with
 `-Dcsm.keepUnbakedModels=true` to use it.
 
-The mechanisms, and the rule each one makes. The part bake cache works during the bake; the other
-model and sprite ones run on `ModelBakeEvent` at the lowest priority, in the order the client proxy
+The mechanisms, and the rule each one makes. The multipart state mapper works while the blockstates
+are loaded and the part bake cache during the bake; the other model and sprite ones run on `ModelBakeEvent` at the lowest priority, in the order the client proxy
 registers them. All of them run again after a resource reload, which bakes new models from the files:
 
 - **Each distinct model part is baked once** (`CsmPartBakeCache`, `CsmObjModelLoader`, Core,
@@ -120,6 +138,26 @@ registers them. All of them run again after a resource reload, which bakes new m
   CSM's `.obj` files any other way** (no `OBJLoader.addDomain("csm")`: two loaders accepting one
   model is an error); and **a new kind of model state or part in a CSM blockstate must be added to
   the key**, or, if it is not one of Forge's transform states, it simply goes uncached.
+
+- **Every state of a multipart block has one model location** (`CsmMultipartStateMapper`, Core,
+  client). Vanilla names a model location after every state (`csm:block#a=1,b=2,...`) and Forge
+  resolves each one on its own; for a multipart blockstate each of them is found to be multipart
+  by a missing-variant exception, and all of them end on the same `MultipartBakedModel`, which picks
+  its parts from the state it is drawn with. 435 blocks had 172,772 such locations. The mapper,
+  registered for every CSM block with more than one state and no state mapper of its own, asks the
+  model loader for the block's definition (which the loader was about to read anyway) and, if it is
+  multipart with no variant named after a state, maps every state to `csm:<block>#multipart`; the
+  `inventory` variants such files carry for the item are untouched. Every other block gets
+  vanilla's default mapping, built once per loader pass as vanilla builds it. Decided per model
+  loader, so a resource pack that turns a blockstate into variants is followed at the next reload.
+  Model locations 304 thousand -> 132 thousand, 20 MiB, "ModelLoader: blocks" 5.95 -> 4.94 s
+  (medians of 4 interleaved pairs). `-Dcsm.noMultipartStateMapper=true` turns it off. **Rule:
+  never look a CSM multipart block's baked model up by a per-state location**
+  (`new ModelResourceLocation(name, "facing=north,...")`, as a `ModelBakeEvent` handler that
+  replaces models might); ask `BlockModelShapes` for the state's model, or replace the one
+  `#multipart` location. And **register a state mapper of your own only in `ModelRegistryEvent`**,
+  when the block's registry name is set (see PEDESTAL_POLE_SYSTEM.md, "The trap that design walked
+  into"); a block with its own mapper is left alone.
 
 - **Baked quads are shared** (`CsmQuadSharing`, Core, client). Forge bakes a submodel again for
   every blockstate variant that names it, so 7.0 million baked quads held about 750 thousand
@@ -229,10 +267,57 @@ the retextured copies and the unbaked models released it completes, and the heap
 flat world is 692 MiB (930 without the part bake cache). The part bake cache is rebuilt on every
 reload with the same counts and empties at the bake event, so nothing is carried across reloads.
 
-**The heap floor.** Before these fixes CSM needed about 2 GB of heap to start with fewer modules
-(`OutOfMemoryError` in `ModelLoader.setupModelRegistry` at 1-1.5 GB); the floor with every module
-has not been re-measured since. Re-check it with `dev-env-utils/gradle/lowmem.gradle` whenever a
-large batch of blocks or models lands.
+**The heap floor, and what to tell players.** Measured 2026-09-25 on the build with every fix
+above (the release jars' code, the dev client's JVM: Java 8, ParallelGC, `-Xms256M`), each size
+launched to the main menu, then two minutes touring the flat test world by teleport, then two
+minutes touring a copy of the MKTNG test city, with `jstat` sampled throughout:
+
+| `-Xmx` | Every module | Core only |
+|---|---|---|
+| 512 MB | | Fine: menu in 8 s, 158 MiB at the menu, 232 MiB in a world |
+| 1 GB | Does not start: `OutOfMemoryError` loading the blockstates | Fine |
+| 1.5 GB | Does not start: `OutOfMemoryError` stitching the texture atlas | |
+| 2 GB | Does not start: still in model baking after 10 minutes of full GC | |
+| 2.25 GB | Starts, badly: 45 s to the menu, 48 full GCs (21 s) during launch; then fine (1% of the time in GC) | |
+| 2.5 GB | Starts: 33 s, 11 full GCs (9 s); then fine | |
+| 3 GB | Starts: 29 s, 8 full GCs (4 s); then fine (1% in GC, old generation under half full in the city) | |
+| 6 GB | 28 s, 5 full GCs (2.4 s) | 8 s |
+
+**What sets the floor is launch, not play.** In a world the client holds 650-700 MiB, but while
+the models are baked it holds about 1.2 GiB (the unbaked models, every sprite's pixels and the
+baked models are all alive at once; measured as the old generation just after the last full GC
+of a `-Xmx6G` launch), and ParallelGC gives the old generation only two thirds of the heap. So:
+**tell players to give the game 3 GB with every module** (`-Xmx3G` in the launcher profile's JVM
+arguments), 2.5 GB at the very least, and more for a large modpack; **Core alone runs in 512
+MB** (a partial set lies in between and has not been measured module by module). Launchers that
+default to 2 GB will not start the full set. Re-measure with `dev-env-utils/gradle/lowmem.gradle` whenever a large batch of
+blocks or models lands, and update `docs/getting-started/installation.md` with it. The next lever
+on the floor is that launch peak: releasing the still sprites' pixels right after the atlas upload
+rather than after the bake would take about 160 MiB off it (30 Mpx with their mip levels), but `builtin/generated` item models
+read their sprite's pixels during the bake, so it needs the item sprites told apart first.
+
+**State and memory budget for new blocks.** What a block costs now that the fixes above are in,
+so a design can be priced before it is built:
+
+- **A state** costs about 40 bytes (CSM's container) plus its entries in Forge's state-id map and
+  the block model shapes, roughly 100 bytes in all: 290 thousand states are some 30 MiB. A
+  state is not where the memory is any more; the model locations and variants below are.
+- **A Forge-format (`forge_marker`) variant** costs a model location, an unbaked
+  `WeightedRandomModel` at load (about 40 microseconds of "ModelLoader: blocks" each: 120
+  thousand variants are most of its 4.9 s) and a baked model; its parts are baked once however
+  many variants share them. So every property in a variant blockstate multiplies launch work, even
+  one that changes nothing visible.
+- **A multipart blockstate** costs one model location and one baked model for the whole block,
+  however many states it has, plus one bake per distinct part. A block whose look is assembled
+  from independent pieces (connections to its neighbours, optional fittings) belongs in multipart.
+- **A sprite** costs its pixels in the block atlas, which is 95% full (see the atlas budget above).
+
+The rules that follow: **keep a block under about 5,000 states** (the heaviest today are the
+standpipes at 5,120 and the exit signs at 5,376, which `ExitSignSpecTest` holds to); past that,
+split it into blocks or keep the choice in a tile entity. **Never add a property, stored or
+actual-state only, that no model reads**, and in a variant blockstate prefer to fold a property
+the model ignores into one that it reads. **Prefer multipart for connecting blocks.** And check a
+new family with `/csm memstats` (its states, locations and quads) before and after.
 
 The render caches are under 1 MB each at full occupancy, so **if memory use needs to come down, the
 model registry is the target and the caches are noise.** Do not add memory-pressure scaling to the
