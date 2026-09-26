@@ -335,6 +335,61 @@ The bathroom, a commercial restroom's fittings and the laundry follow, drawn by
   is put in it rather than voiding it, so nothing is lost by a wrong click), counter pieces (the
   toiletries tray, the toilet brush) and bath mats (`BlockRug` in terry, joining like the rugs).
 
+The commercial restroom sits in the same group of the tab, after the changing
+station, from the same generator: generic fittings with no maker's name or logo anywhere.
+
+- **Flushometer toilets and urinals.** A commercial toilet has no cistern: an elongated bowl
+  with an open-front seat and no lid (the seat at 0.45 m), floor-mounted on a foot or hung from
+  the wall on a carrier, and the flush valve exposed on the wall above it. `flush_valve()` draws
+  the valve once for all six: the spud where it enters the fixture, the flush tube and vacuum
+  breaker, the body, the supply out of the wall through its control stop, and either the lever
+  handle on the body's front (manual) or a sensor housing on its top with its window facing
+  forward and an override button (sensor). The toilets are `BlockToilet` with their own seat
+  height and flush sound (the constructor that takes both); the valve is behind the seat and
+  above it, so the click that flushes is where it is. The flushometer urinal's valve stands
+  above its block, up to 1.6 m, as the kitchen tap stands above its sink. Manual and sensor
+  differ only in the drawing: nothing senses a player leaving a seat. The waterless urinal has no
+  valve and no water, only its trap cartridge (a round cutout texture on an upward face) and no
+  click; the urinal screen is a partition panel hung from the wall, meant to stand between two
+  urinals a block apart.
+- **Toilet partitions** (`BlockToiletPartition`, `BlockToiletPartitionDoor`: `BlockResidentialTall`
+  pieces, two blocks tall, drawn whole in 0..32 and cut at the block line by `split_y`). A run of
+  stalls is a row of fronts placed side by side in the row in front of the toilets, facing out.
+  The front stands across the middle of its block, so a stall is 1.5 m deep and a block wide; the
+  panel between two stalls stands on the line between two blocks and runs from the front back to
+  the wall behind the toilet, a block and a half, reaching into the toilet's block (in the model,
+  in the collision boxes, which the 1.12 collision query's one-block margin reaches, and not in
+  the outline, which is cut to the piece's own block so it is the part a click can hit). `left`
+  and `right` are actual state: a side against a solid wall has no panel (the wall is the
+  stall's side); an open side, where the run stops, always has its end panel; where the run goes
+  on, only a door or a panel piece draws a panel on its left, so one panel stands between two
+  doors and a pilaster continues the stall to its left. A wide (accessible) stall is a door
+  with a pilaster on its right. Three pieces, each in beige or grey powder coat or stainless:
+  the door (between two narrow pilasters on stainless shoes, under the headrail, hinged on its
+  left and swinging in; `open` stored in both halves, the open model the door written out
+  turned a quarter about its hinge by `swung()`, lying along the stall's left side in the block
+  behind, clear of a toilet there; the locker door's sounds), the pilaster (a fixed front the
+  width of the block, floor to headrail) and the panel (the stall panels with no front, each
+  ending at a slim pilaster of its own: an open bay, or an end panel on its own). Doors are 64
+  states, pilasters and panels 32; nothing ticks and there is no tile entity.
+- **Lavatories.** `BlockSensorBasin` (the wall-hung lavatory, its rim at 0.86 m with the trap and
+  supplies exposed under it) and `BlockTroughSink` (a `BlockResidentialRun` that joins into one
+  long trough, end caps only where it stops, a faucet over every block, in white solid surface
+  or stainless) both have `sensor_faucet()`'s spout. A bucket or a bottle is filled at it
+  (`IWaterTap`, so an appliance beside one is plumbed in), and an empty hand held under it runs
+  it once (`SensorFaucet`: a short stream of water from the outlet, a splash, the shower spray
+  quietly and higher). Nothing is stored.
+- **Hand dryers** (`BlockHandDryer`, a `BlockBathroomFixture` with a click sound): the classic
+  warm-air dryer (push button, louvres, a nozzle turned down; drawn up to 1.19 m, past its block
+  as the valves are) and the blade dryer the hands are held in (its slot's lips at 1.03 m), each
+  in two finishes. A click plays its synthesised run and puffs air from its outlet. The older
+  `hd` dryer in the Novelties tab is unchanged.
+- **The stall's dispensers**: the jumbo roll toilet paper dispenser (a disc on the wall, an
+  `octagon_z()` of four rectangles turned about z, with a smoked sight window and the tail of the
+  roll under its tear bar), the seat cover dispenser (meant for the wall above the toilet, the
+  block above the floor's) and the sanitary napkin disposal bin (`BlockResidentialStorage`, nine
+  slots, keeping what is put in it as the wastebasket does).
+
 The living room's extras follow, drawn by `gen_furniture_living.py` (textures and models under
 `furniture/living/`):
 
@@ -912,7 +967,9 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:blender_whirr`, `csm:coffee_gurgle`, `csm:dishwasher_hum` | `BLENDER_WHIRR`, `COFFEE_GURGLE`, `DISHWASHER_HUM` | while running (the mixer's click too) | synthesised |
 | `csm:kettle_whistle`, `csm:jar_lid` | `KETTLE_WHISTLE`, `JAR_LID` | kettle click, cookie jar | synthesised |
 | `csm:toilet_flush` | `TOILET_FLUSH` | toilet (cistern click), urinal | synthesised |
-| `csm:shower_spray` | `SHOWER_SPRAY` | shower and shower head while on (a 2 s loop replayed every 40 ticks), the bath's tap | synthesised |
+| `csm:shower_spray` | `SHOWER_SPRAY` | shower and shower head while on (a 2 s loop replayed every 40 ticks), the bath's tap, a sensor faucet (quietly, higher) | synthesised |
+| `csm:flushometer_flush` | `FLUSHOMETER_FLUSH` | flushometer toilets and urinals | synthesised: the handle's or solenoid's click, a hard high-pressure roar with no cistern behind it, the siphon's slurp, the valve's thunk and the refill's hiss |
+| `csm:hand_dryer_run`, `csm:hand_dryer_blade` | `HAND_DRYER_RUN`, `HAND_DRYER_BLADE` | the classic and the blade hand dryer (click) | synthesised: a motor and fan spinning up and down; a high-speed whine under two jets of air |
 | `csm:washing_machine_run`, `csm:dryer_tumble` | `WASHING_MACHINE_RUN`, `DRYER_TUMBLE` | while running | synthesised |
 | `csm:iron_steam` | `IRON_STEAM` | steam iron click | synthesised |
 | `csm:printer_run` | `PRINTER_RUN` | the copier while it copies (a 2 s loop every 40 ticks), the fax's click | synthesised |

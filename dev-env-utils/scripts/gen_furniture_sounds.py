@@ -2,7 +2,8 @@
 
 The kitchen's cabinet doors, drawers and refrigerator door, and its appliances' beeps, timer ding,
 toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and jar lid, and the
-bathroom's toilet flush and shower spray, the laundry's washing machine, dryer and steam iron, the
+bathroom's toilet flush and shower spray, the commercial restroom's flushometer flush and
+its two hand dryers, the laundry's washing machine, dryer and steam iron, the
 office's copier and school locker door, the living room's doorbell chime and fireplace crackle,
 the backyard's grill sizzle and trampoline boing, and the store's card terminal beep, checkout
 scanner and cash drawer and the fitting room's curtain (the locker sounds and the card terminal's beep replace recordings of
@@ -497,6 +498,73 @@ def curtain_slide():
     return place(total, parts + [(0.0, swish, 0.55), (0.52, end, 0.6)])
 
 
+def flushometer_flush():
+    """A commercial flushometer: the handle's or the solenoid's click, then the valve opening
+    straight onto the supply main, a hard high-pressure roar with no cistern to empty, held
+    while the bowl's siphon catches and slurps it away, and the valve shutting with a thunk and
+    a short hiss as the bowl refills from the bypass."""
+    total = 4.2
+    n = int(RATE * total)
+    t = t_of(total)
+    click = knock(0.2, [(900, 1.0), (2100, 0.6), (3900, 0.3)], 60, 161, click=0.7)
+    roar = band(noise(total, 162), 350, 6500)
+    roar /= max(1e-9, np.max(np.abs(roar)))
+    body = band(noise(total, 163), 90, 700)
+    body /= max(1e-9, np.max(np.abs(body)))
+    on = np.clip((t - 0.06) / 0.08, 0, 1) * np.clip((3.15 - t) / 0.12, 0, 1)
+    churn = 0.8 + 0.2 * np.sin(2 * np.pi * (3.0 + 1.5 * t) * t)
+    slurp = np.zeros(n)
+    rng = np.random.RandomState(164)
+    for _ in range(14):
+        start = rng.uniform(1.9, 3.0)
+        f = rng.uniform(140, 320)
+        tt = t_of(0.12)
+        g = np.sin(2 * np.pi * f * (1 + 2.5 * tt) * tt) * np.exp(-tt * 30)
+        i = int(RATE * start)
+        m = min(len(g), n - i)
+        slurp[i:i + m] += g[:m] * rng.uniform(0.5, 1.0)
+    shut = knock(0.3, [(160, 1.0), (330, 0.5), (700, 0.2)], 26, 165, click=0.4)
+    refill = band(noise(total, 166), 2500, 8000)
+    refill /= max(1e-9, np.max(np.abs(refill)))
+    refill *= np.clip((t - 3.15) / 0.05, 0, 1) * np.clip((total - t) / 0.9, 0, 1) ** 2
+    water = (0.75 * roar + 0.5 * body) * on * churn + 0.3 * slurp + 0.1 * refill
+    return place(total, [(0.0, click, 0.5), (0.0, water, 1.0), (3.12, shut, 0.55)])
+
+
+def hand_dryer_run():
+    """A warm-air hand dryer: the motor's hum and the fan's broad rush, spinning up when the
+    button is pressed, running, and running down as the timer runs out."""
+    total = 4.5
+    n = int(RATE * total)
+    t = t_of(total)
+    speed = np.clip(t / 0.5, 0, 1) * np.clip((total - t) / 0.8, 0, 1) ** 0.7
+    f = 55 + 65 * speed
+    ph = 2 * np.pi * np.cumsum(f) / RATE
+    motor = sum(a * np.sin(k * ph) for k, a in ((1, 1.0), (2, 0.5), (3, 0.3), (5, 0.12)))
+    fan = band(noise(total, 171), 250, 3200)
+    fan /= max(1e-9, np.max(np.abs(fan)))
+    button = knock(0.12, [(1500, 1.0), (3200, 0.4)], 70, 172, click=0.5)
+    body = (0.35 * motor + 0.75 * fan) * speed * env_ad(n, 0.02, 0.1)
+    return place(total, [(0.0, button, 0.4), (0.0, body, 1.0)])
+
+
+def hand_dryer_blade():
+    """A blade hand dryer: a high-speed motor's whine climbing to pitch in a moment under the
+    hiss of two jets of air, held, and falling away when the hands come out."""
+    total = 3.6
+    n = int(RATE * total)
+    t = t_of(total)
+    speed = np.clip(t / 0.25, 0, 1) ** 0.6 * np.clip((total - t) / 0.7, 0, 1)
+    f = 400 + 1100 * speed
+    ph = 2 * np.pi * np.cumsum(f) / RATE
+    whine = np.sin(ph) + 0.35 * np.sin(2 * ph)
+    jet = band(noise(total, 181), 1800, 9500)
+    jet /= max(1e-9, np.max(np.abs(jet)))
+    roar = band(noise(total, 182), 200, 1800)
+    roar /= max(1e-9, np.max(np.abs(roar)))
+    return ((0.25 * whine + 0.7 * jet + 0.4 * roar) * speed) * env_ad(n, 0.01, 0.05)
+
+
 SOUNDS = {
     'cabinet_open': (cabinet_open, 2600),
     'cabinet_close': (cabinet_close, 3600),
@@ -528,6 +596,9 @@ SOUNDS = {
     'scanner_beep': (scanner_beep, 2400),
     'register_drawer': (register_drawer, 3000),
     'curtain_slide': (curtain_slide, 2600),
+    'flushometer_flush': (flushometer_flush, 3200),
+    'hand_dryer_run': (hand_dryer_run, 2400),
+    'hand_dryer_blade': (hand_dryer_blade, 2600),
 }
 
 

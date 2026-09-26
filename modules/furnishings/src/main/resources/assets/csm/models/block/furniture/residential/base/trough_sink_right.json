@@ -1,0 +1,68 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "solid": "csm:blocks/furniture/residential/counter_quartz",
+    "particle": "#solid"
+  },
+  "elements": [
+    {
+      "from": [
+        15.25,
+        10.5,
+        3
+      ],
+      "to": [
+        16,
+        14.0,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#solid",
+          "uv": [
+            0,
+            2.0,
+            13,
+            5.5
+          ]
+        },
+        "west": {
+          "texture": "#solid",
+          "uv": [
+            3,
+            2.0,
+            16,
+            5.5
+          ]
+        },
+        "north": {
+          "texture": "#solid",
+          "uv": [
+            0,
+            2.0,
+            0.75,
+            5.5
+          ]
+        },
+        "up": {
+          "texture": "#solid",
+          "uv": [
+            15.25,
+            3,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#solid",
+          "uv": [
+            15.25,
+            0,
+            16,
+            13
+          ]
+        }
+      }
+    }
+  ]
+}

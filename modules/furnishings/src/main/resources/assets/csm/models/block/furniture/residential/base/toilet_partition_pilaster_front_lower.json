@@ -1,0 +1,128 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "hardware": "csm:blocks/furniture/residential/stainless",
+    "partition": "csm:blocks/furniture/residential/partition_beige",
+    "particle": "#partition"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        1.5,
+        7.5
+      ],
+      "to": [
+        16,
+        16,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#partition",
+          "uv": [
+            0,
+            0,
+            16,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#partition",
+          "uv": [
+            0,
+            0,
+            16,
+            14.5
+          ]
+        },
+        "east": {
+          "texture": "#partition",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            14.5
+          ]
+        },
+        "west": {
+          "texture": "#partition",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#partition",
+          "uv": [
+            0,
+            7.5,
+            16,
+            8.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        7.25
+      ],
+      "to": [
+        16,
+        1.5,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            0,
+            14.5,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            0,
+            14.5,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#hardware",
+          "uv": [
+            7.25,
+            14.5,
+            8.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            7.25,
+            14.5,
+            8.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            0,
+            7.25,
+            16,
+            8.75
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,352 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cartridge": "csm:blocks/furniture/residential/urinal_cartridge",
+    "porcelain": "csm:blocks/furniture/residential/porcelain",
+    "porcelain_shade": "csm:blocks/furniture/residential/porcelain_shade",
+    "particle": "#porcelain"
+  },
+  "elements": [
+    {
+      "from": [
+        4.5,
+        4,
+        10.5
+      ],
+      "to": [
+        11.5,
+        15.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#porcelain_shade",
+          "uv": [
+            4.5,
+            0.5,
+            11.5,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#porcelain",
+          "uv": [
+            4.5,
+            0.5,
+            11.5,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#porcelain",
+          "uv": [
+            0,
+            0.5,
+            5.5,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#porcelain",
+          "uv": [
+            10.5,
+            0.5,
+            16,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#porcelain",
+          "uv": [
+            4.5,
+            10.5,
+            11.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#porcelain",
+          "uv": [
+            4.5,
+            0,
+            11.5,
+            5.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        2.25,
+        11.5
+      ],
+      "to": [
+        10.5,
+        4,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#porcelain",
+          "uv": [
+            5.5,
+            12,
+            10.5,
+            13.75
+          ]
+        },
+        "east": {
+          "texture": "#porcelain",
+          "uv": [
+            0,
+            12,
+            4.5,
+            13.75
+          ]
+        },
+        "west": {
+          "texture": "#porcelain",
+          "uv": [
+            11.5,
+            12,
+            16,
+            13.75
+          ]
+        },
+        "down": {
+          "texture": "#porcelain",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            4.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.75,
+        4,
+        6.75
+      ],
+      "to": [
+        11.25,
+        6.25,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#porcelain",
+          "uv": [
+            4.75,
+            9.75,
+            11.25,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#porcelain",
+          "uv": [
+            5.5,
+            9.75,
+            9.25,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#porcelain",
+          "uv": [
+            6.75,
+            9.75,
+            10.5,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#porcelain_shade",
+          "uv": [
+            4.75,
+            6.75,
+            11.25,
+            10.5
+          ]
+        },
+        "down": {
+          "texture": "#porcelain",
+          "uv": [
+            4.75,
+            5.5,
+            11.25,
+            9.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.5,
+        6.25,
+        6.75
+      ],
+      "to": [
+        5.5,
+        15.5,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#porcelain",
+          "uv": [
+            10.5,
+            0.5,
+            11.5,
+            9.75
+          ]
+        },
+        "east": {
+          "texture": "#porcelain_shade",
+          "uv": [
+            5.5,
+            0.5,
+            9.25,
+            9.75
+          ]
+        },
+        "west": {
+          "texture": "#porcelain",
+          "uv": [
+            6.75,
+            0.5,
+            10.5,
+            9.75
+          ]
+        },
+        "up": {
+          "texture": "#porcelain",
+          "uv": [
+            4.5,
+            6.75,
+            5.5,
+            10.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        10.5,
+        6.25,
+        6.75
+      ],
+      "to": [
+        11.5,
+        15.5,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#porcelain",
+          "uv": [
+            4.5,
+            0.5,
+            5.5,
+            9.75
+          ]
+        },
+        "east": {
+          "texture": "#porcelain",
+          "uv": [
+            5.5,
+            0.5,
+            9.25,
+            9.75
+          ]
+        },
+        "west": {
+          "texture": "#porcelain_shade",
+          "uv": [
+            6.75,
+            0.5,
+            10.5,
+            9.75
+          ]
+        },
+        "up": {
+          "texture": "#porcelain",
+          "uv": [
+            10.5,
+            6.75,
+            11.5,
+            10.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        14.75,
+        6.75
+      ],
+      "to": [
+        10.5,
+        15.5,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#porcelain",
+          "uv": [
+            5.5,
+            0.5,
+            10.5,
+            1.25
+          ]
+        },
+        "up": {
+          "texture": "#porcelain",
+          "uv": [
+            5.5,
+            6.75,
+            10.5,
+            10.5
+          ]
+        },
+        "down": {
+          "texture": "#porcelain",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            9.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.9,
+        6.26,
+        7.4
+      ],
+      "to": [
+        9.1,
+        6.45,
+        9.6
+      ],
+      "faces": {
+        "up": {
+          "texture": "#cartridge",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

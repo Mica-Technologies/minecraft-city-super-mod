@@ -1,0 +1,318 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "hardware": "csm:blocks/furniture/residential/stainless",
+    "partition": "csm:blocks/furniture/residential/partition_beige",
+    "particle": "#partition"
+  },
+  "elements": [
+    {
+      "from": [
+        7.6,
+        6,
+        8
+      ],
+      "to": [
+        8.4,
+        24,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#partition",
+          "uv": [
+            7.6,
+            0,
+            8.311,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#partition",
+          "uv": [
+            7.6,
+            0,
+            8.311,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#partition",
+          "uv": [
+            0.5,
+            0,
+            7.167,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#partition",
+          "uv": [
+            8,
+            0,
+            14.667,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#partition",
+          "uv": [
+            7.6,
+            8,
+            8.4,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#partition",
+          "uv": [
+            7.6,
+            0.5,
+            8.4,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.1,
+        8,
+        15.25
+      ],
+      "to": [
+        8.9,
+        9.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            7.1,
+            6.5,
+            8.9,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            7.1,
+            6.5,
+            8.9,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#hardware",
+          "uv": [
+            0,
+            6.5,
+            0.75,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            15.25,
+            6.5,
+            16,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            7.1,
+            15.25,
+            8.9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#hardware",
+          "uv": [
+            7.1,
+            0,
+            8.9,
+            0.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.1,
+        20.5,
+        15.25
+      ],
+      "to": [
+        8.9,
+        22,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            7.1,
+            0,
+            8.9,
+            1.5
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            7.1,
+            0,
+            8.9,
+            1.5
+          ]
+        },
+        "east": {
+          "texture": "#hardware",
+          "uv": [
+            0,
+            0,
+            0.75,
+            1.5
+          ]
+        },
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            15.25,
+            0,
+            16.0,
+            1.5
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            7.1,
+            15.25,
+            8.9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#hardware",
+          "uv": [
+            7.1,
+            0,
+            8.9,
+            0.75
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        -4.38,
+        0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.3125,
+        0.3125,
+        0.3125
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        -4.38,
+        0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4375,
+        0.4375,
+        0.4375
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4375,
+        0.4375,
+        0.4375
+      ]
+    }
+  }
+}

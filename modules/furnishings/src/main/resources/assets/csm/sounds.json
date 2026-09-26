@@ -385,5 +385,32 @@
         "stream": false
       }
     ]
+  },
+  "flushometer_flush": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:flushometer_flush",
+        "stream": false
+      }
+    ]
+  },
+  "hand_dryer_run": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:hand_dryer_run",
+        "stream": false
+      }
+    ]
+  },
+  "hand_dryer_blade": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:hand_dryer_blade",
+        "stream": false
+      }
+    ]
   }
 }

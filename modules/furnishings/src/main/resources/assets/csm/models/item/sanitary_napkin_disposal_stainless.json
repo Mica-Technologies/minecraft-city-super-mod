@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/residential/base/sanitary_napkin_disposal_item",
+  "textures": {
+    "shell": "csm:blocks/furniture/residential/stainless",
+    "door": "csm:blocks/furniture/residential/stainless_v",
+    "handle": "csm:blocks/furniture/residential/chrome",
+    "trim": "csm:blocks/furniture/residential/stainless_dark"
+  }
+}

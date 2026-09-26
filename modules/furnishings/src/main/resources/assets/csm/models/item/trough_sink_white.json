@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/residential/base/trough_sink_item",
+  "textures": {
+    "solid": "csm:blocks/furniture/residential/counter_quartz"
+  }
+}

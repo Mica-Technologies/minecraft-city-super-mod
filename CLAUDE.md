@@ -743,7 +743,14 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   glass), shower head, towel rails, radiator, wastebaskets, bath mats (the bedroom's rug geometry
   in terry), urinal, dispensers, grab bar, the fold-down changing station, the washing machine
   and dryer (round door windows as cutouts, lit while running), iron, ironing board, baskets and
-  laundry tub; `--check`, `--fragments`. `gen_furniture_sounds.py` synthesises the flush, shower,
+  laundry tub; and the commercial restroom: flushometer toilets (floor-mounted and wall-hung,
+  manual and sensor) and urinals with the valve drawn once by `flush_valve()`, the waterless
+  urinal and urinal screen, toilet partitions (`BlockToiletPartition`: door, pilaster and panel
+  fronts two blocks tall whose stall panels stand on the block line and reach back into the
+  toilet's block, `left`/`right` from actual state; the open door written out swung about its
+  hinge), the wall-hung lavatory and the joining trough sink with sensor faucets, two hand
+  dryers, the jumbo roll and seat cover dispensers and the napkin bin; `--check`, `--fragments`.
+  `gen_furniture_sounds.py` synthesises the flush, flushometer flush, hand dryer, shower,
   washer, dryer and iron sounds
 - `gen_furniture_office.py` -- the Commercial & Office tab, importing the residential, kitchen,
   bedroom and appliance generators: office desks, pedestals and the L-desk corner (their own

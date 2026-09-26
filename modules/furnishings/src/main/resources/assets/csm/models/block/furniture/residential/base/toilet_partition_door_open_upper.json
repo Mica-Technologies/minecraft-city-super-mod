@@ -1,0 +1,433 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "hardware": "csm:blocks/furniture/residential/stainless",
+    "partition": "csm:blocks/furniture/residential/partition_beige",
+    "rubber": "csm:blocks/furniture/residential/rubber_black",
+    "particle": "#partition"
+  },
+  "elements": [
+    {
+      "from": [
+        2.5,
+        0,
+        8.4
+      ],
+      "to": [
+        3.3,
+        12.75,
+        19.4
+      ],
+      "faces": {
+        "east": {
+          "texture": "#partition",
+          "uv": [
+            0,
+            3.25,
+            11.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#partition",
+          "uv": [
+            5.0,
+            3.25,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#partition",
+          "uv": [
+            2.5,
+            3.25,
+            3.3,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#partition",
+          "uv": [
+            12.7,
+            3.25,
+            13.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#partition",
+          "uv": [
+            2.5,
+            5.0,
+            3.3,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.3,
+        8,
+        8.4
+      ],
+      "to": [
+        3.5,
+        10,
+        9.65
+      ],
+      "faces": {
+        "east": {
+          "texture": "#hardware",
+          "uv": [
+            6.35,
+            6,
+            7.6,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            8.4,
+            6,
+            9.65,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            2.3,
+            6,
+            3.5,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            2.3,
+            8.4,
+            3.5,
+            9.65
+          ]
+        },
+        "down": {
+          "texture": "#hardware",
+          "uv": [
+            2.3,
+            6.35,
+            3.5,
+            7.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.3,
+        0,
+        17.65
+      ],
+      "to": [
+        3.8,
+        1.5,
+        18.4
+      ],
+      "faces": {
+        "east": {
+          "texture": "#hardware",
+          "uv": [
+            0,
+            14.5,
+            0.75,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            15.25,
+            14.5,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            3.3,
+            14.5,
+            3.8,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            12.2,
+            14.5,
+            12.7,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            3.3,
+            15.25,
+            3.8,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.3,
+        2.25,
+        18.15
+      ],
+      "to": [
+        3.6,
+        3.25,
+        19.15
+      ],
+      "faces": {
+        "east": {
+          "texture": "#rubber",
+          "uv": [
+            0,
+            12.75,
+            1.0,
+            13.75
+          ]
+        },
+        "west": {
+          "texture": "#rubber",
+          "uv": [
+            15.0,
+            12.75,
+            16.0,
+            13.75
+          ]
+        },
+        "south": {
+          "texture": "#rubber",
+          "uv": [
+            3.3,
+            12.75,
+            3.6,
+            13.75
+          ]
+        },
+        "north": {
+          "texture": "#rubber",
+          "uv": [
+            12.4,
+            12.75,
+            12.7,
+            13.75
+          ]
+        },
+        "up": {
+          "texture": "#rubber",
+          "uv": [
+            3.3,
+            15.0,
+            3.6,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#rubber",
+          "uv": [
+            3.3,
+            0,
+            3.6,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.0,
+        1.5,
+        17.15
+      ],
+      "to": [
+        2.5,
+        2.5,
+        19.4
+      ],
+      "faces": {
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            13.75,
+            13.5,
+            16.0,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            2.0,
+            13.5,
+            2.5,
+            14.5
+          ]
+        },
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            13.5,
+            13.5,
+            14.0,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            2.0,
+            13.75,
+            2.5,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#hardware",
+          "uv": [
+            2.0,
+            0,
+            2.5,
+            2.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.2,
+        8,
+        13.5
+      ],
+      "to": [
+        2.5,
+        8.8,
+        14.3
+      ],
+      "faces": {
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            13.5,
+            7.2,
+            14.3,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            1.2,
+            7.2,
+            2.5,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            13.5,
+            7.2,
+            14.8,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            1.2,
+            13.5,
+            2.5,
+            14.3
+          ]
+        },
+        "down": {
+          "texture": "#hardware",
+          "uv": [
+            1.2,
+            1.7,
+            2.5,
+            2.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.2,
+        8.8,
+        13.5
+      ],
+      "to": [
+        1.7,
+        9.8,
+        14.3
+      ],
+      "faces": {
+        "east": {
+          "texture": "#hardware",
+          "uv": [
+            1.7,
+            6.2,
+            2.5,
+            7.2
+          ]
+        },
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            13.5,
+            6.2,
+            14.3,
+            7.2
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            1.2,
+            6.2,
+            1.7,
+            7.2
+          ]
+        },
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            14.3,
+            6.2,
+            14.8,
+            7.2
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            1.2,
+            13.5,
+            1.7,
+            14.3
+          ]
+        }
+      }
+    }
+  ]
+}
