@@ -48,6 +48,7 @@ logged in [Fix status](#fix-status), each with its own before and after.
 | S1 | Street sign: the same for the blade legend; `blades()` built once | `66a5edad4` | 63.6 µs (both blades, lit) | 8.5 µs. Pixels identical by day and night |
 | - | Syncs sent from `neighborChanged` go out at the end of the server tick (`CsmDeferredSync`), behind the block change that caused them; blankout and crosswalk bodies draw directly if no list can be allocated | `751e47bf2` | a sync could beat its block change and leave a stale cache | kit and cover right within 250 ms, zero changed pixels |
 | P3 | Emergency lights: glow compiled once per block class into a list shared by every light (`CsmSharedDisplayLists`), both bulbs in one draw | `7d5af67c4` | 16.6 µs a light live (46 draws before) | 1.4 µs a light; 256 placed, 155 in view: frame 3.3 to 0.9 ms. Pixels: lit area within 3 levels on every pair, one baked/live pair identical |
+| - | Parking meters: each head's window (and the EXPIRED flag) one vertex-coloured shared list per look and head size, the needle one list under its sweep, the fixed texts and a pay station's count shared lists keyed on the string and head size; windows first under one bind, then text under one; a digital reading formatted once a second per head, not per frame | 2026-09-26 | 256 copies, per call: digital double paid 8.9-9.5 µs, expired 6.6-6.7; mechanical double paid 8.1-8.4; pay station 5.0-5.6 | 5.8-6.4, 4.8-5.1; 6.0-6.4; 4.4. Frame at 256 mechanical doubles 2.15-2.20 to 1.82 ms. Pixels identical by the matched-second pairs (the LCD ticks) |
 
 Every "before" and "after" in one row is from the same session and scene, A/B/A through a render
 toggle (`sharedBakesPerFrame`, `signalLayoutPerFrame`, the sign `*PerFrame` toggles), with
@@ -93,7 +94,7 @@ running" and were resumed; the rest are furnishings with no renderer).
 - New renderers since 09-21 (Streetscape, Life Safety, furniture): the costliest is the parking
   meter, 8.7 µs for a double head, confirmed alone. It draws every rectangle as its own draw call
   and sets its text every frame, per head. A candidate for the shared-list treatment (static
-  face per head size, text keyed on the string shown), not done: meters are few per street.
+  face per head size, text keyed on the string shown); done 2026-09-26, see Fix status.
 
 **Chunk geometry.** `model_depth.py` now removes faces a model's own closed opaque boxes hide
 (`audit_model_weight.py` reports what is left): 6,011 quads from 656 models, 6-16% of each, most

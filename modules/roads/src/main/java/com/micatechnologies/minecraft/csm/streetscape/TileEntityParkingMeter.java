@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -63,6 +64,15 @@ public class TileEntityParkingMeter extends AbstractTileEntity {
   /** Client only: whether the server charges money (SUM) rather than emeralds. */
   private boolean moneyMode;
 
+  /**
+   * Client render cache, render thread only: the digital reading each head last showed and the
+   * whole seconds it shows, so the renderer formats and measures it once a second rather than
+   * every frame. The text depends on nothing but the seconds.
+   */
+  private final long[] readingSeconds = {-1, -1};
+  private final String[] readingText = new String[2];
+  private final int[] readingWidth = new int[2];
+
   // ----------------------------------------------------------------------------------------
   // Spaces and time
   // ----------------------------------------------------------------------------------------
@@ -89,6 +99,32 @@ public class TileEntityParkingMeter extends AbstractTileEntity {
 
   public boolean isExpired(int space, long now) {
     return remaining(space, now) <= 0;
+  }
+
+  /**
+   * The reading a digital head shows, {@link ParkingPayments#remaining}, remembered per head for
+   * the second it stands for. Render thread only.
+   *
+   * @param head    the head, 0 or 1
+   * @param now     the client's wall clock
+   * @param measure measures the text, called only when it changes
+   *
+   * @return the reading; its width is then {@link #readingWidth(int)}
+   */
+  String reading(int head, long now, ToIntFunction<String> measure) {
+    long millis = remaining(head, now);
+    long seconds = Math.max(0, (millis + 999) / 1000);
+    if (readingSeconds[head] != seconds || readingText[head] == null) {
+      readingText[head] = ParkingPayments.clock(millis);
+      readingWidth[head] = measure.applyAsInt(readingText[head]);
+      readingSeconds[head] = seconds;
+    }
+    return readingText[head];
+  }
+
+  /** The width {@link #reading} measured for a head's current reading. */
+  int readingWidth(int head) {
+    return readingWidth[head];
   }
 
   /** Whether any space is expired at {@code now}. */
