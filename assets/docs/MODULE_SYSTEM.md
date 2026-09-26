@@ -386,7 +386,10 @@ flag reaches `Block` through Roads' `AbstractBlockSign`, so Roads' classes are o
 reference classpath exactly as Technology's are on Text to Speech's. **Neither the dev client nor a green build
 can show this class of bug** -- the dev client runs dev names. Before tagging a release, run
 `dev-env-utils/scripts/check_reobf_refs.py` with the previous release's jars as the baseline, and
-try the release jars in a real launcher.
+try the release jars in a real launcher. The check reads the MCP-to-SRG table the reobfuscator
+applies (RetroFuturaGradle's `mcp-srg.srg` for stable_39, in the Gradle cache), so it fails only
+on a plain name that table renames; Forge's own members, enum constants, an enum's `values` and
+`Object`'s methods reached through a Minecraft class are listed but pass.
 
 **Reading a `csm` asset off the class path means reading every copy.** Each module jar carries its
 own `assets/csm/lang/en_us.lang`, and could carry other same-path files. `getResourceAsStream`

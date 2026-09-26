@@ -479,4 +479,5 @@ both.
 `check_reobf_refs.py` reports `BlockFaceShape.SOLID`, `EnumBlockRenderType.ENTITYBLOCK_ANIMATED`
 and `NonNullList.add` as plain-named references new since 2026.09.17. All three are false positives:
 the SRG mappings keep their names unchanged (enum constants, and a method Minecraft never
-obfuscated).
+obfuscated). The checker now reads the mappings and lets names like these through
+itself (MODULE_SYSTEM.md).
