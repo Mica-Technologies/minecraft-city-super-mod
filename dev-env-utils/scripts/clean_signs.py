@@ -11,6 +11,9 @@ from PIL import Image, ImageFilter
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 import csm_layout as layout
+import sign_texture_size as sts
+# The texture is stored at the size its plate is given by sign_texture_size (the road sign
+# resolution rule), whatever size it is drawn at here.
 BK=os.path.join(SCRIPT_DIR, 'sign_originals_backup') + os.sep
 TRAFFICSIGNS_OWNER = layout.owner_of_folder('trafficsigns')
 def tex_path(tex):
@@ -49,7 +52,7 @@ def clean(tex, bg, dark_thr, accents):
             for col,pred in accents:
                 if pred(r,g,b): px[x,y]=col; break
             else: px[x,y]=bg
-    im.save(tex_path(tex)); return True
+    sts.fit(im, tex).save(tex_path(tex)); return True
 
 def run(only=None):
     n=0

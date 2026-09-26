@@ -8,6 +8,9 @@ from PIL import Image, ImageFilter
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 import csm_layout as layout
+import sign_texture_size as sts
+# The texture is stored at the size its plate is given by sign_texture_size (the road sign
+# resolution rule), whatever size it is drawn at here.
 BK = os.path.join(SCRIPT_DIR, 'sign_originals_backup') + os.sep
 TRAFFICSIGNS_OWNER = layout.owner_of_folder('trafficsigns')
 def tex_path(tex):
@@ -36,7 +39,7 @@ def run():
             print('  MISSING backup', tex); continue
         im = Image.open(src).convert('RGBA').resize((256, 256), Image.LANCZOS)
         im = im.filter(ImageFilter.UnsharpMask(radius=1.5, percent=95, threshold=2))
-        im.save(tex_path(tex)); n += 1
+        sts.fit(im, tex).save(tex_path(tex)); n += 1
     print(f'upscaled {n} signs to 256 (+sharpen)')
 
 if __name__ == '__main__':

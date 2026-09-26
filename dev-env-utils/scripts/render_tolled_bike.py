@@ -7,6 +7,9 @@ from PIL import Image, ImageDraw, ImageFont
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 import csm_layout as layout
+import sign_texture_size as sts
+# The texture is stored at the size its plate is given by sign_texture_size (the road sign
+# resolution rule), whatever size it is drawn at here.
 FONT = layout.resolve_asset("fonts/highway_gothic_wide.ttf")
 TRAFFICSIGNS_OWNER = layout.owner_of_folder("trafficsigns")
 def tex_path(name):
@@ -44,7 +47,7 @@ def run():
     ctext(d,"Alto MTA",Wd/2,(pb[1]+pb[3])/2, fit(d,"Alto MTA",pb[2]-pb[0]-16,40), WHITE)
     # $1.00
     ctext(d,"$1.00",Wd/2,296, fit(d,"$1.00",Wd-70,46), BLACK)
-    im.resize((256,256),Image.LANCZOS).save(tex_path("tolled_bike_lane_sign.png"))
+    sts.fit(im.resize((256,256),Image.LANCZOS), "tolled_bike_lane_sign").save(tex_path("tolled_bike_lane_sign.png"))
     print("recreated tolled_bike_lane")
 
 if __name__=="__main__": run()

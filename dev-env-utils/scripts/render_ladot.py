@@ -6,6 +6,9 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout
+import sign_texture_size as sts
+# The texture is stored at the size its plate is given by sign_texture_size (the road sign
+# resolution rule), whatever size it is drawn at here.
 
 FONT = layout.resolve_asset("fonts/highway_gothic_wide.ttf")
 SS = 4; S = 128 * SS
@@ -60,13 +63,13 @@ def signal_sync():
     img.alpha_composite(ti, (int(lcx-ti.width/2), int(box[1]+8*SS)))
     # up-arrow below SIGNAL in left column
     arrow_up(d, lcx, box[3]-bh*0.26, lcol_w*0.5, bh*0.30, WHITE)
-    img.resize((128,128), Image.LANCZOS).save(tex_path("ladot_signal_sync.png"))
+    sts.fit(img.resize((128,128), Image.LANCZOS), "ladot_signal_sync").save(tex_path("ladot_signal_sync.png"))
 
 def no_stopping():
     # upscale the original (keeps the tow-truck symbols + layout) -- don't recreate
     g = Image.open("dev-env-utils/scripts/sign_originals_backup/ladot_no_stopping.png").convert("RGBA")
     g = g.resize((256,256), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.5, percent=90, threshold=2))
-    g.save(tex_path("ladot_no_stopping.png"))
+    sts.fit(g, "ladot_no_stopping").save(tex_path("ladot_no_stopping.png"))
 
 if __name__ == "__main__":
     signal_sync(); no_stopping(); print("rendered ladot_signal_sync, ladot_no_stopping")

@@ -6,6 +6,9 @@ import sys
 from PIL import Image, ImageDraw, ImageFont
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout
+import sign_texture_size as sts
+# The texture is stored at the size its plate is given by sign_texture_size (the road sign
+# resolution rule), whatever size it is drawn at here.
 FONT = layout.resolve_asset("fonts/highway_gothic_wide.ttf")
 TRAFFICSIGNS_OWNER = layout.owner_of_folder("trafficsigns")
 def tex_path(name):
@@ -74,7 +77,7 @@ def run():
     bb=d.textbbox((0,0),"25 FEET",font=lf); uw=bb[2]-bb[0]
     uy=int(y0 + 4*lh - lh*0.12)
     d.rectangle((W/2-uw/2, uy, W/2+uw/2, uy+3), fill=BLACK)
-    im.save(tex_path("steep_edge_sign.png")); print("steep_edge hybrid (crisp band+text, kept diamond)")
+    sts.fit(im, "steep_edge_sign").save(tex_path("steep_edge_sign.png")); print("steep_edge hybrid (crisp band+text, kept diamond)")
 
 if __name__ == "__main__":
     run()
