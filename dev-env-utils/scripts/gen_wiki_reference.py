@@ -169,7 +169,9 @@ TABS = {
                      "The services a city runs to its buildings: electric meters single and in "
                      "banks, the meter socket, service disconnect, main breaker panel and "
                      "switchboard, gas meters single and in banks, the water meter setter and "
-                     "utility room labels."),
+                     "utility room labels; and the water system: the water tower built to size "
+                     "(legs, riser, bracing, the pedestal column, tanks with their balcony and "
+                     "name band, the caged ladder) and ground storage tanks."),
     "tabtreesplants": ("trees-and-plants", "Trees & Plants",
                        "Street trees built block by block from thin, leaning logs and leaves, "
                        "the Tree Planting Tool, and plantings."),

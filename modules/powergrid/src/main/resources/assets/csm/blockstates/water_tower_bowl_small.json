@@ -1,0 +1,165 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/water/bowl_small_icon"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "tile": "0"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_0_0_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "1"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_0_1_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "2"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_0_0_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "3"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_0_1_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "4"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_0_1_1.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "5"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_0_1_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "6"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_0_0_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "7"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_0_1_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "8"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_0_0_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "9"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_1_0_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "10"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_1_1_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "11"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_1_0_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "12"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_1_1_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "13"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_1_1_1.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "14"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_1_1_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "15"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_1_0_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "16"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_1_1_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "17"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_1_0_0.obj",
+        "y": 180
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/water/water_tower_leg_shaft"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/water_tower_leg_footing"
+      },
+      "when": {
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/water_tower_leg_cap"
+      },
+      "when": {
+        "top": "true"
+      }
+    }
+  ]
+}

@@ -520,6 +520,19 @@ def cost_for(registry, info, ancestors):
             "gas_meter": ("SHEET_METAL", "iron_ingot x2"),
             "gas_meter_bank": ("SHEET_METAL", "iron_ingot x2"),
             "water_meter_setter": ("iron_ingot x2", "FASTENER_KIT"),
+            # the water system
+            "water_tower_leg": ("POLE_SECTION",),
+            "water_tower_riser": ("POLE_SECTION",),
+            "water_tower_brace": ("iron_ingot",),
+            "water_tower_strut": ("iron_ingot",),
+            "caged_ladder": ("iron_ingot",),
+            "water_tower_pedestal": ("SHEET_METAL x2",),
+            "water_tower_bowl_small": ("SHEET_METAL x8", "FASTENER_KIT x2"),
+            "water_tower_spheroid_small": ("SHEET_METAL x8", "FASTENER_KIT x2"),
+            "water_tower_bowl_medium": ("SHEET_METAL x16", "FASTENER_KIT x4"),
+            "water_tower_spheroid_medium": ("SHEET_METAL x16", "FASTENER_KIT x4"),
+            "ground_tank_small": ("SHEET_METAL x6", "CONCRETE_MIX"),
+            "ground_tank_large": ("SHEET_METAL x12", "CONCRETE_MIX x2"),
         }
         if registry in utilities:
             return utilities[registry]

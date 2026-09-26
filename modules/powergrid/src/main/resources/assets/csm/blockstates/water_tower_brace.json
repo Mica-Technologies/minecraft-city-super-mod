@@ -1,0 +1,126 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_rise"
+      },
+      "when": {
+        "axis": "x",
+        "rise": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_rise",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "rise": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_fall"
+      },
+      "when": {
+        "axis": "x",
+        "fall": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_fall",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "fall": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_rise_lo"
+      },
+      "when": {
+        "axis": "x",
+        "rise": "true",
+        "legl": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_rise_lo",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "rise": "true",
+        "legl": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_rise_hi"
+      },
+      "when": {
+        "axis": "x",
+        "rise": "true",
+        "legr": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_rise_hi",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "rise": "true",
+        "legr": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_fall_hi"
+      },
+      "when": {
+        "axis": "x",
+        "fall": "true",
+        "legl": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_fall_hi",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "fall": "true",
+        "legl": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_fall_lo"
+      },
+      "when": {
+        "axis": "x",
+        "fall": "true",
+        "legr": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/brace_fall_lo",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "fall": "true",
+        "legr": "true"
+      }
+    }
+  ]
+}

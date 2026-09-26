@@ -1,0 +1,244 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/water/tank_small_icon"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "tile": "0"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_wall_0_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "0",
+        "below": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_footing_0_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "0",
+        "above": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_roof_0_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "1"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_wall_1_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "1",
+        "below": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_footing_1_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "1",
+        "above": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_roof_1_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "2"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_wall_0_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "2",
+        "below": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_footing_0_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "2",
+        "above": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_roof_0_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "3"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_wall_1_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "3",
+        "below": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_footing_1_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "3",
+        "above": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_roof_1_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "4",
+        "above": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_roof_1_1.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "5"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_wall_1_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "5",
+        "below": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_footing_1_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "5",
+        "above": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_roof_1_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "6"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_wall_0_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "6",
+        "below": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_footing_0_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "6",
+        "above": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_roof_0_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "7"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_wall_1_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "7",
+        "below": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_footing_1_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "7",
+        "above": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_roof_1_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "8"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_wall_0_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "8",
+        "below": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_footing_0_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "8",
+        "above": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_small_roof_0_0.obj",
+        "y": 180
+      }
+    }
+  ]
+}

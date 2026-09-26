@@ -5,6 +5,14 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityFixture;
 import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityPanel;
 import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityRun;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockCagedLadder;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockGroundTank;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockPedestalSection;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockTankTile;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockTowerBrace;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockTowerColumn;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockTowerStrut;
+import com.micatechnologies.minecraft.csm.powergrid.water.TankShapes;
 import com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBox;
 import com.micatechnologies.minecraft.csm.streetscape.UtilityBoxSpec;
 import net.minecraft.block.Block;
@@ -17,7 +25,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * module; see {@code assets/docs/UTILITIES_SYSTEM.md} for why there are two.
  *
  * <p>The block lines are written by {@code dev-env-utils/scripts/gen_utilities_meters.py
- * --fragments}, which measures every box from the model it writes.</p>
+ * --fragments} and {@code gen_utilities_water.py --fragments}, which measure every box from the
+ * model they write.</p>
  *
  * @since 2026.9
  */
@@ -61,5 +70,19 @@ public class CsmTabUtilities extends CsmTab {
     initTabBlock(new BlockUtilityFixture("utility_label_gas", new double[]{1, 9, 15.5, 15, 12.5, 16}));
     initTabBlock(new BlockUtilityFixture("utility_label_water", new double[]{1, 9, 15.5, 15, 12.5, 16}));
     initTabBlock(new BlockUtilityFixture("utility_label_disconnect", new double[]{1, 9, 15.5, 15, 12.5, 16}));
+
+    // --- Water system (gen_utilities_water.py --fragments) ---
+    initTabBlock(new BlockTowerColumn("water_tower_leg", 5.5));
+    initTabBlock(new BlockTowerColumn("water_tower_riser", 6.8));
+    initTabBlock(new BlockTowerBrace("water_tower_brace"));
+    initTabBlock(new BlockTowerStrut("water_tower_strut"));
+    initTabBlock(new BlockCagedLadder("caged_ladder", new double[]{1.2, 0, 1.6, 14.8, 16, 16}));
+    initTabBlock(new BlockPedestalSection("water_tower_pedestal"));
+    initTabBlock(new BlockTankTile("water_tower_bowl_small", TankShapes.BOWL_SMALL));
+    initTabBlock(new BlockTankTile("water_tower_bowl_medium", TankShapes.BOWL_MEDIUM));
+    initTabBlock(new BlockTankTile("water_tower_spheroid_small", TankShapes.SPHEROID_SMALL));
+    initTabBlock(new BlockTankTile("water_tower_spheroid_medium", TankShapes.SPHEROID_MEDIUM));
+    initTabBlock(new BlockGroundTank("ground_tank_small", TankShapes.TANK_SMALL));
+    initTabBlock(new BlockGroundTank("ground_tank_large", TankShapes.TANK_LARGE));
   }
 }

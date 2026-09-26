@@ -1,0 +1,89 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "paint": "csm:blocks/utilities/water/paint",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "dark": "csm:blocks/utilities/water/dark",
+    "steel": "csm:blocks/utilities/water/steel",
+    "particle": "csm:blocks/utilities/water/paint"
+  },
+  "elements": [
+    {
+      "from": [
+        15.4408,
+        16.55,
+        7.2
+      ],
+      "to": [
+        19.2592,
+        18.15,
+        8.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paint",
+          "uv": [
+            0,
+            0,
+            0.5592,
+            0.01
+          ]
+        },
+        "south": {
+          "texture": "#paint",
+          "uv": [
+            15.4408,
+            0,
+            16,
+            0.01
+          ]
+        },
+        "up": {
+          "texture": "#paint",
+          "uv": [
+            15.4408,
+            7.2,
+            16,
+            8.8
+          ]
+        },
+        "down": {
+          "texture": "#paint",
+          "uv": [
+            15.4408,
+            7.2,
+            16,
+            8.8
+          ]
+        },
+        "east": {
+          "texture": "#paint",
+          "uv": [
+            7.2,
+            0,
+            8.8,
+            0.01
+          ]
+        },
+        "west": {
+          "texture": "#paint",
+          "uv": [
+            7.2,
+            0,
+            8.8,
+            0.01
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          17.35,
+          17.35,
+          8
+        ],
+        "axis": "z",
+        "angle": 45
+      }
+    }
+  ]
+}

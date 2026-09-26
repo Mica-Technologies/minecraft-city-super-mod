@@ -1,0 +1,356 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/water/bowl_small_icon"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "slot": "0"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_shell_0.obj"
+      }
+    },
+    {
+      "when": {
+        "slot": "0",
+        "name": "0"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_0.obj"
+      }
+    },
+    {
+      "when": {
+        "slot": "0",
+        "name": "1"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_1.obj"
+      }
+    },
+    {
+      "when": {
+        "slot": "0",
+        "name": "2"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_2.obj"
+      }
+    },
+    {
+      "when": {
+        "slot": "0",
+        "name": "3"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_3.obj"
+      }
+    },
+    {
+      "when": {
+        "slot": "0",
+        "name": "4"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_4.obj"
+      }
+    },
+    {
+      "when": {
+        "slot": "0",
+        "name": "5"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_5.obj"
+      }
+    },
+    {
+      "when": {
+        "slot": "0",
+        "name": "6"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_6.obj"
+      }
+    },
+    {
+      "when": {
+        "slot": "0",
+        "name": "7"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_7.obj"
+      }
+    },
+    {
+      "when": {
+        "slot": "1"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_shell_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "slot": "1",
+        "name": "0"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "slot": "1",
+        "name": "1"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_1.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "slot": "1",
+        "name": "2"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_2.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "slot": "1",
+        "name": "3"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_3.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "slot": "1",
+        "name": "4"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_4.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "slot": "1",
+        "name": "5"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_5.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "slot": "1",
+        "name": "6"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_6.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "slot": "1",
+        "name": "7"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_7.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "slot": "2"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_shell_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "slot": "2",
+        "name": "0"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "slot": "2",
+        "name": "1"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_1.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "slot": "2",
+        "name": "2"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_2.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "slot": "2",
+        "name": "3"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_3.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "slot": "2",
+        "name": "4"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_4.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "slot": "2",
+        "name": "5"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_5.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "slot": "2",
+        "name": "6"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_6.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "slot": "2",
+        "name": "7"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_7.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "slot": "3"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_shell_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "slot": "3",
+        "name": "0"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "slot": "3",
+        "name": "1"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_1.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "slot": "3",
+        "name": "2"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_2.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "slot": "3",
+        "name": "3"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_3.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "slot": "3",
+        "name": "4"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_4.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "slot": "3",
+        "name": "5"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_5.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "slot": "3",
+        "name": "6"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_6.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "slot": "3",
+        "name": "7"
+      },
+      "apply": {
+        "model": "csm:utilities/water/bowl_small_band_0_7.obj",
+        "y": 270
+      }
+    }
+  ]
+}

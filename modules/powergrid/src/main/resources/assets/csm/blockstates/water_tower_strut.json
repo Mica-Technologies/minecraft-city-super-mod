@@ -1,0 +1,59 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/water/strut_run"
+      },
+      "when": {
+        "axis": "x"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/strut_run",
+        "y": 90
+      },
+      "when": {
+        "axis": "z"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/strut_end_l"
+      },
+      "when": {
+        "axis": "x",
+        "legl": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/strut_end_l",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "legl": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/strut_end_r"
+      },
+      "when": {
+        "axis": "x",
+        "legr": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/strut_end_r",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "legr": "true"
+      }
+    }
+  ]
+}

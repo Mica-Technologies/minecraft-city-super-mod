@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "131 blocks in this tab"
+!!! info "136 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -61,6 +61,8 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | NOV Round Concrete Pole (Base 2) | `csm:rcpb2` | 1 | 10 | pickaxe | 1 |
 | NOV Round Concrete Pole (Middle) | `csm:rcpm` | 2 | 10 | pickaxe | 1 |
 | NOV Round Concrete Pole (Top) | `csm:rcpt` | 1 | 10 | pickaxe | 1 |
+| Pedestal Water Tank (Medium) | `csm:water_tower_spheroid_medium_band` | 3 | 12 | pickaxe | 1 |
+| Pedestal Water Tank (Small) | `csm:water_tower_spheroid_small_band` | 3 | 12 | pickaxe | 1 |
 | Poster Board | `csm:ad_poster_board_part` | 1.5 | 10 | pickaxe | 0 |
 | Silver Angled Thin Traffic Pole w/ 1 Mount | `csm:trafficpolehorizontalanglemount1silver` |  | 10 | pickaxe | 1 |
 | Silver Angled Thin Traffic Pole w/ 2 Mounts | `csm:trafficpolehorizontalanglemount2silver` |  | 10 | pickaxe | 1 |
@@ -133,6 +135,9 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Vertical Traffic Signal (Solid, LED, 8-8-12 Inch) | `csm:controllableverticalsolidsignalled8812inch` |  |  |  |  |
 | Vertical Up Left Add-On Signal (Gray) | `csm:controllableverticalupleftaddonsignalgray` |  |  |  |  |
 | Vertical Up Left Signal (Gray) | `csm:controllableverticalupleftsignalgray` |  |  |  |  |
+| Water Tank | `csm:water_tank_part` | 3 | 12 | pickaxe | 1 |
+| Water Tower Tank (Medium) | `csm:water_tower_bowl_medium_band` | 3 | 12 | pickaxe | 1 |
+| Water Tower Tank (Small) | `csm:water_tower_bowl_small_band` | 3 | 12 | pickaxe | 1 |
 | White Angled Thin Traffic Pole w/ 1 Mount | `csm:trafficpolehorizontalanglemount1white` |  | 10 | pickaxe | 1 |
 | White Angled Thin Traffic Pole w/ 2 Mounts | `csm:trafficpolehorizontalanglemount2white` |  | 10 | pickaxe | 1 |
 | White Angled Thin Traffic Pole w/ 4 Mounts | `csm:trafficpolehorizontalanglemount3white` |  | 10 | pickaxe | 1 |

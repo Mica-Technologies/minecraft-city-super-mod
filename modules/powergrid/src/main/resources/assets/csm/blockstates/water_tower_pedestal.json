@@ -1,0 +1,69 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/water/pedestal_icon"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/water/pedestal_shaft"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pedestal_footing"
+      },
+      "when": {
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pedestal_cap"
+      },
+      "when": {
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pedestal_door"
+      },
+      "when": {
+        "facing": "north",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pedestal_door",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pedestal_door",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pedestal_door",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "base": "true"
+      }
+    }
+  ]
+}

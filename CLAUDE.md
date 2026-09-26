@@ -87,7 +87,7 @@ container per jar.
 | `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; four tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection, Emergency Services |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
-| `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; water, sewer, gas yard and telecom to come); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
+| `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size and ground storage tanks; sewer, gas yard and telecom to come); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
 | `modules/technology` | `csm_technology` | CSM: Technology | `technology` |
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology) |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
@@ -119,7 +119,8 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 ├── hvac/             (modules/hvac)
 ├── lifesafety/       # Largest: fire alarms, emergency lighting, exit signs
 ├── lighting/
-├── powergrid/        # Utility poles, electrical infrastructure
+├── powergrid/        # Utility poles, electrical infrastructure; services/ (the building
+│                    # service meters), water/ (the water tower and tanks)
 ├── signage/         (modules/signage) ad kiosks, poster boards, billboards
 ├── parks/           (modules/parks) trees/ (log and leaves kit), planting/ (the tool and its
 │                    generators), landscape/ (plantings), amenities/ (the Parks tab)
@@ -383,7 +384,13 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/LIGHTING_SYSTEM.md` -- 4-state on/off control, light-up air projection, AbstractBrightLight, the decorative pendant/sconce family and its 3-material OBJ finish/lens pattern
 - `assets/docs/UTILITIES_SYSTEM.md` -- The Utilities module (was Power Grid; mod id `csm_powergrid`
   kept): why only the display name changed, why it requires Roads, why two tabs (Power Grid and
-  Utilities); the Forge Energy integration and the utility pole pieces
+  Utilities); the Forge Energy integration and the utility pole pieces; the building service
+  meters; the water system: a tower stacked to size (legs, riser, bracing placed along a square
+  panel's diagonals, the pedestal column) under a tank placed whole, a tank as a grid of
+  three-block tiles that find their place by counting their neighbours (one registry name a tank,
+  nothing stored per tile), its OBJ lathe cut at the tile faces, the collision map written from
+  the same profile, the balcony, the name band, ground tanks stacked a layer at a time, what was
+  cut and the traps
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system,
   how large a sign face texture may be (85.3 texels a block of plate; `SignTextureSizeTest` fails
   the build on a larger one),
@@ -885,6 +892,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   register are animated textures, so nothing ticks. Parts shared between blocks (the meter, the
   gas meter body and outlet) are one model file each. Text writes keep each file's line
   endings; `--check`, `--fragments`
+- `gen_utilities_water.py` -- the Utilities tab's water system (Utilities module), importing the
+  meters generator's catalogue and element helpers: the tower's stacking pieces as JSON (legs and
+  riser with pier or cap, the tie rod corner to corner of a block that X-braces a square panel,
+  struts, the caged ladder, the 16-sided pedestal column section as eight turned rectangles);
+  the tanks (two multi-leg sizes with their balcony, two pedestal sizes, two ground tanks stacked
+  a layer at a time) as one 16-gon OBJ lathe per shape, clipped at the faces of each three-block
+  tile and written for one tile of each quarter-turn orbit only, the blockstate turning it to the
+  rest; the band tiles' shells and a decal per town name off one 128 px sheet; and
+  `TankShapes.java`, every tank's cell map voxelised from the same profile, so collision and
+  drawing cannot disagree. OBJ v runs down the texture (a multipart OBJ takes no flip-v);
+  `--check`, `--fragments`, `--report` (the tanks' OBJ quads)
 - `build_transit_demo.py` -- builds the Transit demo world in a flat creative world loaded in a
   dev client, over MCMCP (borrowing `csm_bench.py`'s client; `--client-port`, `--server-port` and
   `--config` aim it at a client other than the dev client): a bus street with every agency's

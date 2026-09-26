@@ -1,0 +1,86 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "paint": "csm:blocks/utilities/water/paint",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "dark": "csm:blocks/utilities/water/dark",
+    "steel": "csm:blocks/utilities/water/steel",
+    "particle": "csm:blocks/utilities/water/paint",
+    "door": "csm:blocks/utilities/water/door"
+  },
+  "elements": [
+    {
+      "from": [
+        2.5,
+        4,
+        -15.7
+      ],
+      "to": [
+        13.5,
+        28.5,
+        -14.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paint",
+          "uv": [
+            0,
+            0,
+            11,
+            15.5
+          ]
+        },
+        "east": {
+          "texture": "#paint",
+          "uv": [
+            0,
+            0,
+            1,
+            15.5
+          ]
+        },
+        "west": {
+          "texture": "#paint",
+          "uv": [
+            0,
+            0,
+            1,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#paint",
+          "uv": [
+            0,
+            0,
+            11,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.3,
+        4.2,
+        -15.9
+      ],
+      "to": [
+        12.7,
+        27.7,
+        -15.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#door",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

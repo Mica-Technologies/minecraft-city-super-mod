@@ -1,0 +1,663 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/water/spheroid_medium_icon"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "tile": "0"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty"
+      }
+    },
+    {
+      "when": {
+        "tile": "1"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty"
+      }
+    },
+    {
+      "when": {
+        "tile": "2"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_2_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "3"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty"
+      }
+    },
+    {
+      "when": {
+        "tile": "4"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "5"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "6"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_1_1.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "7"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_2_1.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "8"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_1_1.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "9"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "10"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_2_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "11"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_2_1.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "12"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_2_2.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "13"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_2_1.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "14"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_2_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "15"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "16"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_1_1.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "17"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_2_1.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "18"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_1_1.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "19"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "20"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "21"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "22"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_0_2_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "23"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "24"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "25"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_0_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "26"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_1_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "27"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_2_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "28"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_3_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "29"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_0_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "30"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_3_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "31"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_1_1.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "32"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_2_1.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "33"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_1_1.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "34"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_1_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "35"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_2_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "36"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_2_1.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "37"
+      },
+      "apply": {
+        "model": "csm:utilities/water/tank_empty"
+      }
+    },
+    {
+      "when": {
+        "tile": "38"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_2_1.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "39"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_2_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "40"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_1_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "41"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_1_1.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "42"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_2_1.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "43"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_1_1.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "44"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_3_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "45"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_0_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "46"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_3_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "47"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_2_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "48"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_1_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "49"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_1_0_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "50"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_0_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "51"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_1_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "52"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_2_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "53"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_3_0.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "54"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_0_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "55"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_3_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "56"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_1_1.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "57"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_2_1.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "58"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_1_1.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "59"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_1_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "60"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_2_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "61"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_2_1.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "62"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_2_2.obj"
+      }
+    },
+    {
+      "when": {
+        "tile": "63"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_2_1.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "64"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_2_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "65"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_1_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "66"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_1_1.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "67"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_2_1.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "68"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_1_1.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "69"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_3_0.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tile": "70"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_0_0.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tile": "71"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_3_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "72"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_2_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "73"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_1_0.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tile": "74"
+      },
+      "apply": {
+        "model": "csm:utilities/water/spheroid_medium_2_0_0.obj",
+        "y": 180
+      }
+    }
+  ]
+}

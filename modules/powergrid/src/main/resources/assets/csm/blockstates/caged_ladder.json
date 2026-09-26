@@ -1,0 +1,156 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_rails"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_rails",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_rails",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_rails",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_cage"
+      },
+      "when": {
+        "facing": "north",
+        "cage": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_cage",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "cage": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_cage",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "cage": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_cage",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "cage": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_feet"
+      },
+      "when": {
+        "facing": "north",
+        "bottom": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_feet",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "bottom": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_feet",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "bottom": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_feet",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "bottom": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_grab"
+      },
+      "when": {
+        "facing": "north",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_grab",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_grab",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/ladder_grab",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "top": "true"
+      }
+    }
+  ]
+}
