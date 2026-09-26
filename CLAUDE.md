@@ -87,7 +87,7 @@ container per jar.
 | `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; four tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection, Emergency Services |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
-| `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer, gas yard and telecom to come); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
+| `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall headwall, flap gate, wingwalls and riprap, the pond outlet riser and emergency spillway, manhole sections whole and cut away; gas yard and telecom to come); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
 | `modules/technology` | `csm_technology` | CSM: Technology | `technology` |
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology) |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
@@ -390,7 +390,12 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   three-block tiles that find their place by counting their neighbours (one registry name a tank,
   nothing stored per tile), its OBJ lathe cut at the tile faces, the collision map written from
   the same profile, the balcony, the name band, ground tanks stacked a layer at a time, the pump
-  station's pipe runs, fittings and pumps, what was cut and the traps
+  station's pipe runs, fittings and pumps; sewer and stormwater: the double-leaf hatch placed as
+  a pair and set in the ground, the redstone-lit control panel and click-started generator on
+  Roads' utility box, the curb inlet at the external road mod's curb height, the headwall with
+  its pipe and flap gate, wingwalls one slope over two blocks, riprap drawn by position, the
+  outlet riser and manhole sections stacking like poles, the manhole climbed on its steps and cut
+  away for a side view; what was cut and the traps
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system,
   how large a sign face texture may be (85.3 texels a block of plate; `SignTextureSizeTest` fails
   the build on a larger one),
@@ -907,6 +912,18 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   vault, the backflow hot box, and the chemical feed skid and chlorine cylinder scale. OBJ v runs
   down the texture (a multipart OBJ takes no flip-v); `--check`, `--fragments`, `--report` (the
   tanks' OBJ quads)
+- `gen_utilities_sewer.py` -- the Utilities tab's sewer and stormwater pieces (Utilities
+  module), importing the meters generator's catalogue and the water generator's OBJ polygons and
+  lathes: the access hatches (one leaf a block, collar, frame, the leaf shut or stood on its
+  hinge, the wet well's safety grate), the lift station control panel (beacon and flood light
+  swapped by `on`) and standby generator (display and rain cap swapped by `on`) on Roads' utility
+  box, the curb inlet (end walls and Streetscape's STORM lid only at a run's end), the headwall
+  (coping and end faces by neighbour; its face round the pipe one convex polygon per edge of the
+  16-gon hole, the pipe and flap gate OBJ lathes turned to run north), the wingwall (one slope
+  over two OBJ wedges), riprap (two stone drawings, four turns, picked by position), the outlet
+  riser and spillway, and the manhole rings, base and cone as OBJ lathes, the cutaways their back
+  half with the cut faces added. Reuses the water system's textures; `--check`, `--fragments`,
+  `--report` (OBJ quads)
 - `build_transit_demo.py` -- builds the Transit demo world in a flat creative world loaded in a
   dev client, over MCMCP (borrowing `csm_bench.py`'s client; `--client-port`, `--server-port` and
   `--config` aim it at a client other than the dev client): a bus street with every agency's
