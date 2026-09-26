@@ -111,11 +111,17 @@ def meter_post(top):
             + post(8, 8, 1.6, 0, 0.5, "post"))
 
 
+# How far a window stands proud of its housing. model_depth.py separates faces closer than 0.2,
+# and a window drawn closer was moved out past the display the renderer draws in front of it,
+# hiding every meter's display; at 0.2 it stays where the display is told it is.
+WINDOW_PROUD = 0.2
+
+
 def window(cx, cy, z, w, h):
     """A head's dark window, and the display the renderer draws over it."""
-    el = slab([cx - w / 2 - 0.2, cy - h / 2 - 0.2, z - 0.05], [cx + w / 2 + 0.2, cy + h / 2 + 0.2,
-                                                                z], "glass", ("north",))
-    return el, [round(cx, 3), round(cy, 3), round(z - 0.05, 3), round(w, 3), round(h, 3)]
+    el = slab([cx - w / 2 - 0.2, cy - h / 2 - 0.2, z - WINDOW_PROUD],
+              [cx + w / 2 + 0.2, cy + h / 2 + 0.2, z], "glass", ("north",))
+    return el, [round(cx, 3), round(cy, 3), round(z - WINDOW_PROUD, 3), round(w, 3), round(h, 3)]
 
 
 def mechanical_head(cx, y0, width=4.8):
