@@ -102,7 +102,7 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
     }
 
     EnumFacing facing = EnumFacing.NORTH;
-    if (state.getProperties().containsKey(FACING)) {
+    if (state.getPropertyKeys().contains(FACING)) {
       facing = state.getValue(FACING);
     }
 

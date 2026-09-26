@@ -2411,7 +2411,7 @@ public class TrafficSignalControllerTickerUtilities {
    */
   private static EnumFacing signalFacingOrNull(World world, BlockPos pos) {
     IBlockState state = world.getBlockState(pos);
-    if (state.getProperties().containsKey(BlockHorizontal.FACING)) {
+    if (state.getPropertyKeys().contains(BlockHorizontal.FACING)) {
       return state.getValue(BlockHorizontal.FACING);
     }
     return null;

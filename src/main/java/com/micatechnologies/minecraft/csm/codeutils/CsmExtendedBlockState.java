@@ -2,6 +2,8 @@ package com.micatechnologies.minecraft.csm.codeutils;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -65,19 +67,51 @@ public class CsmExtendedBlockState extends ExtendedBlockState {
 
     private CsmStateLayout layout;
     private int index;
+    /** Its property map until the layout numbers it; then null. Null in a dirty state. */
+    @Nullable
+    private ImmutableMap<IProperty<?>, Comparable<?>> pending;
 
-    protected State(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties,
+    /**
+     * A clean state, from the container ({@code layout} null, {@code properties} its map), or a
+     * dirty one, from {@code withProperty} ({@code layout} set, {@code properties} ignored).
+     */
+    protected State(Block block, @Nullable ImmutableMap<IProperty<?>, Comparable<?>> properties,
         ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties,
         @Nullable CsmStateLayout layout, int index, @Nullable IBlockState clean) {
-      super(block, properties, unlistedProperties, null, clean);
+      super(block, CsmBlockStateContainer.NO_MAP, unlistedProperties, null, clean);
       this.layout = layout;
       this.index = index;
+      this.pending = layout == null ? properties : null;
     }
 
     @Override
     public void csmAttach(CsmStateLayout layout, int index) {
       this.layout = layout;
       this.index = index;
+      this.pending = null;
+    }
+
+    @Override
+    public Collection<IProperty<?>> getPropertyKeys() {
+      return layout == null ? Collections.unmodifiableCollection(pending.keySet()) : layout.keys();
+    }
+
+    @Override
+    public <T extends Comparable<T>> T getValue(IProperty<T> property) {
+      if (layout == null) {
+        return CsmBlockStateContainer.pendingValue(pending, property, getBlock());
+      }
+      return layout.value(index, property);
+    }
+
+    @Override
+    public ImmutableMap<IProperty<?>, Comparable<?>> getProperties() {
+      return layout == null ? pending : layout.properties(index);
+    }
+
+    @Override
+    public int hashCode() {
+      return layout == null ? pending.hashCode() : layout.hash(index);
     }
 
     @Override
@@ -93,8 +127,8 @@ public class CsmExtendedBlockState extends ExtendedBlockState {
         return clean;
       }
       int cleanIndex = clean == this ? index : ((State) clean).index;
-      return new State(getBlock(), clean.getProperties(), getUnlistedProperties(), layout,
-          cleanIndex, cleanState);
+      return new State(getBlock(), null, getUnlistedProperties(), layout, cleanIndex,
+          cleanState);
     }
 
     @Override
@@ -129,7 +163,7 @@ public class CsmExtendedBlockState extends ExtendedBlockState {
       if (clean) {
         return (IExtendedBlockState) getClean();
       }
-      return new State(getBlock(), getProperties(), builder.build(), layout, index, getClean());
+      return new State(getBlock(), null, builder.build(), layout, index, getClean());
     }
 
     @Override

@@ -252,7 +252,7 @@ public abstract class AbstractPoweredBlockRotatableNSEWUD extends AbstractBlock 
       IBlockState actualState = source.getBlockState(pos).getActualState(source, pos);
 
       // Rotate the bounding box based on the facing direction if FACING property is present
-      if (actualState.getProperties().containsKey(FACING)) {
+      if (actualState.getPropertyKeys().contains(FACING)) {
         return RotationUtils.rotateBoundingBoxByFacing(
             getBlockBoundingBox(actualState, source, pos),
             actualState.getValue(FACING));

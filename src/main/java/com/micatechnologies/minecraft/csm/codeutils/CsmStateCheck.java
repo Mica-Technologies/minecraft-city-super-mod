@@ -118,6 +118,14 @@ public final class CsmStateCheck {
         failures.add(id + ": state " + i + " is " + a + ", vanilla " + b);
         return checks;
       }
+      for (IProperty p : props) {
+        checks++;
+        if (!a.getValue(p).equals(b.getValue(p)) || !a.getPropertyKeys().contains(p)) {
+          failures.add(id + ": state " + a + " value of " + p.getName() + " is " + a.getValue(p)
+              + ", vanilla " + b.getValue(p));
+          return checks;
+        }
+      }
       toMine.put(b, a);
       mineSet.add(a);
     }

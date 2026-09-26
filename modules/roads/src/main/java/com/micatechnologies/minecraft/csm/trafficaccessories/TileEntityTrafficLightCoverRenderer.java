@@ -274,10 +274,10 @@ public class TileEntityTrafficLightCoverRenderer
    */
   @Nullable
   private static EnumFacing readSignalFacing(IBlockState signalState) {
-    if (signalState.getProperties().containsKey(AbstractBlockRotatableNSEW.FACING)) {
+    if (signalState.getPropertyKeys().contains(AbstractBlockRotatableNSEW.FACING)) {
       return signalState.getValue(AbstractBlockRotatableNSEW.FACING);
     }
-    if (signalState.getProperties().containsKey(AbstractBlockRotatableNSEWUD.FACING)) {
+    if (signalState.getPropertyKeys().contains(AbstractBlockRotatableNSEWUD.FACING)) {
       EnumFacing facing = signalState.getValue(AbstractBlockRotatableNSEWUD.FACING);
       return facing.getAxis() == EnumFacing.Axis.Y ? null : facing;
     }

@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
@@ -28,6 +29,14 @@ import net.minecraft.block.state.IBlockState;
  * <p>The properties are in the container's order (sorted by name) and each property's values in
  * the order its {@link IProperty#getAllowedValues()} gives them, which is also the order the
  * vanilla table walks them in.</p>
+ *
+ * <p>The layout also answers for each state's own property map, so that no state holds one.
+ * Vanilla keeps an {@code ImmutableMap} of property to value in every state, about 330 bytes a
+ * state and 90 MB for CSM. A CSM state keeps only its number: {@link #value} reads a value by
+ * arithmetic, {@link #keys} is one list for the block, {@link #hash} is the vanilla map's hash
+ * code, computed once, and {@link #properties} builds the vanilla map when something asks for
+ * it. That last one allocates, so code that only wants to know whether a state has a property
+ * asks {@code getPropertyKeys().contains(p)}, not {@code getProperties().containsKey(p)}.</p>
  *
  * @see CsmBlockStateContainer
  * @see CsmExtendedBlockState
@@ -54,6 +63,10 @@ public final class CsmStateLayout {
   private final ImmutableMap<?, Integer>[] valueIndex;
   private final int[] strides;
   private final IBlockState[] states;
+  /** The vanilla hash code of each state, by number: its property map's. */
+  private final int[] hashes;
+  /** The properties in order, handed out as every state's key collection. */
+  private final Collection<IProperty<?>> keys;
 
   private CsmStateLayout(BlockStateContainer container) {
     this.block = container.getBlock();
@@ -79,6 +92,8 @@ public final class CsmStateLayout {
       count *= values[i].size();
     }
     states = new IBlockState[count];
+    hashes = new int[count];
+    keys = Collections.unmodifiableCollection(ImmutableList.copyOf(properties));
   }
 
   /**
@@ -90,11 +105,13 @@ public final class CsmStateLayout {
   static void attach(BlockStateContainer container) {
     CsmStateLayout layout = new CsmStateLayout(container);
     for (IBlockState state : container.getValidStates()) {
-      int index = layout.indexOf(state.getProperties());
+      ImmutableMap<IProperty<?>, Comparable<?>> map = state.getProperties();
+      int index = layout.indexOf(map);
       if (layout.states[index] != null) {
         throw new IllegalStateException("Two states of " + container + " share number " + index);
       }
       layout.states[index] = state;
+      layout.hashes[index] = map.hashCode();
       ((Holder) state).csmAttach(layout, index);
     }
     for (IBlockState state : layout.states) {
@@ -114,6 +131,72 @@ public final class CsmStateLayout {
       index += v * strides[i];
     }
     return index;
+  }
+
+  /**
+   * The properties, in order, as the key collection of every state of the block.
+   *
+   * @return the properties, unmodifiable
+   */
+  Collection<IProperty<?>> keys() {
+    return keys;
+  }
+
+  /**
+   * The vanilla hash code of state number {@code index}: its property map's.
+   *
+   * @param index the number
+   *
+   * @return the hash code
+   */
+  int hash(int index) {
+    return hashes[index];
+  }
+
+  /**
+   * The value of a property in state number {@code index}, as vanilla's {@code getValue}: found
+   * by identity or, failing that, equality, and cast to the property's value class.
+   *
+   * @param index    the number
+   * @param property the property
+   * @param <T>      the value type
+   *
+   * @return the value
+   *
+   * @throws IllegalArgumentException with vanilla's message, when the block has no such property
+   */
+  <T extends Comparable<T>> T value(int index, IProperty<T> property) {
+    int p = propertyIndex(property);
+    if (p < 0) {
+      throw new IllegalArgumentException("Cannot get property " + property
+          + " as it does not exist in " + block.getBlockState());
+    }
+    List<?> allowed = values[p];
+    return property.getValueClass().cast(allowed.get((index / strides[p]) % allowed.size()));
+  }
+
+  /**
+   * The property map of state number {@code index}, equal to the one vanilla would hold, built
+   * on each call. Callers on a hot path use {@link #value} or {@link #keys} instead.
+   *
+   * @param index the number
+   *
+   * @return the map, in property order
+   */
+  ImmutableMap<IProperty<?>, Comparable<?>> properties(int index) {
+    switch (properties.length) {
+      case 0:
+        return ImmutableMap.of();
+      case 1:
+        return ImmutableMap.of(properties[0], (Comparable<?>) values[0].get(index % values[0].size()));
+      default:
+        ImmutableMap.Builder<IProperty<?>, Comparable<?>> b = ImmutableMap.builder();
+        for (int p = 0; p < properties.length; p++) {
+          List<?> allowed = values[p];
+          b.put(properties[p], (Comparable<?>) allowed.get((index / strides[p]) % allowed.size()));
+        }
+        return b.build();
+    }
   }
 
   /**

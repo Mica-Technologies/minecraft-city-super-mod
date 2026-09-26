@@ -164,7 +164,7 @@ public abstract class AbstractBlockRotatableHZSixteen extends AbstractBlock {
     // Check if the block below is the same type and has a FACING property
     IBlockState belowState = worldIn.getBlockState(pos.down());
     if (belowState.getBlock() instanceof AbstractBlockRotatableHZSixteen
-        && belowState.getProperties().containsKey(FACING)) {
+        && belowState.getPropertyKeys().contains(FACING)) {
       // If so, use the same direction
       return this.getDefaultState().withProperty(FACING, belowState.getValue(FACING));
     } else {

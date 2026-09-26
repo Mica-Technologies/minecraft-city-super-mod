@@ -95,8 +95,8 @@ public class BlankoutBoxConfigGui extends GuiScreen {
                 return tileEntity.getBlankoutType().getFriendlyName();
             case CYCLE_SIGNAL_COLOR: {
                 IBlockState state = tileEntity.getWorld().getBlockState( blockPos );
-                if ( !state.getProperties()
-                        .containsKey( AbstractBlockControllableSignal.COLOR ) ) {
+                if ( !state.getPropertyKeys()
+                        .contains( AbstractBlockControllableSignal.COLOR ) ) {
                     return "N/A";
                 }
                 return SIGNAL_COLOR_NAMES[ state.getValue(

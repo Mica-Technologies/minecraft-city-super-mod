@@ -198,7 +198,7 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     // Recomputed per-call: signals can flip between vertical and horizontal layout via
     // their TE, and a single per-block-class cache cannot reflect per-position state.
     final AxisAlignedBB box = TrafficSignalBoundingBoxHelper.computeBoundingBox(this, source, pos);
-    if (source == null || pos == null || !state.getProperties().containsKey(FACING)) {
+    if (source == null || pos == null || !state.getPropertyKeys().contains(FACING)) {
       return box;
     }
     // The box follows the model sideways as well as up. A head slid under a span's clamp that kept
@@ -578,7 +578,7 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
 
   /** The facing-to-world-axes half of the nudge conversion, for a state already in hand. */
   private static Vec3d getNudgeOffset(int forward, int side, IBlockState state) {
-    if (!state.getProperties().containsKey(FACING)) {
+    if (!state.getPropertyKeys().contains(FACING)) {
       return Vec3d.ZERO;
     }
     final EnumFacing facing = state.getValue(FACING);

@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.codeutils;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +26,11 @@ import net.minecraftforge.common.property.IUnlistedProperty;
  * {@code withProperty} finds the neighbour by arithmetic over a per-block numbering of the states
  * ({@link CsmStateLayout}); {@link #getPropertyValueTable()} still answers, building the table
  * vanilla would have held when asked.</p>
+ *
+ * <p>Its states hold no property map either: the one vanilla's {@code StateImplementation}
+ * keeps is left empty, and a state answers from the layout ({@link CsmStateLayout#value},
+ * {@link CsmStateLayout#properties}). {@code getProperties()} therefore builds a map on each
+ * call; ask {@code getPropertyKeys().contains(p)} to test for a property.</p>
  *
  * <p>Use it exactly where {@code new BlockStateContainer(this, ...)} would be written. A block
  * with unlisted properties uses {@link CsmExtendedBlockState}; {@link Builder} picks between them
@@ -63,20 +70,54 @@ public class CsmBlockStateContainer extends BlockStateContainer {
     return new State(block, properties);
   }
 
-  /** A state that finds its neighbours through the block's {@link CsmStateLayout}. */
+  /** The property map vanilla's state holds for every CSM state: none. */
+  static final ImmutableMap<IProperty<?>, Comparable<?>> NO_MAP = ImmutableMap.of();
+
+  /**
+   * A state that finds its neighbours, and its property values, through the block's
+   * {@link CsmStateLayout}.
+   */
   public static class State extends StateImplementation implements CsmStateLayout.Holder {
 
     private CsmStateLayout layout;
     private int index;
+    /** Its property map until the layout numbers it; then null. */
+    @Nullable
+    private ImmutableMap<IProperty<?>, Comparable<?>> pending;
 
     protected State(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties) {
-      super(block, properties);
+      super(block, NO_MAP);
+      this.pending = properties;
     }
 
     @Override
     public void csmAttach(CsmStateLayout layout, int index) {
       this.layout = layout;
       this.index = index;
+      this.pending = null;
+    }
+
+    @Override
+    public Collection<IProperty<?>> getPropertyKeys() {
+      return layout == null ? Collections.unmodifiableCollection(pending.keySet()) : layout.keys();
+    }
+
+    @Override
+    public <T extends Comparable<T>> T getValue(IProperty<T> property) {
+      if (layout == null) {
+        return pendingValue(pending, property, getBlock());
+      }
+      return layout.value(index, property);
+    }
+
+    @Override
+    public ImmutableMap<IProperty<?>, Comparable<?>> getProperties() {
+      return layout == null ? pending : layout.properties(index);
+    }
+
+    @Override
+    public int hashCode() {
+      return layout == null ? pending.hashCode() : layout.hash(index);
     }
 
     @Override
@@ -96,6 +137,17 @@ public class CsmBlockStateContainer extends BlockStateContainer {
         Map<Map<IProperty<?>, Comparable<?>>, StateImplementation> map) {
       // Intentionally empty.
     }
+  }
+
+  /** Vanilla's {@code getValue}, on a state's map before its layout exists. */
+  static <T extends Comparable<T>> T pendingValue(Map<IProperty<?>, Comparable<?>> map,
+      IProperty<T> property, Block block) {
+    Comparable<?> value = map.get(property);
+    if (value == null) {
+      throw new IllegalArgumentException("Cannot get property " + property
+          + " as it does not exist in " + block.getBlockState());
+    }
+    return property.getValueClass().cast(value);
   }
 
   /**

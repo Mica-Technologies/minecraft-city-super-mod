@@ -266,6 +266,17 @@ class CsmBlockStateContainerTest {
       assertEquals(r.toString(), m.toString());
       assertEquals(new ArrayList<>(r.getPropertyKeys()), new ArrayList<>(m.getPropertyKeys()));
       for (IProperty p : props) {
+        assertEquals(r.getValue(p), m.getValue(p));
+        assertTrue(m.getPropertyKeys().contains(p));
+      }
+      if (i == 0) {
+        PropertyBool absent = PropertyBool.create("zz_absent");
+        assertEquals(assertThrows(IllegalArgumentException.class, () -> r.getValue(absent))
+                .getMessage(),
+            assertThrows(IllegalArgumentException.class, () -> m.getValue(absent)).getMessage());
+        assertEquals(r.getPropertyKeys().contains(absent), m.getPropertyKeys().contains(absent));
+      }
+      for (IProperty p : props) {
         for (Object v : p.getAllowedValues()) {
           assertSame(toMine.get(r.withProperty(p, (Comparable) v)),
               m.withProperty(p, (Comparable) v), m + " " + p.getName() + "=" + v);
@@ -280,7 +291,21 @@ class CsmBlockStateContainerTest {
       }
       if (m instanceof BlockStateContainer.StateImplementation) {
         assertNull(readTableField((BlockStateContainer.StateImplementation) m));
+        assertTrue(readMapField((BlockStateContainer.StateImplementation) m).isEmpty(),
+            "a CSM state holds no property map of its own");
       }
+    }
+  }
+
+  /** The vanilla property map field: the shared empty map in every CSM state. */
+  private static Map<?, ?> readMapField(BlockStateContainer.StateImplementation s) {
+    try {
+      java.lang.reflect.Field f = BlockStateContainer.StateImplementation.class
+          .getDeclaredField("properties");
+      f.setAccessible(true);
+      return (Map<?, ?>) f.get(s);
+    } catch (ReflectiveOperationException e) {
+      throw new AssertionError(e);
     }
   }
 

@@ -243,7 +243,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     if (world != null) {
       BlockPos pos = getPos();
       if (horizontal) {
-        if (state.getProperties().containsKey(AbstractBlockControllableSignalHead.FACING)) {
+        if (state.getPropertyKeys().contains(AbstractBlockControllableSignalHead.FACING)) {
           EnumFacing facing = state.getValue(AbstractBlockControllableSignalHead.FACING);
           if (hasPairedSignalAlong(world, pos, facing.rotateYCCW())) {
             mask |= MOUNT_SUPPRESS_LOW;

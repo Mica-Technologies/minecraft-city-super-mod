@@ -359,7 +359,7 @@ public class TrafficSignalProgrammedPhasePlan {
       return null;
     }
     IBlockState state = world.getBlockState(pos);
-    if (state.getProperties().containsKey(AbstractBlockRotatableNSEW.FACING)) {
+    if (state.getPropertyKeys().contains(AbstractBlockRotatableNSEW.FACING)) {
       return state.getValue(AbstractBlockRotatableNSEW.FACING);
     }
     return null;

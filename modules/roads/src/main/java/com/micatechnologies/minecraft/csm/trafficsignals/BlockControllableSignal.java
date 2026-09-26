@@ -188,7 +188,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   private boolean detectAdjacentHorizontal(IBlockAccess world, BlockPos pos) {
     if (!addon) return false;
     IBlockState state = world.getBlockState(pos);
-    if (!state.getProperties().containsKey(FACING)) return false;
+    if (!state.getPropertyKeys().contains(FACING)) return false;
     EnumFacing facing = state.getValue(FACING);
 
     // Scan along facing axis (forward/back) for the primary signal
@@ -215,7 +215,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     // Check left/right (horizontal add-ons are placed beside the main signal,
     // up to 3 blocks away for double add-ons with gaps)
     IBlockState myState = world.getBlockState(pos);
-    if (myState.getProperties().containsKey(FACING)) {
+    if (myState.getPropertyKeys().contains(FACING)) {
       EnumFacing myFacing = myState.getValue(FACING);
       for (EnumFacing side : new EnumFacing[]{myFacing.rotateY(), myFacing.rotateYCCW()}) {
         for (int dist = 1; dist <= 3; dist++) {
@@ -303,7 +303,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
    */
   private int[] findMainSignalOffset(IBlockAccess world, BlockPos pos) {
     IBlockState state = world.getBlockState(pos);
-    if (!state.getProperties().containsKey(FACING)) return new int[]{0, 0, 0};
+    if (!state.getPropertyKeys().contains(FACING)) return new int[]{0, 0, 0};
     EnumFacing facing = state.getValue(FACING);
 
     // Check left/right (perpendicular to facing), up to 3 blocks

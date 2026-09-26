@@ -110,7 +110,7 @@ public final class SignalTrailerBoom {
     if (name == null || !SignalTrailerGeometry.ARM_TRAILER.equals(name.getPath())) {
       return false;
     }
-    if (!state.getProperties().containsKey(AbstractBlockRotatableNSEW.FACING)) {
+    if (!state.getPropertyKeys().contains(AbstractBlockRotatableNSEW.FACING)) {
       return false;
     }
     return state.getValue(AbstractBlockRotatableNSEW.FACING) == run;

@@ -168,7 +168,7 @@ public abstract class AbstractBlockRotatableHZEight extends AbstractBlock {
       float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
     // Stacked on the same kind of block, take its facing, so the two read as one assembly
     IBlockState belowState = worldIn.getBlockState(pos.down());
-    if (belowState.getProperties().containsKey(FACING) && inheritsFacingFrom(belowState)) {
+    if (belowState.getPropertyKeys().contains(FACING) && inheritsFacingFrom(belowState)) {
       return this.getDefaultState().withProperty(FACING, belowState.getValue(FACING));
     } else {
       // Otherwise, determine the direction based on placer's orientation
@@ -269,7 +269,7 @@ public abstract class AbstractBlockRotatableHZEight extends AbstractBlock {
       IBlockState actualState = source.getBlockState(pos).getActualState(source, pos);
 
       // Rotate the bounding box based on the facing direction if FACING property is present
-      if (actualState.getProperties().containsKey(FACING)) {
+      if (actualState.getPropertyKeys().contains(FACING)) {
         return RotationUtils.rotateBoundingBoxByFacing(
             getBlockBoundingBox(actualState, source, pos),
             actualState.getValue(FACING));

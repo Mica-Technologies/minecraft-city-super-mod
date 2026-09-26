@@ -111,7 +111,7 @@ public abstract class AbstractBlockPoweredComputer extends AbstractBlock
   @Nonnull
   public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     IBlockState actualState = source.getBlockState(pos).getActualState(source, pos);
-    if (actualState.getProperties().containsKey(FACING)) {
+    if (actualState.getPropertyKeys().contains(FACING)) {
       return RotationUtils.rotateBoundingBoxByFacing(
           getBlockBoundingBox(actualState, source, pos),
           actualState.getValue(FACING));
