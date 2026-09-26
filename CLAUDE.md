@@ -126,9 +126,10 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 ├── technology/       # Modern tech: servers, routers, TVs
 ├── transit/         (modules/transit) fare/ (fare gates, vending machine, tickets, cards),
 │                    stop/, shelter/, platform/ (station and platform fit-out),
-│                    airport/ (terminal pieces and the flight schedule),
+│                    airport/ (terminal and airside pieces, the flight schedule),
 │                    board/ (bus departure board and bay display),
-│                    station/ (entrances, fare line railing and gate, line bullets)
+│                    station/ (entrances, fare line railing and gate, line bullets,
+│                    booth counter)
 ├── tts/              (modules/tts)
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
 ├── trafficaccessories/
@@ -412,9 +413,11 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/TRANSIT_SYSTEM.md` -- The Transit module: the fare gates (ticket, card and exit
   sensing, the gate's states, operator modes), the fare vending machine and its purchases, the
   ticket and stored-trip card, why the move from Technology kept every registry name, GUI id and
-  asset path; the bus stops (a stop as a stack of pole lengths, fittings that take the pole's
-  style, settling the whole stack, the invented agencies, route plates set by clicking and drawn
-  from shared lists, the arrival display's made-up but steady countdown); the shelters; the
+  asset path; the bus stops (road signs on Roads' sign posts, why there is no pole family, flags
+  hung off the side of the post and double-sided, why `hang` rather than `shift` picks the flag's
+  model and the state mapper that leaves `shift` out, the invented agencies, route plates set by
+  clicking and drawn from shared lists, the arrival display's made-up but steady countdown); the
+  shelters (joining both ways, the roof light, the slot for Signage's ad panel); the
   station and platform fit-out made to complement RCMC (tactile paving, furniture, signs, tile,
   columns, canopy, validator, and keeping clear of a train at the platform edge); the airport
   terminal (terminal only, the metal detector left to Life Safety, a flight schedule made from
@@ -425,7 +428,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   through Core's TTS service; the measured cost); the stations (a kiosk from glass and roof
   pieces on the container's pattern rather than the job trailer's, the open stair and its globe
   lamps, the fare line railing that finds the fare gates above the floor, the service gate as a
-  vanilla fence gate, line bullets, and why the line diagram is RCMC's); and what was left out
+  vanilla fence gate, line bullets, and why the line diagram is RCMC's); the airside (airfield
+  lights switched a circuit at a time, the beacon turning by texture, signs, masts, ground
+  equipment on Roads' utility box, and a jet bridge that draws and collides past its cell); the
+  demo world and its builder; and what was left out and what the module could grow into
 - `assets/docs/HVAC_SYSTEM.md` -- Rooms that hold heat: the thermal simulation (flood-filled
   spaces split into regions, walls/openings/ground/neighbours, implicit step), model-based
   modulating control, vent throw and the thermostat trim, why a partly unloaded room freezes, the
@@ -790,9 +796,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   the three shift models every road sign has (`sign_*`, `_setback`, `_back_to_back` at 28.3, which
   `SignShiftModelTest` and `SignFaceDepthTest` check), in Forge sign blockstates. The flag hangs
   off the side of the post, reaching right or left, so it has those three models per side, picked
-  by its `hang` property (shift crossed with side) with its `shift` variants left empty; the flag
-  models are shared by the agencies, the blockstate filling the plate slots with the plate or a
-  clear texture from `route1`..`route3`. Also the curb plaque; `--check`, `--fragments`
+  by its `hang` property (shift crossed with side), with no `shift` variants (its state mapper
+  leaves `shift` out of the model locations); the flag models are shared by the agencies, the
+  blockstate filling the plate slots with the plate or a clear texture from `route1`..`route3`. Also the curb plaque; `--check`, `--fragments`
 - `gen_transit_shelters.py` -- the bus shelters (Transit): glass and steel, cantilever canopy and
   flat roof, two blocks tall, joining along their length and front to back from actual state
   (`left`, `right`, `ahead`, `behind`). Every part is written once in shelter coordinates (y 0 to
@@ -846,6 +852,15 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   leaf and the same leaf swung a quarter about its hinge, the sixteen line bullets and the booth
   counter; the legends, lines and globe colours are listed as the Java lists them; `--check`,
   `--fragments`
+- `build_transit_demo.py` -- builds the Transit demo world in a flat creative world loaded in a
+  dev client, over MCMCP (borrowing `csm_bench.py`'s client; `--client-port`, `--server-port` and
+  `--config` aim it at a client other than the dev client): a bus street with every agency's
+  stops, flags hung both ways, back to back and set back, every shelter and Signage's ad panel, a
+  bus concourse with boards; a subway station with the kiosk, open stair, fare line, booth and an
+  open-cut platform with the whole fit-out; an airport terminal and its airside with the jet
+  bridge, a stand and four lever-switched light circuits. It checks the Transit tab's
+  registration list against what it placed and puts the rest on signed plinths. The landside is
+  raised to y 8 so the station's lower level fits above bedrock
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

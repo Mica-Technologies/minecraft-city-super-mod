@@ -7,10 +7,12 @@ signs are road signs (below); like Text to Speech on Technology, that is the one
 may name. Its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)`), is found by
 Core's tab scan, and every block and item keeps the `csm:` namespace.
 
-The module holds the working fare system, which it took over from Technology, the bus stops and
-shelters, the bus station departure boards, the station and platform fit-out and the stations' entrances and fare lines, made to complement the stations of RCMC, the
-author's train mod, and an airport's terminal and airside pieces. What it is to grow into is at the end of
-this page.
+The module holds the working fare system, which it took over from Technology; the bus stops and
+shelters; the bus station departure boards; the station and platform fit-out and the stations'
+entrances and fare lines, made to complement the stations of RCMC, the author's train mod; and an
+airport's terminal and airside pieces. A demo world with all of it laid out to walk round is built
+by `dev-env-utils/scripts/build_transit_demo.py` (Demo world, below). What the module was left
+without, and what it may grow into, is at the end of this page.
 
 | Block or item | Registry name | Class |
 |---|---|---|
@@ -289,6 +291,22 @@ paint: road markings belong to the external road mod.
 
 A bus stop bench or bin is Parks'; Transit adds none.
 
+### Traps
+
+- **The flag's blockstate has no `shift` block, on purpose.** `hang` picks the model and carries
+  the shift; the state mapper leaves `shift` out of the model locations. Adding `shift` variants
+  back (or a second property that names a model) brings back the clash described above, and a
+  `shift` block without the mapper's change makes every location miss its variant.
+- **The plate numbers are drawn where the generator put the plates.** `PLATE_MIDDLE_Y`,
+  `FLAG_X_*` and the depths in `BlockBusStopFlag` must match `PLATE_TOPS`, `PLATE_HT`, `SIDES` and
+  `PZ0`/`PZ1` in `gen_transit_stops.py`, or the numbers float off their plates on one side only.
+- **A flag is a road sign, so its shift comes from its neighbours.** A flag with a traffic pole
+  behind it is set back onto the pole, and a flag hung in the block behind another sign's post
+  facing the other way goes back to back; a builder who sees a flag "jump" has usually put it
+  next to one of these.
+- **Nothing on a stop settles.** Only the curb plaque settles onto the surface below; the posts
+  stand where they are placed, and a slab below is what the extension post is for.
+
 ### Prices
 
 `TransitFabricatorRules` prices a stop by what it is made of: a flag a sign blank and a fastener
@@ -369,6 +387,20 @@ that shows livery is a child model naming its own `frame` and `fascia` textures 
 the flat roof). The fascias carry the agency's name and the stripe its flag uses: CITYLINE teal
 with yellow, RIVERWAY navy with orange end bars, VERDANT green with white lines, EMBERLINE red on a
 graphite frame.
+
+### Traps
+
+- **The collision boxes share the generator's numbers.** `BusShelterStyle.collision` and
+  `gen_transit_shelters.py` describe the same walls, bench, posts and roof; change one, change
+  both.
+- **The ad panel slot is 1.25 px of nothing.** The glass shelter's back row stops short of its
+  left end so Signage's panel can put its back lip there; drawing anything in that sliver makes
+  the two fight.
+- **Only shelters of the same block join.** A glass CITYLINE shelter beside a glass RIVERWAY one
+  is two shelters with two sets of end walls, which is right for two agencies' shelters but
+  surprises a builder mixing liveries in one run.
+- **A shelter is placed as a door is.** Set by command or by a script, both halves must be set,
+  the upper with its bit (4), and the lit bit (8) on the upper half only.
 
 ### Prices
 
@@ -523,7 +555,7 @@ Platform** and **Platform Edge** blocks (decking laid at exactly a metro car's f
 edge carrying its own tactile strip), the Station Line Map sign, the Arrival Board, the Station
 Speaker, the operator panel and line desk, and spline track with catenary, switches and
 signalling. So Transit has no platform or edge block, no speaker, no arrival board for platforms
-(its own departure boards, to come, are for bus stops and station concourses), and nothing laid
+(its departure boards, below, are for bus stops and bus concourses), and nothing laid
 along the track: RCMC's track is splines, not blocks, and a block-aligned third-rail cover or
 buffer stop would clash with it. What is here is the fit-out an RCMC station lacks.
 
@@ -648,6 +680,18 @@ the action bar says why. The screen (`light`: 0 idle, 1 accepted, 2 refused, sto
 bits above the facing) goes back to idle after 30 ticks by a scheduled tick; lit, it gives light
 5. Validating opens nothing: pairing a validator with a gate or RCMC's doors is the builder's
 business.
+
+### Traps
+
+- **Tactile paving is an overlay, not a floor.** It stands on the floor block, in the block above
+  it, as carpet does; set in place of the floor it leaves a hole under a one-pixel plate.
+- **A click reaches only the block the aim passes through.** The help point's buttons and the
+  validator's screen are in the lower block for that reason; anything drawn in the space above a
+  block cannot be clicked.
+- **The name list is written twice.** `BlockStationNameSign.NAMES` and the generator's
+  `STATION_NAMES` must stay in the same order: the saved value indexes both.
+- **Keep clear of the train.** Nothing checks RCMC's clearance (Made to complement RCMC, above):
+  a sign or a clock hung over the track is driven through.
 
 ### Prices
 
@@ -1143,14 +1187,60 @@ metal; the cab adds a control board; the rotunda four sheet metal; the drive leg
 sections and a harness; the column two concrete mix; the chocks one sheet metal.
 `audit_fabricator_costs.py` mirrors the branch.
 
+## Demo world
+
+`dev-env-utils/scripts/build_transit_demo.py` builds, over MCMCP, a walkable layout of the whole
+Transit tab in a fresh flat creative world (the saved one is called "Transit Demo"): a bus street
+with a stop for every agency (flags hung left and right, a back-to-back pair, a flag set back onto a
+traffic pole, cases, arrival displays, the plaque), every shelter in every livery with Signage's
+ad panel on one, a bus concourse with a board bank and bay displays; a subway station with the
+kiosk and the open stair, the concourse, fare line and booth below and an open-cut platform with
+the whole fit-out; an airport terminal with check-in, the queue, security, the gate lounge,
+boards, baggage claim and carts; and the airside four blocks below it, with the jet bridge, a stand
+and its ground equipment, the wind sock, beacon and antenna mast, and a taxiway and runway whose
+four circuits are each switched by a labelled lever. It checks the tab's registration list against
+what it placed and puts anything left over on a row of signed plinths, so a new Transit block
+shows up in the demo without anyone remembering to add it. The landside is raised to y 8 so the
+station's lower level fits above bedrock. `--client-port`, `--server-port` and `--config` point it
+at a client other than the dev client.
+
+Two things it has to do that a builder placing by hand does not: throw each circuit's lever off
+and on again at the end (a light placed takes the state of the circuit it joins, so a batch placed
+at once comes up dark), and close the ad panel's setup screen, which opens when the panel is
+placed.
+
 ## Where the module is going
 
-The stations are done (above); what was left out of them is a line diagram strip (RCMC's line
-map sign is that) and direction signs beyond the platform fit-out's TO TRAINS and EXIT. The airport's airside pieces are done (above); what was left out of
-them is a control tower's glazed cab (Building's glazing builds one; the beacon and antenna mast
-top it), a PAPI (its colour depends on the angle it is seen from, which a texture cannot do),
-sloping jet bridge pieces, and any aircraft. The bus departure boards are done (above); there
-will be no train departure board, since RCMC's arrival boards already serve its platforms.
+Every phase planned for the module shipped: the fare system's move, bus stops on Roads' sign
+posts with side-hung flags, shelters with Signage's ad panel, the station and platform fit-out,
+stations, the bus departure boards, and an airport's terminal and airside. What was left out, and
+why, so it is not built by mistake:
+
+- **RCMC's side of a station.** No platform or platform edge block, PA speaker, platform arrival
+  board, line diagram strip or track-side piece (third-rail cover, buffer stop): RCMC has them or
+  lays its track as splines. No train departure board either; RCMC's arrival boards serve its
+  platforms.
+- **Signage that is not wayfinding.** No "to trains" or "to street" direction signs beyond the
+  platform fit-out's TO TRAINS and EXIT, and no exit signage at all: Life Safety has plenty. No
+  floor PAID AREA marking: one block of stencil does not read, and floor paint is the road mod's.
+- **Aircraft**, static or moving, and a control tower's glazed cab (tilted glass corners do not
+  work in JSON elements; Building's glazing builds a cab, which the beacon and antenna mast top). No
+  PAPI (its colour depends on the angle it is seen from), sloping jet bridge pieces, belt loader or
+  container dollies, and the wind sock does not swing.
+- **The walk-through metal detector** is Life Safety's, and duty-free and cafe fit-out is Market &
+  Store's.
+- **Vehicles, road markings and real branding** will not be added: CSM builds infrastructure,
+  road paint belongs to the external road mod, and every agency, airline and livery is invented.
+
+What it could grow into, each a candidate rather than a plan:
+
+- a settable bay number on a bus stop (bays are numbered by world order among the stops a board
+  sees), a setup screen for the departure boards, and speech in other languages;
+- a gate information display over the gate desk, which needs a gate to find its flights (a flight
+  per gate is rare with 80 gates and 72 departures a day), a gate check on the boarding pass
+  scanner, and diagonal queue belts;
+- a jet bridge whose length telescopes or swings, and a visual docking guidance display at a stand;
+- fewer block atlas pixels: Transit's textures are 2.78 Mpx of an atlas that is 95.1% full.
 
 Two rules hold throughout: every agency, livery and route bullet is invented, never a real transit
 brand; and an advertising panel in a shelter is Signage's board, set into the shelter by the
