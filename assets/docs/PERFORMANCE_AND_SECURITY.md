@@ -53,13 +53,14 @@ fix list are in `PERFORMANCE_INVENTORY.md`.
 
 ### Memory
 
-**With every module the client holds about 860 MiB live** after a full GC (859 MiB at the main
-menu, 915 MiB in a flat world; 2026-09-25, `-Xmx6G`, ParallelGC). It was 4.0 GiB, more than the
+**With every module the client holds about 620 MiB live** after a full GC (621 MiB at the main
+menu, 676 MiB in a flat world; 2026-09-25, `-Xmx6G`, ParallelGC). It was 4.0 GiB, more than the
 4 GiB old generation that heap gets, so the client sat in constant full GC and froze every few
 seconds. The first three fixes below took it to 1.7 GiB and launch to the main menu from a median
 of 58 s to 35 s (pre-init 13 s to 1.5 s, and the full GC that no longer happens); the next six took
 it to 0.86 GiB and left launch time where it was: a median of 37 s before them and 36 s after,
-measured interleaved, with the full GC during launch down from 3.3-3.8 s to 1.9-3.0 s.
+measured interleaved, with the full GC during launch down from 3.3-3.8 s to 1.9-3.0 s. Baking each
+distinct model part once then took it to 0.62 GiB and launch from a median of 38 s to 31 s.
 
 | | Main menu | Flat world | Launch (median of 3) | Full GC during launch |
 |---|---|---|---|---|
@@ -73,8 +74,9 @@ measured interleaved, with the full GC during launch down from 3.3-3.8 s to 1.9-
 | MaryTTS loaded on first use | 965 MiB | 1,021 MiB | no change | 6 |
 | Empty quad and override lists shared | 941 MiB | 997 MiB | no change | 6 |
 | State property maps built on demand | 859 MiB | 915 MiB | no change | 6 |
+| Each distinct model part baked once | 621 MiB | 676 MiB | 38 -> 31 s | 5, ~2.6 s |
 
-Launch times for the last six rows were measured interleaved with the build before (A B A B A B),
+Launch times for the last seven rows were measured interleaved with the build before (A B A B A B),
 on a machine also running a game, so single runs varied by +-5 s; "no change" means the medians
 were within that. The six full GCs left in launch are Forge's own `System.gc()` calls.
 
@@ -87,13 +89,42 @@ for its quads, since Forge builds those lazily and asking would build them all.
 model cache, which is released after the bake, so start the game with
 `-Dcsm.keepUnbakedModels=true` to use it.
 
-The mechanisms, and the rule each one makes. The model and sprite ones run on `ModelBakeEvent` at
-the lowest priority, in the order the client proxy registers them, and run again after a resource
-reload, which bakes new models from the files:
+The mechanisms, and the rule each one makes. The part bake cache works during the bake; the other
+model and sprite ones run on `ModelBakeEvent` at the lowest priority, in the order the client proxy
+registers them. All of them run again after a resource reload, which bakes new models from the files:
+
+- **Each distinct model part is baked once** (`CsmPartBakeCache`, `CsmObjModelLoader`, Core,
+  client). Forge bakes a variant's parts (its base model and each sub-model, each retextured and
+  rotated for that variant) again for every variant: 244 thousand part bakes held about 50 thousand
+  distinct parts, and 91% of the OBJ bakes repeated another. A whole variant rarely repeats (20%),
+  so the cache is keyed on parts: on everything the bake reads, by identity where every variant
+  shares the object read from the file (element corners, rotations and faces, the parent model,
+  an OBJ file's groups) and by value where Forge makes one per variant (resolved textures, flags,
+  display transforms, OBJ materials and custom data, and the model state's transform for the whole
+  model and each display perspective). It is active only from the block atlas's
+  `TextureStitchEvent.Pre`, which comes just before Forge's bake loop, to `ModelBakeEvent` (highest
+  priority), and holds nothing after. JSON parts are caught in Forge's own bake cache for
+  `VanillaModelWrapper` (a field of `ModelLoader.VanillaLoader`, replaced by one that forwards to
+  it) for models under `csm:`; CSM's `.obj` files are loaded by `CsmObjModelLoader` (through
+  Forge's `OBJLoader`, which no longer has the `csm` domain), whose `OBJModel` subclass stays that
+  class through `retexture` and `process` and bakes through the cache. A state made of anything
+  but Forge's own transform states (an `OBJState`, an animation state) is baked as before, since it
+  could hide or move a named part. Every module: 148,931 JSON part bakes became 51,754 and 105,736
+  OBJ bakes 9,625; `SimpleBakedModel`s 151 thousand -> 55 thousand, `OBJBakedModel`s (each with its
+  own quad cache, built lazily in the world) 106 thousand -> 10 thousand; 238 MiB less at the
+  menu; baking 10.6 -> 5.6 s, and the post-bake passes below 3.3 -> 2.0 s because they find less.
+  It also frees the unbaked copies the baked models pinned (`this$1`), except one per distinct
+  part. `-Dcsm.noPartBakeCache=true` turns it off (OBJ files go back to Forge's loader).
+  **Rules: a CSM baked model may be one object for many states and items**, so never change one and
+  never key per-state data on a baked model's identity expecting one model per state; **never load
+  CSM's `.obj` files any other way** (no `OBJLoader.addDomain("csm")`: two loaders accepting one
+  model is an error); and **a new kind of model state or part in a CSM blockstate must be added to
+  the key**, or, if it is not one of Forge's transform states, it simply goes uncached.
 
 - **Baked quads are shared** (`CsmQuadSharing`, Core, client). Forge bakes a submodel again for
   every blockstate variant that names it, so 7.0 million baked quads held about 750 thousand
-  distinct ones. After the bake every quad in a `csm:` model's `SimpleBakedModel` lists is
+  distinct ones. With the part bake cache there are 1.9 million, but distinct parts still repeat
+  one another's faces, and the pass still replaces 1.16 million of them (0.7 s, was 1.6). After the bake every quad in a `csm:` model's `SimpleBakedModel` lists is
   replaced by the first equal quad (vertex data, tint, face, sprite, diffuse flag, format). OBJ
   models (lazy), other quad classes and CSM's own baked model classes are left alone. **Rule: never
   write into a baked quad's `getVertexData()` array** -- it is shared by every model that has that
@@ -157,7 +188,8 @@ reload, which bakes new models from the files:
   thousand camera transforms, nearly all equal). They are pointed at one shared, bit-for-bit equal
   instance each; a shared transform has its lazy decomposition computed first, so render threads
   only read it. 151 MiB, for about 0.1 s (names) and 1 s (a reflective walk of 1.7 million model
-  objects) of launch. **Rule: never mutate a transform, a model's transform map, a camera transform
+  objects) of launch. With the part bake cache the walk replaces 250 thousand transforms instead of
+  600 thousand and takes 0.6 s. **Rule: never mutate a transform, a model's transform map, a camera transform
   (its `Vector3f`s included) or a registry key's strings** -- they are shared.
 - **MaryTTS loads on first use** (the TTS module's `MaryTtsEngine`). It was started in post-init on
   every client: 60 MiB and a second and a half of a background thread whether or not anything ever
@@ -194,7 +226,8 @@ A resource reload (F3+T) with every module takes about 30 s, and the integrated 
 player ("Disconnected") while it runs, with or without these fixes. Never reload resources in a
 session someone is using. It used to hold two model sets at once and run out of a 6 GB heap; with
 the retextured copies and the unbaked models released it completes, and the heap after it in a
-flat world is 925 MiB.
+flat world is 692 MiB (930 without the part bake cache). The part bake cache is rebuilt on every
+reload with the same counts and empties at the bake event, so nothing is carried across reloads.
 
 **The heap floor.** Before these fixes CSM needed about 2 GB of heap to start with fewer modules
 (`OutOfMemoryError` in `ModelLoader.setupModelRegistry` at 1-1.5 GB); the floor with every module
