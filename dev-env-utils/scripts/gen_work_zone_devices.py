@@ -42,10 +42,18 @@ Usage:
     python gen_work_zone_devices.py                  # writes into the repo tree
     python gen_work_zone_devices.py --scratch        # writes into _workzone_out/ instead
     python gen_work_zone_devices.py --only traffic_cone traffic_drum
+    python gen_work_zone_devices.py --check          # writes nothing; exits 1 on drift
+
+A file is only rewritten when its text changes, and it keeps the line endings it already has on
+disk, so a run over an untouched checkout leaves ``git status`` clean even where ``core.autocrlf``
+has checked the tree out as CRLF. ``--check`` compares text with line endings ignored, for the
+same reason (``csm_layout.same_generated_text``), and PNGs by their pixels.
 
 Requires Pillow.
 """
 import argparse
+import contextlib
+import io
 import json
 import math
 import os
@@ -67,6 +75,82 @@ SCRATCH_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_workzon
 # Filled by write_barricade_models; the tab's bounding boxes come from the inventory model, which
 # is the widest a barricade ever gets.
 BARRICADE_BOUNDS = {}
+
+# The Type III barricades' item transform. The inventory model is wider than a block, so the
+# slot render is scaled down and dropped to sit inside the 16 px box (measured in a running client
+# with audit_inventory_renders.py). A transform map leaves every type it does not list at identity,
+# so the rest are forge:default-block spelled out; Forge takes these translations in BLOCK units.
+TYPE3_INVENTORY_TRANSFORM = {
+    "gui": {"rotation": [30, 225, 0], "scale": 0.4978, "translation": [0.0, -0.0911, 0.0]},
+    "ground": {"translation": [0, 0.1875, 0], "scale": 0.25},
+    "fixed": {"scale": 0.5},
+    "thirdperson_righthand": {"rotation": [75, 45, 0], "translation": [0, 0.15625, 0],
+                              "scale": 0.375},
+    "thirdperson_lefthand": {"rotation": [75, 45, 0], "translation": [0, 0.15625, 0],
+                             "scale": 0.375},
+    "firstperson_righthand": {"rotation": [0, 45, 0], "scale": 0.4},
+    "firstperson_lefthand": {"rotation": [0, 225, 0], "scale": 0.4},
+}
+
+# --check: when set, nothing is written and every file whose content would change is listed here.
+_CHECK = {"on": False}
+_DRIFT = []
+
+
+def _emit_text(path, text, fragment=False):
+    """Write generated text, keeping the line endings the file already has on disk.
+
+    The repository stores LF, but ``core.autocrlf`` checks the tree out as CRLF on Windows; writing
+    LF over those files would show every one as modified with no change to its text. So the
+    existing file's line endings win, a file whose text has not changed is not touched at all, and
+    a new file is written LF. Fragments go to the scratch folder and are never checked.
+    """
+    old = None
+    if os.path.exists(path):
+        with open(path, "rb") as handle:
+            old = handle.read()
+    if _CHECK["on"]:
+        if fragment:
+            return
+        if old is None or old.decode("utf-8").replace("\r\n", "\n") != text:
+            _DRIFT.append(path)
+        return
+    eol = "\r\n" if old is not None and b"\r\n" in old else "\n"
+    data = text.replace("\n", eol).encode("utf-8")
+    if data != old:
+        with open(path, "wb") as handle:
+            handle.write(data)
+
+
+@contextlib.contextmanager
+def _text_out(path, fragment=False):
+    buffer = io.StringIO()
+    yield buffer
+    _emit_text(path, buffer.getvalue(), fragment)
+
+
+def _save_png(image, path):
+    """Save a texture, leaving the file alone when its pixels have not changed."""
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    data = buffer.getvalue()
+    same = False
+    if os.path.exists(path):
+        with open(path, "rb") as handle:
+            old = handle.read()
+        same = old == data
+        if not same:
+            with Image.open(io.BytesIO(old)) as before, Image.open(io.BytesIO(data)) as after:
+                same = (before.mode == after.mode and before.size == after.size
+                        and before.tobytes() == after.tobytes())
+    if _CHECK["on"]:
+        if not same:
+            _DRIFT.append(path)
+        return
+    if not same:
+        with open(path, "wb") as handle:
+            handle.write(data)
+
 
 # The block centre, which every device is built around. Declared up here because the
 # shape constants below are written relative to it.
@@ -890,7 +974,7 @@ class Mesh:
         lines.append("usemtl %s" % MATERIAL)
         for tri in self.f:
             lines.append("f " + " ".join("%d/%d/%d" % i for i in tri))
-        with open(path, "w", newline="\n") as fh:
+        with _text_out(path) as fh:
             fh.write("\n".join(lines) + "\n")
 
 
@@ -2683,6 +2767,7 @@ DEVICES = {
     },
     "barricade_type_3_left": {
         "barricade": "type3", "top": "BarricadeGeometry.TYPE3_TOP",
+        "inventory_transform": TYPE3_INVENTORY_TRANSFORM,
         "model": "workzone_barricade_type3",
         "texture": "workzone_rail_left",
         "texture_fn": lambda: diagonal_stripe_image(False, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
@@ -2691,6 +2776,7 @@ DEVICES = {
     },
     "barricade_type_3_right": {
         "barricade": "type3", "top": "BarricadeGeometry.TYPE3_TOP",
+        "inventory_transform": TYPE3_INVENTORY_TRANSFORM,
         "model": "workzone_barricade_type3", "build": None,
         "texture": "workzone_rail_right",
         "texture_fn": lambda: diagonal_stripe_image(True, BARRICADE_RAIL_W, BARRICADE_RAIL_H, BARRICADE_STRIPE),
@@ -3033,7 +3119,7 @@ def java_bbox(bounds):
 
 
 def write_mtl(path, texture_name):
-    with open(path, "w", newline="\n") as fh:
+    with _text_out(path) as fh:
         fh.write("# Procedurally generated by dev-env-utils/scripts/gen_work_zone_devices.py"
                  " -- do not hand edit\n")
         fh.write("# One material; every colour variant's blockstate retextures #body.\n")
@@ -3067,10 +3153,10 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
             tex_path = os.path.join(texture_dir, spec["texture"] + ".png")
             if tex_path not in written:
                 set_v_span(spec.get("v_span", 16.0))
-                spec["texture_fn"]().save(tex_path)
+                _save_png(spec["texture_fn"](), tex_path)
                 written.append(tex_path)
             bs_path = os.path.join(blockstate_dir, registry + ".json")
-            with open(bs_path, "w", newline="\n") as fh:
+            with _text_out(bs_path) as fh:
                 json.dump(joining_blockstate(spec), fh, indent=2)
                 fh.write("\n")
             written.append(bs_path)
@@ -3078,10 +3164,10 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
         if "barricade" in spec:
             tex_path = os.path.join(texture_dir, spec["texture"] + ".png")
             if tex_path not in written:
-                spec["texture_fn"]().save(tex_path)
+                _save_png(spec["texture_fn"](), tex_path)
                 written.append(tex_path)
             bs_path = os.path.join(blockstate_dir, registry + ".json")
-            with open(bs_path, "w", newline="\n") as fh:
+            with _text_out(bs_path) as fh:
                 json.dump(barricade_blockstate(spec), fh, indent=2)
                 fh.write("\n")
             written.append(bs_path)
@@ -3115,16 +3201,16 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
         set_v_span(spec.get("v_span", 16.0))
         tex_path = os.path.join(texture_dir, spec["texture"] + ".png")
         if tex_path not in written:
-            spec["texture_fn"]().save(tex_path)
+            _save_png(spec["texture_fn"](), tex_path)
             written.append(tex_path)
         if spec.get("emissive_fn") is not None:
             # OptiFine picks this up by name; nothing references it otherwise.
             emissive_path = os.path.join(texture_dir, spec["texture"] + "_e.png")
-            spec["emissive_fn"]().save(emissive_path)
+            _save_png(spec["emissive_fn"](), emissive_path)
             written.append(emissive_path)
 
         bs_path = os.path.join(blockstate_dir, registry + ".json")
-        with open(bs_path, "w", newline="\n") as fh:
+        with _text_out(bs_path) as fh:
             json.dump(blockstate_json(spec), fh, indent=2)
             fh.write("\n")
         written.append(bs_path)
@@ -3132,7 +3218,7 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
     # Fragments, for pasting into the lang file and the tab. Written rather than applied so the
     # generator never has to parse and rewrite files it does not own.
     lang_path = os.path.join(fragment_dir, "lang_fragment.txt")
-    with open(lang_path, "w", newline="\n") as fh:
+    with _text_out(lang_path, fragment=True) as fh:
         for registry, spec in DEVICES.items():
             if only and registry not in only:
                 continue
@@ -3140,7 +3226,7 @@ def generate(model_dir, texture_dir, blockstate_dir, fragment_dir, only=None):
     written.append(lang_path)
 
     tab_path = os.path.join(fragment_dir, "tab_fragment.java")
-    with open(tab_path, "w", newline="\n") as fh:
+    with _text_out(tab_path, fragment=True) as fh:
         fh.write("// Generated by gen_work_zone_devices.py -- bounding boxes are the models'\n")
         fh.write("// own extents, so they follow the geometry rather than being eyeballed.\n")
         for registry, spec in DEVICES.items():
@@ -3312,7 +3398,8 @@ def barricade_blockstate(spec):
             "inventory": [{"model": "%s_inv.obj" % model,
                            "custom": {"flip-v": True},
                            "textures": {"#%s" % MATERIAL: texture},
-                           "transform": "forge:default-block"}],
+                           "transform": spec.get("inventory_transform",
+                                                 "forge:default-block")}],
         },
     }
 
@@ -3368,7 +3455,7 @@ def write_barricade_geometry():
         "  }",
         "}",
     ]
-    with open(path, "w", newline="\n") as fh:
+    with _text_out(path) as fh:
         fh.write("\n".join(lines) + "\n")
     return path
 
@@ -3446,7 +3533,7 @@ def write_geometry_constants():
         "  }",
         "}",
     ]
-    with open(path, "w", newline="\n") as fh:
+    with _text_out(path) as fh:
         fh.write("\n".join(lines) + "\n")
     return path
 
@@ -3557,7 +3644,7 @@ def write_signal_trailer_geometry():
         "  }",
         "}",
     ]
-    with open(path, "w", newline="\n") as fh:
+    with _text_out(path) as fh:
         fh.write("\n".join(lines) + "\n")
     return path
 
@@ -3569,7 +3656,10 @@ def main():
                         help="write into _workzone_out/ instead of the repo tree")
     parser.add_argument("--only", nargs="*", default=None,
                         help="only generate these registry names")
+    parser.add_argument("--check", action="store_true",
+                        help="write nothing; exit 1 if any generated file differs from the tree")
     args = parser.parse_args()
+    _CHECK["on"] = args.check
 
     if args.scratch:
         model_dir = os.path.join(SCRATCH_DIR, "models")
@@ -3579,7 +3669,16 @@ def main():
         model_dir, texture_dir = MODEL_DIR, TEXTURE_DIR
         blockstate_dir = BLOCKSTATE_DIR
 
-    for path in generate(model_dir, texture_dir, blockstate_dir, SCRATCH_DIR, only=args.only):
+    written = generate(model_dir, texture_dir, blockstate_dir, SCRATCH_DIR, only=args.only)
+    if args.check:
+        for path in _DRIFT:
+            print("drift: %s" % os.path.relpath(path, layout.REPO_ROOT))
+        if _DRIFT:
+            print("%d file(s) differ; rerun gen_work_zone_devices.py" % len(_DRIFT))
+            return 1
+        print("gen_work_zone_devices: %d file(s) match" % len(written))
+        return 0
+    for path in written:
         print(os.path.relpath(path, layout.REPO_ROOT))
     return 0
 
