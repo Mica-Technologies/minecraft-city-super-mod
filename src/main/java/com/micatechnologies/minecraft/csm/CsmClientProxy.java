@@ -16,7 +16,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -47,7 +46,9 @@ public class CsmClientProxy implements ICsmProxy {
    */
   @Override
   public void preInit(FMLPreInitializationEvent event) {
-    OBJLoader.INSTANCE.addDomain("csm");
+    // Loads CSM's OBJ models (through Forge's OBJ loader) and bakes each distinct model part
+    // once for every variant that names it; see CsmPartBakeCache.
+    com.micatechnologies.minecraft.csm.codeutils.CsmPartBakeCache.install();
     // The seat a block that can be sat in puts its rider on: drawn as nothing.
     RenderingRegistry.registerEntityRenderingHandler(EntityCsmSeat.class, RenderCsmSeat::new);
 
