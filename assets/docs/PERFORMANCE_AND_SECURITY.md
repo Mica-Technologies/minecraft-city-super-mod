@@ -266,6 +266,36 @@ run on `ModelBakeEvent` at the lowest priority, in the order the client proxy re
   call `CsmTts.startInit()` as soon as speech is likely**, so the engine is ready by the time
   something speaks.
 
+**Under VintageFix's dynamic resources the bake is not where you think.** Modpacks run VintageFix
+with `mixin.dynamic_resources=true`, and then models are baked when a chunk first draws them, on
+the chunk builder threads, and dropped a few idle minutes later to be baked again. The model
+registry `ModelBakeEvent` hands out lists only the keys some mod put into it, so a handler that
+walks its keys finds none of CSM's (VintageFix logs "attempting to iterate the model registry"),
+and the walks above simply do nothing there, which costs only their savings. Two things did
+break, and are the rules this makes:
+
+- **Wrap a model through `CsmBakedModelWrappers`, never by walking the registry** (Core, client).
+  A glazed door's glass/hardware split was put in place by such a walk, so in a VintageFix pack it
+  never was, and its glass was drawn opaque in the cutout pass (issue #242). A registered wrapper
+  is applied to every key after the game's bake and, where VintageFix is installed, to each model
+  VintageFix bakes, through its `DynamicModelBakeEvent` (listened for by reflection; VintageFix is
+  not a build dependency). A wrapper may run on a chunk builder thread, so it must be
+  thread-safe. `putObject` under a fixed key (the tree kit's models, the custom door's) is fine:
+  VintageFix keeps those.
+- **A baked model's first `getQuads` can race.** Forge builds an OBJ model's quads on the first
+  `getQuads` and packs each quad's vertices on the first `getVertexData`, setting the quad's
+  packed flag before writing them, so a second chunk builder thread drawing the same new model
+  could take a half-written quad whose texture coordinates pointed anywhere on the atlas; that
+  chunk kept the patchwork until it was rebuilt. VintageFix, baking as chunks draw, made it
+  common: rows of industrial dome pendants came out as other blocks' textures (issue #240, seen
+  with OptiFine and VintageFix together). `CsmObjModelLoader` hands every OBJ bake out inside a
+  `PackedObjModel`, which builds and packs the quads under a lock on the first call, still lazily.
+  **Rule: a baked model of CSM's own that builds its quads lazily builds them under a lock.**
+
+To see a pack's behaviour, run `runObfClient` with VintageFix, MixinBooter and OptiFine copied into
+`run/obfuscated/mods` along with the module jars. The task empties that folder on every launch, so
+start the game again from its command line (read it off the running JVM) after copying them back.
+
 **The block atlas has a budget.** Every block and item sprite goes into one texture whose size is
 the next power of two the stitcher can pack them into, and CSM is nearly all of it. Crossing a size
 is silent and doubles the cost: at 8192 x 8192 instead of 8192 x 4096 the atlas takes twice the GPU
