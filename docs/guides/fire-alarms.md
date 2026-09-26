@@ -7,20 +7,33 @@ what to do, and notification appliances sound together across the building.
 
 | | |
 |---|---|
-| **Control panel** | The brain. Right-click for its front panel screen |
+| **Control panel** | The brain. Right-click for its front panel screen. Two makes: the Simplex 4100 style **Fire Alarm Control Panel**, and the **Edwards iO** panel in red or white |
 | **Initiating devices** | Pull stations, smoke and heat detectors, sprinkler flow switches |
-| **Notification appliances** | Horns, horn/strobes, speakers, speaker/strobes, and beacons |
+| **Notification appliances** | Horns, horn/strobes, bells, speakers, speaker/strobes, and beacons |
 
 ## Wiring it up
 
 1. Place a **control panel**.
-2. Place your **horns and strobes** through the building.
+2. Place your **horns, bells and strobes** through the building.
 3. Place **pull stations and detectors**.
-4. **Link the initiating devices to the panel** with the linker. Devices can be re-linked freely —
-   the linker tells you whether it linked, re-linked, or was already linked.
+4. With the **linker**, click the panel to select it, then click each appliance and each
+   initiating device to link it to that panel. Devices can be re-linked freely — the linker tells
+   you whether it linked, re-linked, or was already linked.
 
-Notification appliances are picked up by the panel and grouped by the sound they play, so one
-channel drives every horn making the same noise rather than each one shouting independently.
+The linker remembers its selected panel, even after you put it away. Sneak-right-click the air to
+clear the selection before you start on another building. Its tooltip shows which panel it holds.
+
+The panel groups its appliances by the sound they play, so one channel drives every horn making
+the same noise rather than each one shouting independently.
+
+### Unlinking
+
+**Sneak-click a device** with the linker to unlink it from the selected panel. Sneak-clicking a
+device the panel does not have tells you it was not linked.
+
+**Sneak-click the panel** itself to unlink every device of that panel's that has gone missing,
+since a device that has been broken can no longer be clicked. The linker reports how many it
+removed.
 
 !!! tip "Panels heal their own index"
 
@@ -30,7 +43,9 @@ channel drives every horn making the same noise rather than each one shouting in
 
 ## The panel — "CSM 4100"
 
-An amber-on-black front panel with the lamps and keys a real one has:
+An amber-on-black front panel with the lamps and keys a real one has. The Edwards iO panel opens
+the same screen under the name "CSM iO64" and works exactly the same way; its cabinet is taller,
+rising into the block above.
 
 | Lamps | Keys |
 |---|---|
@@ -55,11 +70,53 @@ no origin line.
 The panel also stays in sync with alarms raised elsewhere, so an open screen tracks a pull station
 somebody else just hit.
 
+### The panel's buzzer
+
+Like a real panel, the panel sounds a buzzer of its own, heard close to the panel (about 12
+blocks):
+
+| When | Buzzer |
+|---|---|
+| In alarm, not yet acknowledged or silenced | The alarm tone, repeating |
+| Otherwise, in trouble and not acknowledged | The trouble tone, repeating |
+| Reset out of an alarm | One reset tone |
+
+The Simplex-style panel uses Simplex tones and the Edwards iO panel uses Edwards tones.
+**ACK** quiets the buzzer, for an alarm and for trouble alike.
+
+### Trouble: missing devices
+
+If a linked appliance or initiating device is broken or replaced by something else, the panel does
+not forget it. It goes into **trouble**: the TROUBLE lamp lights, the trouble buzzer sounds, and
+the display steps through each missing device every two seconds, with its kind and coordinates:
+
+```
+MISSING 2/3 INITIATING 142,7,-2297
+```
+
+ACK silences the buzzer, but the TROUBLE lamp stays lit while anything is still missing. The
+trouble clears when the device is put back (the same kind of block at the same spot) or when you
+unlink it with the linker (see [Unlinking](#unlinking)). A panel with nothing linked yet is not
+in trouble, so a new panel does not beep before you have set it up, though its display says
+NO APPLIANCES LINKED.
+
+### More than one panel
+
+Each panel keeps its own sounds and strobes. Two panels in alarm near each other both flash their
+own strobes, and silencing or resetting one leaves the other sounding. Breaking a panel during an
+alarm puts out its strobes and stops its sounds.
+
 ## Detectors
 
 A detector watches the column beneath each position within **15 blocks**, running downward until it
 reaches a floor — anything that blocks movement — so a detector on the ceiling of a room covers that
 room rather than everything below it in the building.
+
+### Detector with a strobe
+
+The **Gentex 710CS-C** is a smoke detector with a strobe built in. You link it to a panel like any
+other detector, and it reports to that panel like one. When the panel goes into alarm, its strobe
+flashes with the panel's other strobes, whatever set the alarm off.
 
 ## Sound
 
@@ -71,9 +128,23 @@ Sound is spatially aware and follows the player:
 
 ### Choosing a sound
 
-Most appliances carry their sound selection in block state, which leaves room for **two** options
-alongside the facing. Appliances with more than two — the Gentex Commander 3 family — carry a small
-tile entity instead so the list can be as long as the real unit's.
+Most appliances have **two** sound options at most. A few have a longer list, as long as the
+real unit's: the Gentex Commander 3 family and the bells. On those, **sneak-click with an empty
+hand** to step to the next sound; chat tells you which one it is now set to.
+
+### Bells
+
+Three working fire alarm bells ring with the panel's horns: the **Simplex 4090 Fire Alarm Bell**,
+and the **System Sensor Fire Alarm Bell** in grey or red. Link them to a panel like any other
+appliance. Sneak-click a bell with an empty hand to cycle the four patterns a real bell circuit
+rings:
+
+| Pattern | Rings |
+|---|---|
+| **Code 3** | Three rings and a pause, over and over |
+| **Code 4-4** | A coded pattern of fours |
+| **Continuous** | Without stopping |
+| **March Time** | On and off, 120 times a minute |
 
 ## Redstone
 

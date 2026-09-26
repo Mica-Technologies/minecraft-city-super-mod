@@ -35,7 +35,7 @@ showing.
 | Crossing shows | The unit plays |
 |---|---|
 | Don't walk | A locate tone, once a second |
-| Clearance (flashing don't walk) | The locate tone |
+| Clearance (flashing don't walk) | The locate tone, or the scheme's own clearance sound if it has one |
 | Walk | The walk message |
 | Off | Nothing |
 
@@ -61,10 +61,29 @@ different cities.
     | 9 | Philadelphia voice — "Crossing lights activated" |
     | 10 | Philadelphia voice — walk sign on, all crossings |
     | 11 | Audio disabled |
+    | 12 | Canadian melody — a melody through walk, then a hurried version of it through the flashing don't walk |
+    | 13 | Automated walk signal voice |
+    | 14 | Ancient — the old Campbell locate tone, a short "wait" when pressed, and a beep-boop walk |
 
 === "Polara iN2"
 
-    The Polara units carry their own scheme list in the same style, selectable the same way.
+    | Scheme | Walk announcement |
+    |---|---|
+    | 1 | Standard rapid tick |
+    | 2 | Voice — "Walk sign is on" |
+    | 3 | Voice — walk sign on, all crossings |
+    | 4 | Spanish "wait" message, standard rapid tick |
+    | 5 | Spanish voice — walk sign on |
+    | 6 | Spanish voice — walk sign on, all crossings |
+    | 7 | Audio disabled |
+    | 8 | Automated walk signal voice |
+    | 9 | Meme — the standard voice scheme with a novelty walk sound |
+
+The automated walk signal scheme is on both lists with the same voice, but each keeps its own
+brand's locate tone, so a Campbell button never chirps like a Polara one.
+
+The Canadian melody is the only scheme with a clearance sound of its own. Every other scheme keeps
+the locate tone going through the flashing don't walk.
 
 ### How the sound works
 

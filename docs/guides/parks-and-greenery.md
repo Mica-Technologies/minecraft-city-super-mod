@@ -22,7 +22,8 @@ vanilla-sized log). Logs join up by themselves:
 block, so a crown looks like a crown, and a single column of cypress foliage looks like an Italian
 cypress. Leaves:
 
-- never decay;
+- never decay on their own; they only go when the tree holding them is cut down (see
+  [Cutting trees down](#cutting-trees-down));
 - can be walked through, so a canopy over a sidewalk never blocks it;
 - come in fixed colours for each species, the same in every biome. Several species also have an
   **autumn** set, and the jacaranda a **blossom** set: swap them in for the season.
@@ -30,20 +31,51 @@ cypress. Leaves:
 **Palm crowns** go on top of a palm log. **Spanish Moss** and **Willow Strands** hang under a limb or
 crown and stack downward into a curtain.
 
+### Cutting trees down
+
+Break a log and everything it alone was holding up comes down with it. Cut through the trunk and
+the whole tree falls; cut a limb and only that limb goes. A piece of tree stays up as long as one
+of its logs stands on solid ground (anything that is not part of a tree) or is joined to a vanilla
+log.
+
+- The fallen logs drop as items, except in creative.
+- Leaves left too far from any remaining log go too, dropping nothing, as decaying leaves do.
+  Leaves near a log that is still standing stay, so a neighbouring tree whose canopy touched the
+  one you cut keeps its crown.
+
+**Sneak while breaking** to take out just that one block. Use it to trim or reshape a tree by hand
+without felling it.
+
 ## The Tree Planting Tool
 
 Right-click the ground to plant a whole tree of the selected species. **Sneak and right-click** to
 change species.
 
-The tree **leans and reaches the way you are facing**. Stand on the sidewalk, face the road and
-plant, and the tree arches out over the road. Leaning trees keep their canopy above the street, so
-nothing hangs into traffic. Each tree comes out a little different, so a planted row doesn't look
-copy-pasted.
+In the open, the tree **leans and reaches the way you are looking**. Stand on the sidewalk, face
+the road and plant, and the tree arches out over the road. Leaning trees keep their canopy above
+the street, so nothing hangs into traffic. Each tree comes out a little different, so a planted
+row doesn't look copy-pasted: a spreading tree may fork into two leaders, put some limbs lower on
+the trunk, or send out side branches.
 
-If anything is in the way (a building, a pole, another tree), nothing is planted, and the tool tells
-you how many blocks are in the way. Plant straight onto mulch, gravel or turf and the trunk goes
-through it to the ground. Everything it plants is ordinary blocks, so trim or reshape the
-tree afterwards if you like.
+### Planting next to buildings
+
+The tool grows a tree into the room it has, like a street tree that has grown up against a
+building:
+
+- The trunk **leans away from walls**. Next to a building, that wins over the way you are facing.
+- Limbs turn toward open space, or are cut short where they cannot, and keep a block clear of
+  anything built.
+- The crown fills out only into open space, so it meets a wall with a flat, pruned face. It never
+  reaches through a wall or grows under an awning or balcony.
+- Another tree's leaves do not stop it. Plant a row a few blocks apart and the canopies join into
+  one over the street.
+
+If anything was cut back to fit, the tool tells you how many blocks were pruned. It only refuses to
+plant when there is no room for the trunk itself.
+
+Plant straight onto mulch, gravel or turf and the trunk goes through it to the ground. Everything
+it plants is ordinary blocks, so trim or reshape the tree afterwards if you like (sneak while
+breaking, so you take out one block at a time).
 
 | Leaning and spreading | Tall and thin | Palms | Street styles |
 |---|---|---|---|
