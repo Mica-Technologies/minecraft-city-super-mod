@@ -87,7 +87,7 @@ container per jar.
 | `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; four tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection, Emergency Services |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
-| `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall headwall, flap gate, wingwalls and riprap, the pond outlet riser and emergency spillway, manhole sections whole and cut away; gas yard and telecom to come); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
+| `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall headwall, flap gate, wingwalls and riprap, the pond outlet riser and emergency spillway, manhole sections whole and cut away; the gas yard: a regulator station built from a skid, gas pipe, ball valves, a regulator, a turbine meter, a line heater and a vent stack, the odorant tank, and warning signs that hang on a wall or a chain-link fence; telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna arrays, and a small cell's canister antenna and radio for the street poles); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
 | `modules/technology` | `csm_technology` | CSM: Technology | `technology` |
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology) |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
@@ -395,7 +395,12 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   Roads' utility box, the curb inlet at the external road mod's curb height, the headwall with
   its pipe and flap gate, wingwalls one slope over two blocks, riprap drawn by position, the
   outlet riser and manhole sections stacking like poles, the manhole climbed on its steps and cut
-  away for a side view; what was cut and the traps
+  away for a side view; the gas yard and telecom: the water pipe carrying a service (gas joins
+  only gas), the skid set into the ground with pipe stands under the run, the line heater's gas
+  through its coil header, signs that hang on a chain-link fence's mesh, the fibre cabinet's
+  doors, the ice bridge on tower-column stanchions, the monopole stacked with its antenna array
+  as an `IColumnJoint` (three OBJ sectors 120 degrees apart), the small cell as a post-top fixture
+  with a collar sized to the pole; what was cut and the traps
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system,
   how large a sign face texture may be (85.3 texels a block of plate; `SignTextureSizeTest` fails
   the build on a larger one),
@@ -924,6 +929,18 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   riser and spillway, and the manhole rings, base and cone as OBJ lathes, the cutaways their back
   half with the cut faces added. Reuses the water system's textures; `--check`, `--fragments`,
   `--report` (OBJ quads)
+- `gen_utilities_gas_telecom.py` -- the Utilities tab's gas yard and telecom pieces (Utilities
+  module), three catalogues (`utilities/gas`, `utilities/signs`, `utilities/telecom`) on the
+  meters generator's catalogue and the water generator's helpers: the gas pipe (welded, no end
+  face at a block face; fittings capped there), the ball valve, regulator and turbine meter (the
+  index an animated texture), the vent stack's top, the skid (beam only where it stops, a pipe
+  stand turned for either axis), the line heater and odorant tank on Roads' utility box; the six
+  signs from one 128 sheet, each a wall plate and a fence plate reaching back to the mesh; the
+  fibre cabinet (doors shut or swung out), the cell cabinets on one body, the ice bridge (ends and
+  post by neighbour) and its stanchion, the GPS antenna, the monopole section and the antenna
+  array (its three sectors an OBJ of boxes turned 120 degrees), and the small cell's canister over
+  three collars and its radio over three strap sets. `--check`, `--fragments`, `--report` (OBJ
+  quads)
 - `build_transit_demo.py` -- builds the Transit demo world in a flat creative world loaded in a
   dev client, over MCMCP (borrowing `csm_bench.py`'s client; `--client-port`, `--server-port` and
   `--config` aim it at a client other than the dev client): a bus street with every agency's
