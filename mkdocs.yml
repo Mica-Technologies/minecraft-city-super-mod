@@ -121,8 +121,10 @@ nav:
       - Power Grid: guides/power-grid.md
       - Utilities: guides/utilities.md
       - Novelties: guides/novelties.md
+      - Furniture: guides/furniture.md
       - Advertising: guides/advertising.md
       - Parks & Greenery: guides/parks-and-greenery.md
+      - Transit: guides/transit.md
   - Block Reference:
       - reference/index.md
       - Building Materials: reference/building-materials.md

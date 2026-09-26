@@ -141,6 +141,13 @@ How each system works, and how to build with it.
 
     Arcade cabinets, game tables and the decorative oddities.
 
+-   :material-sofa:{ .lg .middle } **[Furniture](furniture.md)**
+
+    ---
+
+    Tables, sofas, kitchens and desks that join into runs, beds you sleep in, working appliances,
+    taps and showers, a light switch you link to any lamp, and a store's cases and checkout.
+
 -   :material-billboard:{ .lg .middle } **[Advertising](advertising.md)**
 
     ---
@@ -153,5 +160,12 @@ How each system works, and how to build with it.
 
     Street trees built from blocks that lean over the road, a planting tool, hedges and beds,
     benches, playgrounds, fountains and sprinklers.
+
+-   :material-bus:{ .lg .middle } **[Transit](transit.md)**
+
+    ---
+
+    Fare gates and cards, bus stops on Roads' sign posts, shelters, departure boards, station
+    fit-out and entrances, and an airport's terminal and airside.
 
 </div>
