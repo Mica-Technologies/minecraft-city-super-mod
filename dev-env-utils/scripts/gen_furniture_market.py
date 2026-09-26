@@ -12,7 +12,12 @@ basket stacks, security gates, hanging aisle signs, a magazine rack and a bottle
 The fresh departments (butcher and seafood cases, bread racks, the pastry and hot food cases, the
 rotisserie, floral, the coffee station) and the front of the store (the pharmacy's counters,
 shelf wall and signs, the tobacco case, the lottery's dispenser and terminal, the coin, photo and
-movie kiosks, and the ice, propane and firewood merchandisers outside) follow them.
+movie kiosks, and the ice, propane and firewood merchandisers outside) follow them, and then the
+merchandising: end caps closing the gondola runs, the sale tags and shelf talkers a gondola hangs
+on its shelf edges, pallet stacks, bargain and cardboard dump bins, seasonal display tables, the
+checkout's candy strip, the hanging department sign and the standing sale signs, and the apparel
+corner (clothes rails and round racks, folded clothes tables, mannequins, dress forms and fitting
+rooms).
 
 It also writes the Verifone MX915's blockstate and its models standing on a counter: the
 terminal moved to this tab from the Technology module (its hand-made model and texture keep
@@ -52,7 +57,10 @@ What joins (the Java classes compute it as actual state; nothing is stored):
     scanner and bagging counters are one lane, the cart corral joins itself;
   * the pharmacy's drop-off and pick-up counters of a finish are one counter (the reception
     desk's line), the pharmacy shelves join and stack into a wall, and the tobacco cases, ice
-    merchandisers, propane cages and firewood racks each join their own kind.
+    merchandisers, propane cages and firewood racks each join their own kind;
+  * end caps are gondolas: they join and stack with one another as the gondolas do; the
+    checkout's candy strip joins the checkout lane; seasonal tables, clothes rails and folded
+    clothes tables each join their own kind; fitting rooms join into a row of booths.
 
 Usage:
     python gen_furniture_market.py              # write everything
@@ -1623,14 +1631,30 @@ def sign_icon(px, kind, x, y, col, size=64):
         "film": ["XOXOX", "XXXXX", "X...X", "XXXXX", "XOXOX"],
         "flame": ["..X..", ".XX..", ".XXX.", "XXOXX", "XOOOX", ".XXX."],
         "snow": ["X.X.X", ".XXX.", "XXOXX", ".XXX.", "X.X.X"],
+        # the department and seasonal signs'
+        "apple": ["...G.", "..G..", ".XXX.", "XXXXX", "XXXXX", ".XXX."],
+        "loaf": [".XXXX.", "XOXOXX", "XXXXXX", "XXXXXX"],
+        "cheese": ["...XX", ".XXXX", "XXOXX", "XXXXO", "XOXXX"],
+        "fish": ["X...X..", "XX.XXX.", ".XXXOXX", "XX.XXX.", "X...X.."],
+        "flower": [".X.X.", "XXOXX", ".X.X.", "..G..", ".GG.."],
+        "milk": [".XX.", ".OO.", "XXXX", "XOOX", "XOOX", "XXXX"],
+        "cart": ["X.....", ".XXXXX", ".XOXOX", ".XXXX.", "..X.X."],
+        "info": [".X.", "...", "XX.", ".X.", ".X.", "XXX"],
+        "sun": ["X.X.X", ".XXX.", "XXOXX", ".XXX.", "X.X.X"],
+        "leaf": ["..XX", ".XXX", "XXX.", "O..."],
     }
     other = {"pill": (236, 120, 40), "coin": (250, 236, 150), "camera": (40, 40, 44),
-             "film": (40, 40, 44), "flame": (250, 220, 90), "snow": (250, 250, 250)}
+             "film": (40, 40, 44), "flame": (250, 220, 90), "snow": (250, 250, 250),
+             "loaf": (170, 110, 50), "cheese": (200, 150, 40), "fish": (30, 60, 110),
+             "flower": (250, 214, 60), "milk": (40, 110, 190), "cart": (30, 30, 34),
+             "sun": (240, 140, 40), "leaf": (120, 70, 30)}
+    green = (90, 190, 90)
     for dy, row in enumerate(maps[kind]):
         for dx, c in enumerate(row):
             if c == ".":
                 continue
-            put(px, x + dx, y + dy, col if c in "XW" else other.get(kind, col), size)
+            ink = col if c in "XW" else (green if c == "G" else other.get(kind, col))
+            put(px, x + dx, y + dy, ink, size)
 
 
 def sign_sheet(bands):
@@ -1866,6 +1890,443 @@ def firewood_bark(size=16):
     return img
 
 
+# --- merchandising and fixtures: seasonal goods, gum and mints, folded clothes -------------
+def col_ball(px, x0, ht, a, b, rng):
+    """A beach ball per column seen side on: a disc striped in its two colours and white."""
+    r = min(3.5, ht / 2.0)
+    cy = 32 - r
+    for dy in range(ht):
+        y = 31 - dy
+        for dx in range(8):
+            d = math.hypot(dx + 0.5 - 3.75, y + 0.5 - cy)
+            if d > r:
+                continue
+            col = (a, WHITE, b, WHITE)[int((dx + 0.5) * 4 / 7.5) % 4]
+            put(px, x0 + dx, y, shade(col, 1.08 - 0.1 * d / r + 0.08 * (dx < 3)))
+
+
+def top_ball(px, x0, a, b, rng):
+    top_rounds(px, x0, a, b, rng)
+
+
+def col_pumpkin(px, x0, ht, body, rng):
+    """A pumpkin (or a gourd, in its colour) per column: a squat ribbed round and its stalk."""
+    h = ht - 1
+    for dy in range(ht):
+        y = 31 - dy
+        for dx in range(8):
+            if dy >= h:
+                if dx in (3, 4):
+                    put(px, x0 + dx, y, (96, 110, 50) if dx == 3 else (70, 84, 36))
+                continue
+            t = (dy + 0.5) / h
+            half = 3.8 * math.sqrt(max(0.0, 1 - (2 * t - 1) ** 2)) + 0.4
+            if abs(dx + 0.5 - 4) > half:
+                continue
+            k = 0.82 if dx in (1, 4, 6) else 1.0
+            put(px, x0 + dx, y, shade(body, k * (0.9 + 0.12 * t)))
+
+
+def top_pumpkin(px, x0, body, rng):
+    for y in range(32):
+        for dx in range(8):
+            put(px, x0 + dx, y, (0, 0, 0, 0))
+    for cy in range(3, 32, 8):
+        for dx in range(8):
+            for dy in range(-3, 4):
+                d = math.hypot(dx - 3.5, dy)
+                if d > 3.4:
+                    continue
+                col = shade(body, 1.05 - 0.08 * d)
+                if d < 0.8:
+                    col = (90, 100, 44)
+                put(px, x0 + dx, cy + dy, col)
+
+
+def col_gift(px, x0, ht, body, ribbon, rng):
+    """A wrapped gift box per column: the paper with a fleck of pattern, a ribbon down its middle
+    and a bow on top."""
+    for dy in range(ht):
+        y = 31 - dy
+        for dx in range(7):
+            col = body
+            if (dx + dy) % 3 == 0:
+                col = shade(body, 1.18)
+            if dx == 3:
+                col = ribbon
+            if dy >= ht - 1:
+                col = ribbon if dx in (2, 4) else None
+            if col is None:
+                continue
+            put(px, x0 + dx, y, shade(col, 0.85 if dx == 0 else 1.0))
+
+
+def top_gift(px, x0, body, ribbon, rng):
+    for y in range(32):
+        for dx in range(8):
+            col = body if dx < 7 else (0, 0, 0, 0)
+            if dx < 7 and (dx == 3 or y % 8 == 3):
+                col = ribbon
+            if dx < 7 and y % 8 == 7:
+                col = (0, 0, 0, 0)
+            put(px, x0 + dx, y, col)
+
+
+def col_jar(px, x0, ht, wax, lid, rng):
+    """Candles in jars two abreast: the wax seen through the glass, a label, a metal lid."""
+    for bx in (0, 4):
+        for dy in range(ht):
+            y = 31 - dy
+            for dx in range(3):
+                if dy >= ht - 1:
+                    col = lid
+                elif dy == ht // 2:
+                    col = CREAM
+                else:
+                    col = wax
+                put(px, x0 + bx + dx, y, shade(col, 0.9 + 0.14 * (dx == 0)))
+
+
+def col_gum(px, x0, ht, body, accent, rng):
+    """Gum and mints on a checkout strip: slim packs stood in a row, a stripe of their flavour
+    across each, the next pack's colour different."""
+    tones = (body, accent, shade(body, 1.25), WHITE)
+    for dy in range(ht):
+        y = 31 - dy
+        for dx in range(8):
+            pack = dx // 2
+            col = tones[pack % 4] if dx % 2 == 0 else shade(tones[pack % 4], 0.8)
+            if dy == ht // 2:
+                col = accent if pack % 2 == 0 else body
+            if dy == ht - 1 and dx % 2 == 1:
+                col = shade(col, 0.7)
+            put(px, x0 + dx, y, col)
+
+
+def col_folded(px, x0, ht, body, rng):
+    """A stack of folded clothes: a fold every two texels, the crease darker, the ends of the
+    stack a shade apart so the stack reads as cloth, not a block."""
+    for dy in range(ht):
+        y = 31 - dy
+        for dx in range(8):
+            col = body
+            if dy % 2 == 1:
+                col = shade(body, 0.8)
+            if dx in (0, 7):
+                col = shade(col, 0.9)
+            put(px, x0 + dx, y, shade(col, 1.0 + rng.uniform(-0.03, 0.03)))
+
+
+def top_folded(px, x0, body, rng):
+    """A folded shirt from above: the collar's notch, the placket down its middle."""
+    for y in range(32):
+        for dx in range(8):
+            col = body
+            ly = y % 8
+            if ly == 0 and dx in (3, 4):
+                col = shade(body, 0.6)
+            elif ly == 1 and dx in (2, 5):
+                col = shade(body, 0.75)
+            elif dx in (3, 4) and ly > 1:
+                col = shade(body, 1.08)
+            if ly == 7 or dx in (0, 7):
+                col = shade(body, 0.72)
+            put(px, x0 + dx, y, col)
+
+
+STOCK.update({
+    # the seasonal display tables: generic seasonal goods, no names; every season's columns
+    # at the same heights (SEASONAL_H), since the table's model is one for all three
+    "summer": [(_c(col_ball, RED, BLUE), _t(top_ball, RED, BLUE), 3.5),
+               (_c(col_shampoo, (250, 170, 40), WHITE), _t(top_plain, (250, 170, 40)), 2.5),
+               (_c(col_tubs, (236, 70, 60), (250, 214, 60)), _t(top_tubs, (236, 70, 60)), 3),
+               (_c(col_small_boxes, BLUE, YELLOW), _t(top_boxes, BLUE), 4)],
+    "harvest": [(_c(col_pumpkin, (232, 124, 36)), _t(top_pumpkin, (232, 124, 36)), 3.5),
+                (_c(col_pumpkin, (214, 196, 110)), _t(top_pumpkin, (214, 196, 110)), 2.5),
+                (_c(col_jar, (170, 60, 36), (150, 150, 156)), _t(top_plain, (150, 150, 156)), 3),
+                (_c(col_jugs, (150, 90, 40), (60, 40, 30)), _t(top_plain, (150, 90, 40)), 4)],
+    "winter": [(_c(col_gift, (176, 36, 40), (240, 214, 90)), _t(top_gift, (176, 36, 40),
+                                                                (240, 214, 90)), 3.5),
+               (_c(col_gift, (40, 110, 60), WHITE), _t(top_gift, (40, 110, 60), WHITE), 2.5),
+               (_c(col_jar, (240, 236, 226), (200, 170, 70)), _t(top_plain, (200, 170, 70)), 3),
+               (_c(col_cans, (176, 36, 40), (240, 214, 90)), _t(top_plain, SILVER), 4)],
+    # the checkout candy strip: gum, mints and bars (every height under the ledge above)
+    "gum": [(_c(col_gum, (60, 170, 120), WHITE), _t(top_plain, (60, 170, 120)), 2.5),
+            (_c(col_gum, (40, 90, 190), (170, 210, 250)), _t(top_plain, (40, 90, 190)), 2),
+            (_c(col_candy, RED), _t(top_plain, BROWN), 3),
+            (_c(col_gum, (230, 90, 150), WHITE), _t(top_plain, (230, 90, 150)), 2.5)],
+    # the apparel tables: folded tees in three colours and jeans
+    "folded": [(_c(col_folded, (40, 60, 110)), _t(top_folded, (40, 60, 110)), 3),
+               (_c(col_folded, (226, 226, 222)), _t(top_folded, (226, 226, 222)), 2.5),
+               (_c(col_folded, (170, 40, 44)), _t(top_folded, (170, 40, 44)), 3.5),
+               (_c(col_folded, (60, 90, 140)), _t(top_folded, (60, 90, 140)), 2.5)],
+})
+
+# The shared cards sheet (64 px, four 32 px quadrants): the SALE and HOT DEAL cards the standing
+# signs hold, the shelf talker's starburst, and the shelf-edge tags (a red SALE tag for the
+# gondolas, a yellow price tag for the end caps), all with invented prices.
+CARD_Q = {"sale": [0, 0, 8, 8], "deal": [8, 0, 16, 8], "talker": [0, 8, 8, 16],
+          "tag_sale": [8, 8, 16, 12], "tag_price": [8, 12, 16, 16]}
+
+
+def store_cards():
+    img = blank(64)
+    px = img.load()
+
+    def card(ox, oy, bg, key, lines):
+        rng = random.Random(hash_seed(str(lines)))
+        for y in range(32):
+            for x in range(32):
+                col = shade(bg, 1.0 + rng.uniform(-0.02, 0.02))
+                if x in (0, 31) or y in (0, 31):
+                    col = key
+                put(px, ox + x, oy + y, col, 64)
+        for text, y, col, scale in lines:
+            w = LS.text_width(text, scale)
+            LS.draw_text(img, text, ox + int(round(16 - w / 2.0)), oy + y, col, scale)
+
+    card(0, 0, (200, 30, 34), (250, 250, 250),
+         [("SALE", 3, (255, 255, 255), 2), ("2 FOR", 15, (255, 230, 90), 1),
+          ("5.00", 21, (255, 255, 255), 2)])
+    card(32, 0, (240, 120, 24), (40, 30, 24),
+         [("HOT", 3, (255, 255, 255), 2), ("DEAL", 14, (255, 255, 255), 2),
+          ("9.99", 25, (40, 30, 24), 1)])
+    # the talker: a yellow starburst, transparent round it (the gondola draws in cutout)
+    for y in range(32):
+        for x in range(32):
+            a = math.atan2(y + 0.5 - 16, x + 0.5 - 16)
+            r = math.hypot(x + 0.5 - 16, y + 0.5 - 16)
+            edge = 12.5 + 2.5 * (1 if int((a + math.pi) / (2 * math.pi) * 24) % 2 else -1)
+            if r <= edge:
+                put(px, x, 32 + y, (250, 214, 60) if r < edge - 1 else (220, 60, 40), 64)
+    LS.draw_text_centred(img, "SAVE", 16, 32 + 10, (200, 30, 34))
+    LS.draw_text_centred(img, "1.00", 16, 32 + 17, (200, 30, 34))
+    # the tags: 32 x 16 each
+    for oy, bg, fg, text in ((32, (206, 30, 34), (255, 255, 255), "SALE"),
+                             (48, (250, 214, 60), (30, 30, 34), "2 FOR 3")):
+        for y in range(16):
+            for x in range(32):
+                col = bg
+                if y in (0, 15) or x in (0, 31):
+                    col = shade(bg, 0.7)
+                if y == 12 and 3 <= x <= 28:
+                    col = shade(bg, 1.25) if bg[0] < 240 else (206, 30, 34)
+                put(px, 32 + x, oy + y, col, 64)
+        LS.draw_text_centred(img, text, 48, oy + 4, fg)
+    return img
+
+
+# Department and merchandising signs: four more 64 px sheets of four bands each (a 4:1 panel
+# per band). The PHARMACY department reuses store_signs_a's band 0. The seasonal tables'
+# signs are band 3 of sheets d, e and f, so the table's one model takes any of them by
+# retexture.
+SIGNS.update({
+    "store_signs_d": [
+        (["PRODUCE"], (46, 120, 50), WHITE_SIGN,
+         [("apple", 5, 5, (230, 60, 50)), ("apple", 54, 5, (230, 60, 50))], True),
+        (["BAKERY"], (130, 76, 36), (246, 232, 204),
+         [("loaf", 4, 6, (236, 196, 128)), ("loaf", 54, 6, (236, 196, 128))], True),
+        (["DELI"], (120, 30, 40), WHITE_SIGN,
+         [("cheese", 6, 5, (250, 210, 80)), ("cheese", 53, 5, (250, 210, 80))], True),
+        (["SUMMER FUN"], (30, 150, 190), (255, 230, 90),
+         [("sun", 3, 5, (255, 230, 90)), ("sun", 56, 5, (255, 230, 90))], True),
+    ],
+    "store_signs_e": [
+        (["FLORAL"], (150, 56, 110), WHITE_SIGN,
+         [("flower", 6, 5, (250, 170, 200)), ("flower", 53, 5, (250, 170, 200))], True),
+        (["DAIRY"], (40, 110, 190), WHITE_SIGN,
+         [("milk", 7, 5, None), ("milk", 53, 5, None)], True),
+        (["FROZEN"], (60, 150, 200), WHITE_SIGN,
+         [("snow", 6, 5, None), ("snow", 53, 5, None)], True),
+        (["HARVEST"], (190, 100, 30), (250, 238, 210),
+         [("leaf", 6, 5, (250, 200, 80)), ("leaf", 54, 5, (250, 200, 80))], True),
+    ],
+    "store_signs_f": [
+        (["MEAT &", "SEAFOOD"], (30, 60, 110), WHITE_SIGN,
+         [("fish", 4, 5, None), ("fish", 53, 5, None)], True),
+        (["CHECKOUT"], (30, 30, 34), (250, 214, 60),
+         [("cart", 3, 5, (250, 214, 60)), ("cart", 55, 5, (250, 214, 60))], True),
+        (["CUSTOMER", "SERVICE"], (32, 84, 170), WHITE_SIGN,
+         [("info", 6, 5, None), ("info", 56, 5, None)], True),
+        (["WINTER"], (30, 70, 130), WHITE_SIGN,
+         [("snow", 6, 5, None), ("snow", 53, 5, None)], True),
+    ],
+    "store_signs_g": [
+        (["BARGAIN BIN"], (250, 214, 60), (190, 30, 34),
+         [("star", 3, 5, (190, 30, 34)), ("star", 56, 5, (190, 30, 34))], True),
+        (["WEEKLY", "SPECIAL"], (200, 30, 34), WHITE_SIGN,
+         [("star", 7, 5, (250, 214, 60)), ("star", 52, 5, (250, 214, 60))], True),
+        (["FITTING ROOMS"], (50, 50, 56), WHITE_SIGN, [], True),
+        (["SPECIAL BUY"], (250, 250, 250), (200, 30, 34), [], True),
+    ],
+})
+
+
+def load_face(kind, size=32):
+    """The side of a pallet load under its stretch wrap: drinks in printed cases (two invented
+    colourways), bottled water in trays, or bulk packs of kitchen roll, in courses that
+    alternate so the joints do not line up."""
+    rng = random.Random(hash_seed("load_" + kind))
+    img = blank(size)
+    px = img.load()
+    course = {"drinks": 6, "water": 8, "paper": 8}[kind]
+    for y in range(size):
+        c = y // course
+        ly = y % course
+        off = (c % 2) * (course if kind != "drinks" else 5)
+        for x in range(size):
+            lx = (x + off) % (10 if kind == "drinks" else 8)
+            unit = ((x + off) // (10 if kind == "drinks" else 8) + c) % 2
+            if kind == "drinks":
+                body = (176, 36, 40) if unit else (36, 80, 170)
+                col = body
+                if ly == 2:
+                    col = WHITE
+                elif ly in (3, 4) and lx in (2, 4, 6):
+                    col = SILVER
+                if lx == 0 or ly == course - 1:
+                    col = (150, 110, 70)
+            elif kind == "water":
+                col = (178, 214, 236) if lx % 2 == 0 else (150, 196, 226)
+                if ly == 0:
+                    col = (40, 90, 190)
+                elif ly == 1:
+                    col = (206, 230, 244)
+                elif ly >= course - 2:
+                    col = (180, 140, 96) if ly == course - 1 else (196, 156, 110)
+                if lx == 7 and ly < course - 2:
+                    col = shade(col, 0.82)
+            else:
+                col = (242, 242, 238) if lx % 4 else (214, 216, 220)
+                if ly in (3, 4):
+                    col = (70, 140, 210) if unit else (90, 170, 110)
+                if ly == course - 1 or lx == 0:
+                    col = (196, 200, 206)
+            put(px, x, y, shade(col, 1.0 + rng.uniform(-0.03, 0.03)), size)
+    return img
+
+
+def load_top(kind, size=16):
+    """The load from above: case tops, a grid of bottle caps, or roll ends in their wrap."""
+    rng = random.Random(hash_seed("top_" + kind))
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            if kind == "drinks":
+                col = (196, 156, 110)
+                if x % 8 == 0 or y % 4 == 0:
+                    col = (160, 120, 80)
+                elif (x // 8 + y // 4) % 2 and 2 <= x % 8 <= 5 and y % 4 == 2:
+                    col = (176, 36, 40)
+            elif kind == "water":
+                col = (40, 90, 190) if (x % 2 == 0 and y % 2 == 0) else (196, 226, 242)
+            else:
+                d = math.hypot(x % 4 - 1.5, y % 4 - 1.5)
+                col = (150, 140, 120) if d < 0.8 else ((244, 244, 240) if d < 1.9
+                                                        else (206, 214, 222))
+            put(px, x, y, shade(col, 1.0 + rng.uniform(-0.03, 0.03)), size)
+    return img
+
+
+def stretch_wrap(size=16):
+    """Stretch wrap's sheen as a cutout: a few pale streaks where the film catches the light,
+    nothing between (so the load shows through)."""
+    img = blank(size)
+    px = img.load()
+    for x in range(size):
+        for y in (x // 2, (x // 2 + 9) % size):
+            px[x, y] = (236, 242, 246, 255)
+    return img
+
+
+def jumble(size=32):
+    """A bargain bin's heap from above or through its mesh: boxes, bags, tins and packs thrown in
+    together, each a small patch of its colour with a highlight, dark gaps between."""
+    rng = random.Random(8701)
+    img = noisy((118, 108, 96), 8702, size, 0.08)
+    px = img.load()
+    colours = (RED, BLUE, YELLOW, GREEN, ORANGE, PURPLE, TEAL, PINK, WHITE, (60, 60, 64), BROWN)
+    for _ in range(80):
+        w, h = rng.randrange(3, 8), rng.randrange(2, 6)
+        x0, y0 = rng.randrange(0, size), rng.randrange(0, size)
+        col = rng.choice(colours)
+        for dy in range(h):
+            for dx in range(w):
+                c = col
+                if dy == 0:
+                    c = shade(col, 1.2)
+                elif dx == w - 1 or dy == h - 1:
+                    c = shade(col, 0.75)
+                elif (dx + dy) % 5 == 0:
+                    c = WHITE
+                px[(x0 + dx) % size, (y0 + dy) % size] = tuple(clamp(c)) + (255,)
+    return img
+
+
+def kraft(size=16):
+    """Corrugated kraft board: tan, a flute line every other texel."""
+    img = noisy((190, 150, 104), 8711, size, 0.03)
+    px = img.load()
+    for y in range(size):
+        for x in range(0, size, 2):
+            px[x, y] = shade((190, 150, 104), 0.92) + (255,)
+    return img
+
+
+# Garments on hangers seen from the front, eight on one sheet: each 8 x 16 texels, a hook and a
+# hanger over the garment's shape, transparent round it (the rails draw in cutout).
+GARMENTS = [("tee", (200, 44, 48)), ("shirt", (236, 236, 232)), ("dress", (40, 60, 110)),
+            ("jacket", (70, 70, 74)), ("jeans", (60, 90, 140)), ("hoodie", (120, 130, 60)),
+            ("skirt", (200, 120, 150)), ("blouse", (240, 210, 120))]
+
+
+def garment_mask(kind):
+    """Rows of 8 characters: G the garment, D its darker detail (collar, seam, pocket)."""
+    shapes = {
+        "tee": ["GGGDDGGG", "GGGGGGGG", "GGGGGGGG", ".GGGGGG.", ".GGGGGG.", ".GGGGGG.",
+                ".GGGGGG.", ".GGGGGG.", ".DDDDDD."],
+        "shirt": ["GGGDDGGG", "GGGDGGGG", "GGGGDGGG", "GGGDGGGG", "GGGGDGGG", "GGGDGGGG",
+                  "GGGGDGGG", "GGGDGGGG", "DGGGGGGD", ".GGGGGG.", ".DDDDDD."],
+        "dress": ["..GDDG..", "..GGGG..", "..GGGG..", "..DDDD..", ".GGGGGG.", ".GGGGGG.",
+                  ".GGGGGG.", "GGGGGGGG", "GGGGGGGG", "GGGGGGGG", "GGGGGGGG", "DDDDDDDD"],
+        "jacket": ["GGDGGDGG", "GGGDDGGG", "GGGDDGGG", "GGGDDGGG", "GGGDDGGG", "GDGDDGDG",
+                   "GGGDDGGG", "GGGDDGGG", "GGGDDGGG", ".DDDDDD."],
+        "jeans": ["GGGGGGGG", "DGGDDGGD", "GGGGGGGG", "GGG..GGG", "GGG..GGG", "GGG..GGG",
+                  "GGG..GGG", "GGG..GGG", "GGG..GGG", "GGG..GGG", "GGG..GGG", "DDD..DDD"],
+        "hoodie": [".GDDDDG.", "GGDGGDGG", "GGGGGGGG", "GGGGGGGG", "GGGGGGGG", "GGDDDDGG",
+                   "GGDGGDGG", ".GGGGGG.", ".DDDDDD."],
+        "skirt": ["..DDDD..", "..GGGG..", ".GGGGGG.", ".GGGGGG.", "GGGGGGGG", "GGGGGGGG",
+                  "DDDDDDDD"],
+        "blouse": ["GGGDDGGG", "GGGGGGGG", "GGGDGGGG", ".GGGGGG.", ".GGDGGG.", ".GGGGGG.",
+                   ".GGDGGG.", ".DDDDDD."],
+    }
+    return shapes[kind]
+
+
+def garments(size=32):
+    img = blank(size)
+    px = img.load()
+    for i, (kind, col) in enumerate(GARMENTS):
+        ox, oy = 8 * (i % 4), 16 * (i // 4)
+        # the hook and the hanger's shoulders
+        hook = (150, 152, 158)
+        for x, y in ((4, 0), (5, 1), (4, 2), (3, 3), (4, 3), (2, 3), (5, 3), (1, 3), (6, 3)):
+            put(px, ox + x, oy + y, hook if y < 3 else (120, 84, 50))
+        for r, row in enumerate(garment_mask(kind)):
+            y = 4 + r
+            if y >= 16:
+                break
+            for x, ch in enumerate(row):
+                if ch == ".":
+                    continue
+                c = col if ch == "G" else shade(col, 0.72 if sum(col) > 300 else 1.35)
+                if x in (0, 7):
+                    c = shade(c, 0.88)
+                put(px, ox + x, oy + y, c)
+    return img
+
+
 TEXTURES = {
     "glass_clear": lambda: glass(),
     "glass_frost": lambda: glass(96, (226, 238, 246), frost=True),
@@ -1972,6 +2433,20 @@ TEXTURES = {
     "firewood_ends": firewood_ends,
     "firewood_bark": firewood_bark,
 }
+TEXTURES.update({
+    # merchandising and fixtures
+    "store_cards": store_cards,
+    "load_drinks": lambda: load_face("drinks"),
+    "load_water": lambda: load_face("water"),
+    "load_paper": lambda: load_face("paper"),
+    "load_drinks_top": lambda: load_top("drinks"),
+    "load_water_top": lambda: load_top("water"),
+    "load_paper_top": lambda: load_top("paper"),
+    "wrap": stretch_wrap,
+    "jumble": jumble,
+    "kraft": kraft,
+    "garments": garments,
+})
 for _sheet, _bands in SIGNS.items():
     TEXTURES[_sheet] = (lambda b=_bands: sign_sheet(b))
 for _kind in STOCK:
@@ -2020,6 +2495,16 @@ DEFAULT_TEX.update({
     "posters": MT("movie_posters"),
 })
 
+DEFAULT_TEX.update({
+    # merchandising and fixtures
+    "cards": MT("store_cards"), "signs": MT("store_signs_d"), "signs_d": MT("store_signs_d"),
+    "signs_e": MT("store_signs_e"), "signs_f": MT("store_signs_f"),
+    "signs_g": MT("store_signs_g"), "slat": PRODUCE_TEX % "crate_slat",
+    "load": MT("load_drinks"), "load_top": MT("load_drinks_top"), "wrap": MT("wrap"),
+    "heap": MT("jumble"), "kraft": MT("kraft"), "skirt": T("red"), "garments": MT("garments"),
+    "skin": MT("case_white"), "shirt": T("red"), "trousers": T("navy"), "form": T("oatmeal"),
+    "curtain": T("charcoal"),
+})
 
 def geometry(specs, particle, display=None, centre=False, dy=0.0):
     """A base model: the elements built where they stand (so their UVs fit there), then moved
@@ -3073,6 +3558,374 @@ DVD_KIOSK = [el([1.5, 0, 5.5], [14.5, 1, 14.5], "kick", NO_DOWN),
 
 
 # ------------------------------------------------------------------------------------------
+# Merchandising and fixtures: end caps and shelf tags, pallet stacks, department and sale
+# signs, bargain bins and seasonal tables, the checkout's candy strip, and the apparel corner
+# ------------------------------------------------------------------------------------------
+def card_print(x0, x1, y0, y1, z, key, card, face="north"):
+    """A face printed with one of the cards sheet's cards (CARD_Q), a hair proud of z."""
+    uv = {face: list(CARD_Q[card])}
+    if face == "north":
+        return el([x0, y0, z - 0.05], [x1, y1, z], key, (face,), uv=uv)
+    return el([x0, y0, z], [x1, y1, z + 0.05], key, (face,), uv=uv)
+
+
+def shelf_tags(z_shelf, y_shelf, z_deck, y_deck, z_stacked, y_stacked, card):
+    """The tags a gondola or an end cap hangs on its shelf edges (tags=sale|talker): two to a
+    strip, each hanging from the strip's face at z with its top over the strip's bottom edge at
+    y, and the shelf talker (tags=talker), a card on a clear arm standing out into the aisle
+    square to the shelf, printed both sides."""
+    q = CARD_Q[card]
+    edge = {"east": [q[0] + 0.5, q[1] + 1.5, q[0] + 0.6, q[1] + 1.6]}
+    edge["west"] = edge["east"]
+    edge["up"] = edge["east"]
+    edge["down"] = edge["east"]
+
+    def row(z, y):
+        out = []
+        for x in (1.75, 9.75):
+            out.append(el([x, y - 0.75, z - 0.2], [x + 2.5, y + 0.5, z], "cards",
+                          ("north", "east", "west", "up", "down"),
+                          uv=dict(edge, north=list(q))))
+        return out
+    talker = [el([7.9, y_shelf + 0.4, z_shelf - 2.5], [8.1, y_shelf + 0.6, z_shelf], "chrome",
+                 ("east", "west", "up", "down")),
+              el([7.95, y_shelf - 1.25, z_shelf - 5.5], [8.05, y_shelf + 1.75, z_shelf - 2.5],
+                 "cards", ("east", "west"),
+                 uv={"east": list(CARD_Q["talker"]), "west": list(CARD_Q["talker"])})]
+    return {"tags": row(z_shelf, y_shelf), "tags_plinth": row(z_deck, y_deck),
+            "tags_stacked": row(z_stacked, y_stacked), "talker": talker}
+
+
+# The gondola's tags: the shelf's price strip faces z 6.75 from y 7, the base deck's z 6.25
+# from y 1.5, a stacked gondola's bottom strip z 6.75 from y -0.25.
+GONDOLA_TAGS = shelf_tags(6.75, 7, 6.25, 1.5, 6.75, -0.25, "tag_sale")
+TAG_RULES = [("tags", {"tags": "sale|talker"}), ("tags_plinth", {"tags": "sale|talker",
+                                                                  "down": "false"}),
+             ("tags_stacked", {"tags": "sale|talker", "down": "true"}),
+             ("talker", {"tags": "talker"})]
+TAG_PARTS = ("tags", "tags_plinth", "tags_stacked", "talker")
+
+# End caps: a gondola turned to close the end of a run (or an island's two), deeper than the
+# run's shelves, with a WEEKLY SPECIAL header over the head of the stack. They are gondolas, so
+# they join and stack with one another (and with any gondola facing their way).
+ENDCAP_PEG = [el([0, 0, 14.75], [16, 16, 15.5], "peg", ("north", "south"), {"south": "shelf"})]
+ENDCAP_SHELF = [el([0, 7.5, 3], [16, 8, 14.75], "shelf", ("up", "down")),
+                strip_el(0, 16, 7, 8, 2.75, 3)]
+ENDCAP_DECK = [el([0, 2, 2.75], [16, 2.5, 14.75], "shelf", ("up",)),
+               el([0, 0, 2.5], [16, 2.5, 2.75], "kick", ("north",)),
+               strip_el(0, 16, 1.5, 2.5, 2.25, 2.5)]
+ENDCAP_STACKED = [el([0, 0, 3], [16, 0.5, 14.75], "shelf", ("up", "down")),
+                  strip_el(0, 16, -0.25, 0.5, 2.75, 3)]
+ENDCAP_TOP = ([el([0, 15.5, 14.25], [16, 16, 15.75], "shelf", ("north", "up", "south")),
+               el([2, 16, 14.8], [2.5, 17, 15.2], "chrome", SIDES),
+               el([13.5, 16, 14.8], [14, 17, 15.2], "chrome", SIDES)]
+              + sign_panel(1, 15, 17, 20.5, 15, "signs_g", 1))
+ENDCAP_END = [el([0, 0, 2.25], [0.75, 16, 15.5], "shelf", ("west", "east", "north", "up"))]
+ENDCAP_TAGS = shelf_tags(2.75, 7, 2.25, 1.5, 2.75, -0.25, "tag_price")
+
+
+def endcap_parts(above, below, seed):
+    return {"body": ENDCAP_PEG + ENDCAP_SHELF
+            + stock_row(0, 16, 8, 3.25, 14.75, heights(above), seed, "stock_a"),
+            "plinth": ENDCAP_DECK + stock_row(0, 16, 2.5, 3.0, 14.75, heights(below), seed + 1,
+                                              "stock_b"),
+            "stacked": ENDCAP_STACKED + stock_row(0, 16, 0.5, 3.25, 14.75, heights(below),
+                                                  seed + 2, "stock_b"),
+            "top": ENDCAP_TOP, "left": ENDCAP_END, "right": mirror_x(ENDCAP_END)}
+
+
+# A pallet stack: a timber pallet (its boards never drawn from below, so a pallet stacked on a
+# load does not fight the load's top) and a load of cases, water or kitchen roll under a
+# stretch wrap's sheen. Stacked, the upper pallet stands on the lower load: two high is a
+# double-stacked pallet as a warehouse store has it.
+PALLET = ([el([0.25, 0, z], [15.75, 0.5, z + 2.5], "slat", ("north", "south", "east", "west",
+                                                             "up"))
+           for z in (0.25, 6.75, 13.25)]
+          + [el([x, 0.5, 0.25], [x + 1.5, 1.5, 15.75], "slat", ("north", "south", "east", "west"))
+             for x in (0.25, 7.25, 14.25)]
+          + [el([0.25, 1.5, z], [15.75, 2.25, z + 2.5], "slat", ("north", "south", "east", "west",
+                                                                  "up"))
+             for z in (0.25, 3.5, 6.75, 10, 13.25)])
+PALLET_STACK = (PALLET
+                + [el([0.75, 2.25, 0.75], [15.25, 15.75, 15.25], "load", NO_DOWN,
+                      {"up": "load_top"}, uv={f: [0, 0, 16, 16] for f in NO_DOWN}),
+                   el([0.6, 2.3, 0.6], [15.4, 15.9, 15.4], "wrap", NO_DOWN,
+                      uv={f: [0, 0, 16, 16] for f in NO_DOWN})])
+
+# The standing sale signs: a card in a black frame on a pole, printed both sides.
+
+
+def sale_sign(card):
+    return [el([4.5, 0, 4.5], [11.5, 0.5, 11.5], "case"),
+            el([7.75, 0.5, 7.75], [8.25, 13.5, 8.25], "chrome", SIDES),
+            el([3, 13.5, 7.6], [13, 23.5, 8.4], "case"),
+            card_print(3.25, 12.75, 13.75, 23.25, 7.6, "cards", card),
+            card_print(3.25, 12.75, 13.75, 23.25, 8.4, "cards", card, "south")]
+
+
+SALE_SIGN = sale_sign("sale")
+DEAL_SIGN = sale_sign("deal")
+
+# The department sign: a panel two metres by half a metre on two rods, centred on its block (it
+# reaches half a block past each side), one band of the sign sheets on each face. A model per
+# band; the blockstate picks the band and the sheet for the department.
+DEPARTMENTS = [("produce", "store_signs_d", 0), ("bakery", "store_signs_d", 1),
+               ("deli", "store_signs_d", 2), ("meat_seafood", "store_signs_f", 0),
+               ("pharmacy", "store_signs_a", 0), ("floral", "store_signs_e", 0),
+               ("dairy", "store_signs_e", 1), ("frozen", "store_signs_e", 2),
+               ("checkout", "store_signs_f", 1), ("customer_service", "store_signs_f", 2)]
+
+
+def department_sign(band):
+    return ([el([-4.25, 13.25, 7.75], [-3.75, 16, 8.25], "chrome", SIDES),
+             el([19.75, 13.25, 7.75], [20.25, 16, 8.25], "chrome", SIDES)]
+            + sign_panel(-8, 24, 5, 13, 8, "signs", band))
+
+
+# Bargain bins: a wire dump bin on casters, heaped with odds and ends, a BARGAIN BIN sign over
+# its back; and a printed cardboard one, SPECIAL BUY. Things poke out of the heap at angles.
+def heap_items(y):
+    return [el([3, y, 3], [7, y + 1.5, 6], "heap", uv={f: [0, 0, 8, 4] for f in ALL},
+               rot=("x", 22.5, [5, y + 0.5, 4.5])),
+            el([8.5, y, 4], [11, y + 4, 5.5], "heap", uv={f: [8, 2, 12, 8] for f in ALL},
+               rot=("z", -22.5, [9.75, y + 0.5, 4.75])),
+            el([4.5, y, 9], [9, y + 2, 12.5], "heap", uv={f: [2, 9, 9, 13] for f in ALL},
+               rot=("y", 22.5, [6.75, y, 10.75])),
+            el([10, y, 9.5], [13, y + 2.5, 12], "heap", uv={f: [11, 10, 15, 14] for f in ALL},
+               rot=("x", -22.5, [11.5, y + 0.5, 10.75]))]
+
+
+BARGAIN_BIN = ([el([x, 0, z], [x + 1, 1, z + 1], "rubber") for x in (1.25, 13.75)
+                for z in (1.25, 13.75)]
+               + [el([1, 1, 1], [15, 1.75, 15], "chrome")]
+               + [el([x, 1.75, z], [x + 0.5, 11, z + 0.5], "chrome", SIDES)
+                  for x in (1, 14.5) for z in (1, 14.5)]
+               + [el([1.5, 1.75, 1], [14.5, 11, 1.1], "mesh", ("north", "south")),
+                  el([1.5, 1.75, 14.9], [14.5, 11, 15], "mesh", ("north", "south")),
+                  el([1, 1.75, 1.5], [1.1, 11, 14.5], "mesh", ("east", "west")),
+                  el([14.9, 1.75, 1.5], [15, 11, 14.5], "mesh", ("east", "west")),
+                  el([1, 11, 1], [15, 11.5, 1.5], "chrome"),
+                  el([1, 11, 14.5], [15, 11.5, 15], "chrome"),
+                  el([1, 11, 1.5], [1.5, 11.5, 14.5], "chrome"),
+                  el([14.5, 11, 1.5], [15, 11.5, 14.5], "chrome"),
+                  el([1.3, 1.75, 1.3], [14.7, 8.5, 14.7], "heap", NO_DOWN,
+                     uv={f: [0, 0, 16, 16] for f in NO_DOWN}),
+                  el([3, 11.5, 14.55], [3.5, 14, 15.05], "chrome", SIDES),
+                  el([12.5, 11.5, 14.55], [13, 14, 15.05], "chrome", SIDES)]
+               + heap_items(8.5)
+               + sign_panel(2, 14, 14, 17, 14.8, "signs_g", 0))
+DUMP_BIN = ([el([1, 0, 1], [15, 10, 1.5], "kraft", ("north", "south", "east", "west", "up")),
+             el([1, 0, 14.5], [15, 15, 15], "kraft", ("north", "south", "east", "west", "up")),
+             el([1, 0, 1.5], [1.5, 10, 14.5], "kraft", ("east", "west", "up")),
+             el([14.5, 0, 1.5], [15, 10, 14.5], "kraft", ("east", "west", "up")),
+             el([1.5, 0.5, 1.5], [14.5, 8.5, 14.5], "heap", ("up",), uv={"up": [0, 0, 16, 16]}),
+             sign_print(2.5, 13.5, 3.5, 6.25, 1, "signs_g", 3),
+             sign_print(2.5, 13.5, 11, 13.75, 14.5, "signs_g", 3)]
+            + heap_items(8.5))
+
+# Every season's sheet draws its columns at these heights, so one model serves them all.
+SEASONAL_H = [3.5, 2.5, 3, 4]
+
+# The seasonal display table: a skirted table with a riser at its back, a season's goods on
+# both, the season's sign on a stand over the run's end on the shopper's left. The three
+# seasons' signs are band 3 of three sheets, so one model serves them and the finish picks the
+# sheet.
+SEASONAL_BODY = ([el([0, 11, 1], [16, 12, 15], "skirt", ("north", "up", "south", "down")),
+                  el([0, 0.5, 0.75], [16, 12, 1], "skirt", ("north", "up", "down")),
+                  el([0, 0.5, 15], [16, 12, 15.25], "skirt", ("south", "up", "down")),
+                  el([0, 12, 8.5], [16, 15, 15], "skirt", ("north", "up", "south"))]
+                 + stock_row(0, 16, 12, 1.5, 8, SEASONAL_H, 1101, "stock_a", pattern=(0, 1, 2, 3))
+                 + stock_row(0, 16, 15, 9, 14.5, SEASONAL_H, 1102, "stock_a",
+                             pattern=(3, 2, 0, 1)))
+SEASONAL_END = [el([0, 0.5, 0.75], [0.25, 12, 15.25], "skirt", ("west", "east", "north", "south",
+                                                                 "down")),
+                el([0, 12, 8.5], [0.25, 15, 15], "skirt", ("west", "north", "up"))]
+SEASONAL_RIGHT = (mirror_x(SEASONAL_END)
+                  + [el([3, 15, 13.3], [3.5, 19.75, 13.7], "chrome", SIDES),
+                     el([12.5, 15, 13.3], [13, 19.75, 13.7], "chrome", SIDES)]
+                  + sign_panel(1.5, 14.5, 19.75, 23, 13.5, "signs", 3))
+
+# The checkout's candy strip: a checkout counter (it joins the lane as the belt does) whose top
+# is plain and whose customer side carries a wire strip of gum, mints and bars on three ledges.
+CANDY_LEDGES = (1.75, 5.5, 9.25)
+CHECKOUT_CANDY = (cabinet(14.5)
+                  + [el([0, 13.75, 2.25], [16, 14.5, 14], "steel", ("north", "south", "up",
+                                                                    "down"))]
+                  + [el([0.5, 1.5, 0.75], [0.75, 12.5, 3], "chrome", ("west", "east", "north",
+                                                                       "up")),
+                     el([15.25, 1.5, 0.75], [15.5, 12.5, 3], "chrome", ("west", "east", "north",
+                                                                         "up"))])
+for _i, _y in enumerate(CANDY_LEDGES):
+    CHECKOUT_CANDY += [el([0.75, _y, 0.75], [15.25, _y + 0.4, 3], "chrome", ("north", "up",
+                                                                             "down")),
+                       el([0.75, _y + 0.4, 0.75], [15.25, _y + 0.9, 0.9], "chrome",
+                          ("north", "south", "up"))]
+    CHECKOUT_CANDY += stock_row(1, 15, _y + 0.4, 1.0, 3, heights("gum"), 1110 + _i, "stock_a")
+
+# The apparel corner. Garments are planes square to the rail, shown in silhouette (cutout) on
+# their broad faces and by the garment's middle column on their edges.
+GARMENT_UV = [[4 * (i % 4), 8 * (i // 4), 4 * (i % 4) + 4, 8 * (i // 4) + 8] for i in range(8)]
+
+
+def garment(i, x, y0, y1, z0, z1, t=0.6):
+    """Garment i of the sheet on a hanger, its plane square to x (a rail running along x)."""
+    u0, v0, u1, v1 = GARMENT_UV[i]
+    mid = [u0 + 1.9, v0, u0 + 2.1, v1]
+    return el([x, y0, z0], [x + t, y1, z1], "garments", ("east", "west", "north", "south"),
+              uv={"east": [u0, v0, u1, v1], "west": [u0, v0, u1, v1], "north": mid, "south": mid})
+
+
+# The rolling rail: a top rail, garments hung along it, and at a run's ends the H-frame on
+# castors. Placed side by side the rails are one long rail.
+RAIL_ORDER = (0, 2, 4, 1, 6)
+CLOTHES_RAIL = ([el([0, 24.5, 7.6], [16, 25.25, 8.4], "chrome", ("north", "south", "up",
+                                                                 "down"))]
+                + [garment(g, 1.2 + 3.1 * k, 9, 25, 4, 12) for k, g in enumerate(RAIL_ORDER)])
+RAIL_END = [el([0.25, 2, 7.6], [1, 25.25, 8.4], "chrome", ("west", "east", "north", "south",
+                                                           "up")),
+            el([0.1, 1, 2], [1.15, 2, 14], "chrome"),
+            el([0.25, 0, 2.25], [1, 1, 3.25], "rubber"),
+            el([0.25, 0, 12.75], [1, 1, 13.75], "rubber")]
+
+
+def round_rack():
+    """A round rack: a ring of eight bars (four square, four turned 45 degrees) on two crossed
+    arms and a pole, a garment at the middle of each side hanging square to the ring."""
+    r, a = 6.0, 6.0 * R.TAN_22_5
+    out = (R.octagon(8, 8, 3.5, 0, 0.75, "case")
+           + R.octagon(8, 8, 0.5, 0.75, 21, "chrome", caps=("up",))
+           + [el([2.25, 20.75, 7.75], [13.75, 21.25, 8.25], "chrome"),
+              el([7.75, 20.75, 2.25], [8.25, 21.25, 7.75], "chrome", NO_BACK),
+              el([7.75, 20.75, 8.25], [8.25, 21.25, 13.75], "chrome",
+                 ("south", "east", "west", "up", "down"))])
+    ring = [el([8 - a, 21, 8 - r - 0.25], [8 + a, 21.5, 8 - r + 0.25], "chrome"),
+            el([8 - a, 21, 8 + r - 0.25], [8 + a, 21.5, 8 + r + 0.25], "chrome"),
+            el([8 - r - 0.25, 21, 8 - a], [8 - r + 0.25, 21.5, 8 + a], "chrome"),
+            el([8 + r - 0.25, 21, 8 - a], [8 + r + 0.25, 21.5, 8 + a], "chrome")]
+    for e in list(ring):
+        turned = copy.deepcopy(e)
+        turned["rot"] = ("y", 45, [8, 21, 8])
+        ring.append(turned)
+    out += ring
+    # garments: on the north and south sides planes along z, on east and west along x; the
+    # diagonal ones are the north and south garments turned 45 degrees about the pole
+    gi = 0
+    for zc in (8 - r, 8 + r):
+        for turn_by in (0, 45, -45):
+            g = garment(gi % 8, 7.7, 8, 21.5, zc - 2.25, zc + 2.25)
+            if turn_by:
+                g["rot"] = ("y", turn_by, [8, 8, 8])
+            out.append(g)
+            gi += 1
+    for xc in (8 - r, 8 + r):
+        u0, v0, u1, v1 = GARMENT_UV[gi % 8]
+        mid = [u0 + 1.9, v0, u0 + 2.1, v1]
+        out.append(el([xc - 2.25, 8, 7.7], [xc + 2.25, 21.5, 8.3], "garments", SIDES,
+                      uv={"north": [u0, v0, u1, v1], "south": [u0, v0, u1, v1], "east": mid,
+                          "west": mid}))
+        gi += 1
+    return out
+
+
+ROUND_RACK = round_rack()
+
+# The folded clothes table: a table 0.75 m high with stacks of folded tees on top and jeans on a
+# shelf below, legs only at a run's ends.
+FOLD_STACKS = [(0.5, 5), (5.75, 10.25), (11, 15.5)]
+
+
+def folded_stacks(y, rows, cols):
+    out = []
+    hs = heights("folded")
+    for r, (z0, z1) in enumerate(rows):
+        for k, (x0, x1) in enumerate(FOLD_STACKS):
+            c = cols[(r * 3 + k) % len(cols)]
+            h = hs[c]
+            uv = {"north": [4 * c, 16 - h, 4 * c + 4, 16], "south": [4 * c, 16 - h, 4 * c + 4, 16],
+                  "east": [4 * c, 16 - h, 4 * c + 4, 16], "west": [4 * c, 16 - h, 4 * c + 4, 16],
+                  "up": [4 * c, 0, 4 * c + 4, 4]}
+            out.append(el([x0, y, z0], [x1, y + h, z1], "stock_a", NO_DOWN, {"up": "stock_a_top"},
+                          uv=uv))
+    return out
+
+
+APPAREL_TABLE = ([board([0, 11.5, 1], [16, 12.25, 15]),
+                  board([0, 10, 1.25], [16, 11.5, 2], faces=("north", "down")),
+                  board([0, 10, 14], [16, 11.5, 14.75], faces=("south", "down")),
+                  board([0, 3, 1.5], [16, 3.5, 14.5], faces=("north", "south", "up", "down"))]
+                 + folded_stacks(12.25, [(2, 6.5), (8.5, 13)], (0, 1, 2, 1, 2, 0))
+                 + folded_stacks(3.5, [(2.5, 7)], (3,)))
+APPAREL_TABLE_END = [R.leg([0.5, 0, 1.25], [1.75, 11.5, 2.5]),
+                     R.leg([0.5, 0, 13.5], [1.75, 11.5, 14.75]),
+                     board([0.5, 10, 2.5], [1.25, 11.5, 13.5], faces=("west", "east", "down")),
+                     board([0.5, 3, 2.5], [1.25, 3.5, 13.5], faces=("west", "east", "down",
+                                                                    "up"))]
+
+# The mannequin: a blocky but proportioned figure 1.85 m tall on a rod from a round base, in a
+# top and trousers; its skin is the finish (gloss white or black).
+MANNEQUIN = (R.octagon(8, 8.5, 3, 0, 0.5, "case")
+             + [el([7.75, 0.5, 9.25], [8.25, 6, 9.75], "chrome", SIDES),
+                el([5.25, 1, 6.5], [7.5, 2, 9.75], "skin"),
+                el([8.5, 1, 6.5], [10.75, 2, 9.75], "skin"),
+                el([5.25, 2, 6.75], [7.5, 14.5, 9.25], "trousers", SIDES),
+                el([8.5, 2, 6.75], [10.75, 14.5, 9.25], "trousers", SIDES),
+                el([5, 14.5, 6.5], [11, 17, 9.5], "trousers"),
+                el([5.5, 17, 6.75], [10.5, 19.5, 9.25], "shirt", SIDES),
+                el([5, 19.5, 6.25], [11, 23.5, 9.75], "shirt"),
+                el([4.5, 23.5, 6.75], [11.5, 24.5, 9.25], "shirt"),
+                el([3, 16.5, 7], [4.5, 24.5, 8.75], "shirt"),
+                el([11.5, 16.5, 7], [13, 24.5, 8.75], "shirt"),
+                el([3.1, 14.75, 7.1], [4.4, 16.5, 8.65], "skin", NO_UP),
+                el([11.6, 14.75, 7.1], [12.9, 16.5, 8.65], "skin", NO_UP),
+                el([7.25, 24.5, 7.25], [8.75, 25.5, 8.75], "skin", SIDES),
+                el([6.5, 25.5, 6.5], [9.5, 29, 9.5], "skin"),
+                el([7, 29, 7], [9, 29.5, 9], "skin", NO_DOWN)])
+# The dress form: a padded torso on a pole from a round base, a turned wooden cap on its neck.
+DRESS_FORM = (R.octagon(8, 8, 3, 0, 0.75, "case")
+              + R.octagon(8, 8, 0.4, 0.75, 14, "chrome", caps=())
+              + [el([5.25, 14, 6.25], [10.75, 17, 9.75], "form"),
+                 el([5.75, 17, 6.75], [10.25, 19, 9.25], "form", SIDES),
+                 el([5.25, 19, 6], [10.75, 22.5, 10], "form"),
+                 el([5.5, 22.5, 6.75], [10.5, 23.5, 9.25], "form", NO_DOWN),
+                 el([7, 23.5, 7], [9, 24.75, 9], "wood", NO_DOWN),
+                 el([7.5, 24.75, 7.5], [8.5, 25.25, 8.5], "wood", NO_DOWN)])
+
+# The fitting room booth, two blocks tall: its back wall with a mirror, a bench and hooks, the
+# partition on its left, the curtain rod and a fascia; the curtain drawn across or back.
+FIT_BODY = [board([0, 0, 15.25], [16, 30, 16], grain="v", faces=("north", "south", "up")),
+            board([0, 0, 0.5], [0.5, 30, 15.25], grain="v", faces=("west", "east", "north",
+                                                                   "up")),
+            el([4, 8.5, 15.15], [12, 27, 15.25], "mirror", ("north",)),
+            board([1, 7, 11.5], [15, 7.75, 15.25]),
+            el([7.5, 4, 14.25], [8.5, 7, 15.25], "chrome", ("north", "east", "west", "down")),
+            el([11, 22, 14.5], [11.5, 22.75, 15.25], "chrome", NO_BACK),
+            el([13, 22, 14.5], [13.5, 22.75, 15.25], "chrome", NO_BACK),
+            el([0.5, 28.5, 1.25], [16, 29, 1.75], "chrome", ("north", "south", "up", "down")),
+            board([0, 30, 0.5], [16, 32, 1.25], faces=("north", "south", "up", "down"))]
+FIT_LEFT = [el([0, 0, 15.25], [0.01, 30, 16], "edge", ("west",)),
+            el([0, 30, 0.5], [0.01, 32, 1.25], "edge", ("west",))]
+FIT_RIGHT = ([board([15.5, 0, 0.5], [16, 30, 15.25], grain="v", faces=("west", "east", "north",
+                                                                      "up")),
+              el([15.99, 0, 15.25], [16, 30, 16], "edge", ("east",)),
+              el([15.99, 30, 0.5], [16, 32, 1.25], "edge", ("east",)),
+              sign_print(9, 15, 30.25, 31.75, 0.5, "signs_g", 2)])
+FIT_CLOSED = ([el([0.5 + 2.5 * i, 1.5, 1.3 if i % 2 == 0 else 1.75],
+                  [3 + 2.5 * i, 28.25, 1.75 if i % 2 == 0 else 2.2], "curtain",
+                  ("north", "south", "east", "west", "down"))
+               for i in range(6)]
+              + [el([1.5 + 2.5 * i, 28.25, 1.35], [2, 28.75, 1.65], "chrome", SIDES)
+                 for i in range(6)])
+FIT_OPEN = ([el([0.5 + i, 1.5, 1.0 if i % 2 == 0 else 1.7], [1.5 + i, 28.25,
+                                                               1.7 if i % 2 == 0 else 2.4],
+                "curtain", ("north", "south", "east", "west", "down"))
+             for i in range(3)]
+            + [el([0.75 + 0.9 * i, 28.25, 1.35], [1.25 + 0.9 * i, 28.75, 1.65], "chrome", SIDES)
+               for i in range(3)])
+FIT_PARTS = {"body": FIT_BODY, "left": FIT_LEFT, "right": FIT_RIGHT, "closed": FIT_CLOSED,
+             "open": FIT_OPEN}
+
+
+# ------------------------------------------------------------------------------------------
 # Finishes
 # ------------------------------------------------------------------------------------------
 def fin(fid, tex, *names):
@@ -3641,6 +4494,134 @@ add("dvd_kiosk", "tall",
     "Kiosks", "2 blocks tall, decorative: invented films' posters, a screen and a disc slot "
               "under a lit header (light 7); beeps on click")
 
+# --- merchandising and fixtures ----------------------------------------------------------
+def OUT_T(name):
+    """One of the Residential tab's outdoor textures."""
+    return "csm:blocks/furniture/outdoor/%s" % name
+
+
+add("end_cap", "endcap",
+    [fin(v, stock_tex(a, b), *n) for v, a, b, *n in GONDOLA_KINDS if a],
+    ("End Cap Display", "Stirnregal", "Cabecera de góndola", "Gavelhylla"),
+    {"particle": "shelf", "java": 'new BlockGondola("%s", new int[]{0, 0, 2, 16, 16, 16})'},
+    "Shelving",
+    "Closes the end of a gondola run: deeper shelves under a WEEKLY SPECIAL header; joins and "
+    "stacks like a gondola; a click with an empty hand hangs price tags, then a shelf talker")
+add("pallet_stack", "single",
+    [fin("drinks", {"load": MT("load_drinks"), "load_top": MT("load_drinks_top")},
+         "Drinks", "Getränke", "bebidas", "drycker"),
+     fin("water", {"load": MT("load_water"), "load_top": MT("load_water_top")},
+         "Bottled Water", "Wasserflaschen", "agua embotellada", "flaskvatten"),
+     fin("paper", {"load": MT("load_paper"), "load_top": MT("load_paper_top")},
+         "Paper Goods", "Papierwaren", "productos de papel", "pappersvaror")],
+    ("Pallet Stack", "Palettenstapel", "Palé de mercancía", "Lastpall"),
+    {"geo": PALLET_STACK, "particle": "slat",
+     "java": FIX % ("%s", jbox(box_of(PALLET_STACK)), "WOOD")},
+    "Merchandising", "A wrapped load on a pallet; stacks two high")
+add("bargain_bin", "single", [fin("chrome", {}, "Chrome", "Chrom", "cromo", "krom")],
+    ("Bargain Bin", "Wühlkorb", "Cesta de ofertas", "Fyndkorg"),
+    {"geo": BARGAIN_BIN, "particle": "chrome",
+     "java": FIX % ("%s", jbox(box_of(BARGAIN_BIN)), "METAL")},
+    "Merchandising", "A wire dump bin on castors heaped with odds and ends under a BARGAIN BIN "
+                     "sign")
+add("dump_bin", "single", [fin("kraft", {}, "Kraft", "Kraftpapier", "kraft", "kraft")],
+    ("Cardboard Dump Bin", "Aktionsdisplay aus Karton", "Expositor de cartón", "Kartongdisplay"),
+    {"geo": DUMP_BIN, "particle": "kraft",
+     "java": FIX % ("%s", jbox(box_of(DUMP_BIN)), "WOOD")},
+    "Merchandising", "A printed SPECIAL BUY bin heaped with odds and ends")
+add("seasonal_table", "run",
+    [fin("summer", dict(stock_tex("summer", "summer"), skirt=OUT_T("teal"),
+                         signs=MT("store_signs_d")),
+         "Summer", "Sommer", "verano", "sommar"),
+     fin("harvest", dict(stock_tex("harvest", "harvest"), skirt=T("oatmeal"),
+                          signs=MT("store_signs_e")),
+         "Harvest", "Herbst", "otoño", "skörd"),
+     fin("winter", dict(stock_tex("winter", "winter"), skirt=T("red"),
+                         signs=MT("store_signs_f")),
+         "Winter", "Winter", "invierno", "vinter")],
+    ("Seasonal Display Table", "Saisontisch", "Mesa de temporada", "Säsongsbord"),
+    {"body": SEASONAL_BODY, "end": SEASONAL_END, "end_right": SEASONAL_RIGHT, "particle": "skirt",
+     "java": RUN % ("%s", jbox(box_of(SEASONAL_BODY + SEASONAL_RIGHT)), "seasonal_table",
+                    "BlockRenderLayer.CUTOUT")},
+    "Merchandising", "A skirted table and riser of a season's goods under its sign; joins any "
+                     "seasonal table (the sign on the run's end on the shopper's left)")
+add("checkout_candy", "run", CHECKOUT_FINS,
+    ("Checkout Counter with Candy Strip", "Kassentisch mit Süßwarenleiste",
+     "Caja con expositor de golosinas", "Kassadisk med godishylla"),
+    {"body": CHECKOUT_CANDY, "end": cabinet_end(14.5), "particle": "wood",
+     "tex": stock_tex("gum", "gum"),
+     "java": RUN % ("%s", jbox(box_of(CHECKOUT_CANDY)), "checkout", "BlockRenderLayer.CUTOUT")},
+    "Checkout", "A strip of gum, mints and bars on the customer's side; part of the checkout "
+                "lane; counter pieces rest on its top")
+
+add("department_sign", "department", [fin("black", {}, *BLACK_N)],
+    ("Department Sign", "Abteilungsschild", "Cartel de sección", "Avdelningsskylt"),
+    {"geo": department_sign(0), "particle": "case",
+     "java": 'new BlockDepartmentSign("%%s", new int[]{%s})' % jbox(box_of(department_sign(0)))},
+    "Signs & Tags", "Hangs from the ceiling, 2 m wide; click steps through produce, bakery, deli, "
+                    "meat and seafood, pharmacy, floral, dairy, frozen, checkout and customer "
+                    "service, sneak-click steps back")
+add("sale_sign", "single", [fin("red", {}, "Red", "Rot", "rojo", "röd")],
+    ("Sale Sign", "Angebotsschild", "Cartel de oferta", "Reaskylt"),
+    {"geo": SALE_SIGN, "particle": "case", "java": FIX % ("%s", jbox(box_of(SALE_SIGN)), "METAL")},
+    "Signs & Tags", "A SALE card on a floor stand, both sides")
+add("deal_sign", "single", [fin("orange", {}, "Orange", "Orange", "naranja", "orange")],
+    ("Hot Deal Sign", "Schnäppchenschild", "Cartel de chollo", "Fyndskylt"),
+    {"geo": DEAL_SIGN, "particle": "case", "java": FIX % ("%s", jbox(box_of(DEAL_SIGN)), "METAL")},
+    "Signs & Tags", "A HOT DEAL card on a floor stand, both sides")
+
+add("clothing_rail", "run", [fin("chrome", {}, "Chrome", "Chrom", "cromo", "krom")],
+    ("Rolling Clothes Rail", "Rollbare Kleiderstange", "Burro de ropa con ruedas",
+     "Klädställning på hjul"),
+    {"body": CLOTHES_RAIL, "end": RAIL_END, "particle": "chrome",
+     "java": RUN % ("%s", jbox(box_of(CLOTHES_RAIL + RAIL_END)), "clothing_rail",
+                    "BlockRenderLayer.CUTOUT")},
+    "Apparel", "Garments on hangers along a rail; joins into one long rail (castor frames only "
+               "at its ends)")
+add("round_rack", "single", [fin("chrome", {}, "Chrome", "Chrom", "cromo", "krom")],
+    ("Round Clothes Rack", "Rundständer für Kleidung", "Perchero redondo", "Rund klädställning"),
+    {"geo": ROUND_RACK, "particle": "chrome",
+     "java": FIX % ("%s", jbox(box_of(ROUND_RACK)), "METAL")},
+    "Apparel", "Garments all round a ring on a pole")
+add("apparel_table", "run",
+    [fin("oak", dict(OAK, **stock_tex("folded", "folded")), *OAK_N),
+     fin("white", {"wood": T("white"), "wood_v": T("white_v"), "edge": T("white_edge"),
+                   "stock_a": MT("stock_folded"), "stock_a_top": MT("stock_folded_top")},
+         *WHITE_N)],
+    ("Folded Clothes Table", "Tisch für gefaltete Kleidung", "Mesa de ropa doblada",
+     "Bord för vikta kläder"),
+    {"body": APPAREL_TABLE, "end": APPAREL_TABLE_END, "particle": "wood",
+     "java": RUN % ("%s", jbox(box_of(APPAREL_TABLE)), "apparel_table",
+                    "BlockRenderLayer.CUTOUT")},
+    "Apparel", "Stacks of folded tees on top, jeans below; joins into a long table")
+add("mannequin", "tall",
+    [fin("white", {"skin": MT("case_white"), "shirt": T("red"), "trousers": T("navy")},
+         *WHITE_N),
+     fin("black", {"skin": MT("case_black"), "shirt": T("oatmeal"), "trousers": T("charcoal")},
+         *BLACK_N)],
+    ("Mannequin", "Schaufensterpuppe", "Maniquí", "Skyltdocka"),
+    {"geo": MANNEQUIN, "particle": "skin",
+     "java": 'new BlockMarketTall("%%s", new int[]{%s}, 0, null)'
+             % jbox(box_of(MANNEQUIN, tall=True))},
+    "Apparel", "2 blocks tall; a dressed figure on a stand")
+add("dress_form", "tall",
+    [fin("linen", {"form": T("oatmeal")}, "Linen", "Leinen", "lino", "linne"),
+     fin("black", {"form": T("charcoal")}, *BLACK_N)],
+    ("Dress Form", "Schneiderbüste", "Busto de costura", "Provdocka"),
+    {"geo": DRESS_FORM, "particle": "form",
+     "java": 'new BlockMarketTall("%%s", new int[]{%s}, 0, null)'
+             % jbox(box_of(DRESS_FORM, tall=True))},
+    "Apparel", "2 blocks tall; a padded torso form on a pole")
+add("fitting_room", "fitting",
+    [fin("white", {"wood": T("white"), "wood_v": T("white_v"), "edge": T("white_edge"),
+                   "curtain": T("charcoal")}, *WHITE_N),
+     fin("walnut", dict(WALNUT, curtain=T("red")), *WALNUT_N)],
+    ("Fitting Room", "Umkleidekabine", "Probador", "Provrum"),
+    {"particle": "wood",
+     "java": 'new BlockFittingRoom("%s", new int[]{0, 0, 0, 16, 32, 16})'},
+    "Apparel", "2 blocks tall; a booth with a mirror and a bench; joins into a row; click draws "
+               "the curtain")
+
 PIECE = {p[0]: p for p in PIECES}
 
 
@@ -3706,6 +4687,34 @@ def base_models():
                 item = (parts["body"] + parts["plinth"] + parts["top"] + parts["left"]
                         + parts["right"])
                 out.append(("gondola_%s_item" % v, geometry(item, p)))
+            for part, geo in GONDOLA_TAGS.items():
+                out.append(("gondola_%s" % part, geometry(geo, "shelf")))
+        elif kind == "endcap":
+            shared = {"top": ENDCAP_TOP, "left": ENDCAP_END, "right": mirror_x(ENDCAP_END)}
+            for part, geo in shared.items():
+                out.append(("end_cap_%s" % part, geometry(geo, p)))
+            for part, geo in ENDCAP_TAGS.items():
+                out.append(("end_cap_%s" % part, geometry(geo, "shelf")))
+            for v, above, below, *_n in GONDOLA_KINDS:
+                if not above:
+                    continue
+                parts = endcap_parts(above, below, 700 + hash_seed(v) % 97)
+                for part in ("body", "plinth", "stacked"):
+                    out.append(("end_cap_%s_%s" % (v, part), geometry(parts[part], p)))
+                item = (parts["body"] + parts["plinth"] + parts["top"] + parts["left"]
+                        + parts["right"])
+                out.append(("end_cap_%s_item" % v, geometry(item, p, display=big(item))))
+        elif kind == "department":
+            for band in range(4):
+                geo = department_sign(band)
+                out.append(("department_sign_%d" % band, geometry(geo, p, display=big(geo))))
+        elif kind == "fitting":
+            for part, geo in FIT_PARTS.items():
+                lower, upper = split_tall(geo)
+                out.append(("%s_%s_lower" % (piece, part), geometry(lower, p)))
+                out.append(("%s_%s_upper" % (piece, part), geometry(upper, p)))
+            item = FIT_BODY + FIT_LEFT + FIT_RIGHT + FIT_CLOSED
+            out.append(("%s_item" % piece, geometry(item, p, display=big(item))))
         elif kind == "service":
             out.append(("service_desk_sign", geometry(SERVICE_SIGN, "sign")))
         elif kind == "pharmacy":
@@ -3930,8 +4939,44 @@ def generate(assets):
                 copy_model(blk % part, "gondola_%s_%s" % (v, part), ftex)
             for part in ("top", "left", "right"):
                 copy_model(blk % part, "gondola_%s" % part, ftex)
+            for part in TAG_PARTS:
+                copy_model(blk % part, "gondola_%s" % part, ftex)
             copy_model(item, "gondola_%s_item" % v, ftex)
-            state = multipart_state(reg, GONDOLA_RULES)
+            state = multipart_state(reg, GONDOLA_RULES + R.faced(TAG_RULES))
+        elif kind == "endcap":
+            v = reg[len("end_cap_"):]
+            for part in ("body", "plinth", "stacked"):
+                copy_model(blk % part, "end_cap_%s_%s" % (v, part), ftex)
+            for part in ("top", "left", "right") + TAG_PARTS:
+                copy_model(blk % part, "end_cap_%s" % part, ftex)
+            copy_model(item, "end_cap_%s_item" % v, ftex)
+            state = multipart_state(reg, GONDOLA_RULES + R.faced(TAG_RULES))
+        elif kind == "department":
+            # the department picks the band's model and the sheet it is on
+            state = {"forge_marker": 1,
+                     "defaults": {"model": BASE + "department_sign_0",
+                                  "textures": dict(ftex, signs=MT("store_signs_d"))},
+                     "variants": {"facing": facing_variants(),
+                                  "department": {
+                                      name: {"model": BASE + "department_sign_%d" % band,
+                                             "textures": {"signs": MT(sheet)}}
+                                      for name, sheet, band in DEPARTMENTS},
+                                  "inventory": [{}]}}
+        elif kind == "fitting":
+            for part in FIT_PARTS:
+                for half in ("lower", "upper"):
+                    copy_model(blk % ("%s_%s" % (part, half)),
+                               "%s_%s_%s" % (piece, part, half), ftex)
+            copy_model(item, "%s_item" % piece, ftex)
+            rules = []
+            for half in ("lower", "upper"):
+                up = "true" if half == "upper" else "false"
+                rules += R.faced([("body_" + half, {"upper": up}),
+                                  ("left_" + half, {"upper": up, "left": "false"}),
+                                  ("right_" + half, {"upper": up, "right": "false"}),
+                                  ("closed_" + half, {"upper": up, "open": "false"}),
+                                  ("open_" + half, {"upper": up, "open": "true"})])
+            state = multipart_state(reg, rules)
         elif kind == "service":
             for part in ("body", "left", "right"):
                 copy_model(blk % part, "reception_desk_%s" % part, ftex, O.SUB)
@@ -4039,9 +5084,9 @@ MOVED_NAMES = {"BlockAppleCrate": "Apple Crate", "BlockBananaCrate": "Banana Cra
                "BlockOnionCrate": "Onion Crate", "BlockOrangeCrate": "Orange Crate",
                "BlockPearCrate": "Pear Crate", "BlockPotatoeCrate": "Potato Crate",
                "BlockTomatoeCrate": "Tomato Crate", "BlockVerifoneMx915": "Verifone MX915"}
-GROUP_ORDER = ["Refrigerated", "Shelving", "Produce", "Butcher & Seafood", "Bakery & Hot Food",
-               "Floral", "Coffee & Drinks", "Checkout", "Tobacco & Lottery", "Pharmacy",
-               "Store", "Kiosks", "Outdoor"]
+GROUP_ORDER = ["Refrigerated", "Shelving", "Merchandising", "Produce", "Butcher & Seafood",
+               "Bakery & Hot Food", "Floral", "Coffee & Drinks", "Checkout", "Tobacco & Lottery",
+               "Pharmacy", "Store", "Signs & Tags", "Apparel", "Kiosks", "Outdoor"]
 
 
 def fragments():

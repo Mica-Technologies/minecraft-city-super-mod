@@ -2,7 +2,7 @@
 
 Grocery stores and shops: stocked refrigerated displays, gondola shelving, produce, the checkout lane and its registers and card terminals, carts, aisle signs and the shop floor's fixtures.
 
-!!! info "107 blocks in this tab"
+!!! info "136 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -16,6 +16,7 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Bagging Carousel (White) | `csm:bag_carousel_white` | 1.5 | 3.0 | axe | 0 |
 | Bakery Display Case (Oak) | `csm:bakery_case_oak` | 1.5 | 3.0 | axe | 0 |
 | Banana Crate | `csm:bananacrate` | 2 | 10 | pickaxe | 1 |
+| Bargain Bin (Chrome) | `csm:bargain_bin_chrome` | 1.5 | 3.0 | axe | 0 |
 | Beet Crate | `csm:beetcrate` | 2 | 10 | pickaxe | 1 |
 | Bottle Return Machine (Green) | `csm:bottle_return_machine_green` | 1.5 | 3.0 | axe | 0 |
 | Bread Rack (Oak) | `csm:bread_rack_oak` | 1.5 | 3.0 | axe | 0 |
@@ -25,6 +26,7 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Butcher Case (Black) | `csm:butcher_case_black` | 1.5 | 3.0 | axe | 0 |
 | Butcher Case (White) | `csm:butcher_case_white` | 1.5 | 3.0 | axe | 0 |
 | Card Terminal on Stand (Black) | `csm:card_terminal_stand_black` | 1.5 | 3.0 | axe | 0 |
+| Cardboard Dump Bin (Kraft) | `csm:dump_bin_kraft` | 1.5 | 3.0 | axe | 0 |
 | Carrot Barrel | `csm:carrotbarrel` | 2 | 10 | pickaxe | 1 |
 | Carrot Crate | `csm:carrotcrate` | 2 | 10 | pickaxe | 1 |
 | Cart Corral (Steel) | `csm:cart_corral_steel` | 1.5 | 3.0 | axe | 0 |
@@ -33,6 +35,8 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Checkout Candy Rack (Black) | `csm:impulse_rack_black` | 1.5 | 3.0 | axe | 0 |
 | Checkout Counter with Belt (Grey) | `csm:checkout_belt_grey` | 1.5 | 3.0 | axe | 0 |
 | Checkout Counter with Belt (Walnut) | `csm:checkout_belt_walnut` | 1.5 | 3.0 | axe | 0 |
+| Checkout Counter with Candy Strip (Grey) | `csm:checkout_candy_grey` | 1.5 | 3.0 | axe | 0 |
+| Checkout Counter with Candy Strip (Walnut) | `csm:checkout_candy_walnut` | 1.5 | 3.0 | axe | 0 |
 | Checkout Scanner Counter (Grey) | `csm:checkout_scanner_grey` | 1.5 | 3.0 | axe | 0 |
 | Checkout Scanner Counter (Walnut) | `csm:checkout_scanner_walnut` | 1.5 | 3.0 | axe | 0 |
 | Coin Counting Kiosk (Blue) | `csm:coin_kiosk_blue` | 1.5 | 3.0 | axe | 0 |
@@ -45,12 +49,25 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Customer Service Desk (Blue) | `csm:service_desk_blue` | 1.5 | 3.0 | axe | 0 |
 | Customer Service Desk (Red) | `csm:service_desk_red` | 1.5 | 3.0 | axe | 0 |
 | Deli Service Case (Black) | `csm:deli_case_black` | 1.5 | 3.0 | axe | 0 |
+| Department Sign (Black) | `csm:department_sign_black` | 1.5 | 3.0 | axe | 0 |
+| Dress Form (Black) | `csm:dress_form_black` | 1.5 | 3.0 | axe | 0 |
+| Dress Form (Linen) | `csm:dress_form_linen` | 1.5 | 3.0 | axe | 0 |
 | DVD Rental Kiosk (Purple) | `csm:dvd_kiosk_purple` | 1.5 | 3.0 | axe | 0 |
+| End Cap Display (Bottled Drinks) | `csm:end_cap_drinks` | 1.5 | 3.0 | axe | 0 |
+| End Cap Display (Canned Goods) | `csm:end_cap_canned` | 1.5 | 3.0 | axe | 0 |
+| End Cap Display (Cereal) | `csm:end_cap_cereal` | 1.5 | 3.0 | axe | 0 |
+| End Cap Display (Health & Beauty) | `csm:end_cap_health` | 1.5 | 3.0 | axe | 0 |
+| End Cap Display (Household) | `csm:end_cap_household` | 1.5 | 3.0 | axe | 0 |
+| End Cap Display (Snacks) | `csm:end_cap_snacks` | 1.5 | 3.0 | axe | 0 |
 | Firewood Rack (Black) | `csm:firewood_rack_black` | 1.5 | 3.0 | axe | 0 |
+| Fitting Room (Walnut) | `csm:fitting_room_walnut` | 1.5 | 3.0 | axe | 0 |
+| Fitting Room (White) | `csm:fitting_room_white` | 1.5 | 3.0 | axe | 0 |
 | Floral Cooler (Black) | `csm:floral_cooler_black` | 1.5 | 3.0 | axe | 0 |
 | Floral Cooler (White) | `csm:floral_cooler_white` | 1.5 | 3.0 | axe | 0 |
 | Flower Bucket Stand (Black) | `csm:flower_stand_black` | 1.5 | 3.0 | axe | 0 |
 | Flower Bucket Stand (Oak) | `csm:flower_stand_oak` | 1.5 | 3.0 | axe | 0 |
+| Folded Clothes Table (Oak) | `csm:apparel_table_oak` | 1.5 | 3.0 | axe | 0 |
+| Folded Clothes Table (White) | `csm:apparel_table_white` | 1.5 | 3.0 | axe | 0 |
 | Fountain Drink Machine (Blue) | `csm:fountain_machine_blue` | 1.5 | 3.0 | axe | 0 |
 | Fountain Drink Machine (Red) | `csm:fountain_machine_red` | 1.5 | 3.0 | axe | 0 |
 | Golden Apples | `csm:goldenapples` | 2 | 10 | pickaxe | 1 |
@@ -63,6 +80,7 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Gondola Shelving (Snacks) | `csm:gondola_shelf_snacks` | 1.5 | 3.0 | axe | 0 |
 | Green Apple Crate | `csm:greenapplecrate` | 2 | 10 | pickaxe | 1 |
 | Hanging Produce Scale (Steel) | `csm:produce_scale_steel` | 1.5 | 3.0 | axe | 0 |
+| Hot Deal Sign (Orange) | `csm:deal_sign_orange` | 1.5 | 3.0 | axe | 0 |
 | Hot Food Case (Steel) | `csm:hot_food_case_steel` | 1.5 | 3.0 | axe | 0 |
 | Ice Cream Display Freezer (White) | `csm:ice_cream_case_white` | 1.5 | 3.0 | axe | 0 |
 | Ice Merchandiser (Blue) | `csm:ice_merchandiser_blue` | 1.5 | 3.0 | axe | 0 |
@@ -73,10 +91,15 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Lottery Terminal (Black) | `csm:lottery_terminal_black` | 1.5 | 3.0 | axe | 0 |
 | Lottery Ticket Dispenser (Clear) | `csm:lottery_dispenser_clear` | 1.5 | 3.0 | axe | 0 |
 | Magazine Rack (Black) | `csm:magazine_rack_black` | 1.5 | 3.0 | axe | 0 |
+| Mannequin (Black) | `csm:mannequin_black` | 1.5 | 3.0 | axe | 0 |
+| Mannequin (White) | `csm:mannequin_white` | 1.5 | 3.0 | axe | 0 |
 | Onion Crate | `csm:onioncrate` | 2 | 10 | pickaxe | 1 |
 | Open Dairy Case (Black) | `csm:dairy_case_black` | 1.5 | 3.0 | axe | 0 |
 | Open Dairy Case (White) | `csm:dairy_case_white` | 1.5 | 3.0 | axe | 0 |
 | Orange Crate | `csm:orangecrate` | 2 | 10 | pickaxe | 1 |
+| Pallet Stack (Bottled Water) | `csm:pallet_stack_water` | 1.5 | 3.0 | axe | 0 |
+| Pallet Stack (Drinks) | `csm:pallet_stack_drinks` | 1.5 | 3.0 | axe | 0 |
+| Pallet Stack (Paper Goods) | `csm:pallet_stack_paper` | 1.5 | 3.0 | axe | 0 |
 | Pear Crate | `csm:pearcrate` | 2 | 10 | pickaxe | 1 |
 | Pharmacy Drop-Off Counter (Teal) | `csm:pharmacy_dropoff_teal` | 1.5 | 3.0 | axe | 0 |
 | Pharmacy Drop-Off Counter (Walnut) | `csm:pharmacy_dropoff_walnut` | 1.5 | 3.0 | axe | 0 |
@@ -99,9 +122,15 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Reach-In Freezer (Black) | `csm:reach_in_freezer_black` | 1.5 | 3.0 | axe | 0 |
 | Reach-In Freezer (White) | `csm:reach_in_freezer_white` | 1.5 | 3.0 | axe | 0 |
 | Receipt Printer (Black) | `csm:receipt_printer_black` | 1.5 | 3.0 | axe | 0 |
+| Rolling Clothes Rail (Chrome) | `csm:clothing_rail_chrome` | 1.5 | 3.0 | axe | 0 |
 | Rotisserie Oven (Steel) | `csm:rotisserie_oven_steel` | 1.5 | 3.0 | axe | 0 |
+| Round Clothes Rack (Chrome) | `csm:round_rack_chrome` | 1.5 | 3.0 | axe | 0 |
+| Sale Sign (Red) | `csm:sale_sign_red` | 1.5 | 3.0 | axe | 0 |
 | Seafood Case (Black) | `csm:seafood_case_black` | 1.5 | 3.0 | axe | 0 |
 | Seafood Case (White) | `csm:seafood_case_white` | 1.5 | 3.0 | axe | 0 |
+| Seasonal Display Table (Harvest) | `csm:seasonal_table_harvest` | 1.5 | 3.0 | axe | 0 |
+| Seasonal Display Table (Summer) | `csm:seasonal_table_summer` | 1.5 | 3.0 | axe | 0 |
+| Seasonal Display Table (Winter) | `csm:seasonal_table_winter` | 1.5 | 3.0 | axe | 0 |
 | Security Gate (Grey) | `csm:security_gate_grey` | 1.5 | 3.0 | axe | 0 |
 | Self-Checkout Kiosk (Grey) | `csm:self_checkout_grey` | 1.5 | 3.0 | axe | 0 |
 | Self-Serve Coffee Bar (Grey) | `csm:coffee_bar_grey` | 1.5 | 3.0 | axe | 0 |

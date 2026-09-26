@@ -768,11 +768,19 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   with a sign on a post), a stacking shelf wall and hanging PHARMACY and CONSULTATION signs (an
   Rx and a capsule, never a cross), the wall-hung tobacco case, the lottery dispenser and
   terminal (an invented lottery), the ice merchandiser, propane exchange cage and firewood rack,
-  and the coin, photo and movie kiosks, every sign a 4:1 band of one of three shared 64 px
-  sheets (`SIGNS`); and the moved Verifone's blockstate with its model dropped onto each
-  counter height; `--check`, `--fragments` (the whole tab body, moved crates included).
-  `gen_furniture_sounds.py` synthesises the card terminal beep, the scanner beep and the cash
-  drawer
+  and the coin, photo and movie kiosks, every sign a 4:1 band of one of seven shared 64 px
+  sheets (`SIGNS`); the merchandising: end caps (gondolas drawn deeper under a header, so they
+  join and stack as gondolas), the sale tags and shelf talker a click hangs on a gondola's or an
+  end cap's shelf edges (`tags`, from the shared `store_cards` sheet), pallet stacks, the wire
+  bargain bin and cardboard dump bin, seasonal tables (one model, every season's sheet at the
+  same column heights and its sign band 3 of its own sheet), the checkout's candy strip (a lane
+  counter), the hanging department sign (click-cycled, a model per band and the blockstate
+  picking band and sheet) and standing sale signs, and the apparel corner: clothes rails and a
+  round rack (garments as cutout planes square to the rail), folded clothes tables, mannequins,
+  dress forms and fitting rooms whose curtain a click draws; and the moved Verifone's blockstate
+  with its model dropped onto each counter height; `--check`, `--fragments` (the whole tab body,
+  moved crates included). `gen_furniture_sounds.py` synthesises the card terminal beep, the
+  scanner beep, the cash drawer and the fitting room curtain
 - `model_depth.py` -- separates the coplanar faces that z-fight in JSON block models. Every
   JSON-model generator runs it at the end of `generate` / `write_all` (the furniture, novelties and
   Parks generators, the Life Safety catalogue in `life_safety_gen_common.py`, the Building

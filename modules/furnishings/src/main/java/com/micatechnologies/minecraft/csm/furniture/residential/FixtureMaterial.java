@@ -19,7 +19,9 @@ public enum FixtureMaterial {
   /** White or grey plastic: the changing station, the laundry tub. */
   PLASTIC(Material.WOOD, SoundType.STONE, 1.0F),
   /** Glass in a chrome frame: the shower enclosure. */
-  GLASS(Material.GLASS, SoundType.GLASS, 1.0F);
+  GLASS(Material.GLASS, SoundType.GLASS, 1.0F),
+  /** Timber: a pallet, a display table's frame. */
+  WOOD(Material.WOOD, SoundType.WOOD, 1.5F);
 
   private final Material material;
   private final SoundType sound;

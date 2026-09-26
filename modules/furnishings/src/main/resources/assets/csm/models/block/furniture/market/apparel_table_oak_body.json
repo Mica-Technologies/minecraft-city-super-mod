@@ -1,0 +1,12 @@
+{
+  "parent": "csm:block/furniture/market/base/apparel_table_body",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "stock_a": "csm:blocks/furniture/market/stock_folded",
+    "stock_a_top": "csm:blocks/furniture/market/stock_folded_top",
+    "stock_b": "csm:blocks/furniture/market/stock_folded",
+    "stock_b_top": "csm:blocks/furniture/market/stock_folded_top"
+  }
+}

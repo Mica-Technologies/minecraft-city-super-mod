@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/market/base/dress_form_item",
+  "textures": {
+    "form": "csm:blocks/furniture/residential/oatmeal"
+  }
+}

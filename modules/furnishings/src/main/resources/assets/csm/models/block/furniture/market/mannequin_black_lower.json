@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/market/base/mannequin_lower",
+  "textures": {
+    "skin": "csm:blocks/furniture/market/case_black",
+    "shirt": "csm:blocks/furniture/residential/oatmeal",
+    "trousers": "csm:blocks/furniture/residential/charcoal"
+  }
+}

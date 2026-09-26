@@ -1,0 +1,267 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "case": "csm:blocks/furniture/market/case_black",
+    "chrome": "csm:blocks/furniture/residential/chrome",
+    "shelf": "csm:blocks/furniture/market/steel_white",
+    "signs_g": "csm:blocks/furniture/market/store_signs_g",
+    "particle": "#shelf"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        15.5,
+        14.25
+      ],
+      "to": [
+        16,
+        16,
+        15.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shelf",
+          "uv": [
+            0,
+            0,
+            16,
+            0.5
+          ]
+        },
+        "up": {
+          "texture": "#shelf",
+          "uv": [
+            0,
+            14.25,
+            16,
+            15.75
+          ]
+        },
+        "south": {
+          "texture": "#shelf",
+          "uv": [
+            0,
+            0,
+            16,
+            0.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        16,
+        14.95
+      ],
+      "to": [
+        2.5,
+        17,
+        15.05
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chrome",
+          "uv": [
+            13.5,
+            0,
+            14.0,
+            1.0
+          ]
+        },
+        "south": {
+          "texture": "#chrome",
+          "uv": [
+            2,
+            0,
+            2.5,
+            1.0
+          ]
+        },
+        "east": {
+          "texture": "#chrome",
+          "uv": [
+            0.8,
+            0,
+            1.2,
+            1.0
+          ]
+        },
+        "west": {
+          "texture": "#chrome",
+          "uv": [
+            14.8,
+            0,
+            15.2,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.5,
+        16,
+        14.95
+      ],
+      "to": [
+        14,
+        17,
+        15.05
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chrome",
+          "uv": [
+            2,
+            0,
+            2.5,
+            1.0
+          ]
+        },
+        "south": {
+          "texture": "#chrome",
+          "uv": [
+            13.5,
+            0,
+            14.0,
+            1.0
+          ]
+        },
+        "east": {
+          "texture": "#chrome",
+          "uv": [
+            0.8,
+            0,
+            1.2,
+            1.0
+          ]
+        },
+        "west": {
+          "texture": "#chrome",
+          "uv": [
+            14.8,
+            0,
+            15.2,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.75,
+        16.75,
+        14.75
+      ],
+      "to": [
+        15.25,
+        20.75,
+        15.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#case",
+          "uv": [
+            0.75,
+            0,
+            15.25,
+            4.0
+          ]
+        },
+        "south": {
+          "texture": "#case",
+          "uv": [
+            0.75,
+            0,
+            15.25,
+            4.0
+          ]
+        },
+        "east": {
+          "texture": "#case",
+          "uv": [
+            0.75,
+            0,
+            1.25,
+            4.0
+          ]
+        },
+        "west": {
+          "texture": "#case",
+          "uv": [
+            14.75,
+            0,
+            15.25,
+            4.0
+          ]
+        },
+        "up": {
+          "texture": "#case",
+          "uv": [
+            0.75,
+            14.75,
+            15.25,
+            15.25
+          ]
+        },
+        "down": {
+          "texture": "#case",
+          "uv": [
+            0.75,
+            0.75,
+            15.25,
+            1.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        17,
+        14.55
+      ],
+      "to": [
+        15,
+        20.5,
+        14.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#signs_g",
+          "uv": [
+            0,
+            4,
+            16,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        17,
+        15.25
+      ],
+      "to": [
+        15,
+        20.5,
+        15.45
+      ],
+      "faces": {
+        "south": {
+          "texture": "#signs_g",
+          "uv": [
+            0,
+            4,
+            16,
+            8
+          ]
+        }
+      }
+    }
+  ]
+}

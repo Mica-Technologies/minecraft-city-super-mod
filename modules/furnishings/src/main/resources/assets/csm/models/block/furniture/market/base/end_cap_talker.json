@@ -1,0 +1,93 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cards": "csm:blocks/furniture/market/store_cards",
+    "chrome": "csm:blocks/furniture/residential/chrome",
+    "shelf": "csm:blocks/furniture/market/steel_white",
+    "particle": "#shelf"
+  },
+  "elements": [
+    {
+      "from": [
+        7.9,
+        7.4,
+        0.25
+      ],
+      "to": [
+        8.1,
+        7.6,
+        2.75
+      ],
+      "faces": {
+        "east": {
+          "texture": "#chrome",
+          "uv": [
+            13.25,
+            8.4,
+            15.75,
+            8.6
+          ]
+        },
+        "west": {
+          "texture": "#chrome",
+          "uv": [
+            0.25,
+            8.4,
+            2.75,
+            8.6
+          ]
+        },
+        "up": {
+          "texture": "#chrome",
+          "uv": [
+            7.9,
+            0.25,
+            8.1,
+            2.75
+          ]
+        },
+        "down": {
+          "texture": "#chrome",
+          "uv": [
+            7.9,
+            13.25,
+            8.1,
+            15.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.95,
+        5.75,
+        -2.75
+      ],
+      "to": [
+        8.05,
+        8.75,
+        0.25
+      ],
+      "faces": {
+        "east": {
+          "texture": "#cards",
+          "uv": [
+            0,
+            8,
+            8,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cards",
+          "uv": [
+            0,
+            8,
+            8,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

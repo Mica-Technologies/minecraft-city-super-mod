@@ -1,0 +1,255 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "chrome": "csm:blocks/furniture/residential/chrome",
+    "rubber": "csm:blocks/furniture/market/rubber",
+    "particle": "#chrome"
+  },
+  "elements": [
+    {
+      "from": [
+        15,
+        2,
+        7.6
+      ],
+      "to": [
+        15.75,
+        25.25,
+        8.4
+      ],
+      "faces": {
+        "east": {
+          "texture": "#chrome",
+          "uv": [
+            7.6,
+            0,
+            8.151,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#chrome",
+          "uv": [
+            7.6,
+            0,
+            8.151,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#chrome",
+          "uv": [
+            0.25,
+            0,
+            0.766,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#chrome",
+          "uv": [
+            15,
+            0,
+            15.516,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#chrome",
+          "uv": [
+            15,
+            7.6,
+            15.75,
+            8.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.85,
+        1,
+        2
+      ],
+      "to": [
+        15.9,
+        2,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chrome",
+          "uv": [
+            0.1,
+            14,
+            1.15,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#chrome",
+          "uv": [
+            14.85,
+            14,
+            15.9,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#chrome",
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ]
+        },
+        "east": {
+          "texture": "#chrome",
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#chrome",
+          "uv": [
+            14.85,
+            2,
+            15.9,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#chrome",
+          "uv": [
+            14.85,
+            2,
+            15.9,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15,
+        0,
+        2.25
+      ],
+      "to": [
+        15.75,
+        1,
+        3.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rubber",
+          "uv": [
+            0.25,
+            15,
+            1,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#rubber",
+          "uv": [
+            15,
+            15,
+            15.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#rubber",
+          "uv": [
+            2.25,
+            15,
+            3.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#rubber",
+          "uv": [
+            12.75,
+            15,
+            13.75,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#rubber",
+          "uv": [
+            15,
+            12.75,
+            15.75,
+            13.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15,
+        0,
+        12.75
+      ],
+      "to": [
+        15.75,
+        1,
+        13.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rubber",
+          "uv": [
+            0.25,
+            15,
+            1,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#rubber",
+          "uv": [
+            15,
+            15,
+            15.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#rubber",
+          "uv": [
+            12.75,
+            15,
+            13.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#rubber",
+          "uv": [
+            2.25,
+            15,
+            3.25,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#rubber",
+          "uv": [
+            15,
+            2.25,
+            15.75,
+            3.25
+          ]
+        }
+      }
+    }
+  ]
+}

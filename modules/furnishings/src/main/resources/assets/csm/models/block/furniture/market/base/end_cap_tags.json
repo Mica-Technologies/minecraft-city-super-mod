@@ -1,0 +1,128 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cards": "csm:blocks/furniture/market/store_cards",
+    "shelf": "csm:blocks/furniture/market/steel_white",
+    "particle": "#shelf"
+  },
+  "elements": [
+    {
+      "from": [
+        1.75,
+        6.25,
+        2.55
+      ],
+      "to": [
+        4.25,
+        7.5,
+        2.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cards",
+          "uv": [
+            8,
+            12,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cards",
+          "uv": [
+            8.5,
+            13.5,
+            8.6,
+            13.6
+          ]
+        },
+        "west": {
+          "texture": "#cards",
+          "uv": [
+            8.5,
+            13.5,
+            8.6,
+            13.6
+          ]
+        },
+        "up": {
+          "texture": "#cards",
+          "uv": [
+            8.5,
+            13.5,
+            8.6,
+            13.6
+          ]
+        },
+        "down": {
+          "texture": "#cards",
+          "uv": [
+            8.5,
+            13.5,
+            8.6,
+            13.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        9.75,
+        6.25,
+        2.55
+      ],
+      "to": [
+        12.25,
+        7.5,
+        2.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cards",
+          "uv": [
+            8,
+            12,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cards",
+          "uv": [
+            8.5,
+            13.5,
+            8.6,
+            13.6
+          ]
+        },
+        "west": {
+          "texture": "#cards",
+          "uv": [
+            8.5,
+            13.5,
+            8.6,
+            13.6
+          ]
+        },
+        "up": {
+          "texture": "#cards",
+          "uv": [
+            8.5,
+            13.5,
+            8.6,
+            13.6
+          ]
+        },
+        "down": {
+          "texture": "#cards",
+          "uv": [
+            8.5,
+            13.5,
+            8.6,
+            13.6
+          ]
+        }
+      }
+    }
+  ]
+}

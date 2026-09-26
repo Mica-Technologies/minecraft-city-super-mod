@@ -1,0 +1,56 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "edge": "csm:blocks/furniture/office/laminate_grey_edge",
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        15.25
+      ],
+      "to": [
+        0.01,
+        14.0,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            15.25,
+            2.0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14.0,
+        0.5
+      ],
+      "to": [
+        0.01,
+        16.0,
+        1.25
+      ],
+      "faces": {
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            0.5,
+            0.0,
+            1.25,
+            2.0
+          ]
+        }
+      }
+    }
+  ]
+}

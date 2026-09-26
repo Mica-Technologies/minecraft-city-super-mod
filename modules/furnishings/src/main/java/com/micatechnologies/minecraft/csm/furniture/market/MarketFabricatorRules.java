@@ -23,7 +23,12 @@ import net.minecraft.block.Block;
  * with a sign, its shelf wall as the gondola, the tobacco case as timber and glass, the lottery
  * pieces as a dispenser of paper and a terminal of electronics, the ice chest as the island
  * freezer without its glass, the propane cage and firewood rack as iron (the rack with its logs),
- * the kiosks as sheet steel with their electronics.
+ * the kiosks as sheet steel with their electronics. The merchandising: end caps as the gondola
+ * with a sign blank for the header, pallet stacks as planks and paper, the bins as iron or
+ * board, seasonal tables as timber and cloth with a sign, the candy strip as the belt counter
+ * less its motor, department signs as two sign blanks, the standing signs as one on a pole, the
+ * clothes rails, racks and tables as iron or timber and cloth, mannequins and dress forms as
+ * their shells and cloth, and fitting rooms as timber, cloth and a mirror.
  *
  * <p>The blocks that moved in keep what they cost before: the produce crates as the Furniture
  * tab's woodwork, the Verifone as the Technology tab's electronics. Priced by registry name,
@@ -45,6 +50,7 @@ public final class MarketFabricatorRules {
   private static final String MC_DYE = "minecraft:dye";
   private static final String MC_FLOWER = "minecraft:red_flower";
   private static final String MC_LOG = "minecraft:log";
+  private static final String MC_WOOL = "minecraft:wool";
 
   /** The produce crates that moved in from the Furniture tab. */
   private static final Set<String> MOVED_CRATES = new HashSet<>(Arrays.asList(
@@ -293,6 +299,58 @@ public final class MarketFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1));
+    }
+    if (registryName.startsWith("end_cap_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1),
+          FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+    }
+    if (registryName.startsWith("pallet_stack_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.any(MC_PAPER, 2));
+    }
+    if (registryName.startsWith("bargain_bin_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 3),
+          FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+    }
+    if (registryName.startsWith("dump_bin_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PAPER, 4));
+    }
+    if (registryName.startsWith("seasonal_table_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.any(MC_WOOL, 1), FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+    }
+    if (registryName.startsWith("checkout_candy_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("department_sign_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 2));
+    }
+    if (registryName.startsWith("sale_sign_") || registryName.startsWith("deal_sign_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("clothing_rail_") || registryName.startsWith("round_rack_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 2),
+          FabricatorIngredient.any(MC_WOOL, 2));
+    }
+    if (registryName.startsWith("apparel_table_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("mannequin_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("dress_form_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 2),
+          FabricatorIngredient.any(MC_PLANKS, 1));
+    }
+    if (registryName.startsWith("fitting_room_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4),
+          FabricatorIngredient.any(MC_WOOL, 2), FabricatorIngredient.any(MC_GLASS_PANE, 1));
     }
     return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
         FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));

@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/market/base/pallet_stack",
+    "textures": {
+      "load": "csm:blocks/furniture/market/load_water",
+      "load_top": "csm:blocks/furniture/market/load_water_top",
+      "slat": "csm:blocks/furniture/produce/crate_slat"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

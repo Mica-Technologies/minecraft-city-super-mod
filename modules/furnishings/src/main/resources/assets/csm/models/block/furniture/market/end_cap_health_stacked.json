@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/market/base/end_cap_health_stacked",
+  "textures": {
+    "stock_a": "csm:blocks/furniture/market/stock_health",
+    "stock_a_top": "csm:blocks/furniture/market/stock_health_top",
+    "stock_b": "csm:blocks/furniture/market/stock_health_b",
+    "stock_b_top": "csm:blocks/furniture/market/stock_health_b_top",
+    "shelf": "csm:blocks/furniture/market/steel_white"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/market/base/gondola_tags_plinth",
+  "textures": {
+    "stock_a": "csm:blocks/furniture/market/stock_canned",
+    "stock_a_top": "csm:blocks/furniture/market/stock_canned_top",
+    "stock_b": "csm:blocks/furniture/market/stock_canned_b",
+    "stock_b_top": "csm:blocks/furniture/market/stock_canned_b_top",
+    "shelf": "csm:blocks/furniture/market/steel_white"
+  }
+}

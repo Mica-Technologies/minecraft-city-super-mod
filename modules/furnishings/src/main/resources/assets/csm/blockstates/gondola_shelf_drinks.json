@@ -229,6 +229,170 @@
         "model": "csm:furniture/market/gondola_shelf_drinks_right",
         "y": 270
       }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags"
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags_plinth"
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "down": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags_stacked"
+      }
+    },
+    {
+      "when": {
+        "tags": "talker",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_talker"
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags_plinth",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "down": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags_stacked",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tags": "talker",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_talker",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags_plinth",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "down": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags_stacked",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tags": "talker",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_talker",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags_plinth",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tags": "sale|talker",
+        "down": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_tags_stacked",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "tags": "talker",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/market/gondola_shelf_drinks_talker",
+        "y": 270
+      }
     }
   ]
 }

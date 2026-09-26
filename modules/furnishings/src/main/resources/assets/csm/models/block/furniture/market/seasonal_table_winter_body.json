@@ -1,0 +1,11 @@
+{
+  "parent": "csm:block/furniture/market/base/seasonal_table_body",
+  "textures": {
+    "stock_a": "csm:blocks/furniture/market/stock_winter",
+    "stock_a_top": "csm:blocks/furniture/market/stock_winter_top",
+    "stock_b": "csm:blocks/furniture/market/stock_winter",
+    "stock_b_top": "csm:blocks/furniture/market/stock_winter_top",
+    "skirt": "csm:blocks/furniture/residential/red",
+    "signs": "csm:blocks/furniture/market/store_signs_f"
+  }
+}

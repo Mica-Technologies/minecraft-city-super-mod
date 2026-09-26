@@ -1,0 +1,14 @@
+{
+  "parent": "csm:block/furniture/market/base/checkout_candy_right",
+  "textures": {
+    "stock_a": "csm:blocks/furniture/market/stock_gum",
+    "stock_a_top": "csm:blocks/furniture/market/stock_gum_top",
+    "stock_b": "csm:blocks/furniture/market/stock_gum",
+    "stock_b_top": "csm:blocks/furniture/market/stock_gum_top",
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "wood_v": "csm:blocks/furniture/office/laminate_grey",
+    "edge": "csm:blocks/furniture/office/laminate_grey_edge",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "plastic": "csm:blocks/furniture/market/plastic_grey"
+  }
+}

@@ -5,7 +5,7 @@ toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and ja
 bathroom's toilet flush and shower spray, the laundry's washing machine, dryer and steam iron, the
 office's copier and school locker door, the living room's doorbell chime and fireplace crackle,
 the backyard's grill sizzle and trampoline boing, and the store's card terminal beep, checkout
-scanner and cash drawer (the locker sounds and the card terminal's beep replace recordings of
+scanner and cash drawer and the fitting room's curtain (the locker sounds and the card terminal's beep replace recordings of
 unknown origin the mod used to ship), made here from filtered noise, decaying sines and envelopes,
 never recorded or taken from a sound library. Each entry in SOUNDS names a function returning mono samples in -1..1 at RATE and the level
 (RMS, of 32767) it is normalised to; the script writes modules/furnishings/src/main/resources/assets/csm/sounds/<name>.ogg through
@@ -477,6 +477,26 @@ def register_drawer():
     return place(1.2, [(0.0, key, 0.6), (0.05, bell, 0.8), (0.1, run, 0.45), (0.36, stop, 0.9)])
 
 
+def curtain_slide():
+    """A fitting room's curtain drawn along its rod: the rings rattling and scraping on the steel
+    rod in a quick run of small metallic ticks, over the soft swish of the cloth, and the last
+    ring knocking against its neighbours at the end."""
+    total = 0.75
+    rng = np.random.RandomState(151)
+    parts = []
+    t = 0.02
+    while t < 0.5:
+        tick = knock(0.05, [(3100 + rng.uniform(-400, 400), 1.0), (5200, 0.4)], 90, 152,
+                     click=0.6)
+        parts.append((t, tick, 0.25 + 0.2 * rng.uniform()))
+        t += rng.uniform(0.018, 0.04)
+    swish = band(noise(0.55, 153), 500, 4200)
+    swish /= max(1e-9, np.max(np.abs(swish)))
+    swish *= np.sin(np.pi * np.clip(t_of(0.55) / 0.55, 0, 1)) ** 1.2
+    end = knock(0.12, [(2600, 1.0), (4100, 0.5)], 45, 154, click=0.5)
+    return place(total, parts + [(0.0, swish, 0.55), (0.52, end, 0.6)])
+
+
 SOUNDS = {
     'cabinet_open': (cabinet_open, 2600),
     'cabinet_close': (cabinet_close, 3600),
@@ -507,6 +527,7 @@ SOUNDS = {
     'verifone_mx915': (verifone_mx915, 2600),
     'scanner_beep': (scanner_beep, 2400),
     'register_drawer': (register_drawer, 3000),
+    'curtain_slide': (curtain_slide, 2600),
 }
 
 

@@ -772,6 +772,116 @@ The traps:
   all. The two heaviest are the lottery dispenser (1,232 quads over its seven rests) and the
   propane cage (1,167 quads: twelve cylinders of octagons); every other block is under 80 KB.
 
+### Merchandising and fixtures
+
+The things a store puts on its floor between the fixtures: end caps and pallets, signs and tags,
+bins and seasonal tables, and a small apparel corner. Three new classes (the department sign,
+its tile entity and the fitting room) and one new property (the gondola's tags); everything else
+is on the classes the tab already had.
+
+- **End caps** (`end_cap_*`, stocked the six ways the gondola is) close the end of a gondola run:
+  placed against a run's end and facing out, a pegboard back against the run and deeper shelves
+  (stock about 11 px deep against the gondola's 8) with the gondola's price strips, a base deck and a
+  WEEKLY SPECIAL header on posts over the head of a stack. They are `BlockGondola`s drawn
+  differently, so they join and stack with one another exactly as gondolas do (two side by side
+  close an island's end as one end cap; a header stands over each), and a run turned their way
+  joins them. They carry the tags below, a yellow price tag rather than the red one.
+- **Shelf tags and talkers.** A click with an empty hand on a gondola or an end cap hangs red
+  SALE tags (yellow price tags on an end cap) under its price strips, a second click adds a shelf
+  talker (a starburst card on a clear arm standing square to the shelf, out into the aisle, so a
+  shopper walking the aisle sees it), a third takes both off; a sneaking click steps back.
+  `BlockGondola.TAGS` (`ShelfTags`: `none`, `sale`, `talker`) is stored in the two bits above the
+  facing, and the multipart draws the tags on the shelf strip and on the deck strip or, stacked,
+  the bottom strip. The cards, tags and the standing signs' cards share one 64 px sheet,
+  `store_cards`, quartered.
+- **Pallet stacks** (`pallet_stack_drinks`, `_water`, `_paper`, `BlockBathroomFixture` in the new
+  `FixtureMaterial.WOOD`) are a timber pallet and a load in courses (printed cases, trays of
+  bottles, bulk kitchen roll) under a stretch wrap's sheen. One model, retextured. Placed on one
+  another they are a double-stacked pallet.
+- **Bargain bins.** The wire bargain bin on castors and the cardboard SPECIAL BUY dump bin are
+  heaped with odds and ends (`jumble`, one 32 px texture used for the heap and the four things
+  poking out of it at 22.5 degrees).
+- **Seasonal display tables** (`seasonal_table_summer`, `_harvest`, `_winter`, `BlockMarketRun`,
+  group `seasonal_table`) are a skirted table and a riser of generic seasonal goods: beach balls,
+  sun cream, pails and sandals; pumpkins, gourds, candles and cider; gifts, candles and tins. The
+  season's sign stands over the run's end on the shopper's left. One model, retextured: the skirt,
+  the goods' sheet and the sign's sheet.
+- **The checkout's candy strip** (`checkout_candy_*`, grey and walnut) is a checkout counter of
+  group `checkout`, so it joins the belt, scanner and bagging counters into one lane; its top is
+  plain and its customer side carries a wire strip of gum, mints and bars on three ledges.
+- **Department signs** (`department_sign_black`, `BlockDepartmentSign`) hang from the ceiling like
+  the aisle sign but are two metres wide, reaching half a block past each side of their block:
+  PRODUCE, BAKERY, DELI, MEAT & SEAFOOD, PHARMACY, FLORAL, DAIRY, FROZEN, CHECKOUT and CUSTOMER
+  SERVICE, each in its colour with its pictograms, printed both sides. A click steps to the next
+  department, a sneaking click back; the department is kept in a `TileEntityDepartmentSign` (the
+  metadata holds the facing), read by `getActualState` as `DEPARTMENT` (`StoreDepartment`), and
+  the blockstate picks the band's model and the sheet for it. PHARMACY is the pharmacy sign's own
+  band.
+- **Standing sale signs**: a SALE card (2 FOR 5.00) and a HOT DEAL card (9.99) in a frame on a
+  floor stand, both sides. Every price in the tab is invented.
+- **Apparel.** The rolling clothes rail (`BlockMarketRun`, group `clothing_rail`) is a top rail
+  with garments along it and the castor frames only at a run's ends; the round rack is a ring of
+  eight bars on crossed arms and a pole with a garment at the middle of each side. A garment is a
+  plane square to its rail, cut out to its shape on its broad faces (eight garments on one 32 px
+  sheet: a tee, a shirt, a dress, a jacket, jeans, a hoodie, a skirt and a blouse on hangers) and
+  mapped to the garment's middle column on its edges, so its edge follows its length. The folded
+  clothes table (group `apparel_table`, oak and white) holds stacks of folded tees on top and
+  jeans below. The mannequin and the dress form are `BlockMarketTall`s: a figure 1.85 m tall on a
+  rod, dressed in a top and trousers (gloss white or black), and a padded torso on a pole with a
+  turned cap.
+- **Fitting rooms** (`BlockFittingRoom`, a `BlockCloset`, white with a charcoal curtain or walnut
+  with a red one) are booths two blocks tall with a mirror, a bench and hooks, joining into a row:
+  each booth draws the partition on its own left, so a row has one wall between each pair, and
+  the booth at the row's right end also draws its right-hand wall and the FITTING ROOMS sign on
+  the fascia. A click on either half draws the curtain across or back to its side, with a
+  synthesised rattle of rings (`CURTAIN_SLIDE`); `OPEN` is stored in both halves, in the bit
+  above the half. Only the walls and a drawn curtain collide, so an open booth can be walked into.
+- **Pricing** (`MarketFabricatorRules` and its mirror): end caps as the gondola with a sign blank,
+  pallets as planks and paper, the wire bin as iron and a sign blank, the dump bin as paper, the
+  seasonal table as timber and cloth with a sign blank, the candy strip as the belt counter less
+  its motor with an iron rack, department signs as two sign blanks, the standing signs as one on
+  a pole, rails and racks as iron and cloth, tables as timber and cloth, the mannequin as sheet
+  steel and cloth, the dress form as cloth and timber, the fitting room as timber, cloth and a
+  mirror's glass.
+
+The traps:
+
+- **A retextured model fixes the column heights.** The seasonal tables are one model, so every
+  season's sheet draws its four columns at the same heights (`SEASONAL_H`); a shorter drawing
+  leaves its box's top face floating over the product. And a table is seen from above, so its
+  goods have opaque tops: the bottle and can tops the shelves use (caps on a transparent sheet)
+  read as a floating lattice there.
+- **The sign's band is in the model, so a retexture cannot change it.** The three seasons' signs
+  are band 3 of three sheets (`store_signs_d` to `_f`), so the one table model takes any of them
+  by naming the sheet. The department sign needs a model per band and names the sheet in the
+  department's variant; with PHARMACY reused there are seven sign sheets in all.
+- **`TAGS` and the department are stored ordinals.** `ShelfTags` is in the gondola's metadata and
+  `StoreDepartment` in the tile entity: append, never re-order.
+- **Only an empty hand hangs tags.** A gondola's click with anything in the hand is left alone,
+  or a block could not be placed against the shelving.
+- **The tags' particle is the shelf's.** A part's particle texture is added to every finish that
+  lacks it; giving the tag parts the cards sheet as their particle rewrote all 49 existing gondola
+  finish models for nothing.
+- **A pallet's boards have no bottom faces.** A pallet stacked on a load sits on its top; drawn,
+  its boards' undersides would fight the load's top.
+- **The candy strip is in the cutout layer.** Stock columns leave a transparent texel between
+  products; in the solid layer, as the rest of the lane is, they would draw black.
+- **A diagonal garment is a square one turned.** An element turns only about its own origin by
+  22.5-degree steps, so the round rack's four diagonal garments are the north and south ones
+  turned 45 degrees about the pole.
+- **The department sign reaches past its block.** Its panel is -8 to 24 px, drawn from one block;
+  its box (the part that can be clicked) is only the middle block's.
+- **Atlas.** The families added 25 sprites, 16 to 64 px (four sign sheets and the cards sheet are
+  the 64 px ones), and reuse the product sheets, the pallets' slats, the residential fabrics and
+  woods, the store's plastics and steels; the block atlas went from 95.3% to 95.4% of
+  8192 x 4096.
+- **Memory.** `/csm memstats`: the 29 new blocks have 1,512 states, 120 model locations (one per
+  multipart block, 40 for the department sign's facings and departments, eight for each tall
+  piece) and about 6,800 baked quads, 1.7 MB in all; the heaviest are the end caps (the canned
+  one 151 KB) and the white fitting room (148 KB). `tags` took each gondola from 64 states to
+  192, still one model location each. The department is the one property memstats calls
+  texture-only (bands on different sheets share a model), as the aisle sign's number is.
+
 ## Sound Assets
 
 All custom sounds are declared in `FurnishingsSounds.java` (handed to Core's registrar by `CsmFurnishings.preInit`) and defined in `sounds.json`. Every
@@ -808,6 +918,7 @@ entry uses `"stream": false` (loaded into memory, not streamed).
 | `csm:verifone_mx915` | `VERIFONE_MX915` | the Verifone MX915 and the card terminal on its stand (click); the Transit module's fare vending machine, by name | synthesised: two piezo beeps, the second higher (replacing a recording of unknown origin that came with the terminal from Technology) |
 | `csm:scanner_beep` | `SCANNER_BEEP` | the checkout scanner counter and the self-checkout (click) | synthesised |
 | `csm:register_drawer` | `REGISTER_DRAWER` | the POS terminal and the cash register opening | synthesised: key, bell, drawer run and stop |
+| `csm:curtain_slide` | `CURTAIN_SLIDE` | the fitting room's curtain drawn or opened (click) | synthesised: rings rattling along the rod over the cloth's swish |
 
 The xylophone, water dispensers/bubblers and the kitchen sink use only vanilla sounds (filling an
 appliance's tank with a bucket or bottle does too)

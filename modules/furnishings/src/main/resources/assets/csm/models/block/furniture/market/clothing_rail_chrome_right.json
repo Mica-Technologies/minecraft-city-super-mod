@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/market/base/clothing_rail_right",
+  "textures": {
+    "chrome": "csm:blocks/furniture/residential/chrome"
+  }
+}

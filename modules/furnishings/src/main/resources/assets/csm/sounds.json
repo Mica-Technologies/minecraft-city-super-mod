@@ -376,5 +376,14 @@
         "stream": false
       }
     ]
+  },
+  "curtain_slide": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:curtain_slide",
+        "stream": false
+      }
+    ]
   }
 }

@@ -20,7 +20,9 @@ import com.micatechnologies.minecraft.csm.furniture.BlockTomatoeCrate;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockAisleSign;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockCashRegister;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockDisplayCase;
+import com.micatechnologies.minecraft.csm.furniture.market.BlockDepartmentSign;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockDisplayCooler;
+import com.micatechnologies.minecraft.csm.furniture.market.BlockFittingRoom;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockGondola;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockMarketRun;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockMarketTall;
@@ -55,7 +57,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * (drop-off and pick-up counters, a shelf wall, its signs), the shop floor's fixtures: carts and
  * the cart corral, basket stacks, security gates, aisle signs, a magazine rack and a bottle return
  * machine, the kiosks (coin counter, photo printing, movie rental) and the merchandisers outside
- * the door (ice, propane exchange, firewood).
+ * the door (ice, propane exchange, firewood); and the merchandising: end caps that close the
+ * gondola runs, shelf tags and talkers, pallet stacks, bargain bins, seasonal tables, the
+ * checkout's candy strip, hanging department signs and standing sale signs, and an apparel corner
+ * of clothes rails and racks, folded clothes tables, mannequins and fitting rooms.
  *
  * <p>The produce crates came here from the Furniture tab and the Verifone from the Technology
  * module, their classes and registry names unchanged, so placed ones load as they were. The
@@ -123,6 +128,31 @@ public class CsmTabMarketStore extends CsmTab {
     initTabBlock(new BlockGondola("gondola_shelf_household", new int[]{0, 0, 6, 16, 16, 16}));
     initTabBlock(new BlockGondola("gondola_shelf_health", new int[]{0, 0, 6, 16, 16, 16}));
     initTabBlock(new BlockGondola("gondola_shelf_empty", new int[]{0, 0, 6, 16, 16, 16}));
+
+    // End Cap Display
+    initTabBlock(new BlockGondola("end_cap_canned", new int[]{0, 0, 2, 16, 16, 16}));
+    initTabBlock(new BlockGondola("end_cap_cereal", new int[]{0, 0, 2, 16, 16, 16}));
+    initTabBlock(new BlockGondola("end_cap_snacks", new int[]{0, 0, 2, 16, 16, 16}));
+    initTabBlock(new BlockGondola("end_cap_drinks", new int[]{0, 0, 2, 16, 16, 16}));
+    initTabBlock(new BlockGondola("end_cap_household", new int[]{0, 0, 2, 16, 16, 16}));
+    initTabBlock(new BlockGondola("end_cap_health", new int[]{0, 0, 2, 16, 16, 16}));
+
+    // ---- Merchandising ----
+    // Pallet Stack
+    initTabBlock(new BlockBathroomFixture("pallet_stack_drinks", new int[]{0, 0, 0, 16, 16, 16}, FixtureMaterial.WOOD));
+    initTabBlock(new BlockBathroomFixture("pallet_stack_water", new int[]{0, 0, 0, 16, 16, 16}, FixtureMaterial.WOOD));
+    initTabBlock(new BlockBathroomFixture("pallet_stack_paper", new int[]{0, 0, 0, 16, 16, 16}, FixtureMaterial.WOOD));
+
+    // Bargain Bin
+    initTabBlock(new BlockBathroomFixture("bargain_bin_chrome", new int[]{1, 0, 1, 15, 18, 16}, FixtureMaterial.METAL));
+
+    // Cardboard Dump Bin
+    initTabBlock(new BlockBathroomFixture("dump_bin_kraft", new int[]{1, 0, 0, 15, 15, 15}, FixtureMaterial.WOOD));
+
+    // Seasonal Display Table
+    initTabBlock(new BlockMarketRun("seasonal_table_summer", new int[]{0, 0, 0, 16, 24, 16}, "seasonal_table", BlockRenderLayer.CUTOUT));
+    initTabBlock(new BlockMarketRun("seasonal_table_harvest", new int[]{0, 0, 0, 16, 24, 16}, "seasonal_table", BlockRenderLayer.CUTOUT));
+    initTabBlock(new BlockMarketRun("seasonal_table_winter", new int[]{0, 0, 0, 16, 24, 16}, "seasonal_table", BlockRenderLayer.CUTOUT));
 
     // ---- Produce ----
     // Produce crates (moved from the Furniture tab)
@@ -251,6 +281,10 @@ public class CsmTabMarketStore extends CsmTab {
     // Checkout Candy Rack
     initTabBlock(new BlockBathroomFixture("impulse_rack_black", new int[]{1, 0, 5, 15, 21, 13}, FixtureMaterial.METAL));
 
+    // Checkout Counter with Candy Strip
+    initTabBlock(new BlockMarketRun("checkout_candy_grey", new int[]{0, 0, 0, 16, 15, 14}, "checkout", BlockRenderLayer.CUTOUT));
+    initTabBlock(new BlockMarketRun("checkout_candy_walnut", new int[]{0, 0, 0, 16, 15, 14}, "checkout", BlockRenderLayer.CUTOUT));
+
     // ---- Tobacco & Lottery ----
     // Tobacco Case
     initTabBlock(new BlockMarketRun("tobacco_case_black", new int[]{0, 0, 9, 16, 16, 16}, "tobacco_case", 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE, null, 1.0F, BlockRenderLayer.TRANSLUCENT));
@@ -304,6 +338,39 @@ public class CsmTabMarketStore extends CsmTab {
 
     // Bottle Return Machine
     initTabBlock(new BlockMarketTall("bottle_return_machine_green", new int[]{0, 0, 3, 16, 29, 16}, 4, null));
+
+    // ---- Signs & Tags ----
+    // Department Sign
+    initTabBlock(new BlockDepartmentSign("department_sign_black", new int[]{0, 4, 7, 16, 16, 9}));
+
+    // Sale Sign
+    initTabBlock(new BlockBathroomFixture("sale_sign_red", new int[]{3, 0, 4, 13, 24, 12}, FixtureMaterial.METAL));
+
+    // Hot Deal Sign
+    initTabBlock(new BlockBathroomFixture("deal_sign_orange", new int[]{3, 0, 4, 13, 24, 12}, FixtureMaterial.METAL));
+
+    // ---- Apparel ----
+    // Rolling Clothes Rail
+    initTabBlock(new BlockMarketRun("clothing_rail_chrome", new int[]{0, 0, 2, 16, 24, 14}, "clothing_rail", BlockRenderLayer.CUTOUT));
+
+    // Round Clothes Rack
+    initTabBlock(new BlockBathroomFixture("round_rack_chrome", new int[]{0, 0, 0, 16, 22, 16}, FixtureMaterial.METAL));
+
+    // Folded Clothes Table
+    initTabBlock(new BlockMarketRun("apparel_table_oak", new int[]{0, 3, 1, 16, 16, 15}, "apparel_table", BlockRenderLayer.CUTOUT));
+    initTabBlock(new BlockMarketRun("apparel_table_white", new int[]{0, 3, 1, 16, 16, 15}, "apparel_table", BlockRenderLayer.CUTOUT));
+
+    // Mannequin
+    initTabBlock(new BlockMarketTall("mannequin_white", new int[]{3, 0, 5, 13, 30, 12}, 0, null));
+    initTabBlock(new BlockMarketTall("mannequin_black", new int[]{3, 0, 5, 13, 30, 12}, 0, null));
+
+    // Dress Form
+    initTabBlock(new BlockMarketTall("dress_form_linen", new int[]{5, 0, 5, 11, 26, 11}, 0, null));
+    initTabBlock(new BlockMarketTall("dress_form_black", new int[]{5, 0, 5, 11, 26, 11}, 0, null));
+
+    // Fitting Room
+    initTabBlock(new BlockFittingRoom("fitting_room_white", new int[]{0, 0, 0, 16, 32, 16}));
+    initTabBlock(new BlockFittingRoom("fitting_room_walnut", new int[]{0, 0, 0, 16, 32, 16}));
 
     // ---- Kiosks ----
     // Coin Counting Kiosk

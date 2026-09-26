@@ -1,0 +1,89 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/market/base/department_sign_0",
+    "textures": {
+      "case": "csm:blocks/furniture/market/case_black",
+      "signs": "csm:blocks/furniture/market/store_signs_d"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "department": {
+      "produce": {
+        "model": "csm:furniture/market/base/department_sign_0",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_d"
+        }
+      },
+      "bakery": {
+        "model": "csm:furniture/market/base/department_sign_1",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_d"
+        }
+      },
+      "deli": {
+        "model": "csm:furniture/market/base/department_sign_2",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_d"
+        }
+      },
+      "meat_seafood": {
+        "model": "csm:furniture/market/base/department_sign_0",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_f"
+        }
+      },
+      "pharmacy": {
+        "model": "csm:furniture/market/base/department_sign_0",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_a"
+        }
+      },
+      "floral": {
+        "model": "csm:furniture/market/base/department_sign_0",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_e"
+        }
+      },
+      "dairy": {
+        "model": "csm:furniture/market/base/department_sign_1",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_e"
+        }
+      },
+      "frozen": {
+        "model": "csm:furniture/market/base/department_sign_2",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_e"
+        }
+      },
+      "checkout": {
+        "model": "csm:furniture/market/base/department_sign_1",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_f"
+        }
+      },
+      "customer_service": {
+        "model": "csm:furniture/market/base/department_sign_2",
+        "textures": {
+          "signs": "csm:blocks/furniture/market/store_signs_f"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

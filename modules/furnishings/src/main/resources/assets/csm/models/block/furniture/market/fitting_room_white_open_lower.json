@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/market/base/fitting_room_open_lower",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/residential/white_v",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "curtain": "csm:blocks/furniture/residential/charcoal"
+  }
+}
