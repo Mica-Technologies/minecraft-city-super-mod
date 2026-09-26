@@ -8,10 +8,13 @@ import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityRun;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockCagedLadder;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockGroundTank;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockPedestalSection;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockPipeFitting;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockPumpUnit;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockTankTile;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockTowerBrace;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockTowerColumn;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockTowerStrut;
+import com.micatechnologies.minecraft.csm.powergrid.water.BlockWaterPipe;
 import com.micatechnologies.minecraft.csm.powergrid.water.TankShapes;
 import com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBox;
 import com.micatechnologies.minecraft.csm.streetscape.UtilityBoxSpec;
@@ -84,5 +87,21 @@ public class CsmTabUtilities extends CsmTab {
     initTabBlock(new BlockTankTile("water_tower_spheroid_medium", TankShapes.SPHEROID_MEDIUM));
     initTabBlock(new BlockGroundTank("ground_tank_small", TankShapes.TANK_SMALL));
     initTabBlock(new BlockGroundTank("ground_tank_large", TankShapes.TANK_LARGE));
+    initTabBlock(new BlockWaterPipe("water_pipe"));
+    initTabBlock(new BlockUtilityFixture("water_pipe_support", new double[]{3, 0, 2.5, 13, 16, 13.5}));
+    initTabBlock(new BlockPipeFitting("water_gate_valve", new double[]{2.6, 2.6, 0, 13.4, 16, 16}));
+    initTabBlock(new BlockPipeFitting("water_butterfly_valve", new double[]{2.2, 2.2, 0, 13.8, 16, 16}));
+    initTabBlock(new BlockPipeFitting("water_check_valve", new double[]{3, 2.6, 0, 14.4, 13.61, 16}));
+    initTabBlock(new BlockPipeFitting("water_flow_meter", new double[]{2.1, 2.1, 0, 13.9, 16, 16}));
+    initTabBlock(new BlockPipeFitting("water_air_release_valve", new double[]{3, 3, 0, 13, 16, 16}));
+    initTabBlock(new BlockPumpUnit("pump_split_case", new UtilityBoxSpec(2, 1, 1, new AxisAlignedBB(-0.938, 0, -0.001, 0.938, 0.912, 1.001), null), BlockPumpUnit.Nozzles.FRONT_BACK));
+    initTabBlock(new BlockPumpUnit("pump_vertical_inline", new UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(-0.001, 0, 0.175, 1.001, 1.876, 0.825), null), BlockPumpUnit.Nozzles.LEFT_RIGHT));
+    initTabBlock(new BlockPumpUnit("water_hydropneumatic_tank", new UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(0.1, 0, 0.049, 0.9, 1.838, 1.001), null), BlockPumpUnit.Nozzles.BACK));
+    initTabBlock(new BlockUtilityBox("pump_control_panel", new UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(0.037, 0, 0.225, 0.963, 2, 0.994), null)));
+    initTabBlock(new BlockUtilityBox("air_release_enclosure", new UtilityBoxSpec(1, 1, 1, new AxisAlignedBB(0.031, 0, 0.031, 0.969, 0.925, 0.969), null)));
+    initTabBlock(new BlockUtilityBox("air_release_vault", new UtilityBoxSpec(1, 1, 1, new AxisAlignedBB(0, 0, 0, 1, 0.85, 1), null)));
+    initTabBlock(new BlockUtilityBox("backflow_enclosure", new UtilityBoxSpec(2, 1, 1, new AxisAlignedBB(-0.969, 0, 0.062, 0.969, 0.963, 0.938), null)));
+    initTabBlock(new BlockUtilityBox("chemical_feed_skid", new UtilityBoxSpec(2, 1, 2, new AxisAlignedBB(-0.969, 0, 0.062, 0.969, 1.625, 0.963), null)));
+    initTabBlock(new BlockUtilityBox("chlorine_cylinder_scale", new UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(0.031, 0, 0.062, 0.969, 1.613, 0.938), null)));
   }
 }

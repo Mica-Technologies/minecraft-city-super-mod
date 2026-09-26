@@ -15,8 +15,9 @@ import net.minecraft.block.Block;
  * anything that carries a building's supply. Gas and water fittings are iron pipe and a fastener
  * kit, a label a sign blank. The water system is steel by the plate: a tank (one item for the
  * whole bowl, or one layer of a ground tank) is sheet metal and fasteners by its size, a tower
- * leg or riser a pole section, the bracing iron. Anything this does not know takes the generic
- * cost.</p>
+ * leg or riser a pole section, the bracing, pipe and fittings iron, a pump iron and a wiring
+ * harness, anything that measures or controls a control board. Anything this does not know
+ * takes the generic cost.</p>
  *
  * <p>Mirrored in {@code dev-env-utils/scripts/audit_fabricator_costs.py}.</p>
  *
@@ -91,7 +92,7 @@ public final class UtilitiesFabricatorRules {
     }
   }
 
-  /** The water system: the tower and the tanks. */
+  /** The water system: the tower, the tanks, the pump station and its fittings. */
   @Nullable
   private static List<FabricatorIngredient> water(String registryName) {
     switch (registryName) {
@@ -101,6 +102,8 @@ public final class UtilitiesFabricatorRules {
       case "water_tower_brace":
       case "water_tower_strut":
       case "caged_ladder":
+      case "water_pipe":
+      case "water_pipe_support":
         return CsmFabricatorCosts.cost(iron(1));
       case "water_tower_pedestal":
         return CsmFabricatorCosts.cost(sheet(2));
@@ -114,6 +117,34 @@ public final class UtilitiesFabricatorRules {
         return CsmFabricatorCosts.cost(sheet(6), part(CsmParts.CONCRETE_MIX, 1));
       case "ground_tank_large":
         return CsmFabricatorCosts.cost(sheet(12), part(CsmParts.CONCRETE_MIX, 2));
+      case "water_gate_valve":
+      case "water_butterfly_valve":
+      case "water_check_valve":
+        return CsmFabricatorCosts.cost(iron(2), part(CsmParts.FASTENER_KIT, 1));
+      case "water_air_release_valve":
+        return CsmFabricatorCosts.cost(iron(1), part(CsmParts.FASTENER_KIT, 1));
+      case "water_flow_meter":
+        return CsmFabricatorCosts.cost(iron(1), part(CsmParts.CONTROL_BOARD, 1));
+      case "pump_split_case":
+        return CsmFabricatorCosts.cost(iron(4), part(CsmParts.WIRING_HARNESS, 1));
+      case "pump_vertical_inline":
+        return CsmFabricatorCosts.cost(iron(3), part(CsmParts.WIRING_HARNESS, 1));
+      case "water_hydropneumatic_tank":
+        return CsmFabricatorCosts.cost(sheet(3));
+      case "pump_control_panel":
+        return CsmFabricatorCosts.cost(part(CsmParts.ENCLOSURE_SHELL, 2),
+            part(CsmParts.CONTROL_BOARD, 1), part(CsmParts.WIRING_HARNESS, 1));
+      case "air_release_enclosure":
+        return CsmFabricatorCosts.cost(sheet(1), iron(1));
+      case "air_release_vault":
+        return CsmFabricatorCosts.cost(part(CsmParts.CONCRETE_MIX, 2), iron(1));
+      case "backflow_enclosure":
+        return CsmFabricatorCosts.cost(sheet(2));
+      case "chemical_feed_skid":
+        return CsmFabricatorCosts.cost(part(CsmParts.ENCLOSURE_SHELL, 1),
+            part(CsmParts.CONTROL_BOARD, 1), sheet(1));
+      case "chlorine_cylinder_scale":
+        return CsmFabricatorCosts.cost(iron(4), part(CsmParts.CONTROL_BOARD, 1));
       default:
         return null;
     }

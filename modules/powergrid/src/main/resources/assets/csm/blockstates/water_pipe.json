@@ -1,0 +1,60 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/water/pipe_joint"
+      },
+      "when": {
+        "joint": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pipe_arm_north"
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pipe_arm_south"
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pipe_arm_east"
+      },
+      "when": {
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pipe_arm_west"
+      },
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pipe_arm_up"
+      },
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/water/pipe_arm_down"
+      },
+      "when": {
+        "down": "true"
+      }
+    }
+  ]
+}

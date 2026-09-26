@@ -171,7 +171,9 @@ TABS = {
                      "switchboard, gas meters single and in banks, the water meter setter and "
                      "utility room labels; and the water system: the water tower built to size "
                      "(legs, riser, bracing, the pedestal column, tanks with their balcony and "
-                     "name band, the caged ladder) and ground storage tanks."),
+                     "name band, the caged ladder), ground storage tanks, the pump station's "
+                     "pipes, valves, pumps and panel, air release and backflow enclosures, and "
+                     "the treatment skid."),
     "tabtreesplants": ("trees-and-plants", "Trees & Plants",
                        "Street trees built block by block from thin, leaning logs and leaves, "
                        "the Tree Planting Tool, and plantings."),

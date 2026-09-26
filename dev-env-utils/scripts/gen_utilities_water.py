@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Every asset the Utilities tab's water system ships: the build-to-size water tower (legs,
 riser, cross bracing and struts, the caged ladder, the pedestal column and the tank bowls with
-their balcony and name band) and the ground storage tank.
+their balcony and name band), the ground storage tank, the pump station (pipe runs, inline
+valves and meter, pumps, the hydropneumatic tank and the control panel), the above-ground air
+release and backflow pieces, and the treatment skid.
 
     python dev-env-utils/scripts/gen_utilities_water.py
     python dev-env-utils/scripts/gen_utilities_water.py --check
@@ -26,6 +28,9 @@ What is here, and the class that places each (package powergrid.water unless nam
 - **The ground storage tank** (BlockGroundTank) is the same tiles, one three-block layer a unit,
   stacked to any height; each layer draws its footing or roof by whether a layer is below or
   above it.
+- **The pump station and the rest** are JSON models: the pipe (BlockWaterPipe) joins like the
+  standpipe, the inline fittings (BlockPipeFitting) join it along their axis, the pumps and the
+  tanks and panels are Roads' utility box multi-block (BlockPumpUnit where a pipe joins them).
 
 The generator also writes TankShapes.java: every bowl's cell map (which cells hold a part, and
 the balcony's walkway parts with their railing sides), measured from the same profiles the OBJ
@@ -145,7 +150,15 @@ DARK = (66, 70, 74)
 CONCRETE = (170, 168, 162)
 TANK_TAN = (205, 192, 162)
 BAND_BLUE = (28, 62, 132)
+PIPE_BLUE = (34, 66, 138)        # the Ten States colour for finished water
+PUMP_BLUE = (40, 92, 170)
+MOTOR = (118, 124, 130)
+WHEEL_RED = (176, 38, 34)
 STEEL = (170, 174, 176)
+POLY = (232, 230, 218)
+GREEN_BOX = (82, 112, 76)
+ALUMINIUM = (192, 196, 198)
+YELLOW = (230, 186, 34)
 
 for _name, _colour, _seed, _grain in (
         ("paint", PAINT, 101, 2), ("dark", DARK, 102, 3), ("concrete", CONCRETE, 103, 7),
@@ -1303,6 +1316,573 @@ def tanks():
 
 
 # ------------------------------------------------------------------------------------------
+# The pump station: pipe runs, inline fittings, pumps, the pressure tank, the control panel
+# ------------------------------------------------------------------------------------------
+for _name, _colour, _seed, _grain in (
+        ("pipe", PIPE_BLUE, 104, 3), ("pump", PUMP_BLUE, 105, 3), ("poly", POLY, 107, 2),
+        ("wheel", WHEEL_RED, 108, 3), ("green_box", GREEN_BOX, 109, 4), ("yellow", YELLOW, 111, 3),
+        ("black", (34, 34, 38), 112, 2)):
+    C.textures[_name] = (lambda c=_colour, s=_seed, g=_grain: lc.fill(c, 16, g, s))
+
+
+@C.texture("motor")
+def _motor():
+    """An electric motor's frame: cooling fins running its length."""
+    img = lc.fill(MOTOR, 16, 3, 151)
+    for y in range(0, 16, 2):
+        for x in range(16):
+            img.putpixel((x, y), lc.shade(MOTOR, 0.74) + (255,))
+    return img
+
+
+@C.texture("aluminium")
+def _aluminium():
+    """Ribbed aluminium sheet, for the backflow enclosure."""
+    img = lc.fill(ALUMINIUM, 16, 3, 161)
+    for x in range(0, 16, 4):
+        for y in range(16):
+            img.putpixel((x, y), lc.shade(ALUMINIUM, 0.8) + (255,))
+            img.putpixel((x + 1, y), lc.shade(ALUMINIUM, 1.08) + (255,))
+    return img
+
+
+@C.texture("diamond_plate")
+def _diamond_plate():
+    img = lc.fill(ALUMINIUM, 16, 2, 171)
+    for y in range(16):
+        for x in range(16):
+            if (x + 2 * y) % 8 == 0 or (x - 2 * y) % 8 == 4:
+                img.putpixel((x, y), lc.shade(ALUMINIUM, 1.14) + (255,))
+    return img
+
+
+@C.texture("louvre")
+def _louvre():
+    """Louvred vent panel (enclosures): slats with dark gaps."""
+    img = lc.fill(GREEN_BOX, 16, 3, 181)
+    for y in range(1, 16, 3):
+        for x in range(1, 15):
+            img.putpixel((x, y), lc.shade(GREEN_BOX, 0.5) + (255,))
+    return img
+
+
+PIPE_R = 4.0       # the water pipe's radius, and every nozzle's
+FLANGE_R = 5.0
+PIPE_TEX = {"pipe": T("pipe"), "dark": T("dark"), "steel": T("steel"), "wheel": T("wheel"),
+            "pump": T("pump"), "motor": T("motor"), "concrete": T("concrete"),
+            "particle": T("pipe")}
+
+
+def pipe_arm(side):
+    """The pipe from the block's centre out to one face, with the flange half at that face (the
+    neighbour draws the other half), capped only on the inside."""
+    axis, sign = {"north": ("z", -1), "south": ("z", 1), "west": ("x", -1), "east": ("x", 1),
+                  "down": ("y", -1), "up": ("y", 1)}[side]
+    lo, hi = (0, 8) if sign < 0 else (8, 16)
+    f_lo, f_hi = (0, 0.8) if sign < 0 else (15.2, 16)
+    if axis == "y":
+        els = um.octagon("y", 8, 8, PIPE_R, lo, hi, "pipe", False, False)
+        els += um.octagon("y", 8, 8, FLANGE_R, f_lo, f_hi, "pipe", sign > 0, sign < 0)
+    elif axis == "x":
+        els = um.octagon("x", 8, 8, PIPE_R, lo, hi, "pipe", False, False)
+        els += um.octagon("x", 8, 8, FLANGE_R, f_lo, f_hi, "pipe", sign > 0, sign < 0)
+    else:
+        els = um.octagon("z", 8, 8, PIPE_R, lo, hi, "pipe", False, False)
+        els += um.octagon("z", 8, 8, FLANGE_R, f_lo, f_hi, "pipe", sign > 0, sign < 0)
+    return els
+
+
+def z_run(z0=0, z1=16, flanges=True):
+    """A length of pipe along z through the block's centre (a fitting's own pipe), flanged at
+    the faces it reaches."""
+    els = um.octagon("z", 8, 8, PIPE_R, z0, z1, "pipe", False, False)
+    if flanges:
+        # capped both sides: a fitting standing alone is not an open pipe, and a joining pipe's
+        # own flange draws no face at the block's face, so nothing here is coplanar with it
+        if z0 <= 0:
+            els += um.octagon("z", 8, 8, FLANGE_R, 0, 0.8, "pipe", True, True)
+        if z1 >= 16:
+            els += um.octagon("z", 8, 8, FLANGE_R, 15.2, 16, "pipe", True, True)
+    return els
+
+
+def pipes():
+    """The water pipe (BlockWaterPipe): ductile iron in the Ten States blue, flanged at every
+    block, joining the pipe, the fittings and the pumps' nozzles next to it on any side; the
+    cast fitting at a bend, a tee or an end."""
+    models = {"pipe_arm_" + s: model(PIPE_TEX, pipe_arm(s))
+              for s in ("north", "south", "east", "west", "up", "down")}
+    joint = um.octagon("y", 8, 8, 5.0, 3.0, 13.0, "pipe", True, True)
+    models["pipe_joint"] = model(PIPE_TEX, joint)
+    rules = [rule("pipe_joint", {"joint": True})]
+    rules += [rule("pipe_arm_" + s, {s: True}) for s in ("north", "south", "east", "west", "up",
+                                                          "down")]
+    C.add("water_pipe", 'new BlockWaterPipe("water_pipe")',
+          names_of("Water Pipe", "Wasserrohr", "Tubería de Agua", "Vattenrör"),
+          models, multipart(rules),
+          item=model(PIPE_TEX, pipe_arm("north") + pipe_arm("south")), tab=TAB)
+
+    # the saddle support under a run, reaching up to the pipe in the block above
+    sup = [box([3, 0, 3], [13, 0.6, 13], "dark"),
+           box([6.8, 0.6, 6.8], [9.2, 16, 9.2], "steel", faces=("north", "south", "east",
+                                                                 "west")),
+           box([4.5, 16, 2.5], [11.5, 17.2, 13.5], "steel", shift=(0, 16, 0)),
+           box([4.5, 17.2, 2.5], [5.6, 20.0, 13.5], "steel", shift=(0, 16, 0),
+               faces=("north", "south", "east", "west", "up")),
+           box([10.4, 17.2, 2.5], [11.5, 20.0, 13.5], "steel", shift=(0, 16, 0),
+               faces=("north", "south", "east", "west", "up"))]
+    C.add("water_pipe_support", 'new BlockUtilityFixture("water_pipe_support", new double[]{%s})'
+          % ", ".join(fmt(v) for v in extent(sup)),
+          names_of("Water Pipe Support", "Rohrstütze", "Soporte de Tubería", "Rörstöd"),
+          {"water_pipe_support": model(PIPE_TEX, sup)},
+          lc.facing_state(M("water_pipe_support")), tab=TAB)
+
+
+def handwheel_y(cx, cz, y, r, tex="wheel"):
+    """A handwheel lying flat: its rim an octagon ring of eight bars (four square to the axes,
+    four turned 45 degrees, a hair apart), two spokes and the hub."""
+    els = []
+    a = r * TAN8
+    for k, angle in enumerate((0, 45)):
+        e = 0.004 * k
+        bars = [([cx - a, y + e, cz - r], [cx + a, y + 0.8 + e, cz - r + 0.8]),
+                ([cx - a, y + e, cz + r - 0.8], [cx + a, y + 0.8 + e, cz + r]),
+                ([cx - r, y + e, cz - a], [cx - r + 0.8, y + 0.8 + e, cz + a]),
+                ([cx + r - 0.8, y + e, cz - a], [cx + r, y + 0.8 + e, cz + a])]
+        for frm, to in bars:
+            b = box(frm, to, tex)
+            if angle:
+                b["rotation"] = {"origin": [cx, y, cz], "axis": "y", "angle": 45}
+            els.append(b)
+    els.append(box([cx - r + 0.8, y + 0.2, cz - 0.4], [cx + r - 0.8, y + 0.6, cz + 0.4], tex,
+                   faces=("north", "south", "up", "down")))
+    els.append(box([cx - 0.4, y + 0.2, cz - r + 0.8], [cx + 0.4, y + 0.6, cz + r - 0.8], tex,
+                   faces=("east", "west", "up", "down")))
+    els += um.octagon("y", cx, cz, 1.0, y - 0.2, y + 1.0, "dark", True, True)
+    return els
+
+
+def fittings():
+    """The inline fittings (BlockPipeFitting): each carries the pipe through along the way the
+    player was looking, joins a pipe at either end, and is placed like a wall fixture (facing
+    the player), so its model runs along z."""
+    up = (0, 16, 0)
+    body = [box([4, 3, 4.6], [12, 13, 11.4], "pipe")]
+    body += um.octagon("z", 8, 8, 5.4, 4.0, 4.8, "pipe", True, True)
+    body += um.octagon("z", 8, 8, 5.4, 11.2, 12.0, "pipe", True, True)
+    gate = z_run(0, 4.0) + z_run(12.0, 16) + body
+    gate.append(box([5.5, 13, 5.5], [10.5, 16, 10.5], "pipe", faces=("north", "south", "east",
+                                                                      "west")))
+    gate.append(box([5.5, 16, 5.5], [10.5, 18.5, 10.5], "pipe", shift=up))
+    gate += um.octagon("y", 8, 8, 0.6, 18.5, 22, "steel", False, True, shift=up)
+    gate += handwheel_y(8, 8, 21.2, 4.2)
+    butterfly = z_run(0, 6.4) + z_run(9.6, 16)
+    butterfly += um.octagon("z", 8, 8, 5.8, 6.4, 9.6, "pipe", True, True)
+    butterfly.append(box([7, 13.4, 7], [9, 14.5, 9], "steel"))
+    butterfly.append(box([4.8, 14.5, 5], [11.2, 16, 11], "dark",
+                         faces=("north", "south", "east", "west", "down")))
+    butterfly.append(box([4.8, 16, 5], [11.2, 18.4, 11], "dark", shift=up,
+                         faces=("north", "south", "east", "west", "up")))
+    butterfly += um.octagon("x", 16.4, 8, 0.5, 11.2, 12.4, "steel", False, False, shift=up)
+    butterfly += wheel_x(12.4, 16.4, 8, 3.2)
+    check = z_run(0, 3.2) + z_run(12.8, 16)
+    check.append(box([4.2, 2.6, 3.2], [11.8, 12.2, 12.8], "pipe"))
+    check += um.octagon("y", 8, 8, 3.2, 12.2, 13.6, "pipe", True, False)
+    check.append(box([11.8, 8.6, 7.4], [12.6, 9.6, 8.6], "steel"))
+    lever = box([12.6, 8.8, 4.0], [13.4, 9.6, 12.5], "steel")
+    lever["rotation"] = {"origin": [13, 9.2, 8], "axis": "x", "angle": -22.5}
+    check.append(lever)
+    check.append(box([12.4, 4.2, 12.2], [14.4, 7.8, 14.6], "dark"))
+    meter = z_run(0, 3.0) + z_run(13.0, 16)
+    meter += um.octagon("z", 8, 8, 5.2, 3.0, 13.0, "pipe", True, True)
+    meter += um.octagon("z", 8, 8, 5.9, 3.0, 3.8, "pipe", True, True)
+    meter += um.octagon("z", 8, 8, 5.9, 12.2, 13.0, "pipe", True, True)
+    meter.append(box([7, 13.0, 7], [9, 14.2, 9], "steel", faces=("north", "south", "east",
+                                                                  "west")))
+    meter.append(box([5.2, 14.2, 5.2], [10.8, 16, 10.8], "steel",
+                     faces=("north", "south", "east", "west", "down")))
+    meter.append(box([5.2, 16, 5.2], [10.8, 18.6, 10.8], "steel", shift=up,
+                     faces=("north", "south", "west", "up")))
+    meter.append(box([11.05, 14.4, 5.8], [11.05, 18.2, 10.2], "display", faces=("east",),
+                     uv={"east": [0, 0, 16, 16]}))
+    arv = z_run(0, 16)
+    arv += um.octagon("y", 8, 8, 1.6, 11.6, 16, "pipe", False, False)
+    arv += um.octagon("y", 8, 8, 2.2, 13.4, 14.8, "steel", True, True)
+    arv += um.octagon("y", 8, 8, 1.6, 16, 17.2, "pipe", False, False, shift=up)
+    arv += um.octagon("y", 8, 8, 3.2, 17.2, 24.2, "pipe", True, True, shift=up)
+    arv += um.octagon("y", 8, 8, 1.2, 24.2, 25.4, "steel", True, False, shift=up)
+    arv.append(box([6.8, 14.2, 8], [7.2, 14.6, 11.5], "wheel"))
+    tex = dict(PIPE_TEX, display=T("flow_display"))
+    for reg, els, names in (
+            ("water_gate_valve", gate,
+             names_of("Gate Valve", "Absperrschieber", "Válvula de Compuerta", "Kilslidventil")),
+            ("water_butterfly_valve", butterfly,
+             names_of("Butterfly Valve", "Absperrklappe", "Válvula de Mariposa",
+                      "Vridspjällsventil")),
+            ("water_check_valve", check,
+             names_of("Swing Check Valve", "Rückschlagklappe", "Válvula de Retención",
+                      "Klaffbackventil")),
+            ("water_flow_meter", meter,
+             names_of("Magnetic Flow Meter", "Magnetisch-Induktiver Durchflussmesser",
+                      "Medidor de Flujo Magnético", "Magnetisk Flödesmätare")),
+            ("water_air_release_valve", arv,
+             names_of("Air Release Valve", "Entlüftungsventil", "Válvula de Aire",
+                      "Avluftningsventil"))):
+        els = [clamp_uv(e) for e in els]
+        C.add(reg, 'new BlockPipeFitting("%s", new double[]{%s})'
+              % (reg, ", ".join(fmt(v) for v in extent(els))), names,
+              {reg: model(tex, els)}, lc.facing_state(M(reg)), tab=TAB)
+
+
+def wheel_x(x, cy, cz, r):
+    """A handwheel standing square to x (on a gear operator's side)."""
+    els = []
+    for k, angle in enumerate((0, 45)):
+        for (y0, y1) in ((cy - r, cy - r + 0.8), (cy + r - 0.8, cy + r)):
+            b = box([x + 0.004 * k, y0, cz - r * TAN8], [x + 0.8 + 0.004 * k, y1,
+                                                          cz + r * TAN8], "wheel")
+            if angle:
+                b["rotation"] = {"origin": [x, cy, cz], "axis": "x", "angle": 45}
+            els.append(b)
+        for (z0, z1) in ((cz - r, cz - r + 0.8), (cz + r - 0.8, cz + r)):
+            b = box([x + 0.002 + 0.004 * k, cy - r * TAN8, z0],
+                    [x + 0.802 + 0.004 * k, cy + r * TAN8, z1], "wheel")
+            if angle:
+                b["rotation"] = {"origin": [x, cy, cz], "axis": "x", "angle": 45}
+            els.append(b)
+    els.append(box([x + 0.2, cy - 0.4, cz - r + 0.8], [x + 0.6, cy + 0.4, cz + r - 0.8], "wheel",
+                   faces=("up", "down", "east", "west")))
+    return els
+
+
+def clamp_uv(e):
+    """Keeps every face's uv inside the sprite: a part reaching past its block took its uv from
+    its place there, which a shift only moves by whole blocks."""
+    for f in e["faces"].values():
+        f["uv"] = [min(16, max(0, v)) for v in f["uv"]]
+        if f["uv"][0] == f["uv"][2]:
+            f["uv"][2] = min(16, f["uv"][0] + 0.01)
+        if f["uv"][1] == f["uv"][3]:
+            f["uv"][3] = min(16, f["uv"][1] + 0.01)
+    return e
+
+
+@C.texture("flow_display")
+def _flow_display():
+    """The flow meter's transmitter display: a lit LCD with a flow reading and its units."""
+    img = lc.fill((70, 74, 78), 16, 2, 211)
+    lc.rect(img, 2, 3, 14, 10, (40, 48, 44))
+    lc.rect(img, 3, 4, 13, 9, (150, 176, 140))
+    lc.draw_text(img, "412", 3, 4, (28, 34, 30))
+    lc.rect(img, 3, 12, 6, 14, (40, 40, 44))
+    lc.rect(img, 10, 12, 13, 14, (40, 40, 44))
+    return img
+
+
+def pumps():
+    """The pumps and the pressure tank (BlockPumpUnit, Roads' utility box multi-block with a
+    pipe nozzle on the sides it names) and the control panel (Roads' BlockUtilityBox)."""
+    tex = dict(PIPE_TEX)
+    # the horizontal split-case pump: the case in the root block, nozzles front and back to
+    # the pipe; the motor in the block to the placer's right (west, facing north)
+    sc = [box([-15, 0, 3], [15, 1.4, 13], "dark")]
+    sc.append(box([1.5, 1.4, 4.5], [13.5, 12, 11.5], "pump"))
+    sc += um.octagon("x", 8, 8, 4.4, 0.5, 14.5, "pump", True, True)
+    sc.append(box([2.5, 11.6, 5.5], [12.5, 12.2, 10.5], "steel"))
+    sc += um.octagon("z", 8, 8, PIPE_R, 0, 4.5, "pump", False, False)
+    sc += um.octagon("z", 8, 8, PIPE_R, 11.5, 16, "pump", False, False)
+    sc += um.octagon("z", 8, 8, FLANGE_R, 0, 0.8, "pump", True, True)
+    sc += um.octagon("z", 8, 8, FLANGE_R, 15.2, 16, "pump", True, True)
+    sc.append(box([-1.5, 5.8, 5.6], [0.5, 10.2, 10.4], "yellow"))
+    sc += um.octagon("x", 8, 8, 4.6, -12.5, -1.5, "motor", True, True)
+    sc += um.octagon("x", 8, 8, 4.0, -14.6, -12.5, "dark", True, False)
+    sc.append(box([-12, 1.4, 4.6], [-2, 4.2, 11.4], "motor", faces=("north", "south", "east",
+                                                                   "west")))
+    sc.append(box([-9, 12.4, 6.2], [-5.6, 14.6, 9.8], "motor"))
+    sc = [clamp_uv(e) for e in sc]
+    tex_sc = dict(tex, yellow=T("yellow"))
+    split_box = extent_unit(sc)
+    C.add("pump_split_case", 'new BlockPumpUnit("pump_split_case", new UtilityBoxSpec(2, 1, 1, '
+          'new AxisAlignedBB(%s), null), BlockPumpUnit.Nozzles.FRONT_BACK)'
+          % ", ".join(fmt(v) for v in split_box),
+          names_of("Split-Case Pump", "Spiralgehäusepumpe", "Bomba de Carcasa Partida",
+                   "Delbar Spiralpump"),
+          {"pump_split_case": model(tex_sc, sc, big_display(0.42))},
+          lc.facing_state(M("pump_split_case")), tab=TAB)
+
+    # the vertical inline pump: the casing on the pipe's line, the motor standing on it
+    up = (0, 16, 0)
+    vi = [box([3, 0, 3], [13, 1.2, 13], "dark")]
+    vi += um.octagon("x", 8, 8, PIPE_R, 0, 16, "pump", False, False)
+    vi += um.octagon("x", 8, 8, FLANGE_R, 0, 0.8, "pump", True, True)
+    vi += um.octagon("x", 8, 8, FLANGE_R, 15.2, 16, "pump", True, True)
+    vi += um.octagon("y", 8, 8, 5.2, 1.2, 12.5, "pump", True, True)
+    vi += um.octagon("y", 8, 8, 3.2, 12.5, 16, "pump", False, False)
+    vi += um.octagon("y", 8, 8, 3.2, 16, 17.5, "pump", False, True, shift=up)
+    vi += um.octagon("y", 8, 8, 4.8, 17.5, 28.0, "motor", True, True, shift=up)
+    vi += um.octagon("y", 8, 8, 4.2, 28.0, 30.0, "dark", True, False, shift=up)
+    vi.append(box([12.8, 21, 6.4], [14.8, 24, 9.6], "motor", shift=up))
+    vi = [clamp_uv(e) for e in vi]
+    C.add("pump_vertical_inline", 'new BlockPumpUnit("pump_vertical_inline", new UtilityBoxSpec'
+          '(1, 1, 2, new AxisAlignedBB(%s), null), BlockPumpUnit.Nozzles.LEFT_RIGHT)'
+          % ", ".join(fmt(v) for v in extent_unit(vi)),
+          names_of("Vertical Inline Pump", "Inline-Pumpe", "Bomba Vertical en Línea",
+                   "Vertikal Inlinepump"),
+          {"pump_vertical_inline": model(tex, vi, big_display(0.5))},
+          lc.facing_state(M("pump_vertical_inline")), tab=TAB)
+
+    # the hydropneumatic tank: a pressure vessel on legs, its nozzle out the back to the pipe
+    ht = []
+    for dx in (-1, 1):
+        for dz in (-1, 1):
+            ht.append(box([8 + dx * 4.6 - 0.6, 0, 8 + dz * 4.6 - 0.6],
+                          [8 + dx * 4.6 + 0.6, 4, 8 + dz * 4.6 + 0.6], "steel",
+                          faces=("north", "south", "east", "west")))
+    ht += um.octagon("y", 8, 8, 5.2, 2.8, 4.0, "pump", False, True)
+    ht += um.octagon("y", 8, 8, 6.4, 4.0, 16, "pump", True, False)
+    ht += um.octagon("y", 8, 8, 6.4, 16, 26.0, "pump", False, True, shift=up)
+    ht += um.octagon("y", 8, 8, 5.4, 26.0, 28.0, "pump", False, True, shift=up)
+    ht += um.octagon("y", 8, 8, 3.6, 28.0, 29.4, "pump", True, False, shift=up)
+    ht += um.octagon("z", 8, 8, PIPE_R, 14.4, 16, "pump", False, False)
+    ht += um.octagon("z", 8, 8, FLANGE_R, 15.2, 16, "pump", True, True)
+    ht += um.octagon("z", 11, 8, 1.3, 0.8, 1.6, "dark", True, False, shift=(0, 0, 0))
+    ht = [clamp_uv(e) for e in ht]
+    C.add("water_hydropneumatic_tank", 'new BlockPumpUnit("water_hydropneumatic_tank", new '
+          'UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(%s), null), BlockPumpUnit.Nozzles.BACK)'
+          % ", ".join(fmt(v) for v in extent_unit(ht)),
+          names_of("Hydropneumatic Tank", "Druckbehälter", "Tanque Hidroneumático",
+                   "Hydroforetank"),
+          {"water_hydropneumatic_tank": model(tex, ht, big_display(0.5))},
+          lc.facing_state(M("water_hydropneumatic_tank")), tab=TAB)
+
+    # the pump control panel: a floor-standing enclosure, the HMI screen a plane on its door
+    top = 31.2
+    split = (top - 16) / (top - 1.0) * 16
+    cp = [box([1, 0, 4], [15, 1, 15.5], "dark"),
+          box([1, 1, 4], [15, 16, 15.5], "enclosure", faces=("north", "south", "east", "west"),
+              uv={"north": [0, split, 8, 16]}, per={"north": "front"}),
+          box([1, 16, 4], [15, top, 15.5], "enclosure",
+              faces=("north", "south", "east", "west", "up"),
+              uv={"north": [0, 0, 8, split]}, per={"north": "front"}, shift=up),
+          box([0.6, top, 3.6], [15.4, 32, 15.9], "enclosure", shift=up)]
+    cp.append(box([4, 20.5, 3.7], [12, 26.5, 3.7], "hmi", faces=("north",),
+                  uv={"north": [0, 0, 16, 12]}))
+    cp = [clamp_uv(e) for e in cp]
+    tex_cp = dict(tex, enclosure=T("panel_grey"), front=T("panel_front"), hmi=T("hmi"),
+                  particle=T("panel_grey"))
+    C.add("pump_control_panel", 'new BlockUtilityBox("pump_control_panel", new UtilityBoxSpec'
+          '(1, 1, 2, new AxisAlignedBB(%s), null))' % ", ".join(fmt(v) for v in extent_unit(cp)),
+          names_of("Pump Control Panel", "Pumpensteuerschrank", "Panel de Control de Bombas",
+                   "Pumpstyrskåp"),
+          {"pump_control_panel": model(tex_cp, cp, big_display(0.5))},
+          lc.facing_state(M("pump_control_panel")), tab=TAB)
+
+
+def extent_unit(els):
+    """A utility box's unit box, in blocks, from its elements (past the root cell included)."""
+    lo = [min(e["from"][i] for e in els) for i in range(3)]
+    hi = [max(e["to"][i] for e in els) for i in range(3)]
+    return ([round(max(-16, v) / 16.0, 3) for v in lo]
+            + [round(min(32, v) / 16.0, 3) for v in hi])
+
+
+PANEL_GREY = (196, 198, 194)
+C.textures["panel_grey"] = lambda: lc.fill(PANEL_GREY, 16, 2, 221)
+
+
+@C.texture("panel_front")
+def _panel_front():
+    """The control panel's door, 32 x 64 on the left half of a 64 sheet: the HMI's bezel (its
+    screen is a plane of its own), pilot lights, selector switches, the emergency stop and the
+    nameplate."""
+    img = lc.fill(PANEL_GREY, 64, 2, 222)
+    lc.frame(img, 0, 0, 32, 64, lc.shade(PANEL_GREY, 0.7))
+    lc.frame(img, 1, 1, 31, 62, lc.shade(PANEL_GREY, 0.84))
+    lc.rect(img, 7, 9, 25, 24, (40, 42, 46))
+    for i, c in enumerate(((40, 200, 70), (220, 50, 40), (236, 176, 30))):
+        lc.disc(img, 8 + i * 8, 30, 1.8, lc.shade(c, 0.6))
+        lc.disc(img, 8 + i * 8, 30, 1.2, c)
+    for i in range(3):
+        lc.disc(img, 8 + i * 8, 37, 2.0, (30, 30, 34))
+        lc.rect(img, 8 + i * 8, 35, 9 + i * 8, 39, (200, 200, 200))
+    lc.disc(img, 16, 45.5, 3.0, (236, 196, 30))
+    lc.disc(img, 16, 45.5, 2.0, (200, 30, 28))
+    lc.rect(img, 9, 52, 23, 56, (236, 234, 224))
+    lc.frame(img, 9, 52, 23, 56, (120, 122, 126))
+    lc.rect(img, 11, 53, 21, 54, (120, 122, 126))
+    lc.rect(img, 28, 26, 30, 34, (90, 92, 96))
+    return img
+
+
+@C.texture("hmi")
+def _hmi():
+    """The HMI's screen: the pump station's overview, the running pump and the flow and
+    pressure readings changing as an animated strip, so nothing ticks."""
+    frames = 4
+    strip = Image.new("RGBA", (16, 16 * frames))
+    for f in range(frames):
+        img = lc.fill((22, 34, 52), 16, 2, 231 + f)
+        lc.rect(img, 1, 1, 15, 2, (60, 110, 170))
+        for i in range(2):
+            on = (i == f % 2)
+            lc.disc(img, 4 + i * 5, 6, 1.6, (40, 200, 80) if on else (120, 124, 130))
+        lc.rect(img, 1, 6, 15, 7, (120, 160, 210))
+        lc.draw_text(img, "%02d" % (40 + (f * 3) % 7), 2, 9, (240, 240, 230))
+        lc.rect(img, 10, 9 + (f % 3), 14, 14, (60, 170, 220))
+        strip.paste(img, (0, 16 * f))
+    return strip
+
+
+C.extra["textures/blocks/utilities/water/hmi.png.mcmeta"] = um.mcmeta(30)
+
+
+# ------------------------------------------------------------------------------------------
+# Above ground: the air release enclosure and vault, the backflow preventer's hot box
+# ------------------------------------------------------------------------------------------
+def above_ground():
+    tex = {"box": T("green_box"), "louvre": T("louvre"), "concrete": T("concrete"),
+           "dark": T("dark"), "plate": T("diamond_plate"), "pipe": T("pipe"),
+           "steel": T("steel"), "aluminium": T("aluminium"), "particle": T("green_box")}
+    enc = [box([0.5, 0, 0.5], [15.5, 1, 15.5], "concrete"),
+           box([2.5, 1, 2.5], [13.5, 13, 13.5], "box", per={"east": "louvre", "west": "louvre"},
+               faces=("north", "south", "east", "west")),
+           box([2, 13, 2], [14, 14.2, 14], "box"),
+           box([4, 14.2, 4], [12, 14.8, 12], "box"),
+           box([7.2, 9, 2.1], [8.8, 11, 2.5], "dark")]
+    C.add("air_release_enclosure", 'new BlockUtilityBox("air_release_enclosure", new '
+          'UtilityBoxSpec(1, 1, 1, new AxisAlignedBB(%s), null))'
+          % ", ".join(fmt(v) for v in extent_unit(enc)),
+          names_of("Air Release Valve Enclosure", "Entlüftungsventil-Gehäuse",
+                   "Caseta de Válvula de Aire", "Avluftningsventilskåp"),
+          {"air_release_enclosure": model(tex, enc)},
+          lc.facing_state(M("air_release_enclosure")), tab=TAB)
+
+    vault = [box([0, 0, 0], [16, 3.5, 16], "concrete"),
+             box([3, 3.5, 3], [13, 3.9, 13], "plate"),
+             box([3, 3.9, 12.2], [13, 4.3, 12.8], "dark"),
+             box([7.2, 3.9, 4.0], [8.8, 4.2, 4.6], "dark")]
+    vault += um.octagon("y", 14, 14, 1.1, 3.5, 12.5, "pipe", False, False)
+    vault += um.octagon("x", 12.5, 14, 1.1, 10.8, 13.0, "pipe", False, False)
+    bend = box([12.9, 11.4, 12.9], [15.1, 13.6, 15.1], "pipe")
+    vault.append(bend)
+    vault += um.octagon("y", 10.8, 14, 1.1, 9.4, 12.5, "pipe", False, False)
+    vault.append(box([9.5, 8.6, 12.7], [12.1, 9.4, 15.3], "steel"))
+    C.add("air_release_vault", 'new BlockUtilityBox("air_release_vault", new UtilityBoxSpec'
+          '(1, 1, 1, new AxisAlignedBB(%s), null))' % ", ".join(fmt(v) for v in extent_unit(
+              vault)),
+          names_of("Air Release Vault", "Entlüftungsschacht", "Registro de Válvula de Aire",
+                   "Avluftningsbrunn"),
+          {"air_release_vault": model(tex, vault)},
+          lc.facing_state(M("air_release_vault")), tab=TAB)
+
+    hot = [box([-15.5, 0, 1], [15.5, 0.8, 15], "concrete"),
+           box([-14.5, 0.8, 2], [14.5, 13, 14], "aluminium"),
+           box([-14, 13, 2.5], [14, 14.6, 13.5], "aluminium"),
+           box([-13, 14.6, 3.5], [13, 15.4, 12.5], "aluminium"),
+           box([-1, 7, 1.6], [1, 9.4, 2], "dark"),
+           box([-9, 12.2, 1.6], [-6, 12.6, 2], "dark"),
+           box([6, 12.2, 1.6], [9, 12.6, 2], "dark")]
+    hot = [clamp_uv(e) for e in hot]
+    C.add("backflow_enclosure", 'new BlockUtilityBox("backflow_enclosure", new UtilityBoxSpec'
+          '(2, 1, 1, new AxisAlignedBB(%s), null))' % ", ".join(fmt(v) for v in extent_unit(hot)),
+          names_of("Backflow Preventer Enclosure", "Systemtrenner-Schutzgehäuse",
+                   "Caseta de Válvula Antirretorno", "Backventilskåp"),
+          {"backflow_enclosure": model(tex, hot, big_display(0.42))},
+          lc.facing_state(M("backflow_enclosure")), tab=TAB)
+
+
+# ------------------------------------------------------------------------------------------
+# Treatment: the chemical feed skid and the chlorine cylinder scale
+# ------------------------------------------------------------------------------------------
+@C.texture("nfpa")
+def _nfpa():
+    """A hazard diamond decal (the NFPA 704 layout, with no numbers): blue, red, yellow and
+    white quarters in a black edge, cut out."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x + 0.5 - 8, y + 0.5 - 8
+            if abs(dx) + abs(dy) > 7.6:
+                continue
+            if abs(dx) + abs(dy) > 6.6:
+                img.putpixel((x, y), (20, 20, 22, 255))
+            elif dy < -abs(dx) + 0.01:
+                img.putpixel((x, y), (200, 36, 32, 255))
+            elif dx < -abs(dy):
+                img.putpixel((x, y), (36, 80, 180, 255))
+            elif dx > abs(dy):
+                img.putpixel((x, y), (236, 200, 30, 255))
+            else:
+                img.putpixel((x, y), (244, 244, 240, 255))
+    return img
+
+
+def treatment():
+    up = (0, 16, 0)
+    tex = {"poly": T("poly"), "black": T("black"), "dark": T("dark"), "pump": T("pump"),
+           "steel": T("steel"), "yellow": T("yellow"), "panel": T("panel_grey"),
+           "nfpa": T("nfpa"), "display": T("flow_display"), "particle": T("poly")}
+    skid = [box([-15.5, 0, 1], [15.5, 0.6, 15], "black"),
+            box([-15.5, 0.6, 1], [15.5, 3, 1.8], "black"),
+            box([-15.5, 0.6, 14.2], [15.5, 3, 15], "black"),
+            box([-15.5, 0.6, 1.8], [-14.7, 3, 14.2], "black"),
+            box([14.7, 0.6, 1.8], [15.5, 3, 14.2], "black")]
+    skid += um.octagon("y", -7, 8, 5.6, 0.6, 16, "poly", False, False)
+    skid += um.octagon("y", -7, 8, 5.6, 16, 23.0, "poly", True, False, shift=up)
+    skid += um.octagon("y", -7, 8, 1.4, 23.0, 24.2, "black", True, False, shift=up)
+    skid.append(box([-9.4, 9.5, 2.1], [-4.6, 14.3, 2.1], "nfpa", faces=("north",),
+                    uv={"north": [0, 0, 16, 16]}))
+    skid += [box([2, 0.6, 3], [14, 8, 13], "dark", faces=("north", "south", "east", "west",
+                                                            "up")),
+             box([3, 8, 4.5], [7.4, 12, 11.5], "pump"),
+             box([8.6, 8, 4.5], [13, 12, 11.5], "pump"),
+             box([4.2, 12, 6.5], [6.2, 13.4, 9.5], "dark"),
+             box([9.8, 12, 6.5], [11.8, 13.4, 9.5], "dark"),
+             box([7.4, 10, 7.6], [8.6, 10.8, 8.4], "steel"),
+             box([-1.4, 10.2, 7.6], [3, 11, 8.4], "steel"),
+             box([7.6, 3, 13.2], [8.4, 16, 14], "steel", faces=("north", "south", "east",
+                                                                 "west")),
+             box([7.6, 16, 13.2], [8.4, 18, 14], "steel", shift=up,
+                 faces=("north", "south", "east", "west")),
+             box([3.5, 18, 12.6], [12.5, 26, 15.4], "panel", shift=up),
+             box([5, 20.5, 12.3], [11, 24.5, 12.3], "display", faces=("north",),
+                 uv={"north": [0, 2, 16, 11]})]
+    skid = [clamp_uv(e) for e in skid]
+    C.add("chemical_feed_skid", 'new BlockUtilityBox("chemical_feed_skid", new UtilityBoxSpec'
+          '(2, 1, 2, new AxisAlignedBB(%s), null))' % ", ".join(fmt(v) for v in extent_unit(
+              skid)),
+          names_of("Chemical Feed Skid", "Chemikaliendosierstation", "Patín de Dosificación",
+                   "Kemikaliedoseringsstation"),
+          {"chemical_feed_skid": model(tex, skid, big_display(0.42))},
+          lc.facing_state(M("chemical_feed_skid")), tab=TAB)
+
+    cyl = [box([0.5, 0, 1], [15.5, 1.6, 15], "dark"),
+           box([1, 1.6, 1.5], [15, 2.2, 14.5], "plate"),
+           box([1, 2.2, 13.4], [2, 16, 14.4], "steel", faces=("north", "south", "east",
+                                                               "west")),
+           box([14, 2.2, 13.4], [15, 16, 14.4], "steel", faces=("north", "south", "east",
+                                                                 "west")),
+           box([1, 16, 13.4], [2, 25, 14.4], "steel", shift=up),
+           box([14, 16, 13.4], [15, 25, 14.4], "steel", shift=up),
+           box([1, 25, 13.4], [15, 25.8, 14.4], "steel", shift=up),
+           box([1.2, 15.4, 3.4], [14.8, 15.9, 3.9], "dark")]
+    for cx in (4.6, 11.4):
+        cyl += um.octagon("y", cx, 8, 3.3, 2.2, 16, "cylinder", False, False)
+        cyl += um.octagon("y", cx, 8, 3.3, 16, 21.6, "cylinder", False, False, shift=up)
+        cyl += um.octagon("y", cx, 8, 2.6, 21.6, 23.2, "yellow", True, False, shift=up)
+        cyl += um.octagon("y", cx, 8, 1.4, 23.2, 25.4, "dark", True, False, shift=up)
+    cyl = [clamp_uv(e) for e in cyl]
+    tex_cyl = dict(tex, cylinder=T("steel"), plate=T("diamond_plate"))
+    C.add("chlorine_cylinder_scale", 'new BlockUtilityBox("chlorine_cylinder_scale", new '
+          'UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(%s), null))'
+          % ", ".join(fmt(v) for v in extent_unit(cyl)),
+          names_of("Chlorine Cylinder Scale", "Chlorflaschenwaage", "Báscula de Cilindros de Cloro",
+                   "Klorflaskvåg"),
+          {"chlorine_cylinder_scale": model(tex_cyl, cyl, big_display(0.5))},
+          lc.facing_state(M("chlorine_cylinder_scale")), tab=TAB)
+
+
+# ------------------------------------------------------------------------------------------
 # Everything, and the command line
 # ------------------------------------------------------------------------------------------
 column_block("water_tower_leg", 5.5, 7.2, 5, 6.3,
@@ -1315,6 +1895,11 @@ braces()
 ladder()
 pedestal()
 tanks()
+pipes()
+fittings()
+pumps()
+above_ground()
+treatment()
 C.add_lang("csm.utilities.water_tower.band", ("Name band: %s", "Namensband: %s",
                                               "Banda del nombre: %s", "Namnband: %s"))
 C.add_lang("csm.utilities.water_tower.band_blank", ("Name band: blank", "Namensband: leer",

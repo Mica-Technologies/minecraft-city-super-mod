@@ -1,0 +1,233 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "pipe": "csm:blocks/utilities/water/pipe",
+    "dark": "csm:blocks/utilities/water/dark",
+    "steel": "csm:blocks/utilities/water/steel",
+    "wheel": "csm:blocks/utilities/water/wheel",
+    "pump": "csm:blocks/utilities/water/pump",
+    "motor": "csm:blocks/utilities/water/motor",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "particle": "csm:blocks/utilities/water/pipe"
+  },
+  "elements": [
+    {
+      "from": [
+        3.0,
+        3.0,
+        5.9289
+      ],
+      "to": [
+        13.0,
+        13.0,
+        10.0711
+      ],
+      "faces": {
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            3.0,
+            10.0711,
+            13.0
+          ]
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            3.0,
+            10.0711,
+            13.0
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            3.0,
+            5.9289,
+            13.0,
+            10.0711
+          ]
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            3.0,
+            5.9289,
+            13.0,
+            10.0711
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.9289,
+        2.996,
+        3.0
+      ],
+      "to": [
+        10.0711,
+        13.004,
+        13.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            2.996,
+            10.0711,
+            13.004
+          ]
+        },
+        "south": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            2.996,
+            10.0711,
+            13.004
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            3.0,
+            10.0711,
+            13.0
+          ]
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            3.0,
+            10.0711,
+            13.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.0,
+        2.992,
+        5.9289
+      ],
+      "to": [
+        13.0,
+        13.008,
+        10.0711
+      ],
+      "faces": {
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            2.992,
+            10.0711,
+            13.008
+          ]
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            2.992,
+            10.0711,
+            13.008
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            3.0,
+            5.9289,
+            13.0,
+            10.0711
+          ]
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            3.0,
+            5.9289,
+            13.0,
+            10.0711
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          3.0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        5.9289,
+        2.988,
+        3.0
+      ],
+      "to": [
+        10.0711,
+        13.012,
+        13.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            2.988,
+            10.0711,
+            13.012
+          ]
+        },
+        "south": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            2.988,
+            10.0711,
+            13.012
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            3.0,
+            10.0711,
+            13.0
+          ]
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            5.9289,
+            3.0,
+            10.0711,
+            13.0
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          3.0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

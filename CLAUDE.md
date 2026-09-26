@@ -87,7 +87,7 @@ container per jar.
 | `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; four tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection, Emergency Services |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
-| `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size and ground storage tanks; sewer, gas yard and telecom to come); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
+| `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer, gas yard and telecom to come); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
 | `modules/technology` | `csm_technology` | CSM: Technology | `technology` |
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology) |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
@@ -120,7 +120,7 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 ├── lifesafety/       # Largest: fire alarms, emergency lighting, exit signs
 ├── lighting/
 ├── powergrid/        # Utility poles, electrical infrastructure; services/ (the building
-│                    # service meters), water/ (the water tower and tanks)
+│                    # service meters), water/ (the water tower, tanks, pump station)
 ├── signage/         (modules/signage) ad kiosks, poster boards, billboards
 ├── parks/           (modules/parks) trees/ (log and leaves kit), planting/ (the tool and its
 │                    generators), landscape/ (plantings), amenities/ (the Parks tab)
@@ -389,8 +389,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   panel's diagonals, the pedestal column) under a tank placed whole, a tank as a grid of
   three-block tiles that find their place by counting their neighbours (one registry name a tank,
   nothing stored per tile), its OBJ lathe cut at the tile faces, the collision map written from
-  the same profile, the balcony, the name band, ground tanks stacked a layer at a time, what was
-  cut and the traps
+  the same profile, the balcony, the name band, ground tanks stacked a layer at a time, the pump
+  station's pipe runs, fittings and pumps, what was cut and the traps
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system,
   how large a sign face texture may be (85.3 texels a block of plate; `SignTextureSizeTest` fails
   the build on a larger one),
@@ -901,8 +901,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   tile and written for one tile of each quarter-turn orbit only, the blockstate turning it to the
   rest; the band tiles' shells and a decal per town name off one 128 px sheet; and
   `TankShapes.java`, every tank's cell map voxelised from the same profile, so collision and
-  drawing cannot disagree. OBJ v runs down the texture (a multipart OBJ takes no flip-v);
-  `--check`, `--fragments`, `--report` (the tanks' OBJ quads)
+  drawing cannot disagree. Also the pump station (the pipe that joins like the standpipe, inline
+  valves, flow meter and air release valve, the pumps and pressure tank on Roads' utility box
+  with pipe nozzles, the control panel with its animated HMI), the air release enclosure and
+  vault, the backflow hot box, and the chemical feed skid and chlorine cylinder scale. OBJ v runs
+  down the texture (a multipart OBJ takes no flip-v); `--check`, `--fragments`, `--report` (the
+  tanks' OBJ quads)
 - `build_transit_demo.py` -- builds the Transit demo world in a flat creative world loaded in a
   dev client, over MCMCP (borrowing `csm_bench.py`'s client; `--client-port`, `--server-port` and
   `--config` aim it at a client other than the dev client): a bus street with every agency's
