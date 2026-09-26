@@ -1,11 +1,11 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBakedModelWrappers;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.constructionsite.JobTrailerRenderUpdater;
 import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldClimbHandler;
 import com.micatechnologies.minecraft.csm.constructionsite.TileEntityCraneHead;
 import com.micatechnologies.minecraft.csm.constructionsite.TileEntityCraneHeadRenderer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -35,7 +35,7 @@ public class CsmBuildingClientProxy extends CsmBuildingCommonProxy {
       CustomDoorRenderer.register(BlockCustomDoor.instance());
     }
     // A glazed door's glass in the translucent pass and its hardware in the cutout pass.
-    MinecraftForge.EVENT_BUS.register(new DoorLayerModel.Events());
+    CsmBakedModelWrappers.register(DoorLayerModel::wrap);
   }
 
   @Override
