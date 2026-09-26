@@ -21,7 +21,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Interior Finishes](interior-finishes.md) | 60 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
 | [Fire Alarm & Detection](life-safety.md) | 146 | Fire alarm panels, pull stations, horns, strobes, speakers and detectors. |
 | [Lighting](lighting.md) | 132 | Street lights, floodlights, pendants and sconces, all switchable. |
-| [Market & Store](market-store.md) | 67 | Grocery stores and shops: stocked refrigerated displays, gondola shelving, produce, the checkout lane and its registers and card terminals, carts, aisle signs and the shop floor's fixtures. |
+| [Market & Store](market-store.md) | 89 | Grocery stores and shops: stocked refrigerated displays, gondola shelving, produce, the checkout lane and its registers and card terminals, carts, aisle signs and the shop floor's fixtures. |
 | [Materials](materials.md) | 1 | The CSM Fabricator, which turns vanilla ingots into CSM blocks. |
 | [Novelties](novelties.md) | 19 | Decorative oddities that did not belong anywhere else. |
 | [Parks](parks.md) | 32 | Park amenities: benches, tables, bins, playground pieces, fountains and irrigation. |
@@ -37,7 +37,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Transit](transit.md) | 119 | Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, fare gates, the fare vending machine, and the tickets and cards they take. |
 | [Trees & Plants](trees-and-plants.md) | 134 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Unlisted](unlisted.md) | 131 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **3080** | |
+| **Total** | **3102** | |
 
 ## How to read the table
 

@@ -562,6 +562,152 @@ def top_plain(px, x0, col, rng, grain=0.06):
             put(px, x0 + dx, y, shade(col, 1.0 + rng.uniform(-grain, grain)))
 
 
+# --- the fresh departments' stock: sliced bread, muffins and rolls, hot food ----------------
+def col_bread_bag(px, x0, ht, crust, crumb, band, rng):
+    """Sliced bread in its bag seen end on: the crust round the slices' crumb, the bag's
+    printed band across it, the gathered neck and its twist tie on top."""
+    for dy in range(ht):
+        y = 31 - dy
+        for dx in range(7):
+            if dy >= ht - 2:
+                if not 2 <= dx <= 4 or (dy == ht - 1 and dx != 3):
+                    continue
+                col = (240, 200, 60) if dy == ht - 1 else shade(band, 1.1)
+            elif dx in (0, 6) or dy == ht - 3:
+                col = crust
+            elif ht // 3 <= dy < ht // 3 + 2:
+                col = band
+            else:
+                col = shade(crumb, 1.0 + 0.06 * ((dx + dy) % 2))
+            put(px, x0 + dx, y, shade(col, 0.88 if dx == 0 else 1.0))
+
+
+def top_bread_bag(px, x0, crust, band, rng):
+    """Bagged loaves from above, lying front to back: the top crust under the bag's sheen, the
+    band across each, a gap to the next bag."""
+    for y in range(32):
+        for dx in range(8):
+            col = (0, 0, 0, 0) if dx == 7 or y % 8 == 7 else shade(crust, 1.05 - 0.1 * (dx in (0, 6)))
+            if len(col) == 3 and y % 8 in (3, 4):
+                col = band
+            if len(col) == 3 and dx == 2 and y % 8 in (1, 5):
+                col = shade(col, 1.3)
+            put(px, x0 + dx, y, col)
+
+
+def col_muffin(px, x0, ht, cup, top, rng):
+    """Muffins two abreast, three texels wide: a pleated paper cup, a domed top with berries."""
+    for bx in (0, 4):
+        for dy in range(ht):
+            for dx in range(3):
+                if dy < ht // 2:
+                    col = shade(cup, 0.85 if dx == 1 else 1.0)
+                else:
+                    if dy == ht - 1 and dx != 1:
+                        continue
+                    col = top if rng.random() > 0.12 else (90, 40, 110)
+                put(px, x0 + bx + dx, 31 - dy, shade(col, 0.9 + 0.1 * (dx == 0)))
+
+
+def col_rounds(px, x0, ht, body, accent, rng):
+    """Low round bakes in rows, cinnamon rolls or cookies: each three texels wide, a line of
+    their accent (the icing, the chips) through them."""
+    for dy in range(ht):
+        for dx in range(8):
+            if dx % 4 == 3:
+                continue
+            if dy == ht - 1 and dx % 4 != 1:
+                continue
+            col = accent if (dy == ht // 2 and dx % 2 == 0) else body
+            put(px, x0 + dx, 31 - dy, shade(col, 0.85 + 0.12 * (dx % 4 == 1) + 0.05 * dy))
+
+
+def top_rounds(px, x0, body, accent, rng, hole=False):
+    """Round bakes from above on a tray: discs every five texels, the accent scattered on them
+    (icing, chips, berries), a ring with a hole for a bagel."""
+    for y in range(32):
+        for dx in range(8):
+            put(px, x0 + dx, y, (0, 0, 0, 0))
+    for cy in range(2, 32, 5):
+        for dx in range(8):
+            for dy in range(-2, 3):
+                d = math.hypot(dx - 3.5, dy)
+                if d > 3.2 or (hole and d < 1.0):
+                    continue
+                col = shade(body, 1.15 - 0.1 * d)
+                if rng.random() < 0.25:
+                    col = accent
+                put(px, x0 + dx, cy + dy, col)
+
+
+def top_bagels(px, x0, body, accent, rng):
+    top_rounds(px, x0, body, accent, rng, hole=True)
+
+
+def col_chicken(px, x0, ht, rng):
+    """A rotisserie chicken in its clamshell: the black base, the golden bird, the clear dome
+    over it (translucent, the case draws in the translucent layer)."""
+    for dy in range(ht):
+        y = 31 - dy
+        for dx in range(8):
+            if dy < 1:
+                col = (28, 28, 30)
+            elif dx in (0, 7) or dy == ht - 1:
+                if dy == ht - 1 and dx in (0, 7):
+                    continue
+                col = (226, 236, 240, 110)
+            else:
+                t = (dy - 0.5) / max(1.0, ht - 2)
+                w = 3.1 * math.sqrt(max(0.0, 1 - ((t - 0.3) / 0.75) ** 2))
+                if abs(dx + 0.5 - 4) > w:
+                    col = (226, 236, 240, 70)
+                else:
+                    col = shade((190, 108, 40), 0.72 + 0.5 * t - 0.1 * abs(dx + 0.5 - 4))
+                    if dy == 1 and dx in (1, 6):
+                        col = (150, 80, 30)
+            put(px, x0 + dx, y, col)
+
+
+def top_chicken(px, x0, rng):
+    for y in range(32):
+        for dx in range(8):
+            ly = y % 8
+            d = math.hypot((dx - 3.5) / 3.2, (ly - 3.5) / 3.2)
+            if ly == 7 or dx == 7:
+                col = (0, 0, 0, 0)
+            elif d < 0.8:
+                col = shade((200, 124, 50), 1.2 - 0.4 * d)
+            else:
+                col = (226, 236, 240, 110)
+            put(px, x0 + dx, y, col)
+
+
+def col_tray(px, x0, ht, food, accent, rng):
+    """A foil tray heaped with hot food: wings, potato wedges, macaroni."""
+    for dy in range(ht):
+        for dx in range(8):
+            if dx == 7:
+                continue
+            if dy == 0:
+                col = (170, 172, 176)
+            else:
+                if dy == ht - 1 and dx in (0, 6):
+                    continue
+                col = accent if rng.random() < 0.25 else food
+                col = shade(col, 0.85 + 0.2 * dy / max(1, ht))
+            put(px, x0 + dx, 31 - dy, col)
+
+
+def top_tray(px, x0, food, accent, rng):
+    for y in range(32):
+        for dx in range(8):
+            if dx == 7 or y % 11 == 10:
+                col = (170, 172, 176) if dx != 7 else (0, 0, 0, 0)
+            else:
+                col = shade(accent if rng.random() < 0.3 else food, rng.uniform(0.9, 1.1))
+            put(px, x0 + dx, y, col)
+
+
 def product_sheets(seed, columns):
     """The stock of a shelf: four product columns, each (front drawer, top drawer), as two 32 px
     sheets, the fronts and the tops."""
@@ -677,6 +823,29 @@ STOCK = {
                  (_c(col_pastry, "croissant"), _t(top_pastry, "croissant"), 1.5),
                  (_c(col_pastry, "donut_choc"), _t(top_pastry, "donut_choc"), 1.5),
                  (_c(col_bread, (196, 130, 60)), _t(top_bread, (204, 140, 66)), 2)],
+    # the bread rack, the self-serve pastry case and the hot food case (every height fits
+    # under the shelf above it)
+    "bread": [(_c(col_bread_bag, (170, 104, 44), (236, 222, 186), (210, 50, 40)),
+               _t(top_bread_bag, (176, 110, 50), (210, 50, 40)), 4),
+              (_c(col_bread, (196, 130, 60)), _t(top_bread, (204, 140, 66)), 2.5),
+              (_c(col_bread_bag, (120, 70, 34), (176, 126, 76), (44, 120, 60)),
+               _t(top_bread_bag, (130, 78, 38), (44, 120, 60)), 4),
+              (_c(col_bread, (150, 92, 44)), _t(top_bread, (160, 100, 50)), 3)],
+    "pastry": [(_c(col_muffin, (214, 120, 150), (190, 140, 80)),
+                _t(top_rounds, (196, 146, 84), (90, 40, 110)), 2.5),
+               (_c(col_rounds, (206, 150, 84), (246, 240, 226)),
+                _t(top_rounds, (206, 150, 84), (246, 240, 226)), 1.5),
+               (_c(col_rounds, (190, 136, 72), (70, 40, 26)),
+                _t(top_rounds, (196, 142, 78), (70, 40, 26)), 1.5),
+               (_c(col_rounds, (210, 170, 110), (230, 210, 170)),
+                _t(top_bagels, (214, 168, 104), (240, 230, 200)), 1.5)],
+    "hot_food": [(_c(col_chicken), _t(top_chicken), 3.5),
+                 (_c(col_tray, (170, 70, 36), (120, 40, 20)),
+                  _t(top_tray, (170, 70, 36), (120, 40, 20)), 2),
+                 (_c(col_tray, (226, 176, 80), (190, 130, 50)),
+                  _t(top_tray, (226, 176, 80), (190, 130, 50)), 2),
+                 (_c(col_tray, (244, 206, 70), (232, 170, 40)),
+                  _t(top_tray, (244, 206, 70), (232, 170, 40)), 2)],
 }
 
 
@@ -1071,6 +1240,306 @@ def deli_trays(size=32):
     return img
 
 
+# --- the fresh departments --------------------------------------------------------------
+PARSLEY = ((40, 128, 52), (70, 160, 70), (30, 104, 44))
+
+
+def tray_grid(draw, seed, size=32, divider=None):
+    """Eight trays from above, two rows of four, 8 x 16 texels each, with what draw(i, x, y,
+    rng) puts in tray i; divider draws the edge between trays (a butcher's green plastic
+    parsley), or None to let the trays run into one another (an ice bed)."""
+    rng = random.Random(seed)
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            i = (x // 8) + 4 * (y // 16)
+            lx, ly = x % 8, y % 16
+            if divider and (lx == 0 or ly in (0, 15)):
+                col = divider[(x * 7 + y * 3) % len(divider)]
+            else:
+                col = draw(i, lx, ly, rng)
+            px[x, y] = tuple(clamp(col)) + (255,)
+    return img
+
+
+def meat_cut(i, lx, ly, rng):
+    """What a butcher's tray holds: steaks marbled with a fat cap, pork chops, mince, chicken
+    breasts, sausages, ribs, lamb chops and a tied roast."""
+    fat = (240, 226, 214)
+    bone = (236, 228, 204)
+    k = 0.92 + 0.14 * rng.random()
+    if i == 0:
+        if lx == 1 or ly in (1, 8):
+            return fat
+        return shade(fat, 0.95) if rng.random() < 0.12 else shade((176, 34, 42), k)
+    if i == 1:
+        if lx == 7 or ly % 7 == 1:
+            return fat
+        if lx in (2, 3) and ly % 7 in (3, 4):
+            return bone
+        return shade((222, 138, 136), k)
+    if i == 2:
+        return shade((196, 58, 62) if rng.random() > 0.2 else (226, 120, 118), k)
+    if i == 3:
+        return shade((238, 198, 178), 0.9 + 0.12 * math.sin(lx + ly * 0.8))
+    if i == 4:
+        return shade((150, 70, 50) if ly % 3 == 0 else (200, 112, 82), k)
+    if i == 5:
+        return bone if lx % 2 == 1 and ly % 14 > 1 else shade((150, 50, 40), k)
+    if i == 6:
+        if lx in (5, 6) and ly % 5 == 2:
+            return bone
+        return fat if ly % 5 == 4 else shade((150, 38, 50), k)
+    return (236, 226, 196) if ly % 4 == 2 else shade((168, 68, 58), k)
+
+
+def seafood_on_ice(i, lx, ly, rng):
+    """An ice bed from above: crushed ice everywhere, and on it whole fish, salmon fillets,
+    shrimp, crab legs, mussels, tuna steaks, trout and lemons."""
+    ice = shade((220, 234, 244), 0.92 + 0.14 * rng.random())
+    if rng.random() < 0.08:
+        ice = (252, 253, 255)
+    if i in (0, 6):
+        # a fish lying head up the tray: dark back, silver belly, an eye, a forked tail
+        cx = 3.5
+        t = (ly - 1) / 12.0
+        if 0 <= t <= 1:
+            w = 2.6 * math.sin(math.pi * min(1.0, t * 1.15))
+            if abs(lx - cx) <= w:
+                if ly == 3 and lx == 3:
+                    return (20, 20, 24)
+                back = (60, 72, 90) if i == 0 else (120, 110, 90)
+                return back if lx < cx - 0.5 else ((200, 206, 214) if i == 0 else (226, 170, 160))
+        if ly >= 13 and abs(lx - cx) <= (ly - 12) * 1.1 and abs(lx - cx) >= (ly - 13) * 0.6:
+            return (90, 100, 116)
+        return ice
+    if i == 1:
+        if 1 <= lx <= 6 and ly % 7 not in (0,):
+            return (252, 196, 176) if (lx + ly) % 3 == 0 else (242, 130, 98)
+        return ice
+    if i == 2:
+        if rng.random() < 0.6:
+            return (246, 142, 112) if rng.random() > 0.3 else (252, 180, 150)
+        return ice
+    if i == 3:
+        if lx in (1, 2, 4, 5):
+            return (250, 236, 226) if ly % 5 == 0 else (206, 52, 42)
+        return ice
+    if i == 4:
+        if (lx + ly) % 3 != 0 and rng.random() < 0.75:
+            return (40, 40, 60) if rng.random() > 0.2 else (70, 90, 130)
+        return ice
+    if i == 5:
+        if 1 <= lx <= 6 and ly % 6 not in (0, 5):
+            return (160, 40, 50) if (lx * ly) % 5 else (120, 26, 36)
+        return ice
+    if (lx + ly * 2) % 5 < 2:
+        return (250, 222, 60) if rng.random() > 0.3 else (70, 160, 70)
+    return ice
+
+
+def heat_lamp(on, size=16):
+    """A hot case's heat lamp strip: amber, brightest down its middle; off, a dull brown."""
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            d = abs(y - 7.5) / 8.0
+            col = shade((255, 170, 70), 1.12 - 0.35 * d) if on else shade((74, 52, 44), 1 - 0.2 * d)
+            px[x, y] = col + (255,)
+    return img
+
+
+def scale_lcd(size=16):
+    """A deli scale's display: dark bezel, a pale green LCD with its weight."""
+    img = noisy((40, 44, 42), 801, size, 0.02)
+    px = img.load()
+    for y in range(3, 12):
+        for x in range(1, 15):
+            px[x, y] = (150, 188, 140, 255)
+    LS.draw_text(img, "1.25", 1, 5, (28, 44, 30))
+    return img
+
+
+def rotisserie_window(on, size=32):
+    """The rotisserie's glass door: three spits of golden chickens turning in front of the
+    heating element; lit, the whole oven glows amber, off it is dark."""
+    img = blank(size)
+    px = img.load()
+    k = 1.0 if on else 0.42
+    for y in range(size):
+        for x in range(size):
+            base = (150, 80, 36) if on else (40, 34, 30)
+            col = shade(base, 1.2 - 0.5 * y / size)
+            if y in (2, 3) and 2 <= x <= 29:
+                col = (255, 170, 60) if on else (86, 56, 44)
+            if (x + y) % 23 in (0, 1):
+                col = shade(col, 1.25)
+            if x in (0, 31) or y in (0, 31):
+                col = (70, 72, 76)
+            px[x, y] = col + (255,)
+    for sy in (10, 18, 26):
+        for x in range(1, 31):
+            px[x, sy] = (200, 200, 206, 255)
+        for cx in (8.5, 22.5):
+            for y in range(sy - 4, sy + 4):
+                for x in range(int(cx) - 6, int(cx) + 7):
+                    d = math.hypot((x - cx) / 5.2, (y + 0.5 - sy) / 3.3)
+                    if d <= 1.0:
+                        col = shade((198, 120, 48), (1.25 - 0.45 * d) * k)
+                        if y == sy:
+                            col = shade((200, 200, 206), k)
+                        px[x, y] = tuple(clamp(col)) + (255,)
+    return img
+
+
+def fountain_art(base, emblems, size=32):
+    """A fountain drink machine's lit merchandiser: six drinks' tiles in a row, each an
+    invented brand's emblem (a wave, a star, a burst, a leaf, a bubble ring, a bolt) on its
+    colour; drawn in rows 1 to 9, the part the panel maps (u 1 to 15)."""
+    img = noisy(base, hash_seed(str(base)), size, 0.02)
+    px = img.load()
+    for k, (bg, fg, mark) in enumerate(emblems):
+        x0 = 3 + k * 4.5
+        for y in range(1, 10):
+            for x in range(int(x0), int(x0) + 4):
+                lx, ly = x - int(x0), y - 1
+                col = bg
+                if mark == "wave" and ly in (3, 4, 5) and (lx + ly) % 3 != 0:
+                    col = fg
+                elif mark == "star" and (lx in (1, 2) or ly == 4) and 2 <= ly <= 6:
+                    col = fg
+                elif mark == "burst" and (lx + ly) % 2 == 0 and 2 <= ly <= 6:
+                    col = fg
+                elif mark == "leaf" and abs(lx - 1.5) < 1.6 - abs(ly - 4) * 0.4:
+                    col = fg
+                elif mark == "ring" and ly in (2, 6) and lx in (1, 2) or (
+                        mark == "ring" and lx in (0, 3) and 3 <= ly <= 5):
+                    col = fg
+                elif mark == "bolt" and ((ly < 4 and lx == 2) or ly == 4 or (ly > 4 and lx == 1)):
+                    col = fg
+                if ly in (0, 8):
+                    col = shade(bg, 0.7)
+                px[x, y] = tuple(clamp(col)) + (255,)
+    for x in range(size):
+        px[x, 10] = (240, 240, 236, 255)
+    return img
+
+
+FOUNTAIN_EMBLEMS = [((150, 30, 36), (250, 250, 250), "wave"),
+                    ((30, 30, 34), (240, 60, 50), "star"),
+                    ((70, 170, 60), (250, 240, 120), "leaf"),
+                    ((240, 150, 30), (250, 250, 250), "burst"),
+                    ((40, 110, 200), (250, 250, 250), "ring"),
+                    ((250, 214, 40), (40, 40, 44), "bolt")]
+
+
+def condiments(size=16):
+    """A coffee bar's condiment caddy from above, in rows 0 to 3: bins of sugar, sweetener in
+    pink, blue and yellow packets, stirrers, black dividers between."""
+    img = noisy((36, 36, 38), 802, size, 0.02)
+    px = img.load()
+    bins = [(246, 244, 238), (236, 140, 170), (80, 140, 220), (246, 214, 70)]
+    for x in range(size):
+        for y in range(4):
+            if x % 4 == 0:
+                continue
+            col = bins[x // 4]
+            if y % 2 == 1:
+                col = shade(col, 0.88)
+            px[x, y] = col + (255,)
+    for x in range(size):
+        for y in range(4, size):
+            col = (214, 190, 150) if x % 2 == 0 else (36, 36, 38)
+            px[x, y] = col + (255,)
+    return img
+
+
+def lids(size=16):
+    """A lid organiser from above: stacks of white cup lids in their slots, a black tray."""
+    img = noisy((30, 30, 32), 803, size, 0.02)
+    px = img.load()
+    for cy in (3, 11):
+        for cx in (3, 11):
+            for y in range(size):
+                for x in range(size):
+                    d = math.hypot(x + 0.5 - (cx + 0.5), y + 0.5 - (cy + 0.5))
+                    if d < 3.3:
+                        px[x, y] = shade((244, 244, 240), 1.0 if d > 2.2 or d < 1.2 else 0.86) \
+                            + (255,)
+    return img
+
+
+def cup_stack(size=16):
+    """A column of paper cups nested in their dispenser: white, a rim every two texels."""
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            col = (244, 244, 240) if y % 2 else (206, 206, 202)
+            px[x, y] = shade(col, 0.94 + 0.06 * math.sin(x * 0.8)) + (255,)
+    return img
+
+
+# Bunches of flowers: each a quadrant (16 x 16 texels) of a 32 px sheet, the heads in its top
+# half, stems below, the rest clear; a crossed pair of planes shows one in a bucket.
+# (heads [(petal, centre or None)], head radius, wrapped in kraft paper)
+BUNCHES = {
+    "flowers_a": [([((190, 20, 40), (120, 10, 26))], 1.6, False),               # roses
+                  ([((250, 210, 40), None), ((240, 150, 40), None)], 1.4, False),  # tulips
+                  ([((250, 196, 30), (90, 50, 20))], 2.4, False),                # sunflowers
+                  ([((250, 250, 245), (240, 200, 40))], 1.5, False)],             # daisies
+    "flowers_b": [([((240, 120, 160), None), ((250, 176, 204), None)], 1.6, False),  # carnations
+                  ([((250, 246, 240), (240, 180, 60))], 1.8, False),              # lilies
+                  ([((200, 40, 80), None), ((250, 220, 60), None), ((150, 90, 200), None),
+                    ((250, 250, 250), (240, 200, 40))], 1.5, True),               # bouquet
+                  ([((130, 80, 190), None), ((100, 60, 160), None)], 1.2, False)],  # irises
+}
+HEAD_SPOTS = [(3, 3.5), (6.5, 2), (10, 2.5), (13, 3.5), (4.5, 6.5), (8, 5), (11.5, 6.5),
+              (8, 1.5), (2, 6.5), (14, 6.5)]
+
+
+def flower_sheet(name, size=32):
+    rng = random.Random(hash_seed(name))
+    img = blank(size)
+    px = img.load()
+    for q, (heads, r, wrapped) in enumerate(BUNCHES[name]):
+        ox, oy = 16 * (q % 2), 16 * (q // 2)
+        for sx in (4, 6, 7, 9, 10, 12):
+            for y in range(6, 16):
+                x = sx + (1 if (y % 4 == 0 and sx % 2) else 0)
+                px[ox + x, oy + y] = shade((64, 132, 52), 0.85 + 0.25 * rng.random()) + (255,)
+            if rng.random() < 0.7:
+                ly = rng.randrange(9, 13)
+                for d in (1, 2):
+                    x = min(15, sx + d)
+                    px[ox + x, oy + ly - d + 1] = (84, 156, 64, 255)
+        spots = HEAD_SPOTS if r < 2 else HEAD_SPOTS[:4] + [(8, 6)]
+        for i, (hx, hy) in enumerate(spots):
+            petal, centre = heads[i % len(heads)]
+            rr = r * rng.uniform(0.85, 1.1)
+            for y in range(int(hy - rr - 1), int(hy + rr + 2)):
+                for x in range(int(hx - rr - 1), int(hx + rr + 2)):
+                    if not (0 <= x < 16 and 0 <= y < 16):
+                        continue
+                    d = math.hypot(x + 0.5 - hx, y + 0.5 - hy)
+                    if d > rr:
+                        continue
+                    col = shade(petal, 1.15 - 0.3 * d / rr)
+                    if centre and d < rr * 0.42:
+                        col = centre
+                    px[ox + x, oy + y] = tuple(clamp(col)) + (255,)
+        if wrapped:
+            for y in range(8, 16):
+                half = 7 - (y - 8) * 0.5
+                for x in range(16):
+                    if abs(x + 0.5 - 8) <= half:
+                        col = shade((198, 158, 108), 0.9 + 0.15 * ((x + y) % 3 == 0))
+                        px[ox + x, oy + y] = col + (255,)
+    return img
+
+
 TEXTURES = {
     "glass_clear": lambda: glass(),
     "glass_frost": lambda: glass(96, (226, 238, 246), frost=True),
@@ -1138,6 +1607,27 @@ TEXTURES = {
                                796),
     "bulk_choc": lambda: bulk([(90, 56, 36), (110, 70, 44), (70, 44, 30)], 797),
     "bulk_mint": lambda: bulk([(240, 240, 236), (170, 226, 196), (240, 200, 210)], 798),
+    # the fresh departments
+    "meat_trays": lambda: tray_grid(meat_cut, 811, divider=PARSLEY),
+    "seafood_ice": lambda: tray_grid(seafood_on_ice, 812),
+    "heat_lamp_on": lambda: heat_lamp(True),
+    "heat_lamp_off": lambda: heat_lamp(False),
+    "scale_lcd": scale_lcd,
+    "rotisserie_window_on": lambda: rotisserie_window(True),
+    "rotisserie_window_off": lambda: rotisserie_window(False),
+    "fountain_art_red": lambda: fountain_art((176, 30, 34), FOUNTAIN_EMBLEMS),
+    "fountain_art_blue": lambda: fountain_art((30, 70, 150), FOUNTAIN_EMBLEMS),
+    "condiments": condiments,
+    "lids": lids,
+    "cup_stack": cup_stack,
+    "flowers_a": lambda: flower_sheet("flowers_a"),
+    "flowers_b": lambda: flower_sheet("flowers_b"),
+    "header_hot_on": lambda: header("HOT FOOD", (176, 62, 28), True),
+    "header_hot_off": lambda: header("HOT FOOD", (176, 62, 28), False),
+    "header_flowers_on": lambda: header("FRESH FLOWERS", (150, 56, 110), True),
+    "header_flowers_off": lambda: header("FRESH FLOWERS", (150, 56, 110), False),
+    "bread_sign": lambda: label_text(["BREAD"], (120, 74, 36), (246, 236, 214), top=13),
+    "coffee_sign": lambda: label_text(["COFFEE"], (66, 42, 30), (240, 222, 190), top=13),
 }
 for _kind in STOCK:
     TEXTURES["stock_%s" % _kind] = (lambda k=_kind: stock_sheets(k)[0])
@@ -1172,6 +1662,11 @@ DEFAULT_TEX.update({
     "clear": MT("glass_clear"), "label": OT("label_card"), "produce": PRODUCE_TEX % "bed_apple_red",
     "price": MT("price_card"), "dial": MT("scale_dial"), "pans": MT("ice_cream"),
     "trays": MT("deli_trays"), "front": MT("return_front"), "tubs": MT("ice_cream"),
+    # the fresh departments
+    "meat": MT("meat_trays"), "ice": MT("seafood_ice"), "lcd": MT("scale_lcd"),
+    "flowers_a": MT("flowers_a"), "flowers_b": MT("flowers_b"), "bucket": T("metal_steel"),
+    "art": MT("fountain_art_red"), "condiments": MT("condiments"), "lids": MT("lids"),
+    "cups": MT("cup_stack"), "white": MT("case_white"),
 })
 
 
@@ -1321,7 +1816,21 @@ def reach_in(stock_a, stock_b):
     four shelves of stock, lit by LED strips on the mullions, a lit header sign above the door
     and a kick grille below. The mullion is shared: each block draws half of it at either side,
     so a line of doors has one between each pair."""
-    body = [el([0, 0, 15.75], [16, 32, 16], "shell", ("south",)),
+    body = reach_in_frame()
+    levels = [3.0, 9.5, 16.0, 22.5]
+    for i, y in enumerate(levels):
+        if i:
+            body += [el([0.5, y - 0.4, 3.4], [15.5, y, 15.25], "shelf", ("up", "down")),
+                     strip_el(0.5, 15.5, y - 0.9, y, 3.1, 3.4)]
+        key = "stock_a" if i % 2 == 0 else "stock_b"
+        kind = stock_a if key == "stock_a" else stock_b
+        body += stock_row(0.75, 15.25, y, 3.75, 15.25, heights(kind), 100 + i, key)
+    return body, REACH_IN_END
+
+
+def reach_in_frame():
+    """The reach-in's cabinet, door, header and lights, without what is on show behind it."""
+    return [el([0, 0, 15.75], [16, 32, 16], "shell", ("south",)),
             el([0, 3, 15.25], [16, 29.5, 15.75], "liner", ("north",)),
             el([0, 0, 2.25], [16, 3, 15.25], "liner", ("north", "up"), {"north": "grille"}),
             el([0, 29.5, 2], [16, 32, 15.75], "shell", ("north", "up", "down"), {"down": "liner"}),
@@ -1338,16 +1847,9 @@ def reach_in(stock_a, stock_b):
             el([13.1, 21.7, 1.5], [13.7, 22.5, 2], "chrome", SIDES),
             el([0.9, 4, 2.8], [1.3, 28.5, 3.1], "glow", ("north", "east")),
             el([14.7, 4, 2.8], [15.1, 28.5, 3.1], "glow", ("north", "west"))]
-    levels = [3.0, 9.5, 16.0, 22.5]
-    for i, y in enumerate(levels):
-        if i:
-            body += [el([0.5, y - 0.4, 3.4], [15.5, y, 15.25], "shelf", ("up", "down")),
-                     strip_el(0.5, 15.5, y - 0.9, y, 3.1, 3.4)]
-        key = "stock_a" if i % 2 == 0 else "stock_b"
-        kind = stock_a if key == "stock_a" else stock_b
-        body += stock_row(0.75, 15.25, y, 3.75, 15.25, heights(kind), 100 + i, key)
-    end = [el([0, 0, 2], [0.5, 32, 16], "shell", ("west", "north", "up", "down"))]
-    return body, end
+
+
+REACH_IN_END = [el([0, 0, 2], [0.5, 32, 16], "shell", ("west", "north", "up", "down"))]
 
 
 def multideck(stock_a, stock_b):
@@ -1757,6 +2259,248 @@ for _i, _y in enumerate((1, 7.5, 14)):
 
 
 # ------------------------------------------------------------------------------------------
+# The fresh departments: butcher and seafood, bakery and hot food, floral, coffee and drinks
+# ------------------------------------------------------------------------------------------
+# The butcher's and the fishmonger's cases have the deli case's section (its base, curved glass
+# and canopy), so a deli, a butcher and a seafood case set in a line are one service counter.
+SERVICE_SEGS = [(4.0, 0), (4.0, 22.5), (3.0, 45)]
+_, (SERVICE_TOP, _) = curved_glass(0, 16, 9, 2.6, SERVICE_SEGS, top_to=11)
+
+
+def top_scale(y):
+    """A service scale standing on the case's top: a white body with a steel platter over the
+    glass, its display on a post at the back, read from both sides."""
+    return [el([10, y, 7], [15, y + 1.25, 11.5], "white"),
+            el([10.4, y + 1.25, 7.4], [14.6, y + 1.5, 11.1], "steel", NO_DOWN),
+            el([11.75, y + 1.25, 11.5], [13.25, y + 2.5, 12.25], "white", SIDES),
+            el([10.75, y + 2.5, 11.25], [14.25, y + 4.5, 12.5], "white"),
+            ALL_UV(el([11, y + 2.75, 11.2], [14, y + 4.25, 11.25], "lcd", ("north",)), ["north"]),
+            ALL_UV(el([11, y + 2.75, 12.5], [14, y + 4.25, 12.55], "lcd", ("south",)), ["south"])]
+
+
+def price_cards(y, z, xs=(2.5, 10.5)):
+    """Price cards standing in the front trays, facing the shopper."""
+    return [el([x, y, z], [x + 3.2, y + 1.2, z + 0.1], "price", ("north",),
+               uv={"north": [0, 4, 16, 10]}) for x in xs]
+
+
+BUTCHER_INSIDE = ([el([0, 8.5, 3.2], [16, 8.6, 12], "meat", ("up",), uv={"up": [0, 0, 16, 16]}),
+                   el([0, 12.8, 6.5], [16, 13, 12], "glass", ("up", "down")),
+                   el([0, 13, 6.7], [16, 13.1, 11.8], "meat", ("up",), uv={"up": [0, 0, 16, 8]}),
+                   el([0, 12, 12.5], [16, 12.5, 16], "steel", ("up", "north", "south", "down"))]
+                  + price_cards(8.6, 3.5) + top_scale(SERVICE_TOP))
+BUTCHER, BUTCHER_END, _ = service_case(9, SERVICE_SEGS, 11, BUTCHER_INSIDE, 11, 8.4)
+# The ice bed slopes up from the glass, as the produce stand's bed does, its back closed by a
+# wall the server sees.
+_ICE_TILT = ("x", -22.5, [8, 8.5, 3.2])
+SEAFOOD_INSIDE = ([el([0, 8.5, 3.2], [16, 9.5, 12.2], "ice", ("up",), uv={"up": [0, 0, 16, 16]},
+                      rot=_ICE_TILT),
+                   el([0, 8.4, 11.1], [16, 12.9, 11.5], "liner", ("south", "up")),
+                   el([0, 12, 12.5], [16, 12.5, 16], "steel", ("up", "north", "south", "down"))]
+                  + price_cards(9.85, 3.8) + top_scale(SERVICE_TOP))
+SEAFOOD, SEAFOOD_END, _ = service_case(9, SERVICE_SEGS, 11, SEAFOOD_INSIDE, 11, 8.4)
+
+# The bread rack: three shelves stepping back as they rise, each with a lip, bagged and crusty
+# loaves on the outer two and the bakery's on the middle, a BREAD sign over the back.
+BREAD_LEVELS = ((1.5, 2.5), (6.5, 5.5), (11.5, 8.5))
+
+
+def bread_rack():
+    body = [board([0, 0, 15], [16, 19.5, 15.75], grain="v",
+                  faces=("north", "south", "up", "east", "west")),
+            el([0, 0, 2.25], [16, 0.75, 2.75], "kick", ("north", "up"))]
+    for i, (y, zf) in enumerate(BREAD_LEVELS):
+        body += [board([0, y - 0.75, zf], [16, y, 15], faces=("north", "up", "down")),
+                 board([0, y, zf], [16, y + 1, zf + 0.5], faces=("north", "south", "up"))]
+        key, kind = ("stock_b", "bakery") if i == 1 else ("stock_a", "bread")
+        body += stock_row(0, 16, y, zf + 0.75, 15, heights(kind), 900 + i, key)
+    body.append(el([2, 15.5, 14.9], [14, 19.5, 15], "sign", ("north",),
+                   uv={"north": [2, 5.5, 14, 9.5]}))
+    return body
+
+
+BREAD_RACK = bread_rack()
+BREAD_RACK_END = [board([0, 0, 2.25], [0.75, 4, 15.75], grain="v"),
+                  board([0, 4, 5.25], [0.75, 9, 15.75], grain="v"),
+                  board([0, 9, 8.25], [0.75, 19.5, 15.75], grain="v")]
+
+# The self-serve pastry case: a cabinet with an acrylic case on it, two tiers of trays behind
+# doors hinged at the top, each door with its knob.
+PASTRY_BODY = ([board([0, 1, 2.5], [16, 7.25, 3.25], grain="v", faces=("north",)),
+                el([0, 0, 3], [16, 1, 13.5], "kick", ("north", "south")),
+                board([0, 1, 13], [16, 7.25, 13.75], grain="v", faces=("south",)),
+                board([0, 7.25, 2.25], [16, 8, 14], faces=("north", "south", "up", "down"))]
+               + stock_row(0.25, 15.75, 8, 3.75, 13, heights("pastry"), 910, "stock_a")
+               + [el([0, 11.75, 3.25], [16, 12, 13.25], "clear", ("up", "down"))]
+               + stock_row(0.25, 15.75, 12, 4, 13, heights("bakery_b"), 911, "stock_b")
+               + [el([0, 8, 2.75], [16, 16, 3], "clear", ("north", "south")),
+                  el([0, 8, 13.25], [16, 16, 13.5], "clear", ("north", "south")),
+                  el([0, 15.75, 3], [16, 16, 13.25], "clear", ("up", "down")),
+                  el([0, 8, 2.5], [16, 8.5, 2.75], "case", ("north", "up")),
+                  el([0, 11.75, 2.5], [16, 12.25, 2.75], "case", ("north", "up", "down")),
+                  el([0, 15.75, 2.5], [16, 16.25, 3], "case", ("north", "up", "down"))]
+               + [el([x, y, 2.1], [x + 1, y + 0.75, 2.5], "chrome", NO_BACK)
+                  for x in (3.5, 11.5) for y in (8.75, 12.5)])
+PASTRY_END = [board([0, 0, 2.25], [0.75, 8, 14], grain="v"),
+              el([0, 8, 2.5], [0.5, 16.25, 3], "case", ("west", "north", "east", "up")),
+              el([0, 8, 3], [0.25, 15.75, 13.25], "clear", ("west", "east")),
+              el([0, 8, 13.25], [0.5, 16.25, 13.75], "case", ("west", "south", "east", "up"))]
+
+# The hot food case: the bakery case's straight glass on a steel base, a heated well and a
+# shelf of rotisserie chickens and hot trays under amber heat lamps, a lit HOT FOOD header.
+HOT_INSIDE = (stock_row(0, 16, 9, 3.6, 12, heights("hot_food"), 920, "stock_a",
+                        pattern=[0, 1, 0, 2])
+              + [el([0, 14.25, 5], [16, 14.5, 13], "steel", ("north", "up", "down")),
+                 el([0.5, 14, 5.5], [15.5, 14.25, 6.5], "glow", ("down",))]
+              + stock_row(0, 16, 14.5, 5.5, 12.5, heights("hot_food"), 921, "stock_b",
+                          pattern=[0, 3, 0, 1])
+              + [el([0, 20, 2.4], [16, 22.25, 3.4], "shell", ("south", "up", "east", "west")),
+                 header_el(0.5, 15.5, 20.25, 22, 2.4)])
+HOT_FOOD, HOT_FOOD_END, _ = service_case(9, [(11.0, 0)], 12.5, HOT_INSIDE, 12.5, 8.9)
+
+# The rotisserie oven, on the counter: a steel box on feet, its glass door (the window, drawn
+# with the spits of chickens, lit while it roasts), a bar handle and a timer knob.
+ROTISSERIE = (A.feet(1.5, 14.5, 4, 12)
+              + [el([1, 0.25, 4], [15, 12, 12.5], "shell", ("south", "east", "west", "up")),
+                 el([1, 0.25, 3.5], [15, 12, 4], "trim", NO_BACK),
+                 ALL_UV(el([2.25, 1.5, 3.45], [13.75, 10.75, 3.5], "glow", ("north",)),
+                        ["north"]),
+                 el([3.5, 11, 2.5], [12.5, 11.5, 3], "handle"),
+                 el([3.5, 11, 3], [4, 11.5, 3.5], "handle", SIDES),
+                 el([12, 11, 3], [12.5, 11.5, 3.5], "handle", SIDES),
+                 el([12.5, 12, 5], [14, 12.75, 6.5], "rubber", NO_DOWN)])
+
+
+def airpot(cx, cz):
+    """A pump airpot: a steel body, a black lid, the pump head on it and a spout at the front."""
+    return (R.octagon(cx, cz, 1.7, 0.75, 7.75, "steel", caps=())
+            + R.octagon(cx, cz, 1.8, 7.75, 9.1, "rubber", caps=("up",))
+            + [el([cx - 0.4, 5.5, cz - 2.4], [cx + 0.4, 6.25, cz - 1.6], "rubber", NO_BACK),
+               el([cx - 0.75, 9.1, cz - 0.75], [cx + 0.75, 9.6, cz + 0.75], "rubber", NO_DOWN)])
+
+
+# The commercial brewer: a base tray, the tower at the back, the hood over two brew heads, two
+# airpots under them, a control strip and a lamp lit while it brews.
+BREWER = ([el([2, 0, 3.5], [14, 0.75, 12.5], "trim"),
+           el([2, 0.75, 9.5], [14, 13, 12.5], "shell", ("north", "south", "east", "west", "up")),
+           el([2, 10.5, 3.5], [14, 13, 9.5], "shell", ("north", "east", "west", "up", "down")),
+           el([3.25, 9.75, 5], [6.75, 10.5, 8.5], "rubber", ("north", "east", "west", "down")),
+           el([9.25, 9.75, 5], [12.75, 10.5, 8.5], "rubber", ("north", "east", "west", "down")),
+           el([5, 11, 3.45], [11, 12.5, 3.5], "control", ("north",)),
+           ALL_UV(el([11.5, 11.5, 3.4], [12.25, 12.25, 3.45], "glow", ("north",)), ["north"])]
+          + airpot(5, 6.75) + airpot(11, 6.75))
+
+# The fountain drink machine: a cabinet with its lit merchandiser of six invented drinks, six
+# valves with their levers either side of the ice chute, a splash back and a drip tray.
+FOUNTAIN = ([el([1, 1, 5], [15, 13, 12.5], "shell", ("south", "east", "west", "up")),
+             el([1, 8.5, 4.5], [15, 13, 5], "shell", ("north", "east", "west", "up", "down"),
+                {"north": "art"}, uv={"north": [1, 0, 15, 4.5]}),
+             el([1, 1, 4.9], [15, 8.5, 5], "rubber", ("north",)),
+             el([1, 0, 2.5], [15, 1, 12.5], "trim"),
+             el([1.5, 1, 3], [14.5, 1.05, 4.75], "grille", ("up",)),
+             el([1.5, 8.25, 4.4], [14.5, 8.5, 4.5], "glow", ("north", "down")),
+             el([7.25, 4.5, 3.75], [8.75, 8.25, 4.9], "shell", NO_BACK),
+             el([7.5, 4.25, 4], [8.5, 4.5, 4.75], "rubber", ("north", "east", "west", "down"))]
+            + [e for x in (1.75, 3.5, 5.25, 9.5, 11.25, 13)
+               for e in (el([x, 6.25, 3.5], [x + 1.25, 8.25, 4.9], "chrome", NO_BACK),
+                         el([x + 0.4, 5.5, 3.9], [x + 0.85, 6.25, 4.35], "chrome",
+                            ("north", "east", "west", "down")),
+                         el([x + 0.25, 5.25, 3.25], [x + 1, 6.25, 3.5], "rubber", NO_BACK))])
+
+
+# The coffee station's counters: a cabinet a countertop high with a stone top, joining into one
+# station, a back panel along it.
+def drink_counter(doors=True):
+    out = [board([0, 1, 1.75], [16, 13.75, 2.5], grain="v", faces=("north",)),
+           el([0, 0, 2.25], [16, 1, 14.5], "kick", ("north", "south")),
+           board([0, 1, 14], [16, 13.75, 14.75], grain="v", faces=("south",)),
+           el([0, 13.75, 1], [16, 14.5, 15.25], "counter",
+              ("north", "south", "east", "west", "up", "down")),
+           board([0, 14.5, 15.25], [16, 20, 15.75], grain="v",
+                 faces=("north", "south", "east", "west", "up"))]
+    if doors:
+        out += [el([7.9, 1.5, 1.7], [8.1, 13.25, 1.75], "case", ("north",)),
+                el([6.5, 11, 1.25], [7.25, 11.75, 1.75], "chrome", NO_BACK),
+                el([8.75, 11, 1.25], [9.5, 11.75, 1.75], "chrome", NO_BACK)]
+    return out
+
+
+DRINK_END = [board([0, 0, 1.75], [0.75, 13.75, 14.75], grain="v",
+                   faces=("west", "north", "south", "east"))]
+COFFEE_BAR = (drink_counter()
+              + [el([0.5, 14.5, 12.5], [15.5, 16, 15.25], "case", ("north", "east", "west", "up"),
+                    {"up": "condiments"}, uv={"up": [0, 0, 15, 2.75]}),
+                 el([2, 15.75, 15.2], [14, 19.75, 15.25], "sign", ("north",),
+                    uv={"north": [2, 5.5, 14, 9.5]})])
+CUP_COUNTER = (drink_counter(doors=False)
+               + [el([4, 8.5, 1.7], [12, 10.75, 1.75], "rubber", ("north",)),
+                  el([12.5, 14.5, 3], [15.5, 16.5, 6.5], "case", ("north", "east", "west", "up"),
+                     {"up": "lids"}, uv={"up": [0, 0, 16, 16]}),
+                  el([12.5, 14.5, 6.5], [15.5, 17.5, 10], "case", ("north", "east", "west", "up",
+                                                                   "south"),
+                     {"up": "lids"}, uv={"up": [0, 0, 16, 16]}),
+                  el([2, 14.5, 10.5], [9, 15.75, 13], "white", NO_DOWN)]
+               + [e for cx, r in ((3, 1.3), (6.25, 1.6), (9.75, 1.9))
+                  for e in R.octagon(cx, 6, r, 14.5, 19, "cups", caps=("up",))]
+               + [el([x, 15.75, 11.5], [x + 0.3, 17.5, 11.8], "plastic", SIDES + ("up",))
+                  for x in (2.6, 3.6, 4.6, 5.6, 6.6, 7.6, 8.4)])
+
+
+# Floral: buckets of flowers, each bunch a crossed pair of planes standing in its bucket.
+def bucket(cx, cz, y0, r=1.9, h=4.0):
+    return (R.octagon(cx, cz, r, y0, y0 + h, "bucket", caps=())
+            + [el([cx - r * 0.7, y0 + h - 1, cz - r * 0.7], [cx + r * 0.7, y0 + h - 0.9,
+                                                             cz + r * 0.7], "water", ("up",))])
+
+
+def bunch(cx, cz, y0, h, key, q, w=5.0):
+    """A bunch of flowers: quadrant q of the sheet on two planes crossed at 45 degrees."""
+    uv = [8 * (q % 2), 8 * (q // 2), 8 * (q % 2) + 8, 8 * (q // 2) + 8]
+    return [el([cx - w / 2, y0, cz], [cx + w / 2, y0 + h, cz], key, ("north", "south"),
+               uv={"north": uv, "south": uv}, rot=("y", a, [cx, y0, cz])) for a in (45, -45)]
+
+
+FLOWER_TIERS = ((3.5, 1.5, 6), (7.5, 6, 10.5), (11.5, 10.5, 15))
+
+
+def flower_stand():
+    out = []
+    for i, (y, z0, z1) in enumerate(FLOWER_TIERS):
+        out.append(el([1, y - 0.75, z0], [15, y, z1], "frame", ("north", "up", "down")))
+        for x in (0.25, 15):
+            out.append(el([x, 0, z0], [x + 0.75, y, z1], "frame",
+                          ("north", "east", "west", "up") + (("south",) if i == 2 else ())))
+        cz = (z0 + z1) / 2
+        for k, cx in enumerate((3.75, 8, 12.25)):
+            out += bucket(cx, cz, y, 1.9, 3.5)
+            key = "flowers_a" if (i + k) % 2 == 0 else "flowers_b"
+            out += bunch(cx, cz, y + 1, 7.5, key, (i * 3 + k) % 4)
+    # a back panel closes the steps from behind
+    out.append(el([1, 0, 14.25], [15, 10.75, 15], "frame", ("south", "north")))
+    return out
+
+
+FLOWER_STAND = flower_stand()
+
+
+def floral_interior():
+    """The floral cooler's shelves: on each, a front row of buckets and a back row raised on a
+    step, bunches and wrapped bouquets in them."""
+    out = []
+    for i, y in enumerate((3.0, 11.0, 19.0)):
+        if i:
+            out += [el([0.5, y - 0.4, 3.4], [15.5, y, 15.25], "shelf", ("up", "down")),
+                    strip_el(0.5, 15.5, y - 0.9, y, 3.1, 3.4)]
+        out.append(el([0.5, y, 10], [15.5, y + 1.75, 15.25], "shelf", ("north", "up")))
+        for k, cx in enumerate((3.5, 8, 12.5)):
+            for row, (cz, dy, h) in enumerate(((6.5, 0.0, 6.0), (12.5, 1.75, 4.75))):
+                out += bucket(cx, cz, y + dy, 1.7, 3.0)
+                key = "flowers_a" if (i + k + row) % 2 == 0 else "flowers_b"
+                out += bunch(cx, cz, y + dy + 1, h, key, (i + 2 * k + row) % 4, w=4.5)
+    return out
+
+
+# ------------------------------------------------------------------------------------------
 # Finishes
 # ------------------------------------------------------------------------------------------
 def fin(fid, tex, *names):
@@ -1825,6 +2569,8 @@ RUN = 'new BlockMarketRun("%s", new int[]{%s}, "%s", %s)'
 RUN_FULL = ('new BlockMarketRun("%s", new int[]{%s}, "%s", %d, %s, %s, %s, %sF, '
             'BlockRenderLayer.%s)')
 FIX = 'new BlockBathroomFixture("%s", new int[]{%s}, FixtureMaterial.%s)'
+# The deli, butcher and seafood cases share a section, and join one another as one counter.
+SERVICE_JAVA = 'new BlockDisplayCase("%%s", new int[]{%s}, "service_case")'
 FIX_SOUND = 'new BlockBathroomFixture("%s", new int[]{%s}, FixtureMaterial.%s, %s, %sF)'
 
 
@@ -1904,7 +2650,7 @@ add("ice_cream_case", "run", [fin("white", CASE_WHITE, *WHITE_N)],
 add("deli_case", "run", [fin("black", CASE_BLACK, *BLACK_N)],
     ("Deli Service Case", "Feinkosttheke", "Vitrina de charcutería", "Delikatessdisk"),
     {"body": DELI, "end": DELI_END, "glow": GLOW_ONLY, "particle": "shell",
-     "java": 'new BlockDisplayCase("%%s", new int[]{%s})' % jbox(box_of(DELI))},
+     "java": SERVICE_JAVA % jbox(box_of(DELI))},
     "Refrigerated", "Curved glass over meats and salads; joins; 27 slots; lit")
 add("bakery_case", "run", [fin("oak", dict(CASE_BLACK, **OAK), "Oak", "Eiche", "roble", "ek")],
     ("Bakery Display Case", "Backwarenvitrine", "Vitrina de panadería", "Bagerimonter"),
@@ -2060,6 +2806,137 @@ add("bottle_return_machine", "tall", [fin("green", {"shell": MT("plastic_green")
              % jbox(box_of(BOTTLE_RETURN, tall=True))},
     "Store", "2 blocks tall, decorative")
 
+# --- the fresh departments ---------------------------------------------------------------
+WALNUT = {"wood": T("walnut"), "wood_v": T("walnut_v"), "edge": T("walnut_edge")}
+WALNUT_N = ("Walnut", "Nussbaum", "nogal", "valnöt")
+OAK_N = ("Oak", "Eiche", "roble", "ek")
+STEEL_N = ("Steel", "Stahl", "acero", "stål")
+GLOW_HOT = {"glow": (MT("heat_lamp_off"), MT("heat_lamp_on")),
+            "header": (MT("header_hot_off"), MT("header_hot_on"))}
+GLOW_FLOWERS = {"glow": (GLOW_OFF, GLOW_ON),
+                "header": (MT("header_flowers_off"), MT("header_flowers_on"))}
+APPLIANCE = 'new BlockCounterAppliance("%%s", new int[]{%%s}, StoreAppliances.%s)'
+DRINK_RUN = (RUN_FULL % ("%s", "%s", "drink_station", 9, "FurnishingsSounds.CABINET_OPEN",
+                         "FurnishingsSounds.CABINET_CLOSE", "null", "1.0", "SOLID"))
+DRINK_FINS = [
+    fin("grey", {"wood": OT("laminate_grey"), "wood_v": OT("laminate_grey"),
+                 "edge": OT("laminate_grey_edge"), "kick": MT("steel_grey"),
+                 "counter": T("counter_quartz"), "sign": MT("coffee_sign")},
+        "Grey", "Grau", "gris", "grå"),
+    fin("walnut", dict(WALNUT, kick=MT("steel_grey"), counter=T("counter_granite"),
+                       sign=MT("coffee_sign")), *WALNUT_N),
+]
+
+add("butcher_case", "run", [fin("white", CASE_WHITE, *WHITE_N), fin("black", CASE_BLACK, *BLACK_N)],
+    ("Butcher Case", "Fleischtheke", "Vitrina de carnicería", "Köttdisk"),
+    {"body": BUTCHER, "end": BUTCHER_END, "glow": GLOW_ONLY, "particle": "shell",
+     "java": SERVICE_JAVA % jbox(box_of(BUTCHER))},
+    "Butcher & Seafood",
+    "Curved glass over trays of steaks, chops, mince, chicken, sausages, ribs and a roast "
+    "between parsley, a scale on top; joins the deli and seafood cases; 27 slots; lit")
+add("seafood_case", "run", [fin("white", CASE_WHITE, *WHITE_N), fin("black", CASE_BLACK, *BLACK_N)],
+    ("Seafood Case", "Fischtheke", "Vitrina de pescadería", "Fiskdisk"),
+    {"body": SEAFOOD, "end": SEAFOOD_END, "glow": GLOW_ONLY, "particle": "shell",
+     "java": SERVICE_JAVA % jbox(box_of(SEAFOOD))},
+    "Butcher & Seafood",
+    "Curved glass over a sloping ice bed of fish, fillets, shrimp, crab and mussels, a scale on "
+    "top; joins the deli and butcher cases; 27 slots; lit")
+
+add("bread_rack", "run",
+    [fin("oak", dict(OAK, sign=MT("bread_sign")), *OAK_N),
+     fin("walnut", dict(WALNUT, sign=MT("bread_sign")), *WALNUT_N)],
+    ("Bread Rack", "Brotregal", "Estantería de pan", "Brödhylla"),
+    {"body": BREAD_RACK, "end": BREAD_RACK_END, "particle": "wood",
+     "tex": stock_tex("bread", "bakery"),
+     "java": RUN % ("%s", jbox(box_of(BREAD_RACK)), "bread_rack", "BlockRenderLayer.CUTOUT")},
+    "Bakery & Hot Food",
+    "Stepped shelves of bagged and crusty loaves under a BREAD sign; joins any bread rack")
+add("pastry_case", "run",
+    [fin("white", {"wood": T("white"), "wood_v": T("white"), "edge": T("white_edge")}, *WHITE_N),
+     fin("walnut", WALNUT, *WALNUT_N)],
+    ("Self-Serve Pastry Case", "Selbstbedienungs-Gebäckvitrine",
+     "Vitrina de bollería de autoservicio", "Självbetjäningsmonter för bakverk"),
+    {"body": PASTRY_BODY, "end": PASTRY_END, "particle": "wood",
+     "tex": stock_tex("pastry", "bakery_b"),
+     "java": RUN % ("%s", jbox(box_of(PASTRY_BODY)), "pastry_case",
+                    "BlockRenderLayer.TRANSLUCENT")},
+    "Bakery & Hot Food",
+    "Acrylic doors over muffins, cinnamon rolls, cookies, bagels and doughnuts; joins")
+add("hot_food_case", "run",
+    [fin("steel", {"shell": T("stainless"), "frame": T("stainless"), "liner": MT("liner"),
+                   "trim": T("stainless_dark"), "kick": MT("steel_grey"),
+                   "case": T("stainless_dark")}, *STEEL_N)],
+    ("Hot Food Case", "Warmhaltevitrine", "Vitrina caliente", "Varmhållningsmonter"),
+    {"body": HOT_FOOD, "end": HOT_FOOD_END, "glow": GLOW_HOT, "particle": "shell",
+     "tex": stock_tex("hot_food", "hot_food"),
+     "java": 'new BlockDisplayCase("%%s", new int[]{%s}, "hot_food_case")'
+             % jbox(box_of(HOT_FOOD))},
+    "Bakery & Hot Food",
+    "Heated glass case of rotisserie chickens and hot trays under amber lamps and a lit HOT FOOD "
+    "sign; joins; 27 slots; lit, switched like the deli case")
+add("rotisserie_oven", "appliance",
+    [fin("steel", {"shell": T("stainless"), "trim": T("stainless_dark"), "handle": T("chrome")},
+         *STEEL_N)],
+    ("Rotisserie Oven", "Hähnchengrill", "Asador de pollos", "Kycklinggrill"),
+    {"geo": ROTISSERIE, "particle": "shell",
+     "glow": (MT("rotisserie_window_off"), MT("rotisserie_window_on")),
+     "java": APPLIANCE % "ROTISSERIE"},
+    "Bakery & Hot Food",
+    "Roasts raw meat and fish, eight at a time; its window glows while it turns; rests on "
+    "counters")
+
+add("flower_stand", "single",
+    [fin("black", {"frame": T("metal_black")}, *BLACK_N), fin("oak", {"frame": T("oak")}, *OAK_N)],
+    ("Flower Bucket Stand", "Blumeneimer-Ständer", "Expositor de cubos de flores",
+     "Blomsterhinkställ"),
+    {"geo": FLOWER_STAND, "particle": "frame",
+     "java": FIX % ("%s", jbox(box_of(FLOWER_STAND)), "METAL")},
+    "Floral", "Three tiers of buckets of roses, tulips, sunflowers, daisies, carnations, lilies, "
+              "irises and wrapped bouquets")
+add("floral_cooler", "tall_run", cooler_fins({"glass": MT("glass_clear")}),
+    ("Floral Cooler", "Blumenkühlschrank", "Nevera de flores", "Blomkyl"),
+    {"body": reach_in_frame() + floral_interior(), "end": REACH_IN_END, "glow": GLOW_FLOWERS,
+     "particle": "shell",
+     "java": 'new BlockDisplayCooler("%%s", new int[]{%s})' % jbox(COOLER_BOX)},
+    "Floral", "2 blocks tall; a glass door over stepped buckets of flowers and bouquets under a "
+              "lit FRESH FLOWERS sign; joins; 27 slots; lit, switched like the cooler")
+
+add("coffee_bar", "run", DRINK_FINS,
+    ("Self-Serve Coffee Bar", "Selbstbedienungs-Kaffeebar", "Barra de café de autoservicio",
+     "Självbetjäningskaffebar"),
+    {"body": COFFEE_BAR, "end": DRINK_END, "particle": "wood",
+     "java": DRINK_RUN % ("%s", jbox(box_of(COFFEE_BAR)))},
+    "Coffee & Drinks",
+    "A counter with a condiment caddy under a COFFEE sign; joins the cup counter into one "
+    "station; 9 slots; brewers and fountains rest on it")
+add("cup_counter", "run", DRINK_FINS,
+    ("Cup and Lid Counter", "Becher- und Deckeltheke", "Mostrador de vasos y tapas",
+     "Mugg- och lockdisk"),
+    {"body": CUP_COUNTER, "end": DRINK_END, "particle": "wood",
+     "java": DRINK_RUN % ("%s", jbox(box_of(CUP_COUNTER)))},
+    "Coffee & Drinks",
+    "Cup dispensers in three sizes, a lid organiser, straws and a bin flap; joins the coffee bar; "
+    "9 slots")
+add("coffee_brewer", "appliance",
+    [fin("steel", {"shell": T("stainless"), "trim": T("stainless_dark")}, *STEEL_N),
+     fin("black", {"shell": T("appliance_black"), "trim": T("appliance_black_trim")}, *BLACK_N)],
+    ("Commercial Coffee Brewer", "Gewerbliche Kaffeemaschine", "Cafetera industrial",
+     "Storkaffebryggare"),
+    {"geo": BREWER, "particle": "shell", "glow": A.GLOW["green"],
+     "java": APPLIANCE % "COFFEE_BREWER"},
+    "Coffee & Drinks",
+    "Twin airpots; brews coffee from cocoa beans and water, 32 at a time; rests on counters")
+add("fountain_machine", "appliance",
+    [fin("red", {"shell": MT("plastic_red"), "trim": T("stainless_dark"),
+                 "art": MT("fountain_art_red")}, "Red", "Rot", "rojo", "röd"),
+     fin("blue", {"shell": MT("plastic_blue"), "trim": T("stainless_dark"),
+                  "art": MT("fountain_art_blue")}, "Blue", "Blau", "azul", "blå")],
+    ("Fountain Drink Machine", "Getränkespender", "Máquina de refrescos", "Läskautomat"),
+    {"geo": FOUNTAIN, "particle": "shell", "glow": A.GLOW["blue"],
+     "java": APPLIANCE % "FOUNTAIN"},
+    "Coffee & Drinks",
+    "Six invented drinks; pours a fountain drink from sugar and water; rests on counters")
+
 PIECE = {p[0]: p for p in PIECES}
 
 
@@ -2069,7 +2946,7 @@ def names_with(names, fnames):
 
 def java_for(piece, reg):
     _p, kind, _f, _n, spec, _g, _b = PIECE[piece]
-    if kind == "counter":
+    if kind in ("counter", "appliance"):
         return spec["java"] % (reg, jbox(box_of(spec["geo"])))
     return spec["java"] % reg
 
@@ -2081,6 +2958,8 @@ def entries():
         for fid, ftex, *fnames in finishes:
             reg = "%s_%s" % (piece, fid)
             tex = dict(spec.get("tex", {}))
+            if kind == "appliance":
+                tex["glow"] = spec["glow"][0]
             tex.update(ftex)
             out.append((reg, piece, kind, tex, names_with(names, fnames), java_for(piece, reg)))
     return out
@@ -2134,7 +3013,7 @@ def base_models():
             out.append(("%s_lower" % piece, geometry(lower, p)))
             out.append(("%s_upper" % piece, geometry(upper, p)))
             out.append(("%s_item" % piece, geometry(spec["geo"], p, display=big(spec["geo"]))))
-        elif kind == "counter":
+        elif kind in ("counter", "appliance"):
             geo = spec["geo"]
             for rest, drop in A.RESTS:
                 out.append(("%s_%s" % (piece, rest), geometry(geo, p, dy=drop)))
@@ -2230,7 +3109,34 @@ EXTRA_LANG = {
     "itemGroup.tabmarketstore": ("CSM: Market & Store", "CSM: Markt & Laden",
                                  "CSM: Mercado y tienda", "CSM: Marknad & butik"),
     "tile.vf915.name": ("Verifone MX915",) * 4,
+    "item.fountain_drink.name": ("Fountain Drink", "Softdrink vom Zapfhahn", "Refresco de grifo",
+                                 "Läsk från fontän"),
 }
+
+# The fountain drink the fountain drink machine pours: a paper cup, its lid and a straw, drawn
+# as the kitchen's drinks are (gen_furniture_appliances.py's sprite rows).
+ITEM_SUB = "market"
+SODA_ROWS = [
+    ".........ss.....",
+    "........ss......",
+    ".......ss.......",
+    "....OOOsOOOO....",
+    "...OwwwwwwwwO...",
+    "...OOOOOOOOOO...",
+    "....OrrrrrrO....",
+    "....OlrrrrrO....",
+    "....OwwwwwwO....",
+    "....OrwwwwrO....",
+    ".....OrrrrO.....",
+    ".....OlrrrO.....",
+    ".....OrrrrO.....",
+    ".....OrrrrO.....",
+    ".....OOOOOO.....",
+    "................",
+]
+SODA_PAL = {"O": (90, 24, 28), "w": (246, 246, 244), "r": (206, 40, 44), "l": (236, 96, 96),
+            "s": (240, 200, 60)}
+ITEM_TEXTURES = {"fountain_drink": lambda: A.sprite(SODA_ROWS, SODA_PAL)}
 
 
 def lang_entries():
@@ -2285,6 +3191,9 @@ def generate(assets):
         blk = "models/block/%s/%s_%%s.json" % (SUB, reg)
         item = "models/item/%s.json" % reg
         glow = spec.get("glow") or {}
+        if kind == "appliance":
+            off, on = glow
+            glow = {}
         if kind in ("tall_run", "run"):
             tall = kind == "tall_run"
             parts = (["body_lower", "body_upper", "left_lower", "left_upper", "right_lower",
@@ -2343,17 +3252,30 @@ def generate(assets):
                         v["y"] = r
                     variants["facing=%s,upper=%s" % (f, up)] = v
             state = {"variants": variants}
-        elif kind == "counter":
+        elif kind in ("counter", "appliance"):
             state = {"forge_marker": 1,
                      "defaults": {"model": BASE + "%s_floor" % piece, "textures": ftex},
                      "variants": {"facing": facing_variants(),
                                   "rest": {r: {"model": BASE + "%s_%s" % (piece, r)}
                                            for r, _d in A.RESTS},
                                   "inventory": [{"model": BASE + "%s_item" % piece}]}}
+            if kind == "appliance":
+                # RUNNING lights its window or lamp: the one texture swapped, as the kitchen's
+                state["variants"]["running"] = {"true": {"textures": {"glow": on}},
+                                                "false": {"textures": {"glow": off}}}
         else:
             raise ValueError(kind)
         dump("blockstates/%s.json" % reg, state)
     dump("blockstates/vf915.json", verifone_state())
+    for name, draw in ITEM_TEXTURES.items():
+        rel = "textures/items/%s/%s.png" % (ITEM_SUB, name)
+        path = os.path.join(assets, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        draw().save(path)
+        written.append(rel)
+        dump("models/item/%s.json" % name,
+             {"parent": "item/generated", "textures": {"layer0": "csm:items/%s/%s" % (ITEM_SUB,
+                                                                                    name)}})
     R.write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in R.LOCALES]
     R.separate_faces(assets, written)
@@ -2384,6 +3306,11 @@ def base_models_index(piece):
 # Technology) keep their classes and registry names
 # ------------------------------------------------------------------------------------------
 EVENT = "fmlPreInitializationEvent"
+
+
+class StoreDrink:
+    """The fountain drink's registry name (StoreAppliances.FOUNTAIN_DRINK in Java)."""
+    REGISTRY = "fountain_drink"
 MOVED_PRODUCE = ["BlockAppleCrate", "BlockBananaCrate", "BlockBeetCrate", "BlockCarrotBarrel",
                  "BlockCarrotCrate", "BlockCornCrate", "BlockGoldenApples",
                  "BlockGreenAppleCrate", "BlockLargeCrate", "BlockLettuceCrate",
@@ -2397,7 +3324,8 @@ MOVED_NAMES = {"BlockAppleCrate": "Apple Crate", "BlockBananaCrate": "Banana Cra
                "BlockOnionCrate": "Onion Crate", "BlockOrangeCrate": "Orange Crate",
                "BlockPearCrate": "Pear Crate", "BlockPotatoeCrate": "Potato Crate",
                "BlockTomatoeCrate": "Tomato Crate", "BlockVerifoneMx915": "Verifone MX915"}
-GROUP_ORDER = ["Refrigerated", "Shelving", "Produce", "Checkout", "Store"]
+GROUP_ORDER = ["Refrigerated", "Shelving", "Produce", "Butcher & Seafood", "Bakery & Hot Food",
+               "Floral", "Coffee & Drinks", "Checkout", "Store"]
 
 
 def fragments():
@@ -2424,6 +3352,11 @@ def fragments():
                 lines.append("    // %s" % names[0].split(" (")[0])
                 last = piece
             lines.append("    initTabBlock(%s);" % java)
+        if group == "Coffee & Drinks":
+            lines.append("")
+            lines.append("    // Fountain Drink (poured by the fountain drink machine)")
+            lines.append('    initTabItem(new ItemResidentialFood("%s", 2, 0.3F, true, null));'
+                         % StoreDrink.REGISTRY)
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 

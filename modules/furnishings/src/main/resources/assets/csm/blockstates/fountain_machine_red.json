@@ -1,0 +1,66 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/market/base/fountain_machine_floor",
+    "textures": {
+      "glow": "csm:blocks/furniture/residential/lamp_blue_off",
+      "shell": "csm:blocks/furniture/market/plastic_red",
+      "trim": "csm:blocks/furniture/residential/stainless_dark",
+      "art": "csm:blocks/furniture/market/fountain_art_red"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/market/base/fountain_machine_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/market/base/fountain_machine_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/market/base/fountain_machine_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/market/base/fountain_machine_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/market/base/fountain_machine_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/market/base/fountain_machine_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/market/base/fountain_machine_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/market/base/fountain_machine_item"
+      }
+    ],
+    "running": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/lamp_blue_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/residential/lamp_blue_off"
+        }
+      }
+    }
+  }
+}

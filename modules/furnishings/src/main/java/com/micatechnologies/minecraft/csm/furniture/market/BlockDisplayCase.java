@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.furniture.residential.ISwitchable;
 import com.micatechnologies.minecraft.csm.furniture.residential.LampSwitching;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -23,10 +24,13 @@ import net.minecraft.world.World;
 
 /**
  * A refrigerated display a block high: the island freezer, the ice cream dipping cabinet, the
- * deli and bakery service cases, drawn by {@code gen_furniture_market.py}. Cases of the same
- * block set side by side join into one long case, the end glass and panels only where it stops
- * (a {@link BlockResidentialStorage} run). Each block holds 27 slots behind the refrigerator's
- * door sounds; the stock seen through the glass is part of the model, not what it holds.
+ * deli, butcher, seafood and bakery service cases and the hot food case, drawn by
+ * {@code gen_furniture_market.py}. Cases of the same block set side by side join into one long
+ * case, the end glass and panels only where it stops (a {@link BlockResidentialStorage} run); a
+ * case given a <em>group</em> joins any case of that group instead, so the deli, butcher and
+ * seafood cases, which share one section, make one service counter whatever their order. Each
+ * block holds 27 slots behind the refrigerator's door sounds; the stock seen through the glass is
+ * part of the model, not what it holds.
  *
  * <p>Its lights are on when placed ({@link #LIT}), and it gives light while they are; a
  * sneak-free click on the case opens it, so the lights are switched by redstone
@@ -46,16 +50,49 @@ public class BlockDisplayCase extends BlockResidentialStorage implements ISwitch
   /** The light the case gives while lit. */
   public static final int LIGHT = 10;
 
+  /** The cases it joins, or null to join only itself. */
+  @Nullable
+  private final String group;
+
   /**
-   * Constructs a display case.
+   * Constructs a display case that joins only itself.
    *
    * @param registryName its registry name, ending in its finish
    * @param box          its box facing north, in sixteenths
    */
   public BlockDisplayCase(String registryName, int[] box) {
+    this(registryName, box, null);
+  }
+
+  /**
+   * Constructs a display case that joins any case of its group.
+   *
+   * @param registryName its registry name, ending in its finish
+   * @param box          its box facing north, in sixteenths
+   * @param group        the cases it joins (the same section, drawn to meet), or null for itself
+   */
+  public BlockDisplayCase(String registryName, int[] box, @Nullable String group) {
     super(registryName, box, 27, FurnishingsSounds.FRIDGE_OPEN, FurnishingsSounds.FRIDGE_CLOSE);
+    this.group = group;
     setDefaultState(getDefaultState().withProperty(LIT, true)
         .withProperty(LampSwitching.POWERED, false));
+  }
+
+  /**
+   * Whether {@code state} is a case this one joins, facing {@code facing}: itself, or any case of
+   * its group.
+   */
+  private boolean joins(IBlockState state, EnumFacing facing) {
+    Block other = state.getBlock();
+    boolean same = other == this || (group != null && other instanceof BlockDisplayCase
+        && group.equals(((BlockDisplayCase) other).group));
+    return same && state.getValue(FACING) == facing;
+  }
+
+  @Override
+  protected boolean continues(IBlockAccess world, BlockPos pos, EnumFacing facing,
+      EnumFacing side) {
+    return joins(world.getBlockState(pos.offset(side)), facing);
   }
 
   @Override
@@ -143,10 +180,7 @@ public class BlockDisplayCase extends BlockResidentialStorage implements ISwitch
    */
   private void setLineLit(World world, BlockPos pos, IBlockState state, boolean lit) {
     EnumFacing facing = state.getValue(FACING);
-    for (BlockPos p : DisplayLine.reach(pos, facing, q -> {
-      IBlockState s = world.getBlockState(q);
-      return s.getBlock() == this && s.getValue(FACING) == facing;
-    })) {
+    for (BlockPos p : DisplayLine.reach(pos, facing, q -> joins(world.getBlockState(q), facing))) {
       IBlockState s = p.equals(pos) ? state : world.getBlockState(p);
       if (s.getValue(LIT) != lit) {
         world.setBlockState(p, s.withProperty(LIT, lit), 3);

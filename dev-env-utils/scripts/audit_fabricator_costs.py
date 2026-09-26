@@ -823,6 +823,26 @@ def cost_for(registry, info, ancestors):
             return ("SHEET_METAL x3", "glass_pane x2", "CONTROL_BOARD")
         if registry.startswith(("ice_cream_case_", "deli_case_")):
             return ("SHEET_METAL x2", "glass_pane x3", "CONTROL_BOARD")
+        if registry.startswith(("butcher_case_", "seafood_case_")):
+            return ("SHEET_METAL x2", "glass_pane x3", "CONTROL_BOARD")
+        if registry.startswith("hot_food_case_"):
+            return ("SHEET_METAL x2", "glass_pane x2", "WIRING_HARNESS", "LED_MODULE")
+        if registry.startswith("floral_cooler_"):
+            return ("SHEET_METAL x3", "glass_pane x3", "CONTROL_BOARD", "LED_MODULE")
+        if registry.startswith("bread_rack_"):
+            return ("planks x3", "FASTENER_KIT")
+        if registry.startswith("pastry_case_"):
+            return ("planks x2", "glass_pane x2", "FASTENER_KIT")
+        if registry.startswith("rotisserie_oven_"):
+            return ("SHEET_METAL x2", "glass_pane", "WIRING_HARNESS")
+        if registry.startswith("flower_stand_"):
+            return ("iron_ingot x2", "red_flower x3")
+        if registry.startswith(("coffee_bar_", "cup_counter_")):
+            return ("planks x3", "FASTENER_KIT")
+        if registry.startswith("coffee_brewer_"):
+            return ("SHEET_METAL x2", "CONTROL_BOARD", "WIRING_HARNESS")
+        if registry.startswith("fountain_machine_"):
+            return ("SHEET_METAL x2", "CONTROL_BOARD", "LED_MODULE")
         if registry.startswith("bakery_case_"):
             return ("planks x2", "glass_pane x3", "LED_MODULE")
         if registry.startswith("gondola_shelf_"):

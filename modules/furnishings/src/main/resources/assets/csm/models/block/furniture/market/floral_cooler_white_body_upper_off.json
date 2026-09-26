@@ -1,0 +1,13 @@
+{
+  "parent": "csm:block/furniture/market/base/floral_cooler_body_upper",
+  "textures": {
+    "shell": "csm:blocks/furniture/market/case_white",
+    "frame": "csm:blocks/furniture/market/case_white",
+    "liner": "csm:blocks/furniture/market/liner",
+    "trim": "csm:blocks/furniture/residential/stainless_dark",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "glass": "csm:blocks/furniture/market/glass_clear",
+    "glow": "csm:blocks/furniture/residential/lens_off",
+    "header": "csm:blocks/furniture/market/header_flowers_off"
+  }
+}

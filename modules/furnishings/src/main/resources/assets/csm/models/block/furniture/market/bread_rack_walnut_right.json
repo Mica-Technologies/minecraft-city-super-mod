@@ -1,0 +1,13 @@
+{
+  "parent": "csm:block/furniture/market/base/bread_rack_right",
+  "textures": {
+    "stock_a": "csm:blocks/furniture/market/stock_bread",
+    "stock_a_top": "csm:blocks/furniture/market/stock_bread_top",
+    "stock_b": "csm:blocks/furniture/market/stock_bakery",
+    "stock_b_top": "csm:blocks/furniture/market/stock_bakery_top",
+    "wood": "csm:blocks/furniture/residential/walnut",
+    "wood_v": "csm:blocks/furniture/residential/walnut_v",
+    "edge": "csm:blocks/furniture/residential/walnut_edge",
+    "sign": "csm:blocks/furniture/market/bread_sign"
+  }
+}

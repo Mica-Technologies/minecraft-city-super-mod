@@ -1,0 +1,12 @@
+{
+  "parent": "csm:block/furniture/market/base/pastry_case_right",
+  "textures": {
+    "stock_a": "csm:blocks/furniture/market/stock_pastry",
+    "stock_a_top": "csm:blocks/furniture/market/stock_pastry_top",
+    "stock_b": "csm:blocks/furniture/market/stock_bakery_b",
+    "stock_b_top": "csm:blocks/furniture/market/stock_bakery_b_top",
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/residential/white",
+    "edge": "csm:blocks/furniture/residential/white_edge"
+  }
+}

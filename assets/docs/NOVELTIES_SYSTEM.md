@@ -626,6 +626,77 @@ gondolas steel, stands and counters timber (the belt with a wiring harness for i
 scanner with an optical sensor), terminals electronics, carts and racks iron; the moved crates
 and the Verifone cost what they did in their old tabs.
 
+### Fresh departments
+
+The butcher, fishmonger, bakery, florist and coffee station, drawn by the same generator on the
+same classes, so a store's fresh side is built from pieces that already behave like the rest of
+the tab.
+
+- **Butcher and seafood cases** (`butcher_case_*`, `seafood_case_*`, white and black) are the
+  deli case's section, the same base, curved glass and canopy (`SERVICE_SEGS`), with different
+  things on show: trays of steaks, chops, mince, chicken, sausages, ribs, lamb and a roast split
+  by the green plastic parsley butchers lay between trays (`meat_trays`, one 32 px sheet of eight
+  trays), or an ice bed tilted 22.5 degrees towards the shopper with fish, fillets, shrimp, crab
+  and mussels on it (`seafood_ice`). Because the section is the same, `BlockDisplayCase` takes a
+  group (`"service_case"`): the deli, butcher and seafood cases join one another in any order and
+  one light switch works across them. The deli joined only itself before and now joins the
+  group. Each block carries a scale on its top, its display read from both sides.
+- **Bakery.** The bread rack (`BlockMarketRun`, group `bread_rack`, oak and walnut) is three
+  shelves stepping back with a lip each, bagged sliced bread and crusty loaves (the `bread`
+  stock) on the outer two and the bakery case's stock on the middle, under a BREAD sign. The
+  self-serve pastry case (translucent, group `pastry_case`) has two tiers of muffins, cinnamon
+  rolls, cookies, bagels (`pastry`) and doughnuts behind acrylic doors. The hot food case is a
+  `BlockDisplayCase` of its own group on the bakery case's straight glass: rotisserie chickens
+  in clear clamshells (translucent texels) and foil trays of hot food (`hot_food`) under amber
+  heat lamps and a lit HOT FOOD header, switched as the other displays are.
+- **The rotisserie oven, the commercial coffee brewer and the fountain drink machine** are
+  `BlockCounterAppliance`s on the kitchen's machine framework with specs in `StoreAppliances`.
+  The rotisserie roasts raw meat and fish from the air fryer's recipe book, eight at a time and
+  half as slow again; the brewer uses the coffee machine's book but takes 32 and its tank lasts
+  sixteen cups; the fountain pours a `fountain_drink` (an `ItemResidentialFood` drink, its own
+  16 px sprite in `items/market/`, registered in this tab) from sugar and water. The brewer and
+  the fountain are plumbed beside a sink like the kitchen's machines. `RUNNING` retextures their
+  `glow` (the rotisserie's window, the brewer's lamp, the fountain's LED strip), which is the
+  kitchen appliances' pattern.
+- **Floral.** The flower bucket stand (`BlockBathroomFixture`, cutout, black metal or oak) holds
+  three tiers of galvanised buckets; the floral cooler is a `BlockDisplayCooler`, the reach-in's
+  frame (`reach_in_frame()`) over three shelves of buckets, a front row and a back row raised on
+  a step, under a lit FRESH FLOWERS header. Each bunch is a crossed pair of planes at 45
+  degrees showing a quadrant of `flowers_a` or `flowers_b` (roses, tulips, sunflowers, daisies,
+  carnations, lilies, irises, a bouquet wrapped in kraft paper); buckets are octagons.
+- **Coffee station.** The self-serve coffee bar (a condiment caddy and a COFFEE sign on its back
+  panel) and the cup and lid counter (cups in three sizes, a lid organiser, straws, a bin flap)
+  are one group, `drink_station`, so they join into one station with end panels only at its
+  ends; both hold nine slots behind their doors. `SurfaceRest` puts the coffee bar at a
+  countertop's height, so the brewer, the fountain and the rotisserie stand on it; the cup
+  counter's top is full and is not stood on.
+
+The traps:
+
+- **A shared section is a contract.** The deli, butcher and seafood cases meet because their
+  bases, glass and canopies are drawn from the same numbers; change one case's section and the
+  group still joins it, with a step where they meet. Change `SERVICE_SEGS` for all three or give
+  the odd one a group of its own.
+- **Nothing a counter piece carries may reach past z 12.5.** The coffee bar's caddy and back
+  panel start there, and a piece resting on it is drawn in the block above; the rotisserie was
+  first drawn to z 14 and sat in the caddy.
+- **Keep a two-block model's rounds off the half line.** `split_tall` cuts an element at y 16 but
+  hands a turned element whole to the half its middle is in, so an octagon (two of its four
+  rectangles are turned) straddling the line splits into a sliver above and whole rectangles
+  below. The floral cooler's back row stands on a 1.75 px step, not 2, so its buckets on the
+  middle shelf end at y 15.75.
+- **Stock must fit under the shelf above it.** The bread rack's lower shelves have 4.25 px under
+  the next shelf's back, so the `bread` sheet's tallest column is 4 px.
+- **The rotisserie's glass is painted.** A counter appliance draws in the solid layer, so its
+  door cannot be seen through; the spits of chickens are in the window texture, lit and unlit,
+  as the oven's window is.
+- **The ice bed's sides are open.** It is a turned slab; at a run's end the wedge under it shows
+  through the end glass. The end glass is close to it and the ice is pale, so it was left.
+- **Atlas.** The departments added 27 sprites, 16 to 32 px except the two headers (64 px, lit
+  and unlit: a sprite must be square and FRESH FLOWERS is 52 texels wide in the pixel font),
+  and reuse the bakery stock, the reach-in's frame textures, the kitchen's lamps and the
+  residential woods; the block atlas went from 95.1% to 95.2% of 8192 x 4096.
+
 ## Sound Assets
 
 All custom sounds are declared in `FurnishingsSounds.java` (handed to Core's registrar by `CsmFurnishings.preInit`) and defined in `sounds.json`. Every

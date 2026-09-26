@@ -23,7 +23,7 @@ public enum SurfaceRest implements IStringSerializable {
   /**
    * A kitchen countertop, an island, the range, the dishwasher, the chest freezer's lid, a
    * bathroom vanity, the washing machine and dryer, the ironing board, a checkout's belt and
-   * scanner counters.
+   * scanner counters, a store's self-serve coffee bar.
    */
   COUNTER(1.5),
   /** A sideboard, a dresser. */
@@ -82,12 +82,13 @@ public enum SurfaceRest implements IStringSerializable {
     }
     if (block instanceof BlockMarketRun) {
       // The checkout lane: the belt and scanner counters are a countertop's height, the bagging
-      // end a table's. Other store fixtures are not stood on.
+      // end a table's; so is the coffee bar, where the brewer and the fountain stand. Other
+      // store fixtures are not stood on.
       String name = ((BlockMarketRun) block).getBlockRegistryName();
       if (name.startsWith("checkout_bagging_")) {
         return TABLE;
       }
-      return name.startsWith("checkout_") ? COUNTER : FLOOR;
+      return name.startsWith("checkout_") || name.startsWith("coffee_bar_") ? COUNTER : FLOOR;
     }
     if (block instanceof BlockBuiltInAppliance) {
       BlockBuiltInAppliance appliance = (BlockBuiltInAppliance) block;

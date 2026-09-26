@@ -1,0 +1,66 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/market/base/rotisserie_oven_floor",
+    "textures": {
+      "glow": "csm:blocks/furniture/market/rotisserie_window_off",
+      "shell": "csm:blocks/furniture/residential/stainless",
+      "trim": "csm:blocks/furniture/residential/stainless_dark",
+      "handle": "csm:blocks/furniture/residential/chrome"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/market/base/rotisserie_oven_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/market/base/rotisserie_oven_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/market/base/rotisserie_oven_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/market/base/rotisserie_oven_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/market/base/rotisserie_oven_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/market/base/rotisserie_oven_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/market/base/rotisserie_oven_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/market/base/rotisserie_oven_item"
+      }
+    ],
+    "running": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/market/rotisserie_window_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/market/rotisserie_window_off"
+        }
+      }
+    }
+  }
+}

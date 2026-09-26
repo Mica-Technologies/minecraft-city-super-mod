@@ -1,0 +1,11 @@
+{
+  "parent": "csm:block/furniture/market/base/coffee_bar_item",
+  "textures": {
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "wood_v": "csm:blocks/furniture/office/laminate_grey",
+    "edge": "csm:blocks/furniture/office/laminate_grey_edge",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "counter": "csm:blocks/furniture/residential/counter_quartz",
+    "sign": "csm:blocks/furniture/market/coffee_sign"
+  }
+}

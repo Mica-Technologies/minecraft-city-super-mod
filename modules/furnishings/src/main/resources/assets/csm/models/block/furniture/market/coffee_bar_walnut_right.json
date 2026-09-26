@@ -1,0 +1,11 @@
+{
+  "parent": "csm:block/furniture/market/base/coffee_bar_right",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/walnut",
+    "wood_v": "csm:blocks/furniture/residential/walnut_v",
+    "edge": "csm:blocks/furniture/residential/walnut_edge",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "counter": "csm:blocks/furniture/residential/counter_granite",
+    "sign": "csm:blocks/furniture/market/coffee_sign"
+  }
+}

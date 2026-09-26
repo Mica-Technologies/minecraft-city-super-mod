@@ -15,7 +15,11 @@ import net.minecraft.block.Block;
  * steel and glass with their controls and lights; gondola shelving is steel; the produce stand,
  * bulk bins and counters are timber, the checkout's belt with its motor and its scanner with an
  * optical sensor; the terminals and registers are electronics (the old register is brass); carts,
- * the corral and racks are steel wire; the aisle sign is a sign blank.
+ * the corral and racks are steel wire; the aisle sign is a sign blank. The fresh departments
+ * follow the same lines: the butcher, seafood and hot food cases and the floral cooler as the
+ * displays, the bread rack, pastry case and coffee station counters as timber, the brewer,
+ * fountain and rotisserie as sheet steel with their controls, and the flower stand as iron and
+ * the flowers in it.
  *
  * <p>The blocks that moved in keep what they cost before: the produce crates as the Furniture
  * tab's woodwork, the Verifone as the Technology tab's electronics. Priced by registry name,
@@ -35,6 +39,7 @@ public final class MarketFabricatorRules {
   private static final String MC_PAPER = "minecraft:paper";
   private static final String MC_GOLD_NUGGET = "minecraft:gold_nugget";
   private static final String MC_DYE = "minecraft:dye";
+  private static final String MC_FLOWER = "minecraft:red_flower";
 
   /** The produce crates that moved in from the Furniture tab. */
   private static final Set<String> MOVED_CRATES = new HashSet<>(Arrays.asList(
@@ -86,6 +91,55 @@ public final class MarketFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
           FabricatorIngredient.any(MC_GLASS_PANE, 3),
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+    }
+    if (registryName.startsWith("butcher_case_") || registryName.startsWith("seafood_case_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.any(MC_GLASS_PANE, 3),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+    }
+    if (registryName.startsWith("hot_food_case_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.any(MC_GLASS_PANE, 2),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
+    if (registryName.startsWith("floral_cooler_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+          FabricatorIngredient.any(MC_GLASS_PANE, 3),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
+    if (registryName.startsWith("bread_rack_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("pastry_case_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.any(MC_GLASS_PANE, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("rotisserie_oven_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.any(MC_GLASS_PANE, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("flower_stand_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 2),
+          FabricatorIngredient.any(MC_FLOWER, 3));
+    }
+    if (registryName.startsWith("coffee_bar_") || registryName.startsWith("cup_counter_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("coffee_brewer_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("fountain_machine_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
     }
     if (registryName.startsWith("bakery_case_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),

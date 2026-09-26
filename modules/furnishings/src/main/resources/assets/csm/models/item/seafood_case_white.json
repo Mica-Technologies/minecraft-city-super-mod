@@ -1,0 +1,11 @@
+{
+  "parent": "csm:block/furniture/market/base/seafood_case_item",
+  "textures": {
+    "shell": "csm:blocks/furniture/market/case_white",
+    "frame": "csm:blocks/furniture/market/case_white",
+    "liner": "csm:blocks/furniture/market/liner",
+    "trim": "csm:blocks/furniture/residential/stainless_dark",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "glow": "csm:blocks/furniture/residential/lens_on"
+  }
+}

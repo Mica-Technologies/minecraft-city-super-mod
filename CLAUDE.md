@@ -759,6 +759,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   its `.mcmeta`), registers, printer, card terminal, self-checkout, the customer service desk
   (the office's reception desk parts in store colours plus a sign), candy rack; carts, the cart
   corral, basket stacks, security gates, the numbered aisle sign, magazine rack, bottle return;
+  the fresh departments: butcher and seafood cases on the deli case's section (so the three
+  join as one counter, a scale on each), bread racks, the self-serve pastry case, the hot food
+  case and the rotisserie oven, the flower bucket stand and floral cooler (bunches as crossed
+  planes in octagon buckets), and the coffee station (coffee bar and cup counter that join, the
+  brewer and fountain drink machine on the appliance framework, the fountain drink's sprite);
   and the moved Verifone's blockstate with its model dropped onto each counter height;
   `--check`, `--fragments` (the whole tab body, moved crates included).
   `gen_furniture_sounds.py` synthesises the card terminal beep, the scanner beep and the cash

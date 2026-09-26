@@ -25,10 +25,13 @@ import com.micatechnologies.minecraft.csm.furniture.market.BlockGondola;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockMarketRun;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockMarketTall;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockVerifoneMx915;
+import com.micatechnologies.minecraft.csm.furniture.market.StoreAppliances;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBathroomFixture;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterAppliance;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterPiece;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCabinet;
 import com.micatechnologies.minecraft.csm.furniture.residential.FixtureMaterial;
+import com.micatechnologies.minecraft.csm.furniture.residential.ItemResidentialFood;
 import com.micatechnologies.minecraft.csm.furniture.residential.KitchenFront;
 import com.micatechnologies.minecraft.csm.furniture.residential.KitchenLine;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
@@ -42,11 +45,14 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * The tab for grocery stores and shops: refrigerated displays that look stocked (glass-door
  * reach-in coolers and freezers, the open dairy case, the island freezer, the ice cream, deli
  * and bakery cases), gondola shelving stocked six ways, the produce crates, stands, scale and
- * bulk bins, the checkout (belt, scanner and bagging counters that join into a lane, registers,
- * the receipt printer, card terminals including the Verifone MX915, the self-checkout, the
- * customer service desk, the candy rack) and the shop floor's fixtures: carts and the cart
- * corral, basket stacks, security gates, aisle signs, a magazine rack and a bottle return
- * machine.
+ * bulk bins, the fresh departments (butcher and seafood cases that join the deli case into one
+ * counter, bread racks, a self-serve pastry case, the hot food case and a rotisserie oven, a
+ * flower bucket stand and a floral cooler, and a coffee station: the coffee bar and cup counter,
+ * a commercial brewer and a fountain drink machine, with the fountain drink it pours), the
+ * checkout (belt, scanner and bagging counters that join into a lane, registers, the receipt
+ * printer, card terminals including the Verifone MX915, the self-checkout, the customer service
+ * desk, the candy rack) and the shop floor's fixtures: carts and the cart corral, basket stacks,
+ * security gates, aisle signs, a magazine rack and a bottle return machine.
  *
  * <p>The produce crates came here from the Furniture tab and the Verifone from the Technology
  * module, their classes and registry names unchanged, so placed ones load as they were. The
@@ -100,7 +106,7 @@ public class CsmTabMarketStore extends CsmTab {
     initTabBlock(new BlockDisplayCase("ice_cream_case_white", new int[]{0, 0, 2, 16, 19, 16}));
 
     // Deli Service Case
-    initTabBlock(new BlockDisplayCase("deli_case_black", new int[]{0, 0, 2, 16, 19, 16}));
+    initTabBlock(new BlockDisplayCase("deli_case_black", new int[]{0, 0, 2, 16, 19, 16}, "service_case"));
 
     // Bakery Display Case
     initTabBlock(new BlockDisplayCase("bakery_case_oak", new int[]{0, 0, 2, 16, 19, 16}));
@@ -147,6 +153,59 @@ public class CsmTabMarketStore extends CsmTab {
     // Bulk Bins
     initTabBlock(new BlockMarketRun("bulk_bins_nuts", new int[]{0, 0, 6, 16, 16, 16}, "bulk_bins", BlockRenderLayer.TRANSLUCENT));
     initTabBlock(new BlockMarketRun("bulk_bins_candy", new int[]{0, 0, 6, 16, 16, 16}, "bulk_bins", BlockRenderLayer.TRANSLUCENT));
+
+    // ---- Butcher & Seafood ----
+    // Butcher Case
+    initTabBlock(new BlockDisplayCase("butcher_case_white", new int[]{0, 0, 2, 16, 24, 16}, "service_case"));
+    initTabBlock(new BlockDisplayCase("butcher_case_black", new int[]{0, 0, 2, 16, 24, 16}, "service_case"));
+
+    // Seafood Case
+    initTabBlock(new BlockDisplayCase("seafood_case_white", new int[]{0, 0, 2, 16, 24, 16}, "service_case"));
+    initTabBlock(new BlockDisplayCase("seafood_case_black", new int[]{0, 0, 2, 16, 24, 16}, "service_case"));
+
+    // ---- Bakery & Hot Food ----
+    // Bread Rack
+    initTabBlock(new BlockMarketRun("bread_rack_oak", new int[]{0, 0, 2, 16, 20, 16}, "bread_rack", BlockRenderLayer.CUTOUT));
+    initTabBlock(new BlockMarketRun("bread_rack_walnut", new int[]{0, 0, 2, 16, 20, 16}, "bread_rack", BlockRenderLayer.CUTOUT));
+
+    // Self-Serve Pastry Case
+    initTabBlock(new BlockMarketRun("pastry_case_white", new int[]{0, 0, 2, 16, 17, 14}, "pastry_case", BlockRenderLayer.TRANSLUCENT));
+    initTabBlock(new BlockMarketRun("pastry_case_walnut", new int[]{0, 0, 2, 16, 17, 14}, "pastry_case", BlockRenderLayer.TRANSLUCENT));
+
+    // Hot Food Case
+    initTabBlock(new BlockDisplayCase("hot_food_case_steel", new int[]{0, 0, 2, 16, 23, 15}, "hot_food_case"));
+
+    // Rotisserie Oven
+    initTabBlock(new BlockCounterAppliance("rotisserie_oven_steel", new int[]{1, 0, 2, 15, 13, 13}, StoreAppliances.ROTISSERIE));
+
+    // ---- Floral ----
+    // Flower Bucket Stand
+    initTabBlock(new BlockBathroomFixture("flower_stand_black", new int[]{0, 0, 1, 16, 16, 15}, FixtureMaterial.METAL));
+    initTabBlock(new BlockBathroomFixture("flower_stand_oak", new int[]{0, 0, 1, 16, 16, 15}, FixtureMaterial.METAL));
+
+    // Floral Cooler
+    initTabBlock(new BlockDisplayCooler("floral_cooler_black", new int[]{0, 0, 2, 16, 32, 16}));
+    initTabBlock(new BlockDisplayCooler("floral_cooler_white", new int[]{0, 0, 2, 16, 32, 16}));
+
+    // ---- Coffee & Drinks ----
+    // Self-Serve Coffee Bar
+    initTabBlock(new BlockMarketRun("coffee_bar_grey", new int[]{0, 0, 1, 16, 20, 16}, "drink_station", 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE, null, 1.0F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockMarketRun("coffee_bar_walnut", new int[]{0, 0, 1, 16, 20, 16}, "drink_station", 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE, null, 1.0F, BlockRenderLayer.SOLID));
+
+    // Cup and Lid Counter
+    initTabBlock(new BlockMarketRun("cup_counter_grey", new int[]{0, 0, 1, 16, 20, 16}, "drink_station", 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE, null, 1.0F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockMarketRun("cup_counter_walnut", new int[]{0, 0, 1, 16, 20, 16}, "drink_station", 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE, null, 1.0F, BlockRenderLayer.SOLID));
+
+    // Commercial Coffee Brewer
+    initTabBlock(new BlockCounterAppliance("coffee_brewer_steel", new int[]{2, 0, 3, 14, 13, 13}, StoreAppliances.COFFEE_BREWER));
+    initTabBlock(new BlockCounterAppliance("coffee_brewer_black", new int[]{2, 0, 3, 14, 13, 13}, StoreAppliances.COFFEE_BREWER));
+
+    // Fountain Drink Machine
+    initTabBlock(new BlockCounterAppliance("fountain_machine_red", new int[]{1, 0, 2, 15, 13, 13}, StoreAppliances.FOUNTAIN));
+    initTabBlock(new BlockCounterAppliance("fountain_machine_blue", new int[]{1, 0, 2, 15, 13, 13}, StoreAppliances.FOUNTAIN));
+
+    // Fountain Drink (poured by the fountain drink machine)
+    initTabItem(new ItemResidentialFood("fountain_drink", 2, 0.3F, true, null));
 
     // ---- Checkout ----
     // Verifone MX915 (moved from the Technology tab)

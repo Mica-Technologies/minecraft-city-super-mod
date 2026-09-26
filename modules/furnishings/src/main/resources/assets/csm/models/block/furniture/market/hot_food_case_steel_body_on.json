@@ -1,0 +1,17 @@
+{
+  "parent": "csm:block/furniture/market/base/hot_food_case_body",
+  "textures": {
+    "stock_a": "csm:blocks/furniture/market/stock_hot_food",
+    "stock_a_top": "csm:blocks/furniture/market/stock_hot_food_top",
+    "stock_b": "csm:blocks/furniture/market/stock_hot_food",
+    "stock_b_top": "csm:blocks/furniture/market/stock_hot_food_top",
+    "shell": "csm:blocks/furniture/residential/stainless",
+    "frame": "csm:blocks/furniture/residential/stainless",
+    "liner": "csm:blocks/furniture/market/liner",
+    "trim": "csm:blocks/furniture/residential/stainless_dark",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "case": "csm:blocks/furniture/residential/stainless_dark",
+    "glow": "csm:blocks/furniture/market/heat_lamp_on",
+    "header": "csm:blocks/furniture/market/header_hot_on"
+  }
+}
