@@ -396,6 +396,10 @@ public class BlockCustomDoor extends BlockBuildingDoor {
       }
     }
     boolean open = door.getValue(OPEN);
+    if (!open && anyone && !allowed && !DoorLocks.holds(world, lowerPos)) {
+      // Kept out only by a lock whose keypad has gone, which holds() has just cleared.
+      allowed = true;
+    }
     if (open ? anyone : allowed) {
       data.setLastSeen(now);
       boolean redstoneLocked = s.redstone() == Redstone.REDSTONE_LOCK && powered;

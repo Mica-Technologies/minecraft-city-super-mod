@@ -732,8 +732,9 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       return false;
     }
     if (!worldIn.isRemote) {
-      if (!door.getValue(OPEN) && DoorLocks.get(worldIn).isLocked(lowerPos)
-          && !inside(playerIn, lowerPos, door.getValue(FACING))) {
+      // The lock is looked at last, and only here, since it may find its keypad gone and clear.
+      if (!door.getValue(OPEN) && !inside(playerIn, lowerPos, door.getValue(FACING))
+          && DoorLocks.holds(worldIn, lowerPos)) {
         playerIn.sendStatusMessage(new TextComponentTranslation("gui.csm.door.locked"), true);
         worldIn.playSound(null, lowerPos, SoundEvents.BLOCK_IRON_TRAPDOOR_CLOSE,
             SoundCategory.BLOCKS, 0.4F, 1.6F);

@@ -44,6 +44,15 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 - **Door Keypad**: linked to a door (sneak-click the keypad, then the door, both with an empty
   hand) it locks the door. From outside it then opens only with the keypad's code; from inside --
   the side the door faces -- it opens as ever. The button and control station link to doors too.
+  Breaking the keypad unlocks the door. **A lock heals itself if its keypad is gone some other way**
+  (a command, an editor, or a keypad broken before 2026-09-26, when breaking one did not unlock its
+  door): the lock names its keypad in `DoorLocks`, and when it is about to stop someone -- a click
+  from outside, or someone outside in a sensor door's zone -- the keypad's position is looked at;
+  no keypad linked to the door there, and the lock is cleared and the door opens. Only then, never
+  on a tick, and never loading a chunk: with the keypad's chunk unloaded the lock stands. A lock
+  saved before locks named their keypad is named by its keypad when that loads; one still nameless
+  is cleared once the chunks round the door are loaded, since a keypad is put up beside its door
+  (one linked from further away, in a chunk not loaded since, is the case this gets wrong).
 - **Animation** is a client option, `animateDoors` in the CSM configuration, default on. It changes
   only how a door is drawn, so each player's own setting applies and need not match the server's.
 

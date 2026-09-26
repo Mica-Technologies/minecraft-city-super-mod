@@ -55,9 +55,27 @@ public class TileEntityGarageDoorControl extends AbstractTileEntity {
     }
     this.target = target.toImmutable();
     if (keypad && world.getBlockState(this.target).getBlock() instanceof BlockBuildingDoor) {
-      DoorLocks.get(world).lock(this.target);
+      DoorLocks.get(world).lock(this.target, pos);
     }
     markDirtySync(world, pos, true);
+  }
+
+  /** The door, garage door or opener this control is linked to, or null. */
+  @Nullable
+  BlockPos target() {
+    return target;
+  }
+
+  /**
+   * A keypad that loads names itself on its door's lock if the lock was saved before locks named
+   * their keypad, so {@link DoorLocks#holds} can later tell whether it is still there. Its own
+   * block is in a chunk being loaded; the door's is not looked at.
+   */
+  @Override
+  public void onLoad() {
+    if (world != null && !world.isRemote && target != null && isKeypad()) {
+      DoorLocks.get(world).adopt(target, pos);
+    }
   }
 
   private boolean isKeypad() {
