@@ -10,18 +10,22 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.model.SimpleBakedModel;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.obj.OBJModel;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -60,6 +64,13 @@ import org.apache.commons.lang3.tuple.Pair;
  * needs changed vertices builds a new quad. Code that compares quads by identity (the ceiling
  * fan's blades are the quads its running model does not have) keeps working, since two quads
  * that are now one instance were equal in every field before.</p>
+ *
+ * <p>The same pass points every <em>empty</em> quad list and item override list at one shared
+ * empty list. A {@link SimpleBakedModel} has seven quad lists (one per face and the general one)
+ * and most are empty, and every baked model has an override list that almost never has an
+ * override, each its own {@code ArrayList}: 1.2 million empty lists, about 27 MB. <b>So never
+ * add to a list a baked model hands out</b>, which was already wrong, since the list is the
+ * model's own.</p>
  *
  * <p>The dedup maps live only for the pass. A resource reload bakes new models and posts the
  * event again, so the pass reruns on them.</p>
@@ -101,7 +112,15 @@ public final class CsmQuadSharing {
     }
   };
 
+  /** The one empty list every empty quad list and override list is pointed at. */
+  private static final List<Object> EMPTY = Collections.emptyList();
+
   private final Map<Class<?>, List<Field>> fieldCache = new HashMap<>();
+  private final Map<Class<?>, Boolean> modelHelpers = new HashMap<>();
+  private Field generalQuadsField;
+  private Field faceQuadsField;
+  private Field overridesField;
+  private long emptied;
   private Object2ObjectOpenCustomHashMap<BakedQuad, BakedQuad> canonical;
   private ReferenceOpenHashSet<Object> visited;
   private long seen;
@@ -121,7 +140,14 @@ public final class CsmQuadSharing {
     seen = 0;
     replaced = 0;
     skippedModels = 0;
+    emptied = 0;
     try {
+      generalQuadsField = ObfuscationReflectionHelper.findField(SimpleBakedModel.class,
+          "field_177563_a");
+      faceQuadsField = ObfuscationReflectionHelper.findField(SimpleBakedModel.class,
+          "field_177561_b");
+      overridesField = ObfuscationReflectionHelper.findField(ItemOverrideList.class,
+          "field_188023_b");
       IRegistry<ModelResourceLocation, IBakedModel> registry = event.getModelRegistry();
       for (ModelResourceLocation key : registry.getKeys()) {
         if (CsmConstants.MOD_NAMESPACE.equals(key.getNamespace())) {
@@ -130,8 +156,8 @@ public final class CsmQuadSharing {
       }
       Csm.getLogger().info(
           "Shared identical baked quads: {} quads in {} models, {} replaced by an equal quad, "
-              + "{} distinct kept ({} model classes skipped), {} ms",
-          seen, visited.size(), replaced, canonical.size(), skippedModels,
+              + "{} distinct kept ({} model classes skipped); {} empty lists shared, {} ms",
+          seen, visited.size(), replaced, canonical.size(), skippedModels, emptied,
           (System.nanoTime() - start) / 1_000_000L);
     } catch (Throwable t) {
       // Sharing is only a saving; a model class this does not understand must never stop the
@@ -141,6 +167,7 @@ public final class CsmQuadSharing {
       canonical = null;
       visited = null;
       fieldCache.clear();
+      modelHelpers.clear();
     }
   }
 
@@ -181,6 +208,8 @@ public final class CsmQuadSharing {
     }
     if (value instanceof IBakedModel) {
       visit(value, depth);
+    } else if (value instanceof ItemOverrideList) {
+      shareOverrides((ItemOverrideList) value);
     } else if (value instanceof Map) {
       for (Object v : ((Map<?, ?>) value).values()) {
         visitValue(v, depth + 1);
@@ -195,25 +224,73 @@ public final class CsmQuadSharing {
     } else if (value instanceof Pair) {
       visitValue(((Pair<?, ?>) value).getLeft(), depth + 1);
       visitValue(((Pair<?, ?>) value).getRight(), depth + 1);
-    } else {
+    } else if (isModelHelper(value.getClass())) {
       // WeightedBakedModel's entries: a helper class that belongs to a model class.
-      Class<?> enclosing = value.getClass().getEnclosingClass();
-      if (enclosing != null && IBakedModel.class.isAssignableFrom(enclosing)) {
-        for (Field f : fieldsOf(value.getClass())) {
-          try {
-            visitValue(f.get(value), depth + 1);
-          } catch (Throwable ignored) {
-            // Unreadable field: nothing to share there.
-          }
+      for (Field f : fieldsOf(value.getClass())) {
+        try {
+          visitValue(f.get(value), depth + 1);
+        } catch (Throwable ignored) {
+          // Unreadable field: nothing to share there.
         }
       }
     }
+  }
+
+  /**
+   * Whether a class is a helper nested in a model class. Decided once per class, since
+   * {@code getEnclosingClass()} is slow and the walk asks it of millions of values.
+   */
+  private boolean isModelHelper(Class<?> type) {
+    Boolean known = modelHelpers.get(type);
+    if (known == null) {
+      Class<?> enclosing = type.getEnclosingClass();
+      known = enclosing != null && IBakedModel.class.isAssignableFrom(enclosing);
+      modelHelpers.put(type, known);
+    }
+    return known;
   }
 
   private void share(SimpleBakedModel model) {
     share(model.getQuads(null, null, 0L));
     for (EnumFacing side : EnumFacing.values()) {
       share(model.getQuads(null, side, 0L));
+    }
+    try {
+      List<?> general = (List<?>) generalQuadsField.get(model);
+      if (general != null && general != EMPTY && general.isEmpty()) {
+        generalQuadsField.set(model, EMPTY);
+        emptied++;
+      }
+      @SuppressWarnings("unchecked")
+      Map<EnumFacing, List<BakedQuad>> faces =
+          (Map<EnumFacing, List<BakedQuad>>) faceQuadsField.get(model);
+      if (faces instanceof EnumMap) {
+        for (Map.Entry<EnumFacing, List<BakedQuad>> e : faces.entrySet()) {
+          List<BakedQuad> list = e.getValue();
+          if (list != null && list != (Object) EMPTY && list.isEmpty()) {
+            e.setValue(Collections.emptyList());
+            emptied++;
+          }
+        }
+      }
+    } catch (IllegalAccessException | RuntimeException ignored) {
+      // A model built some other way keeps its own lists.
+    }
+    shareOverrides(model.getOverrides());
+  }
+
+  private void shareOverrides(ItemOverrideList overrides) {
+    if (overrides == null) {
+      return;
+    }
+    try {
+      List<?> list = (List<?>) overridesField.get(overrides);
+      if (list != null && list != EMPTY && list.isEmpty()) {
+        overridesField.set(overrides, EMPTY);
+        emptied++;
+      }
+    } catch (IllegalAccessException | RuntimeException ignored) {
+      // Kept as it is.
     }
   }
 
