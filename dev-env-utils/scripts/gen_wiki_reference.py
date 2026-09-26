@@ -138,8 +138,9 @@ TABS = {
                             "into runs and L-shapes, cubicle panels, office seating, boards, "
                             "lockers, the things on a desk and a copier that copies books."),
     "tabresidential": ("residential", "Residential",
-                       "The furniture of homes: dining and living room tables, chairs, "
-                       "bookcases, storage and sofas that join into runs."),
+                       "The furniture of homes: dining and living room furniture and sofas "
+                       "that join into runs, kitchens with working appliances, beds you can "
+                       "sleep in, bathrooms and laundry, living room extras, and the backyard."),
     "tabpowergrid": ("power-grid", "Power Grid",
                      "Utility poles, transformers and the Forge Energy that runs through them."),
     "tabroadsigns": ("road-signs", "Road Signs",
@@ -149,7 +150,8 @@ TABS = {
     "tabstreetscape": ("streetscape", "Streetscape",
                        "Street fixtures between the curb and the building line: fire "
                        "hydrants, bollards, delineators, manhole covers, utility lids, drainage "
-                       "grates, pad-mount transformers, utility pedestals and parking meters."),
+                       "grates, pad-mount transformers, utility pedestals, news racks, "
+                       "mailboxes and parking meters."),
     "tabstructureframing": ("structure-framing", "Structure & Framing",
                             "Steel and wood stud walls, the structure that spans between "
                             "them, and structural steel."),
@@ -158,8 +160,9 @@ TABS = {
     "tabtransit": ("transit", "Transit",
                    "Public transit: bus stop flags, timetable and map cases and the arrival "
                    "display (road signs, stood on the Road Signs tab's sign posts), bus "
-                   "shelters, fare gates, the fare vending machine, and the tickets and cards "
-                   "they take."),
+                   "shelters, bus station departure boards, fare gates, the fare vending "
+                   "machine and the tickets and cards they take, station and platform fit-out, "
+                   "station entrances and fare lines, and the airport terminal and airside."),
     "tabtrafficaccessories": ("traffic-accessories", "Traffic Accessories",
                               "Poles, mounts, mast arms, span wire hardware, backplates and "
                               "cameras."),

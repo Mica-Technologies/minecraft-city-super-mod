@@ -1,6 +1,6 @@
 # Residential
 
-The furniture of homes: dining and living room tables, chairs, bookcases, storage and sofas that join into runs.
+The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard.
 
 !!! info "319 blocks in this tab"
 
