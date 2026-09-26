@@ -1,0 +1,61 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "back": "csm:blocks/utilities/water/aluminium",
+    "dark": "csm:blocks/utilities/water/dark",
+    "face": "csm:blocks/utilities/signs/signs",
+    "particle": "csm:blocks/utilities/water/aluminium"
+  },
+  "elements": [
+    {
+      "from": [
+        2.0,
+        5.0,
+        15.4
+      ],
+      "to": [
+        14.0,
+        13.0,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#back",
+          "uv": [
+            0,
+            3.0,
+            0.6,
+            11.0
+          ]
+        },
+        "west": {
+          "texture": "#back",
+          "uv": [
+            15.4,
+            3.0,
+            16,
+            11.0
+          ]
+        },
+        "up": {
+          "texture": "#back",
+          "uv": [
+            2.0,
+            15.4,
+            14.0,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#back",
+          "uv": [
+            2.0,
+            0,
+            14.0,
+            0.6
+          ]
+        }
+      }
+    }
+  ]
+}

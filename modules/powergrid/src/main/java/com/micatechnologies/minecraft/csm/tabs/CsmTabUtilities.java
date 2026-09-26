@@ -2,9 +2,12 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.powergrid.gas.BlockEquipmentSkid;
+import com.micatechnologies.minecraft.csm.powergrid.gas.BlockVentStack;
 import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityFixture;
 import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityPanel;
 import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityRun;
+import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilitySign;
 import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockAccessHatch;
 import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockHeadwall;
 import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockManholeCone;
@@ -13,6 +16,11 @@ import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockRiprap;
 import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockStackedSection;
 import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockSwitchedUnit;
 import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockWingwall;
+import com.micatechnologies.minecraft.csm.powergrid.telecom.BlockAntennaArray;
+import com.micatechnologies.minecraft.csm.powergrid.telecom.BlockCabinet;
+import com.micatechnologies.minecraft.csm.powergrid.telecom.BlockIceBridge;
+import com.micatechnologies.minecraft.csm.powergrid.telecom.BlockPoleRadio;
+import com.micatechnologies.minecraft.csm.powergrid.telecom.BlockSmallCell;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockCagedLadder;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockGroundTank;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockPedestalSection;
@@ -36,8 +44,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * module; see {@code assets/docs/UTILITIES_SYSTEM.md} for why there are two.
  *
  * <p>The block lines are written by {@code dev-env-utils/scripts/gen_utilities_meters.py
- * --fragments}, {@code gen_utilities_water.py --fragments} and {@code gen_utilities_sewer.py
- * --fragments}, which measure every box from the model they write.</p>
+ * --fragments}, {@code gen_utilities_water.py --fragments}, {@code gen_utilities_sewer.py
+ * --fragments} and {@code gen_utilities_gas_telecom.py --fragments}, which measure every box from
+ * the model they write.</p>
  *
  * @since 2026.9
  */
@@ -129,5 +138,31 @@ public class CsmTabUtilities extends CsmTab {
     initTabBlock(new BlockStackedSection("manhole_riser_cutaway", "manhole", true, true));
     initTabBlock(new BlockManholeCone("manhole_cone", false));
     initTabBlock(new BlockManholeCone("manhole_cone_cutaway", true));
+
+    // --- Gas yard and telecom (gen_utilities_gas_telecom.py --fragments) ---
+    initTabBlock(new BlockWaterPipe("gas_pipe", BlockWaterPipe.GAS, 3.7));
+    initTabBlock(new BlockPipeFitting("gas_ball_valve", new double[]{3.4, 3.4, 0, 12.6, 15.3, 16}, BlockWaterPipe.GAS));
+    initTabBlock(new BlockPipeFitting("gas_pressure_regulator", new double[]{1.9, 3.4, 0, 14.1, 16, 16}, BlockWaterPipe.GAS));
+    initTabBlock(new BlockPipeFitting("gas_turbine_meter", new double[]{3.1, 3.1, 0, 12.9, 16, 16}, BlockWaterPipe.GAS));
+    initTabBlock(new BlockVentStack("gas_vent_stack", new double[]{4.2, 0, 4.2, 11.8, 14.4, 12.4}));
+    initTabBlock(new BlockEquipmentSkid("gas_station_skid"));
+    initTabBlock(new BlockPumpUnit("gas_line_heater", new UtilityBoxSpec(2, 1, 2, new AxisAlignedBB(-0.994, 0, -0.001, 0.775, 1.951, 1.001), null), BlockPumpUnit.Nozzles.FRONT_BACK, BlockWaterPipe.GAS));
+    initTabBlock(new BlockUtilityBox("gas_odorant_tank", new UtilityBoxSpec(2, 1, 2, new AxisAlignedBB(-0.969, 0, 0.062, 0.969, 1.101, 0.938), null)));
+    initTabBlock(new BlockUtilitySign("gas_sign_warning", new double[]{2, 5, 15.4, 14, 13, 16}));
+    initTabBlock(new BlockUtilitySign("gas_sign_no_smoking", new double[]{2, 5, 15.4, 14, 13, 16}));
+    initTabBlock(new BlockUtilitySign("gas_sign_emergency", new double[]{2, 5, 15.4, 14, 13, 16}));
+    initTabBlock(new BlockUtilitySign("gas_sign_station", new double[]{2, 5, 15.4, 14, 13, 16}));
+    initTabBlock(new BlockUtilitySign("gas_sign_authorized", new double[]{2, 5, 15.4, 14, 13, 16}));
+    initTabBlock(new BlockUtilitySign("cell_site_sign", new double[]{2, 5, 15.4, 14, 13, 16}));
+    initTabBlock(new BlockCabinet("fiber_distribution_cabinet", new UtilityBoxSpec(2, 1, 2, new AxisAlignedBB(-0.969, 0, 0.062, 0.969, 1.438, 0.938), null)));
+    initTabBlock(new BlockUtilityBox("cell_equipment_cabinet", new UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(0.031, 0, 0.031, 0.969, 1.812, 0.975), null)));
+    initTabBlock(new BlockUtilityBox("cell_battery_cabinet", new UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(0.031, 0, 0.031, 0.969, 1.812, 0.975), null)));
+    initTabBlock(new BlockIceBridge("ice_bridge"));
+    initTabBlock(new BlockTowerColumn("ice_bridge_stanchion", 1.4));
+    initTabBlock(new BlockUtilityFixture("gps_antenna", new double[]{6.1, 2, 8.1, 9.9, 12.71, 16}));
+    initTabBlock(new BlockTowerColumn("monopole_section", 6));
+    initTabBlock(new BlockAntennaArray("monopole_antenna_array", new double[]{2, 0, 2, 14, 16, 14}));
+    initTabBlock(new BlockSmallCell("small_cell_antenna", new double[]{3.4, 0, 3.4, 12.6, 16, 12.6}));
+    initTabBlock(new BlockPoleRadio("small_cell_radio", new double[]{4.2, 1.8, 6.2, 11.8, 14, 11.4}));
   }
 }

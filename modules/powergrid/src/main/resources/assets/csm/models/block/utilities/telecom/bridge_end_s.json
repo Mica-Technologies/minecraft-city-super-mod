@@ -1,0 +1,128 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "grating": "csm:blocks/utilities/telecom/bridge_grating",
+    "steel": "csm:blocks/utilities/telecom/galv",
+    "cable": "csm:blocks/utilities/telecom/cable",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "dark": "csm:blocks/utilities/water/dark",
+    "particle": "csm:blocks/utilities/telecom/galv"
+  },
+  "elements": [
+    {
+      "from": [
+        0.8,
+        14.0,
+        0
+      ],
+      "to": [
+        1.8,
+        15.6,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0.8,
+            0.4,
+            1.8,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.2,
+        14.0,
+        0
+      ],
+      "to": [
+        15.2,
+        15.6,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            14.2,
+            0.4,
+            15.2,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.4,
+        11.2,
+        0
+      ],
+      "to": [
+        4.2,
+        13.2,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            3.4,
+            2.8,
+            4.2,
+            4.8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        11.8,
+        11.2,
+        0
+      ],
+      "to": [
+        12.6,
+        13.2,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            11.8,
+            2.8,
+            12.6,
+            4.8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.2,
+        11.4,
+        0
+      ],
+      "to": [
+        11.8,
+        12.6,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#cable",
+          "uv": [
+            4.2,
+            3.4,
+            11.8,
+            4.6
+          ]
+        }
+      }
+    }
+  ]
+}

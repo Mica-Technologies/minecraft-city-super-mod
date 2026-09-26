@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/monopole_section_shaft"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/monopole_section_footing"
+      },
+      "when": {
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/monopole_section_cap"
+      },
+      "when": {
+        "top": "true"
+      }
+    }
+  ]
+}

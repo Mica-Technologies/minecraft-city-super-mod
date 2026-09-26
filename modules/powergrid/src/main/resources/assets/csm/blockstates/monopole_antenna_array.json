@@ -1,0 +1,88 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/telecom/monopole_array_icon"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/monopole_section_shaft"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/monopole_array.obj"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/monopole_array.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/monopole_array.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/monopole_array.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/array_top"
+      },
+      "when": {
+        "facing": "north",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/array_top",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/array_top",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/array_top",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "top": "true"
+      }
+    }
+  ]
+}

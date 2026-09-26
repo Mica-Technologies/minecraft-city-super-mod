@@ -18,8 +18,12 @@ import net.minecraft.block.Block;
  * leg or riser a pole section, the bracing, pipe and fittings iron, a pump iron and a wiring
  * harness, anything that measures or controls a control board. Sewer and stormwater pieces are
  * concrete by their size (a pipe or a frame adds iron), the hatches aluminium sheet, the lift
- * station's panel and generator what is in them, riprap cobblestone. Anything this does not know
- * takes the generic cost.</p>
+ * station's panel and generator what is in them, riprap cobblestone. The gas yard is iron pipe
+ * and fittings (a regulator adds its sheet metal diaphragm case, the meter a control board), the
+ * line heater and odorant tank sheet metal vessels with their controls, a sign a sign blank; the
+ * telecom cabinets are enclosure shells with what is in them, the monopole a pole section a
+ * section, its array, the small cell and the GPS antenna the radios and boards they carry.
+ * Anything this does not know takes the generic cost.</p>
  *
  * <p>Mirrored in {@code dev-env-utils/scripts/audit_fabricator_costs.py}.</p>
  *
@@ -183,6 +187,56 @@ public final class UtilitiesFabricatorRules {
         return CsmFabricatorCosts.cost(part(CsmParts.CONCRETE_MIX, 2), iron(1));
       case "riprap":
         return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_COBBLESTONE, 2));
+      default:
+        return gasAndTelecom(registryName);
+    }
+  }
+
+  /** The gas yard and telecom: pipe and fittings, the vessels, signs, cabinets and towers. */
+  @Nullable
+  private static List<FabricatorIngredient> gasAndTelecom(String registryName) {
+    if (registryName.startsWith("gas_sign_") || "cell_site_sign".equals(registryName)) {
+      return CsmFabricatorCosts.cost(part(CsmParts.SIGN_BLANK, 1));
+    }
+    switch (registryName) {
+      case "gas_pipe":
+      case "gas_vent_stack":
+      case "ice_bridge_stanchion":
+        return CsmFabricatorCosts.cost(iron(1));
+      case "gas_ball_valve":
+        return CsmFabricatorCosts.cost(iron(2), part(CsmParts.FASTENER_KIT, 1));
+      case "gas_pressure_regulator":
+        return CsmFabricatorCosts.cost(iron(2), sheet(1), part(CsmParts.FASTENER_KIT, 1));
+      case "gas_turbine_meter":
+        return CsmFabricatorCosts.cost(iron(1), part(CsmParts.CONTROL_BOARD, 1));
+      case "gas_station_skid":
+      case "ice_bridge":
+        return CsmFabricatorCosts.cost(sheet(1), iron(1));
+      case "gas_line_heater":
+        return CsmFabricatorCosts.cost(sheet(4), iron(2), part(CsmParts.CONTROL_BOARD, 1));
+      case "gas_odorant_tank":
+        return CsmFabricatorCosts.cost(sheet(3), part(CsmParts.CONTROL_BOARD, 1));
+      case "fiber_distribution_cabinet":
+        return CsmFabricatorCosts.cost(part(CsmParts.ENCLOSURE_SHELL, 2),
+            part(CsmParts.FASTENER_KIT, 1), part(CsmParts.CONCRETE_MIX, 1));
+      case "cell_equipment_cabinet":
+        return CsmFabricatorCosts.cost(part(CsmParts.ENCLOSURE_SHELL, 2),
+            part(CsmParts.CONTROL_BOARD, 1), part(CsmParts.WIRING_HARNESS, 1));
+      case "cell_battery_cabinet":
+        return CsmFabricatorCosts.cost(part(CsmParts.ENCLOSURE_SHELL, 2),
+            part(CsmParts.WIRING_HARNESS, 1));
+      case "gps_antenna":
+        return CsmFabricatorCosts.cost(part(CsmParts.CONTROL_BOARD, 1));
+      case "monopole_section":
+        return CsmFabricatorCosts.cost(part(CsmParts.POLE_SECTION, 1));
+      case "monopole_antenna_array":
+        return CsmFabricatorCosts.cost(sheet(2), part(CsmParts.CONTROL_BOARD, 2),
+            part(CsmParts.WIRING_HARNESS, 1));
+      case "small_cell_antenna":
+        return CsmFabricatorCosts.cost(sheet(1), part(CsmParts.CONTROL_BOARD, 1));
+      case "small_cell_radio":
+        return CsmFabricatorCosts.cost(part(CsmParts.ENCLOSURE_SHELL, 1),
+            part(CsmParts.CONTROL_BOARD, 1));
       default:
         return null;
     }

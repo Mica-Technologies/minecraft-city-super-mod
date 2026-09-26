@@ -1,0 +1,198 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "plate": "csm:blocks/utilities/gas/skid_deck",
+    "beam": "csm:blocks/utilities/gas/skid_beam",
+    "steel": "csm:blocks/utilities/water/steel",
+    "dark": "csm:blocks/utilities/water/dark",
+    "particle": "csm:blocks/utilities/gas/skid_deck"
+  },
+  "elements": [
+    {
+      "from": [
+        6.4,
+        16,
+        5.6
+      ],
+      "to": [
+        9.6,
+        16.4,
+        10.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#dark",
+          "uv": [
+            6.4,
+            15.6,
+            9.6,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#dark",
+          "uv": [
+            6.4,
+            15.6,
+            9.6,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#dark",
+          "uv": [
+            5.6,
+            15.6,
+            10.4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#dark",
+          "uv": [
+            5.6,
+            15.6,
+            10.4,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#dark",
+          "uv": [
+            6.4,
+            5.6,
+            9.6,
+            10.4
+          ]
+        },
+        "down": {
+          "texture": "#dark",
+          "uv": [
+            6.4,
+            5.6,
+            9.6,
+            10.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.3,
+        16.4,
+        7.3
+      ],
+      "to": [
+        8.7,
+        20.3,
+        8.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            7.3,
+            11.7,
+            8.7,
+            15.6
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            7.3,
+            11.7,
+            8.7,
+            15.6
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7.3,
+            11.7,
+            8.7,
+            15.6
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7.3,
+            11.7,
+            8.7,
+            15.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.0,
+        20.3,
+        4.6
+      ],
+      "to": [
+        9.0,
+        21.0,
+        11.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            7.0,
+            11.0,
+            9.0,
+            11.7
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            7.0,
+            11.0,
+            9.0,
+            11.7
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            4.6,
+            11.0,
+            11.4,
+            11.7
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            4.6,
+            11.0,
+            11.4,
+            11.7
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            7.0,
+            4.6,
+            9.0,
+            11.4
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            7.0,
+            4.6,
+            9.0,
+            11.4
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "back": "csm:blocks/utilities/water/aluminium",
+    "dark": "csm:blocks/utilities/water/dark",
+    "face": "csm:blocks/utilities/signs/signs",
+    "particle": "csm:blocks/utilities/water/aluminium"
+  },
+  "elements": [
+    {
+      "from": [
+        2.0,
+        5.0,
+        15.4
+      ],
+      "to": [
+        14.0,
+        13.0,
+        15.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0.0,
+            0.0,
+            8.0,
+            5.25
+          ]
+        }
+      }
+    }
+  ]
+}

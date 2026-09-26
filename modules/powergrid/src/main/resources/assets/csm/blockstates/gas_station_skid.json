@@ -1,0 +1,58 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/gas/skid_deck"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/gas/skid_edge_north"
+      },
+      "when": {
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/gas/skid_edge_south"
+      },
+      "when": {
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/gas/skid_edge_east"
+      },
+      "when": {
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/gas/skid_edge_west"
+      },
+      "when": {
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/gas/skid_support"
+      },
+      "when": {
+        "support": "x"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/gas/skid_support",
+        "y": 90
+      },
+      "when": {
+        "support": "z"
+      }
+    }
+  ]
+}

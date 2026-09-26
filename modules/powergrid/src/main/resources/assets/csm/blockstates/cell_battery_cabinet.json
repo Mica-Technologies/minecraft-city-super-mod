@@ -1,0 +1,79 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/telecom/cell_battery_cabinet_icon"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/cab_body"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/cab_body",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/cab_body",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/cab_body",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/cab_door_battery"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/cab_door_battery",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/cab_door_battery",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/cab_door_battery",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    }
+  ]
+}

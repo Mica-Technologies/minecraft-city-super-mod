@@ -1,0 +1,35 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "plate": "csm:blocks/utilities/gas/skid_deck",
+    "beam": "csm:blocks/utilities/gas/skid_beam",
+    "steel": "csm:blocks/utilities/water/steel",
+    "dark": "csm:blocks/utilities/water/dark",
+    "particle": "csm:blocks/utilities/gas/skid_deck"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#beam",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

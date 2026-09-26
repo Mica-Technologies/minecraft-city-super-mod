@@ -1,0 +1,141 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cabinet": "csm:blocks/utilities/telecom/cabinet",
+    "louvre": "csm:blocks/utilities/telecom/cabinet_louvre",
+    "fronts": "csm:blocks/utilities/telecom/fronts",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "dark": "csm:blocks/utilities/water/dark",
+    "ac": "csm:blocks/utilities/telecom/ac_grille",
+    "particle": "csm:blocks/utilities/telecom/cabinet"
+  },
+  "elements": [
+    {
+      "from": [
+        1.5,
+        1,
+        2.6
+      ],
+      "to": [
+        14.5,
+        28.0,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fronts",
+          "uv": [
+            10.25,
+            0,
+            13.5,
+            6.75
+          ]
+        },
+        "east": {
+          "texture": "#cabinet",
+          "uv": [
+            13,
+            0,
+            13.4,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#cabinet",
+          "uv": [
+            2.6,
+            0,
+            3,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#cabinet",
+          "uv": [
+            1.5,
+            2.6,
+            14.5,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#cabinet",
+          "uv": [
+            1.5,
+            13,
+            14.5,
+            13.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        12.6,
+        13.2,
+        2.2
+      ],
+      "to": [
+        13.2,
+        16.8,
+        2.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#dark",
+          "uv": [
+            2.8,
+            0,
+            3.4,
+            2.8
+          ]
+        },
+        "south": {
+          "texture": "#dark",
+          "uv": [
+            12.6,
+            0,
+            13.2,
+            2.8
+          ]
+        },
+        "east": {
+          "texture": "#dark",
+          "uv": [
+            13.4,
+            0,
+            13.8,
+            2.8
+          ]
+        },
+        "west": {
+          "texture": "#dark",
+          "uv": [
+            2.2,
+            0,
+            2.6,
+            2.8
+          ]
+        },
+        "up": {
+          "texture": "#dark",
+          "uv": [
+            12.6,
+            2.2,
+            13.2,
+            2.6
+          ]
+        },
+        "down": {
+          "texture": "#dark",
+          "uv": [
+            12.6,
+            13.4,
+            13.2,
+            13.8
+          ]
+        }
+      }
+    }
+  ]
+}

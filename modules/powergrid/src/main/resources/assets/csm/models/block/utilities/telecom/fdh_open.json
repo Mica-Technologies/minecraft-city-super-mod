@@ -1,0 +1,155 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cabinet": "csm:blocks/utilities/telecom/cabinet",
+    "louvre": "csm:blocks/utilities/telecom/cabinet_louvre",
+    "fronts": "csm:blocks/utilities/telecom/fronts",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "dark": "csm:blocks/utilities/water/dark",
+    "ac": "csm:blocks/utilities/telecom/ac_grille",
+    "particle": "csm:blocks/utilities/telecom/cabinet"
+  },
+  "elements": [
+    {
+      "from": [
+        -14.4,
+        1,
+        -10.0
+      ],
+      "to": [
+        -14,
+        22.0,
+        4
+      ],
+      "faces": {
+        "west": {
+          "texture": "#fronts",
+          "uv": [
+            3.5,
+            0,
+            7,
+            5.25
+          ]
+        },
+        "east": {
+          "texture": "#cabinet",
+          "uv": [
+            0,
+            0,
+            10.0,
+            15
+          ]
+        },
+        "north": {
+          "texture": "#cabinet",
+          "uv": [
+            16,
+            0,
+            16,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#cabinet",
+          "uv": [
+            0,
+            6.0,
+            0.01,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#cabinet",
+          "uv": [
+            0,
+            0,
+            0.01,
+            10.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14,
+        1,
+        -10.0
+      ],
+      "to": [
+        14.4,
+        22.0,
+        4
+      ],
+      "faces": {
+        "west": {
+          "texture": "#cabinet",
+          "uv": [
+            6.0,
+            0,
+            16,
+            15
+          ]
+        },
+        "east": {
+          "texture": "#fronts",
+          "uv": [
+            0,
+            0,
+            3.5,
+            5.25
+          ]
+        },
+        "north": {
+          "texture": "#cabinet",
+          "uv": [
+            1.6,
+            0,
+            2,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#cabinet",
+          "uv": [
+            14,
+            6.0,
+            14.4,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#cabinet",
+          "uv": [
+            14,
+            0,
+            14.4,
+            10.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -13.4,
+        1.8,
+        4.6
+      ],
+      "to": [
+        13.4,
+        21.2,
+        4.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fronts",
+          "uv": [
+            0,
+            5.25,
+            7,
+            10.5
+          ]
+        }
+      }
+    }
+  ]
+}

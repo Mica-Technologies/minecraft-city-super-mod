@@ -1,0 +1,160 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "grating": "csm:blocks/utilities/telecom/bridge_grating",
+    "steel": "csm:blocks/utilities/telecom/galv",
+    "cable": "csm:blocks/utilities/telecom/cable",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "dark": "csm:blocks/utilities/water/dark",
+    "particle": "csm:blocks/utilities/telecom/galv",
+    "shaft": "csm:blocks/utilities/telecom/galv"
+  },
+  "elements": [
+    {
+      "from": [
+        6.6,
+        0.0,
+        7.4201
+      ],
+      "to": [
+        9.4,
+        16.0,
+        8.5799
+      ],
+      "faces": {
+        "east": {
+          "texture": "#shaft",
+          "uv": [
+            7.4201,
+            0,
+            8.5799,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#shaft",
+          "uv": [
+            7.4201,
+            0,
+            8.5799,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.4201,
+        -0.004,
+        6.6
+      ],
+      "to": [
+        8.5799,
+        16.004,
+        9.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shaft",
+          "uv": [
+            7.4201,
+            0,
+            8.5799,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#shaft",
+          "uv": [
+            7.4201,
+            0,
+            8.5799,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.6,
+        -0.008,
+        7.4201
+      ],
+      "to": [
+        9.4,
+        16.008,
+        8.5799
+      ],
+      "faces": {
+        "east": {
+          "texture": "#shaft",
+          "uv": [
+            7.4201,
+            0,
+            8.5799,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#shaft",
+          "uv": [
+            7.4201,
+            0,
+            8.5799,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        7.4201,
+        -0.012,
+        6.6
+      ],
+      "to": [
+        8.5799,
+        16.012,
+        9.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shaft",
+          "uv": [
+            7.4201,
+            0,
+            8.5799,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#shaft",
+          "uv": [
+            7.4201,
+            0,
+            8.5799,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

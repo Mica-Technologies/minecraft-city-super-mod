@@ -1,0 +1,122 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/telecom/fdh_icon"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_body"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_body",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_body",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_body",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_shut"
+      },
+      "when": {
+        "facing": "north",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_shut",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_shut",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_shut",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_open"
+      },
+      "when": {
+        "facing": "north",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_open",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_open",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/fdh_open",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "on": "true"
+      }
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/bridge_run"
+      },
+      "when": {
+        "axis": "z"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/bridge_run",
+        "y": 90
+      },
+      "when": {
+        "axis": "x"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/bridge_end_n"
+      },
+      "when": {
+        "axis": "z",
+        "ahead": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/bridge_end_n",
+        "y": 90
+      },
+      "when": {
+        "axis": "x",
+        "ahead": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/bridge_end_s"
+      },
+      "when": {
+        "axis": "z",
+        "behind": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/bridge_end_s",
+        "y": 90
+      },
+      "when": {
+        "axis": "x",
+        "behind": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/bridge_post"
+      },
+      "when": {
+        "axis": "z",
+        "post": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/bridge_post",
+        "y": 90
+      },
+      "when": {
+        "axis": "x",
+        "post": "true"
+      }
+    }
+  ]
+}

@@ -176,7 +176,13 @@ TABS = {
                      "the treatment skid; and sewer and stormwater: the lift station's access "
                      "hatches, control panel and standby generator, the curb inlet, the outfall's "
                      "headwall, flap gate, wingwalls and riprap, the detention pond's outlet riser "
-                     "and emergency spillway, and precast manhole sections whole and cut away."),
+                     "and emergency spillway, and precast manhole sections whole and cut away; "
+                     "the gas yard: a regulator station's skid, gas pipe, ball valves, pressure "
+                     "regulator, turbine meter, line heater, vent stack and odorant tank, and its "
+                     "warning signs; and telecom: the fibre distribution cabinet, a cell site's "
+                     "cabinets, ice bridge and GPS antenna, a monopole built to height with its "
+                     "antenna array, and a small cell's canister antenna and radio for the street "
+                     "poles."),
     "tabtreesplants": ("trees-and-plants", "Trees & Plants",
                        "Street trees built block by block from thin, leaning logs and leaves, "
                        "the Tree Planting Tool, and plantings."),

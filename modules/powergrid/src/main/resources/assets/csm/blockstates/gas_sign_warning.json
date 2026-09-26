@@ -1,0 +1,160 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/signs/sign_wall"
+      },
+      "when": {
+        "facing": "north",
+        "fence": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/sign_wall",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "fence": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/sign_wall",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "fence": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/sign_wall",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "fence": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/sign_fence"
+      },
+      "when": {
+        "facing": "north",
+        "fence": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/sign_fence",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "fence": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/sign_fence",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "fence": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/sign_fence",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "fence": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/gas_sign_warning_wall"
+      },
+      "when": {
+        "facing": "north",
+        "fence": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/gas_sign_warning_wall",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "fence": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/gas_sign_warning_wall",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "fence": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/gas_sign_warning_wall",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "fence": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/gas_sign_warning_fence"
+      },
+      "when": {
+        "facing": "north",
+        "fence": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/gas_sign_warning_fence",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "fence": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/gas_sign_warning_fence",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "fence": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/signs/gas_sign_warning_fence",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "fence": "true"
+      }
+    }
+  ]
+}

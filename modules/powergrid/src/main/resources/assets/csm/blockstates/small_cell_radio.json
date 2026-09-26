@@ -1,0 +1,156 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_large"
+      },
+      "when": {
+        "facing": "north",
+        "polefit": "large"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_large",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "polefit": "large"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_large",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "polefit": "large"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_large",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "polefit": "large"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_thin"
+      },
+      "when": {
+        "facing": "north",
+        "polefit": "thin"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_thin",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "polefit": "thin"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_thin",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "polefit": "thin"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_thin",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "polefit": "thin"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_pedestal"
+      },
+      "when": {
+        "facing": "north",
+        "polefit": "pedestal"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_pedestal",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "polefit": "pedestal"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_pedestal",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "polefit": "pedestal"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_radio_straps_pedestal",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "polefit": "pedestal"
+      }
+    }
+  ]
+}

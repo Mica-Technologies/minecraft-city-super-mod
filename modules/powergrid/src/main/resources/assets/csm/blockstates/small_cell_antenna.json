@@ -1,0 +1,33 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_canister"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_collar_large"
+      },
+      "when": {
+        "polefit": "large"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_collar_thin"
+      },
+      "when": {
+        "polefit": "thin"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/telecom/sc_collar_pedestal"
+      },
+      "when": {
+        "polefit": "pedestal"
+      }
+    }
+  ]
+}
