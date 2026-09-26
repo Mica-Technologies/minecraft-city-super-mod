@@ -69,6 +69,9 @@ public class CsmClientProxy implements ICsmProxy {
     // ...and of the pixel copies CSM's still sprites keep after the atlas is uploaded.
     MinecraftForge.EVENT_BUS.register(
         new com.micatechnologies.minecraft.csm.codeutils.CsmSpriteDataRelease());
+    // ...and makes the baked models share their equal location strings and transforms.
+    MinecraftForge.EVENT_BUS.register(
+        new com.micatechnologies.minecraft.csm.codeutils.CsmBakedModelInterning());
   }
 
   /**
