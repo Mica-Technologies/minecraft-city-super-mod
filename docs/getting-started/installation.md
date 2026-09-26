@@ -7,7 +7,7 @@
 | **Minecraft** | 1.12.2 |
 | **Mod loader** | [Forge for 1.12.2](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html) |
 | **Java** | Whatever your Forge 1.12.2 profile already uses (Java 8) |
-| **Memory** | **3 GB** for the game client with every module installed (`-Xmx3G` in the launcher profile's JVM arguments), and more if the modpack has other large mods. It needs that much only while it loads its models; in a world it uses well under 1 GB. At 2.5 GB it still starts, slowly; at 2 GB or less it does not reach the title screen. Launchers often default to 2 GB, so raise it. Core alone runs in 512 MB |
+| **Memory** | **2 GB** for the game client with every module installed (`-Xmx2G` in the launcher profile's JVM arguments, which is what most launchers give by default), and more if the modpack has other large mods. It needs that much only while it loads its models; in a world it uses well under 1 GB. At 1.75 GB it still starts, a little slower; at 1.5 GB or less it does not reach the title screen. Core alone runs in 512 MB |
 
 ## The mod comes in pieces
 

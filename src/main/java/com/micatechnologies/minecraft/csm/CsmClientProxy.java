@@ -61,6 +61,10 @@ public class CsmClientProxy implements ICsmProxy {
     // (see CsmRenderUtils) — one JNI call per frame rather than one per visible signal.
     MinecraftForge.EVENT_BUS.register(
         new com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils.FrameClock());
+    // Before the stitch, makes the element copies Forge made to retexture variants share one
+    // element per distinct element.
+    MinecraftForge.EVENT_BUS.register(
+        new com.micatechnologies.minecraft.csm.codeutils.CsmRetexturedPartSharing());
     // Once baking is done, makes CSM's baked models share their identical quads.
     MinecraftForge.EVENT_BUS.register(
         new com.micatechnologies.minecraft.csm.codeutils.CsmQuadSharing());

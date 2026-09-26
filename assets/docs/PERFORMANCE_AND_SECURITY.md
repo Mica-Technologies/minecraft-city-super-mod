@@ -62,7 +62,9 @@ that no longer happens); the next six took it to 0.86 GiB and left launch time w
 median of 37 s before them and 36 s after, measured interleaved, with the full GC during launch
 down from 3.3-3.8 s to 1.9-3.0 s. Baking each distinct model part once then took it to 0.62 GiB
 and launch from a median of 38 s to 31 s, and one model location per multipart block to 0.60 GiB
-and about a second less.
+and about a second less. Releasing the sprites at upload and sharing the retextured element copies left
+the menu where it was but took the launch peak from 1.25 GiB to 0.9 GiB, and with it the
+smallest heap the full set starts in from 2.5 GB to 2 GB (see the heap floor below).
 
 | | Main menu | Flat world | Launch (median of 3) | Full GC during launch |
 |---|---|---|---|---|
@@ -78,6 +80,7 @@ and about a second less.
 | State property maps built on demand | 859 MiB | 915 MiB | no change | 6 |
 | Each distinct model part baked once | 621 MiB | 676 MiB | 38 -> 31 s | 5, ~2.6 s |
 | One model location per multipart block | 601 MiB | 656 MiB | 29 -> 28 s | 5, ~2.4 s |
+| Still sprites released at upload, element copies shared | 610 MiB (unchanged) | 685 MiB (unchanged) | 28 -> 28.5 s (noise) | 5, 1.8 -> 1.3 s; launch peak 1.25 -> 0.9 GiB |
 
 Launch times for the last eight rows were measured interleaved with the build before (A B A B A B),
 on a machine also running a game, so single runs varied by +-5 s; "no change" means the medians
@@ -108,9 +111,9 @@ model cache, which is released after the bake, so start the game with
 `-Dcsm.keepUnbakedModels=true` to use it.
 
 The mechanisms, and the rule each one makes. The multipart state mapper works while the blockstates
-are loaded, the sprite release once the atlas is uploaded (and again after the bake) and the part
-bake cache during the bake; the other model ones run on `ModelBakeEvent` at the lowest priority, in
-the order the client proxy registers them. All of them run again after a resource reload, which bakes new models from the files:
+are loaded, the element sharing between loading and stitching, the sprite release once the atlas is
+uploaded (and again after the bake) and the part bake cache during the bake; the other model ones
+run on `ModelBakeEvent` at the lowest priority, in the order the client proxy registers them. All of them run again after a resource reload, which bakes new models from the files:
 
 - **Each distinct model part is baked once** (`CsmPartBakeCache`, `CsmObjModelLoader`, Core,
   client). Forge bakes a variant's parts (its base model and each sub-model, each retextured and
@@ -230,6 +233,21 @@ the order the client proxy registers them. All of them run again after a resourc
   sprite fails quietly: an `ItemLayerModel` bake of it makes no quads, and the item is invisible.
   Changing the mipmap level in the video settings is a resource reload, so it restitches from the
   files.
+- **Retextured element copies share one element per distinct element**
+  (`CsmRetexturedPartSharing`, Core, client). Forge's `retexture` gives every element of every
+  retextured variant a new `BlockPart` and a new `HashMap` of its faces, holding the same corner,
+  rotation and face objects as the element it copied. With every module that was 1.23 million
+  elements, alive from the blockstates' loading until the release above: through the texture
+  stitch and the bake, the two moments the heap is fullest. At the block atlas's
+  `TextureStitchEvent.Pre`, once every model is loaded and before any sprite or bake, each copy's
+  own element list is pointed at the first equal copy: the same corner, rotation and face objects
+  (by identity), shade flag and face order, which is everything a bake reads from an element and
+  what the part bake cache keys on. 1,212,079 elements become 16,710, for 0.5-0.6 s of walking,
+  and the launch peak falls by about 370 MiB (below). A model file's own elements, and any list a
+  model borrows from its file or parent, are never touched. The bake is unchanged: the same part
+  bakes, the same 1.96 million quads, 772,719 distinct. `-Dcsm.noElementSharing=true` turns it off.
+  **Rule: never change a `BlockPart` of a CSM model, or its face map, once the blockstates are
+  loaded**: one may serve many variants.
 - **Model location strings and transforms are interned** (`CsmBakedModelInterning`). Every model
   registry key held its own copies of its namespace, path and variant strings (840 thousand strings,
   50 thousand distinct), and every baked variant its own `TRSRTransformation`s and
@@ -278,35 +296,48 @@ the retextured copies and the unbaked models released it completes, and the heap
 flat world is 692 MiB (930 without the part bake cache). The part bake cache is rebuilt on every
 reload with the same counts and empties at the bake event, so nothing is carried across reloads.
 
-**The heap floor, and what to tell players.** Measured 2026-09-25 on the build with every fix
-above (the release jars' code, the dev client's JVM: Java 8, ParallelGC, `-Xms256M`), each size
-launched to the main menu, then two minutes touring the flat test world by teleport, then two
-minutes touring a copy of the MKTNG test city, with `jstat` sampled throughout:
+**The heap floor, and what to tell players.** Measured 2026-09-26 on the build with every fix
+above (the dev client's JVM: Java 8, ParallelGC, `-Xms256M`), each size launched to the main menu,
+then two minutes touring the flat test world by teleport, then two minutes touring a copy of the
+MKTNG test city, with `jstat` sampled throughout. "Before" is the build without the element sharing
+and the release of sprites at upload, with the same content (Transit and the Market & Store tab
+included); the Core-only column is from 2026-09-25:
 
-| `-Xmx` | Every module | Core only |
-|---|---|---|
-| 512 MB | | Fine: menu in 8 s, 158 MiB at the menu, 232 MiB in a world |
-| 1 GB | Does not start: `OutOfMemoryError` loading the blockstates | Fine |
-| 1.5 GB | Does not start: `OutOfMemoryError` stitching the texture atlas | |
-| 2 GB | Does not start: still in model baking after 10 minutes of full GC | |
-| 2.25 GB | Starts, badly: 45 s to the menu, 48 full GCs (21 s) during launch; then fine (1% of the time in GC) | |
-| 2.5 GB | Starts: 33 s, 11 full GCs (9 s); then fine | |
-| 3 GB | Starts: 29 s, 8 full GCs (4 s); then fine (1% in GC, old generation under half full in the city) | |
-| 6 GB | 28 s, 5 full GCs (2.4 s) | 8 s |
+| `-Xmx` | Every module, before | Every module, now | Core only |
+|---|---|---|---|
+| 512 MB | | | Fine: menu in 8 s, 158 MiB at the menu, 232 MiB in a world |
+| 1 GB | Does not start | Does not start | Fine |
+| 1.5 GB | Does not start | Does not start: `OutOfMemoryError` (GC overhead) baking the models | |
+| 1.75 GB | Does not start | Starts: 32 s to the menu, 11 full GCs (5.5 s); then fine (1% of the time in GC) | |
+| 2 GB | Does not start: `OutOfMemoryError` (GC overhead) baking the models | **Starts: 29 s, 8 full GCs (3.9 s); then fine** (1% in GC, old generation at most 57% full) | |
+| 2.25 GB | Starts, badly: 40 s, 31 full GCs (15 s); then fine | 29 s, 8 full GCs (2.7 s) | |
+| 2.5 GB | Starts: 29 s, 7 full GCs (4.1 s); then fine | 29 s, 7 full GCs (2.3 s) | |
+| 6 GB | 28 s, 5 full GCs (1.8 s) | 28-29 s, 5 full GCs (1.3 s) | 8 s |
 
-**What sets the floor is launch, not play.** In a world the client holds 650-700 MiB, but while
-the models are baked it holds about 1.2 GiB (the unbaked models, every sprite's pixels and the
-baked models are all alive at once; measured as the old generation just after the last full GC
-of a `-Xmx6G` launch), and ParallelGC gives the old generation only two thirds of the heap. So:
-**tell players to give the game 3 GB with every module** (`-Xmx3G` in the launcher profile's JVM
-arguments), 2.5 GB at the very least, and more for a large modpack; **Core alone runs in 512
-MB** (a partial set lies in between and has not been measured module by module). Launchers that
-default to 2 GB will not start the full set. Re-measure with `dev-env-utils/gradle/lowmem.gradle` whenever a large batch of
-blocks or models lands, and update `docs/getting-started/installation.md` with it. The still
-sprites' pixels are now released as soon as the atlas is uploaded (above), which takes about
-155 MiB off the heap while the models bake (1,250 -> 1,100 MiB at fixed points of a launch) but
-nothing off the texture stitch just before it, where every sprite's pixels are alive at once and
-the heap is as full (about 1.25 GiB); the floor waits on that.
+**What sets the floor is launch, not play.** In a world the client holds 650-700 MiB (685 in the
+flat world and 691 in the city at every size above), but while the models load it holds more, and
+ParallelGC gives the old generation only two thirds of the heap. The live heap at fixed points of
+a `-Xmx6G` launch (a forced full GC with a class histogram, two launches each):
+
+| Point in the launch | Before | Sprites released at upload | And element copies shared |
+|---|---|---|---|
+| Every sprite loaded, before the upload | 1,229-1,278 MiB | 1,224-1,253 | **856-905** |
+| Early in the bake | 1,233 | 1,078-1,081 | **705-707** |
+| Later in the bake | 1,249-1,252 | 1,099-1,100 | **726-729** |
+| Main menu | 612-632 | 612-613 | 613 |
+
+So the launch peak went from about 1.25 GiB to about 0.9 GiB, and it is now the texture stitch
+(every sprite's pixels at every mip level, with the unbaked models), not the bake. Launch time at
+`-Xmx6G` did not change (medians of four interleaved launches 28, 28 and 28.5 s, within the
++-2 s of single runs; full GC in launch 1.8 -> 1.3 s pays for the 0.8 s the two walks take).
+**Tell players to give the game 2 GB with every module** (`-Xmx2G` in the launcher profile's JVM
+arguments, which is what most launchers default to), 1.75 GB at the very least, and more for a
+large modpack; **Core alone runs in 512 MB** (a partial set lies in between and has not been
+measured module by module). Re-measure with `dev-env-utils/gradle/lowmem.gradle` whenever a large
+batch of blocks or models lands, and update `docs/getting-started/installation.md` with it. What is
+left in the peak: every sprite's pixels while the atlas is stitched (a sprite can only be released
+once it is uploaded), and the unbaked models themselves (the variants and their retextured model
+copies, now without their own elements), which are needed until the bake is over.
 
 **State and memory budget for new blocks.** What a block costs now that the fixes above are in,
 so a design can be priced before it is built:
