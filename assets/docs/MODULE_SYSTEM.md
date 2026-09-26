@@ -137,7 +137,7 @@ Forge runs the lifecycle **per phase, across all mods**, not per mod. The order 
 5. **`init`.** Core registers every block's tile entity (name and class dedup) and the single
    `IGuiHandler`; each module's client proxy binds its tile entity renderers and any HUD.
 6. **`postInit`.** The `Fabricator coverage: N of M registered blocks are fabricable` line is
-   logged; the TTS module starts its engine loading.
+   logged. (The TTS module's engine is not loaded here: it loads on first use.)
 
 Two consequences worth internalising:
 
@@ -165,7 +165,7 @@ enough, so use it uniformly rather than reasoning case by case.
 | `codeutils.CsmSoundRegistry.register(ICsmSound...)` | its sound enum's values | the `Register<SoundEvent>` event | Core registers the union, so every event stays `csm:<name>`. Registration order (and therefore sound ids) now follows mod load order, which nothing player-visible depends on |
 | `materials.CsmFabricatorCosts.registerRule(tabId, rule)` | one `ICsmFabricatorCostRule` per creative tab | `postInit` (the coverage line) and when the Fabricator GUI opens | Registering a second rule for the same tab throws — one of them would otherwise never be asked. A rule returning `null` means "no opinion", and the block falls through to the generic cost |
 | `codeutils.CsmLifecycleHooks.onClientDisconnect(Runnable)` / `.onPlayerLoggedOut(Consumer<UUID>)` | its static-cache clean-up | when Core's lifecycle handlers fire | Register client-side clean-up as a **lambda, not a method reference**: a `@SideOnly(CLIENT)` target is stripped on a dedicated server, and a method reference resolves at creation time and would fail there |
-| `codeutils.CsmTts.setEngine(ICsmTtsEngine)` | the speech engine | whenever something speaks | Registered from the TTS module's **client** proxy; `CsmTts.startInit()` runs in its `postInit`. With no engine, or before it is ready, Core falls back to the system narrator |
+| `codeutils.CsmTts.setEngine(ICsmTtsEngine)` | the speech engine | whenever something speaks | Registered from the TTS module's **client** proxy, and loaded on first use (MaryTTS is ~45 MB), off the client thread: the first `say`, the Redstone TTS screen or an announcing departure board in range starts it, and a message given while it loads is spoken once it has. With no engine, or one that failed to load, Core falls back to the system narrator |
 | `codeutils.CsmEnvironment.setTemperatureProvider(…)` | HVAC's temperature manager | whenever a block displays a temperature | Without HVAC, Core answers with the biome baseline — the same baseline HVAC itself starts from, so the two never disagree |
 | the module's sided proxy (`ICsmProxy`) | TESR bindings, HUD, client-only wiring, in `init` | — | Core's client proxy names no module class |
 | `CsmTab.initTabBlockIfLoaded(modId, className, event)` | a tab entry whose class ships in *another* module | during Core's `preInit` | Keeps the tab's order identical whether or not that module is installed: the entry is either at its position or absent. Used by the Technology tab for the Redstone TTS block and linker |

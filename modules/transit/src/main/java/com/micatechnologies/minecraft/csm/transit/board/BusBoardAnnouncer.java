@@ -22,7 +22,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * through the engine the Text to Speech module registers; the module is never named. Nothing is
  * said unless an engine is registered and loaded ({@link CsmTts#isReady()}), so without the
  * module a board is silent: Core's narrator fallback, right for a block a player set up to talk,
- * would be wrong for a board that talks by itself. Until then this costs one check a second.</p>
+ * would be wrong for a board that talks by itself. The engine loads on first use, so the first
+ * announcing board to come within range starts it, and the board is heard once it has loaded.
+ * Without the module this costs one check a second.</p>
  *
  * <p><b>Which board speaks.</b> Once a second, the first board of each announcing bank (its
  * page 0) within {@link #RANGE} blocks of the player looks at its list; every due bus not yet
@@ -68,7 +70,7 @@ public final class BusBoardAnnouncer {
       return;
     }
     ticks++;
-    if (ticks % CHECK_TICKS != 0 || !CsmTts.isReady()) {
+    if (ticks % CHECK_TICKS != 0 || !CsmTts.hasEngine()) {
       return;
     }
     Minecraft mc = Minecraft.getMinecraft();
@@ -89,6 +91,11 @@ public final class BusBoardAnnouncer {
   private void listen(TileEntityBusDepartureBoard board, EntityPlayerSP player, long now) {
     if (!board.isAnnouncing() || board.isInvalid()
         || player.getDistanceSqToCenter(board.getPos()) > RANGE * RANGE) {
+      return;
+    }
+    if (!CsmTts.isReady()) {
+      // The engine loads on first use: start it now, and listen once it is ready.
+      CsmTts.startInit();
       return;
     }
     board.refreshView();

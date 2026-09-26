@@ -501,8 +501,8 @@ of the viewer, 40 blocks away).
 - The one non-roads animated texture (`honeywell_addressable_module`, 128x128 frames) re-uploads
   every tick. Roads has 59 `.mcmeta` files; 20 are 32x32 at `frametime 1`.
 - Sound: fire alarms use one `MovingSound` per channel (good); ambient speakers use one per speaker
-  per client, which is an audio-source pressure risk rather than CPU. MaryTTS loads on every client
-  start, which counts against the 2 GB heap floor.
+  per client, which is an audio-source pressure risk rather than CPU. MaryTTS (~45 MB) loads on
+  first use, not at client start (2026-09-25).
 - All non-roads tickable tile entities are server-only. The HVAC air query that used to be the one
   heavy per-tick job (a 49-chunk scan plus a 4,096-cell flood fill per thermostat every 2 s) is
   gone: HVAC tile entities no longer tick, and the thermal simulation steps every loaded room once a

@@ -74,13 +74,26 @@ public class CsmTts {
 
   /**
    * Starts loading the speech engine, if one is registered. Loading is asynchronous, so this
-   * returns immediately.
+   * returns immediately. The engine is loaded on first use rather than at launch; call this as
+   * soon as speech is likely (a screen that picks a voice, a board coming into range), so it is
+   * ready by the time something speaks.
    */
   public static void startInit() {
     ICsmTtsEngine ttsEngine = engine;
     if (ttsEngine != null) {
       ttsEngine.startInit();
     }
+  }
+
+  /**
+   * Gets whether a speech engine is registered, loaded or not.
+   *
+   * @return {@code true} if the Text to Speech module is installed
+   *
+   * @since 2026.9
+   */
+  public static boolean hasEngine() {
+    return engine != null;
   }
 
   /**
@@ -141,9 +154,10 @@ public class CsmTts {
   }
 
   /**
-   * Says the given message in the given voice. Speech is asynchronous either way; a message
-   * spoken while the engine is still loading, has failed to load, or is absent altogether goes
-   * to the system narrator instead.
+   * Says the given message in the given voice. Speech is asynchronous either way. The first
+   * message starts the engine loading, and a message given while it loads is spoken once it has
+   * (the latest one, if several arrive); one given when the engine has failed to load, or with
+   * no engine at all, goes to the system narrator instead.
    *
    * @param message the text to speak
    * @param voice   the id of the voice to speak it in
@@ -161,16 +175,17 @@ public class CsmTts {
       return;
     }
 
-    // Idempotent: the engine ignores this once loading has started. Kept so that the first
-    // thing to speak also starts the engine, as it always has.
+    // The engine loads on first use, off the client thread: the first thing to speak starts it.
+    // Idempotent once loading has started.
     ttsEngine.startInit();
 
-    if (!ttsEngine.isReady()) {
-      // Still loading or failed — fall back immediately, no blocking
+    if (!ttsEngine.isReady() && !ttsEngine.isLoading()) {
+      // Failed to load: the system narrator, without blocking.
       CsmNarrator.say(message);
       return;
     }
 
+    // Ready, or still loading: a loading engine holds the message and speaks it when it is.
     ttsEngine.say(message, voice);
   }
 }

@@ -36,6 +36,18 @@ public interface ICsmTtsEngine {
   boolean isReady();
 
   /**
+   * Gets whether the engine has started loading and has neither finished nor failed. A message
+   * given to {@link #say} meanwhile is held and spoken once loading finishes.
+   *
+   * @return {@code true} while the engine is loading
+   *
+   * @since 2026.9
+   */
+  default boolean isLoading() {
+    return false;
+  }
+
+  /**
    * Gets the ids of the voices the engine offers.
    *
    * @return the available voice ids, or {@code null} if the engine cannot answer yet — the
@@ -46,7 +58,8 @@ public interface ICsmTtsEngine {
   List<String> getAvailableVoiceIds();
 
   /**
-   * Speaks the given message in the given voice. Only called when {@link #isReady()} is true.
+   * Speaks the given message in the given voice. Called when {@link #isReady()} is true, or
+   * while {@link #isLoading()} is: the engine then holds the message and speaks it once loaded.
    *
    * @param message the text to speak
    * @param voice   the id of the voice to speak it in, or empty for the current voice

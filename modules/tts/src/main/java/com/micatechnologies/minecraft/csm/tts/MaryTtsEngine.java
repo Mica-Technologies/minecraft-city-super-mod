@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tts;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmNarrator;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTts;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTtsEngine;
 import java.util.ArrayList;
@@ -23,7 +24,9 @@ import org.apache.logging.log4j.Logger;
  * is absent or has not loaded.
  *
  * <p>Loading MaryTTS takes seconds and scans the shaded jar for voices, so it happens on its own
- * thread and the engine reports itself not ready until it finishes.</p>
+ * thread, on first use rather than at launch, and the engine reports itself not ready until it
+ * finishes. A message that arrives while it loads is held (the latest one) and spoken as soon
+ * as it has loaded, so the first announcement is late rather than lost or in another voice.</p>
  *
  * @author Mica Technologies
  * @version 1.0
@@ -41,6 +44,8 @@ public class MaryTtsEngine implements ICsmTtsEngine {
   private static volatile boolean initFailed = false;
   private static volatile String currentVoice = "";
   private static final AtomicBoolean IS_PLAYING = new AtomicBoolean(false);
+  /** The message given while loading, as {message, voice}; guarded by the class. */
+  private static String[] pending;
 
   @Override
   public void startInit() {
@@ -73,13 +78,29 @@ public class MaryTtsEngine implements ICsmTtsEngine {
           m.setVoice(first);
           currentVoice = first;
         }
-        mary = m;
-        initialized = true;
+        String[] held;
+        synchronized (MaryTtsEngine.class) {
+          mary = m;
+          initialized = true;
+          held = pending;
+          pending = null;
+        }
         LOGGER.info("MaryTTS initialized in {}ms — voice: {}",
             System.currentTimeMillis() - start, currentVoice);
+        if (held != null) {
+          say(held[0], held[1]);
+        }
       } catch (Throwable e) {
         LOGGER.error("Failed to initialize MaryTTS — TTS will fall back to system narrator", e);
-        initFailed = true;
+        String[] held;
+        synchronized (MaryTtsEngine.class) {
+          initFailed = true;
+          held = pending;
+          pending = null;
+        }
+        if (held != null) {
+          CsmNarrator.say(held[0]);
+        }
       }
     }, "CSM-TTS-Init").start();
   }
@@ -87,6 +108,11 @@ public class MaryTtsEngine implements ICsmTtsEngine {
   @Override
   public boolean isReady() {
     return initialized;
+  }
+
+  @Override
+  public boolean isLoading() {
+    return initStarted && !initialized && !initFailed;
   }
 
   @Override
@@ -101,6 +127,17 @@ public class MaryTtsEngine implements ICsmTtsEngine {
 
   @Override
   public void say(String message, String voice) {
+    synchronized (MaryTtsEngine.class) {
+      if (!initialized) {
+        if (initFailed) {
+          CsmNarrator.say(message);
+        } else {
+          // Still loading: hold it; the loading thread speaks it when done.
+          pending = new String[]{message, voice};
+        }
+        return;
+      }
+    }
     if (!IS_PLAYING.compareAndSet(false, true)) {
       return;
     }
