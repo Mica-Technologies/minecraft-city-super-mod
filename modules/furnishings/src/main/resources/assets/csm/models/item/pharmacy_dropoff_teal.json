@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/market/base/pharmacy_dropoff_item",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/market/laminate_teal",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "frame": "csm:blocks/furniture/residential/metal_black",
+    "case": "csm:blocks/furniture/market/case_black"
+  }
+}

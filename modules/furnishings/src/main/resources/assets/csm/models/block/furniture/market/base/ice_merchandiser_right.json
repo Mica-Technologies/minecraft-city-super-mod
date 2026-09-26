@@ -1,0 +1,73 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shell": "csm:blocks/furniture/market/case_black",
+    "particle": "#shell"
+  },
+  "elements": [
+    {
+      "from": [
+        15.5,
+        0,
+        2.5
+      ],
+      "to": [
+        16,
+        19,
+        15.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            0.5,
+            0,
+            11.447,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            0,
+            0.421,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#shell",
+          "uv": [
+            15.5,
+            0,
+            15.921,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.99,
+        19,
+        2
+      ],
+      "to": [
+        16,
+        20,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            0,
+            14.0,
+            1.0
+          ]
+        }
+      }
+    }
+  ]
+}

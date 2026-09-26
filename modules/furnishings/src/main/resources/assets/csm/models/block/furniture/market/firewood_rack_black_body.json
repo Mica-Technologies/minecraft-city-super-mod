@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/market/base/firewood_rack_body",
+  "textures": {
+    "frame": "csm:blocks/furniture/residential/metal_black",
+    "mesh": "csm:blocks/furniture/market/mesh_black"
+  }
+}

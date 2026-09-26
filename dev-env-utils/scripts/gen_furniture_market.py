@@ -9,6 +9,10 @@ scanner counter, bagging end), the POS terminal and the old cash register, the r
 the card terminal on its stand, the self-checkout kiosk, the customer service desk, the candy
 rack and the bagging carousel; and the shop floor's fixtures: shopping carts and the cart corral,
 basket stacks, security gates, hanging aisle signs, a magazine rack and a bottle return machine.
+The fresh departments (butcher and seafood cases, bread racks, the pastry and hot food cases, the
+rotisserie, floral, the coffee station) and the front of the store (the pharmacy's counters,
+shelf wall and signs, the tobacco case, the lottery's dispenser and terminal, the coin, photo and
+movie kiosks, and the ice, propane and firewood merchandisers outside) follow them.
 
 It also writes the Verifone MX915's blockstate and its models standing on a counter: the
 terminal moved to this tab from the Technology module (its hand-made model and texture keep
@@ -45,7 +49,10 @@ What joins (the Java classes compute it as actual state; nothing is stored):
   * gondola shelving joins and stacks with any gondola, whatever its stock: uprights only at a
     run's ends, the base deck only at the bottom of a stack, the top cap only at its head;
   * produce stands join any produce stand, the bulk bins any bulk bins, the checkout's belt,
-    scanner and bagging counters are one lane, the cart corral joins itself.
+    scanner and bagging counters are one lane, the cart corral joins itself;
+  * the pharmacy's drop-off and pick-up counters of a finish are one counter (the reception
+    desk's line), the pharmacy shelves join and stack into a wall, and the tobacco cases, ice
+    merchandisers, propane cages and firewood racks each join their own kind.
 
 Usage:
     python gen_furniture_market.py              # write everything
@@ -708,6 +715,38 @@ def top_tray(px, x0, food, accent, rng):
             put(px, x0 + dx, y, col)
 
 
+def col_pills(px, x0, ht, body, cap, rng):
+    """Pill bottles three abreast, a pixel wide each: the bottle's colour (amber or white)
+    with a white label round its middle and a snap cap on top."""
+    for bx in (0, 3, 6):
+        for dy in range(ht):
+            y = 31 - dy
+            for dx in range(2):
+                x = x0 + bx + dx
+                if dy == ht - 1:
+                    col = cap
+                elif 1 <= dy < ht - 2 and dy % 3 != 0:
+                    col = WHITE
+                else:
+                    col = body
+                put(px, x, y, shade(col, 1.08 if dx == 0 else 0.9))
+
+
+def col_packs(px, x0, ht, body, flip, rng):
+    """Packs of cigarettes in tiers of three texels, two abreast: a white pack with its
+    colour's band and the flip top in that colour. No names, no marks."""
+    for dy in range(ht):
+        y = 31 - dy
+        t = dy % 3
+        for dx in range(8):
+            if dx in (3, 7):
+                continue
+            col = WHITE if t == 0 else (body if t == 1 else flip)
+            if dx % 4 == 0:
+                col = shade(col, 0.82)
+            put(px, x0 + dx, y, col)
+
+
 def product_sheets(seed, columns):
     """The stock of a shelf: four product columns, each (front drawer, top drawer), as two 32 px
     sheets, the fronts and the tops."""
@@ -846,6 +885,21 @@ STOCK = {
                   _t(top_tray, (226, 176, 80), (190, 130, 50)), 2),
                  (_c(col_tray, (244, 206, 70), (232, 170, 40)),
                   _t(top_tray, (244, 206, 70), (232, 170, 40)), 2)],
+    # the pharmacy's shelf wall: generic medicine cartons and pill bottles, no names, no
+    # crosses (every height fits under the shelf above it)
+    "pharmacy": [(_c(col_small_boxes, WHITE, TEAL), _t(top_boxes, WHITE), 3),
+                 (_c(col_pills, (196, 120, 40), WHITE), _t(top_bottles, WHITE), 2),
+                 (_c(col_small_boxes, (236, 240, 246), BLUE), _t(top_boxes, WHITE), 4),
+                 (_c(col_shampoo, (240, 240, 236), (60, 150, 190)), _t(top_bottles, WHITE), 3.5)],
+    "pharmacy_b": [(_c(col_small_boxes, (240, 236, 226), ORANGE), _t(top_boxes, WHITE), 3.5),
+                   (_c(col_pills, (238, 238, 232), (40, 120, 200)), _t(top_bottles, BLUE), 2.5),
+                   (_c(col_small_boxes, WHITE, PURPLE), _t(top_boxes, WHITE), 2),
+                   (_c(col_small_boxes, (230, 244, 232), GREEN), _t(top_boxes, WHITE), 4)],
+    # the tobacco case: plain packs and cartons in colour bands
+    "packs": [(_c(col_packs, RED, RED), _t(top_boxes, WHITE), 3),
+              (_c(col_packs, (40, 90, 170), (40, 90, 170)), _t(top_boxes, WHITE), 3),
+              (_c(col_packs, (200, 170, 70), WHITE), _t(top_boxes, (200, 170, 70)), 3),
+              (_c(col_packs, (60, 130, 80), (60, 130, 80)), _t(top_boxes, WHITE), 3)],
 }
 
 
@@ -1059,6 +1113,18 @@ def label_text(lines, bg, fg, size=32, top=2):
     for line in lines:
         LS.draw_text_centred(img, line, size / 2.0, y, fg)
         y += 7
+    return img
+
+
+def cage_mesh(colour, size=32):
+    """A propane cage's welded mesh: a wire every fourth texel (12 cm), open between, so the
+    cylinders show through."""
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            if x % 4 == 0 or y % 4 == 0:
+                px[x, y] = shade(colour, 1.12 if (x + y) % 2 else 0.94) + (255,)
     return img
 
 
@@ -1540,6 +1606,266 @@ def flower_sheet(name, size=32):
     return img
 
 
+# --- the front of the store: pharmacy, tobacco and lottery, outdoor merchandisers, kiosks ------
+PHARMACY_TEAL = (22, 122, 122)
+
+
+def sign_icon(px, kind, x, y, col, size=64):
+    """A small pictogram on a sign band at (x, y): an Rx, a two-tone capsule, a star, a coin, a
+    camera, a strip of film, a flame or a snowflake. No crosses: a red cross is a protected
+    emblem, so the pharmacy has an Rx and a capsule instead."""
+    maps = {
+        "rx": ["XXX....", "X..X...", "XXX....", "X.XX.X.", "X..XX..", "...X.X."],
+        "pill": [".WWOOO.", "WWWOOOO", ".WWOOO."],
+        "star": ["..X..", "XXXXX", ".XXX.", ".X.X."],
+        "coin": [".XXX.", "XXOXX", "XOXOX", "XXOXX", ".XXX."],
+        "camera": [".XX....", "XXXXXXX", "XX.O.XX", "X.OOO.X", "XX.O.XX", "XXXXXXX"],
+        "film": ["XOXOX", "XXXXX", "X...X", "XXXXX", "XOXOX"],
+        "flame": ["..X..", ".XX..", ".XXX.", "XXOXX", "XOOOX", ".XXX."],
+        "snow": ["X.X.X", ".XXX.", "XXOXX", ".XXX.", "X.X.X"],
+    }
+    other = {"pill": (236, 120, 40), "coin": (250, 236, 150), "camera": (40, 40, 44),
+             "film": (40, 40, 44), "flame": (250, 220, 90), "snow": (250, 250, 250)}
+    for dy, row in enumerate(maps[kind]):
+        for dx, c in enumerate(row):
+            if c == ".":
+                continue
+            put(px, x + dx, y + dy, col if c in "XW" else other.get(kind, col), size)
+
+
+def sign_sheet(bands):
+    """Four signs on one 64 px sheet, a band 64 x 16 texels each (a 4:1 panel, so its letters
+    stay square): up to two lines of the pixel font in fg on bg inside a keyline, and the
+    band's pictograms. Every sign of these families shares three sheets."""
+    img = blank(64)
+    px = img.load()
+    for k, (lines, bg, fg, icons, keyline) in enumerate(bands):
+        y0 = 16 * k
+        rng = random.Random(hash_seed("".join(lines)))
+        for y in range(y0, y0 + 16):
+            for x in range(64):
+                col = shade(bg, 1.0 + rng.uniform(-0.025, 0.025))
+                if keyline and (x in (0, 63) or y in (y0, y0 + 15)):
+                    col = shade(fg, 0.92)
+                put(px, x, y, col, 64)
+        tops = [y0 + 5] if len(lines) == 1 else [y0 + 2, y0 + 9]
+        for line, top in zip(lines, tops):
+            LS.draw_text_centred(img, line, 32, top, fg)
+        for kind, x, dy, col in icons:
+            sign_icon(px, kind, x, y0 + dy, col or fg)
+    return img
+
+
+WHITE_SIGN = (250, 250, 250)
+SIGNS = {
+    "store_signs_a": [
+        (["PHARMACY"], PHARMACY_TEAL, WHITE_SIGN, [("rx", 6, 5, None), ("pill", 52, 6, None)],
+         True),
+        (["PRIVATE", "CONSULTATION"], PHARMACY_TEAL, WHITE_SIGN, [], True),
+        (["PRESCRIPTION", "DROP OFF"], PHARMACY_TEAL, WHITE_SIGN, [], True),
+        (["PRESCRIPTION", "PICK UP"], PHARMACY_TEAL, WHITE_SIGN, [], True),
+    ],
+    "store_signs_b": [
+        (["WE CHECK ID", "21 AND OVER"], (150, 28, 32), WHITE_SIGN, [], True),
+        (["LUCKY CITY", "LOTTERY"], (84, 40, 140), (250, 214, 60),
+         [("star", 5, 5, None), ("star", 54, 5, None)], True),
+        (["JACKPOT", "12 000 000"], (16, 16, 18), (255, 170, 40), [], False),
+        (["PROPANE", "EXCHANGE"], (176, 34, 34), WHITE_SIGN,
+         [("flame", 8, 5, None), ("flame", 51, 5, None)], True),
+    ],
+    "store_signs_c": [
+        (["FIREWOOD", "BUNDLES"], (46, 84, 46), (242, 228, 196), [], True),
+        (["COIN COUNTER"], (36, 86, 170), WHITE_SIGN,
+         [("coin", 2, 6, (226, 180, 40)), ("coin", 57, 6, (226, 180, 40))], True),
+        (["PHOTO", "PRINTS"], (226, 110, 30), WHITE_SIGN,
+         [("camera", 9, 5, None), ("camera", 48, 5, None)], True),
+        (["MOVIES", "NEW RELEASES"], (70, 36, 110), WHITE_SIGN,
+         [("film", 4, 3, None), ("film", 55, 3, None)], True),
+    ],
+}
+
+
+def kiosk_screen(kind, size=16):
+    """A kiosk's lit touchscreen: the coin counter's running total, the photo kiosk's grid of
+    pictures, the movie kiosk's row of covers, the lottery terminal's game keys."""
+    rng = random.Random(hash_seed(kind))
+    img = noisy((230, 234, 240), hash_seed(kind), size, 0.01)
+    px = img.load()
+    head = {"coins": (36, 86, 170), "photo": (226, 110, 30), "movies": (70, 36, 110),
+            "lotto": (84, 40, 140)}[kind]
+    for y in range(size):
+        for x in range(size):
+            col = None
+            if y < 3:
+                col = head
+            elif kind == "coins":
+                if 12 <= y <= 14 and 4 <= x <= 11:
+                    col = (60, 170, 80)
+            elif kind == "photo":
+                if 4 <= y <= 14 and x % 5 != 0 and (y - 4) % 4 != 3 and 1 <= x <= 14:
+                    col = rng.choice(((200, 150, 120), (90, 140, 200), (80, 160, 90),
+                                      (220, 190, 150), (150, 100, 160), (240, 200, 90)))
+            elif kind == "movies":
+                if 4 <= y <= 11 and x % 4 != 0:
+                    col = ((180, 40, 50), (40, 60, 120), (30, 30, 34), (220, 150, 40))[x // 4]
+                    if y in (9, 10):
+                        col = shade(col, 1.4)
+                elif y == 13 and 2 <= x <= 13:
+                    col = (60, 170, 80)
+            elif kind == "lotto":
+                if 4 <= y <= 14 and x % 4 != 0 and (y - 4) % 4 != 3:
+                    col = ((250, 214, 60), (60, 170, 80), (40, 110, 200), (220, 60, 60))[
+                        ((x // 4) + (y - 4) // 4) % 4]
+            if col:
+                px[x, y] = tuple(clamp(col)) + (255,)
+    if kind == "coins":
+        LS.draw_text_centred(img, "9.75", 8, 5, (30, 34, 40))
+    return img
+
+
+# Invented scratch games on the lottery dispenser: (background, stripe, symbol colour, symbol)
+TICKETS = [((236, 70, 60), (250, 214, 60), (250, 250, 250), "7"),
+           ((60, 150, 80), (240, 240, 220), (250, 214, 60), "clover"),
+           ((40, 100, 200), (160, 210, 250), (250, 250, 250), "star"),
+           ((250, 190, 40), (230, 110, 30), (120, 50, 20), "coin")]
+
+
+def lottery_tickets(size=32):
+    """The dispenser's four games, each a column 8 texels wide of fan-folded tickets hanging
+    from its slot: a ticket every 8 rows with its game's colour, a scratch panel in silver,
+    its symbol and the perforation to the next."""
+    img = blank(size)
+    px = img.load()
+    for c, (bg, stripe, sym, kind) in enumerate(TICKETS):
+        for y in range(size):
+            for dx in range(8):
+                x = 8 * c + dx
+                ly = y % 8
+                col = bg
+                if dx == 7:
+                    col = (30, 30, 34)
+                elif ly == 7:
+                    col = shade(bg, 0.7) if dx % 2 else (240, 240, 236)
+                elif ly == 0:
+                    col = stripe
+                elif 4 <= ly <= 5 and 1 <= dx <= 5:
+                    col = (196, 198, 204) if (dx + ly) % 2 else (170, 172, 178)
+                elif 1 <= ly <= 3 and 2 <= dx <= 4:
+                    mark = {"7": ((0, 0), (1, 0), (2, 0), (2, 1), (1, 2)),
+                            "clover": ((1, 0), (0, 1), (2, 1), (1, 1), (1, 2)),
+                            "star": ((1, 0), (0, 1), (1, 1), (2, 1), (0, 2), (2, 2)),
+                            "coin": ((1, 0), (0, 1), (2, 1), (1, 2))}[kind]
+                    if (dx - 2, ly - 1) in mark:
+                        col = sym
+                put(px, x, y, col)
+    return img
+
+
+def movie_posters(size=32):
+    """Four invented films' posters, two by two: a sky, a silhouette against it and a title
+    bar."""
+    rng = random.Random(8601)
+    img = blank(size)
+    px = img.load()
+    skies = [((30, 40, 90), (220, 100, 60)), ((10, 10, 20), (60, 170, 200)),
+             ((120, 20, 30), (250, 180, 60)), ((30, 90, 60), (200, 230, 150))]
+    for q, (top, bottom) in enumerate(skies):
+        ox, oy = 16 * (q % 2), 16 * (q // 2)
+        hill = [11 + int(2.5 * math.sin((x + q * 3) * 0.5)) for x in range(16)]
+        for y in range(16):
+            for x in range(16):
+                t = y / 15.0
+                col = tuple(int(top[i] + (bottom[i] - top[i]) * t) for i in range(3))
+                if y >= hill[x]:
+                    col = (16, 16, 20)
+                if y >= 13:
+                    col = (240, 240, 236) if y == 14 and 3 <= x <= 12 and x % 3 else (12, 12, 14)
+                if x in (0, 15) or y == 0:
+                    col = (40, 40, 44)
+                px[ox + x, oy + y] = tuple(clamp(shade(col, 1 + rng.uniform(-0.03, 0.03)))) \
+                    + (255,)
+    return img
+
+
+def coin_tray(size=16):
+    """The coin counter's tray from above: brushed steel with a scatter of silver, copper and
+    brass coins, the slot at the back."""
+    rng = random.Random(8611)
+    img = R.metal((178, 182, 188), 8612, size)
+    px = img.load()
+    for _ in range(18):
+        cx, cy = rng.randrange(1, size - 1), rng.randrange(1, size - 3)
+        col = rng.choice(((210, 212, 216), (184, 110, 70), (214, 180, 90)))
+        for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            if rng.random() < 0.85:
+                px[min(size - 1, cx + dx), cy + dy] = shade(col, 1.1 if dx == dy == 0 else 0.95) \
+                    + (255,)
+    for x in range(3, size - 3):
+        px[x, size - 2] = (20, 20, 22, 255)
+    return img
+
+
+def ice_door(body, letter, size=32):
+    """An ice merchandiser's door: CITY ICE (an invented brand) over snowflakes, BAGGED below,
+    on the cabinet's colour, a frosty band across the top."""
+    img = noisy(body, hash_seed(str(body)), size, 0.015)
+    px = img.load()
+    for y in range(0, 4):
+        for x in range(size):
+            px[x, y] = shade(letter, 1.0 - 0.04 * y) + (255,)
+    LS.draw_text_centred(img, "CITY", 16, 7, letter)
+    LS.draw_text_centred(img, "ICE", 16, 14, letter, scale=2)
+    LS.draw_text_centred(img, "BAGGED", 16, 26, letter)
+    for x, y in ((2, 9), (26, 9), (3, 19), (25, 19)):
+        sign_icon(px, "snow", x, y, shade(letter, 0.85), size)
+    for y in range(size):
+        for x in range(size):
+            if x in (0, size - 1) or y == size - 1:
+                px[x, y] = shade(body, 0.8) + (255,)
+    return img
+
+
+def firewood_ends(size=16):
+    """A bundle of firewood end on: split logs' end grain, pale with a ring or two and a rim of
+    bark, dark gaps between, in a clear wrap."""
+    rng = random.Random(8621)
+    img = noisy((40, 30, 22), 8622, size, 0.05)
+    px = img.load()
+    logs = [(3.5, 3.5, 3.2), (10.5, 3, 3.4), (4, 10.5, 3.4), (11, 10.5, 3.3), (7.5, 7, 2.4),
+            (14.5, 8, 1.8), (1, 7.5, 1.6), (7.5, 14.5, 1.8)]
+    for cx, cy, r in logs:
+        tone = rng.uniform(0.9, 1.1)
+        for y in range(size):
+            for x in range(size):
+                d = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
+                if d > r:
+                    continue
+                if d > r - 0.8:
+                    col = (86, 60, 40)
+                else:
+                    col = shade((214, 170, 112), tone * (0.93 if int(d * 1.6) % 2 else 1.03))
+                px[x, y] = tuple(clamp(col)) + (255,)
+    return img
+
+
+def firewood_bark(size=16):
+    """The bundle's side: rough split logs lying lengthwise under the wrap's sheen."""
+    rng = random.Random(8623)
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        log = y // 4
+        base = shade((110, 80, 54), 0.9 + 0.2 * ((log * 7) % 3) / 2.0)
+        for x in range(size):
+            col = shade(base, 1.0 + rng.uniform(-0.08, 0.08))
+            if y % 4 == 3:
+                col = (46, 34, 26)
+            if (x + 2 * y) % 13 == 0:
+                col = shade(col, 1.25)
+            px[x, y] = col + (255,)
+    return img
+
+
 TEXTURES = {
     "glass_clear": lambda: glass(),
     "glass_frost": lambda: glass(96, (226, 238, 246), frost=True),
@@ -1628,7 +1954,26 @@ TEXTURES = {
     "header_flowers_off": lambda: header("FRESH FLOWERS", (150, 56, 110), False),
     "bread_sign": lambda: label_text(["BREAD"], (120, 74, 36), (246, 236, 214), top=13),
     "coffee_sign": lambda: label_text(["COFFEE"], (66, 42, 30), (240, 222, 190), top=13),
+    # the front of the store
+    "laminate_teal": lambda: R.laminate(PHARMACY_TEAL, 8631),
+    "plastic_purple": lambda: noisy((88, 44, 130), 8632, 16, 0.025),
+    "plastic_yellow": lambda: noisy((244, 196, 40), 8633, 16, 0.025),
+    "glass_smoke": lambda: glass(120, (70, 74, 82)),
+    "mesh_cage": lambda: cage_mesh((92, 96, 100)),
+    "screen_coins": lambda: kiosk_screen("coins"),
+    "screen_photo": lambda: kiosk_screen("photo"),
+    "screen_movies": lambda: kiosk_screen("movies"),
+    "screen_lotto": lambda: kiosk_screen("lotto"),
+    "lottery_tickets": lottery_tickets,
+    "movie_posters": movie_posters,
+    "coin_tray": coin_tray,
+    "ice_door_white": lambda: ice_door((238, 242, 246), (30, 90, 170)),
+    "ice_door_blue": lambda: ice_door((40, 96, 180), (246, 248, 250)),
+    "firewood_ends": firewood_ends,
+    "firewood_bark": firewood_bark,
 }
+for _sheet, _bands in SIGNS.items():
+    TEXTURES[_sheet] = (lambda b=_bands: sign_sheet(b))
 for _kind in STOCK:
     TEXTURES["stock_%s" % _kind] = (lambda k=_kind: stock_sheets(k)[0])
     TEXTURES["stock_%s_top" % _kind] = (lambda k=_kind: stock_sheets(k)[1])
@@ -1667,6 +2012,12 @@ DEFAULT_TEX.update({
     "flowers_a": MT("flowers_a"), "flowers_b": MT("flowers_b"), "bucket": T("metal_steel"),
     "art": MT("fountain_art_red"), "condiments": MT("condiments"), "lids": MT("lids"),
     "cups": MT("cup_stack"), "white": MT("case_white"),
+    # the front of the store
+    "signs_a": MT("store_signs_a"), "signs_b": MT("store_signs_b"),
+    "signs_c": MT("store_signs_c"), "tickets": MT("lottery_tickets"),
+    "door": MT("ice_door_white"), "tank": MT("plastic_grey"), "bark": MT("firewood_bark"),
+    "ends": MT("firewood_ends"), "accent": MT("plastic_yellow"), "coins": MT("coin_tray"),
+    "posters": MT("movie_posters"),
 })
 
 
@@ -2501,6 +2852,227 @@ def floral_interior():
 
 
 # ------------------------------------------------------------------------------------------
+# The front of the store: the pharmacy, the tobacco case and the lottery, the outdoor
+# merchandisers and the kiosks
+# ------------------------------------------------------------------------------------------
+def sign_print(x0, x1, y0, y1, z, key, band, face="north"):
+    """A sign's printed face: band 0 to 3 of a sign sheet (64 x 16 texels, a 4:1 panel, so
+    x1 - x0 should be four times y1 - y0), a hair proud of the plane z."""
+    uv = {face: [0, 4 * band, 16, 4 * band + 4]}
+    if face == "north":
+        return el([x0, y0, z - 0.05], [x1, y1, z], key, (face,), uv=uv)
+    return el([x0, y0, z], [x1, y1, z + 0.05], key, (face,), uv=uv)
+
+
+def sign_panel(x0, x1, y0, y1, zc, key, band, t=0.5, both=True):
+    """A sign in a frame a quarter pixel wider than its print, t thick about z zc, printed on
+    its front (and its back, reading the same way round, when both)."""
+    out = [el([x0 - 0.25, y0 - 0.25, zc - t / 2], [x1 + 0.25, y1 + 0.25, zc + t / 2], "case")]
+    out.append(sign_print(x0, x1, y0, y1, zc - t / 2, key, band))
+    if both:
+        out.append(sign_print(x0, x1, y0, y1, zc + t / 2, key, band, "south"))
+    return out
+
+
+# The pharmacy counter is the office's reception desk (its transaction counter a block high
+# over the work surface), and a sign on a post at the back of its top reads PRESCRIPTION DROP
+# OFF or PICK UP to both sides.
+def pharmacy_post(band):
+    return ([el([7.6, 16, 4.1], [8.4, 21, 4.9], "chrome", SIDES),
+             el([6.5, 16, 3.25], [9.5, 16.25, 5.75], "chrome", NO_DOWN)]
+            + sign_panel(2, 14, 21, 24, 4.5, "signs_a", band))
+
+
+RECEPTION_ITEM = O.RECEPTION_BODY + O.RECEPTION_END + mirror_x(O.RECEPTION_END)
+
+
+def hanging_sign(key, band):
+    """A sign hung from the ceiling on two rods, printed both sides."""
+    return ([el([2.5, 12.75, 7.75], [3, 16, 8.25], "chrome", SIDES),
+             el([13, 12.75, 7.75], [13.5, 16, 8.25], "chrome", SIDES)]
+            + sign_panel(1, 15, 9, 12.5, 8, key, band))
+
+
+# The pharmacy's shelf wall: open shelves on a back panel, a shelf every third of a block with
+# its price strip, cartons and pill bottles on each. It has no top or base of its own, so
+# blocks stacked on one another are one wall; the end panels come only at a run's ends.
+PSHELF_LEVELS = (0.0, 5.25, 10.5)
+
+
+def pharmacy_shelf():
+    body = [el([0, 0, 15], [16, 16, 15.75], "shell", ("north", "south"))]
+    for i, y in enumerate(PSHELF_LEVELS):
+        if y:
+            body += [el([0, y, 9], [16, y + 0.5, 15], "shell", ("north", "up", "down")),
+                     strip_el(0, 16, y - 0.25, y + 0.75, 8.75, 9)]
+        else:
+            body += [el([0, 0, 9], [16, 0.5, 15], "shell", ("north", "up")),
+                     strip_el(0, 16, 0, 1, 8.75, 9)]
+        key, kind = ("stock_a", "pharmacy") if i % 2 == 0 else ("stock_b", "pharmacy_b")
+        body += stock_row(0, 16, y + 0.5, 9.5, 15, heights(kind), 1000 + i, key)
+    return body
+
+
+PHARMACY_SHELF = pharmacy_shelf()
+PHARMACY_SHELF_END = [el([0, 0, 8.5], [0.75, 16, 15.75], "shell", ("west", "east", "north", "up"))]
+
+# The tobacco case, hung on the wall behind the register: a cabinet 40 cm deep with three rows
+# of packs and cartons behind sliding smoked-glass doors, a lock where they meet, and a frieze
+# over them that carries WE CHECK ID at the run's end on the shopper's left.
+TOBACCO_BODY = ([el([0, 0, 15.5], [16, 16, 16], "shell", ("north", "south")),
+                 el([0, 0, 9.5], [16, 0.75, 15.5], "shell", ("north", "up", "down")),
+                 el([0, 12.25, 9.25], [16, 16, 15.5], "shell", ("north", "up", "down"))]
+                + [e for y in (4.5, 8.25)
+                   for e in (el([0, y - 0.4, 10], [16, y, 15.5], "shelf", ("up", "down")),
+                             strip_el(0, 16, y - 0.9, y, 9.75, 10))]
+                + stock_row(0, 16, 0.75, 10.25, 15.5, heights("packs"), 1010, "stock_a")
+                + stock_row(0, 16, 4.5, 10.25, 15.5, heights("packs"), 1011, "stock_a")
+                + stock_row(0, 16, 8.25, 10.25, 15.5, heights("packs"), 1012, "stock_a")
+                + [el([0, 0.75, 9.6], [8.25, 12.25, 9.7], "glass", ("north", "south")),
+                   el([7.75, 0.75, 9.8], [16, 12.25, 9.9], "glass", ("north", "south")),
+                   el([0, 0.75, 9.3], [16, 1.25, 10], "trim", ("north", "up")),
+                   el([0, 11.75, 9.3], [16, 12.25, 10], "trim", ("north", "down")),
+                   el([7.75, 1.25, 9.5], [8.25, 11.75, 10], "trim", ("north", "east", "west")),
+                   el([7.6, 5.5, 9.2], [8.4, 6.5, 9.5], "chrome", NO_BACK)])
+# (the sign goes on the block with no neighbour to its own right: the shopper's left)
+_TOBACCO_SIDE = [el([0, 0, 9.25], [0.5, 16, 16], "shell", ("west", "east", "north", "up", "down"))]
+TOBACCO_LEFT = _TOBACCO_SIDE
+TOBACCO_RIGHT = (mirror_x(_TOBACCO_SIDE)
+                 + [sign_print(0.75, 15.25, 12.4, 15.85, 9.25, "signs_b", 0)])
+
+# The lottery ticket dispenser, on the counter: four games of scratch tickets hanging from
+# their slots behind a clear front, a tear bar over them, the (invented) LUCKY CITY LOTTERY
+# header on top.
+LOTTO_DISPENSER = ([el([2, 0, 5], [14, 0.5, 12], "case"),
+                    el([2, 0.5, 11.5], [14, 8, 12], "case", ("north", "south", "east", "west",
+                                                            "up")),
+                    el([2, 0.5, 5], [2.5, 8, 11.5], "case", ("west", "east", "north", "up")),
+                    el([13.5, 0.5, 5], [14, 8, 11.5], "case", ("west", "east", "north", "up")),
+                    el([2.5, 1, 6], [13.5, 7.5, 6.05], "tickets", ("north",),
+                       uv={"north": [0, 0, 16, 9.5]}),
+                    el([2.5, 7.5, 5], [13.5, 8, 5.75], "chrome"),
+                    el([2.5, 0.5, 5.1], [13.5, 7.5, 5.2], "clear", ("north", "south"))]
+                   + [el([x - 0.2, 0.5, 5.2], [x + 0.2, 7.5, 11.5], "case",
+                         ("north", "east", "west")) for x in (5.25, 8, 10.75)]
+                   + sign_panel(2.25, 13.75, 8.5, 11.375, 11.75, "signs_b", 1, both=False))
+
+# The lottery terminal: a play-slip reader and the ticket slot on the front of its base, the
+# clerk's touchscreen tilted towards the back, and a customer display on a post showing the
+# (invented) jackpot.
+LOTTO_TERMINAL = ([el([3, 0, 5], [13, 3.5, 12.5], "case"),
+                   el([4, 3.5, 5.25], [9, 4.25, 8], "case", NO_DOWN),
+                   el([4.5, 4.25, 6], [8.5, 4.3, 6.5], "rubber", ("up",)),
+                   el([10, 3.5, 6], [12.5, 3.55, 7.5], "rubber", ("up",)),
+                   ALL_UV(el([3.5, 3.5, 10.5], [12.5, 9, 11.5], "case", ALL, {"south": "screen"},
+                             rot=("x", -22.5, [8, 3.5, 11])), ["south"]),
+                   el([13, 0, 9], [14, 12, 10], "case", SIDES),
+                   el([6.5, 12, 9], [14.5, 14.5, 10], "case")]
+                  + [sign_print(6.75, 14.25, 12.25, 14.125, 9, "signs_b", 2)])
+
+# The ice merchandiser outside the door: an insulated chest 1.25 m high with a door printed
+# CITY ICE (an invented brand), a hasp over it and a handle; the chests of a run stand as one.
+ICE_BODY = [el([0, 0, 3], [16, 1, 15], "kick", ("north", "south")),
+            el([0, 1, 2.5], [16, 19, 15.5], "shell", ("north", "south")),
+            el([0, 19, 2], [16, 20, 16], "shell", ("north", "south", "up", "down")),
+            ALL_UV(el([1, 1.75, 2.25], [15, 18.25, 2.5], "door", ALL,
+                      {"east": "shell", "west": "shell", "up": "shell", "down": "shell"}),
+                   ["north"]),
+            el([12.5, 7.5, 1.5], [13.25, 12.5, 2.25], "chrome", NO_BACK),
+            el([7.5, 17.25, 1.75], [8.5, 18, 2.25], "chrome", NO_BACK)]
+ICE_END = [el([0, 0, 2.5], [0.5, 19, 15.5], "shell", ("west", "north", "south")),
+           el([0, 19, 2], [0.01, 20, 16], "shell", ("west",))]
+
+
+# The propane exchange cage: a grey steel cage of open mesh, two tiers of cylinders, each an
+# octagon with its collar and valve, a PROPANE EXCHANGE sign on the roof. The mullions are
+# drawn half in each block, so the cages of a run stand as one with a door each.
+def cylinder(cx, cz, y0, full=True):
+    out = R.octagon(cx, cz, 2.2, y0, y0 + 6, "tank", caps=("up",))
+    if full:
+        out += (R.octagon(cx, cz, 1.5, y0 + 6, y0 + 7.5, "tank", caps=())
+                + [el([cx - 0.4, y0 + 6, cz - 0.4], [cx + 0.4, y0 + 7.25, cz + 0.4], "brass",
+                      NO_DOWN)])
+    return out
+
+
+PROPANE_BODY = ([el([0, 0, 2.5], [16, 1, 14.5], "frame", ("north", "up", "south")),
+                 el([0, 11, 2.5], [16, 11.5, 14.5], "frame", ("north", "up", "down", "south")),
+                 el([0, 21.5, 2.5], [16, 22, 14.5], "frame", ("north", "up", "down", "south"))]
+                + [el([0, y0, z], [16, y1, z + 0.1], "mesh", ("north", "south"))
+                   for y0, y1 in ((1, 11), (11.5, 21.5)) for z in (2.5, 14.4)]
+                + [el([0, 1, 2.25], [0.5, 21.5, 2.85], "frame", ("north", "east", "south")),
+                   el([15.5, 1, 2.25], [16, 21.5, 2.85], "frame", ("north", "west", "south")),
+                   el([7.25, 9, 1.9], [8.75, 10, 2.25], "chrome", NO_BACK)]
+                + [e for y0 in (1, 11.5) for cx in (3, 8, 13)
+                   for e in cylinder(cx, 5.25, y0) + cylinder(cx, 11, y0, full=False)]
+                + sign_panel(0.5, 15.5, 22.25, 26, 2.75, "signs_b", 3, both=False))
+PROPANE_END = [el([0, 0, 2.25], [0.75, 22, 3], "frame", NO_DOWN),
+               el([0, 0, 14], [0.75, 22, 14.75], "frame", NO_DOWN),
+               el([0.25, 1, 3], [0.35, 11, 14], "mesh", ("east", "west")),
+               el([0.25, 11.5, 3], [0.35, 21.5, 14], "mesh", ("east", "west")),
+               el([0, 0, 3], [0.01, 1, 14], "frame", ("west",)),
+               el([0, 11, 3], [0.01, 11.5, 14], "frame", ("west",)),
+               el([0, 21.5, 3], [0.01, 22, 14], "frame", ("west",))]
+
+
+# The firewood rack: a black steel rack of two tiers of shrink-wrapped bundles, four to a
+# tier, a FIREWOOD BUNDLES sign on top.
+def bundle(x0, y0, z0):
+    uv = {"north": [0, 3, 16, 13], "south": [0, 3, 16, 13]}
+    return el([x0, y0, z0], [x0 + 7, y0 + 4.5, z0 + 5.5], "bark", NO_DOWN,
+              {"north": "ends", "south": "ends"}, uv=uv)
+
+
+FIREWOOD_BODY = ([el([0, y, 2], [16, y + 0.5, 14.5], "frame", ("north", "up", "down", "south"))
+                  for y in (0.5, 9.5, 17.5)]
+                 + [el([0, y0, 14.4], [16, y1, 14.5], "mesh", ("north", "south"))
+                    for y0, y1 in ((1, 9.5), (10, 17.5))]
+                 + [bundle(x, y, z) for y in (1, 10) for x in (0.75, 8.25) for z in (2.5, 8.5)]
+                 + sign_panel(0.5, 15.5, 18.25, 22, 2.5, "signs_c", 0, both=False))
+FIREWOOD_END = ([el([0, 0, z], [0.75, 18, z + 0.75], "frame", SIDES + ("up",))
+                 for z in (2, 13.75)]
+                + [el([0, y, 2.75], [0.75, y + 0.5, 13.75], "frame", ("west", "up", "down"))
+                   for y in (0.5, 9.5, 17.5)])
+
+# The kiosks, two blocks tall and lit (their upper half gives light 7): a coin counter with its
+# tray on a ledge, a photo kiosk with a tilted touchscreen over its printer, and a movie rental
+# kiosk of posters and a screen under a lit header. No brands: each wears a generic header.
+COIN_KIOSK = ([el([2, 0, 4], [14, 1, 14], "kick", NO_DOWN),
+               el([2.5, 1, 4.5], [13.5, 13, 14], "shell", NO_DOWN),
+               el([2.5, 9.25, 4.4], [13.5, 10.25, 4.5], "accent", ("north", "east", "west")),
+               el([5.5, 3, 4.25], [10.5, 7.5, 4.5], "trim", NO_BACK),
+               el([6.5, 6.5, 4], [9.5, 7, 4.25], "rubber", NO_BACK),
+               el([2.25, 13, 3.25], [13.75, 14, 10], "shell"),
+               ALL_UV(el([3, 14, 3.75], [13, 14.05, 9.5], "coins", ("up",)), ["up"]),
+               el([2.5, 14, 9.5], [13.5, 24, 14], "shell", NO_DOWN),
+               ALL_UV(el([4, 16, 9.4], [12, 22, 9.5], "screen", ("north",)), ["north"]),
+               el([2, 24, 9], [14, 24.5, 14.5], "shell")]
+              + sign_panel(2.5, 13.5, 24.75, 27.5, 9.75, "signs_c", 1, both=False))
+PHOTO_KIOSK = ([el([2, 0, 6], [14, 1, 14], "kick", NO_DOWN),
+                el([2.5, 1, 6.5], [13.5, 12.5, 14], "shell", NO_DOWN),
+                el([4, 2.5, 6.25], [12, 5, 6.5], "trim", NO_BACK),
+                el([4.5, 7, 5], [11.5, 7.5, 6.5], "case", NO_BACK),
+                el([1.5, 12.5, 3], [14.5, 13.25, 14], "accent"),
+                el([3, 13.25, 3.75], [7, 13.75, 6], "case", NO_DOWN),
+                el([3.5, 13.75, 4.5], [6.5, 13.8, 5.5], "rubber", ("up",)),
+                el([2.5, 13.25, 10], [13.5, 24, 14], "shell", NO_DOWN),
+                ALL_UV(el([3.5, 14, 7], [12.5, 20, 8], "shell", ALL, {"north": "screen"},
+                          rot=("x", 22.5, [8, 14, 7.5])), ["north"]),
+                el([2, 24, 9.5], [14, 24.5, 14.5], "shell")]
+               + sign_panel(2.5, 13.5, 24.75, 27.5, 10.25, "signs_c", 2, both=False))
+DVD_KIOSK = [el([1.5, 0, 5.5], [14.5, 1, 14.5], "kick", NO_DOWN),
+             el([1, 1, 5], [15, 28.5, 15], "shell", NO_DOWN),
+             ALL_UV(el([1.75, 15, 4.9], [14.25, 27.25, 5], "posters", ("north",)), ["north"]),
+             ALL_UV(el([3, 8.5, 4.9], [9.5, 13.5, 5], "screen", ("north",)), ["north"]),
+             el([3.5, 6.5, 4.6], [9, 7.25, 5], "rubber", NO_BACK),
+             el([10.5, 9, 4.25], [13, 12.5, 5], "case", NO_BACK),
+             el([10.5, 6.5, 4.5], [13, 8.5, 5], "trim", NO_BACK),
+             el([3.5, 3, 4.6], [12.5, 3.75, 5], "rubber", NO_BACK),
+             el([0.5, 28.5, 3], [15.5, 32, 15.5], "shell"),
+             sign_print(1.5, 14.5, 28.75, 32, 3, "signs_c", 3)]
+
+
+# ------------------------------------------------------------------------------------------
 # Finishes
 # ------------------------------------------------------------------------------------------
 def fin(fid, tex, *names):
@@ -2937,6 +3509,138 @@ add("fountain_machine", "appliance",
     "Coffee & Drinks",
     "Six invented drinks; pours a fountain drink from sugar and water; rests on counters")
 
+# --- the front of the store ----------------------------------------------------------------
+TEAL_N = ("Teal", "Petrol", "verde azulado", "blågrön")
+PHARMACY_FINS = [
+    fin("teal", {"wood": T("white"), "wood_v": MT("laminate_teal"), "edge": T("white_edge"),
+                 "frame": T("metal_black")}, *TEAL_N),
+    fin("walnut", dict(WALNUT, frame=T("metal_black")), *WALNUT_N),
+]
+PHARMACY_JAVA = ('new BlockKitchenCabinet("%s", new int[]{0, 0, 0, 16, 16, 15}, '
+                 'KitchenLine.RECEPTION, 9, KitchenFront.DRAWERS)')
+PHARMACY_DESK = ("The reception desk as a pharmacy counter: joins the drop-off and pick-up "
+                 "counters of its finish into one; 9 slots in drawers; a sign on a post reads "
+                 "PRESCRIPTION %s both ways")
+
+add("pharmacy_dropoff", "pharmacy", PHARMACY_FINS,
+    ("Pharmacy Drop-Off Counter", "Apothekentheke Rezeptannahme",
+     "Mostrador de farmacia para entregar recetas", "Apoteksdisk för receptinlämning"),
+    {"geo": pharmacy_post(2), "java": PHARMACY_JAVA}, "Pharmacy", PHARMACY_DESK % "DROP OFF")
+add("pharmacy_pickup", "pharmacy", PHARMACY_FINS,
+    ("Pharmacy Pick-Up Counter", "Apothekentheke Rezeptausgabe",
+     "Mostrador de farmacia para recoger recetas", "Apoteksdisk för uthämtning"),
+    {"geo": pharmacy_post(3), "java": PHARMACY_JAVA}, "Pharmacy", PHARMACY_DESK % "PICK UP")
+add("pharmacy_shelf", "run", [fin("white", {"shell": MT("case_white")}, *WHITE_N)],
+    ("Pharmacy Shelf Wall", "Apothekenregal", "Estantería de farmacia", "Apotekshylla"),
+    {"body": PHARMACY_SHELF, "end": PHARMACY_SHELF_END, "particle": "shell",
+     "tex": stock_tex("pharmacy", "pharmacy_b"),
+     "java": RUN % ("%s", jbox(box_of(PHARMACY_SHELF)), "pharmacy_shelf",
+                    "BlockRenderLayer.CUTOUT")},
+    "Pharmacy", "Shelves of generic cartons and pill bottles; joins any pharmacy shelf, and "
+                "stacks into a wall (end panels only at a run's ends)")
+_HANG = FIX % ("%s", jbox(box_of(hanging_sign("signs_a", 0))), "METAL")
+add("pharmacy_sign", "single", [fin("teal", {}, *TEAL_N)],
+    ("Pharmacy Sign", "Apothekenschild", "Cartel de farmacia", "Apoteksskylt"),
+    {"geo": hanging_sign("signs_a", 0), "particle": "case", "java": _HANG},
+    "Pharmacy", "Hangs from the ceiling: PHARMACY with an Rx and a capsule, both sides")
+add("consultation_sign", "single", [fin("teal", {}, *TEAL_N)],
+    ("Consultation Sign", "Beratungsschild", "Cartel de consulta", "Rådgivningsskylt"),
+    {"geo": hanging_sign("signs_a", 1), "particle": "case", "java": _HANG},
+    "Pharmacy", "Hangs from the ceiling: PRIVATE CONSULTATION, both sides")
+
+add("tobacco_case", "run",
+    [fin("black", {"shell": MT("case_black"), "trim": T("stainless_dark"),
+                   "shelf": MT("steel_grey")}, *BLACK_N),
+     fin("walnut", {"shell": T("walnut"), "trim": T("stainless_dark"),
+                    "shelf": MT("steel_grey")}, *WALNUT_N)],
+    ("Tobacco Case", "Tabakwarenschrank", "Vitrina de tabaco", "Tobaksskåp"),
+    {"body": TOBACCO_BODY, "end": TOBACCO_LEFT, "end_right": TOBACCO_RIGHT, "particle": "shell",
+     "tex": dict(stock_tex("packs", "packs"), glass=MT("glass_smoke")),
+     "java": RUN_FULL % ("%s", jbox(box_of(TOBACCO_BODY + TOBACCO_RIGHT)), "tobacco_case", 9,
+                         "FurnishingsSounds.CABINET_OPEN", "FurnishingsSounds.CABINET_CLOSE",
+                         "null", "1.0", "TRANSLUCENT")},
+    "Tobacco & Lottery",
+    "Hangs on the wall behind the register: plain packs behind sliding smoked glass, WE CHECK "
+    "ID over the run's end on the shopper's left; joins into a run; 9 slots")
+add("lottery_dispenser", "counter",
+    [fin("clear", {}, "Clear", "Transparent", "transparente", "genomskinlig")],
+    ("Lottery Ticket Dispenser", "Rubbellos-Spender", "Dispensador de boletos de lotería",
+     "Skraplottsställ"),
+    {"geo": LOTTO_DISPENSER, "particle": "case",
+     "java": 'new BlockCounterPiece("%s", new int[]{%s}, Material.WOOD, SoundType.METAL, '
+             'BlockRenderLayer.TRANSLUCENT)'},
+    "Tobacco & Lottery",
+    "Four invented scratch games behind a clear front under a LUCKY CITY LOTTERY header; "
+    "rests on counters")
+add("lottery_terminal", "counter", [fin("black", {"screen": MT("screen_lotto")}, *BLACK_N)],
+    ("Lottery Terminal", "Lotto-Terminal", "Terminal de lotería", "Lottoterminal"),
+    {"geo": LOTTO_TERMINAL, "particle": "case",
+     "java": ('new BlockCounterPiece("%%s", new int[]{%%s}, %s, FurnishingsSounds.PRINTER_RUN, '
+              '1.8F, null)' % PIECE_METAL)},
+    "Tobacco & Lottery",
+    "Play-slip reader, the clerk's screen and a jackpot display; prints a ticket on click; rests "
+    "on counters")
+
+add("ice_merchandiser", "run",
+    [fin("white", {"shell": MT("case_white"), "kick": MT("steel_grey"),
+                   "door": MT("ice_door_white")}, *WHITE_N),
+     fin("blue", {"shell": MT("plastic_blue"), "kick": MT("steel_grey"),
+                  "door": MT("ice_door_blue")}, "Blue", "Blau", "azul", "blå")],
+    ("Ice Merchandiser", "Eistruhe für Eiswürfel", "Arcón de hielo", "Isfrys"),
+    {"body": ICE_BODY, "end": ICE_END, "particle": "shell",
+     "java": RUN_FULL % ("%s", jbox(box_of(ICE_BODY)), "ice_merchandiser", 27,
+                         "FurnishingsSounds.FRIDGE_OPEN", "FurnishingsSounds.FRIDGE_CLOSE",
+                         "null", "1.0", "SOLID")},
+    "Outdoor", "An insulated chest of bagged CITY ICE (an invented brand); joins into a run; "
+               "27 slots, fridge door sounds")
+add("propane_cage", "run",
+    [fin("grey", {"frame": MT("steel_grey"), "mesh": MT("mesh_cage"),
+                  "tank": MT("steel_white")}, "Grey", "Grau", "gris", "grå")],
+    ("Propane Exchange Cage", "Propangas-Tauschkäfig", "Jaula de intercambio de propano",
+     "Gasolbytesbur"),
+    {"body": PROPANE_BODY, "end": PROPANE_END, "particle": "frame",
+     "java": RUN % ("%s", jbox(box_of(PROPANE_BODY)), "propane_cage",
+                    "BlockRenderLayer.CUTOUT")},
+    "Outdoor", "Two tiers of cylinders behind open mesh under a PROPANE EXCHANGE sign; joins "
+               "into a run")
+add("firewood_rack", "run", [fin("black", {"frame": T("metal_black"), "mesh": MT("mesh_black")},
+                                 *BLACK_N)],
+    ("Firewood Rack", "Brennholzregal", "Estante de leña", "Vedställ"),
+    {"body": FIREWOOD_BODY, "end": FIREWOOD_END, "particle": "frame",
+     "java": RUN % ("%s", jbox(box_of(FIREWOOD_BODY)), "firewood_rack",
+                    "BlockRenderLayer.CUTOUT")},
+    "Outdoor", "Two tiers of wrapped firewood bundles under a FIREWOOD sign; joins into a run")
+
+KIOSK_JAVA = 'new BlockMarketTall("%%s", new int[]{%s}, 7, FurnishingsSounds.%s)'
+add("coin_kiosk", "tall",
+    [fin("blue", {"shell": MT("plastic_blue"), "kick": MT("steel_grey"),
+                  "accent": MT("plastic_yellow"), "trim": T("stainless_dark"),
+                  "screen": MT("screen_coins")}, "Blue", "Blau", "azul", "blå")],
+    ("Coin Counting Kiosk", "Münzzählautomat", "Quiosco contador de monedas",
+     "Myntinräkningsautomat"),
+    {"geo": COIN_KIOSK, "particle": "shell",
+     "java": KIOSK_JAVA % (jbox(box_of(COIN_KIOSK, tall=True)), "APPLIANCE_BEEP")},
+    "Kiosks", "2 blocks tall, decorative: a coin tray and a lit screen (light 7); beeps on click")
+add("photo_kiosk", "tall",
+    [fin("white", {"shell": MT("case_white"), "kick": MT("steel_grey"),
+                   "accent": MT("plastic_red"), "trim": T("stainless_dark"),
+                   "screen": MT("screen_photo")}, *WHITE_N)],
+    ("Photo Printing Kiosk", "Fotodruckautomat", "Quiosco de impresión de fotos", "Fotoautomat"),
+    {"geo": PHOTO_KIOSK, "particle": "shell",
+     "java": KIOSK_JAVA % (jbox(box_of(PHOTO_KIOSK, tall=True)), "PRINTER_RUN")},
+    "Kiosks", "2 blocks tall, decorative: a tilted touchscreen over a print tray (light 7); "
+              "prints on click")
+add("dvd_kiosk", "tall",
+    [fin("purple", {"shell": MT("plastic_purple"), "kick": MT("steel_grey"),
+                    "trim": T("stainless_dark"), "screen": MT("screen_movies")},
+         "Purple", "Lila", "morado", "lila")],
+    ("DVD Rental Kiosk", "DVD-Verleihautomat", "Quiosco de alquiler de DVD",
+     "DVD-uthyrningsautomat"),
+    {"geo": DVD_KIOSK, "particle": "shell",
+     "java": KIOSK_JAVA % (jbox(box_of(DVD_KIOSK, tall=True)), "APPLIANCE_BEEP")},
+    "Kiosks", "2 blocks tall, decorative: invented films' posters, a screen and a disc slot "
+              "under a lit header (light 7); beeps on click")
+
 PIECE = {p[0]: p for p in PIECES}
 
 
@@ -3004,6 +3708,10 @@ def base_models():
                 out.append(("gondola_%s_item" % v, geometry(item, p)))
         elif kind == "service":
             out.append(("service_desk_sign", geometry(SERVICE_SIGN, "sign")))
+        elif kind == "pharmacy":
+            out.append(("%s_sign" % piece, geometry(spec["geo"], "case")))
+            item = RECEPTION_ITEM + spec["geo"]
+            out.append(("%s_item" % piece, geometry(item, "wood", display=big(item))))
         elif kind in ("single", "sign"):
             geo = spec["geo"]
             lo, hi = B.extent(geo)
@@ -3230,6 +3938,13 @@ def generate(assets):
             copy_model(blk % "sign", "service_desk_sign", ftex)
             copy_model(item, "reception_desk_item", ftex, O.SUB)
             state = multipart_state(reg, run_rules() + R.faced([("sign", {"right": "false"})]))
+        elif kind == "pharmacy":
+            # the reception desk's parts, and this counter's sign on every block
+            for part in ("body", "left", "right"):
+                copy_model(blk % part, "reception_desk_%s" % part, ftex, O.SUB)
+            copy_model(blk % "sign", "%s_sign" % piece, ftex)
+            copy_model(item, "%s_item" % piece, ftex)
+            state = multipart_state(reg, run_rules() + R.faced([("sign", {})]))
         elif kind == "single":
             state = {"forge_marker": 1, "defaults": {"model": BASE + piece, "textures": ftex},
                      "variants": {"facing": facing_variants(), "inventory": [{}]}}
@@ -3325,7 +4040,8 @@ MOVED_NAMES = {"BlockAppleCrate": "Apple Crate", "BlockBananaCrate": "Banana Cra
                "BlockPearCrate": "Pear Crate", "BlockPotatoeCrate": "Potato Crate",
                "BlockTomatoeCrate": "Tomato Crate", "BlockVerifoneMx915": "Verifone MX915"}
 GROUP_ORDER = ["Refrigerated", "Shelving", "Produce", "Butcher & Seafood", "Bakery & Hot Food",
-               "Floral", "Coffee & Drinks", "Checkout", "Store"]
+               "Floral", "Coffee & Drinks", "Checkout", "Tobacco & Lottery", "Pharmacy",
+               "Store", "Kiosks", "Outdoor"]
 
 
 def fragments():

@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/market/base/pharmacy_shelf_body",
+  "textures": {
+    "stock_a": "csm:blocks/furniture/market/stock_pharmacy",
+    "stock_a_top": "csm:blocks/furniture/market/stock_pharmacy_top",
+    "stock_b": "csm:blocks/furniture/market/stock_pharmacy_b",
+    "stock_b_top": "csm:blocks/furniture/market/stock_pharmacy_b_top",
+    "shell": "csm:blocks/furniture/market/case_white"
+  }
+}

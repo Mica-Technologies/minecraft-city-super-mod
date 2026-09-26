@@ -19,7 +19,11 @@ import net.minecraft.block.Block;
  * follow the same lines: the butcher, seafood and hot food cases and the floral cooler as the
  * displays, the bread rack, pastry case and coffee station counters as timber, the brewer,
  * fountain and rotisserie as sheet steel with their controls, and the flower stand as iron and
- * the flowers in it.
+ * the flowers in it. The front of the store likewise: the pharmacy counters as the service desk
+ * with a sign, its shelf wall as the gondola, the tobacco case as timber and glass, the lottery
+ * pieces as a dispenser of paper and a terminal of electronics, the ice chest as the island
+ * freezer without its glass, the propane cage and firewood rack as iron (the rack with its logs),
+ * the kiosks as sheet steel with their electronics.
  *
  * <p>The blocks that moved in keep what they cost before: the produce crates as the Furniture
  * tab's woodwork, the Verifone as the Technology tab's electronics. Priced by registry name,
@@ -40,6 +44,7 @@ public final class MarketFabricatorRules {
   private static final String MC_GOLD_NUGGET = "minecraft:gold_nugget";
   private static final String MC_DYE = "minecraft:dye";
   private static final String MC_FLOWER = "minecraft:red_flower";
+  private static final String MC_LOG = "minecraft:log";
 
   /** The produce crates that moved in from the Furniture tab. */
   private static final Set<String> MOVED_CRATES = new HashSet<>(Arrays.asList(
@@ -232,6 +237,57 @@ public final class MarketFabricatorRules {
     if (registryName.startsWith("magazine_rack_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1),
           FabricatorIngredient.any(MC_PAPER, 3));
+    }
+    if (registryName.startsWith("pharmacy_dropoff_")
+        || registryName.startsWith("pharmacy_pickup_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 5),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1),
+          FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+    }
+    if (registryName.startsWith("pharmacy_shelf_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("pharmacy_sign_")
+        || registryName.startsWith("consultation_sign_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
+    }
+    if (registryName.startsWith("tobacco_case_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+          FabricatorIngredient.any(MC_GLASS_PANE, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("lottery_dispenser_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_GLASS_PANE, 1),
+          FabricatorIngredient.any(MC_PAPER, 2));
+    }
+    if (registryName.startsWith("lottery_terminal_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.any(MC_PAPER, 1));
+    }
+    if (registryName.startsWith("ice_merchandiser_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+    }
+    if (registryName.startsWith("propane_cage_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 3),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+    }
+    if (registryName.startsWith("firewood_rack_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 2),
+          FabricatorIngredient.any(MC_LOG, 2));
+    }
+    if (registryName.startsWith("coin_kiosk_") || registryName.startsWith("dvd_kiosk_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
+    if (registryName.startsWith("photo_kiosk_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.any(MC_PAPER, 1));
     }
     if (registryName.startsWith("bottle_return_machine_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),

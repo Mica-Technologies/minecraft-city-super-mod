@@ -889,6 +889,28 @@ def cost_for(registry, info, ancestors):
             return ("iron_ingot", "paper x3")
         if registry.startswith("bottle_return_machine_"):
             return ("SHEET_METAL x3", "CONTROL_BOARD", "OPTICAL_SENSOR")
+        if registry.startswith(("pharmacy_dropoff_", "pharmacy_pickup_")):
+            return ("planks x5", "FASTENER_KIT", "SIGN_BLANK")
+        if registry.startswith("pharmacy_shelf_"):
+            return ("SHEET_METAL x2", "FASTENER_KIT")
+        if registry.startswith(("pharmacy_sign_", "consultation_sign_")):
+            return ("SIGN_BLANK",)
+        if registry.startswith("tobacco_case_"):
+            return ("planks x2", "glass_pane x2", "FASTENER_KIT")
+        if registry.startswith("lottery_dispenser_"):
+            return ("glass_pane", "paper x2")
+        if registry.startswith("lottery_terminal_"):
+            return ("CONTROL_BOARD", "LED_MODULE", "paper")
+        if registry.startswith("ice_merchandiser_"):
+            return ("SHEET_METAL x3", "CONTROL_BOARD")
+        if registry.startswith("propane_cage_"):
+            return ("iron_ingot x3", "SHEET_METAL x2")
+        if registry.startswith("firewood_rack_"):
+            return ("iron_ingot x2", "log x2")
+        if registry.startswith(("coin_kiosk_", "dvd_kiosk_")):
+            return ("SHEET_METAL x3", "CONTROL_BOARD", "LED_MODULE")
+        if registry.startswith("photo_kiosk_"):
+            return ("SHEET_METAL x2", "CONTROL_BOARD", "LED_MODULE", "paper")
         return ("planks x2", "FASTENER_KIT")
     # Any other tab is a module's own, priced by the rule the module registers
     # (e.g. ParksFabricatorRules), which this audit does not mirror; this is the generic cost

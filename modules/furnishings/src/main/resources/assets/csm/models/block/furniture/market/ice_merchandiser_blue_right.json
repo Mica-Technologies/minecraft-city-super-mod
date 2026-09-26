@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/market/base/ice_merchandiser_right",
+  "textures": {
+    "shell": "csm:blocks/furniture/market/plastic_blue",
+    "kick": "csm:blocks/furniture/market/steel_grey",
+    "door": "csm:blocks/furniture/market/ice_door_blue"
+  }
+}

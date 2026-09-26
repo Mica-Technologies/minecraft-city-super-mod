@@ -51,8 +51,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * a commercial brewer and a fountain drink machine, with the fountain drink it pours), the
  * checkout (belt, scanner and bagging counters that join into a lane, registers, the receipt
  * printer, card terminals including the Verifone MX915, the self-checkout, the customer service
- * desk, the candy rack) and the shop floor's fixtures: carts and the cart corral, basket stacks,
- * security gates, aisle signs, a magazine rack and a bottle return machine.
+ * desk, the candy rack), the tobacco case and the lottery's dispenser and terminal, the pharmacy
+ * (drop-off and pick-up counters, a shelf wall, its signs), the shop floor's fixtures: carts and
+ * the cart corral, basket stacks, security gates, aisle signs, a magazine rack and a bottle return
+ * machine, the kiosks (coin counter, photo printing, movie rental) and the merchandisers outside
+ * the door (ice, propane exchange, firewood).
  *
  * <p>The produce crates came here from the Furniture tab and the Verifone from the Technology
  * module, their classes and registry names unchanged, so placed ones load as they were. The
@@ -248,6 +251,35 @@ public class CsmTabMarketStore extends CsmTab {
     // Checkout Candy Rack
     initTabBlock(new BlockBathroomFixture("impulse_rack_black", new int[]{1, 0, 5, 15, 21, 13}, FixtureMaterial.METAL));
 
+    // ---- Tobacco & Lottery ----
+    // Tobacco Case
+    initTabBlock(new BlockMarketRun("tobacco_case_black", new int[]{0, 0, 9, 16, 16, 16}, "tobacco_case", 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE, null, 1.0F, BlockRenderLayer.TRANSLUCENT));
+    initTabBlock(new BlockMarketRun("tobacco_case_walnut", new int[]{0, 0, 9, 16, 16, 16}, "tobacco_case", 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE, null, 1.0F, BlockRenderLayer.TRANSLUCENT));
+
+    // Lottery Ticket Dispenser
+    initTabBlock(new BlockCounterPiece("lottery_dispenser_clear", new int[]{2, 0, 5, 14, 12, 12}, Material.WOOD, SoundType.METAL, BlockRenderLayer.TRANSLUCENT));
+
+    // Lottery Terminal
+    initTabBlock(new BlockCounterPiece("lottery_terminal_black", new int[]{3, 0, 5, 15, 15, 13}, Material.WOOD, SoundType.METAL, BlockRenderLayer.SOLID, FurnishingsSounds.PRINTER_RUN, 1.8F, null));
+
+    // ---- Pharmacy ----
+    // Pharmacy Drop-Off Counter
+    initTabBlock(new BlockKitchenCabinet("pharmacy_dropoff_teal", new int[]{0, 0, 0, 16, 16, 15}, KitchenLine.RECEPTION, 9, KitchenFront.DRAWERS));
+    initTabBlock(new BlockKitchenCabinet("pharmacy_dropoff_walnut", new int[]{0, 0, 0, 16, 16, 15}, KitchenLine.RECEPTION, 9, KitchenFront.DRAWERS));
+
+    // Pharmacy Pick-Up Counter
+    initTabBlock(new BlockKitchenCabinet("pharmacy_pickup_teal", new int[]{0, 0, 0, 16, 16, 15}, KitchenLine.RECEPTION, 9, KitchenFront.DRAWERS));
+    initTabBlock(new BlockKitchenCabinet("pharmacy_pickup_walnut", new int[]{0, 0, 0, 16, 16, 15}, KitchenLine.RECEPTION, 9, KitchenFront.DRAWERS));
+
+    // Pharmacy Shelf Wall
+    initTabBlock(new BlockMarketRun("pharmacy_shelf_white", new int[]{0, 0, 8, 16, 16, 16}, "pharmacy_shelf", BlockRenderLayer.CUTOUT));
+
+    // Pharmacy Sign
+    initTabBlock(new BlockBathroomFixture("pharmacy_sign_teal", new int[]{0, 8, 7, 16, 16, 9}, FixtureMaterial.METAL));
+
+    // Consultation Sign
+    initTabBlock(new BlockBathroomFixture("consultation_sign_teal", new int[]{0, 8, 7, 16, 16, 9}, FixtureMaterial.METAL));
+
     // ---- Store ----
     // Shopping Cart
     initTabBlock(new BlockBathroomFixture("shopping_cart_red", new int[]{2, 0, 0, 14, 16, 16}, FixtureMaterial.METAL));
@@ -272,5 +304,26 @@ public class CsmTabMarketStore extends CsmTab {
 
     // Bottle Return Machine
     initTabBlock(new BlockMarketTall("bottle_return_machine_green", new int[]{0, 0, 3, 16, 29, 16}, 4, null));
+
+    // ---- Kiosks ----
+    // Coin Counting Kiosk
+    initTabBlock(new BlockMarketTall("coin_kiosk_blue", new int[]{2, 0, 3, 14, 28, 15}, 7, FurnishingsSounds.APPLIANCE_BEEP));
+
+    // Photo Printing Kiosk
+    initTabBlock(new BlockMarketTall("photo_kiosk_white", new int[]{1, 0, 3, 15, 28, 15}, 7, FurnishingsSounds.PRINTER_RUN));
+
+    // DVD Rental Kiosk
+    initTabBlock(new BlockMarketTall("dvd_kiosk_purple", new int[]{0, 0, 2, 16, 32, 16}, 7, FurnishingsSounds.APPLIANCE_BEEP));
+
+    // ---- Outdoor ----
+    // Ice Merchandiser
+    initTabBlock(new BlockMarketRun("ice_merchandiser_white", new int[]{0, 0, 1, 16, 20, 16}, "ice_merchandiser", 27, FurnishingsSounds.FRIDGE_OPEN, FurnishingsSounds.FRIDGE_CLOSE, null, 1.0F, BlockRenderLayer.SOLID));
+    initTabBlock(new BlockMarketRun("ice_merchandiser_blue", new int[]{0, 0, 1, 16, 20, 16}, "ice_merchandiser", 27, FurnishingsSounds.FRIDGE_OPEN, FurnishingsSounds.FRIDGE_CLOSE, null, 1.0F, BlockRenderLayer.SOLID));
+
+    // Propane Exchange Cage
+    initTabBlock(new BlockMarketRun("propane_cage_grey", new int[]{0, 0, 1, 16, 24, 15}, "propane_cage", BlockRenderLayer.CUTOUT));
+
+    // Firewood Rack
+    initTabBlock(new BlockMarketRun("firewood_rack_black", new int[]{0, 0, 2, 16, 23, 15}, "firewood_rack", BlockRenderLayer.CUTOUT));
   }
 }

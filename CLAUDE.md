@@ -764,8 +764,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   case and the rotisserie oven, the flower bucket stand and floral cooler (bunches as crossed
   planes in octagon buckets), and the coffee station (coffee bar and cup counter that join, the
   brewer and fountain drink machine on the appliance framework, the fountain drink's sprite);
-  and the moved Verifone's blockstate with its model dropped onto each counter height;
-  `--check`, `--fragments` (the whole tab body, moved crates included).
+  the front of the store: pharmacy drop-off and pick-up counters (the reception desk's parts
+  with a sign on a post), a stacking shelf wall and hanging PHARMACY and CONSULTATION signs (an
+  Rx and a capsule, never a cross), the wall-hung tobacco case, the lottery dispenser and
+  terminal (an invented lottery), the ice merchandiser, propane exchange cage and firewood rack,
+  and the coin, photo and movie kiosks, every sign a 4:1 band of one of three shared 64 px
+  sheets (`SIGNS`); and the moved Verifone's blockstate with its model dropped onto each
+  counter height; `--check`, `--fragments` (the whole tab body, moved crates included).
   `gen_furniture_sounds.py` synthesises the card terminal beep, the scanner beep and the cash
   drawer
 - `model_depth.py` -- separates the coplanar faces that z-fight in JSON block models. Every

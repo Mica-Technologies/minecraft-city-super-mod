@@ -1,0 +1,92 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shell": "csm:blocks/furniture/market/case_black",
+    "signs_b": "csm:blocks/furniture/market/store_signs_b",
+    "particle": "#shell"
+  },
+  "elements": [
+    {
+      "from": [
+        15.5,
+        -0.2,
+        8.85
+      ],
+      "to": [
+        16,
+        16.2,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            0,
+            6.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#shell",
+          "uv": [
+            9.25,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            0,
+            0,
+            0.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#shell",
+          "uv": [
+            15.5,
+            9.25,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            15.5,
+            0,
+            16,
+            6.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.75,
+        12.4,
+        9.05
+      ],
+      "to": [
+        15.25,
+        15.85,
+        9.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#signs_b",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        }
+      }
+    }
+  ]
+}

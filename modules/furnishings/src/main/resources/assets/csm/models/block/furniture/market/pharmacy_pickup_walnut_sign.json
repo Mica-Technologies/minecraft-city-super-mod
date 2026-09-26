@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/market/base/pharmacy_pickup_sign",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/walnut",
+    "wood_v": "csm:blocks/furniture/residential/walnut_v",
+    "edge": "csm:blocks/furniture/residential/walnut_edge",
+    "frame": "csm:blocks/furniture/residential/metal_black",
+    "case": "csm:blocks/furniture/market/case_black"
+  }
+}

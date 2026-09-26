@@ -697,6 +697,81 @@ The traps:
   and reuse the bakery stock, the reach-in's frame textures, the kitchen's lamps and the
   residential woods; the block atlas went from 95.1% to 95.2% of 8192 x 4096.
 
+### Front of the store
+
+The pharmacy, the tobacco case and the lottery behind the register, the kiosks inside the door
+and the merchandisers outside it, drawn by the same generator on classes the tab already had:
+nothing here needed a new Java class or a new property.
+
+- **Pharmacy.** The drop-off and pick-up counters (`pharmacy_dropoff_*`, `pharmacy_pickup_*`,
+  teal and walnut) are `BlockKitchenCabinet`s on the office's `KitchenLine.RECEPTION`, drawn
+  from the reception desk's own parts, as the customer service desk is, with one more part on
+  every block: a sign on a post at the back of the transaction top reading PRESCRIPTION DROP OFF
+  or PICK UP to both sides. Cabinets join by line and finish, so the drop-off and pick-up
+  counters of a finish make one counter in any order. The shelf wall behind (`BlockMarketRun`,
+  group `pharmacy_shelf`) is three open shelves of generic cartons and pill bottles (the
+  `pharmacy` and `pharmacy_b` stock) on a back panel, with no top or base of its own, so blocks
+  stacked on one another are one wall; its end panels come only at a run's ends. The PHARMACY
+  and PRIVATE CONSULTATION signs hang from the ceiling like the aisle sign, printed both sides.
+  **No red cross anywhere:** it is a protected emblem, so the pharmacy has an Rx and a
+  two-tone capsule.
+- **Tobacco and lottery.** The tobacco case (`BlockMarketRun`, group `tobacco_case`, black and
+  walnut, 9 slots, translucent) hangs on the wall behind the register: its model fills the back
+  seven pixels of its block, three rows of plain packs in colour bands behind two sliding
+  smoked-glass doors. WE CHECK ID, 21 AND OVER is on the frieze of the run's end on the
+  shopper's left. The lottery is an invented one, LUCKY CITY LOTTERY: the ticket dispenser (a
+  translucent `BlockCounterPiece`) shows four scratch games (a seven, a clover, a star, a coin)
+  hanging from their slots behind a clear front, and the terminal has a play-slip reader, the
+  clerk's screen tilted towards the back and a jackpot display on a post; it prints (the
+  copier's sound, faster) on click. Both rest on counters.
+- **Outdoor merchandisers.** The ice merchandiser (`BlockMarketRun`, group
+  `ice_merchandiser`, white and blue, 27 slots behind the refrigerator's door sounds) is an
+  insulated chest 1.25 m high whose door reads CITY ICE (invented). It is not lit: real ones
+  mostly are not, and a lit one would need the display cases' `LIT` and `POWERED`. The propane
+  exchange cage (group `propane_cage`, cutout) holds two tiers of cylinders, each an octagon
+  with its collar and valve, behind grey mesh; its mullions are drawn half in each block, as the
+  reach-in's are, so a run of cages has a door each. The firewood rack (group `firewood_rack`)
+  holds eight wrapped bundles on a black steel rack.
+- **Kiosks** (`BlockMarketTall`, two blocks, the upper half giving light 7): a coin counting
+  kiosk with a coin tray on a ledge, a photo printing kiosk with a tilted touchscreen over its
+  print tray, and a movie rental kiosk with four invented films' posters and a disc slot. None
+  wears a brand, and none looks like one: generic headers (COIN COUNTER, PHOTO PRINTS, MOVIES),
+  colours chosen away from the real kiosks'. CSM has no currency item, so the coin counter
+  counts nothing; the kiosks beep or print on click and are otherwise decorative.
+- **Pricing** (`MarketFabricatorRules` and its mirror): the pharmacy counters as the service
+  desk with a sign blank, the shelf wall as a gondola, the signs a sign blank each, the tobacco
+  case timber and glass, the dispenser glass and paper, the terminal electronics and paper, the
+  ice chest the island freezer without its glass, the cage and the rack iron (the rack with two
+  logs), the kiosks sheet steel with a control board and LEDs.
+
+The traps:
+
+- **A sign is a band of a shared sheet, and its panel must be 4:1.** Every sign of these
+  families (twelve of them) is one of the four bands, 64 x 16 texels, of the three 64 px
+  sheets in `SIGNS` (`store_signs_a` to `_c`), picked by the model's UV. A panel of any other
+  shape stretches its letters; `sign_panel` and `sign_print` take the band's number, so a new
+  sign takes a free band or a new sheet, never a re-order of the existing bands, which would
+  change the models that point at them.
+- **A run's left and right are the block's own.** `LEFT` and `RIGHT` are seen from behind the
+  block, looking out of its front, so the shopper sees them swapped: the tobacco case's sign is
+  on its `right` end part to stand on the shopper's left. (The cart corral's "left end" is on
+  the shopper's right.)
+- **A walnut pharmacy counter joins the office's walnut reception desk.** Cabinets join by
+  line and finish, and both are `RECEPTION` in walnut. They share the parts, so the join is
+  clean; the teal counters join only one another.
+- **A piece on a pharmacy counter meets its sign post.** `SurfaceRest` puts a counter piece on
+  the transaction top (the block above, at `FLOOR`), where the post stands at z 4.1 to 4.9.
+- **The cage's colours are chosen for contrast.** White cylinders behind white mesh vanished
+  in the first preview; the cage is grey and its mesh (`mesh_cage`) a wire every 12 cm, so the
+  cylinders read through it. The back row has no collars, being hidden by the front one.
+- **Atlas.** The families added 25 sprites, 16 to 64 px (the three sign sheets are the only
+  64 px ones), and reuse the store's plastics, steels, glass, woods and price strip; the block
+  atlas went from 95.2% to 95.3% of 8192 x 4096.
+- **Memory.** `/csm memstats`: the 18 blocks have 264 states, 99 model locations (one per
+  multipart block, 28 for each counter piece's rests) and about 5,300 baked quads, 1.0 MB in
+  all. The two heaviest are the lottery dispenser (1,232 quads over its seven rests) and the
+  propane cage (1,167 quads: twelve cylinders of octagons); every other block is under 80 KB.
+
 ## Sound Assets
 
 All custom sounds are declared in `FurnishingsSounds.java` (handed to Core's registrar by `CsmFurnishings.preInit`) and defined in `sounds.json`. Every
