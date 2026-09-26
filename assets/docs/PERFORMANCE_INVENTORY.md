@@ -100,6 +100,32 @@ running" and were resumed; the rest are furnishings with no renderer).
 in the signal heads (about 220 of a head's 1,116). That is baked chunk-mesh geometry, so it saves
 memory and rebuild time wherever the blocks stand, not per-frame renderer time.
 
+## New renderers, 2026-09-26 (Transit, Market & Store)
+
+The same harness over every tile-entity block added since the re-run above (97 blocks, 14 with a
+renderer), 8 copies each, with three blocks from the 09-24 run as a same-session reference (the
+doghouse signal 2.46 -> 2.60, the double parking meter 6.83 -> 7.29, the portable speed limit sign
+6.71 -> 8.38: inside the cross-restart noise). Data:
+`benchmarks/block-inventory-2026-09-20/inventory-new-2026-09-26.json`.
+
+| Block | Renderer | µs each |
+|---|---|---|
+| Bus departure board | `TileEntityBusDepartureBoardRenderer` | 18.8 |
+| Flight board, departures / arrivals | `TileEntityFlightBoardRenderer` | 12.8 / 11.9 |
+| Bus stop arrival display | `TileEntityBusArrivalDisplayRenderer` | 4.3 |
+| Bus bay display | `TileEntityBusBayDisplayRenderer` | 3.7 |
+| Platform clock | `TileEntityPlatformClockRenderer` | 2.9 |
+| Bus stop flags (four agencies) | `TileEntityBusStopFlagRenderer` | 1.9-2.1 |
+| Shelter ad panel | `TileEntityAdBoardRenderer` | 1.9 |
+| Ceiling fans (three finishes) | `TileEntityCeilingFanRenderer` | 0.03-0.04 |
+
+The Market & Store tab adds no renderer: its display cases, stocked shelves and department signs
+are baked models. The boards are the costliest new blocks, 5-7 signal heads each, and already draw
+every text piece from shared display lists (`CsmSharedDisplayLists`); what is left is a call per
+row and column and a countdown that changes, so there is no free fix. A board is one or two per
+station or gate, so 20 in view is a third of a millisecond. A candidate if a terminal full of them
+is ever built: one list per board keyed on the text it shows, rebuilt only when a row changes.
+
 ## Read this first
 
 - **One finding was a cliff, not a cost (now fixed).** `CsmDisplayListCache` held 1,024 positions
@@ -725,5 +751,6 @@ Data files, in `benchmarks/block-inventory-2026-09-20/`:
 | `scale-64-copies.json` | 30 renderer representatives at 64 copies, with baselines, at `14415298d` |
 | `busy-states-head7e56919.json` | the clean busy-state run, including the rows described as untrusted |
 | `busy-states-raw.json` | the first, contaminated busy-state run (kept for the record only) |
+| `inventory-new-2026-09-26.json` | the 97 tile-entity blocks new since 09-24 (Transit, Market & Store) and three references |
 | `results-2026-09-21.txt` | console output of the cliff, strobe, sync, night and scale tests (force-added: the repo ignores `*.txt`) |
 | `evidence/oom-direct-buffer-216-crates.txt` | the client crash report from the 216-crate sync flood |
