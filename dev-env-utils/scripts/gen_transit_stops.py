@@ -30,7 +30,7 @@ VERDANT and EMBERLINE. The flag is printed on both faces and stands on top of it
 above it, like the road signs' tall plates; its three route plates hang under it in the block,
 where a click reaches them. Flag and plates hang off the side of the post, NYC style, reaching
 to the reader's right or left: six flag models (sign_flag and sign_flag_left, each with its two
-shifts), which the flag's `hang` property picks, its `shift` variants left empty. The flag models are shared by the four agencies: the blockstate
+shifts), which the flag's `hang` property picks, with no `shift` variants (the block's state mapper leaves `shift` out). The flag models are shared by the four agencies: the blockstate
 fills slot 1 with the agency's flag, and each route plate's slot (p1..p3) with the agency's plate
 while it carries a number (`route1`..`route3`, from TileEntityBusStopFlag) or with a clear
 texture while it does not -- so the plates are baked in every shift model without a model per
@@ -416,9 +416,10 @@ def shift_models(name, textures, piece, display=None):
 
 def sign_state(model, textures, extra=None, shift_picks_model=True):
     """A road sign's Forge blockstate: the eight facings, the extension post below, the three
-    shift models; plus any other property's variants. With shift_picks_model False the shift
-    variants are left empty, for a block whose model another property picks (the flag's hang):
-    two properties that both name a model clash, and the last one wins."""
+    shift models; plus any other property's variants. With shift_picks_model False there are no
+    shift variants, for a block whose model another property picks (the flag's hang): two
+    properties that both name a model clash, and the last one wins. Such a block's state mapper
+    must then leave `shift` out of its model locations (BlockBusStopFlag.registerModels)."""
     facing = {}
     for f, angle in FACINGS:
         if angle:
@@ -430,10 +431,10 @@ def sign_state(model, textures, extra=None, shift_picks_model=True):
         "inventory": [{}],
         "downward": {"false": {}, "true": {"submodel": {"extension": {
             "model": SIGN_POLE, "transform": {"translation": [0.0, -1.0, 0.0]}}}}},
-        "shift": ({"none": {}, "setback": {"model": model + "_setback"},
-                   "backtoback": {"model": model + "_back_to_back"}} if shift_picks_model
-                  else {"none": {}, "setback": {}, "backtoback": {}}),
     }
+    if shift_picks_model:
+        variants["shift"] = {"none": {}, "setback": {"model": model + "_setback"},
+                             "backtoback": {"model": model + "_back_to_back"}}
     variants.update(extra or {})
     variants["normal"] = [{}]
     return {"forge_marker": 1, "defaults": {"model": model, "textures": textures},

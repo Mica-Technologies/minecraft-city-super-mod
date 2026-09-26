@@ -65,18 +65,6 @@
           "face": "csm:blocks/transit/airside/sign_holding_5"
         }
       }
-    },
-    "arrow": {
-      "left": {},
-      "right": {}
-    },
-    "lit": {
-      "true": {},
-      "false": {}
-    },
-    "powered": {
-      "true": {},
-      "false": {}
     }
   }
 }

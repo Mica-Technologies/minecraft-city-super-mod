@@ -11,6 +11,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.tileentity.TileEntity;
@@ -22,6 +23,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * A bus stop flag: the agency's sign, printed on both faces, with up to three route plates hung
@@ -131,6 +135,19 @@ public class BlockBusStopFlag extends BlockTrafficSign implements ICsmTileEntity
   protected BlockStateContainer createBlockState() {
     return new CsmBlockStateContainer(this, FACING, DOWNWARD, SHIFT, HANG, ROUTE1, ROUTE2,
         ROUTE3);
+  }
+
+  /**
+   * Registers the item model, and a state mapper that leaves {@link #SHIFT} out of the model
+   * location. The flag's model is picked by {@link #HANG}, which already carries the shift, so
+   * the blockstate has no {@code shift} variants and a location per shift would be three
+   * identical variants: without the mapper every flag has 2,304 model locations, with it 768.
+   */
+  @Override
+  @SideOnly(Side.CLIENT)
+  public void registerModels() {
+    super.registerModels();
+    ModelLoader.setCustomStateMapper(this, new StateMap.Builder().ignore(SHIFT).build());
   }
 
   /**

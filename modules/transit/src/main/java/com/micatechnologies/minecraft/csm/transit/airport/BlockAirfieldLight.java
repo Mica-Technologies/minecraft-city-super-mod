@@ -20,6 +20,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.client.renderer.block.statemap.StateMap;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * An airfield light: an edge, threshold or centreline light, the approach light bar, the airport
@@ -80,6 +85,26 @@ public class BlockAirfieldLight extends BlockPlatformFixture {
   @Nonnull
   protected BlockStateContainer createBlockState() {
     return new CsmBlockStateContainer(this, FACING, LIT, POWERED);
+  }
+
+  /**
+   * The properties no model reads, which the blockstate therefore has no variants for. They are
+   * left out of the model locations, so they do not multiply them.
+   *
+   * @return the properties the state mapper ignores
+   */
+  protected IProperty<?>[] propertiesNoModelReads() {
+    return new IProperty<?>[]{POWERED};
+  }
+
+  /** Registers the item model, and a state mapper that leaves {@link #propertiesNoModelReads}
+   * out of the model locations. */
+  @Override
+  @SideOnly(Side.CLIENT)
+  public void registerModels() {
+    super.registerModels();
+    ModelLoader.setCustomStateMapper(this,
+        new StateMap.Builder().ignore(propertiesNoModelReads()).build());
   }
 
   @Override

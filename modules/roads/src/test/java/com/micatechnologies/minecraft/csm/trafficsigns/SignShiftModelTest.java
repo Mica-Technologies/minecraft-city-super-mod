@@ -52,7 +52,8 @@ import org.junit.jupiter.api.Test;
  *
  * <p>One sign picks its model by another property: Transit's bus stop flag hangs off either side
  * of its post, and since two properties that both name a model clash in a Forge blockstate, its
- * {@code shift} variants are empty and a {@code hang} property ({@code <shift>_right},
+ * blockstate has no {@code shift} variants (its state mapper leaves the property out) and a
+ * {@code hang} property ({@code <shift>_right},
  * {@code <shift>_left}) names the model. Such a sign's three shift models are read from
  * {@code hang}, once per side, and held to the same rules.</p>
  */
@@ -162,20 +163,20 @@ class SignShiftModelTest {
   private void check(String name, JsonObject blockstate, boolean notApplicable,
       List<String> problems) throws IOException {
     JsonObject variants = blockstate.getAsJsonObject("variants");
-    if (variants == null || !variants.has("shift")) {
+    JsonObject hang = variants == null ? null : variants.getAsJsonObject(HANG);
+    if (variants == null || (hang == null && !variants.has("shift"))) {
       problems.add(name + ": a sign with no shift variants at all");
       return;
     }
-    JsonObject shift = variants.getAsJsonObject("shift");
-    for (String value : Arrays.asList("none", "setback", "backtoback")) {
-      if (!shift.has(value)) {
-        problems.add(name + ": shift has no " + value + " variant");
-        return;
-      }
-    }
     String defaultModel = blockstate.getAsJsonObject("defaults").get("model").getAsString();
-    JsonObject hang = variants.getAsJsonObject(HANG);
     if (hang == null) {
+      JsonObject shift = variants.getAsJsonObject("shift");
+      for (String value : Arrays.asList("none", "setback", "backtoback")) {
+        if (!shift.has(value)) {
+          problems.add(name + ": shift has no " + value + " variant");
+          return;
+        }
+      }
       checkShifts(name, shift, "", defaultModel, notApplicable, problems);
       return;
     }

@@ -44,10 +44,6 @@
           "b7": "csm:blocks/transit/airside/beacon_off"
         }
       }
-    },
-    "powered": {
-      "true": {},
-      "false": {}
     }
   }
 }

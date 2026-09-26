@@ -73,14 +73,6 @@
       "right": {
         "model": "csm:transit/airside/airport_taxiway_direction_sign_right"
       }
-    },
-    "lit": {
-      "true": {},
-      "false": {}
-    },
-    "powered": {
-      "true": {},
-      "false": {}
     }
   }
 }

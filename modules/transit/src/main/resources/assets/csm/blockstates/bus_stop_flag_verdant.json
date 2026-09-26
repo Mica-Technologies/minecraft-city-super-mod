@@ -140,11 +140,6 @@
         }
       }
     },
-    "shift": {
-      "none": {},
-      "setback": {},
-      "backtoback": {}
-    },
     "route1": {
       "true": {
         "textures": {

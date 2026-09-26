@@ -404,11 +404,12 @@ def register_textures():
 # Blockstates
 # ------------------------------------------------------------------------------------------
 def light_state(model, lens_keys, colour, extra=None):
-    """A facing blockstate whose `lit` swaps each lens texture for the lit one; `powered` only
-    remembers the redstone, so it draws nothing."""
+    """A facing blockstate whose `lit` swaps each lens texture for the lit one. `powered` only
+    remembers the redstone and draws nothing, so it has no variants: the block's state mapper
+    leaves it out of the model locations (BlockAirfieldLight.propertiesNoModelReads)."""
     lit = {"true": {"textures": {k: C.T("lens_%s_on" % c) for k, c in lens_keys.items()}},
            "false": {"textures": {k: C.T("lens_%s_off" % c) for k, c in lens_keys.items()}}}
-    variants = {"lit": lit, "powered": {"true": {}, "false": {}}}
+    variants = {"lit": lit}
     if extra:
         variants.update(extra)
     return lc.facing_state(C.M(model), variants)
@@ -559,8 +560,7 @@ def airfield_lights():
         "lit": {"true": {"textures": {"b%d" % p: C.T("beacon_%d" % p)
                                       for p in range(BEACON_FRAMES)}},
                 "false": {"textures": {"b%d" % p: C.T("beacon_off")
-                                       for p in range(BEACON_FRAMES)}}},
-        "powered": {"true": {}, "false": {}}})
+                                       for p in range(BEACON_FRAMES)}}}})
     C.add(reg, light_java(reg, (3, 0, 3, 13, 12.4, 13), "beacon", 15),
           names_of("Airport Beacon", "Flughafen-Leuchtfeuer", "Faro de Aeródromo",
                    "Flygplatsfyr"),
@@ -672,8 +672,7 @@ def airfield_signs():
         legend = {str(v): {"textures": {"face": C.T(prefix + labels[min(v, len(labels)) - 1])}}
                   for v in range(1, LEGENDS + 1)}
         state = lc.facing_state(C.M(reg), {
-            "legend": legend, "arrow": {"left": {}, "right": {}},
-            "lit": {"true": {}, "false": {}}, "powered": {"true": {}, "false": {}}})
+            "legend": legend})
         C.add(reg, sign_java(reg, texts, False), names, {reg: m}, state, tab=TAB)
 
     # the direction sign: a letter cell and an arrow cell, the arrow on the side it points
@@ -697,8 +696,7 @@ def airfield_signs():
         min(v, len(LOCATIONS)) - 1].lower())}} for v in range(1, LEGENDS + 1)}
     state = lc.facing_state(C.M(reg + "_left"), {
         "legend": legend,
-        "arrow": {"left": {"model": C.M(reg + "_left")}, "right": {"model": C.M(reg + "_right")}},
-        "lit": {"true": {}, "false": {}}, "powered": {"true": {}, "false": {}}})
+        "arrow": {"left": {"model": C.M(reg + "_left")}, "right": {"model": C.M(reg + "_right")}}})
     C.add(reg, sign_java(reg, list(LOCATIONS), True),
           names_of("Taxiway Direction Sign", "Rollweg-Richtungsschild",
                    "Letrero de Dirección de Calle de Rodaje", "Taxibanans riktningsskylt"),

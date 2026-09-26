@@ -65,18 +65,6 @@
           "face": "csm:blocks/transit/airside/sign_location_h"
         }
       }
-    },
-    "arrow": {
-      "left": {},
-      "right": {}
-    },
-    "lit": {
-      "true": {},
-      "false": {}
-    },
-    "powered": {
-      "true": {},
-      "false": {}
     }
   }
 }

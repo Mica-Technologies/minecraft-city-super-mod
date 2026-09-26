@@ -22,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.block.properties.IProperty;
 
 /**
  * A lit airfield sign on two frangible legs: a taxiway location sign, a direction sign, a runway
@@ -85,6 +86,13 @@ public class BlockAirfieldSign extends BlockAirfieldLight implements ICsmTileEnt
   @Nonnull
   protected BlockStateContainer createBlockState() {
     return new CsmBlockStateContainer(this, FACING, LIT, POWERED, LEGEND, ARROW);
+  }
+
+  /** A sign's lens is its legend, lit by block light alone, so no model reads {@link #LIT}
+   * either; and {@link #ARROW} picks a model only on a direction sign. */
+  @Override
+  protected IProperty<?>[] propertiesNoModelReads() {
+    return arrows ? new IProperty<?>[]{POWERED, LIT} : new IProperty<?>[]{POWERED, LIT, ARROW};
   }
 
   private int values() {

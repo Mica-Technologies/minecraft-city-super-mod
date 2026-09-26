@@ -32,10 +32,6 @@
           "red": "csm:blocks/transit/airside/lens_red_off"
         }
       }
-    },
-    "powered": {
-      "true": {},
-      "false": {}
     }
   }
 }

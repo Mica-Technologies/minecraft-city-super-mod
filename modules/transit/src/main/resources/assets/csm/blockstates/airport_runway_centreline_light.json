@@ -30,10 +30,6 @@
           "lens": "csm:blocks/transit/airside/lens_white_off"
         }
       }
-    },
-    "powered": {
-      "true": {},
-      "false": {}
     }
   }
 }

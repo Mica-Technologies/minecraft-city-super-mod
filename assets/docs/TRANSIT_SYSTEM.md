@@ -210,13 +210,16 @@ left).
   past x 0..16 already names its uv.
 - **Why one property picks the model.** A Forge blockstate lets every property's variant name a
   model, and when two do, the last one wins: `shift` and a separate side could never together say
-  "setback, reaching left". So the flag's `shift` variants are empty and an actual-state
-  `hang` property (`BusStopFlagHang`: `none_right`, `setback_right`, `backtoback_right` and the
-  three `_left`), worked out from the sign system's shift and the tile entity's side, names one
-  of six models: `sign_flag`, `sign_flag_setback`, `sign_flag_back_to_back` and the same three
-  as `sign_flag_left*`. The state count is facing 8 x downward 2 x shift 3 x hang 6 x routes 8,
-  2,304 a flag, of which only a third can occur; a custom state mapper ignoring `shift` would cut
-  it to 768 but would take the `shift` block out of the blockstate `SignShiftModelTest` reads.
+  "setback, reaching left". So the flag's blockstate has no `shift` variants at all, and an
+  actual-state `hang` property (`BusStopFlagHang`: `none_right`, `setback_right`,
+  `backtoback_right` and the three `_left`), worked out from the sign system's shift and the tile
+  entity's side, names one of six models: `sign_flag`, `sign_flag_setback`,
+  `sign_flag_back_to_back` and the same three as `sign_flag_left*`. The state count is facing 8 x
+  downward 2 x shift 3 x hang 6 x routes 8, 2,304 a flag, of which only a third can occur. Since
+  `hang` already carries the shift, the block's state mapper (`BlockBusStopFlag.registerModels`)
+  leaves `shift` out of the model locations: 768 a flag rather than 2,304 identical triples, which
+  took the Transit module from 11,657 model locations to 4,461. `SignShiftModelTest` reads a
+  blockstate with a `hang` block from `hang` and does not ask it for `shift`.
 - **The box** is the road sign's, narrowed across to the flag and the post (x -2 to 9.5 or 6.5 to
   18, reaching a little past the block on the flag's side) so the empty side of the post does not
   take clicks; set back, the collision is the road sign's thin slab at the flag's plane, the same
@@ -1028,8 +1031,11 @@ light-up air) is used. A light is lit or not (`lit`, in its metadata beside the 
 companion for OptiFine's emissive rendering, the lens faces are unshaded, and a lit light gives
 block light (runway edge and threshold 12, runway centreline 11, taxiway lights and signs 10,
 approach and beacon 15, obstruction 9), bright enough for a lit lens to read at night without
-OptiFine. There is no
-renderer, no tile entity (except the signs'), and nothing ticks.
+OptiFine. There is no renderer, no tile entity (except the signs'), and nothing ticks. `powered`
+only remembers the redstone, and a sign's lens is its legend, lit by block light alone, so no
+model reads `powered` (nor, on a sign, `lit`, nor `arrow` except on the direction sign): the
+blockstates have no variants for them, and `BlockAirfieldLight.propertiesNoModelReads` leaves them
+out of the model locations (a sign 36 locations rather than 288).
 
 **Lights switch a circuit at a time.** A real airfield switches its runway and taxiway lighting
 as circuits, and a runway may have a hundred lights, so one lever per light would be useless.
