@@ -702,7 +702,7 @@ index, is an animated texture; the fibre cabinet's doors are a stored bit.
 - **The compound fence** is Building's chain-link fence (stacked two high) with its barbed-wire
   top; the signs here are made to hang on it.
 - **A cell site's generator** is the sewer family's standby generator, which fits as it is.
-- **The gas meters at a building** are the building service meters (Phase 1).
+- **The gas meters at a building** are the building service meters, above.
 
 ### The regulator station is built from pieces
 
