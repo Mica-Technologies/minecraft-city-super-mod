@@ -558,6 +558,104 @@ FHWA series rather than lifted from the book, because the book's are 24 x 6 -- f
 wide as they are tall -- and no plate in the mod is that shape; squeezing the drawing onto the
 2:1 plaque stretched the legend.
 
+## Mile Markers and Post Markers
+
+Issue #237: the reference location signs (MUTCD 2H.05) with their number set in world, the
+object markers, and post-mounted delineators. Everything -- textures, models, blockstates, lang,
+and the Java table the mile markers are laid out from -- is written by
+`dev-env-utils/scripts/gen_road_markers.py` (`--check`, `--fragments`, `--apply` for the lang
+lines, `--sheet` for a contact sheet of every face).
+
+### The mile markers
+
+| Block | Plate | What it carries |
+|---|---|---|
+| `mile_marker_sign_1`, `_2`, `_3` | D10-1, D10-2, D10-3 (10 x 18, 27, 36 in) | MILE over 1, 2 or 3 stacked numerals |
+| `mile_marker_sign_1_intermediate`, `_2_`, `_3_` | D10-1a, D10-2a, D10-3a (10 x 27, 36, 48 in) | the same, and a tenth panel (".2") under a divider |
+| `mile_marker_sign_enhanced` | D10-4 (18 x 54 in) | direction, route shield and route number, MILE, the number |
+| `mile_marker_sign_enhanced_intermediate` | D10-5 (18 x 60 in) | the same with its tenth panel |
+
+Each is an ordinary `AbstractBlockSign` (`BlockMileMarkerSign`, one class constructed per plate
+from `MileMarkerLayout`): eight facings, the extension post, setback, back-to-back, every post and
+mount. Its three shift models follow the one convention and are held by `SignShiftModelTest`,
+`SignFaceDepthTest` and `SignTextureSizeTest` like any sign's. The plates are drawn at the
+catalogue's 1.5 in a unit, centred on the block's middle, and a plate shorter than the post
+reaches the post's top.
+
+**The number is not a block property.** A number is a thousand values; as a property it would
+multiply the states by a thousand. `TileEntityMileMarkerSign` holds the settings (mile, tenth,
+shield, route, direction; short NBT keys), and `BlockMileMarkerSign.getExtendedState` hands a
+clamped `MileMarkerLegend` to the model as the unlisted `LEGEND` property, which adds no states.
+`MileMarkerBakedModel` wraps every baked variant of the blockstate (put in place by
+`MileMarkerModels` at `ModelBakeEvent`, keyed on the registry name, no state mapper) and appends
+the legend as quads: `MileMarkerFaces` lays out one rectangle per glyph, and each is baked by the
+vanilla `FaceBakery` under the same `TRSRTransformation` the blockstate's `facing` variant builds,
+so the eight facings, the 45-degree ones included, cannot disagree with the plate. Quads are
+cached by (legend, facing, shift). There is **no tile entity renderer and no per-frame cost**:
+the legend is in the chunk mesh, and a change rebuilds the section (the setter's
+`markDirtySync(..., state, true)`, and `onDataPacket` for a client told only by the entity
+packet). States added: 48 a plate (8 facings x downward x shift), 384 in all.
+
+Depth: the legend is 0.2 units in front of the plate's art and a route number 0.2 in front of its
+shield. It is in the same pass as the plate, so anything nearer z-fights at a distance -- 0.2 is
+`SignFaceDepthTest`'s own threshold.
+
+**The glyph sheet**, `trafficsigns/mile_marker_glyphs` (256 px), holds the mile numerals and point
+in FHWA Series D (the D10 drawings' series) from `shs_signs.series_font`, the guide sign font's
+numerals cut from `textures/fonts/guide_sign_font.png` (so a route number on a D10-4's shield is
+set exactly as the Dynamic Route Marker Sign and the guide sign set it, at the shield's own
+`GuideSignShieldType` centre, cap and width fractions), and NORTH, SOUTH, EAST and WEST in Series
+B. The blockstates name it on an unused texture key, so it is on the atlas and every asset tool
+sees it, and `MileMarkerModels` registers it at texture stitch as well. A route number takes its
+shield's colour as vertex colour, which both lighting pipelines shade like the shield under it.
+The shields themselves are the route marker sign's faces, read off that sign's baked models so the
+texture sharing stays `gen_route_markers.py`'s business. Route numbers are digits only, three at
+most: the sheet holds nothing else.
+
+**The plate face is cut into cells.** A 10 x 48 in plate squished into one square texture has five
+times the texels across as down, and Minecraft picks the mip level from the denser axis, so MILE
+blurred a few blocks out. Each face is cut into 2 to 4 cells of roughly its width square (at
+catalogue cut points that never run through MILE or the divider), each drawn into a quarter of the
+texture and painted on its own face. The texture is then the size `sign_texture_size` gives the
+plate. The panel, border and corner radius are drawn from the book's dimensions (Guide chapter pp.
+3-80 to 3-83; the 10 in plates' 0.4 in border and 1.15 in radius measured off the D10-1 drawing)
+with MILE set in Series B (C on the 18 in plates) through `shs_signs.set_legend_line`: the book's
+own panels could not be used whole, because it draws the intermediate plates as two panels split
+at the divider and the D10-4's shield in paths.
+
+**Setting it.** A click opens `MileMarkerSignGui` (GUI id 37): the mile, the tenth, and on an
+enhanced plate the direction (click / shift-click), the shield (with jump buttons, as the route
+marker's editor) and the route number. Every change is sent at once (`MileMarkerConfigPacket`) and
+clamped on the server to the plate: 0-9, 10-99 or 100-999 on the stacked plates, 0-999 on the
+enhanced ones. A screen rather than click-to-count because a marker is set once to three digits.
+
+### The object markers and delineators
+
+Ground devices, not signs on the sign posts: each stands on its own green steel U-channel post (or
+is a flexible post), and is a `BlockWorkZoneDeviceDiagonal`, so it takes all eight facings and
+settles onto a sloped or partial-height road like the work zone devices
+(`WORK_ZONE_ACCESSORIES.md`). Drawn at 2 in a unit with the posts shortened, so an OM3 still fits
+under the 32-unit element limit.
+
+| Blocks | Tab | Face |
+|---|---|---|
+| `object_marker_om1_1`, `_om1_2`, `_om1_3` | Road Signs, end of the warning group | OM1-1 to OM1-3 |
+| `object_marker_om2_1v`, `_2v`, `_1h`, `_2h` | the same | OM2-1V/H, OM2-2V/H |
+| `object_marker_om3_l`, `_c`, `_r` | the same | OM3-L (OM3-R mirrored), OM3-C, OM3-R |
+| `end_of_road_marker_om4_1`, `_2`, `_3` | the same | OM4-1 to OM4-3 |
+| `delineator_uchannel_{white,yellow,red}`, `_{white,yellow}_double` | Streetscape, after the delineators | a reflector plate, or two |
+| `delineator_flexible_{white,yellow,red}` | the same | a band of sheeting on a flat post |
+
+The object marker faces are the book's drawings (Markers chapter pp. 11-1 to 11-4) through
+`shs_signs.book_sign`, recoloured onto `MOD_COLOURS`; OM1-1 and OM4-1, which the book draws as
+outlines on the page's white, are filled with their colour. Each plate is a silhouette like the
+yield family's -- the face on its north side, a gray back cut to the same outline on its south --
+in cells as above where it is tall or wide. States added: 8 a device, 168 in all.
+
+What already existed and was not duplicated: the white and yellow plastic `delineator_post`s, the
+zebra delineator and the tubular flexible delineators (`bollard_flexible_*`). The mod had no
+object markers or mile markers before.
+
 ## Road Signs in Other Modules: the Bus Stop
 
 Transit's bus stop flags (`bus_stop_flag_<agency>`), arrival display and timetable and route map

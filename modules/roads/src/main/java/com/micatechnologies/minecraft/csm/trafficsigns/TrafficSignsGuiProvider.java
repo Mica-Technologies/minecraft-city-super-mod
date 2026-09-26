@@ -26,6 +26,11 @@ public class TrafficSignsGuiProvider implements ICsmGuiProvider {
         && tileEntity instanceof TileEntityDynamicRouteMarkerSign) {
       return new DynamicRouteMarkerSignGui((TileEntityDynamicRouteMarkerSign) tileEntity);
     }
+    if (id == BlockMileMarkerSign.GUI_ID && tileEntity instanceof TileEntityMileMarkerSign
+        && world.getBlockState(pos).getBlock() instanceof BlockMileMarkerSign) {
+      return new MileMarkerSignGui((TileEntityMileMarkerSign) tileEntity,
+          ((BlockMileMarkerSign) world.getBlockState(pos).getBlock()).getLayout());
+    }
     if (id == BlockStreetNameBlade.GUI_ID
         && tileEntity instanceof TileEntityStreetNameBlade) {
       // The dynamic street sign's own editor: a blade is that sign's document, and the

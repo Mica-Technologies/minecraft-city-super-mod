@@ -111,6 +111,23 @@ public class CsmTabStreetscape extends CsmTab {
         new AxisAlignedBB(0.356250, 0.000000, 0.356250, 0.643750, 0.937500, 0.643750)));
     initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_zebra",
         new AxisAlignedBB(0.068750, 0.000000, 0.340625, 0.931250, 0.190625, 0.659375)));
+    // Post-mounted delineators and flexible marker posts (gen_road_markers.py --fragments).
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_uchannel_white",
+        new AxisAlignedBB(0.375000, 0.000000, 0.390625, 0.625000, 1.250000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_uchannel_yellow",
+        new AxisAlignedBB(0.375000, 0.000000, 0.390625, 0.625000, 1.250000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_uchannel_red",
+        new AxisAlignedBB(0.375000, 0.000000, 0.390625, 0.625000, 1.250000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_uchannel_white_double",
+        new AxisAlignedBB(0.375000, 0.000000, 0.390625, 0.625000, 1.250000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_uchannel_yellow_double",
+        new AxisAlignedBB(0.375000, 0.000000, 0.390625, 0.625000, 1.250000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_flexible_white",
+        new AxisAlignedBB(0.375000, 0.000000, 0.375000, 0.625000, 1.250000, 0.625000)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_flexible_yellow",
+        new AxisAlignedBB(0.375000, 0.000000, 0.375000, 0.625000, 1.250000, 0.625000)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("delineator_flexible_red",
+        new AxisAlignedBB(0.375000, 0.000000, 0.375000, 0.625000, 1.250000, 0.625000)));
 
     // Bollards (gen_streetscape_bollards.py --fragments).
     initTabBlock(new BlockUtilityBox("bollard_cast_iron_black", new UtilityBoxSpec(1, 1, 1,

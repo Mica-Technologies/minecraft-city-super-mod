@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.roads;
 
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * Client proxy for the Roads & Traffic module: binds this module's tile-entity special renderers (and any
@@ -9,6 +10,15 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
  * client proxy; they are here so Core never names a class that belongs to a module.
  */
 public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
+
+  /**
+   * The mile markers' baked models and glyph sheet: their handlers must be on the bus before the
+   * first model bake, which comes before initialization.
+   */
+  @Override
+  public void preInit(FMLPreInitializationEvent event) {
+    com.micatechnologies.minecraft.csm.trafficsigns.MileMarkerModels.register();
+  }
 
   @Override
   public void init(FMLInitializationEvent event) {

@@ -409,6 +409,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system,
   how large a sign face texture may be (85.3 texels a block of plate; `SignTextureSizeTest` fails
   the build on a larger one),
+  the mile markers whose number is baked into the chunk mesh from the tile entity (no TESR), the
+  object markers and post delineators,
   the three shift models and where a back-to-back plate has to sit (`SignShiftModelTest` fails the
   build on a shift entry that does not move), and why the metal behind a sign's art is recessed
   (`SignFaceDepthTest` fails the build on two faces too close to tell apart at a distance)
@@ -504,6 +506,15 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   its order are parsed out of `GuideSignShieldType` rather than repeated, since the ordinals
   are serialized. Faces are 128 px, backs their 64 px source; shields with identical pixels
   share one texture and the orphans are deleted; `--check` fails on drift
+- `gen_road_markers.py` -- the mile markers (D10-1 to D10-5, `BlockMileMarkerSign`) and the post
+  markers: the mile marker plates drawn from the book's dimensions with MILE in the FHWA series
+  and cut into near-square cells (one per quarter of the texture, so a 1:5 plate does not blur),
+  the glyph sheet (Series D numerals, the guide sign font's numerals cut from its atlas,
+  NORTH/SOUTH/EAST/WEST in Series B), the three shift models and blockstates, and
+  `MileMarkerLayout.java`, every slot and glyph the baked model draws the number from, so the
+  two cannot drift; the OM1-OM4 object markers from the book's drawings and the U-channel and
+  flexible delineators, each a settling `BlockWorkZoneDeviceDiagonal` on its own post. `--apply`
+  inserts the four languages' lang lines; `--check`, `--fragments`, `--sheet`
 - `measure_shield_legends.py` -- where each state, DC and province route marker on the sign atlas
   sets its route number (cap height, width, centre, colour): fits the largest two-digit number
   into the face region under a seed point and writes the values into `GuideSignShieldType`.

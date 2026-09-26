@@ -67,6 +67,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadSectionConfig
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadSectionConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsFabricatorRules;
 import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsGuiProvider;
+import com.micatechnologies.minecraft.csm.trafficsigns.MileMarkerConfigPacket;
+import com.micatechnologies.minecraft.csm.trafficsigns.MileMarkerConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsigns.RouteMarkerConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsigns.RouteMarkerConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsigns.TrafficSignsGuiProvider;
@@ -259,6 +261,10 @@ public class CsmRoads {
     NETWORK.registerMessage(
         MailboxActionPacketHandler.class,
         MailboxActionPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        MileMarkerConfigPacketHandler.class,
+        MileMarkerConfigPacket.class,
         Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's

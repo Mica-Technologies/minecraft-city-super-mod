@@ -2,7 +2,7 @@
 
 Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals, news racks, mailboxes and parking meters.
 
-!!! info "94 blocks in this tab"
+!!! info "102 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -29,6 +29,11 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 | Curbside Mailbox (Green) | `csm:mailbox_curbside_green` | 3 | 12 | pickaxe | 1 |
 | Curbside Mailbox (White) | `csm:mailbox_curbside_white` | 3 | 12 | pickaxe | 1 |
 | Delineator Post | `csm:delineator_post` | 0.6 | 3 | pickaxe | 0 |
+| Delineator Post (U-Channel, Double White) | `csm:delineator_uchannel_white_double` | 0.6 | 3 | pickaxe | 0 |
+| Delineator Post (U-Channel, Double Yellow) | `csm:delineator_uchannel_yellow_double` | 0.6 | 3 | pickaxe | 0 |
+| Delineator Post (U-Channel, Red) | `csm:delineator_uchannel_red` | 0.6 | 3 | pickaxe | 0 |
+| Delineator Post (U-Channel, White) | `csm:delineator_uchannel_white` | 0.6 | 3 | pickaxe | 0 |
+| Delineator Post (U-Channel, Yellow) | `csm:delineator_uchannel_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Delineator Post (Yellow) | `csm:delineator_post_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Electric Pull Box | `csm:vault_lid_electric` | 1.5 | 10 | pickaxe | 0 |
 | Electric Pull Box (Rusted) | `csm:vault_lid_electric_rusted` | 1.5 | 10 | pickaxe | 0 |
@@ -42,6 +47,9 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 | Fire Hydrant (Yellow, Red Cap) | `csm:hydrant_yellow_red_cap` | 3 | 12 | pickaxe | 1 |
 | Flexible Delineator (White) | `csm:bollard_flexible_white` | 3 | 12 | pickaxe | 1 |
 | Flexible Delineator (Yellow) | `csm:bollard_flexible_yellow` | 3 | 12 | pickaxe | 1 |
+| Flexible Marker Post (Red) | `csm:delineator_flexible_red` | 0.6 | 3 | pickaxe | 0 |
+| Flexible Marker Post (White) | `csm:delineator_flexible_white` | 0.6 | 3 | pickaxe | 0 |
+| Flexible Marker Post (Yellow) | `csm:delineator_flexible_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Gas Valve Box | `csm:valve_box_gas` | 1.5 | 10 | pickaxe | 0 |
 | Gas Valve Box (Rusted) | `csm:valve_box_gas_rusted` | 1.5 | 10 | pickaxe | 0 |
 | Gutter Inlet Grate | `csm:gutter_inlet_grate` | 1.5 | 10 | pickaxe | 0 |
