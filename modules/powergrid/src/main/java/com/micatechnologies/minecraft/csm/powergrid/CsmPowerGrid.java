@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.powergrid;
 
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
@@ -53,5 +54,7 @@ public class CsmPowerGrid {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
+    CsmFabricatorCosts.registerRule(UtilitiesFabricatorRules.TAB_ID,
+        UtilitiesFabricatorRules::price);
   }
 }

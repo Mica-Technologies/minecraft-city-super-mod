@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/utilities/meters/meter_digital",
+  "textures": {
+    "face": "csm:blocks/utilities/meters/face_analog"
+  }
+}

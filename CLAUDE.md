@@ -874,6 +874,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   leaf and the same leaf swung a quarter about its hinge, the sixteen line bullets and the booth
   counter; the legends, lines and globe colours are listed as the Java lists them; `--check`,
   `--fragments`
+- `gen_utilities_meters.py` -- the Utilities tab's building service meters (Utilities module):
+  electric meters (digital and analog, on a ringless socket), the blank meter socket, the meter
+  bank that joins side by side (`BlockUtilityRun`, end flanges only at its ends), the service
+  disconnect, the main breaker panel whose door a click opens (`BlockUtilityPanel`), the service
+  entrance switchboard (Roads' `BlockUtilityBox`, 1 x 1 x 2), gas meters single and in a bank
+  (one header, capped at one end and fed by the riser and regulator at the other), the water
+  meter setter and four utility room labels. A picture on a round part is one square plane with
+  the octagon cut out of its texture's corners; the meter faces, the gas index and the water
+  register are animated textures, so nothing ticks. Parts shared between blocks (the meter, the
+  gas meter body and outlet) are one model file each. Text writes keep each file's line
+  endings; `--check`, `--fragments`
 - `build_transit_demo.py` -- builds the Transit demo world in a flat creative world loaded in a
   dev client, over MCMCP (borrowing `csm_bench.py`'s client; `--client-port`, `--server-port` and
   `--config` aim it at a client other than the dev client): a bus street with every agency's

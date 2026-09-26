@@ -151,6 +151,7 @@ nav:
       - Traffic Signals: reference/traffic-signals.md
       - Transit: reference/transit.md
       - Trees & Plants: reference/trees-and-plants.md
+      - Utilities: reference/utilities.md
       - Unlisted: reference/unlisted.md
   - Developer:
       - developer/index.md

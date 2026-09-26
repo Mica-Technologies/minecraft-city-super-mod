@@ -1,0 +1,117 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_tub"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_tub",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_tub",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_tub",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "open": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_door_closed"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "open": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_door_closed",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "open": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_door_closed",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "open": "false"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_door_closed",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "open": "true"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_door_open"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "open": "true"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_door_open",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "open": "true"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_door_open",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "open": "true"
+      },
+      "apply": {
+        "model": "csm:utilities/meters/main_panel_door_open",
+        "y": 270
+      }
+    }
+  ]
+}

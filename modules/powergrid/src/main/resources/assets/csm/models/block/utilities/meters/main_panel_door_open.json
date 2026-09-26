@@ -1,0 +1,140 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "enclosure": "csm:blocks/utilities/meters/enclosure",
+    "hub": "csm:blocks/utilities/meters/hub",
+    "steel": "csm:blocks/utilities/meters/steel",
+    "particle": "csm:blocks/utilities/meters/enclosure",
+    "front": "csm:blocks/utilities/meters/fronts"
+  },
+  "elements": [
+    {
+      "from": [
+        2.7,
+        1.2,
+        13.9
+      ],
+      "to": [
+        13.3,
+        15.3,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            9.25,
+            8.25,
+            14.75,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        1,
+        13.9
+      ],
+      "to": [
+        2.7,
+        15.5,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#enclosure",
+          "uv": [
+            13.3,
+            0.5,
+            13.5,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.3,
+        1,
+        13.9
+      ],
+      "to": [
+        13.5,
+        15.5,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#enclosure",
+          "uv": [
+            2.5,
+            0.5,
+            2.7,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.3,
+        1.2,
+        3.0
+      ],
+      "to": [
+        13.7,
+        15.3,
+        13.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#enclosure",
+          "uv": [
+            2.3,
+            0.7,
+            2.7,
+            14.8
+          ]
+        },
+        "east": {
+          "texture": "#front",
+          "uv": [
+            9.25,
+            0.25,
+            14.75,
+            7.5
+          ]
+        },
+        "west": {
+          "texture": "#enclosure",
+          "uv": [
+            3.0,
+            0.7,
+            13.6,
+            14.8
+          ]
+        },
+        "up": {
+          "texture": "#enclosure",
+          "uv": [
+            13.3,
+            3.0,
+            13.7,
+            13.6
+          ]
+        },
+        "down": {
+          "texture": "#enclosure",
+          "uv": [
+            13.3,
+            2.4,
+            13.7,
+            13.0
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "enclosure": "csm:blocks/utilities/meters/enclosure",
+    "hub": "csm:blocks/utilities/meters/hub",
+    "steel": "csm:blocks/utilities/meters/steel",
+    "particle": "csm:blocks/utilities/meters/enclosure",
+    "front": "csm:blocks/utilities/meters/fronts"
+  },
+  "elements": [
+    {
+      "from": [
+        2.7,
+        1.2,
+        13.6
+      ],
+      "to": [
+        13.3,
+        15.3,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            9.25,
+            0.25,
+            14.75,
+            7.5
+          ]
+        },
+        "east": {
+          "texture": "#enclosure",
+          "uv": [
+            2,
+            0.7,
+            2.4,
+            14.8
+          ]
+        },
+        "west": {
+          "texture": "#enclosure",
+          "uv": [
+            13.6,
+            0.7,
+            14,
+            14.8
+          ]
+        },
+        "up": {
+          "texture": "#enclosure",
+          "uv": [
+            2.7,
+            13.6,
+            13.3,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#enclosure",
+          "uv": [
+            2.7,
+            2,
+            13.3,
+            2.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.3,
+        7.5,
+        13.2
+      ],
+      "to": [
+        3.9,
+        9.5,
+        13.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hub",
+          "uv": [
+            12.1,
+            6.5,
+            12.7,
+            8.5
+          ]
+        },
+        "east": {
+          "texture": "#hub",
+          "uv": [
+            2.4,
+            6.5,
+            2.8,
+            8.5
+          ]
+        },
+        "west": {
+          "texture": "#hub",
+          "uv": [
+            13.2,
+            6.5,
+            13.6,
+            8.5
+          ]
+        },
+        "up": {
+          "texture": "#hub",
+          "uv": [
+            3.3,
+            13.2,
+            3.9,
+            13.6
+          ]
+        },
+        "down": {
+          "texture": "#hub",
+          "uv": [
+            3.3,
+            2.4,
+            3.9,
+            2.8
+          ]
+        }
+      }
+    }
+  ]
+}

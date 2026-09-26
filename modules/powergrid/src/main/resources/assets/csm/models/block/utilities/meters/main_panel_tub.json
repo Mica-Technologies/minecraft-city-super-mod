@@ -1,0 +1,62 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "enclosure": "csm:blocks/utilities/meters/enclosure",
+    "hub": "csm:blocks/utilities/meters/hub",
+    "steel": "csm:blocks/utilities/meters/steel",
+    "particle": "csm:blocks/utilities/meters/enclosure",
+    "front": "csm:blocks/utilities/meters/fronts"
+  },
+  "elements": [
+    {
+      "from": [
+        2.5,
+        1,
+        14
+      ],
+      "to": [
+        13.5,
+        15.5,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#enclosure",
+          "uv": [
+            0,
+            0.5,
+            2,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#enclosure",
+          "uv": [
+            14,
+            0.5,
+            16,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#enclosure",
+          "uv": [
+            2.5,
+            14,
+            13.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#enclosure",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            2
+          ]
+        }
+      }
+    }
+  ]
+}

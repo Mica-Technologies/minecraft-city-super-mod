@@ -165,6 +165,11 @@ TABS = {
                               "cameras."),
     "tabtrafficsignals": ("traffic-signals", "Traffic Signals",
                           "Signal heads, crosswalk signals and the controllers that drive them."),
+    "tabutilities": ("utilities", "Utilities",
+                     "The services a city runs to its buildings: electric meters single and in "
+                     "banks, the meter socket, service disconnect, main breaker panel and "
+                     "switchboard, gas meters single and in banks, the water meter setter and "
+                     "utility room labels."),
     "tabtreesplants": ("trees-and-plants", "Trees & Plants",
                        "Street trees built block by block from thin, leaning logs and leaves, "
                        "the Tree Planting Tool, and plantings."),
@@ -179,7 +184,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
-              "tabtreesplants",
+              "tabtreesplants", "tabutilities",
               "tabnone"]
 
 

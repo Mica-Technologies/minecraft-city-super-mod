@@ -1,0 +1,161 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/utilities/meters/gas_body",
+    "face": "csm:blocks/utilities/meters/gas_face",
+    "hub": "csm:blocks/utilities/meters/hub",
+    "steel": "csm:blocks/utilities/meters/steel",
+    "pipe": "csm:blocks/utilities/meters/pipe_gas",
+    "regulator": "csm:blocks/utilities/meters/regulator",
+    "lever": "csm:blocks/utilities/meters/lever_yellow",
+    "particle": "csm:blocks/utilities/meters/gas_body"
+  },
+  "elements": [
+    {
+      "from": [
+        14.4,
+        14.7,
+        13.0015
+      ],
+      "to": [
+        16.0,
+        15.9,
+        13.4985
+      ],
+      "faces": {
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            14.4,
+            13.0015,
+            16,
+            13.4985
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            14.4,
+            2.5015,
+            16,
+            2.9985
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.396,
+        15.0515,
+        12.65
+      ],
+      "to": [
+        16.004,
+        15.5485,
+        13.85
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            0.4515,
+            1.604,
+            0.9485
+          ]
+        },
+        "south": {
+          "texture": "#pipe",
+          "uv": [
+            14.396,
+            0.4515,
+            16,
+            0.9485
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.392,
+        14.7,
+        13.0015
+      ],
+      "to": [
+        16.008,
+        15.9,
+        13.4985
+      ],
+      "faces": {
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            14.392,
+            13.0015,
+            16,
+            13.4985
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            14.392,
+            2.5015,
+            16,
+            2.9985
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          14.4,
+          15.3,
+          13.25
+        ],
+        "axis": "x",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        14.388,
+        15.0515,
+        12.65
+      ],
+      "to": [
+        16.012,
+        15.5485,
+        13.85
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            0.4515,
+            1.612,
+            0.9485
+          ]
+        },
+        "south": {
+          "texture": "#pipe",
+          "uv": [
+            14.388,
+            0.4515,
+            16,
+            0.9485
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          14.4,
+          15.3,
+          13.25
+        ],
+        "axis": "x",
+        "angle": 45
+      }
+    }
+  ]
+}

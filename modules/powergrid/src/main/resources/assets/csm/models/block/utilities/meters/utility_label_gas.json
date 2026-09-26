@@ -1,0 +1,68 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "label": "csm:blocks/utilities/meters/labels",
+    "particle": "csm:blocks/utilities/meters/labels"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        9,
+        15.5
+      ],
+      "to": [
+        15,
+        12.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#label",
+          "uv": [
+            0,
+            4.0,
+            16,
+            8.0
+          ]
+        },
+        "east": {
+          "texture": "#label",
+          "uv": [
+            0,
+            4.0,
+            0.25,
+            8.0
+          ]
+        },
+        "west": {
+          "texture": "#label",
+          "uv": [
+            15.75,
+            4.0,
+            16,
+            8.0
+          ]
+        },
+        "up": {
+          "texture": "#label",
+          "uv": [
+            0,
+            4.0,
+            16,
+            4.25
+          ]
+        },
+        "down": {
+          "texture": "#label",
+          "uv": [
+            0,
+            7.75,
+            16,
+            8.0
+          ]
+        }
+      }
+    }
+  ]
+}

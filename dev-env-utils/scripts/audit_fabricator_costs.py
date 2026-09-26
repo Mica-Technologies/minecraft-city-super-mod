@@ -505,6 +505,24 @@ def cost_for(registry, info, ancestors):
         if registry.startswith(("vault_lid", "valve_box", "sewer_cleanout")):
             return ("iron_ingot", "CONCRETE_MIX")
         return ("iron_ingot x2",)
+    if tab == "tabutilities":
+        # Mirrors UtilitiesFabricatorRules (Utilities module).
+        if registry.startswith("utility_label_"):
+            return ("SIGN_BLANK",)
+        utilities = {
+            "electric_meter_digital": ("ENCLOSURE_SHELL", "CONTROL_BOARD"),
+            "electric_meter_analog": ("ENCLOSURE_SHELL", "glass_pane"),
+            "electric_meter_bank": ("ENCLOSURE_SHELL", "CONTROL_BOARD", "WIRING_HARNESS"),
+            "electric_meter_socket": ("SHEET_METAL", "WIRING_HARNESS"),
+            "service_disconnect": ("ENCLOSURE_SHELL", "WIRING_HARNESS"),
+            "main_panel": ("ENCLOSURE_SHELL", "WIRING_HARNESS"),
+            "electric_switchboard": ("ENCLOSURE_SHELL x2", "WIRING_HARNESS x2"),
+            "gas_meter": ("SHEET_METAL", "iron_ingot x2"),
+            "gas_meter_bank": ("SHEET_METAL", "iron_ingot x2"),
+            "water_meter_setter": ("iron_ingot x2", "FASTENER_KIT"),
+        }
+        if registry in utilities:
+            return utilities[registry]
     if tab == "tabfurniture":
         if has_any(registry, METAL_FURNITURE_WORDS):
             return ("SHEET_METAL", "FASTENER_KIT")

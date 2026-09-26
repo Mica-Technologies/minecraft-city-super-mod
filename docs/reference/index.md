@@ -36,8 +36,9 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Transit](transit.md) | 119 | Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, fare gates, the fare vending machine, and the tickets and cards they take. |
 | [Trees & Plants](trees-and-plants.md) | 134 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
+| [Utilities](utilities.md) | 14 | The services a city runs to its buildings: electric meters single and in banks, the meter socket, service disconnect, main breaker panel and switchboard, gas meters single and in banks, the water meter setter and utility room labels. |
 | [Unlisted](unlisted.md) | 131 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **3149** | |
+| **Total** | **3163** | |
 
 ## How to read the table
 
