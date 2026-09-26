@@ -381,6 +381,18 @@ roof back.
   (each block draws the half flange at its face), joining the pipe, a fitting along its axis, or a
   pump's or tank's nozzle next to it on any side, with the cast fitting where it is not a straight
   run and standing upright alone. Which sides join is actual state; it collides arm by arm.
+  The fitting has no property of its own: the multipart draws it on any two arms at a right
+  angle or one arm alone (`gen_utilities_water.joint_when`), which is how the grade collar
+  fitted without growing the states past 128.
+- **Where a pipe rises out of the ground it wears a grade collar** (`GROUND`, actual state): a
+  pipe that runs on up, and whose every side it does not join is a block with a solid top,
+  stands in the cell a ground block was taken from, and used to leave a pit round the riser. The
+  collar fills that cell to the surface with a concrete slab's top and stands a concrete ring
+  round the pipe 1.2 to 1.4 px proud (clear of the water pipe's flange); the block then selects
+  and collides as a full block, so it is walked on as the ground is. A buried vertical run, an
+  elbow below grade and the gas yard's risers against the skid (whose top is solid) all get
+  it; a pipe in a trench (an open side) or standing on the ground does not. `BlockWaterPipe.
+  atGrade` holds the rule; the gas pipe shares it.
 - **The inline fittings** (`BlockPipeFitting`) carry the pipe through along the way the player was
   looking and join it at both ends; their flanges are capped both sides, so one standing alone is
   not an open pipe, and a joining pipe's flange draws no face at the block's face, so nothing is
@@ -851,8 +863,10 @@ which OBJ parts the test world had built). No renderer, no tile entity, nothing 
   equipment a block above the grass.
 - **The line heater's nozzles are the front and back of its root block**, not its ends: lay the
   run through the coil header, square to the vessel.
-- **A pipe run into the ground leaves a hole round it**: the pipe block replaces the ground
-  block. Bury it a block deeper, or accept a pit round the riser.
+- **A pipe run into the ground wears a grade collar only where it rises**: the cell with the
+  pipe going on up and ground (a solid top) on every other side. A buried pipe lying level at
+  grade, with open air above it, is a pipe in a trench and keeps its trench; bury it a block
+  deeper and bring it up through a riser.
 - **A sign against anything without a solid face hangs in fence mode**, which is right for
   fences and bars and odd against another fixture.
 - **Aluminium diamond plate reads as a white slab in sunlight**; the skid has its own darker
@@ -927,5 +941,6 @@ Recorded here so a later track starts from what is known; none of it is promised
   column and joint interface would carry them.
 - **Walk-in shelters** (the cell site's and the pump station's), sounds for the generator and the
   pumps, and a site ID on the cell cabinets without a renderer.
-- **Pipes that go underground** without leaving a pit round the riser (Gas yard, Traps): a pipe
-  block with a ground collar, or a riser that draws the soil round itself.
+- **Pipes that go underground** now rise through a concrete grade collar (The water system);
+  a riser that draws the ground's own texture round itself would need the block beside it, a
+  renderer or a baked model per ground block, and was not needed.

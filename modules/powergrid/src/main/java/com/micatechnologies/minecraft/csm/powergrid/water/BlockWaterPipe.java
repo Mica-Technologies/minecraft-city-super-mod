@@ -25,8 +25,13 @@ import net.minecraft.world.World;
  * tees form by themselves, as the Life Safety standpipe's do.
  *
  * <p>Which sides are joined is actual state, from the neighbours, so nothing is stored and a
- * run re-forms as pieces are added or taken away. {@link #JOINT} is set wherever the pipe is not
- * a straight run and draws the cast fitting there. A pipe joined to nothing stands upright.</p>
+ * run re-forms as pieces are added or taken away. The blockstate draws the cast fitting wherever
+ * the pipe is not a straight run, reading that off the arms, so it needs no property of its own.
+ * A pipe joined to nothing stands upright.</p>
+ *
+ * <p>Where a pipe rises out of the ground ({@link #GROUND}), the concrete grade collar fills its
+ * cell to the surface: without it the pipe, standing in the cell the ground block was taken out
+ * of, left a pit round the riser.</p>
  *
  * <p>A pipe carries one service, {@link #WATER} unless constructed with another: the gas yard's
  * welded steel pipe is this class carrying {@link #GAS}. A pipe joins only a pipe, and only the
@@ -42,8 +47,11 @@ public class BlockWaterPipe extends AbstractBlock {
   public static final PropertyBool WEST = PropertyBool.create("west");
   public static final PropertyBool UP = PropertyBool.create("up");
   public static final PropertyBool DOWN = PropertyBool.create("down");
-  /** Set where the pipe is not a straight run, to draw the cast fitting. */
-  public static final PropertyBool JOINT = PropertyBool.create("joint");
+  /**
+   * Set where the pipe rises out of the ground, to draw the grade collar: see
+   * {@link #atGrade(IBlockAccess, BlockPos, boolean[])}.
+   */
+  public static final PropertyBool GROUND = PropertyBool.create("ground");
 
   /** The service of the water system's pipe, fittings and pumps. */
   public static final String WATER = "water";
@@ -160,10 +168,40 @@ public class BlockWaterPipe extends AbstractBlock {
     return false;
   }
 
+  /**
+   * Whether the pipe at {@code pos} rises out of the ground: it runs on up, and every side it
+   * does not join, bar its top and bottom, is a block whose top is a solid face, so the ground
+   * stands level with the pipe's cell all round. That cell is where the ground block was, and
+   * the grade collar fills it to the surface. A pipe in a trench, or on the ground, has an open
+   * side and keeps its arms in view.
+   *
+   * @param world the world
+   * @param pos   the pipe's position
+   * @param arms  its arms, from {@link #arms(IBlockAccess, BlockPos)}
+   *
+   * @return whether to draw the grade collar
+   */
+  public static boolean atGrade(IBlockAccess world, BlockPos pos, boolean[] arms) {
+    if (!arms[EnumFacing.UP.getIndex()]) {
+      return false;
+    }
+    for (EnumFacing side : EnumFacing.HORIZONTALS) {
+      if (arms[side.getIndex()]) {
+        continue;
+      }
+      BlockPos at = pos.offset(side);
+      IBlockState other = world.getBlockState(at);
+      if (other.getBlockFaceShape(world, at, EnumFacing.UP) != BlockFaceShape.SOLID) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, NORTH, SOUTH, EAST, WEST, UP, DOWN, JOINT);
+    return new CsmBlockStateContainer(this, NORTH, SOUTH, EAST, WEST, UP, DOWN, GROUND);
   }
 
   @Override
@@ -176,7 +214,7 @@ public class BlockWaterPipe extends AbstractBlock {
     for (EnumFacing side : EnumFacing.values()) {
       actual = actual.withProperty(arm(side), arms[side.getIndex()]);
     }
-    return actual.withProperty(JOINT, !straight(arms));
+    return actual.withProperty(GROUND, atGrade(world, pos, arms));
   }
 
   @Override
@@ -191,10 +229,13 @@ public class BlockWaterPipe extends AbstractBlock {
     return 0;
   }
 
-  /** The box round the fitting and every arm the pipe has. */
+  /** The box round the fitting and every arm the pipe has; the whole cell under a grade collar. */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     boolean[] a = arms(source, pos);
+    if (atGrade(source, pos, a)) {
+      return FULL_BLOCK_AABB;
+    }
     double lo = 0.5 - r;
     double hi = 0.5 + r;
     return new AxisAlignedBB(a[EnumFacing.WEST.getIndex()] ? 0 : lo,
@@ -203,13 +244,20 @@ public class BlockWaterPipe extends AbstractBlock {
         a[EnumFacing.SOUTH.getIndex()] ? 1 : hi);
   }
 
-  /** Collides arm by arm, so a bend is not a solid block to walk into. */
+  /**
+   * Collides arm by arm, so a bend is not a solid block to walk into; a grade collar is walked
+   * on as the ground round it is.
+   */
   @Override
   @SuppressWarnings("deprecation")
   public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos,
       AxisAlignedBB entityBox, List<AxisAlignedBB> boxes, @Nullable Entity entity,
       boolean isActualState) {
     boolean[] a = arms(world, pos);
+    if (atGrade(world, pos, a)) {
+      addCollisionBoxToList(pos, entityBox, boxes, FULL_BLOCK_AABB);
+      return;
+    }
     double lo = 0.5 - r;
     double hi = 0.5 + r;
     addCollisionBoxToList(pos, entityBox, boxes, new AxisAlignedBB(lo, lo, lo, hi, hi, hi));

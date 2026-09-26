@@ -1406,17 +1406,60 @@ def z_run(z0=0, z1=16, flanges=True):
     return els
 
 
+PIPE_SIDES = ("north", "south", "east", "west", "up", "down")
+PIPE_OPPOSITE = {"north": "south", "south": "north", "east": "west", "west": "east",
+                 "up": "down", "down": "up"}
+
+
+def joint_when():
+    """The multipart condition for a pipe's cast fitting: wherever the run is not straight,
+    read off the arms (BlockWaterPipe has no property for it). A pipe is straight only with
+    exactly two opposite arms, so the fitting is drawn on any two arms at a right angle, or on
+    one arm alone (a pipe always has at least one)."""
+    terms = []
+    for i, a in enumerate(PIPE_SIDES):
+        for b in PIPE_SIDES[i + 1:]:
+            if PIPE_OPPOSITE[a] != b:
+                terms.append({a: "true", b: "true"})
+    for a in PIPE_SIDES:
+        terms.append({s: ("true" if s == a else "false") for s in PIPE_SIDES})
+    return {"OR": terms}
+
+
+def grade_collar(ring_r, ring_top, tex="concrete"):
+    """The concrete collar where a pipe rises out of the ground (BlockWaterPipe.GROUND): the
+    pipe stands in the cell the ground block was taken from, so a slab's top fills that cell
+    to the surface, and a ring round the pipe stands a little proud of it. Only the slab's top
+    is drawn: the ground round it hides its sides, and it hides the pipe's arms beneath. The
+    ring's four overlapping tops read one texel, so they are one colour and cannot be seen to
+    fight (the octagon caps' trick; with the texture's grain model_depth stepped them apart)."""
+    ring = um.octagon("y", 8, 8, ring_r, 16, ring_top, tex, False, True, shift=(0, 16, 0))
+    for el in ring:
+        el["faces"]["up"]["uv"] = [8, 8, 9, 9]
+    return [box([0, 15, 0], [16, 16, 16], tex, faces=("up",))] + ring
+
+
+def pipe_multipart(m, prefix, collar):
+    """A pipe's rules (the gas pipe's too): the fitting, an arm per side, and the grade collar;
+    ``m`` names a model's location in the pipe's own catalogue."""
+    rules = [{"apply": {"model": m(prefix + "_joint")}, "when": joint_when()}]
+    rules += [{"apply": {"model": m(prefix + "_arm_" + s)}, "when": {s: "true"}}
+              for s in PIPE_SIDES]
+    rules.append({"apply": {"model": m(collar)}, "when": {"ground": "true"}})
+    return rules
+
+
 def pipes():
     """The water pipe (BlockWaterPipe): ductile iron in the Ten States blue, flanged at every
     block, joining the pipe, the fittings and the pumps' nozzles next to it on any side; the
-    cast fitting at a bend, a tee or an end."""
-    models = {"pipe_arm_" + s: model(PIPE_TEX, pipe_arm(s))
-              for s in ("north", "south", "east", "west", "up", "down")}
+    cast fitting at a bend, a tee or an end, and the grade collar where it rises out of the
+    ground."""
+    models = {"pipe_arm_" + s: model(PIPE_TEX, pipe_arm(s)) for s in PIPE_SIDES}
     joint = um.octagon("y", 8, 8, 5.0, 3.0, 13.0, "pipe", True, True)
     models["pipe_joint"] = model(PIPE_TEX, joint)
-    rules = [rule("pipe_joint", {"joint": True})]
-    rules += [rule("pipe_arm_" + s, {s: True}) for s in ("north", "south", "east", "west", "up",
-                                                          "down")]
+    # the ring clears the flange (FLANGE_R, 0.8 thick) of the pipe standing on it
+    models["pipe_grade"] = model(PIPE_TEX, grade_collar(FLANGE_R + 1.0, 17.4))
+    rules = pipe_multipart(M, "pipe", "pipe_grade")
     C.add("water_pipe", 'new BlockWaterPipe("water_pipe")',
           names_of("Water Pipe", "Wasserrohr", "Tubería de Agua", "Vattenrör"),
           models, multipart(rules),

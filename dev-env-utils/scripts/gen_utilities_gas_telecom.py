@@ -257,8 +257,10 @@ def gas_pipe():
     models = {"gas_pipe_arm_" + s: model(PIPE_TEX, gas_arm(s)) for s in SIDES}
     models["gas_pipe_joint"] = model(PIPE_TEX, octagon("y", 8, 8, JOINT_R, 4.3, 11.7, "pipe",
                                                        True, True))
-    rules = [rule(G, "gas_pipe_joint", {"joint": True})]
-    rules += [rule(G, "gas_pipe_arm_" + s, {s: True}) for s in SIDES]
+    # the grade collar where it rises out of the ground, its ring 1.5 px round the pipe
+    models["gas_pipe_grade"] = model(dict(PIPE_TEX, concrete=W("concrete")),
+                                     gw.grade_collar(GAS_R + 1.5, 17.2))
+    rules = gw.pipe_multipart(G.M, "gas_pipe", "gas_pipe_grade")
     G.add("gas_pipe", 'new BlockWaterPipe("gas_pipe", BlockWaterPipe.GAS, %s)' % fmt(JOINT_R),
           names_of("Gas Pipe", "Gasleitung", "Tubería de Gas", "Gasledning"),
           models, multipart(G, rules),
