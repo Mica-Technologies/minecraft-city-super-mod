@@ -1,0 +1,132 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "precast": "csm:blocks/utilities/sewer/precast",
+    "particle": "csm:blocks/utilities/sewer/precast"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        3.0,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            13.0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            13.0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        3.0,
+        14.6
+      ],
+      "to": [
+        16,
+        3.8,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            14.6,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            12.2,
+            16,
+            13.0
+          ]
+        },
+        "south": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            12.2,
+            16,
+            13.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        3.0,
+        0
+      ],
+      "to": [
+        16,
+        4.2,
+        1.2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            0,
+            16,
+            1.2
+          ]
+        },
+        "north": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            11.8,
+            16,
+            13.0
+          ]
+        },
+        "south": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            11.8,
+            16,
+            13.0
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "concrete": "csm:blocks/utilities/sewer/precast",
+    "frame": "csm:blocks/utilities/water/aluminium",
+    "plate": "csm:blocks/utilities/water/diamond_plate",
+    "dark": "csm:blocks/utilities/water/dark",
+    "steel": "csm:blocks/utilities/water/steel",
+    "grate": "csm:blocks/utilities/sewer/safety_grate",
+    "particle": "csm:blocks/utilities/water/diamond_plate"
+  },
+  "elements": [
+    {
+      "from": [
+        1.5,
+        14.4,
+        1.5
+      ],
+      "to": [
+        16,
+        14.9,
+        14.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#grate",
+          "uv": [
+            1.5,
+            1.5,
+            16,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#grate",
+          "uv": [
+            1.5,
+            1.5,
+            16,
+            14.5
+          ]
+        }
+      }
+    }
+  ]
+}

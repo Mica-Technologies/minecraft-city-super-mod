@@ -1,0 +1,333 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/sewer/riser_icon"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_walls"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_walls",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_walls",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_walls",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_plain"
+      },
+      "when": {
+        "facing": "north",
+        "base": "false",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_plain",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "base": "false",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_plain",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "base": "false",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_plain",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "base": "false",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_orifice"
+      },
+      "when": {
+        "facing": "north",
+        "base": "true",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_orifice",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "base": "true",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_orifice",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "base": "true",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_orifice",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "base": "true",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_notch"
+      },
+      "when": {
+        "facing": "north",
+        "base": "false",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_notch",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "base": "false",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_notch",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "base": "false",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_notch",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "base": "false",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_both"
+      },
+      "when": {
+        "facing": "north",
+        "base": "true",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_both",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "base": "true",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_both",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "base": "true",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_front_both",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "base": "true",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_floor"
+      },
+      "when": {
+        "facing": "north",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_floor",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_floor",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_floor",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_orifice_plate"
+      },
+      "when": {
+        "facing": "north",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_orifice_plate",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_orifice_plate",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_orifice_plate",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_rack"
+      },
+      "when": {
+        "facing": "north",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_rack",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_rack",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/riser_rack",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "top": "true"
+      }
+    }
+  ]
+}

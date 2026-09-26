@@ -1,0 +1,84 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "enclosure": "csm:blocks/utilities/sewer/enclosure",
+    "plain": "csm:blocks/utilities/sewer/enclosure_plain",
+    "black": "csm:blocks/utilities/water/black",
+    "dark": "csm:blocks/utilities/water/dark",
+    "steel": "csm:blocks/utilities/water/steel",
+    "display": "csm:blocks/utilities/sewer/gen_display",
+    "display_off": "csm:blocks/utilities/sewer/gen_display_off",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "particle": "csm:blocks/utilities/sewer/enclosure_plain"
+  },
+  "elements": [
+    {
+      "from": [
+        -10.5,
+        27.6,
+        6.5
+      ],
+      "to": [
+        -7.5,
+        28.0,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            7.5,
+            4.0,
+            10.5,
+            4.4
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            5.5,
+            4.0,
+            8.5,
+            4.4
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            6.5,
+            4.0,
+            9.5,
+            4.4
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            6.5,
+            4.0,
+            9.5,
+            4.4
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            5.5,
+            6.5,
+            8.5,
+            9.5
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            5.5,
+            6.5,
+            8.5,
+            9.5
+          ]
+        }
+      }
+    }
+  ]
+}

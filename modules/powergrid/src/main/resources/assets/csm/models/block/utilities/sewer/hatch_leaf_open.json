@@ -1,0 +1,209 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "concrete": "csm:blocks/utilities/sewer/precast",
+    "frame": "csm:blocks/utilities/water/aluminium",
+    "plate": "csm:blocks/utilities/water/diamond_plate",
+    "dark": "csm:blocks/utilities/water/dark",
+    "steel": "csm:blocks/utilities/water/steel",
+    "grate": "csm:blocks/utilities/sewer/safety_grate",
+    "particle": "csm:blocks/utilities/water/diamond_plate"
+  },
+  "elements": [
+    {
+      "from": [
+        0.3,
+        16,
+        1.5
+      ],
+      "to": [
+        1.1,
+        30.5,
+        14.5
+      ],
+      "faces": {
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            1.5,
+            0,
+            14.5,
+            14.5
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            1.5,
+            0,
+            14.5,
+            14.5
+          ]
+        },
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            14.9,
+            1.5,
+            15.7,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            0.3,
+            1.5,
+            1.1,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            0.3,
+            1.5,
+            1.1,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.1,
+        20,
+        7.6
+      ],
+      "to": [
+        1.6,
+        26,
+        8.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            14.4,
+            6,
+            14.9,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1.1,
+            6,
+            1.6,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            6,
+            8.4,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            6,
+            8.4,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1.1,
+            7.6,
+            1.6,
+            8.4
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1.1,
+            7.6,
+            1.6,
+            8.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.1,
+        20,
+        7.6
+      ],
+      "to": [
+        4.5,
+        20.6,
+        8.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            11.5,
+            11.4,
+            14.9,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1.1,
+            11.4,
+            4.5,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            11.4,
+            8.4,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            11.4,
+            8.4,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1.1,
+            7.6,
+            4.5,
+            8.4
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1.1,
+            7.6,
+            4.5,
+            8.4
+          ]
+        }
+      }
+    }
+  ]
+}

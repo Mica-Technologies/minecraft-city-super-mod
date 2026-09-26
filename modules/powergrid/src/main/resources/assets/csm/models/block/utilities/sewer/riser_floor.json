@@ -1,0 +1,36 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "precast": "csm:blocks/utilities/sewer/precast",
+    "inside": "csm:blocks/utilities/sewer/precast_dark",
+    "rack": "csm:blocks/utilities/sewer/bar_rack",
+    "steel": "csm:blocks/utilities/water/steel",
+    "dark": "csm:blocks/utilities/water/dark",
+    "particle": "csm:blocks/utilities/sewer/precast"
+  },
+  "elements": [
+    {
+      "from": [
+        2.0,
+        0,
+        2.0
+      ],
+      "to": [
+        14.0,
+        1,
+        14.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#inside",
+          "uv": [
+            2.0,
+            2.0,
+            14.0,
+            14.0
+          ]
+        }
+      }
+    }
+  ]
+}

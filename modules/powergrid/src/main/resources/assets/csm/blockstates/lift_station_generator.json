@@ -1,0 +1,200 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/sewer/gen_icon"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_body"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_body",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_body",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_body",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_run"
+      },
+      "when": {
+        "facing": "north",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_run",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_run",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_run",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_stop"
+      },
+      "when": {
+        "facing": "north",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_stop",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_stop",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_stop",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_cap_open"
+      },
+      "when": {
+        "facing": "north",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_cap_open",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_cap_open",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_cap_open",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "on": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_cap_shut"
+      },
+      "when": {
+        "facing": "north",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_cap_shut",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_cap_shut",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "on": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/gen_cap_shut",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "on": "false"
+      }
+    }
+  ]
+}

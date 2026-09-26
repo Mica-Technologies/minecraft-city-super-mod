@@ -1,0 +1,154 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "precast": "csm:blocks/utilities/sewer/precast",
+    "inside": "csm:blocks/utilities/sewer/precast_dark",
+    "rack": "csm:blocks/utilities/sewer/bar_rack",
+    "steel": "csm:blocks/utilities/water/steel",
+    "dark": "csm:blocks/utilities/water/dark",
+    "particle": "csm:blocks/utilities/sewer/precast"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        14.0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#inside",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            0,
+            2.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#precast",
+          "uv": [
+            14.0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            14.0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        2.0
+      ],
+      "to": [
+        2.0,
+        16,
+        14.0
+      ],
+      "faces": {
+        "east": {
+          "texture": "#inside",
+          "uv": [
+            2.0,
+            0,
+            14.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#precast",
+          "uv": [
+            2.0,
+            0,
+            14.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#precast",
+          "uv": [
+            0,
+            2.0,
+            2.0,
+            14.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.0,
+        0,
+        2.0
+      ],
+      "to": [
+        16,
+        16,
+        14.0
+      ],
+      "faces": {
+        "east": {
+          "texture": "#precast",
+          "uv": [
+            2.0,
+            0,
+            14.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#inside",
+          "uv": [
+            2.0,
+            0,
+            14.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#precast",
+          "uv": [
+            14.0,
+            2.0,
+            16,
+            14.0
+          ]
+        }
+      }
+    }
+  ]
+}

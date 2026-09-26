@@ -16,7 +16,9 @@ import net.minecraft.block.Block;
  * kit, a label a sign blank. The water system is steel by the plate: a tank (one item for the
  * whole bowl, or one layer of a ground tank) is sheet metal and fasteners by its size, a tower
  * leg or riser a pole section, the bracing, pipe and fittings iron, a pump iron and a wiring
- * harness, anything that measures or controls a control board. Anything this does not know
+ * harness, anything that measures or controls a control board. Sewer and stormwater pieces are
+ * concrete by their size (a pipe or a frame adds iron), the hatches aluminium sheet, the lift
+ * station's panel and generator what is in them, riprap cobblestone. Anything this does not know
  * takes the generic cost.</p>
  *
  * <p>Mirrored in {@code dev-env-utils/scripts/audit_fabricator_costs.py}.</p>
@@ -30,6 +32,7 @@ public final class UtilitiesFabricatorRules {
 
   private static final String MC_IRON_INGOT = "minecraft:iron_ingot";
   private static final String MC_GLASS_PANE = "minecraft:glass_pane";
+  private static final String MC_COBBLESTONE = "minecraft:cobblestone";
 
   private static FabricatorIngredient sheet(int n) {
     return FabricatorIngredient.part(CsmParts.SHEET_METAL, n);
@@ -145,6 +148,41 @@ public final class UtilitiesFabricatorRules {
             part(CsmParts.CONTROL_BOARD, 1), sheet(1));
       case "chlorine_cylinder_scale":
         return CsmFabricatorCosts.cost(iron(4), part(CsmParts.CONTROL_BOARD, 1));
+      default:
+        return sewer(registryName);
+    }
+  }
+
+  /** Sewer and stormwater: the lift station, the precast pieces and riprap. */
+  @Nullable
+  private static List<FabricatorIngredient> sewer(String registryName) {
+    switch (registryName) {
+      case "wet_well_hatch":
+      case "valve_vault_hatch":
+        return CsmFabricatorCosts.cost(sheet(2), part(CsmParts.FASTENER_KIT, 1));
+      case "lift_station_control_panel":
+        return CsmFabricatorCosts.cost(part(CsmParts.ENCLOSURE_SHELL, 1),
+            part(CsmParts.CONTROL_BOARD, 1), part(CsmParts.WIRING_HARNESS, 1));
+      case "lift_station_generator":
+        return CsmFabricatorCosts.cost(iron(4), sheet(2), part(CsmParts.WIRING_HARNESS, 2));
+      case "curb_inlet":
+        return CsmFabricatorCosts.cost(part(CsmParts.CONCRETE_MIX, 2), iron(1));
+      case "outfall_headwall":
+      case "outfall_wingwall":
+      case "emergency_spillway":
+      case "manhole_riser":
+      case "manhole_riser_cutaway":
+        return CsmFabricatorCosts.cost(part(CsmParts.CONCRETE_MIX, 2));
+      case "outfall_headwall_pipe":
+        return CsmFabricatorCosts.cost(part(CsmParts.CONCRETE_MIX, 3));
+      case "outfall_headwall_flap_gate":
+        return CsmFabricatorCosts.cost(part(CsmParts.CONCRETE_MIX, 3), iron(2));
+      case "outlet_riser":
+      case "manhole_cone":
+      case "manhole_cone_cutaway":
+        return CsmFabricatorCosts.cost(part(CsmParts.CONCRETE_MIX, 2), iron(1));
+      case "riprap":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_COBBLESTONE, 2));
       default:
         return null;
     }

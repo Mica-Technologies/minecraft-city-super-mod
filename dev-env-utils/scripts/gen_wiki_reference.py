@@ -173,7 +173,10 @@ TABS = {
                      "(legs, riser, bracing, the pedestal column, tanks with their balcony and "
                      "name band, the caged ladder), ground storage tanks, the pump station's "
                      "pipes, valves, pumps and panel, air release and backflow enclosures, and "
-                     "the treatment skid."),
+                     "the treatment skid; and sewer and stormwater: the lift station's access "
+                     "hatches, control panel and standby generator, the curb inlet, the outfall's "
+                     "headwall, flap gate, wingwalls and riprap, the detention pond's outlet riser "
+                     "and emergency spillway, and precast manhole sections whole and cut away."),
     "tabtreesplants": ("trees-and-plants", "Trees & Plants",
                        "Street trees built block by block from thin, leaning logs and leaves, "
                        "the Tree Planting Tool, and plantings."),

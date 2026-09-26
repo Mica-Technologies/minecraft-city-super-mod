@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "normal": [
+      {
+        "model": "csm:utilities/sewer/riprap_a"
+      },
+      {
+        "model": "csm:utilities/sewer/riprap_a",
+        "y": 90
+      },
+      {
+        "model": "csm:utilities/sewer/riprap_a",
+        "y": 180
+      },
+      {
+        "model": "csm:utilities/sewer/riprap_a",
+        "y": 270
+      },
+      {
+        "model": "csm:utilities/sewer/riprap_b"
+      },
+      {
+        "model": "csm:utilities/sewer/riprap_b",
+        "y": 90
+      },
+      {
+        "model": "csm:utilities/sewer/riprap_b",
+        "y": 180
+      },
+      {
+        "model": "csm:utilities/sewer/riprap_b",
+        "y": 270
+      }
+    ]
+  }
+}

@@ -549,6 +549,23 @@ def cost_for(registry, info, ancestors):
             "backflow_enclosure": ("SHEET_METAL x2",),
             "chemical_feed_skid": ("ENCLOSURE_SHELL", "CONTROL_BOARD", "SHEET_METAL"),
             "chlorine_cylinder_scale": ("iron_ingot x4", "CONTROL_BOARD"),
+            # sewer and stormwater
+            "wet_well_hatch": ("SHEET_METAL x2", "FASTENER_KIT"),
+            "valve_vault_hatch": ("SHEET_METAL x2", "FASTENER_KIT"),
+            "lift_station_control_panel": ("ENCLOSURE_SHELL", "CONTROL_BOARD", "WIRING_HARNESS"),
+            "lift_station_generator": ("iron_ingot x4", "SHEET_METAL x2", "WIRING_HARNESS x2"),
+            "curb_inlet": ("CONCRETE_MIX x2", "iron_ingot"),
+            "outfall_headwall": ("CONCRETE_MIX x2",),
+            "outfall_wingwall": ("CONCRETE_MIX x2",),
+            "emergency_spillway": ("CONCRETE_MIX x2",),
+            "manhole_riser": ("CONCRETE_MIX x2",),
+            "manhole_riser_cutaway": ("CONCRETE_MIX x2",),
+            "outfall_headwall_pipe": ("CONCRETE_MIX x3",),
+            "outfall_headwall_flap_gate": ("CONCRETE_MIX x3", "iron_ingot x2"),
+            "outlet_riser": ("CONCRETE_MIX x2", "iron_ingot"),
+            "manhole_cone": ("CONCRETE_MIX x2", "iron_ingot"),
+            "manhole_cone_cutaway": ("CONCRETE_MIX x2", "iron_ingot"),
+            "riprap": ("cobblestone x2",),
         }
         if registry in utilities:
             return utilities[registry]

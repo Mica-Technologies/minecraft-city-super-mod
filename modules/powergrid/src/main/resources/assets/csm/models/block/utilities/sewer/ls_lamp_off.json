@@ -1,0 +1,40 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/utilities/water/steel",
+    "stainless": "csm:blocks/utilities/water/aluminium",
+    "front": "csm:blocks/utilities/sewer/ls_panel_front",
+    "dark": "csm:blocks/utilities/water/dark",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "beacon": "csm:blocks/utilities/water/light",
+    "beacon_off": "csm:blocks/utilities/sewer/beacon_off",
+    "lamp": "csm:blocks/utilities/sewer/lamp_on",
+    "lamp_off": "csm:blocks/utilities/sewer/lamp_off",
+    "particle": "csm:blocks/utilities/water/aluminium"
+  },
+  "elements": [
+    {
+      "from": [
+        6.3,
+        26.0,
+        5.4
+      ],
+      "to": [
+        9.7,
+        26.2,
+        7.4
+      ],
+      "faces": {
+        "down": {
+          "texture": "#lamp_off",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

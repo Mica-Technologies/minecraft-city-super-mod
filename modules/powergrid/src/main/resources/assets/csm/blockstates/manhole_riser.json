@@ -1,0 +1,157 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/sewer/manhole_riser_icon"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_ring.obj"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_ring.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_ring.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_ring.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_ring_top.obj"
+      },
+      "when": {
+        "facing": "north",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_ring_top.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_ring_top.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_ring_top.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_base.obj"
+      },
+      "when": {
+        "facing": "north",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_base.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_base.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_base.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "base": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_steps"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_steps",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_steps",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/mh_steps",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    }
+  ]
+}

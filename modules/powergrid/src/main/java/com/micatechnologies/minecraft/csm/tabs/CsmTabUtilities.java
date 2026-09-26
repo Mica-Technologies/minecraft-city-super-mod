@@ -5,6 +5,14 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityFixture;
 import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityPanel;
 import com.micatechnologies.minecraft.csm.powergrid.services.BlockUtilityRun;
+import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockAccessHatch;
+import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockHeadwall;
+import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockManholeCone;
+import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockPrecastRun;
+import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockRiprap;
+import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockStackedSection;
+import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockSwitchedUnit;
+import com.micatechnologies.minecraft.csm.powergrid.sewer.BlockWingwall;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockCagedLadder;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockGroundTank;
 import com.micatechnologies.minecraft.csm.powergrid.water.BlockPedestalSection;
@@ -28,8 +36,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * module; see {@code assets/docs/UTILITIES_SYSTEM.md} for why there are two.
  *
  * <p>The block lines are written by {@code dev-env-utils/scripts/gen_utilities_meters.py
- * --fragments} and {@code gen_utilities_water.py --fragments}, which measure every box from the
- * model they write.</p>
+ * --fragments}, {@code gen_utilities_water.py --fragments} and {@code gen_utilities_sewer.py
+ * --fragments}, which measure every box from the model they write.</p>
  *
  * @since 2026.9
  */
@@ -103,5 +111,23 @@ public class CsmTabUtilities extends CsmTab {
     initTabBlock(new BlockUtilityBox("backflow_enclosure", new UtilityBoxSpec(2, 1, 1, new AxisAlignedBB(-0.969, 0, 0.062, 0.969, 0.963, 0.938), null)));
     initTabBlock(new BlockUtilityBox("chemical_feed_skid", new UtilityBoxSpec(2, 1, 2, new AxisAlignedBB(-0.969, 0, 0.062, 0.969, 1.625, 0.963), null)));
     initTabBlock(new BlockUtilityBox("chlorine_cylinder_scale", new UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(0.031, 0, 0.062, 0.969, 1.613, 0.938), null)));
+
+    // --- Sewer and stormwater (gen_utilities_sewer.py --fragments) ---
+    initTabBlock(new BlockAccessHatch("wet_well_hatch", true));
+    initTabBlock(new BlockAccessHatch("valve_vault_hatch", false));
+    initTabBlock(new BlockSwitchedUnit("lift_station_control_panel", new UtilityBoxSpec(1, 1, 2, new AxisAlignedBB(0.031, 0, 0.325, 0.969, 1.75, 0.938), null), false, 12));
+    initTabBlock(new BlockSwitchedUnit("lift_station_generator", new UtilityBoxSpec(2, 1, 2, new AxisAlignedBB(-0.975, 0, 0.075, 0.975, 1.95, 0.925), null), true, 0));
+    initTabBlock(new BlockPrecastRun("curb_inlet", new double[]{0, 0, 0, 16, 16, 16}));
+    initTabBlock(new BlockHeadwall("outfall_headwall", new double[]{0, 0, 9.4, 16, 17.2, 16}));
+    initTabBlock(new BlockHeadwall("outfall_headwall_pipe", new double[]{0, 0, 8, 16, 17.2, 16}));
+    initTabBlock(new BlockHeadwall("outfall_headwall_flap_gate", new double[]{0, 0, 7.1, 16, 17.2, 16}));
+    initTabBlock(new BlockWingwall("outfall_wingwall", 12.429, 6.714));
+    initTabBlock(new BlockRiprap("riprap", 5));
+    initTabBlock(new BlockStackedSection("outlet_riser", "outlet", false, false));
+    initTabBlock(new BlockPrecastRun("emergency_spillway", new double[]{0, 0, 0, 16, 4.2, 16}));
+    initTabBlock(new BlockStackedSection("manhole_riser", "manhole", true, false));
+    initTabBlock(new BlockStackedSection("manhole_riser_cutaway", "manhole", true, true));
+    initTabBlock(new BlockManholeCone("manhole_cone", false));
+    initTabBlock(new BlockManholeCone("manhole_cone_cutaway", true));
   }
 }

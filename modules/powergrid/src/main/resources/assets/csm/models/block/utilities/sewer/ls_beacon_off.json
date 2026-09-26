@@ -1,0 +1,199 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/utilities/water/steel",
+    "stainless": "csm:blocks/utilities/water/aluminium",
+    "front": "csm:blocks/utilities/sewer/ls_panel_front",
+    "dark": "csm:blocks/utilities/water/dark",
+    "concrete": "csm:blocks/utilities/water/concrete",
+    "beacon": "csm:blocks/utilities/water/light",
+    "beacon_off": "csm:blocks/utilities/sewer/beacon_off",
+    "lamp": "csm:blocks/utilities/sewer/lamp_on",
+    "lamp_off": "csm:blocks/utilities/sewer/lamp_off",
+    "particle": "csm:blocks/utilities/water/aluminium"
+  },
+  "elements": [
+    {
+      "from": [
+        4.4,
+        22.8,
+        9.8444
+      ],
+      "to": [
+        6.6,
+        25.4,
+        10.7556
+      ],
+      "faces": {
+        "east": {
+          "texture": "#beacon_off",
+          "uv": [
+            5.2444,
+            6.6,
+            6.1556,
+            9.2
+          ]
+        },
+        "west": {
+          "texture": "#beacon_off",
+          "uv": [
+            9.8444,
+            6.6,
+            10.7556,
+            9.2
+          ]
+        },
+        "up": {
+          "texture": "#beacon_off",
+          "uv": [
+            4.4,
+            9.8444,
+            6.6,
+            10.7556
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.0444,
+        22.796,
+        9.2
+      ],
+      "to": [
+        5.9556,
+        25.404,
+        11.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#beacon_off",
+          "uv": [
+            10.0444,
+            6.596,
+            10.9556,
+            9.204
+          ]
+        },
+        "south": {
+          "texture": "#beacon_off",
+          "uv": [
+            5.0444,
+            6.596,
+            5.9556,
+            9.204
+          ]
+        },
+        "up": {
+          "texture": "#beacon_off",
+          "uv": [
+            5.0444,
+            9.2,
+            5.9556,
+            11.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.4,
+        22.792,
+        9.8444
+      ],
+      "to": [
+        6.6,
+        25.408,
+        10.7556
+      ],
+      "faces": {
+        "east": {
+          "texture": "#beacon_off",
+          "uv": [
+            5.2444,
+            6.592,
+            6.1556,
+            9.208
+          ]
+        },
+        "west": {
+          "texture": "#beacon_off",
+          "uv": [
+            9.8444,
+            6.592,
+            10.7556,
+            9.208
+          ]
+        },
+        "up": {
+          "texture": "#beacon_off",
+          "uv": [
+            4.4,
+            9.8444,
+            6.6,
+            10.7556
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          5.5,
+          22.8,
+          10.3
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        5.0444,
+        22.788,
+        9.2
+      ],
+      "to": [
+        5.9556,
+        25.412,
+        11.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#beacon_off",
+          "uv": [
+            10.0444,
+            6.588,
+            10.9556,
+            9.212
+          ]
+        },
+        "south": {
+          "texture": "#beacon_off",
+          "uv": [
+            5.0444,
+            6.588,
+            5.9556,
+            9.212
+          ]
+        },
+        "up": {
+          "texture": "#beacon_off",
+          "uv": [
+            5.0444,
+            9.2,
+            5.9556,
+            11.4
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          5.5,
+          22.8,
+          10.3
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

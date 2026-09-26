@@ -1,0 +1,87 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:utilities/sewer/wing_icon"
+    }
+  },
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/wing_upper.obj"
+      },
+      "when": {
+        "facing": "north",
+        "lower": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/wing_upper.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "lower": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/wing_upper.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "lower": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/wing_upper.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "lower": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/wing_lower.obj"
+      },
+      "when": {
+        "facing": "north",
+        "lower": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/wing_lower.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "lower": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/wing_lower.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "lower": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sewer/wing_lower.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "lower": "true"
+      }
+    }
+  ]
+}
