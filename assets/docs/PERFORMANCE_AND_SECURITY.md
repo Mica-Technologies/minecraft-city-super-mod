@@ -108,8 +108,9 @@ model cache, which is released after the bake, so start the game with
 `-Dcsm.keepUnbakedModels=true` to use it.
 
 The mechanisms, and the rule each one makes. The multipart state mapper works while the blockstates
-are loaded and the part bake cache during the bake; the other model and sprite ones run on `ModelBakeEvent` at the lowest priority, in the order the client proxy
-registers them. All of them run again after a resource reload, which bakes new models from the files:
+are loaded, the sprite release once the atlas is uploaded (and again after the bake) and the part
+bake cache during the bake; the other model ones run on `ModelBakeEvent` at the lowest priority, in
+the order the client proxy registers them. All of them run again after a resource reload, which bakes new models from the files:
 
 - **Each distinct model part is baked once** (`CsmPartBakeCache`, `CsmObjModelLoader`, Core,
   client). Forge bakes a variant's parts (its base model and each sub-model, each retextured and
@@ -210,15 +211,25 @@ registers them. All of them run again after a resource reload, which bakes new m
   `ModelLoaderRegistry` for a CSM model after it** -- ask the model manager for the baked one. A
   plain model would be read from its file again, but a multipart variant's definition is gone.
   Forge's own re-bake path is its animation state machine, which no CSM block or item uses.
-- **Still sprites' pixel data is released after baking** (`CsmSpriteDataRelease`). Vanilla keeps
-  every sprite's pixels, at every mip level, in the heap after uploading them to the atlas; only
-  the animation tick and bakes that turn pixels into geometry (`builtin/generated` items) read them,
-  and those bakes are over by the bake event. The frame data of every non-animated `csm:` sprite is
-  cleared with vanilla's `clearFramesTextureData()` (3,213 sprites, 47 Mpx, 242 MiB); animated
-  sprites and other mods' keep theirs, and size, position and UVs are untouched. **Rule: never read
-  a CSM sprite's pixels after the bake** (`getFrameTextureData` on a still sprite; its
-  `getFrameCount()` is 0). Read the PNG from the resource manager instead. Changing the mipmap level
-  in the video settings is a resource reload, so it restitches from the files.
+- **Still sprites' pixel data is released once the atlas is uploaded** (`CsmSpriteDataRelease`).
+  Vanilla keeps every sprite's pixels, at every mip level, in the heap after uploading them to the
+  atlas; only the animation tick and bakes that turn pixels into geometry (a model whose root is
+  `builtin/generated`, baked by Forge's `ItemLayerModel`) read them. The frame data of every
+  non-animated `csm:` sprite is cleared with vanilla's `clearFramesTextureData()` in two steps. At
+  the block atlas's `TextureStitchEvent.Post`, which comes after the upload and before the bake
+  loop, every one is cleared except the textures of the models whose bake reads pixels: every
+  `builtin/generated` model, and every model of a kind the pass does not know (anything but a JSON
+  model, an OBJ model and Forge's variant containers), found by walking Forge's model cache and the
+  loader's variant map. Every module: 3,109 sprites (30 Mpx at full size) at the upload, the other
+  134 after the bake (`ModelBakeEvent`, lowest priority). That takes about 155 MiB off the heap
+  while the models bake, for about 0.25 s of walking. Animated sprites and other mods' keep
+  theirs, and size, position and UVs are untouched. `-Dcsm.lateSpriteRelease=true` releases
+  everything after the bake instead. **Rule: never read a CSM sprite's pixels once the block atlas
+  is uploaded** (`getFrameTextureData` on a still sprite; its `getFrameCount()` is 0), except in the
+  bake of a `builtin/generated` model. Read the PNG from the resource manager instead. A released
+  sprite fails quietly: an `ItemLayerModel` bake of it makes no quads, and the item is invisible.
+  Changing the mipmap level in the video settings is a resource reload, so it restitches from the
+  files.
 - **Model location strings and transforms are interned** (`CsmBakedModelInterning`). Every model
   registry key held its own copies of its namespace, path and variant strings (840 thousand strings,
   50 thousand distinct), and every baked variant its own `TRSRTransformation`s and
@@ -291,10 +302,11 @@ of a `-Xmx6G` launch), and ParallelGC gives the old generation only two thirds o
 arguments), 2.5 GB at the very least, and more for a large modpack; **Core alone runs in 512
 MB** (a partial set lies in between and has not been measured module by module). Launchers that
 default to 2 GB will not start the full set. Re-measure with `dev-env-utils/gradle/lowmem.gradle` whenever a large batch of
-blocks or models lands, and update `docs/getting-started/installation.md` with it. The next lever
-on the floor is that launch peak: releasing the still sprites' pixels right after the atlas upload
-rather than after the bake would take about 160 MiB off it (30 Mpx with their mip levels), but `builtin/generated` item models
-read their sprite's pixels during the bake, so it needs the item sprites told apart first.
+blocks or models lands, and update `docs/getting-started/installation.md` with it. The still
+sprites' pixels are now released as soon as the atlas is uploaded (above), which takes about
+155 MiB off the heap while the models bake (1,250 -> 1,100 MiB at fixed points of a launch) but
+nothing off the texture stitch just before it, where every sprite's pixels are alive at once and
+the heap is as full (about 1.25 GiB); the floor waits on that.
 
 **State and memory budget for new blocks.** What a block costs now that the fixes above are in,
 so a design can be priced before it is built:
