@@ -382,6 +382,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/LIGHTING_SYSTEM.md` -- 4-state on/off control, light-up air projection, AbstractBrightLight, the decorative pendant/sconce family and its 3-material OBJ finish/lens pattern
 - `assets/docs/POWER_GRID_SYSTEM.md` -- Forge Energy integration, utility poles, electrical infrastructure
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system,
+  how large a sign face texture may be (85.3 texels a block of plate; `SignTextureSizeTest` fails
+  the build on a larger one),
   the three shift models and where a back-to-back plate has to sit (`SignShiftModelTest` fails the
   build on a shift entry that does not move), and why the metal behind a sign's art is recessed
   (`SignFaceDepthTest` fails the build on two faces too close to tell apart at a distance)
@@ -430,7 +432,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   server-sent HUD, `/csmhvac` and the test lab, and why the old offset engine was replaced
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 - `assets/docs/PERFORMANCE_AND_SECURITY.md` -- Where frame time and memory actually go (client frame time is
-  the whole story; the server tick is 0.4%), how to measure without fooling yourself, the rules render and
+  the whole story; the server tick is 0.4%), the block atlas budget (`atlas_budget.py`), how to measure
+  without fooling yourself, the rules render and
   tick code follow, NBT short keys, and the conventions every network packet follows
 
 Agent progress/tracking docs are in `assets/docs/agent_progress/`.
@@ -469,7 +472,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   gray back per route shield, cut from the guide sign atlas that already ships, plus the three
   shift models and the blockstate whose `shield` variant picks the marker. The shield list and
   its order are parsed out of `GuideSignShieldType` rather than repeated, since the ordinals
-  are serialized; `--check` fails on drift
+  are serialized. Faces are 128 px, backs their 64 px source; shields with identical pixels
+  share one texture and the orphans are deleted; `--check` fails on drift
 - `measure_shield_legends.py` -- where each state, DC and province route marker on the sign atlas
   sets its route number (cap height, width, centre, colour): fits the largest two-digit number
   into the face region under a seed point and writes the values into `GuideSignShieldType`.
@@ -481,7 +485,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   either the official FHWA drawing through `shs_signs.py` or, where the book has no sign at the
   mod's wording, Highway Gothic text through `render_sign.py`; fitted at the plate's aspect,
   blockstate cloned from a same-shape sibling, `--apply` inserts the lang lines and tab lines
-  after each sign's sibling; `--check` fails on drift. Silhouettes that are none of the eight
+  after each sign's sibling; `--check` fails on drift (faces and `_back`s, each stored at its
+  plate's size through `sign_texture_size.fit`). Silhouettes that are none of the eight
   shapes use the `yield_sign` model with a gray `_back` texture on slot `2`
 - `shs_signs.py` -- accurate sign faces from the FHWA Standard Highway Signs drawings (public
   domain): fetches the 2004 book chapters and the interim per-sign ZIPs into the gitignored
@@ -494,7 +499,7 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_official_faces.py` -- swaps an EXISTING road sign's face for its SHS drawing: reads the
   sign's own blockstate for the plate model and the texture it paints (slot `1`, often not
   named after the registry), measures the plate's aspect off the model's `#1` faces, and
-  writes that texture and nothing else -- registration and blockstates are untouched, so
+  writes that texture, at its plate's size (`sign_texture_size.fit`), and nothing else -- registration and blockstates are untouched, so
   `--check` is a byte comparison and a batch reverts with `git checkout`. `--sheet` makes the
   before/after contact sheet a batch is reviewed on; `--verify-sheet` puts each unverified
   match-table guess beside its cited book page. `replace=('50', '35')` re-sets the one numeral
@@ -505,7 +510,24 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_large_custom_signs.py` -- road signs whose plate is several blocks across (the 5 x 3
   TRUCKERS panel): an OBJ plate centred on the placed block for each shift, since a JSON element
   cannot reach past -16..32, plus the blockstate with a slot-fitted inventory transform;
-  `--art <dir>` rebuilds the face textures from the source art, `--check` fails on drift
+  `--art <dir>` rebuilds the face textures from the source art (not in the repository),
+  `--from-existing` reduces the committed ones to the catalogue size; `--check` fails on drift
+  and on a face texture not at its catalogue size
+- `sign_texture_size.py` -- the road sign texture resolution rule every sign generator applies:
+  measures each sign texture's largest plate off every model that draws it (JSON faces through
+  their UV window, OBJ polygons through their UVs) and gives the smallest power of two with at
+  least 85.3 texels a block (128 px to 1.5 blocks, 256 to 3, 512 to 6, never below 128);
+  `fit(img, path)` reduces with the one approved filter (linear-light area average, light
+  unsharp on opaque pixels). `--all` lists every texture over its size. See "Texture
+  resolution" in `assets/docs/TRAFFIC_SIGNS.md`
+- `cap_sign_textures.py` -- `--check` fails on any road sign texture above its plate's size,
+  whatever wrote it, and names the fix; `--apply` reduces only the ones no checked generator
+  writes (hand-made faces, retired one-off scripts' output); `--claims` lists who writes each.
+  `SignTextureSizeTest` holds the same rule in the build
+- `atlas_budget.py` -- how full CSM leaves the block atlas: collects every sprite the game loads
+  and packs them with a port of Forge's `Stitcher`. Warns above 95% of 8192 x 4096 and exits 1
+  once the atlas outgrows it (which silently doubles its GPU memory and stitch time). Run it
+  before adding a large batch of textures; see "Memory" in PERFORMANCE_AND_SECURITY.md
 - `detect_legend_series.py` -- measures a sign's original texture (first git version): each legend
   line's centre, cap height and nearest FHWA series, for a remake's `layout=`
 - `gen_enforcement_cameras.py` -- the red light cameras, speed cameras and flash unit
@@ -559,7 +581,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   texture as a two-frame strip (one 100 ms blink a
   second, timed by the `.mcmeta` so every sign in the world blinks in step), writes the OptiFine
   `_e` companion on the same clock, and clones the plain sign's blockstate, so no model changes.
-  The LED positions are read off each base texture's own outline, not hard-coded
+  The LED positions are read off each base texture's own outline, not hard-coded, and the strip
+  is drawn at the base's size (the plate's). Re-run it whenever a base face changes; `--check`
+  fails on drift
 - `gen_pv_lens_atlas.py` -- the programmable-visibility lens atlas (`lights/atlas_pv.png`) from the
   light atlas: an edge-preserving smoothing that removes the LED dot texture but keeps legends and
   the lens rim crisp and never pushes colour past the disc's alpha; `--check` fails on drift

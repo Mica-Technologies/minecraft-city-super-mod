@@ -308,7 +308,11 @@ which has no post to move and already carries its legend on both faces.
    }
    ```
 
-2. Create the sign face texture at `textures/block/mycustomsign.png`
+2. Create the sign face texture at `textures/blocks/trafficsigns/mycustomsign.png`, at the size
+   its plate is given (see [Texture resolution](#texture-resolution): 128 px for any plate up to
+   1.5 blocks). Draw it larger if that is easier and bring it down with
+   `sign_texture_size.fit`, or `cap_sign_textures.py --apply`; `SignTextureSizeTest` fails the
+   build on a face stored larger than its plate needs
 
 3. Create blockstate JSON at `blockstates/mycustomsign.json`:
    - Copy an existing sign's blockstate as a template
@@ -421,8 +425,12 @@ So the art keeps the plate's aspect. `--art` resamples it once to the plate's pr
 2.06:1 DANGER art is fitted to its 3 x 2 plate here, not by the UVs), at a whole number of pixels
 per block on both axes, and centres it in the square texture; the front face's UVs pick out just
 that rectangle, brought in half a texel. Texel density is then the same both ways, and the
-texture size is chosen to keep it at or above a one-block sign's 128 px a block: 1024 px for the
-5-wide panels (192 px a block), 512 for DANGER (149). The rest of the square is not left
+texture size follows the rule every sign face does ([Texture resolution](#texture-resolution),
+at least 85.3 texels a block): 512 px for all three, which is 96 texels a block on the 5-wide
+panels and 149 on DANGER. The 5-wide panels were 1024 until 2026-09; the originals are not in the
+repository, so `--from-existing` halved the committed textures, which is why their catalogue
+entries carry a padding of 16 rather than 32: the layout halves exactly and every art pixel stays
+where the UVs expect it. The rest of the square is not left
 transparent. The art's edge pixels are repeated outward to fill it, alpha included, so the lower
 mip levels average the plate's rim with more of itself rather than with transparency or a
 neighbouring atlas sprite, while an edge the art itself leaves transparent (the TRUCKERS panel's
@@ -459,7 +467,7 @@ any of it.
 | `TileEntityDynamicRouteMarkerSign` | two values: the marker (`sh`) and the route number (`rt`) |
 | `TileEntityDynamicRouteMarkerSignRenderer` | draws the route number, and nothing else |
 | `DynamicRouteMarkerSignGui` / `RouteMarkerConfigPacket` | the editor and its one packet |
-| `gen_route_markers.py` | 67 faces, 67 gray backs, three models, the blockstate |
+| `gen_route_markers.py` | the faces and gray backs (one texture per distinct image), three models, the blockstate |
 
 ### The marker is a block property, not something the renderer draws
 
@@ -595,7 +603,10 @@ own outline (the octagon's vertices are where its edge meets the texture edge; a
 panel is its opaque bounds; the diamond's points are where it meets each texture edge, its
 edges inset by the diamond's own apothem) rather than hard-coding them, and pre-stretches the WRONG WAY dots
 by the wide plate's 22:16 aspect so they come out round in the world. The lang lines and tab
-registrations it prints are added by hand next to the plain sign's own.
+registrations it prints are added by hand next to the plain sign's own. The strip is drawn at
+its base face's size, which is the size its plate is given ([Texture resolution](#texture-resolution);
+a base still above it is reduced first), so re-run the script whenever a base face changes:
+`--check` fails if a strip, companion, `.mcmeta` or blockstate no longer matches its base.
 
 ## Where Sign Faces Come From
 
@@ -647,9 +658,56 @@ its `setback` / `back_to_back` twins:
 | `metal_sign_tall_narrow` | 12.6 x 21 (0.6) | `ladotsignalsync` (an 18 x 30 in sign) |
 | `metal_sign_tall_extra_narrow` | 10.5 x 21 (0.5) | `verizondig` |
 
-Their textures were cropped to the drawn sign and stretched back out to the square (256 px, so the
-stretch loses nothing). Before giving a sign a new plate, measure the opaque bounds of its face
+Their textures were cropped to the drawn sign and stretched back out to the square (then 256 px,
+so the stretch lost nothing; both are 128 now, by the texture resolution rule). Before giving a sign a new plate, measure the opaque bounds of its face
 texture against the plate's `#1` face; a fill well under the full width or height is this fault.
+
+### Texture resolution
+
+A sign face is stored at **the smallest power of two that gives its plate at least 85.3 texels a
+block**: 128 px on a plate up to 1.5 blocks, 256 up to 3, 512 up to 6. It is never stored below
+128, and never larger than it is drawn. A texture drawn by several plates takes the largest; an
+animation strip counts one frame; an OptiFine `_e` companion follows its base.
+
+Why: every sign face is a sprite in the one block atlas, whose size is the next power of two that
+holds every sprite, and the road signs are nearly half of CSM's share. At 256 px a one-block face
+had 256 texels a block, which only shows within about six blocks on a 1080p screen, and the signs
+at that size were what pushed the atlas from 8192 x 4096 to 8192 x 8192 -- twice the GPU memory
+and twice the stitching at launch. At 85.3 texels a block a face matches the old one from about
+nine blocks out, and nothing changes past that: the reduction uses the same average as the game's
+own mip levels. What is lost is small print within a few blocks on the 1.5-block plates (the
+permit parking fine print, "PER UIA FEDERAL LAW"). The 16 x 8 plaques and the 8 x 24 paddle are
+one block across, so they are 128 like any one-block sign; the earlier choice to give them 256
+was about their legend being small on the plate, not about density.
+
+How it is enforced:
+
+- **`dev-env-utils/scripts/sign_texture_size.py`** measures the plate and gives the size. It
+  walks every model any blockstate draws: JSON element faces through their UV window and element
+  rescale, OBJ polygons through their UV Jacobian, recording how many blocks one full width or
+  height of the texture covers (the *span*); `size = pow2ceil(85.3 x span)`, with 2% tolerance
+  so a 24-unit plate is 1.5 blocks. `fit(img, path)` brings an image to that size with the one
+  filter: an area average in linear light (gamma 2.2, premultiplied alpha -- exactly the game's
+  own mip level on an opaque area), then a light unsharp mask (0.6 px, 60%) on the opaque pixels
+  only, since sharpening the colour under a cutout's soft edge pulls a dark rim into it.
+- **Every generator** that writes a face calls `fit` before it saves or compares, so its
+  `--check` holds the reduced output: `gen_official_faces.py`, `gen_gap_signs.py`,
+  `gen_led_signs.py`, and the retired one-off scripts (`upscale_signs.py`, `clean_signs.py`,
+  `render_ladot.py`, `render_steep_edge.py`, `render_tolled_bike.py`) if they are ever re-run.
+  The generators still *draw* at 256 where they did (plaques, paddles, composed faces): the
+  legend is set crisply and then reduced, which is what was reviewed.
+- **`gen_route_markers.py`** keeps the faces at 128 (their 64 px atlas cell magnified with
+  `GL_NEAREST` turns visibly blocky up close) and stores the gray backs at their 64 px source.
+  Shields with pixel-identical faces or backs share one texture.
+- **`gen_large_custom_signs.py`** sizes its panels to the rule in its catalogue.
+- **`cap_sign_textures.py --check`** fails on any sign texture above its size and names the fix;
+  `--apply` reduces the ones no generator writes (hand-made faces). **`SignTextureSizeTest`**
+  (Roads tests) holds the same rule in the build, with its own port of the measurement.
+
+For a new sign: draw the face at any power-of-two size at or above the rule's and let `fit`
+bring it down, or draw it at 128 if its plate is 1.5 blocks or less. A pixel-identical copy of
+an existing face is not a new texture: point the blockstate at the existing one. And watch the
+atlas: `atlas_budget.py` reports how full it is (see "Memory" in `PERFORMANCE_AND_SECURITY.md`).
 
 ### A plate needs its own shift twins
 

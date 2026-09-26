@@ -167,6 +167,29 @@ reload, which bakes new models from the files:
   call `CsmTts.startInit()` as soon as speech is likely**, so the engine is ready by the time
   something speaks.
 
+**The block atlas has a budget.** Every block and item sprite goes into one texture whose size is
+the next power of two the stitcher can pack them into, and CSM is nearly all of it. Crossing a size
+is silent and doubles the cost: at 8192 x 8192 instead of 8192 x 4096 the atlas takes twice the GPU
+memory (about 340 MiB with its mip levels instead of 170) and the stitch at launch, which reads
+every pixel, twice as long. It crossed once, on the road sign faces (48.5 Mpx of sprites, 30.9 of
+them signs, many at 256 px on one-block plates). Sizing each face by its plate
+(TRAFFIC_SIGNS.md, "Texture resolution"), storing the route marker backs at their 64 px source and
+merging 47 pixel-identical copies took 16.8 Mpx out and brought the atlas back to **8192 x 4096**
+(confirmed in the log's `Created: 8192x4096 textures-atlas`). Measured interleaved (3 + 3
+launches, every module): texture stitching 6.0 -> 3.8 s, launch to the menu a median of 43 -> 39 s
+(each pair 2-4 s faster), the menu heap unchanged at 859 MiB (still sprites' pixels are released
+after the bake anyway). That leaves it **95% full**: about 1.6 Mpx, a
+hundred-odd more 128 px textures, before it doubles again. OptiFine's `_e` companions still fit.
+
+`dev-env-utils/scripts/atlas_budget.py` is how that is seen coming. It collects every sprite the
+game loads -- blockstate texture overrides, JSON model texture maps through their parents, OBJ
+materials, item models -- at its frame size (it matches the stage 3a heap dump's 3,275 CSM sprites
+name for name), adds the dev client's other ~820 small sprites, and packs them with a line-for-line
+port of Forge's `Stitcher`, so "fits" is the game's answer. It warns above 95% of 8192 x 4096 and
+exits 1 once the atlas no longer fits it. **Rule: run it before adding a large batch of textures,
+and when it warns, cut sprite pixels** -- a texture larger than its face needs, identical copies
+that could be one sprite -- rather than accept the doubling.
+
 A resource reload (F3+T) with every module takes about 30 s, and the integrated server drops the
 player ("Disconnected") while it runs, with or without these fixes. Never reload resources in a
 session someone is using. It used to hold two model sets at once and run out of a 6 GB heap; with
