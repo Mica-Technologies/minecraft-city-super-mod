@@ -581,7 +581,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `fix_sign_plate_backing.py` -- recesses the bare-metal face behind a hand-built sign plate's
   art, which z-fought with it from a dozen blocks out; rewrites a model only if it can reproduce
   the file byte for byte first, so the diff is the geometry and nothing else. `--apply` repairs,
-  `--check` fails on a plate that still has the defect (`SignFaceDepthTest` holds the same rule)
+  `--check` fails on a plate that still has the defect (`SignFaceDepthTest` holds the same rule
+  for road signs); the pull request integrity job runs `--check` over every module's models, so
+  a generated model with the defect is fixed in its generator
 - `gen_led_signs.py` -- the LED-enhanced flashing STOP / WRONG WAY / DO NOT ENTER / PEDESTRIAN
   signs and the pedestrian arrow plaques: composites the border LEDs into the plain sign's face
   texture as a two-frame strip (one 100 ms blink a

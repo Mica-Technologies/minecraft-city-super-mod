@@ -57,6 +57,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      # Two faces of different textures overlapping within 0.2 units of each other z-fight from
+      # across a street (issue #212). SignFaceDepthTest holds the road signs to that in the build;
+      # this holds every module's JSON models to the rule the script shares with it. Standard
+      # library only. Repair in the model's generator, or with --apply for a hand-built sign plate.
+      - name: Check for faces too close behind a model's art
+        run: python3 dev-env-utils/scripts/fix_sign_plate_backing.py --check
+
       - name: Set Up JDK 21
         uses: actions/setup-java@v5
         with:

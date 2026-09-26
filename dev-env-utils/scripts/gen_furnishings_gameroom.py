@@ -890,8 +890,10 @@ def beerrack():
     for y in (1.0, 10.0, 19.0, 27.2):
         els.append(B([x0, y, z0], [x1, y + 0.4, z1], "wire_shelf", faces=("up", "down"),
                      uv=[0, 0, 16, 16]))
-        els.append(B([x0, y, z0 - 0.01], [x1, y + 0.4, z0], "steel",
-                     faces=("north",), uv=[0, 0, 16, 0.4]))
+        # the lip stops at the uprights: running across their fronts it stood 0.01 before a
+        # face of another texture (fix_sign_plate_backing.py --check)
+        els.append(B([x0 + 0.8, y, z0 - 0.01], [x1 - 0.8, y + 0.4, z0], "steel",
+                     faces=("north",), uv=[0.4, 0, 15.6, 0.4]))
     # three half-barrel kegs on the bottom shelf
     for cx in (-2.5, 6.5, 15.5):
         els += post(cx, 12.5, 3.1, 1.4, 8.8, "keg", top=True, bottom=False)
