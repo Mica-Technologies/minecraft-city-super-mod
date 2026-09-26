@@ -58,7 +58,6 @@ public final class SwitchLinks {
   public static final String RELAY = "switch_relay";
 
   private static final String KEY_LINK = "csmSwitchLink";
-  private static final String MSG = "csm.furnishings.switch.";
   /** Where a relay goes, most preferred first: below and above before the sides. */
   private static final EnumFacing[] RELAY_SIDES = {EnumFacing.DOWN, EnumFacing.UP,
       EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST};
@@ -287,7 +286,8 @@ public final class SwitchLinks {
 
   private static void tell(@Nullable EntityPlayer player, String key, Object... args) {
     if (player != null) {
-      player.sendStatusMessage(new TextComponentTranslation(MSG + key, args), false);
+      player.sendStatusMessage(
+          new TextComponentTranslation("csm.furnishings.switch." + key, args), false);
     }
   }
 }
