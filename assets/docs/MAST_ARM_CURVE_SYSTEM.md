@@ -318,7 +318,7 @@ whole point of the multi-block layout, but nothing yet renders a mount stub on a
 Doing it properly means stub geometry that meets the tube at the local tangent angle, which
 varies per cell — so the stubs would be generated per cell alongside the tube, and the block
 would move from `AbstractBlockRotatableNSEW` to the `AbstractBlockTrafficPole` family to pick up
-the `MOUNT_*` properties. See `POWER_GRID_SYSTEM.md` and `AbstractBlockTrafficPole` for how the
+the `MOUNT_*` properties. See `UTILITIES_SYSTEM.md` and `AbstractBlockTrafficPole` for how the
 existing mount properties work.
 
 **Free-form sizing.** The presets are fixed blocks. A single block whose run/rise are chosen from

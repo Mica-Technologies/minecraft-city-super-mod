@@ -21,7 +21,7 @@ every module requires it. Beyond that, install only the subsystems you actually 
 | **CSM: Life Safety** | Fire alarms, exit signs and emergency lighting, fire protection, and fire, police and EMS station fittings with sirens and dispatch |
 | **CSM: HVAC** | Thermostats, air handlers, ducting and vents |
 | **CSM: Lighting** | Street and area luminaires, pendants and wall sconces |
-| **CSM: Power Grid** | Utility poles, cross arms, insulators, transformers and other electrical infrastructure |
+| **CSM: Utilities** | Utility poles, cross arms, insulators, transformers and other electrical infrastructure, and the services a building takes: electric, gas and water meters and the main panel. Formerly CSM: Power Grid, and the same jar: worlds carry on unchanged. **Also requires CSM: Roads & Traffic** |
 | **CSM: Technology** | Computers, servers, televisions, speakers |
 | **CSM: Furniture & Novelties** | Indoor and outdoor furniture, arcade cabinets, decorative novelties |
 | **CSM: Building Materials** | Block, stair, slab and fence sets |

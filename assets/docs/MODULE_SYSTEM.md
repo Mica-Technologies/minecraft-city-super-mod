@@ -25,7 +25,7 @@ world ever sees is namespaced with them.
 | Life Safety | `csm_lifesafety` | CSM: Life Safety | `…-lifesafety-<version>.jar` | `lifesafety`, `api/firealarm` | Fire Alarm & Detection (3), Exits & Emergency Lighting (21), Fire Protection (22), Emergency Services (23) | 155 |
 | HVAC | `csm_hvac` | CSM: HVAC | `…-hvac-<version>.jar` | `hvac` | HVAC (2) | 45 |
 | Lighting | `csm_lighting` | CSM: Lighting | `…-lighting-<version>.jar` | `lighting` | Lighting (4), hidden (−9) | 140 |
-| Power Grid | `csm_powergrid` | CSM: Power Grid | `…-powergrid-<version>.jar` | `powergrid` | Power Grid (6) | 46 |
+| Utilities (formerly Power Grid) | `csm_powergrid` | CSM: Utilities | `…-powergrid-<version>.jar` | `powergrid` | Power Grid (6) | 46 |
 | Technology | `csm_technology` | CSM: Technology | `…-technology-<version>.jar` | `technology` | Technology (8) | 44 |
 | Furniture & Novelties | `csm_furnishings` | CSM: Furniture & Novelties | `…-furnishings-<version>.jar` | `furniture`, `novelties` | Novelties (5), Furniture (12), Gaming (13), Residential (24), Commercial & Office (25), Market & Store (26), hidden (−7) | 509 |
 | Building Materials | `csm_building` | CSM: Building Materials | `…-building-<version>.jar` | `buildingmaterials` | Building Materials (1) | 87 |
@@ -41,7 +41,7 @@ itemless `*_slab_double` states.
 come from the same release. That is deliberate: they are built from one tree, and a mixed install
 should fail loudly at startup rather than subtly later.
 
-Two modules also require another module, and the rule is the same for both: **a module may
+Three modules also require another module, and the rule is the same for all of them: **a module may
 reference Core, and a module that declares a required module may reference that module too** —
 never the other way round, and never a module it does not declare.
 
@@ -53,6 +53,12 @@ never the other way round, and never a module it does not declare.
   back-to-back pairing and extension post; a second pole family of Transit's own would have
   duplicated all of it and could never stand on a sign post or next to a signal arm the way a
   road sign does.
+- **Utilities → Roads & Traffic** (`required-after:csm_roads@[<version>]`): its larger pieces
+  are Roads' utility box multi-block (`BlockUtilityBox`: the root draws the whole unit,
+  invisible parts fill the rest, placing is all or nothing), and what stands at street level
+  settles onto the road surface the way Roads' street fixtures do. Utilities was CSM: Power
+  Grid and kept that mod id (`csm_powergrid`) and tree (`modules/powergrid`) when it was renamed,
+  so worlds saved with Power Grid load unchanged; see `UTILITIES_SYSTEM.md`.
 
 Each is declared in three places that must agree: the `@Mod` `dependencies` string, the
 `mcmod.info` `dependencies` / `requiredMods` lists, and the `deps:` of the module's entry in
@@ -103,7 +109,7 @@ That is why Building Materials is `csm_building` and not `csm_buildingmaterials`
 
 The compile classpath enforces the boundary: a module compiles against Minecraft and Core only
 (plus another module only where `modules.gradle` declares `deps:`, which today is Text to Speech →
-Technology and Transit → Roads & Traffic). Core's compile classpath contains no module at all, so a Core → module reference does
+Technology, and Transit and Utilities → Roads & Traffic). Core's compile classpath contains no module at all, so a Core → module reference does
 not compile.
 
 Where Core genuinely has to recognise something a module owns, it does so through an interface in
@@ -203,8 +209,8 @@ For each entry in `modules.gradle`'s `csmModules` list it creates:
 
 `-PcsmRunModules` accepts `all` (the default), `core`, or a comma-separated list of module names;
 Core is always loaded, and an unknown name fails configuration rather than silently loading nothing.
-A module's `deps:` come with it: `-PcsmRunModules=transit` runs Core, Roads and Transit, and `tts`
-brings Technology, since either would otherwise stop FML at startup on its missing dependency.
+A module's `deps:` come with it: `-PcsmRunModules=transit` runs Core, Roads and Transit (and
+`powergrid`, Utilities, runs Roads too), and `tts` brings Technology, since either would otherwise stop FML at startup on its missing dependency.
 It applies to every run task, dev client and dev server alike.
 
 In IntelliJ the run-configuration dropdown is the chooser. The buildscript's own **2. Run Client**
@@ -344,7 +350,7 @@ during construction, so the answer is already final.
 **Shared assets stay in Core, at the path they already have.** A model or texture that two modules
 reach lives in Core's tree, subsystem folder name and all. That means folder names can lie about
 which jar ships a file — `models/block/lighting/shared_models/large_mount.json` is shipped by Roads,
-and `textures/blocks/buildingmaterials/…/metal_gold.png` by Power Grid, because those are the modules
+and `textures/blocks/buildingmaterials/…/metal_gold.png` by Utilities (Power Grid), because those are the modules
 that reference them. Do not "fix" a folder name: the path is what the JSON, the OBJ, the MTL, the
 generator scripts and the docs all name, and rewriting them is precisely the risk the split avoided.
 

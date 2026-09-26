@@ -26,7 +26,7 @@ thirteen.
 | CSM: Life Safety | Fire alarm appliances and panels, emergency lighting, exit signs |
 | CSM: HVAC | Thermostats, air handlers, ducting |
 | CSM: Lighting | Street and area luminaires, pendants and sconces |
-| CSM: Power Grid | Utility poles, insulators, cross arms, electrical infrastructure |
+| CSM: Utilities | Utility poles, insulators, cross arms, electrical infrastructure, and building service meters and panels — **also requires CSM: Roads & Traffic** (formerly CSM: Power Grid) |
 | CSM: Technology | Computers, servers, televisions, speakers |
 | CSM: Furniture & Novelties | Indoor and outdoor furniture, arcade cabinets, decorative novelties |
 | CSM: Building Materials | Block, stair, slab and fence sets |
@@ -475,8 +475,8 @@ subsystems:
 - **[LIGHTING_SYSTEM.md](assets/docs/LIGHTING_SYSTEM.md)** -- The 4-state on/off control
   system, light-up air projection, redstone vs manual control, and the AbstractBrightLight
   hierarchy.
-- **[POWER_GRID_SYSTEM.md](assets/docs/POWER_GRID_SYSTEM.md)** -- Forge Energy integration,
-  utility pole system, and decorative electrical infrastructure.
+- **[UTILITIES_SYSTEM.md](assets/docs/UTILITIES_SYSTEM.md)** -- The Utilities module (formerly
+  Power Grid): Forge Energy integration, the utility pole system, and building services.
 - **[TRAFFIC_SIGNS.md](assets/docs/TRAFFIC_SIGNS.md)** -- The 472-sign system: Forge
   blockstate format, dynamic DOWNWARD/SETBACK properties, shared base models, and how to add
   new signs.

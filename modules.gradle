@@ -18,8 +18,10 @@
 // `main`, so copying main's classpaths here picks up everything RFG added to them.
 
 def csmModules = [
-    [name: 'powergrid', modId: 'csm_powergrid', displayName: 'CSM: Power Grid'],
     [name: 'roads', modId: 'csm_roads', displayName: 'CSM: Roads & Traffic'],
+    // Utilities keeps the mod id and tree it had as Power Grid, so saved worlds are untouched;
+    // it follows Roads because it builds on Roads' utility box multi-block and settling.
+    [name: 'powergrid', modId: 'csm_powergrid', displayName: 'CSM: Utilities', deps: ['roads']],
     [name: 'lifesafety', modId: 'csm_lifesafety', displayName: 'CSM: Life Safety'],
     [name: 'hvac', modId: 'csm_hvac', displayName: 'CSM: HVAC'],
     [name: 'lighting', modId: 'csm_lighting', displayName: 'CSM: Lighting'],
@@ -90,7 +92,8 @@ csmModules.each { m ->
     // Minecraft + Core, nothing else: the compiler is the module boundary. A module that
     // declares `deps: ['other']` also sees that module's classes (Text to Speech compiles
     // against Technology because its Redstone TTS block links to Technology's speakers; Transit
-    // against Roads because its bus stop flags are road signs); list dependencies before
+    // against Roads because its bus stop flags are road signs; Utilities against Roads for its
+    // utility box multi-block); list dependencies before
     // dependants in csmModules so the source set already exists.
     ss.compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
     ss.runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output

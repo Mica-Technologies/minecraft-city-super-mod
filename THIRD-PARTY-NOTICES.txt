@@ -16,7 +16,7 @@ WHICH JAR THIS APPLIES TO
 
   No other jar in a release bundles any third-party code. The Core jar
   (minecraft-city-super-mod-core-<version>.jar) and every subsystem module jar
-  — Roads & Traffic, Life Safety, HVAC, Lighting, Power Grid, Technology,
+  — Roads & Traffic, Life Safety, HVAC, Lighting, Utilities, Technology,
   Furniture & Novelties, Building Materials — contain only this mod's own
   classes and assets. Nothing in this file applies to them, and a player who
   does not install the Text to Speech jar receives none of it.

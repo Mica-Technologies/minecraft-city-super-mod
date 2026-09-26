@@ -2,7 +2,7 @@
   {
     "modid": "${modid}",
     "name": "${modname}",
-    "description": "Utility poles, insulators, cross arms and electrical infrastructure for the City Super Mod. Requires CSM: Core.",
+    "description": "Utilities for the City Super Mod: utility poles, insulators, cross arms and electrical infrastructure, and the services a city runs to its buildings, from the meters on the wall to the mains. Formerly CSM: Power Grid. Requires CSM: Core and CSM: Roads & Traffic.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
@@ -12,9 +12,9 @@
     "authorList": [
       "Mica Technologies"
     ],
-    "dependencies": ["csm"],
+    "dependencies": ["csm", "csm_roads"],
     "dependants": [],
-    "requiredMods": ["csm"],
+    "requiredMods": ["csm", "csm_roads"],
     "useDependencyInformation": "true"
   }
 ]
