@@ -38,6 +38,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import life_safety_gen_common as lc  # noqa: E402
 import gen_transit_platforms as gp  # noqa: E402
 import gen_transit_airport as ga  # noqa: E402
+import sign_texture_size as sts  # noqa: E402
 
 REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 ASSETS = os.path.join(REPO, "modules", "transit", "src", "main", "resources", "assets", "csm")
@@ -54,7 +55,9 @@ AMBER = (255, 176, 40)
 
 # --- the departure board --------------------------------------------------------------------
 # TileEntityBusDepartureBoardRenderer: the screen's place on the model and its bands, in
-# sixteenths. The screen's window is SCREEN_W x SCREEN_H texels of a 256 texture.
+# sixteenths. The screen is drawn with its window SCREEN_W x SCREEN_H texels of a 256 square, then
+# stored at SCREEN_TEX (85 texels a block on a face under a block): the renderer and the model take
+# the window as a fraction of the texture (WINDOW_V = 189f / 256f), whatever size it is stored at.
 SCREEN_X0, SCREEN_X1 = 0.4, 15.6
 SCREEN_Y0, SCREEN_Y1 = 2.4, 13.6
 SCREEN_Z = 14.6   # 0.4 proud of the bezel, as the flight board's
@@ -62,6 +65,7 @@ BEZEL = (0, 2, 15, 16, 14, 16)
 HEADER_H, COLHEAD_H, ROW_PITCH, ROWS = 1.8, 0.8, 1.0, 8
 TITLE_X = 2.3     # where the renderer starts the title, clear of the pictogram
 SCREEN_W = 256
+SCREEN_TEX = 128
 SCREEN_H = int(round(SCREEN_W * (SCREEN_Y1 - SCREEN_Y0) / (SCREEN_X1 - SCREEN_X0)))   # 189
 SCREEN_BG = (8, 10, 14)
 
@@ -97,7 +101,7 @@ def board_screen():
         y1 = int(round((HEADER_H + COLHEAD_H + (i + 1) * ROW_PITCH) * k))
         if i % 2:
             lc.rect(img, 0, y0, SCREEN_W, min(y1, SCREEN_H), (15, 18, 24))
-    return img
+    return sts.reduce(img, SCREEN_TEX)
 
 
 def bay_front():

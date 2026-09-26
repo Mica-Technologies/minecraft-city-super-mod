@@ -57,7 +57,10 @@ public class TileEntityFlightBoardRenderer
   private static final float SCREEN_Z = 14.6f;
   private static final float WIDTH = 15.2f;
   private static final float HEIGHT = 8.8f;
-  /** How much of the texture's height the screen's window takes. */
+  /**
+   * How much of the texture's height the screen's window takes: a fraction of the sprite, measured
+   * where the generator draws it (a 256 square) and true at the size it is stored at (128).
+   */
   private static final float WINDOW_V = 148f / 256f;
   /** The bands down the screen, in sixteenths. */
   private static final float HEADER = 1.6f;

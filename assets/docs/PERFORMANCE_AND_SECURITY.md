@@ -289,6 +289,22 @@ exits 1 once the atlas no longer fits it. **Rule: run it before adding a large b
 and when it warns, cut sprite pixels** -- a texture larger than its face needs, identical copies
 that could be one sprite -- rather than accept the doubling.
 
+**Photographic textures on faces smaller than a block are capped at 85 texels a block, like the
+sign faces; lettering and pixel art are exempt.** A photograph or a smooth drawing loses nothing
+visible when it is stored at the density its largest face can show (the sign rule's 85.3 texels a
+block, halving while the face still gets that), reduced with the sign rule's filter
+(`sign_texture_size.reduce`: linear-light area average, a light unsharp mask, strips frame by
+frame, `.mcmeta` untouched, `_e` companions at their base's size). Hard-edged pixel art and small
+legends do not survive a filter -- a pixel font or an arrow drawn to the pixel smears, and a
+placard a player walks up to read goes soft -- so those keep their size unless their generator
+redraws them smaller. Applied in 2026-09 to the APS button housings, the grey crosswalk heads, the
+bus and flight board screens (drawn at 256 and stored at 128 by `gen_transit_boards.py` and
+`gen_transit_airport.py`; their renderers take the screen window as a fraction of the texture,
+`WINDOW_V`, so it holds at either size), the Sony clock, the Edwards EST flank and the solar
+panel (which `gen_work_zone_devices.py` reads for the signal trailer's array): 25 textures,
+1.0 Mpx, the atlas from 95.4% to 92.4% full, room for 155 more 128 px textures before it doubles
+(93 before).
+
 A resource reload (F3+T) with every module takes about 30 s, and the integrated server drops the
 player ("Disconnected") while it runs, with or without these fixes. Never reload resources in a
 session someone is using. It used to hold two model sets at once and run out of a 6 GB heap; with
@@ -353,7 +369,7 @@ so a design can be priced before it is built:
 - **A multipart blockstate** costs one model location and one baked model for the whole block,
   however many states it has, plus one bake per distinct part. A block whose look is assembled
   from independent pieces (connections to its neighbours, optional fittings) belongs in multipart.
-- **A sprite** costs its pixels in the block atlas, which is 95% full (see the atlas budget above).
+- **A sprite** costs its pixels in the block atlas, which is 92% full (see the atlas budget above).
 
 The rules that follow: **keep a block under about 5,000 states** (the heaviest today are the
 standpipes at 5,120 and the exit signs at 5,376, which `ExitSignSpecTest` holds to); past that,

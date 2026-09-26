@@ -50,6 +50,7 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import life_safety_gen_common as lc  # noqa: E402
 import gen_transit_platforms as gp  # noqa: E402
+import sign_texture_size as sts  # noqa: E402
 
 REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 ASSETS = os.path.join(REPO, "modules", "transit", "src", "main", "resources", "assets", "csm")
@@ -495,12 +496,15 @@ def carousel_skirt():
 
 # --- the flight information boards ---------------------------------------------------------
 # BlockFlightBoard / TileEntityFlightBoardRenderer: the screen's place on the model and the rows,
-# in sixteenths. The screen's window is FIDS_W x FIDS_H texels of a 256 texture.
+# in sixteenths. The screen is drawn with its window FIDS_W x FIDS_H texels of a 256 square, then
+# stored at FIDS_TEX (85 texels a block on a face under a block): the renderer and the model take
+# the window as a fraction of the texture (WINDOW_V = 148f / 256f), whatever size it is stored at.
 SCREEN_X0, SCREEN_X1 = 0.4, 15.6
 SCREEN_Y0, SCREEN_Y1 = 3.6, 12.4
 SCREEN_Z = 14.6   # 0.4 proud of the bezel: model_depth moves a face closer than 0.2 to another
 HEADER_H, COLHEAD_H, ROW_PITCH, ROWS = 1.6, 0.8, 0.9, 7
 FIDS_W = 256
+FIDS_TEX = 128
 FIDS_H = int(round(FIDS_W * (SCREEN_Y1 - SCREEN_Y0) / (SCREEN_X1 - SCREEN_X0)))   # 148
 FIDS_BG = (10, 22, 52)
 
@@ -523,7 +527,7 @@ def fids(arrivals):
             lc.rect(img, 0, y0, FIDS_W, min(y1, FIDS_H), (16, 32, 70))
     plane(img, 14, hdr / 2.0, 9, 30 if arrivals else -30, WHITE)
     lc.draw_text(img, "ARRIVALS" if arrivals else "DEPARTURES", 30, hdr // 2 - 7, WHITE, 3)
-    return img
+    return sts.reduce(img, FIDS_TEX)
 
 
 def bezel():

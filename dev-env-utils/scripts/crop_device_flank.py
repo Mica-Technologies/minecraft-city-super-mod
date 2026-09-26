@@ -58,7 +58,9 @@ Usage:
 Recorded invocations:
     # Edwards EST 202-8A grey body, from the 202-8A-T side profile. The -T and the -TW share this
     # moulding exactly -- only the mounting plate behind it changes colour -- so one texture serves
-    # both blocks.
+    # both blocks. The committed texture is this output halved to 128 with the road sign filter
+    # (sign_texture_size.reduce): the flank is under a block and a half across, and 128 already
+    # gives it 85 texels a block. Re-crop at 256 and reduce it the same way.
     python crop_device_flank.py 202-8a-t_1_edited.png edwards_est_202_8a_flank \
         --box 214,150,374,995 --units 2.9
 
