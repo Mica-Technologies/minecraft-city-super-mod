@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -20,7 +21,9 @@ import net.minecraft.world.IBlockAccess;
  * A block-long section of a water tower's leg or riser, stacked to the tower's height. The
  * lowest section ({@link #BASE}) stands on its concrete pier and the highest ({@link #TOP})
  * takes a cap -- unless a tank is on it, whose own stub carries the leg or the riser on up into
- * it. Both are actual state, so nothing is stored and a column re-forms as it is built.
+ * it. Both are actual state, so nothing is stored and a column re-forms as it is built. The same
+ * class stacks the telecom monopole and the ice bridge's stanchions; an {@link IColumnJoint}
+ * above or below (the monopole's antenna array, the ice bridge) carries the column on through.
  *
  * @since 2026.9
  */
@@ -70,8 +73,10 @@ public class BlockTowerColumn extends AbstractBlock {
   public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world,
       BlockPos pos) {
     IBlockState above = world.getBlockState(pos.up());
-    return state.withProperty(BASE, world.getBlockState(pos.down()).getBlock() != this)
-        .withProperty(TOP, above.getBlock() != this && !TankUnits.isTankBlock(above));
+    Block below = world.getBlockState(pos.down()).getBlock();
+    return state.withProperty(BASE, below != this && !(below instanceof IColumnJoint))
+        .withProperty(TOP, above.getBlock() != this && !TankUnits.isTankBlock(above)
+            && !(above.getBlock() instanceof IColumnJoint));
   }
 
   @Override

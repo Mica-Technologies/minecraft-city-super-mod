@@ -27,10 +27,29 @@ public class BlockPumpUnit extends BlockUtilityBox implements IWaterPipeJoint {
   }
 
   private final Nozzles nozzles;
+  private final String service;
 
   public BlockPumpUnit(String registryName, UtilityBoxSpec spec, Nozzles nozzles) {
+    this(registryName, spec, nozzles, BlockWaterPipe.WATER);
+  }
+
+  /**
+   * @param registryName its registry name
+   * @param spec         its size and shape
+   * @param nozzles      which of the root block's sides carry a nozzle
+   * @param service      the service of the pipe its nozzles join (the gas yard's line heater
+   *                     carries {@link BlockWaterPipe#GAS})
+   */
+  public BlockPumpUnit(String registryName, UtilityBoxSpec spec, Nozzles nozzles,
+      String service) {
     super(registryName, spec);
     this.nozzles = nozzles;
+    this.service = service;
+  }
+
+  @Override
+  public String pipeService() {
+    return service;
   }
 
   @Override

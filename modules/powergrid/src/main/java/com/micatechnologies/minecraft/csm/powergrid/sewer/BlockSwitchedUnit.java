@@ -107,12 +107,26 @@ public class BlockSwitchedUnit extends BlockUtilityBox {
     if (!world.isRemote) {
       boolean on = !state.getValue(ON);
       world.setBlockState(pos, state.withProperty(ON, on), 3);
-      world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.6F,
-          on ? 0.8F : 0.6F);
-      player.sendStatusMessage(new TextComponentTranslation(
-          on ? "csm.utilities.generator.running" : "csm.utilities.generator.stopped"), true);
+      toggled(world, pos, player, on);
     }
     return true;
+  }
+
+  /**
+   * Tells the player a click turned the unit on or off, on the server: the generator's lever
+   * click and its status message. A unit whose click does something else (a cabinet's doors)
+   * says so here.
+   *
+   * @param world  the world
+   * @param pos    the root's position
+   * @param player the player who clicked
+   * @param on     the unit's new state
+   */
+  protected void toggled(World world, BlockPos pos, EntityPlayer player, boolean on) {
+    world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.6F,
+        on ? 0.8F : 0.6F);
+    player.sendStatusMessage(new TextComponentTranslation(
+        on ? "csm.utilities.generator.running" : "csm.utilities.generator.stopped"), true);
   }
 
   @Override

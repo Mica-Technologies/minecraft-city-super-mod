@@ -9,7 +9,7 @@ import net.minecraft.world.IBlockAccess;
 
 /**
  * An inline pipe fitting: a gate, butterfly or check valve, a magnetic flow meter, an air
- * release valve on its tee. It carries the pipe through along the way the player was looking
+ * release valve on its tee; in the gas yard a ball valve, a pressure regulator, a turbine meter. It carries the pipe through along the way the player was looking
  * when placing it (it faces the player, and its model's pipe runs front to back), and a
  * {@link BlockWaterPipe} joins it at either end.
  *
@@ -17,8 +17,26 @@ import net.minecraft.world.IBlockAccess;
  */
 public class BlockPipeFitting extends BlockUtilityFixture implements IWaterPipeJoint {
 
+  private final String service;
+
   public BlockPipeFitting(String registryName, double[] box) {
+    this(registryName, box, BlockWaterPipe.WATER);
+  }
+
+  /**
+   * @param registryName its registry name
+   * @param box          its box facing north, in sixteenths
+   * @param service      the service of the pipe it joins ({@link BlockWaterPipe#GAS} for the
+   *                     gas yard's valves, regulators and meter)
+   */
+  public BlockPipeFitting(String registryName, double[] box, String service) {
     super(registryName, box);
+    this.service = service;
+  }
+
+  @Override
+  public String pipeService() {
+    return service;
   }
 
   @Override

@@ -28,6 +28,10 @@ import net.minecraft.world.World;
  * run re-forms as pieces are added or taken away. {@link #JOINT} is set wherever the pipe is not
  * a straight run and draws the cast fitting there. A pipe joined to nothing stands upright.</p>
  *
+ * <p>A pipe carries one service, {@link #WATER} unless constructed with another: the gas yard's
+ * welded steel pipe is this class carrying {@link #GAS}. A pipe joins only a pipe, and only the
+ * fittings and nozzles, of its own service, so a gas run laid beside a water run stays apart.</p>
+ *
  * @since 2026.9
  */
 public class BlockWaterPipe extends AbstractBlock {
@@ -41,15 +45,38 @@ public class BlockWaterPipe extends AbstractBlock {
   /** Set where the pipe is not a straight run, to draw the cast fitting. */
   public static final PropertyBool JOINT = PropertyBool.create("joint");
 
-  private static final double R = 5.0 / 16;
+  /** The service of the water system's pipe, fittings and pumps. */
+  public static final String WATER = "water";
+  /** The service of the gas yard's pipe and fittings. */
+  public static final String GAS = "gas";
+
   private static final ThreadLocal<String> PENDING = new ThreadLocal<>();
 
   private final String registryName;
+  private final String service;
+  /** Half the width of the fitting and every arm, in blocks. */
+  private final double r;
 
   public BlockWaterPipe(String registryName) {
+    this(registryName, WATER, 5.0);
+  }
+
+  /**
+   * @param registryName its registry name
+   * @param service      the service it carries: it joins only pipe, fittings and nozzles of it
+   * @param radius       the radius of its fitting, in sixteenths: its box and collision
+   */
+  public BlockWaterPipe(String registryName, String service, double radius) {
     super(stash(registryName), SoundType.METAL, "pickaxe", 0, 2F, 6F, 0F, 0);
     this.registryName = registryName;
+    this.service = service;
+    this.r = radius / 16.0;
     PENDING.remove();
+  }
+
+  /** The service this pipe carries. */
+  public String getService() {
+    return service;
   }
 
   private static Material stash(String registryName) {
@@ -80,18 +107,30 @@ public class BlockWaterPipe extends AbstractBlock {
   }
 
   /** Whether the pipe at {@code pos} joins whatever is on its {@code side}. */
-  static boolean joins(IBlockAccess world, BlockPos pos, EnumFacing side) {
+  boolean joins(IBlockAccess world, BlockPos pos, EnumFacing side) {
     BlockPos at = pos.offset(side);
     IBlockState other = world.getBlockState(at);
     if (other.getBlock() instanceof BlockWaterPipe) {
-      return true;
+      return service.equals(((BlockWaterPipe) other.getBlock()).service);
     }
-    return other.getBlock() instanceof IWaterPipeJoint && ((IWaterPipeJoint) other.getBlock())
-        .joinsWaterPipe(world, at, other, side.getOpposite());
+    if (!(other.getBlock() instanceof IWaterPipeJoint)) {
+      return false;
+    }
+    IWaterPipeJoint joint = (IWaterPipeJoint) other.getBlock();
+    return service.equals(joint.pipeService())
+        && joint.joinsWaterPipe(world, at, other, side.getOpposite());
   }
 
-  /** The six arms in {@link EnumFacing} order; a pipe joined to nothing stands upright. */
-  static boolean[] arms(IBlockAccess world, BlockPos pos) {
+  /**
+   * The six arms of the pipe at {@code pos}, in {@link EnumFacing} order; a pipe joined to
+   * nothing stands upright.
+   *
+   * @param world the world
+   * @param pos   the pipe's position
+   *
+   * @return which of its sides it joins
+   */
+  public boolean[] arms(IBlockAccess world, BlockPos pos) {
     boolean[] arms = new boolean[6];
     boolean any = false;
     for (EnumFacing side : EnumFacing.values()) {
@@ -105,7 +144,7 @@ public class BlockWaterPipe extends AbstractBlock {
     return arms;
   }
 
-  static boolean straight(boolean[] arms) {
+  public static boolean straight(boolean[] arms) {
     int count = 0;
     for (boolean a : arms) {
       count += a ? 1 : 0;
@@ -156,8 +195,8 @@ public class BlockWaterPipe extends AbstractBlock {
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     boolean[] a = arms(source, pos);
-    double lo = 0.5 - R;
-    double hi = 0.5 + R;
+    double lo = 0.5 - r;
+    double hi = 0.5 + r;
     return new AxisAlignedBB(a[EnumFacing.WEST.getIndex()] ? 0 : lo,
         a[EnumFacing.DOWN.getIndex()] ? 0 : lo, a[EnumFacing.NORTH.getIndex()] ? 0 : lo,
         a[EnumFacing.EAST.getIndex()] ? 1 : hi, a[EnumFacing.UP.getIndex()] ? 1 : hi,
@@ -171,8 +210,8 @@ public class BlockWaterPipe extends AbstractBlock {
       AxisAlignedBB entityBox, List<AxisAlignedBB> boxes, @Nullable Entity entity,
       boolean isActualState) {
     boolean[] a = arms(world, pos);
-    double lo = 0.5 - R;
-    double hi = 0.5 + R;
+    double lo = 0.5 - r;
+    double hi = 0.5 + r;
     addCollisionBoxToList(pos, entityBox, boxes, new AxisAlignedBB(lo, lo, lo, hi, hi, hi));
     if (a[EnumFacing.WEST.getIndex()]) {
       addCollisionBoxToList(pos, entityBox, boxes, new AxisAlignedBB(0, lo, lo, lo, hi, hi));
