@@ -188,7 +188,10 @@ lite and pane is drawn) in the translucent pass, and everything else -- the leaf
 push bar and a fitted closer -- in the cutout pass (`DoorLayerModel`, which wraps each glazed door's
 baked model and sorts its quads by the pass being drawn). The rest are cutout only. Drawn whole in
 the translucent pass, a glazed door's closer lost its body to the frame behind it from some angles
-and its arm looked folded the wrong way (issues #235 and #236): see the traps.
+and its arm looked folded the wrong way (issues #235 and #236): see the traps. The wrapper is
+registered with Core's `CsmBakedModelWrappers` rather than put in place by walking the model registry
+in a `ModelBakeEvent` handler, which in a pack running VintageFix finds no door at all and left every
+glazed door's glass opaque (issue #242; PERFORMANCE_AND_SECURITY.md).
 
 ## Cost
 
