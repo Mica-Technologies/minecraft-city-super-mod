@@ -68,12 +68,15 @@ public class TileEntityGarageDoorControl extends AbstractTileEntity {
   }
 
   /**
-   * The control is going: a keypad unlocks the door it locked.
+   * The keypad is going: it unlocks the door it locked. Called for keypads only, from
+   * {@link BlockGarageDoorControl#breakBlock}, where the world already holds whatever replaced the
+   * keypad -- so asking the world whether this is a keypad would always say no, and a broken
+   * keypad left its door locked for good.
    *
    * @since 1.0
    */
   void removed() {
-    if (target != null && isKeypad()) {
+    if (target != null) {
       DoorLocks.get(world).unlock(target);
     }
   }

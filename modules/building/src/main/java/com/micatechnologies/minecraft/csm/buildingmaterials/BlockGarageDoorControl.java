@@ -208,7 +208,9 @@ public class BlockGarageDoorControl extends AbstractBlock implements ICsmTileEnt
   @Override
   public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
     TileEntity te = worldIn.getTileEntity(pos);
-    if (!worldIn.isRemote && te instanceof TileEntityGarageDoorControl) {
+    // By now the world already holds the block that replaced this one, so whether this was a
+    // keypad is this block's kind, not what the world holds there now.
+    if (!worldIn.isRemote && te instanceof TileEntityGarageDoorControl && kind == Kind.KEYPAD) {
       ((TileEntityGarageDoorControl) te).removed();
     }
     super.breakBlock(worldIn, pos, state);
