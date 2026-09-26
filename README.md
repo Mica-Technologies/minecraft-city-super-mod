@@ -51,8 +51,9 @@ It covers:
 - **Getting started** -- supported Minecraft versions, installing the mod, what it plays nicely
   with, and where it is safe to download from
 - **Guides** -- how each system works and how to build with it: traffic signals and the ASC-3
-  controller, span wire, mast arms, crosswalks, road and highway signs, fire alarms, lighting,
-  HVAC, the power grid, and survival crafting
+  controller, span wire, mast arms, crosswalks, road and highway signs, the streetscape, fire
+  alarms and emergency services, lighting, HVAC, the power grid and utilities, transit,
+  furniture, parks, advertising, and survival crafting
 - **Block reference** -- every block the mod registers, with the registry id you need for `/give`
   and `/setblock`
 - **Developer** -- building from source, the block and item base classes, adding content, and the

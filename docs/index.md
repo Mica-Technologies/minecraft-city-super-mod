@@ -23,8 +23,8 @@ across a building, street lights that switch, a road sign set drawn from the MUT
 
     ---
 
-    Traffic signals, span wire, fire alarm, HVAC, lighting, power. How each one works and how to
-    build with it.
+    Traffic signals, span wire, fire alarm, HVAC, lighting, utilities, transit. How each one works
+    and how to build with it.
 
     [:octicons-arrow-right-24: Guides](guides/index.md)
 
@@ -48,7 +48,7 @@ across a building, street lights that switch, a road sign set drawn from the MUT
 
 ## What is in it
 
-The City Super Mod adds **1,639 blocks and 35+ items** to Minecraft 1.12.2, all of it aimed at
+The City Super Mod adds **over 3,200 blocks and 35+ items** to Minecraft 1.12.2, all of it aimed at
 making a city look and behave like one.
 
 | | |
@@ -58,8 +58,12 @@ making a city look and behave like one.
 | **Life safety** | Horns, strobes, speakers, pull stations and panels, wired to a control panel that sounds them together on a channel. |
 | **Lighting** | Street and area lighting with a four-state on/off control, plus a decorative pendant and sconce family. |
 | **HVAC** | Heating and cooling that simulates room temperature rather than just looking the part. |
-| **Power grid** | Utility poles and distribution hardware carrying Forge Energy. |
+| **Utilities** | Utility poles and distribution hardware carrying Forge Energy, and the services a building takes: meters and panels, a water tower built to size, pump and lift stations, a gas regulator yard, cell sites. |
+| **Streetscape** | Covers, bollards, hydrants, news racks, working mailboxes and parking meters. |
+| **Transit** | Fare gates and cards, bus stops, shelters and departure boards, station fit-out, and an airport terminal and airside. |
 | **Building materials** | Concrete block, brick, stucco, siding, metal cladding, stone veneer and coloured metal, with matching stairs, slabs and fences. |
+| **Furniture** | Homes, offices and shops: furniture that joins into runs, beds you sleep in, working kitchen appliances, and a grocery store's cases, shelving and checkout. |
+| **Parks & signage** | Street trees built from blocks, park amenities, and ad kiosks, poster boards and billboards. |
 
 It is aimed at creative building, but **everything is obtainable in survival** through a two-tier
 chain: vanilla ores become CSM parts at a crafting table, and parts become blocks in the CSM
