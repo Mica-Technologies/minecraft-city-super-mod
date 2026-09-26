@@ -116,6 +116,13 @@ How each system works, and how to build with it.
 
     Modular poles, four cross-arm families, and Forge Energy.
 
+-   :material-water-pump:{ .lg .middle } **[Utilities](utilities.md)**
+
+    ---
+
+    Meters and panels, water towers built to size, pump stations, lift stations, outfalls, a gas
+    regulator yard, cell sites and small cells.
+
 </div>
 
 ## Everything else

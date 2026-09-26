@@ -30,7 +30,9 @@ has to exist first. What Utilities takes from Roads:
   two cells a side whose root draws the whole of it, with invisible parts filling the rest and
   placing all or nothing. Anything in this module up to two cells a side is one of these rather
   than a multi-block of its own (STREETSCAPE_SYSTEM.md, Multi-block units); only the water
-  tower's tanks and pedestal column, far bigger, are this module's own (The water system, below);
+  tower's tanks and pedestal column, far bigger, are this module's own (The water system, below),
+  and the access hatch's two leaves, which are a pair of blocks placed together like a door's
+  halves (Sewer and stormwater, below);
 - **road-surface settling** (`AbstractBlockRoadSurface*`, which is Core's, but reached through
   the Roads classes built on it), so what stands at street level stands on a sloped road block.
 
@@ -855,3 +857,75 @@ which OBJ parts the test world had built). No renderer, no tile entity, nothing 
   fences and bars and odd against another fixture.
 - **Aluminium diamond plate reads as a white slab in sunlight**; the skid has its own darker
   painted checker plate.
+
+---
+
+## The module as a whole
+
+### Weight
+
+`/csm memstats dump` (2026-09-26, every module, the Utilities demo world with every tank built,
+so every tank OBJ that can be seen was baked):
+
+| | Blocks | States | Model locations | Quads built | OBJ quads unbuilt (est.) | Memory |
+|---|---|---|---|---|---|---|
+| Power Grid tab (unchanged) | 45 | 290 | 290 | 4,583 | 0 | 0.8 MB |
+| Utilities tab and its hidden tab | 88 | 1,503 | 190 | 19,337 | 3,207 | 7.6 MB |
+| **The module** | **133** | **1,793** | **480** | **23,920** | **3,207** | **8.4 MB** |
+
+(The Power Grid row counts the blocks the tab names; `rfprod` and `rftors`, registered by class,
+fall in the other row.) The quads built are higher than the 19,823 recorded after the gas yard
+and telecom because the demo world draws all four elevated tanks at once; the states and
+locations are unchanged, since nothing was added after that.
+
+- **No block is near the state budget.** The most are the water and gas pipes at 128 each (seven
+  sides joined, actual state, and nothing stored), then the large ground tank at 100 and the
+  medium tanks' band blocks at 96. Every other block is 75 or fewer; most are 4 to 16.
+- **The heaviest blocks by memory are the tanks**, 0.5 to 0.8 MB each with their OBJ tiles built
+  (the medium pedestal tank the most, 722 quads), then the antenna array (0.46 MB). A tank is
+  one placed item for a structure fifteen blocks across, so this is the cost of the whole tank,
+  and a tank not in view is never built.
+- **Nothing in the module ticks, has a tile entity or has a renderer.** Every moving thing (meter
+  faces, the flow meter and turbine meter, the HMI, the obstruction light, the panel's beacon,
+  the generator's display) is an animated texture.
+- Seven duplicate quads in the whole module (7 KB); nothing to gain there.
+
+The block atlas stands at 89.6% of 8192 x 4096 (3,382 CSM sprites, 29.84 Mpx padded) after the
+four families added 78 sprites between them (89.3% before the track).
+
+### The demo world
+
+`dev-env-utils/scripts/build_utilities_demo.py` builds a flat, peaceful, creative world with every
+block of the Utilities tab placed as it is used, a short Power Grid pole line, a sign at each area
+and an overview board at the spawn (in world coordinates). It is MCMCP-driven like the Transit
+demo (`--client-port`, `--server-port`, `--config`, `--x`/`--z`, and `--only` to rebuild one area),
+raises the ground to y 12 so the wet well, valve vault, pond and manhole trench fit, places the
+tanks with their items as a player would (a tank's parts are written by its placement) and sets
+everything else directly, the utility box parts included. It checks the tab's registration list
+against what it placed and puts anything missing on signed plinths; nothing is missing today.
+
+Things to try in it: the hatches (click either leaf), the lift station's lever (the panel's
+beacon and flood light), the standby generator (click to stop and start), the house's main panel
+door, the fibre cabinet's doors, and a tank's town name (click anywhere on the tank).
+
+### What the module could grow into
+
+Recorded here so a later track starts from what is known; none of it is promised.
+
+- **An electric substation or switchyard**, left out of this track by choice: transformers,
+  breakers, bus work and a control house would be a family of its own, and the Power Grid tab's
+  MCreator-era pole pieces would want a rework in the same generated style first.
+- **The Power Grid tab itself**: the poles, arms and insulators are MCreator-era JSON with no
+  generator; a crossarm is seven blocks laid in a row. A generated pole line (poles that pick
+  their ends, a crossarm as one block, span wire between poles) is the obvious next step.
+- **More tank shapes and finishes**: a 21-wide tank (196 states), a fluted column tank, a
+  standpipe, colour finishes; each is a new OBJ lathe and tile set, so each costs its states and
+  bakes (The water system, What was cut).
+- **Treatment plant pieces** past the skid and cylinders: clarifiers, filters and a basin are
+  large round or long structures that would reuse the tank tiles' approach.
+- **A lattice cell tower and a stealth monopine**, cut here for their quads; the monopole's
+  column and joint interface would carry them.
+- **Walk-in shelters** (the cell site's and the pump station's), sounds for the generator and the
+  pumps, and a site ID on the cell cabinets without a renderer.
+- **Pipes that go underground** without leaving a pit round the riser (Gas yard, Traps): a pipe
+  block with a ground collar, or a riser that draws the soil round itself.

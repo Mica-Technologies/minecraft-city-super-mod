@@ -1,7 +1,8 @@
 # Power Grid
 
 Utility poles, cross-arms and the hardware that hangs off them — plus a Forge Energy layer for the
-blocks that actually carry power.
+blocks that actually carry power. It is the **Power Grid** tab of the **CSM: Utilities** module;
+meters, water, sewer, gas and telecom are in its [Utilities](utilities.md) tab.
 
 ## Two halves
 

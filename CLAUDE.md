@@ -119,8 +119,12 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 ├── hvac/             (modules/hvac)
 ├── lifesafety/       # Largest: fire alarms, emergency lighting, exit signs
 ├── lighting/
-├── powergrid/        # Utility poles, electrical infrastructure; services/ (the building
-│                    # service meters), water/ (the water tower, tanks, pump station)
+├── powergrid/       (modules/powergrid, CSM: Utilities) utility poles and line hardware, fe/
+│                    (Forge Energy blocks), services/ (building service meters, panels,
+│                    labels and signs), water/ (the water tower, tanks, pump station),
+│                    sewer/ (lift station, curb inlet, outfall, pond outlet, manholes),
+│                    gas/ (the regulator yard), telecom/ (cabinets, ice bridge, monopole,
+│                    small cell)
 ├── signage/         (modules/signage) ad kiosks, poster boards, billboards
 ├── parks/           (modules/parks) trees/ (log and leaves kit), planting/ (the tool and its
 │                    generators), landscape/ (plantings), amenities/ (the Parks tab)
@@ -400,7 +404,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   through its coil header, signs that hang on a chain-link fence's mesh, the fibre cabinet's
   doors, the ice bridge on tower-column stanchions, the monopole stacked with its antenna array
   as an `IColumnJoint` (three OBJ sectors 120 degrees apart), the small cell as a post-top fixture
-  with a collar sized to the pole; what was cut and the traps
+  with a collar sized to the pole; what was cut and the traps; the module's final weight
+  (133 blocks, 1,793 states), the demo world, and what the module could grow into
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system,
   how large a sign face texture may be (85.3 texels a block of plate; `SignTextureSizeTest` fails
   the build on a larger one),
@@ -950,6 +955,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   bridge, a stand and four lever-switched light circuits. It checks the Transit tab's
   registration list against what it placed and puts the rest on signed plinths. The landside is
   raised to y 8 so the station's lower level fits above bedrock
+- `build_utilities_demo.py` -- builds the Utilities demo world in a flat creative world loaded in
+  a dev client, over MCMCP, in the Transit demo's style (`--client-port`, `--server-port`,
+  `--config`, and `--only` to rebuild one area): a street of buildings with their meters and
+  panels; a lattice and a pedestal water tower in both sizes with their bands set differently,
+  the ground tanks and the pump station; a storm street with curb inlets, the lift station
+  compound (a hatch open, the panel on a lever, the generator running), an outfall into a pond
+  with its riser and spillway, a manhole cut away beside a trench; the gas regulator yard, the
+  cell site and small cells; a short Power Grid pole line and an overview board. Tanks are
+  placed with their items (their placement writes the parts), everything else directly. It
+  checks the Utilities tab's registration list against what it placed and puts the rest on
+  signed plinths. The ground is raised to y 12 for the wet well, vault, pond and trench
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on

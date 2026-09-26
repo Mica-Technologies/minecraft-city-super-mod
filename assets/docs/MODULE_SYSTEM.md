@@ -21,18 +21,18 @@ world ever sees is namespaced with them.
 | Module | Mod id | Display name | Release jar | Java packages | Creative tabs (load order) | Blocks |
 |---|---|---|---|---|---|---|
 | Core | `csm` | CSM: Core | `minecraft-city-super-mod-core-<version>.jar` | root, `codeutils`, `api`, `materials`, `tabs/CsmTabMaterials` | Materials (14) | 1 block + 15 items |
-| Roads & Traffic | `csm_roads` | CSM: Roads & Traffic | `…-roads-<version>.jar` | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` | Road Signs (7), Traffic Accessories (9), Traffic Signals (10), Streetscape (11), hidden (−10) | 1,028 |
-| Life Safety | `csm_lifesafety` | CSM: Life Safety | `…-lifesafety-<version>.jar` | `lifesafety`, `api/firealarm` | Fire Alarm & Detection (3), Exits & Emergency Lighting (21), Fire Protection (22), Emergency Services (23) | 155 |
-| HVAC | `csm_hvac` | CSM: HVAC | `…-hvac-<version>.jar` | `hvac` | HVAC (2) | 45 |
+| Roads & Traffic | `csm_roads` | CSM: Roads & Traffic | `…-roads-<version>.jar` | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` | Road Signs (7), Traffic Accessories (9), Traffic Signals (10), Streetscape (11), hidden (−10) | 1,357 |
+| Life Safety | `csm_lifesafety` | CSM: Life Safety | `…-lifesafety-<version>.jar` | `lifesafety`, `api/firealarm` | Fire Alarm & Detection (3), Exits & Emergency Lighting (21), Fire Protection (22), Emergency Services (23) | 299 |
+| HVAC | `csm_hvac` | CSM: HVAC | `…-hvac-<version>.jar` | `hvac` | HVAC (2) | 46 |
 | Lighting | `csm_lighting` | CSM: Lighting | `…-lighting-<version>.jar` | `lighting` | Lighting (4), hidden (−9) | 140 |
-| Utilities (formerly Power Grid) | `csm_powergrid` | CSM: Utilities | `…-powergrid-<version>.jar` | `powergrid` | Power Grid (6) | 46 |
+| Utilities (formerly Power Grid) | `csm_powergrid` | CSM: Utilities | `…-powergrid-<version>.jar` | `powergrid` (`fe`, `services`, `water`, `sewer`, `gas`, `telecom`) | Power Grid (6), Utilities (28), hidden (−6) | 133 |
 | Technology | `csm_technology` | CSM: Technology | `…-technology-<version>.jar` | `technology` | Technology (8) | 44 |
-| Furniture & Novelties | `csm_furnishings` | CSM: Furniture & Novelties | `…-furnishings-<version>.jar` | `furniture`, `novelties` | Novelties (5), Furniture (12), Gaming (13), Residential (24), Commercial & Office (25), Market & Store (26), hidden (−7) | 509 |
-| Building Materials | `csm_building` | CSM: Building Materials | `…-building-<version>.jar` | `buildingmaterials` | Building Materials (1) | 87 |
+| Furniture & Novelties | `csm_furnishings` | CSM: Furniture & Novelties | `…-furnishings-<version>.jar` | `furniture`, `novelties` | Novelties (5), Furniture (12), Gaming (13), Residential (24), Commercial & Office (25), Market & Store (26), hidden (−7) | 578 |
+| Building Materials | `csm_building` | CSM: Building Materials | `…-building-<version>.jar` | `buildingmaterials` | Building Materials (1), Structure & Framing (15), Interior Finishes (16), Construction Site (17) | 377 |
 | Text to Speech | `csm_tts` | CSM: Text to Speech | `…-tts-<version>.jar` | `tts` | none — its blocks appear in Technology | 1 block + 1 item |
-| Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage`, hidden (−8) | Signage & Advertising (18) | 13 |
-| Parks & Greenery | `csm_parks` | CSM: Parks & Greenery | `…-parks-<version>.jar` | `parks` | Trees & Plants (19), Parks (20) | 160 + 1 item |
-| Transit | `csm_transit` | CSM: Transit | `…-transit-<version>.jar` | `transit` | Transit (27) | 24 + 2 items |
+| Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage` | Signage & Advertising (18), hidden (−8) | 15 |
+| Parks & Greenery | `csm_parks` | CSM: Parks & Greenery | `…-parks-<version>.jar` | `parks` | Trees & Plants (19), Parks (20) | 166 + 1 item |
+| Transit | `csm_transit` | CSM: Transit | `…-transit-<version>.jar` | `transit` | Transit (27) | 119 + 2 items |
 
 Block counts are blockstates shipped in that tree, so they include hidden (retiring) blocks and the
 itemless `*_slab_double` states.
