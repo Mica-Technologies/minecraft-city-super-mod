@@ -305,6 +305,15 @@ panel (which `gen_work_zone_devices.py` reads for the signal trailer's array): 2
 1.0 Mpx, the atlas from 95.4% to 92.4% full, room for 155 more 128 px textures before it doubles
 (93 before).
 
+**A texture that only retiring blocks draw is stored at 16 px.** A retiring block
+(`ICsmRetiringBlock` with a replacement) turns into its replacement on its first random tick, so
+its look only has to last until then; blurry is fine. The old grey signal heads, the old crosswalk
+blocks and the Barlo and LED-dotted signal blocks drew 55 textures nothing live reaches, at 128
+and 256 px: stored at 16 on the short side (strips frame by frame, `.mcmeta` untouched) they give
+back another 1.0 Mpx, taking the atlas to 89.3% full with room for 218 more 128 px textures. A
+texture is only shrunk when no live blockstate, item model, Java lookup or script also names it.
+**Rule: when a block starts retiring, check whether its textures are now reached only by it.**
+
 A resource reload (F3+T) with every module takes about 30 s, and the integrated server drops the
 player ("Disconnected") while it runs, with or without these fixes. Never reload resources in a
 session someone is using. It used to hold two model sets at once and run out of a 6 GB heap; with
@@ -369,7 +378,7 @@ so a design can be priced before it is built:
 - **A multipart blockstate** costs one model location and one baked model for the whole block,
   however many states it has, plus one bake per distinct part. A block whose look is assembled
   from independent pieces (connections to its neighbours, optional fittings) belongs in multipart.
-- **A sprite** costs its pixels in the block atlas, which is 92% full (see the atlas budget above).
+- **A sprite** costs its pixels in the block atlas, which is 89% full (see the atlas budget above).
 
 The rules that follow: **keep a block under about 5,000 states** (the heaviest today are the
 standpipes at 5,120 and the exit signs at 5,376, which `ExitSignSpecTest` holds to); past that,
