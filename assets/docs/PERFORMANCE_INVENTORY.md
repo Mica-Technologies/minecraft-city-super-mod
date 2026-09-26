@@ -127,6 +127,64 @@ row and column and a countdown that changes, so there is no free fix. A board is
 station or gate, so 20 in view is a third of a millisecond. A candidate if a terminal full of them
 is ever built: one list per board keyed on the text it shows, rebuilt only when a row changes.
 
+## Busy states and moving parts, 2026-09-26
+
+The rows the 09-21 state suite could not be trusted on, and the moving parts no script had
+reached, measured at `1b993a0ce` in a throwaway client (flat world, input locked, profiler with a
+6 s warm-up and a 5-6 s window). Every state was set without `/setblock` on a tile entity: blocks
+placed with their metadata through `server_set_blocks`, then `/blockdata`. Data:
+`benchmarks/block-inventory-2026-09-20/phase6-2026-09-26.json`; scripts `harness/states2.py`,
+`countdown.py`, `strobe_room.py` and `doors.py`.
+
+| Block and state | Renderer | µs each | Idle, same session | How it was set, and checked |
+|---|---|---|---|---|
+| Blankout box, lit (train legend) | `TileEntityBlankoutBoxRenderer` | 2.4 | 2.45 | meta 2 (lit), `{boT:5,vT:1,mT:0}`; 8 copies |
+| Crosswalk 16-inch, countdown running | `TileEntityCrosswalkSignalNewRenderer` | 2.9 | 2.95-3.0 (before and after) | meta 1 (clearance), `{cCd:99,lCS:1,lCT:1980}`. Read back 95 before the window and 84 after it, so the digits changed every second through it; seen close up, hand flashing and digits counting down |
+| Thermostat, calling | `TileEntityHvacThermostatRenderer` | 7.75 (7.5-8.2) | 7.85 | `{tLo:68,tHi:76,cT:62.0f,cL:1b,cM:1}`; two runs |
+| Pole-mount speed limit, 35 | `TileEntityPoleMountSpeedLimitRenderer` | 4.05 | 4.1 | 35 is the default, so the `/blockdata` "failed" as unchanged on all 8: this is the idle state again, and the legend is a list keyed on the value anyway |
+| Sectional garage door 3 x 3, moving | `TileEntityGarageDoorRenderer` | **11.3-11.9** a door | 0 (no tile entity at rest) | redstone rising edges below each door, a second thread re-toggling each door as its move ended (30 moves in the window) |
+| Sectional garage door 3 x 3, stopped part-way | the same | 11.3-11.8 | 0 | toggled, and toggled again a second later; still `anchor` after the window |
+| Roll-up door 3 x 3, moving / stopped part-way | the same | 7.4-8.4 / 7.8 | 0 | as above; checked close up that a stopped roll-up draws part-way |
+| Interior door (oak), swinging | `TileEntityDoorSwingRenderer` | **33-39** a draw | 0 (no tile entity at rest) | a redstone block beside each lower half placed and removed every 0.6 s; 80 swings in the window, each drawn for its 8 ticks |
+| Exit door with a closer, swinging | the same | **47-50** a draw | 0 | the same; push bar and the closer's arm solved every frame |
+
+**Strobes in a closed room.** One panel driving the strobes (`strobe_room.py`, `ROOM=1`): a stone
+room with a roof, the strobes on its north wall facing in, the camera inside at the far end, noon
+outside (the room is dark). Same session as the open flat-world case, which is the 09-21 setup:
+
+| Strobes | Open: added µs a frame / per strobe on a flash frame / p99 | Room: the same |
+|---|---|---|
+| 30 | 27.5 / ~6.1 / 1.28 to 1.41 ms | 52.9 and 48.7 (two runs) / ~11 / 1.27 to 1.58-1.64 ms |
+| 120 | 74.0 / ~4.1 / 1.47 to 2.00 ms | 95.3 / ~5.3 / 1.36 to **2.68 ms** |
+
+So walls do cost more, as the open-world test could not show: about 1.8x at 30 strobes and 1.3x at
+120, where the per-strobe share of the cone and wall wash falls. The mean frame moved by 0.06-0.07
+ms either way; the 99th percentile is what an alarm spends, since every strobe flashes in the same
+frames. Still cheap for what it is: 120 strobes in view is a large building's whole alarm.
+
+**What to take from it.**
+
+- **The busy states cost what the idle ones do.** The countdown, the lit blankout and the calling
+  thermostat are within 0.1 µs of idle, because each is already drawn from lists keyed on what it
+  shows (the countdown compiles one new list a second, which does not show).
+- **Thermostat bimodality did not recur.** Every copy read 7.5-8.7 in both runs; the two
+  0.0-0.2 readings of 09-21 were most likely the `/setblock` replacement trap, not a cheap state.
+- **A door swing is expensive per draw but brief.** 33-50 µs is 16-25 signal heads, for
+  0.4 s a swing, and only on the doors that are moving: a corridor of eight doors all swinging at
+  once adds about 0.3 ms to those frames. The renderer writes every quad of both halves' models
+  itself (turned, and shaded by where each faces) each frame, and the exit door adds the closer's
+  arm solve and the push bar. Candidate, if ever needed: the quads of a half in a list per model,
+  replayed under the swing's rotation, with only the shading left live (the shading follows the
+  angle, so it is not a free bake). Not acted on: measure only.
+- **A moving or stopped garage door costs 8-12 µs** a door, drawn from its anchor for the second
+  or three it moves; a door left stopped part-way keeps that cost until it is moved again.
+- **The fixed-position outlier.** In every scenario the copy at x = -80 read 2-3x the others
+  (blankout 7.4-15.5, crosswalk 8.6-9.4, thermostat 14.2-14.7, speed limit 8.6-9.1, against 2.3-8
+  for the rest). It is the position, not the block or its state; the cause was not found. Take the
+  median of a row of copies, never one copy.
+- **Custom doors moving** are drawn from `RenderWorldLastEvent`, not a tile entity renderer, so the
+  profiler does not see them; they were not measured.
+
 ## Read this first
 
 - **One finding was a cliff, not a cost (now fixed).** `CsmDisplayListCache` held 1,024 positions
@@ -337,8 +395,8 @@ realistic fill, same session, idle then filled, median across placed copies:
 countdown both read 0.1 µs after their state was set with `/setblock`, against 4.3 idle, which is
 the wrong direction (a lit countdown draws more, not less) and is the signature of a replaced
 tile entity. `thermostat_calling` read 0.0 idle and busy while the same blocks read 8.5 elsewhere.
-The pole-mount speed limit `blockdata` failed on all 8. They are in the raw file and need re-running
-with a different setup.
+The pole-mount speed limit `blockdata` failed on all 8. They are in the raw file; re-run on
+2026-09-26 without `/setblock`, see [Busy states and moving parts](#busy-states-and-moving-parts-2026-09-26).
 
 ## Findings by area
 
@@ -426,7 +484,10 @@ per-frame `getBiome` and `getBlockState`. **Cost is bimodal per instance and the
 found**: with eight copies in a row, six read 8-9 µs (one 15) and two read 0.0-0.2, at any facing
 from any distance 12-60 blocks, and not always the leftmost. The "cached" strings are single-slot
 fields on the shared renderer, so several thermostats in view overwrite each other; that is a
-candidate but not established.
+candidate but not established. *2026-09-26: the strings are now cached per thermostat (S3), and a
+re-run with state set by `/blockdata` alone showed no bimodality (every copy 7.5-8.7 µs); the two
+low copies were most likely the `/setblock` trap. See [Busy states and moving
+parts](#busy-states-and-moving-parts-2026-09-26).*
 
 ### Fire alarm strobes (measured)
 
@@ -445,7 +506,9 @@ second, so about 15% of frames draw:
 A 120-strobe building alarm adds 0.09 ms to the mean frame and roughly doubles the 99th
 percentile, because every strobe flashes in the same frames. Night and noon came out alike here, so
 the darkness scaling of the cone and light pools did not show up in an open flat world (it may in a
-real room with walls for the rays to hit; not tested).
+real room with walls for the rays to hit). *Tested 2026-09-26 in a closed room: 1.3-1.8x the
+open-world cost, p99 up to 2.68 ms at 120; see [Busy states and moving
+parts](#busy-states-and-moving-parts-2026-09-26).*
 
 Two things this test taught about the alarm itself:
 
@@ -657,11 +720,8 @@ and measure with the mode off.
 
 | Test | Why it matters |
 |---|---|
-| Blankout lit, crosswalk countdown, thermostat calling, pole-mount speed limit | The state suite gave untrustworthy rows for these (see above). Try `/blockdata` only, without `/setblock`, or set blockstate through `server_set_blocks` metadata. |
-| Thermostat bimodality | Two of eight instances read 0.1 µs at any facing and distance; find out which state distinguishes them, since it may reveal a real early-out or a real cost on the others. |
-| Real rooms for strobes | Cone and light-pool cost scales with darkness and rays hitting walls; the flat-world test had almost nothing to hit. |
 | The exact cliff edge | Re-run the 1,000-1,030 sweep with a `server_census` per step, so the count is heads that exist, not heads placed. |
-| Moving doors | Garage/door swing while animating; no script exists yet. |
+| Custom doors moving | Drawn from `RenderWorldLastEvent`, which the profiler does not see; needs a frame-time A/B with a row of doors kept moving. (Fixed doors and garage doors were measured 2026-09-26.) |
 | GPU headroom | The heavy-model test on a slower GPU, or with `gl_finish`, from a camera that sees them all. |
 | Direct-buffer OOM | Reproduce from a cold JVM with one heavy section and the sync flood, to say whether repeated rebuilds or one big section is the trigger. |
 | The cliff's real-world reach | Fly a 100-intersection scene at a wide field of view (110) and count heads rendered; `/csm displaylists` while doing it. |
