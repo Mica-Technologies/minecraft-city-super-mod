@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "678 blocks in this tab"
+!!! info "691 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -183,6 +183,9 @@ The MUTCD sign set, grouped the way the manual groups it.
 | End 35 MPH Speed Limit Sign | `csm:signendspeed35` | 2 | 10 | pickaxe | 1 |
 | End County Maintained Road | `csm:endcountymaintainedroadsign` | 2 | 10 | pickaxe | 1 |
 | End Land Work | `csm:endlandworksign` | 2 | 10 | pickaxe | 1 |
+| End of Roadway Marker (Black, Nine Reflectors, OM4-2) | `csm:end_of_road_marker_om4_2` | 0.6 | 3 | pickaxe | 0 |
+| End of Roadway Marker (Nine Reflectors, OM4-1) | `csm:end_of_road_marker_om4_1` | 0.6 | 3 | pickaxe | 0 |
+| End of Roadway Marker (Plain, OM4-3) | `csm:end_of_road_marker_om4_3` | 0.6 | 3 | pickaxe | 0 |
 | End Road Sign | `csm:roadend` | 2 | 10 | pickaxe | 1 |
 | End Road Work Sign | `csm:signendroadwork` | 2 | 10 | pickaxe | 1 |
 | End School Zone Sign | `csm:signendschoolzone` | 2 | 10 | pickaxe | 1 |
@@ -655,6 +658,16 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Turning Vehicles Yield to Pedestrians Sign | `csm:signturningvehiclesyieldtoped` | 2 | 10 | pickaxe | 1 |
 | Turns Only Sign | `csm:signturnsonly` | 2 | 10 | pickaxe | 1 |
 | Two-Way Traffic Sign | `csm:signtwowaytraffic` | 2 | 10 | pickaxe | 1 |
+| Type 1 Object Marker (Black, Nine Reflectors, OM1-2) | `csm:object_marker_om1_2` | 0.6 | 3 | pickaxe | 0 |
+| Type 1 Object Marker (Nine Reflectors, OM1-1) | `csm:object_marker_om1_1` | 0.6 | 3 | pickaxe | 0 |
+| Type 1 Object Marker (Plain, OM1-3) | `csm:object_marker_om1_3` | 0.6 | 3 | pickaxe | 0 |
+| Type 2 Object Marker (Horizontal, Plain, OM2-2H) | `csm:object_marker_om2_2h` | 0.6 | 3 | pickaxe | 0 |
+| Type 2 Object Marker (Horizontal, Three Reflectors, OM2-1H) | `csm:object_marker_om2_1h` | 0.6 | 3 | pickaxe | 0 |
+| Type 2 Object Marker (Vertical, Plain, OM2-2V) | `csm:object_marker_om2_2v` | 0.6 | 3 | pickaxe | 0 |
+| Type 2 Object Marker (Vertical, Three Reflectors, OM2-1V) | `csm:object_marker_om2_1v` | 0.6 | 3 | pickaxe | 0 |
+| Type 3 Object Marker (Center, OM3-C) | `csm:object_marker_om3_c` | 0.6 | 3 | pickaxe | 0 |
+| Type 3 Object Marker (Left, OM3-L) | `csm:object_marker_om3_l` | 0.6 | 3 | pickaxe | 0 |
+| Type 3 Object Marker (Right, OM3-R) | `csm:object_marker_om3_r` | 0.6 | 3 | pickaxe | 0 |
 | U-Turn Yield On Green (R10-12) | `csm:r1012uturn` | 2 | 10 | pickaxe | 1 |
 | U-Turn Yield to Right Turn Sign | `csm:signr1016` | 2 | 10 | pickaxe | 1 |
 | Uneven Lanes Sign | `csm:signunevenlanes` | 2 | 10 | pickaxe | 1 |

@@ -2,7 +2,10 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockWorkZoneDeviceDiagonal;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockDynamicRouteMarkerSign;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockMileMarkerSign;
+import com.micatechnologies.minecraft.csm.trafficsigns.MileMarkerLayout;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignMount;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockPoweredTrafficSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockStreetNameBlade;
@@ -11,6 +14,7 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostmount;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockInStreetSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockTrafficSign;
 import net.minecraft.block.Block;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -527,6 +531,35 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signyintersection"));
     initTabBlock(new BlockTrafficSign("signyieldahead"));
 
+    // Object markers (OM1 to OM3) and end of roadway markers (OM4), each standing on its
+    // own post and settling onto the road (gen_road_markers.py --fragments).
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om1_1",
+        new AxisAlignedBB(0.102188, 0.000000, 0.390625, 0.897813, 1.712500, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om1_2",
+        new AxisAlignedBB(0.102188, 0.000000, 0.390625, 0.897813, 1.712500, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om1_3",
+        new AxisAlignedBB(0.102188, 0.000000, 0.390625, 0.897813, 1.712500, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om2_1v",
+        new AxisAlignedBB(0.375000, 0.000000, 0.390625, 0.625000, 1.375000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om2_2v",
+        new AxisAlignedBB(0.375000, 0.000000, 0.390625, 0.625000, 1.375000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om2_1h",
+        new AxisAlignedBB(0.312500, 0.000000, 0.390625, 0.687500, 1.312500, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om2_2h",
+        new AxisAlignedBB(0.312500, 0.000000, 0.390625, 0.687500, 1.312500, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om3_l",
+        new AxisAlignedBB(0.312500, 0.000000, 0.390625, 0.687500, 1.750000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om3_c",
+        new AxisAlignedBB(0.312500, 0.000000, 0.390625, 0.687500, 1.750000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("object_marker_om3_r",
+        new AxisAlignedBB(0.312500, 0.000000, 0.390625, 0.687500, 1.750000, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("end_of_road_marker_om4_1",
+        new AxisAlignedBB(0.102188, 0.000000, 0.390625, 0.897813, 1.712500, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("end_of_road_marker_om4_2",
+        new AxisAlignedBB(0.102188, 0.000000, 0.390625, 0.897813, 1.712500, 0.640625)));
+    initTabBlock(new BlockWorkZoneDeviceDiagonal("end_of_road_marker_om4_3",
+        new AxisAlignedBB(0.102188, 0.000000, 0.390625, 0.897813, 1.712500, 0.640625)));
+
     // --- Pedestrian and bicycle signs: including the fluorescent yellow-green series ---
     initTabBlock(new BlockTrafficSign("signaheadplaquefloyellow"));
     initTabBlock(new BlockTrafficSign("signarrowplaquefloyellowdownleft"));
@@ -652,6 +685,16 @@ public class CsmTabRoadSigns extends CsmTab {
     // The route marker leads the group: it is the one sign here whose face is chosen in
     // world rather than baked, and every marker in the catalogue is behind this one block.
     initTabBlock(BlockDynamicRouteMarkerSign.class, fmlPreInitializationEvent);
+    // The mile markers (D10-1 to D10-5) follow it, their number also set in world
+    // (gen_road_markers.py --fragments).
+    initTabBlock(new BlockMileMarkerSign(MileMarkerLayout.D10_1));
+    initTabBlock(new BlockMileMarkerSign(MileMarkerLayout.D10_2));
+    initTabBlock(new BlockMileMarkerSign(MileMarkerLayout.D10_3));
+    initTabBlock(new BlockMileMarkerSign(MileMarkerLayout.D10_1A));
+    initTabBlock(new BlockMileMarkerSign(MileMarkerLayout.D10_2A));
+    initTabBlock(new BlockMileMarkerSign(MileMarkerLayout.D10_3A));
+    initTabBlock(new BlockMileMarkerSign(MileMarkerLayout.D10_4));
+    initTabBlock(new BlockMileMarkerSign(MileMarkerLayout.D10_5));
     initTabBlock(new BlockTrafficSign("1hrtruckparkingsign"));
     initTabBlock(new BlockTrafficSign("twohourpark830530"));
     initTabBlock(new BlockTrafficSign("sign24hrparking"));

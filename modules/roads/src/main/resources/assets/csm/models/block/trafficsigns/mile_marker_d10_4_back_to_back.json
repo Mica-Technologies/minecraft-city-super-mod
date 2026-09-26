@@ -1,0 +1,185 @@
+{
+  "credit": "CSM mile marker D10-4 (numbers drawn by MileMarkerBakedModel); gen_road_markers.py",
+  "textures": {
+    "0": "csm:blocks/trafficsigns/absolutely_nothing_sign"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        -10,
+        28.5
+      ],
+      "to": [
+        14,
+        26,
+        29
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        -10,
+        28.9
+      ],
+      "to": [
+        14,
+        26,
+        29
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        18,
+        28.49
+      ],
+      "to": [
+        14,
+        26,
+        28.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ],
+          "texture": "#1"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        6.6667,
+        28.49
+      ],
+      "to": [
+        14,
+        18,
+        28.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            16,
+            8
+          ],
+          "texture": "#1"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        -10,
+        28.49
+      ],
+      "to": [
+        14,
+        6.6667,
+        28.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8,
+            8,
+            16
+          ],
+          "texture": "#1"
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "scale": [
+        0.4167,
+        0.4167,
+        0.4167
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "scale": [
+        0.4167,
+        0.4167,
+        0.4167
+      ]
+    }
+  }
+}

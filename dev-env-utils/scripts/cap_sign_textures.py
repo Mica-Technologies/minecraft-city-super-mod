@@ -16,7 +16,8 @@ generator claims -- the hand-made faces and the outputs of the retired one-off s
 (``upscale_signs.py``, ``clean_signs.py``, ``render_ladot.py``, ``render_steep_edge.py``,
 ``render_tolled_bike.py``), whose sources are partly outside the repository. A texture a
 generator writes is left for that generator (``gen_official_faces.py``, ``gen_gap_signs.py``,
-``gen_route_markers.py``, ``gen_large_custom_signs.py``, ``gen_led_signs.py``): its ``--check``
+``gen_route_markers.py``, ``gen_large_custom_signs.py``, ``gen_led_signs.py``,
+``gen_road_markers.py``): its ``--check``
 is a byte comparison, so fixing its output here would only make that check fail. Re-run the
 generator instead; each one sizes its textures through ``sign_texture_size.fit``.
 """
@@ -67,6 +68,8 @@ def claims():
     for name in sts.sign_texture_files():
         if name.startswith(sts.PREFIX + 'route_marker_'):
             claim(name, 'gen_route_markers.py')
+        if name.startswith(sts.PREFIX + 'mile_marker_'):
+            claim(name, 'gen_road_markers.py')
     return own
 
 

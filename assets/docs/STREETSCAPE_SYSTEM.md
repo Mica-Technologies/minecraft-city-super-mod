@@ -21,6 +21,13 @@ would turn south-facing hydrants in existing worlds. It draws the same lathed hy
 NFPA-coloured ones below (red, silver caps), with their box; its class is its own only for that
 rotation.
 
+Added beside them for issue #237: post-mounted delineators (`delineator_uchannel_*`, a reflector
+plate, or two stacked, in white, yellow or red on a green steel U-channel) and flexible marker
+posts (`delineator_flexible_*`, a flat composite post with a band of white, yellow or red
+sheeting). They are `BlockWorkZoneDeviceDiagonal`s like the three above -- eight facings, settling
+-- and come from `gen_road_markers.py`; see "Mile Markers and Post Markers" in
+`TRAFFIC_SIGNS.md`, which also covers the object markers that share their post.
+
 ## Settling
 
 Every Streetscape block extends a Core `AbstractBlockRoadSurface*` base
