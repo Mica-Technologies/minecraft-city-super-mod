@@ -1,0 +1,196 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "clay": "csm:blocks/parks/landscape/terracotta",
+    "top": "csm:blocks/parks/landscape/terracotta_top_large",
+    "particle": "csm:blocks/parks/landscape/terracotta"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        3,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#clay",
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#clay",
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#clay",
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#clay",
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#clay",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        3,
+        3
+      ],
+      "to": [
+        13,
+        11,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#clay",
+          "uv": [
+            3,
+            5,
+            13,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#clay",
+          "uv": [
+            3,
+            5,
+            13,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#clay",
+          "uv": [
+            3,
+            5,
+            13,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#clay",
+          "uv": [
+            3,
+            5,
+            13,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#clay",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        11,
+        2
+      ],
+      "to": [
+        14,
+        13,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#clay",
+          "uv": [
+            2,
+            3,
+            14,
+            5
+          ]
+        },
+        "south": {
+          "texture": "#clay",
+          "uv": [
+            2,
+            3,
+            14,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#clay",
+          "uv": [
+            2,
+            3,
+            14,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#clay",
+          "uv": [
+            2,
+            3,
+            14,
+            5
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#clay",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        }
+      }
+    }
+  ]
+}

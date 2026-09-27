@@ -21,9 +21,11 @@ import net.minecraft.world.World;
 
 /**
  * A landscape block that faces something behind it: a tree stake, whose tie reaches back to the
- * trunk in the next cell, and a hanging flower basket on a bracket, whose plate meets the pole or
- * wall behind it ({@link PoleFitted}). The model faces north with what it attaches to at +Z,
- * as every side-mounted accessory in the mod does.
+ * trunk in the next cell, a hanging flower basket on a bracket, whose plate meets the pole or
+ * wall behind it ({@link PoleFitted}), and the pieces of a nursery or farm that have a front (a
+ * window box against its wall, the potting bench, a wheelbarrow, crop rows as
+ * {@link BlockParkCrop}). The model faces north with what it attaches to at +Z, as every
+ * side-mounted accessory in the mod does.
  *
  * @since 2026.9
  */
@@ -43,17 +45,48 @@ public class BlockParkFacing extends AbstractBlockRotatableNSEW {
    * @param collides     whether it can be walked into
    */
   public BlockParkFacing(String registryName, int[] box, boolean collides) {
-    super(stash(registryName), SoundType.WOOD, "axe", 0, 1.0F, 2.0F, 0.0F, 0);
+    // The literal call is what gen_wiki_reference.py reads a facing prop's stats from.
+    super(stash(registryName, Material.WOOD), SoundType.WOOD, "axe", 0, 1.0F, 2.0F, 0.0F, 0);
     this.registryName = registryName;
-    this.box = new AxisAlignedBB(box[0] / 16.0, box[1] / 16.0, box[2] / 16.0, box[3] / 16.0,
-        box[4] / 16.0, box[5] / 16.0);
+    this.box = toBox(box);
     this.collides = collides;
     PENDING.remove();
   }
 
-  private static Material stash(String registryName) {
+  /**
+   * Constructs a facing prop of another material than wood. The first six arguments are in
+   * {@code AbstractBlock}'s order, so a subclass's literal call is where
+   * {@code gen_wiki_reference.py} reads its stats.
+   *
+   * @param material     its material
+   * @param sound        its sound
+   * @param tool         the tool that breaks it fastest, or null
+   * @param harvestLevel the harvest level that tool needs
+   * @param hardness     its hardness
+   * @param resistance   its blast resistance
+   * @param registryName its registry name
+   * @param box          its box facing north, in sixteenths: {x0, y0, z0, x1, y1, z1}
+   * @param collides     whether it can be walked into
+   */
+  protected BlockParkFacing(Material material, SoundType sound, @Nullable String tool,
+      int harvestLevel, float hardness, float resistance, String registryName, int[] box,
+      boolean collides) {
+    super(stash(registryName, material), sound, tool, harvestLevel, hardness, resistance, 0.0F,
+        0);
+    this.registryName = registryName;
+    this.box = toBox(box);
+    this.collides = collides;
+    PENDING.remove();
+  }
+
+  private static AxisAlignedBB toBox(int[] box) {
+    return new AxisAlignedBB(box[0] / 16.0, box[1] / 16.0, box[2] / 16.0, box[3] / 16.0,
+        box[4] / 16.0, box[5] / 16.0);
+  }
+
+  private static Material stash(String registryName, Material material) {
     PENDING.set(registryName);
-    return Material.WOOD;
+    return material;
   }
 
   @Override

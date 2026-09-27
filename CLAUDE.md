@@ -709,7 +709,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   change. `--fragments` prints the tab lines; `--check` fails on drift
 - `gen_park_plantings.py` -- the street-tree accessories and plantings (grates, pit fence, stakes,
   pole-fitted hanging baskets, hedges, shrubs, grasses, flower beds, ground covers, planters and
-  raised beds) from one catalogue whose tab lines carry each block's size; `--check`, `--fragments`
+  raised beds), the regional plants and their nursery pots, and the nursery, garden centre and
+  farm pieces (terracotta pots, urn, bowl, half barrel, window box, the joining nursery bench,
+  potting bench, stacked pots, seedling flats, compost bin, wheelbarrow, crop rows, trellis) from
+  one catalogue whose tab lines carry each block's size; `--check`, `--fragments`
 - `gen_park_amenities.py` -- the Parks tab: benches and picnic tables (end frames only at a run's
   ends), bins, playground, pergola, fountains with animated water, irrigation; borrows
   gen_park_plantings.py's helpers; `--check`, `--fragments`

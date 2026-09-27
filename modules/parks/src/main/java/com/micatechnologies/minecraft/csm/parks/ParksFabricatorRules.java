@@ -44,6 +44,7 @@ public final class ParksFabricatorRules {
   private static final String MC_WOOL = "minecraft:wool";
   private static final String MC_STICK = "minecraft:stick";
   private static final String MC_FLOWER_POT = "minecraft:flower_pot";
+  private static final String MC_SEEDS = "minecraft:wheat_seeds";
 
   private ParksFabricatorRules() {
   }
@@ -142,7 +143,46 @@ public final class ParksFabricatorRules {
     if (name.endsWith("_concrete")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 3));
     }
-    return null;
+    return nurseryCost(name);
+  }
+
+  /**
+   * The nursery, garden centre and farm pieces: fired clay pots, timber, stone, seeds and
+   * sticks, by name. The steel nursery bench and the wheelbarrow take the generic cost (null).
+   */
+  @Nullable
+  private static List<FabricatorIngredient> nurseryCost(String name) {
+    switch (name) {
+      case "planter_terracotta_small":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY_BALL, 2));
+      case "planter_terracotta_large":
+      case "planter_glazed_urn":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY_BALL, 4));
+      case "planter_concrete_bowl":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STONE, 3),
+            FabricatorIngredient.any(MC_FLOWER, 1));
+      case "planter_half_barrel":
+      case "compost_bin":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3));
+      case "potting_bench":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4));
+      case "window_box_flowers":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
+            FabricatorIngredient.any(MC_FLOWER, 1));
+      case "nursery_pot_stack":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_FLOWER_POT, 2));
+      case "seedling_flats":
+      case "crop_row_lettuce":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SEEDS, 2));
+      case "crop_row_tomato":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SEEDS, 2),
+            FabricatorIngredient.any(MC_STICK, 3));
+      case "trellis_clematis":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STICK, 4),
+            FabricatorIngredient.any(MC_VINE, 1));
+      default:
+        return null;
+    }
   }
 
   /**

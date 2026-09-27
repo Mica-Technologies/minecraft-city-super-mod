@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkCrop;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkFacing;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkJoining;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkProp;
@@ -368,5 +369,22 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockParkProp("potted_flower_wood_anemone", BlockParkProp.Kind.SHRUB, 10, 3));
     initTabBlock(new BlockParkProp("potted_flower_harebell", BlockParkProp.Kind.SHRUB, 12, 3));
     initTabBlock(new BlockParkProp("potted_flower_marguerite", BlockParkProp.Kind.SHRUB, 14, 3));
+
+    // The nursery, garden centre and farm: more planters, nursery benches and stock, crop rows.
+    initTabBlock(new BlockParkProp("planter_terracotta_small", BlockParkProp.Kind.PLANTER, 8, 4));
+    initTabBlock(new BlockParkProp("planter_terracotta_large", BlockParkProp.Kind.PLANTER, 13, 2));
+    initTabBlock(new BlockParkProp("planter_glazed_urn", BlockParkProp.Kind.PLANTER, 14, 2));
+    initTabBlock(new BlockParkProp("planter_concrete_bowl", BlockParkProp.Kind.PLANTER, 8, 1));
+    initTabBlock(new BlockParkProp("planter_half_barrel", BlockParkProp.Kind.PLANTER, 10, 1));
+    initTabBlock(new BlockParkFacing("window_box_flowers", new int[]{1, 0, 10, 15, 10, 16}, true));
+    initTabBlock(new BlockParkJoining("nursery_bench", BlockParkJoining.Kind.TABLE, 16, 16));
+    initTabBlock(new BlockParkFacing("potting_bench", new int[]{0, 0, 3, 16, 16, 16}, true));
+    initTabBlock(new BlockParkProp("nursery_pot_stack", BlockParkProp.Kind.PLANTER, 12, 1));
+    initTabBlock(new BlockParkProp("seedling_flats", BlockParkProp.Kind.PLANTER, 3, 0));
+    initTabBlock(new BlockParkProp("compost_bin", BlockParkProp.Kind.PLANTER, 14, 0));
+    initTabBlock(new BlockParkFacing("wheelbarrow", new int[]{2, 0, 0, 14, 10, 16}, true));
+    initTabBlock(new BlockParkCrop("crop_row_lettuce", new int[]{0, 0, 2, 16, 5, 14}));
+    initTabBlock(new BlockParkCrop("crop_row_tomato", new int[]{0, 0, 2, 16, 16, 14}));
+    initTabBlock(new BlockParkFacing("trellis_clematis", new int[]{0, 0, 7, 16, 16, 9}, false));
   }
 }

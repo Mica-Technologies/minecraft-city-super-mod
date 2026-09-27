@@ -1,0 +1,180 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "post": "csm:blocks/parks/landscape/stake",
+    "lattice": "csm:blocks/parks/landscape/trellis_clematis",
+    "particle": "csm:blocks/parks/landscape/stake"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        7
+      ],
+      "to": [
+        1.5,
+        16,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            14.5,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            0,
+            7,
+            1.5,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#post",
+          "uv": [
+            0,
+            7,
+            1.5,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.5,
+        0,
+        7
+      ],
+      "to": [
+        16,
+        16,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            14.5,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            14.5,
+            7,
+            16,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#post",
+          "uv": [
+            14.5,
+            7,
+            16,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        0,
+        8
+      ],
+      "to": [
+        14.5,
+        16,
+        8
+      ],
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#lattice",
+          "uv": [
+            1.5,
+            0,
+            14.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#lattice",
+          "uv": [
+            1.5,
+            0,
+            14.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

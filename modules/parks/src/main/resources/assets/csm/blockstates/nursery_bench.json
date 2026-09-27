@@ -1,0 +1,113 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:parks/landscape/nursery_bench_post"
+      }
+    },
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/nursery_bench_side"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/nursery_bench_side",
+        "y": 90,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/nursery_bench_side",
+        "y": 180,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/nursery_bench_side",
+        "y": 270,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "false"
+          },
+          {
+            "east": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:parks/landscape/nursery_bench_corner"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "false"
+          },
+          {
+            "south": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:parks/landscape/nursery_bench_corner",
+        "y": 90,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "false"
+          },
+          {
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:parks/landscape/nursery_bench_corner",
+        "y": 180,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "west": "false"
+          },
+          {
+            "north": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:parks/landscape/nursery_bench_corner",
+        "y": 270,
+        "uvlock": false
+      }
+    }
+  ]
+}

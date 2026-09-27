@@ -326,6 +326,31 @@ by region. Each is one `BlockParkProp`, like the plantings above, grouped in the
   and a plant planted out beside its pot. The pot is added by the generator (`potted()`), not
   drawn per plant. A potted plant is a `SHRUB`: it has a box to stand on and to bump into.
 
+### Nursery, garden centre and farm
+
+Fifteen pieces for laying out a plant nursery, a garden centre or a small farm, at the end of
+the tab. The plants for them are the `potted_` blocks; none of these is a potted plant again, and
+none repeats the Furniture tabs' hose reel, storage crates, produce crates, wooden barrel,
+pumpkins or scarecrow.
+
+| Group | Pieces |
+|---|---|
+| Planters (`BlockParkProp`, `PLANTER`) | small and large terracotta pots, a glazed ceramic urn, a concrete bowl of bedding flowers, a half barrel |
+| Nursery | a window box of trailing flowers (`BlockParkFacing`, hung against the wall behind it), the nursery growing bench (`BlockParkJoining.Kind.TABLE`), a potting bench, stacked empty nursery pots, seedling flats |
+| Farm | a slatted compost bin, a wheelbarrow of soil, lettuce and staked tomato rows (`BlockParkCrop`), a trellis with a clematis |
+
+- **A pot's rim is a ring drawn into its top texture** at the pixels the rim box's up face samples
+  (`rim_top`), so a small pot's soil sits inside a rim rather than across the whole top.
+- **The nursery bench is a block high**, so a potted plant placed on it stands on its mesh top. It
+  joins into a run like the raised beds: rails only round the outside, stopping short of corner
+  pieces. Each open side carries the leg at its left-hand corner, so a run has one leg a block
+  along each long edge and every corner of the whole bench has one.
+- **Crop rows face**, so a field can run either way; their ridge runs across the block, so rows
+  placed end to end are one ridge. `BlockParkCrop` is the facing prop in plant material: broken
+  by hand, walked through, and it burns.
+- **The wheelbarrow's wheel is an exact octagon**, a cross of two rectangles and the same cross
+  turned 45 degrees, in one flat colour so the four sides on one plane show the same pixels.
+
 ---
 
 ## Park amenities (Parks tab)
@@ -393,7 +418,11 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
   - plantings cost what they are planted with or made of (saplings, tall grass, flowers, gravel,
     sand, planks, stone), by name: `shrub_` and `plant_` a sapling, `grass_` tall grass,
     `flower_` a flower; a `potted_` plant costs its plant and a flower pot;
-  - grates and the pit fence take the generic steel cost.
+  - grates and the pit fence take the generic steel cost;
+  - the nursery and farm pieces cost what they are made of: clay for the terracotta pots and
+    the urn, planks for the barrel, window box, potting bench and compost bin, stone for the
+    bowl, flower pots for the stacked pots, seeds for the flats and crop rows, sticks and a vine
+    for the trellis. The nursery bench and the wheelbarrow take the generic steel cost.
 - **Parks:**
   - flower pots cost clay; the bird bath and fountains cost stone;
   - wooden benches, tables and the pergola cost planks;
@@ -407,7 +436,7 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
 | Script | Writes |
 |---|---|
 | `gen_trees.py` | Bark and leaf-cluster textures; the palm crown sheets and icons; moss; the log and leaves placeholder models and blockstates; the lang for woods, leaves and presets; the tool's icon, model and messages. `--fragments` prints the tab lines |
-| `gen_park_plantings.py` | Every block in the accessories and plantings catalogue, the regional plantings and their potted copies: textures, element models, blockstates, item models and lang. `--fragments` |
+| `gen_park_plantings.py` | Every block in the accessories and plantings catalogue, the regional plantings and their potted copies, and the nursery, garden centre and farm pieces: textures, element models, blockstates, item models and lang. `--fragments` |
 | `gen_park_amenities.py` | The same for the amenities. It borrows `gen_park_plantings.py`'s helpers |
 | `gen_park_legacy_amenities.py` | The models, textures and blockstates of the five amenities that kept their old ids (both swing sets, the teeter totter, the trash can, the bird bath). It writes no lang and no tab lines, since those blocks already have them |
 
