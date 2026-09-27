@@ -230,6 +230,12 @@ Door Swing Tool are items, so they have crafting recipes (`recipes/door_closer.j
   door shut by hand and opened again inside its time slammed on the first opening's tick (#234).
 - **1.12's long array tag cannot be read back** (no getter), so `DoorLocks` stores positions as
   pairs of ints.
+- **A door's box is not always where the door is drawn.** A swing's box jumps to where the swing
+  ends as it starts, so a second click during the 8 ticks goes through the doorway; a sliding or
+  splitting custom door leaves its cell clear once open. Such a click landed on the floor beyond
+  and placed the held block (#244). `DoorClickThrough` (both sides) denies the held item's use
+  when the look ray crosses a door's cell on the way to its target. The target still gets its
+  own click, the cells the player stands in are left out, and sneaking still places.
 
 ## Custom doors
 

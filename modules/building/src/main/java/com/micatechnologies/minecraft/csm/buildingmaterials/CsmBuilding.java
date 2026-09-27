@@ -71,6 +71,8 @@ public class CsmBuilding {
     ScaffoldRailCollision.register();
     // A tower crane's deck, walkways and cab, which its renderer draws but no block backs.
     CraneCollision.register();
+    // A click that went through a door's cell does not place the held block beyond it.
+    DoorClickThrough.register();
     CsmGuiRegistry.register(new BuildingGuiProvider());
     // The packet order here fixes this channel's discriminators; only append to it.
     NETWORK.registerMessage(CraneHeadConfigPacketHandler.class, CraneHeadConfigPacket.class,
