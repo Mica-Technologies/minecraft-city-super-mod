@@ -355,11 +355,20 @@ station, from the same generator: generic fittings with no maker's name or logo 
 - **Toilet partitions** (`BlockToiletPartition`, `BlockToiletPartitionDoor`: `BlockResidentialTall`
   pieces, two blocks tall, drawn whole in 0..32 and cut at the block line by `split_y`). A run of
   stalls is a row of fronts placed side by side in the row in front of the toilets, facing out.
-  The front stands across the middle of its block, so a stall is 1.5 m deep and a block wide; the
-  panel between two stalls stands on the line between two blocks and runs from the front back to
-  the wall behind the toilet, a block and a half, reaching into the toilet's block (in the model,
+  The front stands at the outer edge of its block, so a stall is two blocks deep and a block
+  wide: the toilet's block and a clear block to stand in. (It first stood across the middle of
+  its block, a 1.5 m stall with a 0.64-block doorway, which a player could never get fully into.)
+  The panel between two stalls stands on the line between two blocks and runs from the front
+  back to the wall behind the toilet, two blocks, reaching into the toilet's block (in the model,
   in the collision boxes, which the 1.12 collision query's one-block margin reaches, and not in
-  the outline, which is cut to the piece's own block so it is the part a click can hit). `left`
+  the outline, which is cut to the piece's own block so it is the part a click can hit). The
+  pilasters beside a door are narrow (1.25 and 0.75 px) and the door 13.5 px wide, so the way in
+  past the open door is 0.81 of a block against a player's 0.6. Collision is kept thin, never
+  thicker than what is drawn: the front and pilasters only as deep as their panels (1 px, not
+  the shoes' and headrail's 1.5), the open door half its drawn thickness, and the flushometer
+  and close-coupled toilets (`BlockToilet`) collide only from 7 px back, behind the bowl's front,
+  so a player turns round in a shut stall; the outlines, and so the clicks, are still the drawn
+  parts, and a click from inside the stall passes the partition's parts to reach the toilet. `left`
   and `right` are actual state: a side against a solid wall has no panel (the wall is the
   stall's side); an open side, where the run stops, always has its end panel; where the run goes
   on, only a door or a panel piece draws a panel on its left, so one panel stands between two
@@ -367,8 +376,8 @@ station, from the same generator: generic fittings with no maker's name or logo 
   with a pilaster on its right. Three pieces, each in beige or grey powder coat or stainless:
   the door (between two narrow pilasters on stainless shoes, under the headrail, hinged on its
   left and swinging in; `open` stored in both halves, the open model the door written out
-  turned a quarter about its hinge by `swung()`, lying along the stall's left side in the block
-  behind, clear of a toilet there; the locker door's sounds), the pilaster (a fixed front the
+  turned a quarter about its hinge by `swung()`, lying along the stall's left side in the front
+  block, clear of the toilet, its inside coat hook short enough to clear the panel; the locker door's sounds), the pilaster (a fixed front the
   width of the block, floor to headrail) and the panel (the stall panels with no front, each
   ending at a slim pilaster of its own: an open bay, or an end panel on its own). Doors are 64
   states, pilasters and panels 32; nothing ticks and there is no tile entity.

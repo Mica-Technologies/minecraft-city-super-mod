@@ -23,7 +23,7 @@ import net.minecraft.world.World;
  * half to open or shut it, with the steel door sounds of the school locker. {@link #OPEN} is
  * stored in both halves, in the bit above {@link #UPPER}; the open model is the door written
  * out swung a quarter turn about its hinge (a model element turns only to 45 degrees), lying
- * along the stall's left side in the block behind. Otherwise it is a {@link BlockToiletPartition}
+ * along the stall's left side, clear of the doorway. Otherwise it is a {@link BlockToiletPartition}
  * and joins a run like one.
  *
  * @since 2026.9
@@ -34,12 +34,20 @@ public class BlockToiletPartitionDoor extends BlockToiletPartition {
   public static final PropertyBool OPEN = PropertyBool.create("open");
 
   /** The front with the door open, facing north, in sixteenths: its pilasters, the headrail
-   * across, and the door swung in about its hinge. */
+   * across, and the door swung in about its hinge (the click boxes). The way in, between the
+   * open door and the right pilaster, is 12.95 sixteenths, 0.81 of a block. */
   private static final double[][] OPEN_FRONT = {
-      {0, 0, 7.25, 2.5, TOP, 8.75},
-      {13.5, 0, 7.25, 16, TOP, 8.75},
-      {0, 29, 7.25, 16, TOP, 8.75},
-      {2.5, 5, 8.4, 3.3, 28.75, 19.4}};
+      {0, 0, 0.25, 1.5, TOP, 1.75},
+      {15.25, 0, 0.25, 16, TOP, 1.75},
+      {0, 29, 0.25, 16, TOP, 1.75},
+      {1.5, 5, 1.4, 2.3, 28.75, 14.9}};
+  /** The same as collision boxes: the pilasters and headrail only as deep as their panels, the
+   * door thinner than it is drawn. */
+  private static final double[][] OPEN_FRONT_SOLID = {
+      {0, 0, 0.5, 1.25, TOP, 1.5},
+      {15.25, 0, 0.5, 16, TOP, 1.5},
+      {0, 29, 0.5, 16, TOP, 1.5},
+      {1.5, 5, 1.5, 2.0, 28.75, 14.9}};
 
   /**
    * Constructs a stall door.
@@ -77,11 +85,11 @@ public class BlockToiletPartitionDoor extends BlockToiletPartition {
   }
 
   @Override
-  protected List<double[]> parts(IBlockState actual) {
-    List<double[]> out = super.parts(actual);
+  protected List<double[]> parts(IBlockState actual, boolean solid) {
+    List<double[]> out = super.parts(actual, solid);
     if (actual.getValue(OPEN)) {
-      out.remove(FRONT);
-      for (double[] part : OPEN_FRONT) {
+      out.remove(solid ? FRONT_SOLID : FRONT);
+      for (double[] part : solid ? OPEN_FRONT_SOLID : OPEN_FRONT) {
         out.add(part);
       }
     }

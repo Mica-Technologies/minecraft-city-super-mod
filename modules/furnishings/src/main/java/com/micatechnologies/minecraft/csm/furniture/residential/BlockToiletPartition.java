@@ -24,13 +24,15 @@ import net.minecraft.world.World;
  * A toilet partition: one stall's front in a commercial restroom's run of stalls, two blocks
  * tall and placed and broken as one ({@link BlockResidentialTall}). A run is a row of fronts
  * placed side by side, facing out of the stalls, in the row in front of the toilets: each front
- * stands across the middle of its block, so a stall is 1.5 m deep with its toilet in the block
- * behind, and a block wide.
+ * stands at the outer edge of its block, so a stall is two blocks deep, the toilet's block and a
+ * clear block to stand in, and a block wide.
  *
  * <p>The panel between two stalls stands on the line between two blocks and runs from the
- * front back to the wall behind the toilet, a block and a half; the front draws it, reaching
- * into the block behind (as the jet bridge and a tall piece's model do), and it collides there
- * too. {@link #LEFT} and {@link #RIGHT} (actual state, the viewer's standing behind the front,
+ * front back to the wall behind the toilet, two blocks; the front draws it, reaching into the
+ * block behind (as the jet bridge and a tall piece's model do), and it collides there too.
+ * The collision boxes are the drawn parts and no thicker: the front and the pilasters only as
+ * deep as their panels, not their shoes and headrail, so a player turns round in the stall
+ * freely. {@link #LEFT} and {@link #RIGHT} (actual state, the viewer's standing behind the front,
  * facing {@link #FACING}) say which of the front's two sides carries one:</p>
  * <ul>
  *   <li>a side against a solid wall never does: the wall is the stall's side;</li>
@@ -67,12 +69,17 @@ public class BlockToiletPartition extends BlockResidentialTall {
 
   /** The whole piece's height, in sixteenths from the floor of the lower half. */
   protected static final double TOP = 30.5;
-  /** The front, facing north, in sixteenths: across the block, floor to headrail. */
-  protected static final double[] FRONT = {0, 0, 7.25, 16, TOP, 8.75};
+  /** The front, facing north, in sixteenths: across the outer edge of the block, floor to
+   * headrail, as deep as its shoes and headrail (the click box). */
+  protected static final double[] FRONT = {0, 0, 0.25, 16, TOP, 1.75};
+  /** The front's collision: only as deep as its panels. */
+  protected static final double[] FRONT_SOLID = {0, 0, 0.5, 16, TOP, 1.5};
   /** The panel on the left side: on the block line, from the front to the wall behind. */
-  private static final double[] PANEL_LEFT = {-0.4, 5, 8.5, 0.4, 29, 31.5};
-  /** A panel piece's slim pilaster at the front of its left panel. */
-  private static final double[] POST_LEFT = {-1, 0, 7.25, 1, 29.75, 8.75};
+  private static final double[] PANEL_LEFT = {-0.4, 5, 1.5, 0.4, 29, 31.5};
+  /** A panel piece's slim pilaster at the front of its left panel (the click box). */
+  private static final double[] POST_LEFT = {-1, 0, 0.25, 1, 29.75, 1.75};
+  /** That pilaster's collision: only as wide and deep as its panel. */
+  private static final double[] POST_LEFT_SOLID = {-0.75, 0, 0.5, 0.75, 29.75, 1.5};
 
   private final Kind kind;
 
@@ -83,7 +90,7 @@ public class BlockToiletPartition extends BlockResidentialTall {
    * @param kind         which it is ({@link Kind#DOOR} is {@link BlockToiletPartitionDoor})
    */
   public BlockToiletPartition(String registryName, Kind kind) {
-    super(registryName, new int[]{0, 0, 7, 16, 31, 9}, FixtureMaterial.METAL.getMaterial(),
+    super(registryName, new int[]{0, 0, 0, 16, 31, 2}, FixtureMaterial.METAL.getMaterial(),
         FixtureMaterial.METAL.getSound(), FixtureMaterial.METAL.getHardness());
     this.kind = kind;
     setDefaultState(getDefaultState().withProperty(LEFT, false).withProperty(RIGHT, false));
@@ -144,24 +151,27 @@ public class BlockToiletPartition extends BlockResidentialTall {
    * state draws.
    *
    * @param actual the actual state
+   * @param solid  true for the collision boxes, no thicker than the parts' panels; false for
+   *               the click boxes, which take in their hardware
    *
    * @return the boxes, each {x0, y0, z0, x1, y1, z1}
    */
-  protected List<double[]> parts(IBlockState actual) {
+  protected List<double[]> parts(IBlockState actual, boolean solid) {
     List<double[]> out = new ArrayList<>();
     if (kind != Kind.PANEL) {
-      out.add(FRONT);
+      out.add(solid ? FRONT_SOLID : FRONT);
     }
+    double[] post = solid ? POST_LEFT_SOLID : POST_LEFT;
     if (actual.getValue(LEFT)) {
       out.add(PANEL_LEFT);
       if (kind == Kind.PANEL) {
-        out.add(POST_LEFT);
+        out.add(post);
       }
     }
     if (actual.getValue(RIGHT)) {
       out.add(mirror(PANEL_LEFT));
       if (kind == Kind.PANEL) {
-        out.add(mirror(POST_LEFT));
+        out.add(mirror(post));
       }
     }
     return out;
@@ -194,7 +204,7 @@ public class BlockToiletPartition extends BlockResidentialTall {
       BlockPos pos) {
     boolean upper = state.getValue(UPPER);
     AxisAlignedBB box = null;
-    for (double[] part : parts(state)) {
+    for (double[] part : parts(state, false)) {
       AxisAlignedBB b = half(part, upper);
       if (b == null) {
         continue;
@@ -203,7 +213,7 @@ public class BlockToiletPartition extends BlockResidentialTall {
           Math.min(b.maxX, 1), b.maxY, Math.min(b.maxZ, 1));
       box = box == null ? b : box.union(b);
     }
-    return box != null ? box : new AxisAlignedBB(0, 0, 0.45, 1, 1, 0.55);
+    return box != null ? box : new AxisAlignedBB(0, 0, 0.02, 1, 1, 0.11);
   }
 
   /**
@@ -224,7 +234,7 @@ public class BlockToiletPartition extends BlockResidentialTall {
     boolean upper = actual.getValue(UPPER);
     RayTraceResult best = null;
     double bestDistance = Double.MAX_VALUE;
-    for (double[] part : parts(actual)) {
+    for (double[] part : parts(actual, false)) {
       AxisAlignedBB b = half(part, upper);
       if (b == null) {
         continue;
@@ -251,7 +261,7 @@ public class BlockToiletPartition extends BlockResidentialTall {
     IBlockState actual = isActualState ? state : state.getActualState(world, pos);
     EnumFacing facing = actual.getValue(FACING);
     boolean upper = actual.getValue(UPPER);
-    for (double[] part : parts(actual)) {
+    for (double[] part : parts(actual, true)) {
       AxisAlignedBB b = half(part, upper);
       if (b != null) {
         addCollisionBoxToList(pos, entityBox, collidingBoxes,
