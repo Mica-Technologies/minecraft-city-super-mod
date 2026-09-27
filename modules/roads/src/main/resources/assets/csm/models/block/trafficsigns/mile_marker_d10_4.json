@@ -61,6 +61,15 @@
           ],
           "texture": "#0"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -84,6 +93,15 @@
           ],
           "texture": "#1"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -107,6 +125,15 @@
           ],
           "texture": "#1"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -130,6 +157,15 @@
           ],
           "texture": "#1"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {

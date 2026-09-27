@@ -20,6 +20,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockFaceUV;
 import net.minecraft.client.renderer.block.model.BlockPartFace;
+import net.minecraft.client.renderer.block.model.BlockPartRotation;
 import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -57,6 +58,15 @@ import org.lwjgl.util.vector.Vector3f;
 public class MileMarkerBakedModel extends BakedModelWrapper<IBakedModel> {
 
   private static final FaceBakery BAKERY = new FaceBakery();
+
+  /**
+   * A turn of nothing, passed where the bakery takes an element's rotation. Given none, the
+   * bakery squares every face up to the nearest side of the block (its applyFacing), which undoes
+   * the 45 degree turn of a diagonal facing; given this, it leaves the corners where the facing's
+   * transformation put them. The plate models carry the same zero rotation for the same reason.
+   */
+  private static final BlockPartRotation NO_TURN =
+      new BlockPartRotation(new Vector3f(0.5f, 0.5f, 0.5f), EnumFacing.Axis.Y, 0.0f, false);
 
   private final MileMarkerLayout layout;
   private final TextureAtlasSprite sheet;
@@ -156,8 +166,8 @@ public class MileMarkerBakedModel extends BakedModelWrapper<IBakedModel> {
       BlockPartFace face = new BlockPartFace(EnumFacing.NORTH, -1, "",
           new BlockFaceUV(piece.uv, 0));
       BakedQuad quad = BAKERY.makeBakedQuad(new Vector3f(piece.x0, piece.y0, piece.z),
-          new Vector3f(piece.x1, piece.y1, piece.z), face, sprite, EnumFacing.NORTH, turn, null,
-          false, true);
+          new Vector3f(piece.x1, piece.y1, piece.z), face, sprite, EnumFacing.NORTH, turn,
+          NO_TURN, false, true);
       if (piece.colour != -1) {
         tint(quad.getVertexData(), piece.colour);
       }

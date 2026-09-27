@@ -38,6 +38,15 @@
           ],
           "texture": "#back"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -70,6 +79,15 @@
           ],
           "texture": "#back"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -129,6 +147,15 @@
           ],
           "texture": "#post"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -188,6 +215,15 @@
           ],
           "texture": "#post"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -238,6 +274,15 @@
           ],
           "texture": "#post"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -288,6 +333,15 @@
           ],
           "texture": "#post"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -338,6 +392,15 @@
           ],
           "texture": "#post"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     },
     {
@@ -388,6 +451,15 @@
           ],
           "texture": "#post"
         }
+      },
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
       }
     }
   ],
