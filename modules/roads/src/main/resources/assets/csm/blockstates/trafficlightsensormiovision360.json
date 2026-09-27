@@ -3,7 +3,8 @@
   "defaults": {
     "model": "csm:trafficsignals/shared_models/miovision_360.obj",
     "custom": {
-      "flip-v": true
+      "flip-v": true,
+      "ambient": false
     }
   },
   "variants": {
