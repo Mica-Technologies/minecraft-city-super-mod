@@ -185,6 +185,9 @@ class per form, constructed by registry name (`glass_<kind>`, `glass_pane_<kind>
   Bullet-resistant glass is hardness 25 and blast resistance 2000; the rest break like glass.
 - A pane's inventory icon is a flat item texture (the glass in its frame), from
   `models/item`; a block's is the block with its full frame.
+- **A pane is 1.5 blocks tall to anything walking into it**, a fence's height, so no one can jump
+  over it and a run of panes serves as a glass railing or balustrade. Only the collision is that
+  tall; the outline the player picks, and what the HVAC scanner reads, is the pane's own cell.
 
 ## Pricing
 
