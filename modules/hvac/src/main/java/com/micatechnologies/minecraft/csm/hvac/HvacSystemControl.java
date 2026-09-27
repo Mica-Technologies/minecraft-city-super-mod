@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -202,7 +203,7 @@ final class HvacSystemControl {
         TileEntity te = world.getTileEntity(a.pos);
         if (te instanceof TileEntityHvacHeater
             && ((TileEntityHvacHeater) te).claimStep != w.stepId) {
-          runStandalone((TileEntityHvacHeater) te, a);
+          runStandalone(w, (TileEntityHvacHeater) te, a);
         }
       } else if (a.kind == ThermalAnchor.ZONE) {
         TileEntity te = world.getTileEntity(a.pos);
@@ -230,7 +231,8 @@ final class HvacSystemControl {
   // region Standalone units
 
   /** An unlinked, powered unit holds its own room like a space heater or window unit. */
-  private static void runStandalone(TileEntityHvacHeater unit, ThermalAnchor a) {
+  private static void runStandalone(HvacThermalWorld w, TileEntityHvacHeater unit,
+      ThermalAnchor a) {
     if (a.space != null && a.space.frozen) {
       return; // part of its room is unloaded: leave it exactly as it is
     }
@@ -240,6 +242,7 @@ final class HvacSystemControl {
     }
     ThermalSpace s = a.space;
     int r = a.region;
+    s.activeStep = w.stepId; // a space heater at work keeps its room awake
     float cap = unit.getHeatCapacity();
     float q;
     if (unit.isCoolingUnit()) {
@@ -300,6 +303,31 @@ final class HvacSystemControl {
       unit.claimStep = w.stepId;
       units.add(unit);
     }
+    // Switched off at the primary: nothing runs, and the rooms it serves sleep (neither stepped
+    // nor rescanned) unless something else is working in them.
+    if (primary.getSwitchMode() == HvacStatus.SWITCH_OFF) {
+      int poweredOff = 0;
+      for (TileEntityHvacHeater u : units) {
+        poweredOff += u.hasPower() ? 1 : 0;
+      }
+      for (int zi = 0; zi < zones.size(); zi++) {
+        Zone z = zones.get(zi);
+        sleep(w, z.anchor);
+        for (BlockPos vp : z.tstat.getLinkedVents()) {
+          sleep(w, w.anchor(vp));
+        }
+        z.tstat.applyControl(display(w, z.anchor, z.tstat.getPos()), HvacStatus.MODE_IDLE,
+            HvacStatus.MODE_IDLE, 0,
+            spaceFlags(z.anchor) | (zi > 0 ? HvacStatus.FLAG_SYSTEM_OFF : 0), -1, poweredOff,
+            units.size());
+      }
+      for (TileEntityHvacHeater u : units) {
+        u.applyOutput(0.0f);
+        sleep(w, w.anchor(u.getPos()));
+      }
+      return;
+    }
+
     // A system with any member unloaded (a zone, a unit, a vent) cannot know what it would do,
     // so it does nothing and holds every room it touches exactly as it is until it is whole.
     boolean complete = zones.size() == 1 + primary.getLinkedZones().size()
@@ -409,6 +437,14 @@ final class HvacSystemControl {
       }
     }
 
+    // A running system keeps awake every room it reads or blows into.
+    for (Zone z : zones) {
+      wake(w, z.space());
+    }
+    for (Served e : served.values()) {
+      wake(w, e.space);
+    }
+
     // What each region needs, both ways.
     float heatWant = 0;
     float coolWant = 0;
@@ -419,8 +455,14 @@ final class HvacSystemControl {
       float tc = coolTarget(g.tstat) - (trimmed ? g.tstat.trimCool : 0);
       e.targetHeat = th;
       e.targetCool = tc;
-      float rh = e.need(th);
-      float rc = -e.need(tc);
+      // The switches: the primary's governs the whole system, the zone's its own rooms. Off at
+      // either, or set the other way, and the room asks for nothing that way.
+      int sp = primary.getSwitchMode();
+      int sz = g.tstat.getSwitchMode();
+      boolean heatOn = HvacStatus.switchHeats(sp) && HvacStatus.switchHeats(sz);
+      boolean coolOn = HvacStatus.switchCools(sp) && HvacStatus.switchCools(sz);
+      float rh = heatOn ? e.need(th) : 0f;
+      float rc = coolOn ? -e.need(tc) : 0f;
       float limH = hasDucts ? e.vents * VENT_CAPACITY : e.heatCapHere;
       float limC = hasDucts ? e.vents * VENT_CAPACITY : e.coolCapHere;
       e.needHeat = clamp(rh, 0, limH);
@@ -538,6 +580,9 @@ final class HvacSystemControl {
     for (int zi = 0; zi < zones.size(); zi++) {
       Zone z = zones.get(zi);
       int flags = spaceFlags(z.anchor);
+      if (zi > 0 && primary.getSwitchMode() == HvacStatus.SWITCH_OFF) {
+        flags |= HvacStatus.FLAG_SYSTEM_OFF;
+      }
       if (hasDucts && z.vents == 0 && (zi > 0 || zones.size() == 1)) {
         flags |= HvacStatus.FLAG_NO_VENTS;
       }
@@ -645,6 +690,20 @@ final class HvacSystemControl {
   }
 
   /** Holds the anchor's space as it is for this step, if it has one. */
+  /** Offers an anchor's space to sleep this step; see {@link ThermalSpace#idle}. */
+  private static void sleep(HvacThermalWorld w, ThermalAnchor a) {
+    if (a != null && a.space != null) {
+      w.idleCandidates.add(a.space);
+    }
+  }
+
+  /** Marks a space as worked in this step, so it stays awake. */
+  private static void wake(HvacThermalWorld w, @Nullable ThermalSpace s) {
+    if (s != null) {
+      s.activeStep = w.stepId;
+    }
+  }
+
   private static void freeze(ThermalAnchor a) {
     if (a != null && a.space != null) {
       a.space.frozen = true;

@@ -31,6 +31,7 @@ public class HvacThermostatConfigPacketHandler implements
         TileEntityHvacThermostatBase thermostat = (TileEntityHvacThermostatBase) te;
         thermostat.setTargetTempLow(low);
         thermostat.setTargetTempHigh(high);
+        thermostat.setSwitchMode(message.getSwitchMode());
       }
     });
     return null;

@@ -221,6 +221,23 @@ A system with heaters and coolers heats or cools, never both. It reverses only a
 nothing to do in its current mode, or when the other mode has out-demanded it for five minutes.
 Zones wanting the opposite show "Waiting".
 
+### The switch: Auto, Heat, Cool, Off
+
+Every thermostat has a switch, as a real one does, on its screen's Mode button (`sw`, absent on
+older thermostats, which is Auto). Auto holds the range as before. Heat and Cool ask only that way:
+a room past the other end of the range drifts, as it would with that switch on a real system. Off
+asks nothing. A primary's switch governs its whole system, a zone's only the rooms its vents blow
+into (a room two zones blow into follows the zone it belongs to, as above). The wall display
+shows `Heat: 68°F`, `Cool: 80°F` or `System Off` in place of the range; a zone under a primary
+that is off says so.
+
+**Off is idle, not just no heat.** A system whose primary is off does no control work at all: its
+units are set to zero and its thermostats told they are off, and the rooms it serves sleep
+(`ThermalSpace.idle`): frozen as an unloaded room is, so their temperatures hold, and not
+rescanned, so a block change while they sleep leaves them dirty and they are rescanned once the
+system is switched back on. A room something else is working in stays awake (another system, a
+space heater), so switching one system off never stops another from heating a room they share.
+
 ### What the thermostats report
 
 `applyControl` sets the display temperature (the region's; the saved value while the room loads;
@@ -323,7 +340,7 @@ drawn in proportion to output; redstone is free). `TileEntityHvacRtuCooler` exte
 
 | Tile entity | Keys |
 |---|---|
-| both thermostats | `tLo`, `tHi` setpoints; `cT` region temperature; `cL`, `cM` calling; `bM` blocked mode; `eff` output %; `sF` flags; `cap` capacity % (-1 n/a); `pU`, `tU` units powered/total; `trH`, `trC` trims; `lV` vents |
+| both thermostats | `tLo`, `tHi` setpoints; `cT` region temperature; `cL`, `cM` calling; `bM` blocked mode; `eff` output %; `sF` flags; `cap` capacity % (-1 n/a); `pU`, `tU` units powered/total; `trH`, `trC` trims; `lV` vents; `sw` switch (0 Auto, 1 Heat, 2 Cool, 3 Off) |
 | primary | `lU` units, `lZ` zones, `sM` system mode |
 | zone | `hP`, `lP` primary |
 | unit | `energy`, `out` output fraction |

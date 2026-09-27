@@ -112,6 +112,17 @@ public final class ThermalSpace {
    */
   boolean frozen;
 
+  /**
+   * Set for a step in which every system touching the space is switched off, and nothing else
+   * (another system, a space heater) is working in it: the space sleeps. It is frozen as an
+   * unloaded one is, and not rescanned; a block change while it sleeps leaves it dirty, and it is
+   * rescanned the step after something wakes it.
+   */
+  boolean idle;
+
+  /** The last step in which a running system or unit worked in this space. */
+  long activeStep = -1;
+
   /** World tick of the last scan. */
   long lastScanTick;
 

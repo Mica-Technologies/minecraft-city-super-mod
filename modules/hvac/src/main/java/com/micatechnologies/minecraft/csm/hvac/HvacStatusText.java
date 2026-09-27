@@ -49,7 +49,12 @@ final class HvacStatusText {
     int output = t.getOutputPercent();
 
     // What it is doing.
-    if (!primary && (flags & HvacStatus.FLAG_NO_PRIMARY) != 0) {
+    if (t.getSwitchMode() == HvacStatus.SWITCH_OFF) {
+      out.add(new Line(primary ? "○ Off: the system will not heat or cool"
+          : "○ Off: this zone will not heat or cool", COLOR_INFO));
+    } else if ((flags & HvacStatus.FLAG_SYSTEM_OFF) != 0) {
+      out.add(new Line("○ Off at the primary thermostat", COLOR_INFO));
+    } else if (!primary && (flags & HvacStatus.FLAG_NO_PRIMARY) != 0) {
       out.add(new Line("⚠ Not linked to a primary thermostat", COLOR_BAD));
     } else if (units == 0) {
       out.add(new Line("⚠ No heaters or coolers linked", COLOR_WARN));
@@ -63,6 +68,10 @@ final class HvacStatusText {
       out.add(new Line("⚠ Too warm, and no cooler linked", COLOR_WARN));
     } else if ((flags & HvacStatus.FLAG_WAITING) != 0) {
       out.add(new Line("● Waiting: system busy the other way", COLOR_WARN));
+    } else if (t.getSwitchMode() == HvacStatus.SWITCH_HEAT) {
+      out.add(new Line("● Satisfied (heat only)", COLOR_OK));
+    } else if (t.getSwitchMode() == HvacStatus.SWITCH_COOL) {
+      out.add(new Line("● Satisfied (cool only)", COLOR_OK));
     } else {
       out.add(new Line("● Satisfied", COLOR_OK));
     }

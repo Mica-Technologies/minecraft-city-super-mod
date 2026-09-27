@@ -494,6 +494,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
     List<ThermalSpace> due = new ArrayList<>();
     List<ThermalSpace> periodic = new ArrayList<>();
     for (ThermalSpace s : spaces) {
+      if (s.idle) {
+        continue; // asleep: rescanned, if dirty, once something wakes it
+      }
       long age = now - s.lastScanTick;
       if (s.dirty && age >= RESCAN_DEBOUNCE_TICKS) {
         due.add(s);
@@ -697,11 +700,26 @@ public final class HvacThermalWorld implements IWorldEventListener {
       s.frozen = !allLoaded(s);
       s.prepareLoss();
     }
+    idleCandidates.clear();
     HvacSystemControl.run(this);
+    // A space only switched-off systems touch sleeps; one anything is working in stays awake.
+    for (ThermalSpace s : spaces) {
+      s.idle = false;
+    }
+    for (ThermalSpace s : idleCandidates) {
+      if (s.activeStep != stepId) {
+        s.idle = true;
+        s.frozen = true;
+      }
+    }
     for (ThermalSpace s : spaces) {
       s.integrate(DT);
     }
   }
+
+  /** Spaces a switched-off system touched this step; see {@link ThermalSpace#idle}. */
+  final java.util.Set<ThermalSpace> idleCandidates =
+      java.util.Collections.newSetFromMap(new IdentityHashMap<>());
 
   /**
    * Runs {@code seconds} of simulated time at once, for testing: the blocks are taken as they are

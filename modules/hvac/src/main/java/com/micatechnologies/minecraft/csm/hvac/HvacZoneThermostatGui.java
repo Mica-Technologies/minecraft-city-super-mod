@@ -19,6 +19,7 @@ public class HvacZoneThermostatGui extends GuiScreen {
   private static final int BTN_HIGH_MINUS = 2;
   private static final int BTN_HIGH_PLUS = 3;
   private static final int BTN_CLOSE = 4;
+  private static final int BTN_SWITCH = 5;
   private static final int TEMP_STEP = 5;
 
   private static final int GUI_WIDTH = 240;
@@ -61,9 +62,11 @@ public class HvacZoneThermostatGui extends GuiScreen {
     buttonList.add(new GuiButton(BTN_HIGH_MINUS, col1Btn, maxY, btnW, btnH, "-"));
     buttonList.add(new GuiButton(BTN_HIGH_PLUS, col2Btn, maxY, btnW, btnH, "+"));
 
-    // Close button
-    buttonList.add(new GuiButton(BTN_CLOSE, guiLeft + GUI_WIDTH / 2 - 40,
-        guiTop + GUI_HEIGHT - 20, 80, 16, "Close"));
+    // The switch, as on a real thermostat, and Close
+    buttonList.add(new GuiButton(BTN_SWITCH, guiLeft + 14, guiTop + GUI_HEIGHT - 20, 100, 16,
+        switchLabel()));
+    buttonList.add(new GuiButton(BTN_CLOSE, guiLeft + GUI_WIDTH - 94, guiTop + GUI_HEIGHT - 20,
+        80, 16, "Close"));
   }
 
   @Override
@@ -163,8 +166,15 @@ public class HvacZoneThermostatGui extends GuiScreen {
   protected void actionPerformed(GuiButton button) throws IOException {
     int low = thermostat.getTargetTempLow();
     int high = thermostat.getTargetTempHigh();
+    int switchMode = thermostat.getSwitchMode();
 
     switch (button.id) {
+      case BTN_SWITCH:
+        // Auto, Heat, Cool, Off, round again. Shown at once; the server's sync confirms it.
+        switchMode = (switchMode + 1) % HvacStatus.SWITCH_NAMES.length;
+        thermostat.setSwitchMode(switchMode);
+        button.displayString = switchLabel();
+        break;
       case BTN_LOW_MINUS:
         low = Math.max(0, low - TEMP_STEP);
         break;
@@ -185,7 +195,12 @@ public class HvacZoneThermostatGui extends GuiScreen {
     }
 
     // Reuse the same config packet — the handler checks both TE types
-    CsmHvac.NETWORK.sendToServer(new HvacThermostatConfigPacket(blockPos, low, high));
+    CsmHvac.NETWORK.sendToServer(new HvacThermostatConfigPacket(blockPos, low, high,
+        switchMode));
+  }
+
+  private String switchLabel() {
+    return "Mode: " + HvacStatus.SWITCH_NAMES[thermostat.getSwitchMode()];
   }
 
   @Override

@@ -70,6 +70,7 @@ public class TileEntityHvacThermostatRenderer
     private int lastRoundedRoom = Integer.MIN_VALUE;
     private int lastCallingMode = -1;
     private boolean lastCalling = false;
+    private int lastSwitchMode = -1;
     private String roomTempStr = "";
     private int roomTempWidth;
     private int lastTargetLow = -1;
@@ -115,6 +116,7 @@ public class TileEntityHvacThermostatRenderer
     int targetHigh = te.getTargetTempHigh();
     boolean calling = te.isCalling();
     int callingMode = te.getCallingMode();
+    int switchMode = te.getSwitchMode();
     int roundedRoom = Math.round(roomTemp);
 
     DisplayCache cache = displayCaches.get(tileEntity);
@@ -171,11 +173,17 @@ public class TileEntityHvacThermostatRenderer
       cache.roomTempWidth = fr.getStringWidth(cache.roomTempStr);
     }
 
-    // Cache setpoint string — only rebuild when setpoints change
-    if (targetLow != cache.lastTargetLow || targetHigh != cache.lastTargetHigh) {
+    // Cache setpoint string — only rebuild when setpoints or the switch change. The line shows
+    // what the switch lets it do, as a real thermostat's display does.
+    if (targetLow != cache.lastTargetLow || targetHigh != cache.lastTargetHigh
+        || switchMode != cache.lastSwitchMode) {
       cache.lastTargetLow = targetLow;
       cache.lastTargetHigh = targetHigh;
-      cache.setpointLine = "Set: " + targetLow + "-" + targetHigh + "\u00B0F";
+      cache.lastSwitchMode = switchMode;
+      cache.setpointLine = switchMode == HvacStatus.SWITCH_OFF ? "System Off"
+          : switchMode == HvacStatus.SWITCH_HEAT ? "Heat: " + targetLow + "\u00B0F"
+          : switchMode == HvacStatus.SWITCH_COOL ? "Cool: " + targetHigh + "\u00B0F"
+          : "Set: " + targetLow + "-" + targetHigh + "\u00B0F";
       cache.setpointWidth = fr.getStringWidth(cache.setpointLine);
     }
 

@@ -12,14 +12,17 @@ public class HvacThermostatConfigPacket implements IMessage {
   private BlockPos pos;
   private int targetTempLow;
   private int targetTempHigh;
+  private int switchMode;
 
   public HvacThermostatConfigPacket() {
   }
 
-  public HvacThermostatConfigPacket(BlockPos pos, int targetTempLow, int targetTempHigh) {
+  public HvacThermostatConfigPacket(BlockPos pos, int targetTempLow, int targetTempHigh,
+      int switchMode) {
     this.pos = pos;
     this.targetTempLow = targetTempLow;
     this.targetTempHigh = targetTempHigh;
+    this.switchMode = switchMode;
   }
 
   @Override
@@ -27,6 +30,7 @@ public class HvacThermostatConfigPacket implements IMessage {
     this.pos = BlockPos.fromLong(buf.readLong());
     this.targetTempLow = buf.readInt();
     this.targetTempHigh = buf.readInt();
+    this.switchMode = buf.readByte();
   }
 
   @Override
@@ -34,6 +38,7 @@ public class HvacThermostatConfigPacket implements IMessage {
     buf.writeLong(this.pos.toLong());
     buf.writeInt(this.targetTempLow);
     buf.writeInt(this.targetTempHigh);
+    buf.writeByte(this.switchMode);
   }
 
   public BlockPos getPos() {
@@ -46,5 +51,9 @@ public class HvacThermostatConfigPacket implements IMessage {
 
   public int getTargetTempHigh() {
     return targetTempHigh;
+  }
+
+  public int getSwitchMode() {
+    return switchMode;
   }
 }
