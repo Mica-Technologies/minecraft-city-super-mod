@@ -52,6 +52,8 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
   static final String NBT_TOTAL_UNITS = "tU";
   static final String NBT_TRIM_HEAT = "trH";
   static final String NBT_TRIM_COOL = "trC";
+  /** The switch (Auto, Heat, Cool, Off); absent, as on every thermostat before it, is Auto. */
+  static final String NBT_SWITCH = "sw";
   /** Retired keys (the ramp accumulator) removed on load. */
   static final String OLD_NBT_RAMP_TICKS = "rT";
   static final String LEGACY_OLD_NBT_RAMP_TICKS = "rampTicks";
@@ -66,6 +68,7 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
   protected boolean temperatureKnown;
   protected boolean isCalling;
   protected int callingMode = HvacStatus.MODE_IDLE;
+  protected int switchMode = HvacStatus.SWITCH_AUTO;
   protected int blockedMode = HvacStatus.MODE_IDLE;
   protected int outputPercent;
   protected int statusFlags;
@@ -243,6 +246,7 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
     isCalling = readBool(compound, NBT_IS_CALLING, LEGACY_NBT_IS_CALLING);
     callingMode = readInt(compound, NBT_CALLING_MODE, LEGACY_NBT_CALLING_MODE);
     blockedMode = compound.getInteger(NBT_BLOCKED_MODE);
+    switchMode = Math.max(0, Math.min(HvacStatus.SWITCH_OFF, compound.getInteger(NBT_SWITCH)));
     outputPercent = readInt(compound, NBT_OUTPUT, LEGACY_NBT_OUTPUT);
     statusFlags = compound.getInteger(NBT_FLAGS);
     capacityPercent = compound.hasKey(NBT_CAPACITY) ? compound.getInteger(NBT_CAPACITY) : -1;
@@ -278,6 +282,7 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
     compound.setBoolean(NBT_IS_CALLING, isCalling);
     compound.setInteger(NBT_CALLING_MODE, callingMode);
     compound.setInteger(NBT_BLOCKED_MODE, blockedMode);
+    compound.setInteger(NBT_SWITCH, switchMode);
     compound.setInteger(NBT_OUTPUT, outputPercent);
     compound.setInteger(NBT_FLAGS, statusFlags);
     compound.setInteger(NBT_CAPACITY, capacityPercent);
@@ -355,6 +360,19 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
   @Override
   public int getTargetTempHigh() {
     return targetTempHigh;
+  }
+
+  @Override
+  public int getSwitchMode() {
+    return switchMode;
+  }
+
+  /** Sets the switch (Auto, Heat, Cool, Off); the control loop takes it up on its next step. */
+  public void setSwitchMode(int switchMode) {
+    this.switchMode = Math.max(0, Math.min(HvacStatus.SWITCH_OFF, switchMode));
+    if (world != null && !world.isRemote) {
+      markDirtySync(world, pos, true);
+    }
   }
 
   public void setTargetTempHigh(int targetTempHigh) {

@@ -13,6 +13,18 @@ public final class HvacStatus {
   public static final int MODE_HEATING = 1;
   public static final int MODE_COOLING = 2;
 
+  /**
+   * A thermostat's switch, as on a real one. Auto heats or cools to hold the range (what every
+   * thermostat did before the switch existed, and still the default); Heat and Cool do only that;
+   * Off does nothing. A primary's switch governs its whole system, a zone's only its own rooms.
+   */
+  public static final int SWITCH_AUTO = 0;
+  public static final int SWITCH_HEAT = 1;
+  public static final int SWITCH_COOL = 2;
+  public static final int SWITCH_OFF = 3;
+  /** The switch positions' names, by value. */
+  public static final String[] SWITCH_NAMES = {"Auto", "Heat", "Cool", "Off"};
+
   /** The thermostat is not in an enclosed room (it sees the sky, or the room has a hole). */
   public static final int FLAG_NOT_ENCLOSED = 1;
   /** The thermostat's room is too large to condition (a cave, a vast open hall). */
@@ -33,6 +45,18 @@ public final class HvacStatus {
   public static final int FLAG_UNITS_UNCONNECTED = 1 << 8;
   /** Part of the room is in an unloaded chunk; the reading is the last one saved. */
   public static final int FLAG_WAITING_FOR_CHUNKS = 1 << 9;
+  /** A zone whose primary thermostat is switched off, so its system is off. */
+  public static final int FLAG_SYSTEM_OFF = 1 << 10;
+
+  /** Whether a switch position lets its thermostat heat. */
+  public static boolean switchHeats(int switchMode) {
+    return switchMode == SWITCH_AUTO || switchMode == SWITCH_HEAT;
+  }
+
+  /** Whether a switch position lets its thermostat cool. */
+  public static boolean switchCools(int switchMode) {
+    return switchMode == SWITCH_AUTO || switchMode == SWITCH_COOL;
+  }
 
   private HvacStatus() {
   }

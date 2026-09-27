@@ -35,4 +35,7 @@ public interface IHvacThermostatDisplay {
    * Synced to client via NBT so the GUI and TESR can display the correct status.
    */
   int getCallingMode();
+
+  /** The thermostat's switch: one of {@link HvacStatus}'s {@code SWITCH_} values. */
+  int getSwitchMode();
 }
