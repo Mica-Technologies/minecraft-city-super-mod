@@ -378,6 +378,21 @@ def _plate_box(p, z0, z1):
     return {"from": [r4(x0), r4(y0), r4(z0)], "to": [r4(x1), r4(y1), r4(z1)], "faces": faces}
 
 
+# Every element carries an explicit zero rotation. Vanilla's FaceBakery squares up a face whose
+# element has no rotation (applyFacing rebuilds its corners from their bounding box, along the
+# nearest axis), which is harmless at the four cardinal facings but flattens a face turned 45
+# degrees by the blockstate onto one side of its block: the diagonal facings drew the plate and
+# the marker posts square to the grid while the legend, baked separately, stood turned. A zero
+# rotation is drawn exactly as none is, and skips that step.
+_ZERO_TURN = {"angle": 0, "axis": "y", "origin": [8, 0, 8]}
+
+
+def _turnable(elements):
+    for e in elements:
+        e.setdefault("rotation", dict(_ZERO_TURN))
+    return elements
+
+
 def _gui_scale(h_units):
     return r4(0.625 * min(1.0, 24.0 / max(h_units, 16.0)))
 
@@ -388,7 +403,7 @@ def _sign_model(p, elements):
     return {"credit": "CSM mile marker %s (numbers drawn by MileMarkerBakedModel); "
                       "gen_road_markers.py" % p["code"],
             "textures": {"0": BLANK},
-            "elements": elements,
+            "elements": _turnable(elements),
             "display": {"gui": {"rotation": [0, 180, 0], "scale": [s, s, s]},
                         "fixed": {"rotation": [0, 180, 0], "scale": [s, s, s]}}}
 
@@ -920,7 +935,7 @@ def _device_model(elements, textures, credit):
     return {"credit": credit + "; gen_road_markers.py",
             "ambientocclusion": False,
             "textures": dict(textures, particle=textures.get("post", textures.get("body"))),
-            "elements": elements,
+            "elements": _turnable(elements),
             "display": {"gui": {"rotation": [10, 200, 0], "translation": [0, r4(-(cy - 8) * s), 0],
                                 "scale": [s, s, s]},
                         "fixed": {"rotation": [0, 180, 0], "translation": [0, r4(-(cy - 8) * s), 0],
