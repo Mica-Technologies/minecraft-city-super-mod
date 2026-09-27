@@ -1288,6 +1288,520 @@ for start, end in zip(REGIONS, REGIONS[1:]):
 
 
 # ------------------------------------------------------------------------------------------
+# The nursery, garden centre and farm: more planters, the benches and stock a plant nursery is
+# laid out with, and a small farm's rows, compost and barrow. Plants for them are the potted_
+# blocks above; nothing here is a potted plant again.
+# ------------------------------------------------------------------------------------------
+TERRACOTTA = [(204, 112, 72), (190, 100, 64), (174, 90, 58), (156, 80, 52)]
+GLAZE = [(52, 92, 168), (42, 78, 150), (34, 66, 132), (26, 54, 112)]
+OAK = [(150, 110, 70), (136, 98, 62), (120, 86, 54), (104, 74, 46)]
+GALVANIZED = [(182, 186, 186), (166, 170, 172), (150, 154, 156), (134, 138, 140)]
+PLASTIC = [(46, 46, 48), (40, 40, 42), (34, 34, 36)]
+
+
+def rim_top(palette, lo, hi, seed, width=1, rim=None):
+    """Soil in a pot seen from above, with the pot's rim as a ring at pixels lo .. hi - 1: the up
+    face of a rim box from lo to hi samples exactly that window, so the ring lies on its edge."""
+    img = noise_tex(SOIL, seed, grain=0.8)
+    ring = rim if rim is not None else noise_tex(palette, seed + 1, grain=0.5)
+    px, rp = img.load(), ring.load()
+    for y in range(lo, hi):
+        for x in range(lo, hi):
+            if min(x - lo, y - lo, hi - 1 - x, hi - 1 - y) < width:
+                px[x, y] = rp[x, y]
+    return img
+
+
+def banded(palette, seed, rows=(), shade=0.8):
+    """A noise texture darkened along the given rows (a pot's moulded bands)."""
+    img = noise_tex(palette, seed, grain=0.6)
+    px = img.load()
+    for y in rows:
+        for x in range(16):
+            px[x, y] = clamp(tuple(c * shade for c in px[x, y][:3])) + (255,)
+    return img
+
+
+def glaze_tex(seed):
+    """A reactive glaze: deep blue, lighter where it thinned over the shoulder, with speckles."""
+    rng = random.Random(seed)
+    img = noise_tex(GLAZE, seed, grain=0.5)
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            r, g, b, _ = px[x, y]
+            if y < 5:  # the lighter band where the glaze ran thin
+                r, g, b = r + 30, g + 36, b + 40
+            if rng.random() < 0.06:
+                r, g, b = r + 60, g + 60, b + 50
+            px[x, y] = clamp((r, g, b)) + (255,)
+    return img
+
+
+def staves_tex(seed):
+    """Barrel staves: upright boards with dark joints every 3 pixels."""
+    img = noise_tex(OAK, seed, grain=0.5)
+    px = img.load()
+    for x in range(0, 16, 3):
+        for y in range(16):
+            px[x, y] = clamp(OAK[-1]) + (255,)
+    return img
+
+
+def mesh_tex():
+    """A nursery bench's expanded steel mesh: diamonds of galvanized strand, open between."""
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            if (x + y) % 4 == 0 or (x - y) % 4 == 0:
+                px[x, y] = clamp(GALVANIZED[(x // 4 + y) % 3]) + (255,)
+    return img
+
+
+def pot_stack_tex(seed):
+    """Nested black pots seen from the side: a lip every 2 pixels, each a little lighter."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            v = 38 + rng.randint(-3, 3) + (16 if y % 2 == 0 else 0)
+            px[x, y] = (v, v, v + 2, 255)
+    return img
+
+
+def pot_mouth_tex():
+    """The top pot of a stack, seen from above: its rim, and the dark inside nested pots."""
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            edge = min(x, y, 15 - x, 15 - y)
+            v = 56 if edge < 2 else (26 if edge < 5 else 18 + (edge % 2) * 6)
+            px[x, y] = (v, v, v + 2, 255)
+    return img
+
+
+def tray_tex(seed):
+    """A plug tray from above: 2 px cells in black plastic, compost in each, a seedling's green
+    leaves in most."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            if x % 2 == 0 or y % 2 == 0:
+                px[x, y] = (30, 30, 32, 255)
+            else:
+                px[x, y] = clamp(SOIL[rng.randrange(4)]) + (255,)
+                if rng.random() < 0.75:
+                    px[x, y] = clamp((96 + rng.randint(-12, 12), 164, 70)) + (255,)
+    return img
+
+
+def seedlings_tex(seed):
+    """A row of seedlings from the side: pairs of seed leaves on short stems."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for i in range(8):
+        x = 1 + i * 2
+        h = rng.randint(1, 2)
+        for k in range(h):
+            _dot(px, x, 15 - k, (120, 160, 84))
+        for dx in (-1, 1):
+            _dot(px, x + dx, 15 - h, (104, 172, 72) if dx < 0 else (126, 186, 86))
+        _dot(px, x, 15 - h, (112, 176, 78))
+    return img
+
+
+def compost_tex(seed):
+    """Compost: dark crumbly humus flecked with scraps (leaves, peel, eggshell)."""
+    return noise_tex([(84, 62, 42), (70, 52, 34), (58, 42, 28), (44, 32, 22)], seed, cells=8,
+                     grain=0.9, speckle=0.12,
+                     speck_colour=[(104, 132, 56), (196, 132, 44), (222, 214, 190), (140, 96, 52)])
+
+
+def tilled_tex(seed):
+    """Tilled soil from above: furrows along the row."""
+    img = noise_tex(SOIL, seed, grain=0.8)
+    px = img.load()
+    for y in range(0, 16, 4):
+        for x in range(16):
+            px[x, y] = clamp(tuple(c * 0.72 for c in px[x, y][:3])) + (255,)
+    return img
+
+
+def tomato_tex(seed):
+    """A staked tomato plant from the side: a stem up the middle, leaves off it, trusses of red
+    and green fruit."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    leaf = [(70, 122, 52), (58, 104, 44), (84, 138, 60)]
+    for y in range(1, 16):
+        _dot(px, 8 + (0.6 if y % 5 < 2 else 0), y, (82, 120, 54))
+    for _ in range(80):
+        y = rng.randrange(1, 15)
+        spread = 2 + (15 - abs(y - 8)) * 0.35
+        _dot(px, 8 + rng.uniform(-spread, spread), y, leaf[rng.randrange(3)])
+    for cx, cy, ripe in ((5, 11, True), (11, 9, True), (6, 6, False), (10, 4, True),
+                         (4, 8, False), (12, 13, False)):
+        c = [(214, 44, 36), (190, 30, 28)] if ripe else [(150, 180, 70), (126, 160, 58)]
+        for ox, oy in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            _dot(px, cx + ox, cy + oy, c[(ox + oy) % 2])
+    return img
+
+
+def trellis_tex(seed):
+    """A timber lattice, square on the diagonal, with a clematis climbing it: stems, leaves, and
+    big purple flowers."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            if (x + y) % 8 in (0, 1) or (x - y) % 8 in (0, 1):
+                px[x, y] = clamp(STAKE[(x + 2 * y) % 4]) + (255,)
+    leaf = [(64, 116, 50), (52, 100, 42), (80, 132, 58)]
+    x = 7.0
+    for y in range(15, -1, -1):
+        x += rng.uniform(-0.8, 0.8)
+        x = max(3, min(12, x))
+        _dot(px, x, y, (78, 104, 50))
+        for _ in range(3):
+            _dot(px, x + rng.uniform(-3.5, 3.5), y + rng.uniform(-1, 1), leaf[rng.randrange(3)])
+    for cx, cy in ((4, 3), (11, 6), (6, 10), (12, 13), (9, 1)):
+        _head(px, cx, cy + 1, [".a.", "aya", ".a."],
+              {"a": (132, 72, 184), "y": (236, 222, 170)})
+    return img
+
+
+def lettuce_tex(seed):
+    return leafy([(150, 204, 92), (128, 186, 76), (106, 166, 62), (86, 144, 50)], seed)
+
+
+TEXTURES.update({
+    "terracotta": lambda: banded(TERRACOTTA, 81, rows=(3,)),
+    "terracotta_top_small": lambda: rim_top(TERRACOTTA, 4, 12, 82),
+    "terracotta_top_large": lambda: rim_top(TERRACOTTA, 2, 14, 83),
+    "glazed_urn": lambda: glaze_tex(84),
+    "glazed_urn_top": lambda: rim_top(GLAZE, 4, 12, 85, rim=glaze_tex(84)),
+    "barrel_staves": lambda: staves_tex(86),
+    "barrel_top": lambda: rim_top(OAK, 1, 15, 87, width=2, rim=staves_tex(86)),
+    "galvanized": lambda: noise_tex(GALVANIZED, 88, grain=0.7),
+    "bench_mesh": mesh_tex,
+    "pot_stack": lambda: pot_stack_tex(89),
+    "pot_mouth": pot_mouth_tex,
+    "tray_plastic": lambda: noise_tex(PLASTIC, 90, grain=0.8),
+    "seedling_tray": lambda: tray_tex(91),
+    "seedlings": lambda: seedlings_tex(92),
+    "compost": lambda: compost_tex(93),
+    "weathered_wood": lambda: noise_tex([(158, 142, 118), (142, 126, 104), (126, 112, 92),
+                                         (110, 96, 80)], 94, grain=0.6),
+    "barrow_green": lambda: noise_tex([(70, 128, 72), (60, 114, 62), (52, 100, 54)], 95,
+                                      grain=0.7),
+    "tire": lambda: solid((34, 34, 36)),
+    "tilled_soil": lambda: tilled_tex(97),
+    "lettuce": lambda: lettuce_tex(98),
+    "tomato_plant": lambda: tomato_tex(99),
+    "trellis_clematis": lambda: trellis_tex(100),
+})
+
+
+def wbox(frm, to, tex, faces=("north", "south", "east", "west", "up", "down"), per=None):
+    """box(), for an element reaching past the cell: each face's UV window is slid into 0..16
+    whole rather than clamped, so it keeps its size instead of stretching."""
+    el = box([min(15.99, max(0, v)) for v in frm], [min(16, max(0.01, v)) for v in to], tex,
+             faces, per)
+    el["from"], el["to"] = [round(v, 3) for v in frm], [round(v, 3) for v in to]
+    x0, y0, z0 = frm
+    x1, y1, z1 = to
+    raw = {"north": [16 - x1, 16 - y1, 16 - x0, 16 - y0], "south": [x0, 16 - y1, x1, 16 - y0],
+           "east": [16 - z1, 16 - y1, 16 - z0, 16 - y0], "west": [z0, 16 - y1, z1, 16 - y0],
+           "up": [x0, z0, x1, z1], "down": [x0, 16 - z1, x1, 16 - z0]}
+    for f in el["faces"]:
+        u = raw[f]
+        for a, b in ((0, 2), (1, 3)):
+            if u[a] < 0:
+                u[b] -= u[a]
+                u[a] = 0
+            if u[b] > 16:
+                u[a] -= u[b] - 16
+                u[b] = 16
+        el["faces"][f]["uv"] = [round(v, 3) for v in u]
+    return el
+
+
+def plane(frm, to, tex, uv=(0, 0, 16, 16), angle=0, origin=None):
+    """A zero-thickness card, drawn from both sides: a crop plant, a seedling row, a trellis."""
+    axis_z = frm[2] == to[2]
+    faces = ("north", "south") if axis_z else ("east", "west")
+    el = {"from": list(frm), "to": list(to), "shade": False,
+          "faces": {f: face(tex, list(uv)) for f in faces}}
+    if angle:
+        el["rotation"] = {"origin": origin or [8, 8, 8], "axis": "y", "angle": angle,
+                          "rescale": False}
+    return el
+
+
+def facing_prop(registry, box6, names, models, collides=True, crop=False):
+    java = ('new BlockParkCrop("%s", new int[]{%s})' if crop else
+            'new BlockParkFacing("%s", new int[]{%s}, ' + ("true" if collides else "false") + ")")
+    add(registry, java % (registry, ", ".join(str(v) for v in box6)), names, models,
+        facing_state(registry))
+
+
+# --- terracotta pots: a tapered body under a rolled rim ---
+for size, (foot, body, rim, height), names in (
+        ("small", ((5.5, 0, 2), (5, 2, 6), (4, 6, 8), 8),
+         ("Small Terracotta Pot", "Kleiner Terrakottatopf", "Maceta de terracota pequeña",
+          "Liten terrakottakruka")),
+        ("large", ((4, 0, 3), (3, 3, 11), (2, 11, 13), 13),
+         ("Large Terracotta Pot", "Großer Terrakottatopf", "Maceta de terracota grande",
+          "Stor terrakottakruka"))):
+    reg = "planter_terracotta_" + size
+    tex = {"clay": T("terracotta"), "top": T("terracotta_top_" + size),
+           "particle": T("terracotta")}
+    (fi, fy0, fy1), (bi, by0, by1), (ri, ry0, ry1) = foot, body, rim
+    sides = ("north", "south", "east", "west")
+    els = [box([fi, fy0, fi], [16 - fi, fy1, 16 - fi], "clay", faces=sides + ("down",)),
+           box([bi, by0, bi], [16 - bi, by1, 16 - bi], "clay", faces=sides + ("down",)),
+           box([ri, ry0, ri], [16 - ri, ry1, 16 - ri], "clay", per={"up": "top"})]
+    prop(reg, "PLANTER", height, int(ri), names, {reg: model(tex, els)}, simple_state(reg))
+
+# --- a glazed ceramic urn: bellied, a narrow neck, a thick lip ---
+urn_tex = {"glaze": T("glazed_urn"), "top": T("glazed_urn_top"), "particle": T("glazed_urn")}
+prop("planter_glazed_urn", "PLANTER", 14, 2,
+     ("Glazed Ceramic Urn", "Glasierte Keramikurne", "Urna de cerámica esmaltada",
+      "Glaserad keramikurna"),
+     {"planter_glazed_urn": model(urn_tex, [
+         box([5, 0, 5], [11, 1.5, 11], "glaze", faces=("north", "south", "east", "west", "down")),
+         box([3.5, 1.5, 3.5], [12.5, 4, 12.5], "glaze",
+             faces=("north", "south", "east", "west", "down")),
+         box([2.5, 4, 2.5], [13.5, 10, 13.5], "glaze"),
+         box([3.5, 10, 3.5], [12.5, 12, 12.5], "glaze"),
+         box([4, 12, 4], [12, 14, 12], "glaze", per={"up": "top"}),
+     ])}, simple_state("planter_glazed_urn"))
+
+# --- a concrete bowl on a pedestal, planted with bedding flowers ---
+bowl_tex = {"concrete": T("planter_concrete"), "top": T("planter_concrete_top"),
+            "flowers": T("mixed_basket"), "particle": T("planter_concrete")}
+prop("planter_concrete_bowl", "PLANTER", 8, 1,
+     ("Concrete Bowl Planter", "Beton-Pflanzschale", "Jardinera de cuenco de hormigón",
+      "Planteringsskål av betong"),
+     {"planter_concrete_bowl": model(bowl_tex, [
+         box([5, 0, 5], [11, 1, 11], "concrete"),
+         box([6, 1, 6], [10, 3, 10], "concrete", faces=("north", "south", "east", "west")),
+         box([3, 3, 3], [13, 5, 13], "concrete"),
+         box([1, 5, 1], [15, 8, 15], "concrete", per={"up": "top"}),
+         # Bedding flowers mounded in it, a little short of its rim.
+         box([2, 8, 2], [14, 10.5, 14], "flowers", faces=("north", "south", "east", "west", "up")),
+         box([4, 10.5, 4], [12, 11.5, 12], "flowers", faces=("north", "south", "east", "west", "up")),
+     ], ao=False)}, simple_state("planter_concrete_bowl"))
+
+# --- a half whiskey barrel: oak staves, two iron hoops standing just proud of them ---
+barrel_tex = {"staves": T("barrel_staves"), "top": T("barrel_top"), "iron": T("steel"),
+              "particle": T("barrel_staves")}
+hoop = ("north", "south", "east", "west", "up", "down")
+prop("planter_half_barrel", "PLANTER", 10, 1,
+     ("Half Barrel Planter", "Halbfass-Pflanzkübel", "Jardinera de medio barril",
+      "Halvtunna för plantering"),
+     {"planter_half_barrel": model(barrel_tex, [
+         box([1.5, 0, 1.5], [14.5, 10, 14.5], "staves", per={"up": "top"}),
+         box([1.2, 1.5, 1.2], [14.8, 2.5, 14.8], "iron", faces=hoop[:4] + ("up", "down")),
+         box([1.2, 7, 1.2], [14.8, 8, 14.8], "iron", faces=hoop[:4] + ("up", "down")),
+     ])}, simple_state("planter_half_barrel"))
+
+# --- a window box: a cedar trough on two brackets against the wall (+Z), trailing flowers ---
+wbox_tex = {"wood": T("planter_wood"), "iron": T("steel"), "flowers": T("mixed_basket"),
+            "trail": T("petunia"), "particle": T("planter_wood")}
+facing_prop("window_box_flowers", [1, 0, 10, 15, 10, 16],
+            ("Window Box with Flowers", "Blumenkasten", "Jardinera de ventana con flores",
+             "Blomlåda"),
+            {"window_box_flowers": model(wbox_tex, [
+                box([2.5, 0, 14], [3.5, 2, 16], "iron", faces=("north", "east", "west", "down")),
+                box([12.5, 0, 14], [13.5, 2, 16], "iron", faces=("north", "east", "west", "down")),
+                box([1, 2, 10], [15, 7, 16], "wood"),
+                # The flowers heaped in the box, and trailing over its front.
+                box([1.5, 7, 10.5], [14.5, 10, 15.5], "flowers",
+                    faces=("north", "east", "west", "up")),
+                plane([1, 4, 9.5], [15, 8, 9.5], "trail", uv=(1, 8, 15, 12)),
+            ], ao=False)})
+
+# --- the nursery bench: a steel frame a block high, an expanded-mesh top; joins into a run ---
+bench_tex = {"steel": T("galvanized"), "mesh": T("bench_mesh"), "particle": T("galvanized")}
+RAIL = (14.5, 16)
+bench_post = model(bench_tex, [
+    {"from": [0, 15.6, 0], "to": [16, 15.6, 16], "shade": True,
+     "faces": {"up": face("mesh", [0, 0, 16, 16]), "down": face("mesh", [0, 0, 16, 16])}},
+])
+# A side's rail stops short of the corners (joining() draws corner pieces), and each side
+# carries the leg at its left-hand corner, so a run has one leg a block along each edge and
+# every corner of the whole bench has one.
+bench_side = model(bench_tex, [
+    box([1, RAIL[0], 0], [15, RAIL[1], 1], "steel", faces=("north", "south", "up", "down")),
+    box([1, 0, 1], [2.5, RAIL[0], 2.5], "steel", faces=("north", "south", "east", "west")),
+])
+bench_corner = model(bench_tex, [box([15, RAIL[0], 0], [16, RAIL[1], 1], "steel")])
+bench_item = ([box([0, RAIL[0], 0], [16, RAIL[1], 1], "steel"),
+               box([0, RAIL[0], 15], [16, RAIL[1], 16], "steel"),
+               box([0, RAIL[0], 1], [1, RAIL[1], 15], "steel", faces=hoop[:4] + ("up", "down")),
+               box([15, RAIL[0], 1], [16, RAIL[1], 15], "steel", faces=hoop[:4] + ("up", "down"))]
+              + [box([x, 0, z], [x + 1.5, RAIL[0], z + 1.5], "steel",
+                     faces=("north", "south", "east", "west"))
+                 for x in (1, 13.5) for z in (1, 13.5)])
+joining("nursery_bench", "TABLE", 16, 16,
+        ("Nursery Growing Bench", "Gärtnerei-Kulturtisch", "Mesa de cultivo de vivero",
+         "Odlingsbord för plantskola"),
+        bench_post, bench_side, item_extra=bench_item, side_when="false", corner=bench_corner)
+
+# --- the potting bench: a cedar worktop with a splashback, a shelf of pots underneath ---
+pb_tex = {"wood": T("planter_wood"), "legs": T("stake"), "soil": T("soil"),
+          "clay": T("terracotta"), "top": T("terracotta_top_small"), "pot": T("nursery_pot"),
+          "pot_top": T("nursery_pot_top"), "particle": T("planter_wood")}
+def full_top(el):
+    """A small pot's top: its whole rim-and-soil texture, not the window under the pot."""
+    el["faces"]["up"]["uv"] = [4, 4, 12, 12]
+    return el
+
+
+legs = [box([x, 0, z], [x + 1.5, 13, z + 1.5], "legs", faces=("north", "south", "east", "west"))
+        for x in (0.5, 14) for z in (3.5, 14)]
+facing_prop("potting_bench", [0, 0, 3, 16, 16, 16],
+            ("Potting Bench", "Pflanztisch", "Mesa de trasplante", "Planteringsbänk"),
+            {"potting_bench": model(pb_tex, legs + [
+                box([0, 3, 4], [16, 4, 15.5], "wood"),
+                box([0, 13, 3], [16, 14.5, 16], "wood"),
+                box([0, 14.5, 15], [16, 16, 16], "wood", faces=hoop[:5]),
+                # A heap of potting soil, and pots on the worktop and the shelf below.
+                box([1.5, 14.5, 7], [7.5, 15.5, 13.5], "soil", faces=hoop[:5]),
+                box([2.5, 15.5, 8], [6, 16, 12], "soil", faces=hoop[:5]),
+                box([10, 14.5, 7], [13, 16, 10], "clay", faces=hoop[:4]),
+                full_top(wbox([9.5, 16, 6.5], [13.5, 17, 10.5], "clay", per={"up": "top"})),
+                full_top(box([2, 4, 6], [7, 7.5, 11], "pot", per={"up": "pot_top"})),
+                full_top(box([9, 4, 7], [13, 7, 11], "pot", per={"up": "pot_top"})),
+            ])})
+
+# --- stacks of empty nursery pots, nested ---
+stack_tex = {"pot": T("pot_stack"), "mouth": T("pot_mouth"), "particle": T("nursery_pot")}
+
+
+def pot_column(x0, z0, w, h):
+    el = box([x0, 0, z0], [x0 + w, h, z0 + w], "pot", faces=("north", "south", "east", "west",
+                                                             "up"))
+    el["faces"]["up"] = face("mouth", [0, 0, 16, 16])
+    return el
+
+
+prop("nursery_pot_stack", "PLANTER", 12, 1,
+     ("Stacked Nursery Pots", "Gestapelte Pflanztöpfe", "Macetas de vivero apiladas",
+      "Staplade plantskolekrukor"),
+     {"nursery_pot_stack": model(stack_tex, [
+         pot_column(1.5, 1.5, 6, 10), pot_column(9, 2, 5.5, 7), pot_column(4.5, 9, 6, 12),
+     ])}, simple_state("nursery_pot_stack"))
+
+# --- seedling flats: two plug trays of seedlings, rows of seed leaves along each ---
+flat_tex = {"tray": T("tray_plastic"), "cells": T("seedling_tray"), "sprouts": T("seedlings"),
+            "particle": T("seedling_tray")}
+flats = []
+for x0, x1 in ((0.5, 7.75), (8.25, 15.5)):
+    flats.append(box([x0, 0, 0.5], [x1, 2, 15.5], "tray", per={"up": "cells"}))
+    for z in (2.5, 5.5, 8.5, 11.5, 14):
+        flats.append(plane([x0 + 0.25, 2, z], [x1 - 0.25, 5, z], "sprouts",
+                           uv=(x0 + 0.25, 13, x1 - 0.25, 16)))
+prop("seedling_flats", "PLANTER", 3, 0,
+     ("Seedling Flats", "Anzuchtschalen mit Sämlingen", "Bandejas de plántulas",
+      "Plantbrätten med småplantor"),
+     {"seedling_flats": model(flat_tex, flats, ao=False)}, simple_state("seedling_flats"))
+
+# --- a slatted compost bin, full of compost ---
+compost_tex_map = {"wood": T("weathered_wood"), "compost": T("compost"),
+                   "particle": T("weathered_wood")}
+compost = [box([x, 0, z], [x + 2, 14, z + 2], "wood") for x in (0, 14) for z in (0, 14)]
+for y in range(1, 13, 3):
+    compost += [box([2, y, 0.5], [14, y + 2, 1.5], "wood", faces=("north", "south", "up", "down")),
+                box([2, y, 14.5], [14, y + 2, 15.5], "wood",
+                    faces=("north", "south", "up", "down")),
+                box([0.5, y, 2], [1.5, y + 2, 14], "wood", faces=("east", "west", "up", "down")),
+                box([14.5, y, 2], [15.5, y + 2, 14], "wood", faces=("east", "west", "up", "down"))]
+compost.append(box([2, 0, 2], [14, 10, 14], "compost", faces=hoop[:5]))
+prop("compost_bin", "PLANTER", 14, 0,
+     ("Wooden Compost Bin", "Holzkomposter", "Compostador de madera", "Kompostlåda av trä"),
+     {"compost_bin": model(compost_tex_map, compost)}, simple_state("compost_bin"))
+
+# --- a wheelbarrow of soil: a green steel tray, the wheel at the front (north) ---
+barrow_tex = {"paint": T("barrow_green"), "steel": T("steel"), "tire": T("tire"),
+              "soil": T("soil"), "particle": T("barrow_green")}
+# The wheel is an exact octagon: a cross of two rectangles and the same cross turned 45 degrees
+# (a square and the square turned would be a star). The tyre is one flat colour, so where the
+# four put their sides on one plane they show the same pixels.
+WHEEL_C, WHEEL_R = (2.5, 2.75), 2.25
+WHEEL_H = WHEEL_R * math.tan(math.pi / 8)
+wheel = []
+for turn in (0, 45):
+    for dy, dz in ((WHEEL_H, WHEEL_R), (WHEEL_R, WHEEL_H)):
+        el = box([7, WHEEL_C[0] - dy, WHEEL_C[1] - dz], [9, WHEEL_C[0] + dy, WHEEL_C[1] + dz],
+                 "tire")
+        if turn:
+            el["rotation"] = {"origin": [8, WHEEL_C[0], WHEEL_C[1]], "axis": "x", "angle": turn,
+                              "rescale": False}
+        wheel.append(el)
+handle = [box([x, 6, 11], [x + 1, 7, 16], "steel", faces=("east", "west", "up", "down", "south"))
+          for x in (2.5, 12.5)]
+for h in handle:
+    h["rotation"] = {"origin": [h["from"][0], 6, 11], "axis": "x", "angle": -22.5,
+                     "rescale": False}
+facing_prop("wheelbarrow", [2, 0, 0, 14, 10, 16],
+            ("Wheelbarrow", "Schubkarre", "Carretilla", "Skottkärra"),
+            {"wheelbarrow": model(barrow_tex, [
+                box([7.5, 2, 2], [8.5, 6, 3], "steel", faces=("east", "west", "north", "south")),
+                box([3, 5, 2.5], [13, 6, 12], "paint", faces=("down", "north", "south", "east",
+                                                              "west")),
+                box([2.5, 6, 1.5], [13.5, 10, 2.5], "paint"),
+                box([2.5, 6, 11.5], [13.5, 10, 12.5], "paint"),
+                box([2.5, 6, 2.5], [3.5, 10, 11.5], "paint", faces=("east", "west", "up")),
+                box([12.5, 6, 2.5], [13.5, 10, 11.5], "paint", faces=("east", "west", "up")),
+                box([3.5, 6, 2.5], [12.5, 9, 11.5], "soil", faces=("up",)),
+                box([3.5, 0, 10], [4.5, 5, 11], "steel", faces=("north", "south", "east", "west")),
+                box([11.5, 0, 10], [12.5, 5, 11], "steel",
+                    faces=("north", "south", "east", "west")),
+            ] + wheel + handle)})
+
+# --- crop rows: a ridge of tilled soil along the row, and the crop on it ---
+row_soil = [box([0, 0, 2], [16, 2, 14], "soil", per={"up": "tilled"})]
+lettuce = []
+for x in (1, 6, 11):
+    for z in (3, 9):
+        lettuce += [box([x + 0.5, 2, z + 0.5], [x + 3.5, 4, z + 3.5], "leaf", faces=hoop[:5]),
+                    box([x + 1, 4, z + 1], [x + 3, 5, z + 3], "leaf", faces=hoop[:5])]
+facing_prop("crop_row_lettuce", [0, 0, 2, 16, 5, 14],
+            ("Lettuce Row", "Salatreihe", "Hilera de lechugas", "Salladsrad"),
+            {"crop_row_lettuce": model({"soil": T("soil"), "tilled": T("tilled_soil"),
+                                        "leaf": T("lettuce"), "particle": T("lettuce")},
+                                       row_soil + lettuce)}, crop=True)
+tomato = []
+for x in (3, 8, 13):
+    tomato += [box([x - 0.5, 2, 9], [x + 0.5, 16, 10], "stake", faces=hoop[:5]),
+               plane([x - 3.5, 2, 8], [x + 3.5, 16, 8], "plant", uv=(4.5, 2, 11.5, 16),
+                     angle=45, origin=[x, 8, 8]),
+               plane([x - 3.5, 2, 8], [x + 3.5, 16, 8], "plant", uv=(4.5, 2, 11.5, 16),
+                     angle=-45, origin=[x, 8, 8])]
+facing_prop("crop_row_tomato", [0, 0, 2, 16, 16, 14],
+            ("Staked Tomato Row", "Tomatenreihe mit Stäben", "Hilera de tomates con tutores",
+             "Tomatrad med stöd"),
+            {"crop_row_tomato": model({"soil": T("soil"), "tilled": T("tilled_soil"),
+                                       "stake": T("stake"), "plant": T("tomato_plant"),
+                                       "particle": T("tomato_plant")},
+                                      row_soil + tomato, ao=False)}, crop=True)
+
+# --- a garden trellis with a clematis on it, between two posts ---
+facing_prop("trellis_clematis", [0, 0, 7, 16, 16, 9],
+            ("Garden Trellis with Clematis", "Rankgitter mit Clematis",
+             "Enrejado de jardín con clemátide", "Spaljé med klematis"),
+            {"trellis_clematis": model({"post": T("stake"), "lattice": T("trellis_clematis"),
+                                        "particle": T("stake")}, [
+                box([0, 0, 7], [1.5, 16, 9], "post"),
+                box([14.5, 0, 7], [16, 16, 9], "post"),
+                plane([1.5, 0, 8], [14.5, 16, 8], "lattice", uv=(1.5, 0, 14.5, 16)),
+            ], ao=False)}, collides=False)
+
+
+# ------------------------------------------------------------------------------------------
 # Output
 # ------------------------------------------------------------------------------------------
 def dump(path, data):

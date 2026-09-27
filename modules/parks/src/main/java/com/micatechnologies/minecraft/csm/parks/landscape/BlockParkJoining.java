@@ -21,8 +21,9 @@ import net.minecraft.world.World;
 
 /**
  * A landscape block that joins its neighbours of the same family in the four horizontal
- * directions, as a fence does: hedges, the hoop fence round a tree pit, and raised planting beds
- * (which draw their walls only on the outside of a run, so a row of them is one long bed).
+ * directions, as a fence does: hedges, the hoop fence round a tree pit, raised planting beds
+ * (which draw their walls only on the outside of a run, so a row of them is one long bed) and the
+ * nursery bench.
  *
  * <p>The four sides are actual state, read from the neighbours and never stored, and the
  * multipart blockstate picks what to draw from them ({@code gen_park_plantings.py}).</p>
@@ -47,7 +48,12 @@ public class BlockParkJoining extends AbstractBlock {
     /** A gazebo railing: joins its own block, and runs into a post (a post prop) beside it. */
     RAIL(Material.WOOD, SoundType.WOOD, "axe", 1.5F, BlockRenderLayer.CUTOUT),
     /** A pergola's roof of beams and rafters, sitting on its posts; joins its own block only. */
-    PERGOLA(Material.WOOD, SoundType.WOOD, "axe", 2.0F, BlockRenderLayer.CUTOUT);
+    PERGOLA(Material.WOOD, SoundType.WOOD, "axe", 2.0F, BlockRenderLayer.CUTOUT),
+    /**
+     * A steel nursery bench, a block high so a pot stands on its top; joins its own block only,
+     * so a run of them is one long bench.
+     */
+    TABLE(Material.IRON, SoundType.METAL, "pickaxe", 2.0F, BlockRenderLayer.CUTOUT);
 
     final Material material;
     final SoundType sound;
@@ -145,7 +151,8 @@ public class BlockParkJoining extends AbstractBlock {
       return false;
     }
     BlockParkJoining o = (BlockParkJoining) other.getBlock();
-    return kind == Kind.BED || kind == Kind.PERGOLA || kind == Kind.RAIL ? o == this
+    return kind == Kind.BED || kind == Kind.PERGOLA || kind == Kind.RAIL || kind == Kind.TABLE
+        ? o == this
         : o.kind == kind;
   }
 

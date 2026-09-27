@@ -2,7 +2,7 @@
 
 Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings.
 
-!!! info "263 blocks in this tab"
+!!! info "278 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -48,6 +48,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Coast Redwood Log | `csm:tree_log_redwood_medium` | 2.0 | 5.0 | axe | 0 |
 | Coast Redwood Twig | `csm:tree_log_redwood_twig` | 2.0 | 5.0 | axe | 0 |
 | Colorado Blue Columbine | `csm:flower_columbine` |  |  |  |  |
+| Concrete Bowl Planter | `csm:planter_concrete_bowl` |  |  |  |  |
 | Concrete Planter | `csm:planter_concrete` |  |  |  |  |
 | Coontie | `csm:plant_coontie` |  |  |  |  |
 | Coreopsis | `csm:flower_coreopsis` |  |  |  |  |
@@ -97,9 +98,12 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Full Scots Pine Log | `csm:tree_log_pine_full` | 2.0 | 5.0 | axe | 0 |
 | Full Sweetgum Log | `csm:tree_log_sweetgum_full` | 2.0 | 5.0 | axe | 0 |
 | Full Weeping Willow Log | `csm:tree_log_willow_full` | 2.0 | 5.0 | axe | 0 |
+| Garden Trellis with Clematis | `csm:trellis_clematis` | 1.0 | 2.0 | axe | 0 |
 | Ginkgo Leaves | `csm:tree_leaves_ginkgo` | 0.2 | 1.0 |  | 0 |
 | Ginkgo Log | `csm:tree_log_ginkgo_medium` | 2.0 | 5.0 | axe | 0 |
 | Ginkgo Twig | `csm:tree_log_ginkgo_twig` | 2.0 | 5.0 | axe | 0 |
+| Glazed Ceramic Urn | `csm:planter_glazed_urn` |  |  |  |  |
+| Half Barrel Planter | `csm:planter_half_barrel` |  |  |  |  |
 | Harebell | `csm:flower_harebell` |  |  |  |  |
 | Heather | `csm:shrub_heather` |  |  |  |  |
 | Highbush Blueberry | `csm:shrub_highbush_blueberry` |  |  |  |  |
@@ -122,9 +126,11 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Japanese Maple Leaves | `csm:tree_leaves_maple_japanese` | 0.2 | 1.0 |  | 0 |
 | Japanese Maple Log | `csm:tree_log_maple_medium` | 2.0 | 5.0 | axe | 0 |
 | Japanese Maple Twig | `csm:tree_log_maple_twig` | 2.0 | 5.0 | axe | 0 |
+| Large Terracotta Pot | `csm:planter_terracotta_large` |  |  |  |  |
 | Lemon-scented Gum Leaves | `csm:tree_leaves_gum` | 0.2 | 1.0 |  | 0 |
 | Lemon-scented Gum Log | `csm:tree_log_gum_medium` | 2.0 | 5.0 | axe | 0 |
 | Lemon-scented Gum Twig | `csm:tree_log_gum_twig` | 2.0 | 5.0 | axe | 0 |
+| Lettuce Row | `csm:crop_row_lettuce` | 0.2 | 0.4 |  | 0 |
 | Linden Leaves | `csm:tree_leaves_linden` | 0.2 | 1.0 |  | 0 |
 | Linden Log | `csm:tree_log_linden_medium` | 2.0 | 5.0 | axe | 0 |
 | Linden Twig | `csm:tree_log_linden_twig` | 2.0 | 5.0 | axe | 0 |
@@ -146,6 +152,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Mountain Laurel | `csm:shrub_mountain_laurel` |  |  |  |  |
 | Mulch | `csm:ground_mulch` |  |  |  |  |
 | Mulched Tree Pit | `csm:tree_pit_mulch` |  |  |  |  |
+| Nursery Growing Bench | `csm:nursery_bench` |  |  |  |  |
 | Oxeye Daisy | `csm:flower_marguerite` |  |  |  |  |
 | Palm Log | `csm:tree_log_palm_medium` | 2.0 | 5.0 | axe | 0 |
 | Palm Twig | `csm:tree_log_palm_twig` | 2.0 | 5.0 | axe | 0 |
@@ -191,6 +198,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Potted Wild Lupine | `csm:potted_flower_lupine` |  |  |  |  |
 | Potted Winterberry | `csm:potted_shrub_winterberry` |  |  |  |  |
 | Potted Wood Anemone | `csm:potted_flower_wood_anemone` |  |  |  |  |
+| Potting Bench | `csm:potting_bench` | 1.0 | 2.0 | axe | 0 |
 | Purple Flower Bed | `csm:flower_bed_purple` |  |  |  |  |
 | Raised Cedar Planting Bed | `csm:raised_bed_wood` |  |  |  |  |
 | Raised Concrete Planting Bed | `csm:raised_bed_concrete` |  |  |  |  |
@@ -204,9 +212,13 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Scots Pine Foliage | `csm:tree_leaves_pine` | 0.2 | 1.0 |  | 0 |
 | Scots Pine Log | `csm:tree_log_pine_medium` | 2.0 | 5.0 | axe | 0 |
 | Scots Pine Twig | `csm:tree_log_pine_twig` | 2.0 | 5.0 | axe | 0 |
+| Seedling Flats | `csm:seedling_flats` |  |  |  |  |
+| Small Terracotta Pot | `csm:planter_terracotta_small` |  |  |  |  |
 | Soapweed Yucca | `csm:plant_yucca` |  |  |  |  |
 | Spanish Moss | `csm:spanish_moss` | 0.1 | 0.1 |  | 0 |
 | Square Tree Grate | `csm:tree_grate_square` |  |  |  |  |
+| Stacked Nursery Pots | `csm:nursery_pot_stack` |  |  |  |  |
+| Staked Tomato Row | `csm:crop_row_tomato` | 0.2 | 0.4 |  | 0 |
 | Sweetgum Leaves | `csm:tree_leaves_sweetgum` | 0.2 | 1.0 |  | 0 |
 | Sweetgum Log | `csm:tree_log_sweetgum_medium` | 2.0 | 5.0 | axe | 0 |
 | Sweetgum Twig | `csm:tree_log_sweetgum_twig` | 2.0 | 5.0 | axe | 0 |
@@ -268,11 +280,14 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Weeping Willow Leaves | `csm:tree_leaves_willow` | 0.2 | 1.0 |  | 0 |
 | Weeping Willow Log | `csm:tree_log_willow_medium` | 2.0 | 5.0 | axe | 0 |
 | Weeping Willow Twig | `csm:tree_log_willow_twig` | 2.0 | 5.0 | axe | 0 |
+| Wheelbarrow | `csm:wheelbarrow` | 1.0 | 2.0 | axe | 0 |
 | White Sage | `csm:shrub_white_sage` |  |  |  |  |
 | Wild Lupine | `csm:flower_lupine` |  |  |  |  |
 | Willow Strands | `csm:willow_strands` | 0.1 | 0.1 |  | 0 |
+| Window Box with Flowers | `csm:window_box_flowers` | 1.0 | 2.0 | axe | 0 |
 | Winterberry | `csm:shrub_winterberry` |  |  |  |  |
 | Wood Anemone | `csm:flower_wood_anemone` |  |  |  |  |
+| Wooden Compost Bin | `csm:compost_bin` |  |  |  |  |
 | Yellow Flower Bed | `csm:flower_bed_yellow` |  |  |  |  |
 
 </div>
