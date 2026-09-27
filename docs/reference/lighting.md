@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "132 blocks in this tab"
+!!! info "134 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -134,6 +134,8 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Street Light Photocell Relay Module | `csm:pcrm` | 2 | 10 | pickaxe | 1 |
 | Sylvania Ultra LED (Full) | `csm:uledf` | 2 | 10 | pickaxe | 1 |
 | Sylvania Ultra LED (Half) | `csm:uledh` | 2 | 10 | pickaxe | 1 |
+| Tall Building Beacon (Red, Flashing) | `csm:obstruction_beacon_red` | 2.0 | 6.0 | pickaxe | 1 |
+| Tall Building Beacon (White, Strobe) | `csm:obstruction_beacon_white` | 2.0 | 6.0 | pickaxe | 1 |
 | Vanity Bar Sconce (Black) | `csm:sconcevanityblack` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Bronze) | `csm:sconcevanitybronze` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Brushed Nickel) | `csm:sconcevanitynickel` | 2 | 10 | pickaxe | 1 |

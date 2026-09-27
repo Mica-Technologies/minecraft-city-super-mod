@@ -16,6 +16,7 @@ import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM2;
 import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM3;
 import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM4;
 import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM5;
+import com.micatechnologies.minecraft.csm.lighting.BlockObstructionBeacon;
 import com.micatechnologies.minecraft.csm.lighting.BlockPCRM;
 import com.micatechnologies.minecraft.csm.lighting.BlockRBM;
 import net.minecraft.block.Block;
@@ -173,6 +174,9 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("whov50shaded", new AxisAlignedBB(0.125000, -0.187500, 0.062500, 0.875000, 0.375000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("whov50shadednp", new AxisAlignedBB(0.125000, -0.187500, 0.062500, 0.875000, 0.250000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("wsl", new AxisAlignedBB(0.437500, 0.000000, 0.875000, 0.562500, 1.000000, 1.000000), 0));
+    // Aviation obstruction beacons for tall buildings (gen_obstruction_beacons.py --fragments)
+    initTabBlock(new BlockObstructionBeacon("obstruction_beacon_red", new double[]{3.4, 0, 3.4, 12.6, 10.2, 12.6}, new double[]{3, 0, 3, 13, 13.2, 16}, 9));
+    initTabBlock(new BlockObstructionBeacon("obstruction_beacon_white", new double[]{3.4, 0, 3.4, 12.6, 12.2, 12.6}, new double[]{3, 0, 3, 13, 15.2, 16}, 9));
     // Decorative pendants
     initTabBlock(new BlockBrightLightFactory("pendschoolhouseblack", new AxisAlignedBB(0.187500, 0.225000, 0.187500, 0.812500, 1.000000, 0.812500), 0));
     initTabBlock(new BlockBrightLightFactory("pendschoolhousebronze", new AxisAlignedBB(0.187500, 0.225000, 0.187500, 0.812500, 1.000000, 0.812500), 0));

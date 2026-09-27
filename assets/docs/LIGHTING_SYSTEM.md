@@ -336,6 +336,49 @@ models were deleted.
   as chain hardware; removing it would need a canopy-less model variant selected from the block
   above.
 
+## Tall Building Beacons (Aviation Obstruction Lights)
+
+Two aviation obstruction beacons for the top of a tall building, a tower or a mast, both
+`BlockObstructionBeacon`, with their models, textures and lang from
+`dev-env-utils/scripts/gen_obstruction_beacons.py` (`--check`, `--fragments`):
+
+| Block | Registry name | Models |
+|---|---|---|
+| Tall Building Beacon (Red, Flashing) | `csm:obstruction_beacon_red` | FAA L-864 style |
+| Tall Building Beacon (White, Strobe) | `csm:obstruction_beacon_white` | FAA L-865 style |
+
+**The timings are the FAA's.** FAA AC 150/5345-43J, Table 3-5 (Flash Characteristics for
+Obstruction Lights):
+
+- L-864 (red): 30 flashes a minute (±3), and, for a light that is not incandescent, a flash of
+  100 to 1333 ms. The beacon flashes as the tower crane's L-864 lights do (CONSTRUCTION_SITE.md):
+  a 100 ms rise, a 700 ms hold and a 100 ms fade, dark for the rest of the two-second cycle.
+- L-865 (white): 40 flashes a minute (one every 1.5 s), a flash of under 100 ms by day and
+  twilight. The strobe is one tick (50 ms) at full, then 1.45 s dark. (By night a real L-865 may
+  run a longer, dimmer flash, 100 to 1000 ms; a dual system hands the night to a red L-864
+  instead, which is the other block.)
+
+**The flash is the texture.** Each lit lens is a three-frame strip (dark, half, full) whose
+`.mcmeta` lists the frames with their own times in ticks, so every beacon in the world flashes in
+step with no tile entity, renderer or tick; the crane's lights, by contrast, take a phase from
+their position, since they are drawn by its renderer. The strip's `_e` companion is transparent
+in its dark frames, so under OptiFine only the flash glows. The lens faces are unshaded. A lit
+beacon gives a steady block light of 9 (the airside obstruction lights' level); light cannot
+flash without ticking.
+
+**Lit unless powered.** A real obstruction light burns all the time (the red one by night, from
+its photocell), so a beacon is placed lit, and redstone power switches it off: a daylight sensor
+beside a red beacon keeps it dark by day, as its photocell would. The rule reads the power as it
+is, so nothing about the redstone is stored, and there is no click to switch it (a click would be
+undone by the next neighbour update). This is simpler than the airside lights' circuits
+(TRANSIT_SYSTEM.md), which an airfield switches together; tall buildings do not.
+
+**Mounting.** Placed on top of a block (a roof, a parapet, a pole top) it stands on it
+(`mount=floor`); it is an `ICsmPostTopFixture`, so a concrete pole under it shows its tenon.
+Placed against the side of a block it stands on a steel shelf bracket off that face
+(`mount=north|east|south|west`, the wall at +Z in the model, turned by the blockstate). Ten
+states in all (`mount` x `lit`); the metadata holds both.
+
 ## Lit and Unlit Textures on the Older Fixtures
 
 The 81 fixtures that predate the decorative family reach the same result by a different route, and

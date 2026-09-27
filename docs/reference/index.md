@@ -20,7 +20,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [HVAC](hvac.md) | 46 | Heating and cooling that actually simulates room temperature. |
 | [Interior Finishes](interior-finishes.md) | 68 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
 | [Fire Alarm & Detection](life-safety.md) | 146 | Fire alarm panels, pull stations, horns, strobes, speakers and detectors. |
-| [Lighting](lighting.md) | 132 | Street lights, floodlights, pendants and sconces, all switchable. |
+| [Lighting](lighting.md) | 134 | Street lights, floodlights, pendants and sconces, all switchable. |
 | [Market & Store](market-store.md) | 136 | Grocery stores and shops: stocked refrigerated displays, gondola shelving, produce, the checkout lane and its registers and card terminals, carts, aisle signs and the shop floor's fixtures. |
 | [Materials](materials.md) | 1 | The CSM Fabricator, which turns vanilla ingots into CSM blocks. |
 | [Novelties](novelties.md) | 19 | Decorative oddities that did not belong anywhere else. |
@@ -38,7 +38,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Trees & Plants](trees-and-plants.md) | 278 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Utilities](utilities.md) | 82 | The services a city runs to its buildings: electric meters single and in banks, the meter socket, service disconnect, main breaker panel and switchboard, gas meters single and in banks, the water meter setter and utility room labels; and the water system: the water tower built to size (legs, riser, bracing, the pedestal column, tanks with their balcony and name band, the caged ladder), ground storage tanks, the pump station's pipes, valves, pumps and panel, air release and backflow enclosures, and the treatment skid; and sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall's headwall, flap gate, wingwalls and riprap, the detention pond's outlet riser and emergency spillway, and precast manhole sections whole and cut away; the gas yard: a regulator station's skid, gas pipe, ball valves, pressure regulator, turbine meter, line heater, vent stack and odorant tank, and its warning signs; and telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna array, and a small cell's canister antenna and radio for the street poles. |
 | [Unlisted](unlisted.md) | 136 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **3439** | |
+| **Total** | **3441** | |
 
 ## How to read the table
 

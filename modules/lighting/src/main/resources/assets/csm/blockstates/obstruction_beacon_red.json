@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lighting/obstruction/obstruction_beacon_red"
+  },
+  "variants": {
+    "mount": {
+      "floor": {},
+      "north": {
+        "model": "csm:lighting/obstruction/obstruction_beacon_red_wall"
+      },
+      "east": {
+        "model": "csm:lighting/obstruction/obstruction_beacon_red_wall",
+        "y": 90
+      },
+      "south": {
+        "model": "csm:lighting/obstruction/obstruction_beacon_red_wall",
+        "y": 180
+      },
+      "west": {
+        "model": "csm:lighting/obstruction/obstruction_beacon_red_wall",
+        "y": 270
+      }
+    },
+    "lit": {
+      "true": {},
+      "false": {
+        "textures": {
+          "lens": "csm:blocks/lighting/obstruction/lens_red_off"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}
