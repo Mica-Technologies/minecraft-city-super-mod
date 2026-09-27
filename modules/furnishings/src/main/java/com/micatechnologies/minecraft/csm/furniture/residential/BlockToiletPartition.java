@@ -15,6 +15,8 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -202,6 +204,42 @@ public class BlockToiletPartition extends BlockResidentialTall {
       box = box == null ? b : box.union(b);
     }
     return box != null ? box : new AxisAlignedBB(0, 0, 0.45, 1, 1, 0.55);
+  }
+
+  /**
+   * A click finds the parts themselves, not the outline. The outline is the union of the parts
+   * in this block, and with the door open, or on a panel piece, that union takes in the whole
+   * back half of the block: a player standing in the stall is inside it, and every ray from
+   * there would hit this block, so the toilet in front of them could not be clicked and the
+   * click would work the door instead. The panel reaching into the block behind is found here
+   * too, when the ray passes through this block first.
+   */
+  @Override
+  @Nullable
+  @SuppressWarnings("deprecation")
+  public RayTraceResult collisionRayTrace(@Nonnull IBlockState state, @Nonnull World world,
+      @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
+    IBlockState actual = state.getActualState(world, pos);
+    EnumFacing facing = actual.getValue(FACING);
+    boolean upper = actual.getValue(UPPER);
+    RayTraceResult best = null;
+    double bestDistance = Double.MAX_VALUE;
+    for (double[] part : parts(actual)) {
+      AxisAlignedBB b = half(part, upper);
+      if (b == null) {
+        continue;
+      }
+      RayTraceResult hit = rayTrace(pos, start, end,
+          RotationUtils.rotateBoundingBoxByFacing(b, facing));
+      if (hit != null) {
+        double distance = hit.hitVec.squareDistanceTo(start);
+        if (distance < bestDistance) {
+          best = hit;
+          bestDistance = distance;
+        }
+      }
+    }
+    return best;
   }
 
   @Override
