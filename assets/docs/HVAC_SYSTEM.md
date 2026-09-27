@@ -131,7 +131,10 @@ winter in about 10 minutes; a properly sized system warms it from freezing in 4-
 ## Lifecycle: anchors, rescans, unloads
 
 - Thermostats, units and **linked** vents register as anchors on `onLoad` and unregister on
-  `onChunkUnload`/`invalidate`. An unlinked, decorative vent costs nothing.
+  `onChunkUnload`/`invalidate`. An unlinked, decorative vent costs nothing. A vent linked (or
+  unlinked) by writing its data in place -- `/setblock` with a data tag, `/blockdata` -- registers
+  (or unregisters) from `readNBT`, since `onLoad` has already run: it used to join only when its
+  chunk next loaded (issue #243).
 - An anchor without a space tries its own cell, then its six neighbours (a full-block heater sits
   beside its room). A failure is retried: 2 s if unloaded, 5 s if open to the sky, 30 s if too
   large (and the too-large flood's cells are remembered so its neighbours do not repeat it).
@@ -139,10 +142,20 @@ winter in about 10 minutes; a properly sized system warms it from freezing in 4-
 - A player standing in enclosed air near HVAC that no device's space covers (a hallway, a
   storeroom) anchors a space of their own, started at its equilibrium, so the HUD there comes from
   the simulation too.
+- A space with nothing to inherit starts at its equilibrium. Spaces that appear together (a new
+  building's floors, which are coupled through their slabs) start at the outdoor temperature and
+  settle together; each used to settle against its neighbours' untouched arrays, which read 0°F,
+  and a new ten-storey tower started every floor at 4-9°F.
 - `HvacThermalWorld` is an `IWorldEventListener`: a block **state** change on or beside a space's
-  cells marks it dirty and it is rescanned a second later (a same-state update is a tile-entity
-  sync and is ignored). Every space is also rescanned every 5 minutes as a safety net. Rescanning
-  the 25,714-cell store takes 15-25 ms.
+  cells marks it dirty and it is rescanned a second later. A same-state update (a tile-entity
+  sync) is ignored, and so is a change that leaves the cell the same to the scanner: it passed air
+  before and after (or blocked it both times) and its wall material is unchanged. A lamp
+  switching, a furnace lighting or a machine's state flipping beside a room changes nothing, and
+  each used to cost a rescan of the whole room every second for as long as it kept flipping.
+- At most four spaces are rescanned in a step, the longest waiting first; the rest wait a step or
+  two. Every space is also rescanned every 5 minutes as a safety net, one a step and only when the
+  step has room, so floors found together do not all come due on one tick. Rescanning the
+  25,714-cell store takes 15-25 ms, a 2,600-cell office floor 4-5 ms.
 - A rescan keeps each cell's temperature: new regions start from the cells they took over (from
   live spaces, or ones taken apart this step), so opening a door mixes two rooms and closing it
   leaves each as it was. A rescan that hits an unloaded chunk puts the old space back unchanged.
@@ -248,6 +261,16 @@ the new world's clock was behind the old one's (found in the lab: a desert room 
 | `settemp <F>` | sets your room's every region (start a test from cold or hot) |
 | `ff <seconds>` | runs that much simulated time now (an hour of the whole lab: ~0.2 s) |
 | `rescan` | rescans your room now and reports the time |
+| `perf [reset]` | what the simulation has cost since the counters were reset: ms a step and a tick, by phase (rescan, attach, couplings, control and physics, players), rescans on a change and periodic, floods and their cells, block changes seen and those that changed a room |
+
+What it costs (issue #246, a ten-storey tower of 2,600-cell floors, each with a thermostat, a
+heater and eight vents): idle, 0.6-0.8 ms a step, 0.03-0.04 ms a tick; a lamp toggled beside every
+floor each second, the same (398 block changes seen, none changed a room). Before the listener
+ignored such changes, that lamp cost a rescan of every floor every second. A block appearing and
+vanishing inside every room each second, which does change them, is the load the per-step cap
+spreads out: 190 rescans in 40 s, worst step 43 ms, before it; 160 rescans, worst step 27 ms, after
+(0.5 ms a tick on average). `perf` on the server that reported the lag is how to find
+what it is doing there.
 
 ### The lab
 

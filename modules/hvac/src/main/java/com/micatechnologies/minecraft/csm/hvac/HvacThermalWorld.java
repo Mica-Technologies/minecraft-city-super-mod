@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmEnvironment;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -74,6 +75,15 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   private static final long COUPLING_REFRESH_TICKS = 200L;
 
+  /**
+   * Most spaces rescanned in one step, the longest waiting first; the rest wait a step or two. A
+   * rescan of a big floor is some 10 ms, so a burst of changes across a tower (every floor's doors
+   * at once) would otherwise land on a single tick. The five-minute safety net takes only what is
+   * left of this, and at most one: spaces found together (a building's floors, when its chunks
+   * load) would otherwise all come due on the same tick as well.
+   */
+  private static final int RESCANS_PER_STEP = 4;
+
   /** Distance to an HVAC device within which a player sees the HUD. */
   static final int HUD_RANGE = 24;
 
@@ -101,6 +111,35 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   /** Counts steps; tile entities use it to tell whether a system claimed them this step. */
   long stepId;
+
+  /** What the simulation has cost since the counters were last reset; see {@code /csmhvac perf}. */
+  final Perf perf = new Perf();
+
+  /** Running cost counters, read and reset by {@code /csmhvac perf}. */
+  static final class Perf {
+    long sinceTick = Long.MIN_VALUE;
+    long steps;
+    long rescanNanos;
+    long attachNanos;
+    long couplingNanos;
+    long stepNanos;
+    long playerNanos;
+    long maxTickNanos;
+    long dirtyRescans;
+    long periodicRescans;
+    long couplings;
+    long scans;
+    long scannedCells;
+    long blockUpdates;
+    long relevantBlockUpdates;
+
+    void reset(long now) {
+      sinceTick = now;
+      steps = rescanNanos = attachNanos = couplingNanos = stepNanos = playerNanos = 0;
+      maxTickNanos = dirtyRescans = periodicRescans = couplings = scans = scannedCells = 0;
+      blockUpdates = relevantBlockUpdates = 0;
+    }
+  }
 
   private static final class TooLarge {
     final LongOpenHashSet cells;
@@ -234,7 +273,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
           last = ThermalScanner.Status.TOO_LARGE;
           continue;
         }
-        ThermalScanner.Result r = ThermalScanner.scan(cellSource, x, y, z);
+        ThermalScanner.Result r = scan(cellSource, x, y, z);
         if (r.status == ThermalScanner.Status.OK) {
           s = createSpace(r, key, now);
         } else {
@@ -260,6 +299,13 @@ public final class HvacThermalWorld implements IWorldEventListener {
     a.retryTick = now + (last == ThermalScanner.Status.UNLOADED ? RETRY_UNLOADED_TICKS
         : last == ThermalScanner.Status.TOO_LARGE ? RETRY_TOO_LARGE_TICKS
             : RETRY_NOT_ENCLOSED_TICKS);
+  }
+
+  private ThermalScanner.Result scan(ThermalCellSource src, int x, int y, int z) {
+    ThermalScanner.Result r = ThermalScanner.scan(src, x, y, z);
+    perf.scans++;
+    perf.scannedCells += r.cells.size();
+    return r;
   }
 
   private void join(ThermalAnchor a, ThermalSpace s, long cell) {
@@ -446,11 +492,24 @@ public final class HvacThermalWorld implements IWorldEventListener {
    */
   private void rescanDue(long now) {
     List<ThermalSpace> due = new ArrayList<>();
+    List<ThermalSpace> periodic = new ArrayList<>();
     for (ThermalSpace s : spaces) {
       long age = now - s.lastScanTick;
-      if ((s.dirty && age >= RESCAN_DEBOUNCE_TICKS) || age >= RESCAN_PERIOD_TICKS) {
+      if (s.dirty && age >= RESCAN_DEBOUNCE_TICKS) {
         due.add(s);
+      } else if (age >= RESCAN_PERIOD_TICKS) {
+        periodic.add(s);
       }
+    }
+    if (due.size() > RESCANS_PER_STEP) {
+      due.sort((a, b) -> Long.compare(a.lastScanTick, b.lastScanTick));
+      due = new ArrayList<>(due.subList(0, RESCANS_PER_STEP));
+    }
+    perf.dirtyRescans += due.size();
+    if (!periodic.isEmpty() && due.size() < RESCANS_PER_STEP) {
+      periodic.sort((a, b) -> Long.compare(a.lastScanTick, b.lastScanTick));
+      due.add(periodic.get(0));
+      perf.periodicRescans++;
     }
     if (due.isEmpty()) {
       return;
@@ -529,7 +588,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
     for (ThermalSpace s : spaces) {
       s.outdoor = outdoorAt(s.sampleCell);
       java.util.Arrays.fill(s.unconditionedUA, 0f);
-      Map<Long, Integer> index = new HashMap<>();
+      Long2IntOpenHashMap index = new Long2IntOpenHashMap();
+      index.defaultReturnValue(-1);
       IntList regions = new IntList();
       List<ThermalSpace> others = new ArrayList<>();
       IntList otherRegions = new IntList();
@@ -544,8 +604,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
         }
         int or = other.regionOfCell(cell);
         long key = ((long) r << 40) ^ ((long) other.id << 20) ^ or;
-        Integer at = index.get(key);
-        if (at == null) {
+        int at = index.get(key);
+        if (at < 0) {
           index.put(key, regions.size());
           regions.add(r);
           others.add(other);
@@ -560,15 +620,28 @@ public final class HvacThermalWorld implements IWorldEventListener {
       s.coupleOtherRegion = otherRegions.toArray();
       s.coupleUA = uas.toArray();
     }
+    // Rooms that appear together (a new building's floors) are coupled to each other, and each
+    // settles against the others' temperatures: start them all at the outdoor temperature rather
+    // than the 0°F a new array holds, and settle them together a few rounds.
+    List<ThermalSpace> settling = new ArrayList<>();
     for (ThermalSpace s : spaces) {
       if (s.needsEquilibrium) {
-        s.settleToEquilibrium();
-        s.needsEquilibrium = false;
-        s.temperatureKnown = true;
+        java.util.Arrays.fill(s.temperature, s.outdoor);
+        settling.add(s);
       }
+    }
+    for (int round = 0; round < (settling.size() > 1 ? 4 : 1); round++) {
+      for (ThermalSpace s : settling) {
+        s.settleToEquilibrium();
+      }
+    }
+    for (ThermalSpace s : settling) {
+      s.needsEquilibrium = false;
+      s.temperatureKnown = true;
     }
     topologyChanged = false;
     lastCouplingTick = now;
+    perf.couplings++;
   }
 
   private float outdoorAt(long cell) {
@@ -585,18 +658,36 @@ public final class HvacThermalWorld implements IWorldEventListener {
     if (now % STEP_TICKS != 0) {
       return;
     }
+    if (perf.sinceTick == Long.MIN_VALUE) {
+      perf.reset(now);
+    }
+    long t0 = System.nanoTime();
     maintain(now);
+    long t1 = System.nanoTime();
     step();
+    long t2 = System.nanoTime();
     updatePlayers(now);
+    long t3 = System.nanoTime();
+    perf.steps++;
+    perf.stepNanos += t2 - t1;
+    perf.playerNanos += t3 - t2;
+    perf.maxTickNanos = Math.max(perf.maxTickNanos, t3 - t0);
   }
 
   /** Rescans, attaches and couplings: everything that follows the blocks. */
   void maintain(long now) {
+    long t0 = System.nanoTime();
     rescanDue(now);
+    long t1 = System.nanoTime();
     attachPending(now);
+    long t2 = System.nanoTime();
     if (topologyChanged || now - lastCouplingTick >= COUPLING_REFRESH_TICKS) {
       resolveCouplings(now);
     }
+    long t3 = System.nanoTime();
+    perf.rescanNanos += t1 - t0;
+    perf.attachNanos += t2 - t1;
+    perf.couplingNanos += t3 - t2;
   }
 
   /** One second of simulated time: controllers, then physics. */
@@ -713,8 +804,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
             && cellSource.classify(pos.getX(), pos.getY(), pos.getZ()) == ThermalCellSource.AIR
             && !inTooLarge(key, now)) {
           playerNextScan.put(id, now + PLAYER_SCAN_INTERVAL_TICKS);
-          ThermalScanner.Result r = ThermalScanner.scan(cellSource, pos.getX(), pos.getY(),
-              pos.getZ());
+          ThermalScanner.Result r = scan(cellSource, pos.getX(), pos.getY(), pos.getZ());
           if (r.status == ThermalScanner.Status.OK) {
             ThermalSpace s = createSpace(r, key, now);
             pa = new ThermalAnchor(pos, ThermalAnchor.PLAYER);
@@ -759,19 +849,72 @@ public final class HvacThermalWorld implements IWorldEventListener {
     if (oldState == newState) {
       return; // a tile entity sync, not a change of shape
     }
+    perf.blockUpdates++;
+    long key = ThermalScanner.pack(pos.getX(), pos.getY(), pos.getZ());
+    List<ThermalAnchor> list = anchorsByChunk.get(chunkKey(pos.getX() >> 4, pos.getZ() >> 4));
+    boolean waiting = false;
+    if (list != null) {
+      for (ThermalAnchor a : list) {
+        waiting |= a.space == null;
+      }
+    }
+    // Cheapest first: most changes in a world are nowhere near a room.
+    if (!waiting && !nearSpace(pos.getX(), pos.getY(), pos.getZ()) && !inAnyTooLarge(key)) {
+      return;
+    }
+    // A change that leaves the cell as it was to air and heat (a lamp switching, a machine
+    // running, a crop growing) changes no room. Rescanning on one was a flood of the whole room
+    // every second for as long as something beside it kept changing.
+    if (sameToAir(pos, oldState, newState)) {
+      return;
+    }
+    perf.relevantBlockUpdates++;
     long now = world.getTotalWorldTime();
     markDirtyAround(pos.getX(), pos.getY(), pos.getZ());
-    long key = ThermalScanner.pack(pos.getX(), pos.getY(), pos.getZ());
     tooLarge.removeIf(t -> t.cells.contains(key));
     // A roof going on may enclose an anchor that could not find a space: let it try again soon.
-    List<ThermalAnchor> list = anchorsByChunk.get(chunkKey(pos.getX() >> 4, pos.getZ() >> 4));
-    if (list != null) {
+    if (waiting) {
       for (ThermalAnchor a : list) {
         if (a.space == null && a.retryTick > now + RESCAN_DEBOUNCE_TICKS) {
           a.retryTick = now + RESCAN_DEBOUNCE_TICKS;
         }
       }
     }
+  }
+
+  /** Whether a change leaves its cell the same to the scanner: passing air, and wall material. */
+  private boolean sameToAir(BlockPos pos, IBlockState oldState, IBlockState newState) {
+    if (HvacAirflow.wallFactor(oldState) != HvacAirflow.wallFactor(newState)) {
+      return false;
+    }
+    try {
+      return HvacAirflow.passesAir(world, pos, oldState)
+          == HvacAirflow.passesAir(world, pos, newState);
+    } catch (RuntimeException e) {
+      return false; // a block that cannot answer for its old state: rescan to be safe
+    }
+  }
+
+  private boolean nearSpace(int x, int y, int z) {
+    if (cellToSpace.containsKey(ThermalScanner.pack(x, y, z))) {
+      return true;
+    }
+    for (EnumFacing f : EnumFacing.values()) {
+      if (cellToSpace.containsKey(
+          ThermalScanner.pack(x + f.getXOffset(), y + f.getYOffset(), z + f.getZOffset()))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean inAnyTooLarge(long key) {
+    for (TooLarge t : tooLarge) {
+      if (t.cells.contains(key)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void markDirtyAround(int x, int y, int z) {

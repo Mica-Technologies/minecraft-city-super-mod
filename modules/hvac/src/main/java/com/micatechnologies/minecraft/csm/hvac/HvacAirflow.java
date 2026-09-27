@@ -55,7 +55,14 @@ public final class HvacAirflow {
    * @return true when the cell counts as air for the thermal scanner
    */
   public static boolean passesAir(World world, BlockPos pos) {
-    IBlockState state = world.getBlockState(pos);
+    return passesAir(world, pos, world.getBlockState(pos));
+  }
+
+  /**
+   * Whether air passes through {@code state} standing at {@code pos}. The block listener asks this
+   * of the state a block had before a change as well as of the one it has now.
+   */
+  public static boolean passesAir(World world, BlockPos pos, IBlockState state) {
     Material material = state.getMaterial();
     if (material == Material.AIR) {
       return true;
