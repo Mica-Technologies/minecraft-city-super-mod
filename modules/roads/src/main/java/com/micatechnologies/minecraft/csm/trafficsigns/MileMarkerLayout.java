@@ -7,7 +7,9 @@ package com.micatechnologies.minecraft.csm.trafficsigns;
  * The eight mile marker plates (MUTCD D10-1 to D10-5) and where each draws what its tile entity
  * holds, in model units of the unturned model (the plate faces north, the reader stands north of
  * it, and the reader's x runs the other way from the model's: {@code modelX = 16 - readerX}).
- * Every legend is centred on the plate's centre line.
+ * Every legend is centred on the plate's centre line. {@code lift} is how far the blockstate's
+ * facing transform lifts the whole model so the plate's bottom edge is on the block's floor; the
+ * legend is lifted with it.
  *
  * <p>{@code mile} is, for a stacked plate, one {@code (centreY, cap)} pair per digit from the
  * top; for an enhanced plate one {@code (centreY, cap, maxWidth)} run. {@code tenth} and
@@ -21,42 +23,42 @@ package com.micatechnologies.minecraft.csm.trafficsigns;
  */
 public enum MileMarkerLayout {
 
-  D10_1("mile_marker_sign_1", "D10-1", 1, true, false,
+  D10_1("mile_marker_sign_1", "D10-1", 1, true, false, 0.0000f,
       new float[] {8.0000f, 4.0000f},
       null,
       null,
       null),
-  D10_2("mile_marker_sign_2", "D10-2", 2, true, false,
+  D10_2("mile_marker_sign_2", "D10-2", 2, true, false, 1.0000f,
       new float[] {9.0000f, 4.0000f, 3.0000f, 4.0000f},
       null,
       null,
       null),
-  D10_3("mile_marker_sign_3", "D10-3", 3, true, false,
+  D10_3("mile_marker_sign_3", "D10-3", 3, true, false, 4.0000f,
       new float[] {12.0000f, 4.0000f, 6.0000f, 4.0000f, 0.0000f, 4.0000f},
       null,
       null,
       null),
-  D10_1A("mile_marker_sign_1_intermediate", "D10-1a", 1, true, true,
+  D10_1A("mile_marker_sign_1_intermediate", "D10-1a", 1, true, true, 1.0000f,
       new float[] {9.0000f, 4.0000f},
       new float[] {3.0000f, 4.0000f, 5.4667f},
       null,
       null),
-  D10_2A("mile_marker_sign_2_intermediate", "D10-2a", 2, true, true,
+  D10_2A("mile_marker_sign_2_intermediate", "D10-2a", 2, true, true, 4.0000f,
       new float[] {12.0000f, 4.0000f, 6.0000f, 4.0000f},
       new float[] {0.0000f, 4.0000f, 5.4667f},
       null,
       null),
-  D10_3A("mile_marker_sign_3_intermediate", "D10-3a", 3, true, true,
+  D10_3A("mile_marker_sign_3_intermediate", "D10-3a", 3, true, true, 8.0000f,
       new float[] {16.0000f, 4.0000f, 10.0000f, 4.0000f, 4.0000f, 4.0000f},
       new float[] {-4.0000f, 4.0000f, 5.4667f},
       null,
       null),
-  D10_4("mile_marker_sign_enhanced", "D10-4", 3, false, false,
+  D10_4("mile_marker_sign_enhanced", "D10-4", 3, false, false, 10.0000f,
       new float[] {-4.0000f, 5.3333f, 10.6667f},
       null,
       new float[] {21.3333f, 4.0000f, 10.6667f},
       new float[] {12.3333f, 8.6667f}),
-  D10_5("mile_marker_sign_enhanced_intermediate", "D10-5", 3, false, true,
+  D10_5("mile_marker_sign_enhanced_intermediate", "D10-5", 3, false, true, 12.0000f,
       new float[] {0.5000f, 5.3333f, 10.6667f},
       new float[] {-7.8333f, 5.3333f, 10.6667f},
       new float[] {24.5000f, 4.0000f, 10.6667f},
@@ -111,19 +113,21 @@ public enum MileMarkerLayout {
   private final int digits;
   private final boolean stacked;
   private final boolean tenth;
+  private final float lift;
   private final float[] mileSlot;
   private final float[] tenthSlot;
   private final float[] directionSlot;
   private final float[] shieldSlot;
 
   MileMarkerLayout(String registryName, String code, int digits, boolean stacked,
-      boolean tenth, float[] mileSlot, float[] tenthSlot, float[] directionSlot,
+      boolean tenth, float lift, float[] mileSlot, float[] tenthSlot, float[] directionSlot,
       float[] shieldSlot) {
     this.registryName = registryName;
     this.code = code;
     this.digits = digits;
     this.stacked = stacked;
     this.tenth = tenth;
+    this.lift = lift;
     this.mileSlot = mileSlot;
     this.tenthSlot = tenthSlot;
     this.directionSlot = directionSlot;
@@ -158,6 +162,12 @@ public enum MileMarkerLayout {
   /** Whether the plate carries a direction, a route shield and a route number. */
   public boolean isEnhanced() {
     return shieldSlot != null;
+  }
+
+  /** How far the blockstate lifts the model, in model units: the plate's bottom edge is then
+   * on the block's floor. */
+  public float getLift() {
+    return lift;
   }
 
   public float[] getMileSlot() {

@@ -580,7 +580,14 @@ from `MileMarkerLayout`): eight facings, the extension post, setback, back-to-ba
 mount. Its three shift models follow the one convention and are held by `SignShiftModelTest`,
 `SignFaceDepthTest` and `SignTextureSizeTest` like any sign's. The plates are drawn at the
 catalogue's 1.5 in a unit, centred on the block's middle, and a plate shorter than the post
-reaches the post's top.
+reaches the post's top. A taller plate would reach below its block and bury its number on bare
+ground, and one 36 or 40 units tall cannot be drawn from y 0 inside an element's -16 to 32, so
+the blockstate lifts the whole model instead: each `facing` variant's transform carries a y
+translation (`MileMarkerLayout.getLift()`, 1 to 12 units, none on the D10-1) that stands the
+plate's bottom edge on the block's floor. The post is drawn that much below 0 so it still meets
+the ground, the `downward` extension's own translation takes the lift off again (Forge composes
+the variant's transform with a submodel's), and `MileMarkerBakedModel.transformation` builds
+the same translation for the legend, so the two agree on every facing and shift.
 
 **The number is not a block property.** A number is a thousand values; as a property it would
 multiply the states by a thousand. `TileEntityMileMarkerSign` holds the settings (mile, tenth,
