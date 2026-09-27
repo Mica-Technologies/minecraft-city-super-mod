@@ -3,7 +3,8 @@
   "defaults": {
     "model": "csm:trafficsignals/shared_models/gridsmart_ac3.obj",
     "custom": {
-      "flip-v": true
+      "flip-v": true,
+      "ambient": false
     }
   },
   "variants": {

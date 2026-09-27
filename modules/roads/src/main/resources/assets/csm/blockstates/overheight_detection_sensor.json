@@ -3,7 +3,8 @@
   "defaults": {
     "model": "csm:trafficsignals/shared_models/overheight_detection_sensor.obj",
     "custom": {
-      "flip-v": true
+      "flip-v": true,
+      "ambient": false
     }
   },
   "variants": {
