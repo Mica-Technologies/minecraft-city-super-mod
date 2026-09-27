@@ -2,7 +2,7 @@
 
 The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them.
 
-!!! info "60 blocks in this tab"
+!!! info "68 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -18,6 +18,9 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Carpet Tile (Blue) | `csm:floor_carpet_blue` |  |  |  |  |
 | Carpet Tile (Charcoal) | `csm:floor_carpet_charcoal` |  |  |  |  |
 | Carpet Tile (Grey) | `csm:floor_carpet_grey` |  |  |  |  |
+| Carpet Tile Block (Blue) | `csm:floor_carpet_blue_block` |  |  |  |  |
+| Carpet Tile Block (Charcoal) | `csm:floor_carpet_charcoal_block` |  |  |  |  |
+| Carpet Tile Block (Grey) | `csm:floor_carpet_grey_block` |  |  |  |  |
 | Ceiling Tile (50s 1) | `csm:ct50s1` | 2 | 10 | pickaxe | 1 |
 | Ceiling Tile (50s 2) | `csm:ct50s2` | 2 | 10 | pickaxe | 1 |
 | Ceiling Tile (50s 3) | `csm:ct50s3` | 2 | 10 | pickaxe | 1 |
@@ -31,6 +34,8 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Ceiling Tile (Standard 3) | `csm:cts3` | 2 | 10 | pickaxe | 1 |
 | Ceramic Floor Tile (Grey) | `csm:floor_ceramic_grey` |  |  |  |  |
 | Ceramic Floor Tile (White) | `csm:floor_ceramic_white` |  |  |  |  |
+| Ceramic Floor Tile Block (Grey) | `csm:floor_ceramic_grey_block` |  |  |  |  |
+| Ceramic Floor Tile Block (White) | `csm:floor_ceramic_white_block` |  |  |  |  |
 | Ceramic Wall Tile (Green Subway) | `csm:wall_tile_subway_green` |  |  |  |  |
 | Ceramic Wall Tile (White Square) | `csm:wall_tile_square_white` |  |  |  |  |
 | Ceramic Wall Tile (White Subway) | `csm:wall_tile_subway_white` |  |  |  |  |
@@ -61,11 +66,14 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Roller Shade (Grey) | `csm:shade_roller_grey` | 0.3 | 1 | axe | 0 |
 | Roller Shade (White) | `csm:shade_roller_white` | 0.3 | 1 | axe | 0 |
 | Rubber Floor (Studded) | `csm:floor_rubber_studded` |  |  |  |  |
+| Rubber Floor Block (Studded) | `csm:floor_rubber_studded_block` |  |  |  |  |
 | Sheer Curtain | `csm:curtain_sheer` | 0.3 | 1 | axe | 0 |
 | Venetian Blind (White) | `csm:blind_venetian_white` | 0.3 | 1 | axe | 0 |
 | Vertical Blind (White) | `csm:blind_vertical_white` | 0.3 | 1 | axe | 0 |
 | Vinyl Composition Tile (Beige) | `csm:floor_vct_beige` |  |  |  |  |
 | Vinyl Composition Tile (White) | `csm:floor_vct_white` |  |  |  |  |
+| Vinyl Composition Tile Block (Beige) | `csm:floor_vct_beige_block` |  |  |  |  |
+| Vinyl Composition Tile Block (White) | `csm:floor_vct_white_block` |  |  |  |  |
 | Walnut Hardwood | `csm:hardwood_walnut` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Fence | `csm:hardwood_walnut_fence` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Slab | `csm:hardwood_walnut_slab` | 2 | 10 | axe | 0 |

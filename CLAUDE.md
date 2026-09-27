@@ -676,7 +676,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   course or end they belong to; `--check` fails on drift
 - `gen_flooring.py` -- the floor finishes: one-pixel overlays (`BlockFloorFinish`, carpet, vinyl
   and ceramic tile, hardwood, polished concrete, rubber) whose blockstates pick a turn or a second
-  drawing per block position so a floor shows no repeat, and the polished concrete and hardwood
+  drawing per block position so a floor shows no repeat, full blocks of the other finishes
+  (`BlockFloorFinishBlock`, the same textures and picks), and the polished concrete and hardwood
   full-block sets; `--check` fails on drift
 - `gen_wall_finishes.py` -- wall finishes hung on any wall (`BlockWallFinish`: paint, ceramic
   tile, acoustic panels, beadboard, slat wall) with caps, edge trims and frames drawn only at the

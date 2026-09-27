@@ -13,6 +13,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT1;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT2;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT3;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinish;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinishBlock;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetPolishedConcrete;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodOak;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodWalnut;
@@ -128,6 +129,14 @@ public class CsmTabInteriorFinishes extends CsmTab {
     initTabBlock(new BlockFloorFinish("floor_hardwood_walnut")); // Hardwood Floor (Walnut)
     initTabBlock(new BlockFloorFinish("floor_polished_concrete")); // Polished Concrete Floor
     initTabBlock(new BlockFloorFinish("floor_rubber_studded")); // Rubber Floor (Studded)
+    initTabBlock(new BlockFloorFinishBlock("floor_carpet_grey_block")); // Carpet Tile Block (Grey)
+    initTabBlock(new BlockFloorFinishBlock("floor_carpet_blue_block")); // Carpet Tile Block (Blue)
+    initTabBlock(new BlockFloorFinishBlock("floor_carpet_charcoal_block")); // Carpet Tile Block (Charcoal)
+    initTabBlock(new BlockFloorFinishBlock("floor_vct_white_block")); // Vinyl Composition Tile Block (White)
+    initTabBlock(new BlockFloorFinishBlock("floor_vct_beige_block")); // Vinyl Composition Tile Block (Beige)
+    initTabBlock(new BlockFloorFinishBlock("floor_ceramic_white_block")); // Ceramic Floor Tile Block (White)
+    initTabBlock(new BlockFloorFinishBlock("floor_ceramic_grey_block")); // Ceramic Floor Tile Block (Grey)
+    initTabBlock(new BlockFloorFinishBlock("floor_rubber_studded_block")); // Rubber Floor Block (Studded)
     initTabBlock(BlockSetPolishedConcrete.class,
         fmlPreInitializationEvent); // Polished Concrete Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetHardwoodOak.class,
