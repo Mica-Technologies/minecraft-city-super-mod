@@ -150,6 +150,31 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockTreeLog("tree_log_beech_medium", TreeWood.BEECH, TreeLogWidth.MEDIUM));
     initTabBlock(new BlockTreeLog("tree_log_beech_thick", TreeWood.BEECH, TreeLogWidth.THICK));
     initTabBlock(new BlockTreeLog("tree_log_beech_full", TreeWood.BEECH, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_sabal_twig", TreeWood.SABAL, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_sabal_thin", TreeWood.SABAL, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_sabal_medium", TreeWood.SABAL, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_sabal_thick", TreeWood.SABAL, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_sabal_full", TreeWood.SABAL, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_redwood_twig", TreeWood.REDWOOD, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_redwood_thin", TreeWood.REDWOOD, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_redwood_medium", TreeWood.REDWOOD, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_redwood_thick", TreeWood.REDWOOD, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_redwood_full", TreeWood.REDWOOD, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_whitepine_twig", TreeWood.WHITE_PINE, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_whitepine_thin", TreeWood.WHITE_PINE, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_whitepine_medium", TreeWood.WHITE_PINE, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_whitepine_thick", TreeWood.WHITE_PINE, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_whitepine_full", TreeWood.WHITE_PINE, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_oak_twig", TreeWood.OAK, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_oak_thin", TreeWood.OAK, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_oak_medium", TreeWood.OAK, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_oak_thick", TreeWood.OAK, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_oak_full", TreeWood.OAK, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_camphor_twig", TreeWood.CAMPHOR, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_camphor_thin", TreeWood.CAMPHOR, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_camphor_medium", TreeWood.CAMPHOR, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_camphor_thick", TreeWood.CAMPHOR, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_camphor_full", TreeWood.CAMPHOR, TreeLogWidth.FULL));
 
     // Leaves: one block a species and season, then the palm crowns and the hanging moss. Also
     // written by gen_trees.py.
@@ -215,12 +240,26 @@ public class CsmTabTreesPlants extends CsmTab {
         "csm:blocks/parks/leaves_beech"));
     initTabBlock(new BlockTreeLeaves("tree_leaves_beech_autumn", TreeLeafType.BROADLEAF,
         "csm:blocks/parks/leaves_beech_autumn"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_redwood", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_redwood"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_pine_white", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_pine_white"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_oak", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_oak"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_oak_autumn", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_oak_autumn"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_camphor", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_camphor"));
     initTabBlock(new BlockTreeLeaves("tree_crown_palm_fan", TreeLeafType.PALM_FAN,
         "csm:blocks/parks/palm_crown_fan"));
     initTabBlock(new BlockTreeLeaves("tree_crown_palm_fan_skirt", TreeLeafType.PALM_FAN_SKIRT,
         "csm:blocks/parks/palm_crown_fan"));
     initTabBlock(new BlockTreeLeaves("tree_crown_palm_feather", TreeLeafType.PALM_FEATHER,
         "csm:blocks/parks/palm_crown_feather"));
+    initTabBlock(new BlockTreeLeaves("tree_crown_palm_cabbage", TreeLeafType.PALM_CABBAGE,
+        "csm:blocks/parks/palm_crown_cabbage"));
+    initTabBlock(new BlockTreeLeaves("tree_crown_palm_cabbage_skirt", TreeLeafType.PALM_CABBAGE_SKIRT,
+        "csm:blocks/parks/palm_crown_cabbage"));
     initTabBlock(new BlockHangingMoss("spanish_moss"));
     initTabBlock(new BlockHangingMoss("willow_strands"));
 

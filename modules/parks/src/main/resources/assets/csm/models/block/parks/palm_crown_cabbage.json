@@ -1,0 +1,7 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "csm:blocks/parks/palm_crown_cabbage",
+    "particle": "csm:blocks/parks/palm_crown_cabbage"
+  }
+}

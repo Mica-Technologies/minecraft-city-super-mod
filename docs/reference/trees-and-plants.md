@@ -2,7 +2,7 @@
 
 Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings.
 
-!!! info "231 blocks in this tab"
+!!! info "263 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -15,6 +15,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Arborvitae Foliage | `csm:tree_leaves_arborvitae` | 0.2 | 1.0 |  | 0 |
 | Artificial Turf | `csm:ground_turf` |  |  |  |  |
 | Autumn Elm Leaves | `csm:tree_leaves_elm_autumn` | 0.2 | 1.0 |  | 0 |
+| Autumn English Oak Leaves | `csm:tree_leaves_oak_autumn` | 0.2 | 1.0 |  | 0 |
 | Autumn European Beech Leaves | `csm:tree_leaves_beech_autumn` | 0.2 | 1.0 |  | 0 |
 | Autumn Ginkgo Leaves | `csm:tree_leaves_ginkgo_autumn` | 0.2 | 1.0 |  | 0 |
 | Autumn Honey Locust Leaves | `csm:tree_leaves_honeylocust_autumn` | 0.2 | 1.0 |  | 0 |
@@ -31,11 +32,21 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Blue Spruce Log | `csm:tree_log_spruce_medium` | 2.0 | 5.0 | axe | 0 |
 | Blue Spruce Twig | `csm:tree_log_spruce_twig` | 2.0 | 5.0 | axe | 0 |
 | Boxwood Ball | `csm:shrub_boxwood` |  |  |  |  |
+| Cabbage Palm Crown | `csm:tree_crown_palm_cabbage` | 0.2 | 1.0 |  | 0 |
+| Cabbage Palm Crown with Skirt | `csm:tree_crown_palm_cabbage_skirt` | 0.2 | 1.0 |  | 0 |
+| Cabbage Palm Log | `csm:tree_log_sabal_medium` | 2.0 | 5.0 | axe | 0 |
+| Cabbage Palm Twig | `csm:tree_log_sabal_twig` | 2.0 | 5.0 | axe | 0 |
 | California Lilac | `csm:shrub_ceanothus` |  |  |  |  |
 | California Poppy | `csm:flower_california_poppy` |  |  |  |  |
 | Camellia | `csm:shrub_camellia` |  |  |  |  |
+| Camphor Tree Leaves | `csm:tree_leaves_camphor` | 0.2 | 1.0 |  | 0 |
+| Camphor Tree Log | `csm:tree_log_camphor_medium` | 2.0 | 5.0 | axe | 0 |
+| Camphor Tree Twig | `csm:tree_log_camphor_twig` | 2.0 | 5.0 | axe | 0 |
 | Cedar Planter | `csm:planter_wood` |  |  |  |  |
 | Clipped Linden Leaves | `csm:tree_leaves_linden_clipped` | 0.2 | 1.0 |  | 0 |
+| Coast Redwood Foliage | `csm:tree_leaves_redwood` | 0.2 | 1.0 |  | 0 |
+| Coast Redwood Log | `csm:tree_log_redwood_medium` | 2.0 | 5.0 | axe | 0 |
+| Coast Redwood Twig | `csm:tree_log_redwood_twig` | 2.0 | 5.0 | axe | 0 |
 | Colorado Blue Columbine | `csm:flower_columbine` |  |  |  |  |
 | Concrete Planter | `csm:planter_concrete` |  |  |  |  |
 | Coontie | `csm:plant_coontie` |  |  |  |  |
@@ -43,9 +54,15 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Corten Steel Planter | `csm:planter_corten` |  |  |  |  |
 | Decomposed Granite | `csm:ground_decomposed_granite` |  |  |  |  |
 | Deergrass | `csm:grass_deergrass` |  |  |  |  |
+| Eastern White Pine Foliage | `csm:tree_leaves_pine_white` | 0.2 | 1.0 |  | 0 |
+| Eastern White Pine Log | `csm:tree_log_whitepine_medium` | 2.0 | 5.0 | axe | 0 |
+| Eastern White Pine Twig | `csm:tree_log_whitepine_twig` | 2.0 | 5.0 | axe | 0 |
 | Elm Leaves | `csm:tree_leaves_elm` | 0.2 | 1.0 |  | 0 |
 | Elm Log | `csm:tree_log_elm_medium` | 2.0 | 5.0 | axe | 0 |
 | Elm Twig | `csm:tree_log_elm_twig` | 2.0 | 5.0 | axe | 0 |
+| English Oak Leaves | `csm:tree_leaves_oak` | 0.2 | 1.0 |  | 0 |
+| English Oak Log | `csm:tree_log_oak_medium` | 2.0 | 5.0 | axe | 0 |
+| English Oak Twig | `csm:tree_log_oak_twig` | 2.0 | 5.0 | axe | 0 |
 | European Beech Leaves | `csm:tree_leaves_beech` | 0.2 | 1.0 |  | 0 |
 | European Beech Log | `csm:tree_log_beech_medium` | 2.0 | 5.0 | axe | 0 |
 | European Beech Twig | `csm:tree_log_beech_twig` | 2.0 | 5.0 | axe | 0 |
@@ -56,7 +73,12 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Firebush | `csm:shrub_firebush` |  |  |  |  |
 | Fountain Grass | `csm:grass_fountain` |  |  |  |  |
 | Full Blue Spruce Log | `csm:tree_log_spruce_full` | 2.0 | 5.0 | axe | 0 |
+| Full Cabbage Palm Log | `csm:tree_log_sabal_full` | 2.0 | 5.0 | axe | 0 |
+| Full Camphor Tree Log | `csm:tree_log_camphor_full` | 2.0 | 5.0 | axe | 0 |
+| Full Coast Redwood Log | `csm:tree_log_redwood_full` | 2.0 | 5.0 | axe | 0 |
+| Full Eastern White Pine Log | `csm:tree_log_whitepine_full` | 2.0 | 5.0 | axe | 0 |
 | Full Elm Log | `csm:tree_log_elm_full` | 2.0 | 5.0 | axe | 0 |
+| Full English Oak Log | `csm:tree_log_oak_full` | 2.0 | 5.0 | axe | 0 |
 | Full European Beech Log | `csm:tree_log_beech_full` | 2.0 | 5.0 | axe | 0 |
 | Full Ginkgo Log | `csm:tree_log_ginkgo_full` | 2.0 | 5.0 | axe | 0 |
 | Full Honey Locust Log | `csm:tree_log_honeylocust_full` | 2.0 | 5.0 | axe | 0 |
@@ -191,7 +213,12 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Tall Boxwood Hedge | `csm:hedge_boxwood_tall` |  |  |  |  |
 | Tall Privet Hedge | `csm:hedge_privet_tall` |  |  |  |  |
 | Thick Blue Spruce Log | `csm:tree_log_spruce_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Cabbage Palm Log | `csm:tree_log_sabal_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Camphor Tree Log | `csm:tree_log_camphor_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Coast Redwood Log | `csm:tree_log_redwood_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Eastern White Pine Log | `csm:tree_log_whitepine_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Elm Log | `csm:tree_log_elm_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick English Oak Log | `csm:tree_log_oak_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick European Beech Log | `csm:tree_log_beech_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Ginkgo Log | `csm:tree_log_ginkgo_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Honey Locust Log | `csm:tree_log_honeylocust_thick` | 2.0 | 5.0 | axe | 0 |
@@ -211,7 +238,12 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Thick Sweetgum Log | `csm:tree_log_sweetgum_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Weeping Willow Log | `csm:tree_log_willow_thick` | 2.0 | 5.0 | axe | 0 |
 | Thin Blue Spruce Log | `csm:tree_log_spruce_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Cabbage Palm Log | `csm:tree_log_sabal_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Camphor Tree Log | `csm:tree_log_camphor_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Coast Redwood Log | `csm:tree_log_redwood_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Eastern White Pine Log | `csm:tree_log_whitepine_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Elm Log | `csm:tree_log_elm_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin English Oak Log | `csm:tree_log_oak_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin European Beech Log | `csm:tree_log_beech_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Ginkgo Log | `csm:tree_log_ginkgo_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Honey Locust Log | `csm:tree_log_honeylocust_thin` | 2.0 | 5.0 | axe | 0 |

@@ -31,6 +31,8 @@ import net.minecraft.util.math.BlockPos;
  *   <li><b>Box</b>: a clear trunk and a box-clipped crown wide across the facing, so a row
  *       joins into a pleached hedge on stilts.</li>
  *   <li><b>Pollard</b>: a stout trunk cut back to a head of knuckles, each with a tuft.</li>
+ *   <li><b>Tiered</b>: a tall conifer with its limbs in whorls up the trunk, each tipped with a
+ *       flat pad, the whorls shorter toward the top. Eastern white pine.</li>
  * </ul>
  *
  * <p><b>Growing into the room there is.</b> A street tree next to a building has grown away from
@@ -99,6 +101,9 @@ public final class TreeGenerators {
         break;
       case POLLARD:
         g.pollard(heading);
+        break;
+      case TIERED:
+        g.tiered(heading);
         break;
       default:
         g.head(heading);
@@ -781,6 +786,50 @@ public final class TreeGenerators {
           cluster(knuckle.up(), 1.0);
         }
       }
+    }
+
+    /**
+     * A tall conifer with its limbs in whorls up the trunk: a clear trunk, then every three or
+     * four blocks a whorl of level limbs, each tipped with a flat pad, the limbs shorter and
+     * thinner toward the top, and a tuft on the leader. Each whorl is turned from the one below,
+     * so the layers do not stack limb over limb.
+     */
+    void tiered(double heading) {
+      int height = range(p.heightMin, p.heightMax);
+      int clear = range(p.trunkMin, p.trunkMax);
+      int lookOut = Math.min(12, p.reachMax + (int) Math.ceil(p.clusterRx));
+      double[] away = awayFromWalls(new int[]{clear, (clear + height) / 2, height - 2}, lookOut);
+      double[] settled = settle(heading, away, 0.35);
+      double h = settled[0];
+      int lean = Math.min(p.leanMax + 1, range(p.leanMin, p.leanMax)
+          + (int) Math.round(Math.min(1, settled[1])));
+      int half = height / 2;
+      List<BlockPos> trunk = trunk(height, h, lean,
+          y -> y >= clear && y < height - 2 && rng.nextDouble() < 0.25,
+          y -> y < half ? p.trunkWidth : thinner(p.trunkWidth));
+      if (trunk.size() < clear + 2) {
+        plan.noRoom();
+        return;
+      }
+      BlockPos top = trunk.get(trunk.size() - 1);
+      double span = Math.max(1, trunk.size() - 1 - clear);
+      int whorl = 0;
+      for (int y = clear; y < trunk.size() - 2; y += 2 + rng.nextInt(2)) {
+        BlockPos origin = trunk.get(y);
+        double t = (y - clear) / span;
+        double reach = (p.reachMax - (p.reachMax - p.reachMin) * t)
+            * (0.8 + rng.nextDouble() * 0.35);
+        int limbs = range(p.limbsMin, p.limbsMax);
+        double base = h + whorl * 0.9 + rng.nextDouble() * 0.6;
+        List<Double> taken = new ArrayList<>();
+        for (int i = 0; i < limbs; i++) {
+          double a = base + i * 2 * Math.PI / limbs + (rng.nextDouble() - 0.5) * 0.5;
+          limbWithCluster(origin, a, Math.max(1.5, reach), range(p.riseMin, p.riseMax),
+              t < 0.5 ? p.limbWidth : thinner(p.limbWidth), 1.0 - 0.35 * t, taken, false);
+        }
+        whorl++;
+      }
+      cluster(top.up(), 0.6);
     }
 
     void head(double heading) {

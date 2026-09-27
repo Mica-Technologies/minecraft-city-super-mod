@@ -108,6 +108,15 @@ crown adds dead fronds hanging down the trunk. The sprite is a 2 x 2 sheet (live
 boot), so one crown needs one texture. The palm log below reaches into the crown because the crown
 counts as leaves.
 
+The cabbage palm has its own crown (`PALM_CABBAGE`, and `_SKIRT` with the dead fronds): a full
+round head rather than the fan palm's tight ball. It has 33 fronds in three tiers, reaching up, level
+and bowed down, each tier turned from the one above so it fills the gaps, and each frond bending
+further toward its tip, as a sabal's costapalmate fans do. The fronds are 48 px long and 26 px
+wide, against the fan palm's 26 and 16. The boot is sized for the stouter trunk (a leaf type's
+`bootRadius`), and the sheet has its own darker, bluer green. The lowest tier may bow half a block
+below the crown's cell; only a skirt hangs further. The trunk is its own wood, `sabal`, a medium
+log whose bark is the criss-cross of old frond bases.
+
 ### Seasons
 
 Autumn and blossom sets are separate blocks: `tree_leaves_<species>_autumn`, and
@@ -182,12 +191,13 @@ That idea comes from Biomes O' Plenty's generator builders (see Decisions).
 
 | Shape | How it grows | Presets |
 |---|---|---|
-| Profile | Straight trunk, crown radius from a profile of height (rounded bottom, pointed top) | cypress, ginkgo, poplar, sweetgum, hornbeam, arborvitae, Colorado blue spruce |
-| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum, paper birch, Japanese maple, Scots pine, European beech |
+| Profile | Straight trunk, crown radius from a profile of height (rounded bottom, pointed top) | cypress, ginkgo, poplar, sweetgum, hornbeam, arborvitae, Colorado blue spruce, coast redwood |
+| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum, paper birch, Japanese maple, Scots pine, European beech, old English oak, camphor |
 | Palm | Sideways offset grows with the square of the height, so the trunk curves; crown on the top log | fan palm, leaning feather palm, queen palm, cabbage palm |
 | Head | Clear trunk and a clipped ball | ball-head plane |
 | Box | Clear trunk and a box crown, wide across the facing | pleached linden: a row joins into a hedge on stilts |
 | Pollard | Stout trunk cut back to knuckles, a tuft on each | pollarded plane |
+| Tiered | Tall trunk; above a clear stretch, a whorl of level limbs every two or three blocks, each tipped with a flat pad, shorter toward the top, each whorl turned from the last | eastern white pine |
 
 The last six presets are regional: paper birch (New Hampshire), Colorado blue spruce, cabbage
 palm (Florida), Japanese maple, Scots pine (Sweden) and European beech (Denmark). California was
@@ -196,7 +206,22 @@ beech) and eight leaves blocks, autumn sets for the birch, maple and beech among
 Japanese maple's leaves are small five-lobed stars (the `palmate` sprite), and the spruce and
 pine wear a needle sprite across a whole cluster (`needle_wide`) with the broadleaf
 arrangement, since a wide conifer crown needs sheets rather than the cypress's upright cards.
-The cabbage palm is the fan palm's crowns on a shorter trunk, skirted more often than not.
+The cabbage palm first wore the fan palm's crown on a thin trunk, which looked spindly; it now
+has its own crown and trunk (Palm crowns, above), skirted more often than not.
+
+Four big trees followed, for specimens and parks rather than streets:
+
+| Preset | Shape | How big | What it is |
+|---|---|---|---|
+| Coast redwood (California) | Profile | 30-36 tall | A full-width trunk clear for 7-9 blocks, a narrow dark spire above |
+| Eastern white pine (New Hampshire's state tree) | Tiered | 22-27 tall | A tall straight trunk, layered pads of soft blue-green needles |
+| Old English oak (Denmark's Kongeegen, Sweden's old oaks) | Limb | 25-30 across | A full-width trunk and heavy limbs under a vast, dense crown |
+| Camphor tree (Japan's shrine trees) | Limb | a high dome some 25 across | A full-width trunk forking low into climbing limbs |
+
+A big broadleaf crown reads as one crown only when its clusters are nearly as wide as its limbs
+are long; with the reach of a small tree's and bigger clusters the crown broke into separate
+lobes. They brought four woods (redwood, white pine, oak, camphor) and five leaves blocks,
+`oak_autumn` among them.
 
 A limbed tree has **no leaves below its street clearance** (about 4 to 5 blocks over a road, 3
 in a park). Its canopy stays above traffic and its trunk stays clear.
@@ -409,7 +434,10 @@ and fails when any preset grows more than 15% past its recorded budget.
 One pass (2026-09-23) took one of every preset from 82,178 quads to 31,199 without changing how
 the trees read. The adaptive generator that followed (forks, side branches, lopsided clusters)
 brought it back to about 33,700, the price of limbed trees that no longer all look alike. The six
-regional presets added about 9,800 more (the beech, a big broad dome, is 3,951 of it). Leaves were about 85% of a tree, at 25 to 30 quads a cell.
+regional presets added about 9,800 more (the beech, a big broad dome, is 3,951 of it). The
+cabbage palm's own crown took it from 231 to 439, and the four big trees added about 29,400: the
+old oak, the camphor and the white pine are some 9,000 each, nearly half of it their thick limbs.
+They are specimens: a street of them costs what a street of three times as many live oaks does. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
 - **Sheeted leaves.** Every leaf type but clipped draws a leaf sheet on each open face (one quad,
   facing out, 1 px inside the face), a tuft card past each open side and the top, and one card
   inside, where they had drawn six interior cards, three fringe cards per open face and cover

@@ -49,11 +49,18 @@ public final class TreePalmGeometry {
   public static List<TreeLogGeometry.Quad> quads(TreeLeafType type, int variant, boolean fancy) {
     Random rng = new Random(type.ordinal() * 6151L + variant * 92821L);
     List<TreeLogGeometry.Quad> quads = new ArrayList<>();
-    boot(quads);
+    boot(quads, type.bootRadius);
 
     boolean feather = type == TreeLeafType.PALM_FEATHER;
     int count = fancy ? type.fronds : type.fronds * 2 / 3;
     double turn = variant * Math.PI / 2 / count + rng.nextDouble() * 0.3;
+    if (type.tiers >= 3) {
+      tieredFronds(quads, type, rng, count, turn);
+      if (type.skirt) {
+        skirt(quads, type, rng, fancy);
+      }
+      return quads;
+    }
     int segments = feather ? 3 : 2;
     double droop = feather ? 1.25 : 0.35;
     for (int i = 0; i < count; i++) {
@@ -79,21 +86,64 @@ public final class TreePalmGeometry {
     }
 
     if (type.skirt) {
-      int dead = fancy ? type.fronds : type.fronds / 2;
-      for (int i = 0; i < dead; i++) {
-        double yaw = i * 2 * Math.PI / dead + (rng.nextDouble() - 0.5) * 0.4;
-        double dx = Math.cos(yaw);
-        double dz = Math.sin(yaw);
-        double out = 5 + rng.nextDouble() * 1.5;
-        double[][] spine = {
-            {8 + dx * 2, 4 + rng.nextDouble(), 8 + dz * 2},
-            {8 + dx * out, -3, 8 + dz * out},
-            {8 + dx * (out + 0.5), -26 - rng.nextDouble() * 6, 8 + dz * (out + 0.5)},
-        };
-        strip(quads, spine, side(yaw, (rng.nextDouble() - 0.5) * 0.3), 7, DEAD);
-      }
+      skirt(quads, type, rng, fancy);
     }
     return quads;
+  }
+
+  /**
+   * A full round head (the cabbage palm): fronds in three tiers, the young ones reaching up, a
+   * level ring, and old ones bowed down, each bending further toward its tip, as a sabal's
+   * costapalmate fans do. Every tier's fronds are spread round the whole crown.
+   */
+  private static void tieredFronds(List<TreeLogGeometry.Quad> quads, TreeLeafType type,
+      Random rng, int count, double turn) {
+    double[] lowDeg = {40, 6, -16};
+    double[] spanDeg = {25, 20, 12};
+    double[] droop = {0.35, 0.5, 0.5};
+    double[] lengthScale = {0.82, 1.0, 1.0};
+    int segments = 3;
+    double start = type.bootRadius * 0.6;
+    for (int i = 0; i < count; i++) {
+      int tier = i % 3;
+      // Stagger the tiers, so the fronds of one tier fill the gaps of the one above.
+      double yaw = turn + i * 2 * Math.PI / count + tier * 0.7 + (rng.nextDouble() - 0.5) * 0.3;
+      double elevation = Math.toRadians(lowDeg[tier] + rng.nextDouble() * spanDeg[tier]);
+      double length = type.frondLength * (0.8 + rng.nextDouble() * 0.3) * lengthScale[tier];
+      double roll = (rng.nextDouble() - 0.5) * 0.8;
+      double dx = Math.cos(yaw);
+      double dz = Math.sin(yaw);
+      double[][] spine = new double[segments + 1][];
+      spine[0] = new double[]{8 + dx * start, FROND_BASE_Y + (tier == 0 ? 1.5 : 0)
+          + rng.nextDouble(), 8 + dz * start};
+      for (int k = 1; k <= segments; k++) {
+        double e = elevation - droop[tier] * (k - 1) / (segments - 1);
+        double step = length / segments;
+        double[] q = spine[k - 1];
+        spine[k] = new double[]{q[0] + dx * Math.cos(e) * step, q[1] + Math.sin(e) * step,
+            q[2] + dz * Math.cos(e) * step};
+      }
+      strip(quads, spine, side(yaw, roll), type.frondWidth, LIVE);
+    }
+  }
+
+  /** Dead fronds hanging down the trunk from under the crown, clear of the boot. */
+  private static void skirt(List<TreeLogGeometry.Quad> quads, TreeLeafType type, Random rng,
+      boolean fancy) {
+    int dead = fancy ? type.fronds : type.fronds / 2;
+    double reach = type.bootRadius + 2.6;
+    for (int i = 0; i < dead; i++) {
+      double yaw = i * 2 * Math.PI / dead + (rng.nextDouble() - 0.5) * 0.4;
+      double dx = Math.cos(yaw);
+      double dz = Math.sin(yaw);
+      double out = reach + rng.nextDouble() * 1.5;
+      double[][] spine = {
+          {8 + dx * 2, 4 + rng.nextDouble(), 8 + dz * 2},
+          {8 + dx * out, -3, 8 + dz * out},
+          {8 + dx * (out + 0.5), -26 - rng.nextDouble() * 6, 8 + dz * (out + 0.5)},
+      };
+      strip(quads, spine, side(yaw, (rng.nextDouble() - 0.5) * 0.3), 7, DEAD);
+    }
   }
 
   /** The unit vector across a frond: horizontal and square to its yaw, rolled a little. */
@@ -124,9 +174,8 @@ public final class TreePalmGeometry {
   }
 
   /** The boot: a short square collar the fronds grow from, capped on top. */
-  static void boot(List<TreeLogGeometry.Quad> quads) {
-    double r0 = 2.4;
-    double r1 = 3.4;
+  static void boot(List<TreeLogGeometry.Quad> quads, double r0) {
+    double r1 = r0 + 1.0;
     double top = FROND_BASE_Y + 1;
     double[][] ring0 = {{8 - r0, 0, 8 - r0}, {8 + r0, 0, 8 - r0}, {8 + r0, 0, 8 + r0},
         {8 - r0, 0, 8 + r0}};

@@ -31,7 +31,7 @@ class TreePalmGeometryTest {
   @Test
   void crownReachesWellPastTheCell() {
     for (TreeLeafType type : new TreeLeafType[]{TreeLeafType.PALM_FAN,
-        TreeLeafType.PALM_FEATHER}) {
+        TreeLeafType.PALM_FEATHER, TreeLeafType.PALM_CABBAGE}) {
       List<TreeLogGeometry.Quad> quads = TreePalmGeometry.quads(type, 0, true);
       assertFalse(quads.isEmpty());
       assertTrue(reach(quads) > 16, type + " fronds should reach past the neighbouring cells");
@@ -42,6 +42,10 @@ class TreePalmGeometryTest {
   void onlyTheSkirtHangsBelowTheCrown() {
     assertTrue(minY(TreePalmGeometry.quads(TreeLeafType.PALM_FAN, 1, true)) > -16);
     assertTrue(minY(TreePalmGeometry.quads(TreeLeafType.PALM_FAN_SKIRT, 1, true)) < -16);
+    // A cabbage palm's lowest tier bows down beside the trunk, but no further than half a block
+    // below the crown's cell; its skirt hangs well below that.
+    assertTrue(minY(TreePalmGeometry.quads(TreeLeafType.PALM_CABBAGE, 1, true)) > -24);
+    assertTrue(minY(TreePalmGeometry.quads(TreeLeafType.PALM_CABBAGE_SKIRT, 1, true)) < -24);
   }
 
   @Test

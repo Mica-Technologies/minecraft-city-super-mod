@@ -122,12 +122,12 @@ public enum TreePreset {
       TreeLogWidth.THIN, "tree_leaves_spruce_blue", null,
       p -> p.trunk(1, 2).height(12, 15).cluster(2.6, 0)),
   /**
-   * Cabbage palm (sabal), Florida's state tree: shorter and stouter-headed than the Mexican fan
-   * palm, usually still wearing its dead fronds.
+   * Cabbage palm (sabal), Florida's state tree: a stout trunk criss-crossed with old frond bases
+   * and a dense round head of big fans, more often than not still wearing its dead fronds.
    */
-  CABBAGE_PALM("cabbagepalm", Shape.PALM, TreeWood.PALM, TreeLogWidth.THIN, TreeLogWidth.THIN,
-      "tree_crown_palm_fan_skirt", "tree_crown_palm_fan",
-      p -> p.height(8, 12).lean(0, 2)),
+  CABBAGE_PALM("cabbagepalm", Shape.PALM, TreeWood.SABAL, TreeLogWidth.MEDIUM,
+      TreeLogWidth.MEDIUM, "tree_crown_palm_cabbage_skirt", "tree_crown_palm_cabbage",
+      p -> p.height(9, 13).lean(0, 2)),
   /** Japanese maple: a low, many-limbed dome of red leaves, for a garden rather than a street. */
   JAPANESE_MAPLE("japanesemaple", Shape.LIMB, TreeWood.MAPLE, TreeLogWidth.MEDIUM,
       TreeLogWidth.THIN, "tree_leaves_maple_japanese", null,
@@ -142,11 +142,42 @@ public enum TreePreset {
   EUROPEAN_BEECH("beech", Shape.LIMB, TreeWood.BEECH, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
       "tree_leaves_beech", null,
       p -> p.trunk(3, 4).lean(0, 1).limbs(4, 5).reach(3, 5).rise(3, 5).cluster(3.0, 2.2)
-          .clearance(4).spread(2.2).fork(0.3));
+          .clearance(4).spread(2.2).fork(0.3)),
+  /**
+   * Coast redwood, California: the tallest tree there is, a full-width trunk clear for a long way
+   * and a narrow spire of dark foliage above it.
+   */
+  COAST_REDWOOD("coastredwood", Shape.PROFILE, TreeWood.REDWOOD, TreeLogWidth.FULL,
+      TreeLogWidth.THICK, "tree_leaves_redwood", null,
+      p -> p.trunk(7, 9).height(30, 36).cluster(3.2, 0)),
+  /**
+   * Eastern white pine, New Hampshire's state tree: a tall straight trunk with its limbs in
+   * whorls, each tipped with a flat pad of soft needles, the layers shorter toward the top.
+   */
+  EASTERN_WHITE_PINE("whitepine", Shape.TIERED, TreeWood.WHITE_PINE, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_pine_white", null,
+      p -> p.trunk(7, 9).height(22, 27).lean(0, 1).limbs(3, 4).reach(4, 6).rise(0, 1)
+          .cluster(3.0, 1.2).clearance(6)),
+  /**
+   * An old English oak, the kind Denmark's Kongeegen and Sweden's hundreds-of-years oaks are: a
+   * full-width trunk, heavy limbs reaching far out and a vast, broad crown.
+   */
+  ENGLISH_OAK("englishoak", Shape.LIMB, TreeWood.OAK, TreeLogWidth.FULL, TreeLogWidth.THICK,
+      "tree_leaves_oak", null,
+      p -> p.trunk(5, 6).lean(0, 1).limbs(6, 7).reach(5, 7).rise(4, 6).cluster(4.2, 2.8)
+          .clearance(5).spread(2.8).backLimb(true).fork(0.4)),
+  /**
+   * Camphor tree (kusunoki), Japan's great shrine trees: a massive trunk forking low into limbs
+   * that climb to a high, dense, glossy dome.
+   */
+  CAMPHOR_TREE("camphor", Shape.LIMB, TreeWood.CAMPHOR, TreeLogWidth.FULL, TreeLogWidth.THICK,
+      "tree_leaves_camphor", null,
+      p -> p.trunk(4, 5).lean(0, 1).limbs(6, 7).reach(4, 6).rise(5, 7).cluster(4.4, 3.4)
+          .clearance(5).spread(3.0).fork(0.6));
 
   /** The generator shapes. */
   public enum Shape {
-    PROFILE, LIMB, PALM, HEAD, BOX, POLLARD
+    PROFILE, LIMB, PALM, HEAD, BOX, POLLARD, TIERED
   }
 
   public final String id;
