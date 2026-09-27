@@ -1,8 +1,10 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
+import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
@@ -11,7 +13,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -22,6 +26,10 @@ import net.minecraft.world.WorldServer;
  * or anything above the seat, to flush it: the toilet's flush sound and a swirl of water in the
  * bowl. Which one a click does is decided by where it lands: the back of the block (behind the
  * seat's hinges), or anywhere above the seat, flushes.
+ *
+ * <p>It collides only from {@link #COLLIDE_FROM} back, so the front of the bowl does not stand
+ * in the way of a player in front of it: in a toilet stall that is the space to stand and turn
+ * round in. The outline, and so the click, is the whole toilet.</p>
  *
  * @since 2026.9
  */
@@ -36,6 +44,8 @@ public class BlockToilet extends BlockResidentialFurniture {
   /** A click this high, in blocks, is on the cistern (or its lid, the raised seat lid, the
    * flush valve). */
   private static final double CISTERN_ABOVE = 0.5;
+  /** Where the collision box starts, facing north, in blocks: the back of the bowl. */
+  private static final double COLLIDE_FROM = 7.0 / 16;
 
   private final ICsmSound flushSound;
 
@@ -83,6 +93,17 @@ public class BlockToilet extends BlockResidentialFurniture {
       return true;
     }
     return sit(world, pos, state, player);
+  }
+
+  @Override
+  @Nullable
+  @SuppressWarnings("deprecation")
+  public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockState state,
+      @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
+    AxisAlignedBB box = getBlockBoundingBox(state, world, pos);
+    AxisAlignedBB back = new AxisAlignedBB(box.minX, box.minY, Math.max(box.minZ, COLLIDE_FROM),
+        box.maxX, box.maxY, box.maxZ);
+    return RotationUtils.rotateBoundingBoxByFacing(back, state.getValue(FACING));
   }
 
   /** The flush: its sound, and water swirling in the bowl. */

@@ -1006,38 +1006,41 @@ NAPKIN_BIN = [el([5, 5, 13], [11, 12.5, 16], "shell", NO_DOWN + ("down",)),
                                                                   "west"))]
 
 # --- toilet partitions: a run of stalls placed as a row of fronts, each two blocks tall.
-# The front stands across the middle of its block (a stall 1.5 m deep with the toilet in the
-# block behind); the panel between two stalls runs from the front back to the wall behind the
-# toilet, a block and a half, on the line between two blocks, so that stalls are a block wide.
-# Panels and doors 0.31 to 1.81 m, pilasters floor to the headrail on stainless shoes. ------
+# The front stands at the outer edge of its block, the row in front of the toilets, so a stall
+# is two blocks deep: the toilet's block and a clear block to stand in. The panel between two
+# stalls runs from the front back to the wall behind the toilet, two blocks, on the line
+# between two blocks, so that stalls are a block wide. Pilasters are narrow and the door wide,
+# so the doorway is 0.84 of a block (0.81 clear past the open door). Panels and doors 0.31 to
+# 1.81 m, pilasters floor to the headrail on stainless shoes. ------------------------------
 P_BOTTOM, P_TOP = 5.0, 29.0
-HEADRAIL = [el([0, P_TOP, 7.25], [16, 30.5, 8.75], "hardware")]
-PART_FRONT_DOOR = ([el([0, 1.5, 7.5], [2.25, P_TOP, 8.5], "partition"),
-                    el([13.75, 1.5, 7.5], [16, P_TOP, 8.5], "partition"),
-                    el([0, 0, 7.25], [2.25, 1.5, 8.75], "hardware", NO_DOWN),
-                    el([13.75, 0, 7.25], [16, 1.5, 8.75], "hardware", NO_DOWN),
+HEADRAIL = [el([0, P_TOP, 0.25], [16, 30.5, 1.75], "hardware")]
+PART_FRONT_DOOR = ([el([0, 1.5, 0.5], [1.25, P_TOP, 1.5], "partition"),
+                    el([15.25, 1.5, 0.5], [16, P_TOP, 1.5], "partition"),
+                    el([0, 0, 0.25], [1.25, 1.5, 1.75], "hardware", NO_DOWN),
+                    el([15.25, 0, 0.25], [16, 1.5, 1.75], "hardware", NO_DOWN),
                     # the hinges' pilaster leaves, and the latch's keeper inside
-                    el([1.5, 8, 7.4], [2.5, 10, 8.6], "hardware", NO_DOWN + ("down",)),
-                    el([1.5, 24, 7.4], [2.5, 26, 8.6], "hardware", NO_DOWN + ("down",)),
-                    el([13.75, 17.25, 8.5], [14.5, 18.75, 9.1], "hardware", NO_DOWN
+                    el([0.5, 8, 0.4], [1.5, 10, 1.6], "hardware", NO_DOWN + ("down",)),
+                    el([0.5, 24, 0.4], [1.5, 26, 1.6], "hardware", NO_DOWN + ("down",)),
+                    el([15.25, 17.25, 1.5], [16, 18.75, 2.1], "hardware", NO_DOWN
                        + ("down",))]
                    + HEADRAIL)
-PART_DOOR = [el([2.5, P_BOTTOM, 7.6], [13.5, P_TOP - 0.25, 8.4], "partition"),
-             el([2.5, 8, 7.4], [3.75, 10, 8.6], "hardware", ("north", "south", "east", "up",
+PART_DOOR = [el([1.5, P_BOTTOM, 0.6], [15, P_TOP - 0.25, 1.4], "partition"),
+             el([1.5, 8, 0.4], [2.75, 10, 1.6], "hardware", ("north", "south", "east", "up",
                                                              "down")),
-             el([2.5, 24, 7.4], [3.75, 26, 8.6], "hardware", ("north", "south", "east", "up",
+             el([1.5, 24, 0.4], [2.75, 26, 1.6], "hardware", ("north", "south", "east", "up",
                                                               "down")),
              # outside: the pull and the latch's occupancy indicator
-             el([11.75, 15.5, 7.1], [12.5, 17.5, 7.6], "hardware", NO_DOWN + ("down",)),
-             el([12.25, 18.25, 7.3], [13.25, 19.25, 7.6], "rubber", NO_DOWN + ("down",)),
-             # inside: the slide latch and a coat hook
-             el([11.25, 17.5, 8.4], [13.5, 18.5, 8.9], "hardware", ("south", "east", "west", "up",
-                                                                   "down")),
-             el([7.6, 24, 8.4], [8.4, 24.8, 9.7], "hardware", ("south", "east", "west", "up",
-                                                              "down")),
-             el([7.6, 24.8, 9.2], [8.4, 25.8, 9.7], "hardware", ("north", "south", "east",
-                                                                 "west", "up"))]
-PART_HINGE = (2.5, 8.4)  # the door's hinge line, facing north, in x and z
+             el([13.25, 15.5, 0.1], [14, 17.5, 0.6], "hardware", NO_DOWN + ("down",)),
+             el([13.75, 18.25, 0.3], [14.75, 19.25, 0.6], "rubber", NO_DOWN + ("down",)),
+             # inside: the slide latch and a coat hook, short enough to clear the panel when
+             # the door lies open along it
+             el([12.75, 17.5, 1.4], [15, 18.5, 1.9], "hardware", ("south", "east", "west", "up",
+                                                                 "down")),
+             el([7.85, 24, 1.4], [8.65, 24.8, 2.3], "hardware", ("south", "east", "west", "up",
+                                                                "down")),
+             el([7.85, 24.8, 1.8], [8.65, 25.8, 2.3], "hardware", ("north", "south", "east",
+                                                                  "west", "up"))]
+PART_HINGE = (1.5, 1.4)  # the door's hinge line, facing north, in x and z
 
 
 def swung(specs, pivot=PART_HINGE):
@@ -1050,18 +1053,18 @@ def swung(specs, pivot=PART_HINGE):
 
 
 PART_OPEN = swung(PART_DOOR)
-PART_FRONT_FIXED = ([el([0, 1.5, 7.5], [16, P_TOP, 8.5], "partition"),
-                     el([0, 0, 7.25], [16, 1.5, 8.75], "hardware", NO_DOWN)]
+PART_FRONT_FIXED = ([el([0, 1.5, 0.5], [16, P_TOP, 1.5], "partition"),
+                     el([0, 0, 0.25], [16, 1.5, 1.75], "hardware", NO_DOWN)]
                     + HEADRAIL)
-PART_DIVIDER = [el([-0.4, P_BOTTOM, 8.5], [0.4, P_TOP, 31.5], "partition"),
+PART_DIVIDER = [el([-0.4, P_BOTTOM, 1.5], [0.4, P_TOP, 31.5], "partition"),
                 el([-0.9, 8, 30.25], [0.9, 9.5, 32], "hardware", NO_DOWN + ("down",)),
                 el([-0.9, 24.5, 30.25], [0.9, 26, 32], "hardware", NO_DOWN + ("down",)),
-                el([-0.9, 8, 8.5], [0.9, 9.5, 10], "hardware", ALL),
-                el([-0.9, 24.5, 8.5], [0.9, 26, 10], "hardware", ALL)]
+                el([-0.9, 8, 1.5], [0.9, 9.5, 3], "hardware", ALL),
+                el([-0.9, 24.5, 1.5], [0.9, 26, 3], "hardware", ALL)]
 # A panel with no front ends at a slim pilaster of its own.
-PART_POST = [el([-0.75, 1.5, 7.5], [0.75, P_TOP, 8.5], "partition"),
-             el([-1, 0, 7.25], [1, 1.5, 8.75], "hardware", NO_DOWN),
-             el([-0.9, P_TOP, 7.35], [0.9, 29.75, 8.65], "hardware", NO_DOWN)]
+PART_POST = [el([-0.75, 1.5, 0.5], [0.75, P_TOP, 1.5], "partition"),
+             el([-1, 0, 0.25], [1, 1.5, 1.75], "hardware", NO_DOWN),
+             el([-0.9, P_TOP, 0.35], [0.9, 29.75, 1.65], "hardware", NO_DOWN)]
 PARTITION_KINDS = {
     "door": {"front": PART_FRONT_DOOR, "door": PART_DOOR, "open": PART_OPEN,
              "divider": PART_DIVIDER},
