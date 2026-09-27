@@ -385,7 +385,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
 - `assets/docs/LANE_CONTROL_SYSTEM.md` -- Reversible lanes: the lane control signal, its own
   controller cabinet, groups on a time-of-day schedule, and why the clearance runs one way only
-- `assets/docs/LIGHTING_SYSTEM.md` -- 4-state on/off control, light-up air projection, AbstractBrightLight, the decorative pendant/sconce family and its 3-material OBJ finish/lens pattern
+- `assets/docs/LIGHTING_SYSTEM.md` -- 4-state on/off control, light-up air projection, AbstractBrightLight, the decorative pendant/sconce family and its 3-material OBJ finish/lens pattern, the tall building (aviation obstruction) beacons flashed by texture
 - `assets/docs/UTILITIES_SYSTEM.md` -- The Utilities module (was Power Grid; mod id `csm_powergrid`
   kept): why only the display name changed, why it requires Roads, why two tabs (Power Grid and
   Utilities); the Forge Energy integration and the utility pole pieces; the building service
@@ -649,6 +649,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   geometry for 11 models, draws the shared metal/shade/lens swatch textures, and emits all 33
   blockstates plus lang and tab-registration fragments from one catalogue, so an id cannot drift
   from its blockstate
+- `gen_obstruction_beacons.py` -- the Lighting tab's tall building beacons (`BlockObstructionBeacon`):
+  the red L-864 style flashing beacon and the white L-865 style strobe, each standing on a block or
+  a shelf bracket off a wall; the flash is a three-frame lens strip whose `.mcmeta` times each frame
+  to FAA AC 150/5345-43J (30 and 40 flashes a minute), with `_e` companions dark between flashes;
+  `--check`, `--fragments`
 - `gen_cmu.py` -- the four concrete masonry sets: the coursed textures, and the five
   blockstates and six models each set needs. The bond is drawn at 8 x 4 px, two units across
   a block and four courses up it, because a real 8 x 16 in unit does not divide sixteen
