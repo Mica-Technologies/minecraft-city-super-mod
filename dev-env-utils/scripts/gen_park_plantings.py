@@ -430,19 +430,38 @@ prop("tree_pit_mulch", "GROUND", 16, 0,
 
 
 # --- joining blocks: multipart on four actual-state sides ---
-def joining(registry, kind, height, width, names, post, side, item_extra=(), side_when="true"):
+SIDES = (("north", 0), ("east", 90), ("south", 180), ("west", 270))
+
+
+def joining(registry, kind, height, width, names, post, side, item_extra=(), side_when="true",
+            corner=None):
     """post: elements always drawn; side: elements drawn toward north, turned for the others.
 
     A hedge or fence draws a side where it joins (side_when "true"); a bed draws its wall where
-    it does not ("false"), so a run of beds is one bed walled only round the outside."""
+    it does not ("false"), so a run of beds is one bed walled only round the outside.
+
+    corner: the north-east corner post of a walled block, turned for the other three and drawn
+    wherever either wall beside it is. A bed's wall then stops short of the corners, so two
+    walls never overlap there: turned, their tops carry turned pixels on one plane, which
+    z-fight."""
     models = {registry + "_post": post, registry + "_side": side}
     parts = [{"apply": {"model": MODEL + registry + "_post"}}]
-    for direction, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+    for direction, rot in SIDES:
         apply = {"model": MODEL + registry + "_side"}
         if rot:
             apply["y"] = rot
             apply["uvlock"] = False
         parts.append({"when": {direction: side_when}, "apply": apply})
+    if corner is not None:
+        models[registry + "_corner"] = corner
+        for i, (direction, rot) in enumerate(SIDES):
+            apply = {"model": MODEL + registry + "_corner"}
+            if rot:
+                apply["y"] = rot
+                apply["uvlock"] = False
+            after = SIDES[(i + 1) % 4][0]
+            parts.append({"when": {"OR": [{direction: side_when}, {after: side_when}]},
+                          "apply": apply})
     # The item: a post and a side either way, so the icon reads as a run.
     item_model = {"parent": "csm:block/parks/landscape/" + registry + "_item"}
     models[registry + "_item"] = {
@@ -488,15 +507,25 @@ for mat, names_m in (("concrete", ("Concrete", "Beton", "hormigón", "betong")),
                      ("corten", ("Corten Steel", "Cortenstahl", "acero corten", "cortenstål"))):
     reg = "raised_bed_" + mat
     tex = {"wall": T("planter_" + mat), "soil": T("soil"), "particle": T("planter_" + mat)}
-    post = model(tex, [box([0, 0, 0], [16, 10, 16], "soil", per={"up": "soil"})])
-    side = model(tex, [box([0, 0, 0], [16, 12, 2], "wall")])
+    # The soil is only its top (and its underside): its sides would lie on the walls' outer
+    # faces, or face a joined bed's soil across the block line.
+    post = model(tex, [box([0, 0, 0], [16, 10, 16], "soil", faces=("up", "down"))])
+    # A wall stops at the corners, which have posts of their own (see joining), and has no end
+    # faces, since a corner post always stands at each end of it.
+    side = model(tex, [box([2, 0, 0], [14, 12, 2], "wall", faces=("north", "south", "up"))])
+    # No wall draws its underside: the soil's covers the whole block, on the same plane.
+    corner = model(tex, [box([14, 0, 0], [16, 12, 2], "wall",
+                             faces=("north", "south", "east", "west", "up"))])
     # The item is a single bed: walls on all four sides.
-    walls = [box([0, 0, 0], [16, 12, 2], "wall"), box([0, 0, 14], [16, 12, 16], "wall"),
-             box([0, 0, 2], [2, 12, 14], "wall"), box([14, 0, 2], [16, 12, 14], "wall")]
+    sides4 = ("north", "south", "east", "west", "up")
+    walls = [box([0, 0, 0], [16, 12, 2], "wall", faces=sides4),
+             box([0, 0, 14], [16, 12, 16], "wall", faces=sides4),
+             box([0, 0, 2], [2, 12, 14], "wall", faces=sides4),
+             box([14, 0, 2], [16, 12, 14], "wall", faces=sides4)]
     joining(reg, "BED", 12, 16,
             ("Raised %s Planting Bed" % names_m[0], "Hochbeet (%s)" % names_m[1],
              "Bancal elevado de %s" % names_m[2], "Upphöjd odlingsbädd av %s" % names_m[3]),
-            post, side, item_extra=walls, side_when="false")
+            post, side, item_extra=walls, side_when="false", corner=corner)
     reg = "planter_" + mat
     tex = {"side": T("planter_" + mat), "top": T("planter_%s_top" % mat),
            "particle": T("planter_" + mat)}
