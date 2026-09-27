@@ -42,6 +42,72 @@
         "y": 270,
         "uvlock": false
       }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "false"
+          },
+          {
+            "east": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:parks/landscape/raised_bed_concrete_corner"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "false"
+          },
+          {
+            "south": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:parks/landscape/raised_bed_concrete_corner",
+        "y": 90,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "false"
+          },
+          {
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:parks/landscape/raised_bed_concrete_corner",
+        "y": 180,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "west": "false"
+          },
+          {
+            "north": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:parks/landscape/raised_bed_concrete_corner",
+        "y": 270,
+        "uvlock": false
+      }
     }
   ]
 }

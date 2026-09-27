@@ -532,7 +532,9 @@ joining_block("fountain_basin", "BED", 11, 16,
               model(stone_water, [box([0, 0, 0], [16, 11, 2.5], "stone")]),
               [box([0, 0, 0], [16, 11, 2.5], "stone"), box([0, 0, 13.5], [16, 11, 16], "stone"),
                box([0, 0, 2.5], [2.5, 11, 13.5], "stone"),
-               box([13.5, 0, 2.5], [16, 11, 13.5], "stone")], "false")
+               box([13.5, 0, 2.5], [16, 11, 13.5], "stone")], "false",
+              # The walls overlap at the corners; locked, their rims show the same stone there.
+              uvlock=True)
 
 
 def curtain(x0, x1, z, y0, y1, facing_z=True):

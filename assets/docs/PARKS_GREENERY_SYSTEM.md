@@ -290,6 +290,12 @@ model copies move the bracket plate back to the thinner pole's skin, as
 Their wall is drawn where the side is *not* joined (`side_when "false"`). A hedge or fence draws an
 arm where it *is* joined.
 
+A raised bed's wall stops 2 px short of each corner, and the corner is a post of its own, drawn
+where either wall beside it is (a multipart `OR`). Two whole walls overlapped there, and a turned
+wall's top carries turned pixels, so the corners flickered. The soil draws only its top and
+underside: its sides lay on the walls' outer faces. The fountain basin keeps whole walls, turned
+with `uvlock` as the pergola's beams are, so its corners carry the same stone.
+
 ### Regional plantings and nursery pots
 
 A handful of plants native to each of six places, so a garden or a plant nursery can be stocked
@@ -488,6 +494,12 @@ renderer.
   their `generate` with `model_depth.py`, which moves the smaller face along its normal until
   the planes are 0.2 px apart (see Residential Furniture in `NOVELTIES_SYSTEM.md`). Draw details
   flush and let it do so; hand-nudged offsets are measured as the design.
+- **`model_depth.py` sees only the unturned parts of a multipart.** A side turned by `y` is
+  never measured against the post or the other sides, and item models no blockstate draws are
+  not measured at all. Where turned sides meet (a bed's corners), keep them from overlapping, or
+  turn them with `uvlock` so they carry the same pixels. It also moves the smaller face out in
+  front: the raised bed's soil side ended up 0.2 px in front of its wall, so leave out a face
+  that only lies on another rather than letting it be separated.
 - **The `Block` constructor asks before your fields exist.** `isOpaqueCube` and `createBlockState`
   run inside `super(...)`. A class constructed by name must stash whatever those calls read (the
   registry name, `BlockParkProp`'s `Kind`) in a `ThreadLocal` before calling `super`, as every

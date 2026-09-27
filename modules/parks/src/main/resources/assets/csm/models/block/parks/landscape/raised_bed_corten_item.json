@@ -18,42 +18,6 @@
         16
       ],
       "faces": {
-        "north": {
-          "texture": "#soil",
-          "uv": [
-            0,
-            6,
-            16,
-            16
-          ]
-        },
-        "south": {
-          "texture": "#soil",
-          "uv": [
-            0,
-            6,
-            16,
-            16
-          ]
-        },
-        "east": {
-          "texture": "#soil",
-          "uv": [
-            0,
-            6,
-            16,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#soil",
-          "uv": [
-            0,
-            6,
-            16,
-            16
-          ]
-        },
         "up": {
           "texture": "#soil",
           "uv": [
@@ -130,15 +94,6 @@
             16,
             2
           ]
-        },
-        "down": {
-          "texture": "#wall",
-          "uv": [
-            0,
-            14,
-            16,
-            16
-          ]
         }
       }
     },
@@ -198,15 +153,6 @@
             16,
             16
           ]
-        },
-        "down": {
-          "texture": "#wall",
-          "uv": [
-            0,
-            0,
-            16,
-            2
-          ]
         }
       }
     },
@@ -222,6 +168,24 @@
         14
       ],
       "faces": {
+        "north": {
+          "texture": "#wall",
+          "uv": [
+            14,
+            4,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wall",
+          "uv": [
+            0,
+            4,
+            2,
+            16
+          ]
+        },
         "east": {
           "texture": "#wall",
           "uv": [
@@ -241,15 +205,6 @@
           ]
         },
         "up": {
-          "texture": "#wall",
-          "uv": [
-            0,
-            2,
-            2,
-            14
-          ]
-        },
-        "down": {
           "texture": "#wall",
           "uv": [
             0,
@@ -272,6 +227,24 @@
         14
       ],
       "faces": {
+        "north": {
+          "texture": "#wall",
+          "uv": [
+            0,
+            4,
+            2,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wall",
+          "uv": [
+            14,
+            4,
+            16,
+            16
+          ]
+        },
         "east": {
           "texture": "#wall",
           "uv": [
@@ -291,15 +264,6 @@
           ]
         },
         "up": {
-          "texture": "#wall",
-          "uv": [
-            14,
-            2,
-            16,
-            14
-          ]
-        },
-        "down": {
           "texture": "#wall",
           "uv": [
             14,
