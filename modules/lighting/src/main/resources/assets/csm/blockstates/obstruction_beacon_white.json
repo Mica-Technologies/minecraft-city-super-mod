@@ -24,11 +24,7 @@
     },
     "lit": {
       "true": {},
-      "false": {
-        "textures": {
-          "lens": "csm:blocks/lighting/obstruction/lens_white_off"
-        }
-      }
+      "false": {}
     },
     "inventory": [
       {}

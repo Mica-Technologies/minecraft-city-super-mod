@@ -354,16 +354,25 @@ Obstruction Lights):
   100 to 1333 ms. The beacon flashes as the tower crane's L-864 lights do (CONSTRUCTION_SITE.md):
   a 100 ms rise, a 700 ms hold and a 100 ms fade, dark for the rest of the two-second cycle.
 - L-865 (white): 40 flashes a minute (one every 1.5 s), a flash of under 100 ms by day and
-  twilight. The strobe is one tick (50 ms) at full, then 1.45 s dark. (By night a real L-865 may
-  run a longer, dimmer flash, 100 to 1000 ms; a dual system hands the night to a red L-864
-  instead, which is the other block.)
+  twilight. The strobe is 100 ms at full and a 60 ms fade, then dark to the end of the 1.5 s. A
+  single 50 ms tick, the first version, was not seen in game at all, so it is as long as the
+  standard allows and a little fade. (By night a real L-865 may run a longer, dimmer flash, 100
+  to 1000 ms; a dual system hands the night to a red L-864 instead, which is the other block.)
 
-**The flash is the texture.** Each lit lens is a three-frame strip (dark, half, full) whose
-`.mcmeta` lists the frames with their own times in ticks, so every beacon in the world flashes in
-step with no tile entity, renderer or tick; the crane's lights, by contrast, take a phase from
-their position, since they are drawn by its renderer. The strip's `_e` companion is transparent
-in its dark frames, so under OptiFine only the flash glows. The lens faces are unshaded. A lit
-beacon gives a steady block light of 9 (the airside obstruction lights' level); light cannot
+**The flash is a renderer's.** `TileEntityObstructionBeaconRenderer` draws it, and only while
+it is on: a fullbright sleeve just outside the lens, a small hot glow facing the camera, and a
+wide soft bloom that grows as the surroundings darken (a quarter of it in full daylight). The
+glow keeps a minimum size on screen, so a beacon on a roof a hundred blocks off still reads as a
+point of light; the tile entity draws to 256 blocks. The timing comes from the wall clock, so
+every beacon in view flashes in step. The models carry only the dark lens.
+
+It was first the lens texture's animation (a three-frame strip timed by its `.mcmeta`, with `_e`
+companions), which needs no tile entity. It did not work: a baked model is drawn at the light
+around it, so the red flash read as a slightly lighter lens by day and dim by night, and the
+strobe's one-tick frame was not seen at all. Brightness and glow need a renderer. The tile
+entity holds nothing and never ticks, and the renderer returns at once between flashes.
+
+A lit beacon gives a steady block light of 9 (the airside obstruction lights' level); light cannot
 flash without ticking.
 
 **Lit unless powered.** A real obstruction light burns all the time (the red one by night, from

@@ -1,7 +1,10 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
@@ -33,6 +36,10 @@ public class CsmLighting {
   @Mod.Instance(MOD_ID)
   public static CsmLighting instance;
 
+  @SidedProxy(clientSide = "com.micatechnologies.minecraft.csm.lighting.CsmLightingClientProxy",
+              serverSide = "com.micatechnologies.minecraft.csm.lighting.CsmLightingCommonProxy")
+  public static ICsmProxy proxy;
+
   private static Logger logger;
 
   public static Logger getLogger() {
@@ -43,5 +50,12 @@ public class CsmLighting {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
+    proxy.preInit(event);
+  }
+
+  @Mod.EventHandler
+  public void init(FMLInitializationEvent event) {
+    // Client: bind this module's tile-entity renderers. Server: nothing.
+    proxy.init(event);
   }
 }
