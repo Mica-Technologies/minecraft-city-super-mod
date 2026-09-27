@@ -24,6 +24,8 @@ import net.minecraft.world.World;
  *   start a test from cold or hot.</li>
  *   <li>{@code ff <seconds>} -- runs that much simulated time at once.</li>
  *   <li>{@code rescan} -- rescans the room at your feet now, and says how long it took.</li>
+ *   <li>{@code perf [reset]} -- what the simulation has cost the server tick since the counters
+ *   were last reset: time per step by phase, rescans and why, cells flooded, block changes seen.</li>
  * </ul>
  *
  * @author Mica Technologies
@@ -40,7 +42,7 @@ public class CommandHvac extends CommandBase {
 
   @Override
   public String getUsage(ICommandSender sender) {
-    return "/csmhvac <info [x y z]|spaces|settemp <F>|ff <seconds>|rescan>";
+    return "/csmhvac <info [x y z]|spaces|settemp <F>|ff <seconds>|rescan|perf [reset]>";
   }
 
   @Override
@@ -114,6 +116,9 @@ public class CommandHvac extends CommandBase {
         info(sender, w, at);
         break;
       }
+      case "perf":
+        perf(sender, w, args.length >= 2 && "reset".equals(args[1]));
+        break;
       default:
         throw new WrongUsageException(getUsage(sender));
     }
@@ -147,6 +152,33 @@ public class CommandHvac extends CommandBase {
     say(sender, String.format("  regions %.1fF .. %.1fF", min, max));
   }
 
+  private static void perf(ICommandSender sender, HvacThermalWorld w, boolean reset) {
+    HvacThermalWorld.Perf p = w.perf;
+    long now = w.world.getTotalWorldTime();
+    if (reset || p.sinceTick == Long.MIN_VALUE) {
+      p.reset(now);
+      say(sender, "HVAC cost counters reset.");
+      return;
+    }
+    double seconds = Math.max(1, now - p.sinceTick) / 20.0;
+    long steps = Math.max(1, p.steps);
+    double total = (p.rescanNanos + p.attachNanos + p.couplingNanos + p.stepNanos
+        + p.playerNanos) / 1e6;
+    say(sender, String.format("HVAC over %.0f s (%d steps): %d spaces, %d anchors", seconds,
+        p.steps, w.spaces().size(), w.anchors().size()));
+    say(sender, String.format("  %.2f ms a step on average, %.1f ms at most; %.3f ms a tick",
+        total / steps, p.maxTickNanos / 1e6, total / (seconds * 20)));
+    say(sender, String.format("  per step: rescan %.2f  attach %.2f  couplings %.2f"
+            + "  control+physics %.2f  players %.2f ms", p.rescanNanos / 1e6 / steps,
+        p.attachNanos / 1e6 / steps, p.couplingNanos / 1e6 / steps, p.stepNanos / 1e6 / steps,
+        p.playerNanos / 1e6 / steps));
+    say(sender, String.format("  rescans: %d on a change, %d periodic; %d couplings;"
+            + " %d floods of %d cells", p.dirtyRescans, p.periodicRescans, p.couplings, p.scans,
+        p.scannedCells));
+    say(sender, String.format("  block changes: %d seen, %d changed a room", p.blockUpdates,
+        p.relevantBlockUpdates));
+  }
+
   private static void say(ICommandSender sender, String text) {
     sender.sendMessage(new TextComponentString(text));
     CsmHvac.getLogger().info("[csmhvac] " + text);
@@ -157,7 +189,7 @@ public class CommandHvac extends CommandBase {
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
       return getListOfStringsMatchingLastWord(args, "info", "spaces", "settemp", "ff",
-          "rescan");
+          "rescan", "perf");
     }
     return Collections.emptyList();
   }
