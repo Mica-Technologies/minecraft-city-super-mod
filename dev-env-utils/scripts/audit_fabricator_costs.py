@@ -235,6 +235,9 @@ def cost_for(registry, info, ancestors):
         return ("SHEET_METAL", "FASTENER_KIT")
 
     if tab == "tabinteriorfinishes":
+        if registry.startswith("floor_") and registry.endswith("_block"):
+            # A floor finish as a full block: the overlay's finish on a block of screed.
+            return cost_for(registry[:-len("_block")], info, ancestors) + ("CONCRETE_MIX",)
         if has_word(registry, "venetian"):
             return ("SHEET_METAL",)
         if has_word(registry, "shade") or has_word(registry, "vertical"):

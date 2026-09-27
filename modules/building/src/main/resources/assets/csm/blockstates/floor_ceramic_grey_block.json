@@ -1,0 +1,15 @@
+{
+  "variants": {
+    "normal": [
+      {
+        "model": "csm:flooring/floor_ceramic_grey_block"
+      },
+      {
+        "model": "csm:flooring/floor_ceramic_grey_block_b"
+      }
+    ],
+    "inventory": {
+      "model": "csm:flooring/floor_ceramic_grey_block"
+    }
+  }
+}

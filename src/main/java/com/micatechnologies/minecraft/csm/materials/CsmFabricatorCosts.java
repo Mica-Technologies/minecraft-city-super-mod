@@ -610,6 +610,15 @@ public final class CsmFabricatorCosts {
    * suggesting concrete.
    */
   private static List<FabricatorIngredient> interiorFinishCost(String registryName) {
+    // A floor finish built up to a full block (floor_<material>_<colour>_block) is its overlay's
+    // finish on a block of screed: what the overlay costs, and a Concrete Mix.
+    if (registryName.startsWith("floor_") && registryName.endsWith("_block")) {
+      List<FabricatorIngredient> finish = interiorFinishCost(
+          registryName.substring(0, registryName.length() - "_block".length()));
+      FabricatorIngredient[] out = finish.toArray(new FabricatorIngredient[finish.size() + 1]);
+      out[finish.size()] = FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1);
+      return cost(out);
+    }
     // Window treatments: an aluminium venetian blind is sheet metal; shades and vertical
     // blinds are fabric; curtains are fabric and a dye.
     if (CsmBlockDisplayNames.hasWord(registryName, "venetian")) {

@@ -9,7 +9,7 @@ The glazing the window treatments hang against is in `WALL_MATERIALS.md` § Glaz
 | Ceilings | the popcorn ceiling and ceiling tiles (`BlockPCC`, `BlockCT*`, `BlockDCT*`) | -- |
 | Window treatments | Venetian Blind (White); Roller Shade (White, Grey, Blackout); Vertical Blind (White); Curtain (Beige, Grey, Navy); Sheer Curtain | `gen_window_treatments.py` |
 | Wall finishes | Painted Drywall (six colours); Ceramic Wall Tile (White Subway, Green Subway, White Square); Acoustic Wall Panel (Grey, Blue, Charcoal); Beadboard (White); Wood Slat Wall (Oak); Corner Guard (Stainless, White Vinyl) | `gen_wall_finishes.py` |
-| Flooring | Carpet Tile (Grey, Blue, Charcoal); Vinyl Composition Tile (White, Beige); Ceramic Floor Tile (White, Grey); Hardwood Floor (Oak, Walnut); Polished Concrete Floor; Rubber Floor (Studded); and the Polished Concrete, Oak Hardwood and Walnut Hardwood sets | `gen_flooring.py` |
+| Flooring | Carpet Tile (Grey, Blue, Charcoal); Vinyl Composition Tile (White, Beige); Ceramic Floor Tile (White, Grey); Hardwood Floor (Oak, Walnut); Polished Concrete Floor; Rubber Floor (Studded); a full block of each of the carpet, vinyl, ceramic and rubber floors; and the Polished Concrete, Oak Hardwood and Walnut Hardwood sets | `gen_flooring.py` |
 
 ## Window treatments
 
@@ -61,7 +61,8 @@ looking at the window -- so they turn with it.
 
 ## Flooring
 
-Two ways to floor a room, both chosen on purpose (2026-09-18):
+Three ways to floor a room, the first two chosen on purpose (2026-09-18), the third added for
+issue #245:
 
 - **An overlay** (`BlockFloorFinish`, constructed by registry name `floor_<material>_<colour>`) --
   a one-pixel finish laid on top of any floor, as vanilla carpet is. It needs a solid top under it
@@ -71,6 +72,14 @@ Two ways to floor a room, both chosen on purpose (2026-09-18):
 - **A full-block set** (block, stairs, slab and fence, on `gen_cmu.py`'s blockstates) for the
   finishes that are also a structure: polished concrete, oak and walnut hardwood. A hardwood block
   shows the boards on its top and their edges on its sides.
+- **A full block** (`BlockFloorFinishBlock`, `<overlay>_block`) of each of the eight overlays with
+  no set: carpet tile, vinyl and ceramic tile, rubber. It is there so a floor can be built at full
+  block height and furniture, which is drawn to stand on a full block, sits on it rather than a
+  pixel into it. The overlay's own textures on every face (nothing new in the atlas), and no
+  state at all: its one variant is the overlay's list of turns and drawings, picked by position.
+  No stairs, slab or fence; the sets are for finishes that are also a structure. Carpet and
+  rubber are cloth to the game (soft, by hand, wool's hardness), tile is rock (a pickaxe, stone's
+  hardness).
 
 **No visible repeat.** An overlay's blockstate is a list of models the game picks between by block
 position. Carpet tile is laid quarter-turned, and hardwood and polished concrete have two drawings
@@ -83,7 +92,8 @@ by a second, differently shaded drawing instead. For the same reason carpet tile
 all.
 
 Priced by what they are made of: carpet tile a wool, vinyl tile paper and a dye, ceramic two clay,
-hardwood two planks, polished concrete a Concrete Mix, rubber a slime ball.
+hardwood two planks, polished concrete a Concrete Mix, rubber a slime ball. A full block is its
+overlay's cost and a Concrete Mix, the screed it is laid on.
 
 ## Wall finishes
 

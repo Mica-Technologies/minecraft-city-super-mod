@@ -12,6 +12,9 @@ Two kinds of flooring, both in the Interior Finishes tab:
   hardwood, polished concrete and studded rubber, eleven in all.
 - **Full-block sets** (a block, stairs, slab and fence each, on gen_cmu.py's blockstates) for the
   two that are also a structure: polished concrete and hardwood in two species.
+- **Full blocks** (BlockFloorFinishBlock, `<overlay>_block`) of the eight overlays that have no set
+  -- carpet, vinyl and ceramic tile, rubber -- so a floor can be built up to a whole block and
+  furniture stands on it at the normal height. The overlay's textures on every face; no new ones.
 
 Nothing repeats as a visible pattern across a big floor. Each overlay's blockstate picks, per block
 position, one of several turns of the model (a carpet tile laid quarter-turned) and, where a texture
@@ -79,6 +82,38 @@ OVERLAYS = {
     "floor_rubber_studded": ("rubber", (44, 44, 46), "any", (
         "Rubber Floor (Studded)", "Suelo de Caucho (Con Tacos)", "Noppenbelag (Gummi)",
         "Gummigolv (Noppor)")),
+}
+
+# Full blocks of the overlays that have no set (BlockFloorFinishBlock, one class constructed by
+# registry name `<overlay>_block`): overlay name -> name in each language. The whole floor built
+# up to a full block, so furniture stands on it at the normal height. The overlay's own textures on
+# every face, and its turns and second drawing picked by position, as the overlay's are. Order is
+# creative order.
+FULL_BLOCKS = {
+    "floor_carpet_grey": (
+        "Carpet Tile Block (Grey)", "Bloque de Moqueta (Gris)", "Teppichfliesenblock (Grau)",
+        "Textilplattblock (Grå)"),
+    "floor_carpet_blue": (
+        "Carpet Tile Block (Blue)", "Bloque de Moqueta (Azul)", "Teppichfliesenblock (Blau)",
+        "Textilplattblock (Blå)"),
+    "floor_carpet_charcoal": (
+        "Carpet Tile Block (Charcoal)", "Bloque de Moqueta (Carbón)",
+        "Teppichfliesenblock (Anthrazit)", "Textilplattblock (Koksgrå)"),
+    "floor_vct_white": (
+        "Vinyl Composition Tile Block (White)", "Bloque de Loseta Vinílica (Blanca)",
+        "Vinylfliesenblock (Weiß)", "Vinylplattblock (Vit)"),
+    "floor_vct_beige": (
+        "Vinyl Composition Tile Block (Beige)", "Bloque de Loseta Vinílica (Beige)",
+        "Vinylfliesenblock (Beige)", "Vinylplattblock (Beige)"),
+    "floor_ceramic_white": (
+        "Ceramic Floor Tile Block (White)", "Bloque de Baldosa Cerámica (Blanca)",
+        "Keramikfliesenblock (Weiß)", "Klinkerplattblock (Vit)"),
+    "floor_ceramic_grey": (
+        "Ceramic Floor Tile Block (Grey)", "Bloque de Baldosa Cerámica (Gris)",
+        "Keramikfliesenblock (Grau)", "Klinkerplattblock (Grå)"),
+    "floor_rubber_studded": (
+        "Rubber Floor Block (Studded)", "Bloque de Suelo de Caucho (Con Tacos)",
+        "Noppenbelagblock (Gummi)", "Gummigolvblock (Noppor)"),
 }
 
 # Full-block sets: name -> (drawing, colour, name in each language). The class for each is
@@ -269,12 +304,21 @@ def overlay_model(tex):
             "elements": [el]}
 
 
+def block_model(tex):
+    """A full block of the finish: the overlay's texture on every face."""
+    return {"parent": "block/cube_all", "textures": {"all": TEX_REF % tex}}
+
+
 def models():
     out = {}
     for name, (draw, _, _, _) in OVERLAYS.items():
         out[name] = overlay_model(name)
         if draw in TWO:
             out[name + "_b"] = overlay_model(name + "_b")
+    for name in FULL_BLOCKS:
+        out[name + "_block"] = block_model(name)
+        if OVERLAYS[name][0] in TWO:
+            out[name + "_block_b"] = block_model(name + "_b")
     return out
 
 
@@ -303,8 +347,28 @@ def overlay_state(name):
                          "inventory": {"model": MODEL_REF % name}}}
 
 
+def block_state(name):
+    """A full block has no state of its own: the one variant is the same list of turns and
+    drawings the overlay picks between by position. Never an `axis` finish (hardwood has its set)."""
+    draw, _, turns, _ = OVERLAYS[name]
+    assert turns != "axis", name
+    models_ = [name + "_block"] + ([name + "_block_b"] if draw in TWO else [])
+    out = []
+    for m in models_:
+        for r in ((0,) if turns == "none" else (0, 90, 180, 270)):
+            v = {"model": MODEL_REF % m}
+            if r:
+                v["y"] = r
+            out.append(v)
+    return {"variants": {"normal": out,
+                         "inventory": {"model": MODEL_REF % (name + "_block")}}}
+
+
 def blockstates():
-    return {name: overlay_state(name) for name in OVERLAYS}
+    out = {name: overlay_state(name) for name in OVERLAYS}
+    for name in FULL_BLOCKS:
+        out[name + "_block"] = block_state(name)
+    return out
 
 # --------------------------------------------------------------------------------------------
 # Writing
@@ -343,6 +407,8 @@ LANGS = gen_cmu.LANGS
 def lang_entries():
     out = [("tile.%s.name" % name, dict(zip(LANGS, names)))
            for name, (_, _, _, names) in OVERLAYS.items()]
+    out += [("tile.%s_block.name" % name, dict(zip(LANGS, names)))
+            for name, names in FULL_BLOCKS.items()]
     for name, (_, _, names) in SETS.items():
         base = dict(zip(LANGS, names))
         for suffix, _ in gen_cmu.VARIANTS:
@@ -357,6 +423,9 @@ def tab_lines():
     lines = []
     for name, (_, _, _, names) in OVERLAYS.items():
         lines.append('    initTabBlock(new BlockFloorFinish("%s")); // %s' % (name, names[0]))
+    for name, names in FULL_BLOCKS.items():
+        lines.append('    initTabBlock(new BlockFloorFinishBlock("%s_block")); // %s'
+                     % (name, names[0]))
     for name, (_, _, names) in SETS.items():
         lines.append("    initTabBlock(%s.class,\n        fmlPreInitializationEvent); // %s Set "
                      "(Block, Fence, Slab, Stairs)" % (gen_cmu.class_name(name), names[0]))
