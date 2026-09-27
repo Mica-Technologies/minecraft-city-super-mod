@@ -121,6 +121,16 @@ public class TileEntityHvacVentRelay extends AbstractTileEntity {
     }
     savedTemp = compound.hasKey(NBT_SAVED_TEMP) ? compound.getFloat(NBT_SAVED_TEMP) : Float.NaN;
     compound.removeTag(OLD_NBT_CONTRIBUTION);
+    // A chunk load reads before the world is set, and onLoad registers after it. A world already
+    // set means a write to a vent that is in place (/setblock with a data tag, /blockdata): onLoad
+    // has run and will not run again, so the link is taken up, or dropped, here.
+    if (world != null) {
+      if (linkedThermostatPos != null) {
+        register();
+      } else {
+        unregister();
+      }
+    }
   }
 
   @Override
