@@ -193,10 +193,21 @@ public class BlockGlazingPane extends AbstractBlock {
   }
 
   /**
+   * How tall a pane is to anything walking into it, in blocks: a fence's height, so no one can
+   * jump over it and a run of panes serves as a glass railing or balustrade. Only the collision is
+   * this tall; the outline the player picks is the pane's own cell.
+   */
+  private static final double COLLISION_HEIGHT = 1.5;
+
+  /**
    * The pane's boxes: a thin centre, and an arm out to each side it runs to. A lone pane runs
    * along x.
    */
   private static AxisAlignedBB[] boxes(IBlockState actual) {
+    return boxes(actual, 1.0);
+  }
+
+  private static AxisAlignedBB[] boxes(IBlockState actual, double top) {
     boolean n = actual.getValue(NORTH) != Side.NONE;
     boolean e = actual.getValue(EAST) != Side.NONE;
     boolean s = actual.getValue(SOUTH) != Side.NONE;
@@ -208,11 +219,11 @@ public class BlockGlazingPane extends AbstractBlock {
     double lo = 0.5 - HALF;
     double hi = 0.5 + HALF;
     return new AxisAlignedBB[]{
-        new AxisAlignedBB(lo, 0, lo, hi, 1, hi),
-        n ? new AxisAlignedBB(lo, 0, 0, hi, 1, 0.5) : null,
-        s ? new AxisAlignedBB(lo, 0, 0.5, hi, 1, 1) : null,
-        w ? new AxisAlignedBB(0, 0, lo, 0.5, 1, hi) : null,
-        e ? new AxisAlignedBB(0.5, 0, lo, 1, 1, hi) : null};
+        new AxisAlignedBB(lo, 0, lo, hi, top, hi),
+        n ? new AxisAlignedBB(lo, 0, 0, hi, top, 0.5) : null,
+        s ? new AxisAlignedBB(lo, 0, 0.5, hi, top, 1) : null,
+        w ? new AxisAlignedBB(0, 0, lo, 0.5, top, hi) : null,
+        e ? new AxisAlignedBB(0.5, 0, lo, 1, top, hi) : null};
   }
 
   @Override
@@ -222,7 +233,7 @@ public class BlockGlazingPane extends AbstractBlock {
       @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn,
       boolean isActualState) {
     IBlockState actual = isActualState ? state : state.getActualState(worldIn, pos);
-    for (AxisAlignedBB box : boxes(actual)) {
+    for (AxisAlignedBB box : boxes(actual, COLLISION_HEIGHT)) {
       if (box != null) {
         addCollisionBoxToList(pos, entityBox, collidingBoxes, box);
       }
