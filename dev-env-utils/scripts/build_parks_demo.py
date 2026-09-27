@@ -388,12 +388,14 @@ flush()
 PRESETS = ['liveoak', 'elm', 'plane', 'honeylocust', 'cypress', 'ginkgo', 'fanpalm',
            'leaningpalm', 'lollipopplane', 'jacaranda', 'peppertree', 'coastliveoak',
            'weepingwillow', 'poplar', 'sweetgum', 'hornbeam', 'queenpalm', 'lemongum',
-           'arborvitae', 'pleachedlinden', 'pollardedplane']
+           'arborvitae', 'pleachedlinden', 'pollardedplane', 'paperbirch', 'bluespruce',
+           'cabbagepalm', 'japanesemaple', 'scotspine', 'beech']
 NAMES = ['Southern Live Oak', 'American Elm', 'London Plane', 'Honey Locust', 'Italian Cypress',
          'Ginkgo', 'Mexican Fan Palm', 'Leaning Feather Palm', 'Ball-Head Plane', 'Jacaranda',
          'Pepper Tree', 'Coast Live Oak', 'Weeping Willow', 'Lombardy Poplar', 'Slender Sweetgum',
          'Columnar Hornbeam', 'Queen Palm', 'Lemon-scented Gum', 'Emerald Arborvitae',
-         'Pleached Linden', 'Pollarded Plane']
+         'Pleached Linden', 'Pollarded Plane', 'Paper Birch', 'Colorado Blue Spruce',
+         'Cabbage Palm', 'Japanese Maple', 'Scots Pine', 'European Beech']
 PLAYER = _me['name']
 client.call('client_select_slot', slot=0)
 client.call('client_view', hideHud=True)
@@ -457,7 +459,7 @@ plant('lollipopplane', CX - 9, CZ - 9, S)
 plant('lollipopplane', CX + 9, CZ - 9, S)
 plant('pollardedplane', CX - 9, CZ + 9, S)
 plant('pollardedplane', CX + 9, CZ + 9, S)
-# The arboretum: every preset, three rows of seven, each with a sign.
+# The arboretum: every preset, in rows of seven, each with a sign.
 AX0, AZ0 = X0 - 108, Z0 + 20
 for i, preset in enumerate(PRESETS):
     x = AX0 + (i % 7) * 14

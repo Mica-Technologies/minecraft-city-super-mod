@@ -1,0 +1,223 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leaves": "csm:blocks/parks/landscape/winterberry",
+    "particle": "csm:blocks/parks/landscape/winterberry",
+    "stems": "csm:blocks/parks/landscape/winterberry_stems"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        5,
+        2
+      ],
+      "to": [
+        14,
+        13,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            3,
+            14,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            3,
+            14,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            3,
+            14,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            3,
+            14,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.5,
+        12.5,
+        3.5
+      ],
+      "to": [
+        12.5,
+        15,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            1,
+            12.5,
+            3.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            1,
+            12.5,
+            3.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            1,
+            12.5,
+            3.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            1,
+            12.5,
+            3.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            3.5,
+            12.5,
+            12.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.8,
+        0,
+        8
+      ],
+      "to": [
+        15.2,
+        6,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": 45,
+        "rescale": true
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#stems",
+          "uv": [
+            0,
+            10,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#stems",
+          "uv": [
+            0,
+            10,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.8,
+        0,
+        8
+      ],
+      "to": [
+        15.2,
+        6,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": -45,
+        "rescale": true
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#stems",
+          "uv": [
+            0,
+            10,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#stems",
+          "uv": [
+            0,
+            10,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

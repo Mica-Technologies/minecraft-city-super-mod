@@ -623,6 +623,642 @@ for bid, flowers, names in (
 
 
 # ------------------------------------------------------------------------------------------
+# Regional plantings: native plants of California, New Hampshire, Colorado, Florida, Japan
+# and Scandinavia, each also in a nursery pot, so a garden centre can be stocked in rows.
+# ------------------------------------------------------------------------------------------
+def _canvas():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    return img, img.load()
+
+
+def _dot(px, x, y, c):
+    x, y = int(round(x)), int(round(y))
+    if 0 <= x < 16 and 0 <= y < 16:
+        px[x, y] = clamp(c) + (255,)
+
+
+def _head(px, x, y, pattern, colours):
+    """Stamps a flower head: pattern rows top to bottom, its bottom row centred on (x, y)."""
+    x, y = int(round(x)), int(round(y))
+    for r, row in enumerate(pattern):
+        yy = y - (len(pattern) - 1 - r)
+        for c, ch in enumerate(row):
+            if ch != ".":
+                _dot(px, x - len(row) // 2 + c, yy, colours[ch])
+
+
+def _foliage(px, rng, palette, top, count):
+    """Basal leaves: scattered pixels from row `top` down to the ground."""
+    for _ in range(count):
+        _dot(px, rng.randrange(16), rng.randrange(top, 16), palette[rng.randrange(len(palette))])
+
+
+def herb_tex(seed, foliage, foliage_top, foliage_count, stems, stem_colour, heads, pattern,
+             lean=0.12):
+    """Stemmed flowers over basal foliage. stems: (count, shortest, tallest); heads: a list of
+    colour maps, one picked per stem (a lupine stand is mixed, a poppy stand is not)."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    _foliage(px, rng, foliage, foliage_top, foliage_count)
+    count, lo, hi = stems
+    for i in range(count):
+        # Spread the stems across the card, a little jittered, so no two heads sit together.
+        x = 1.5 + (i + rng.uniform(0.15, 0.85)) * 13.0 / count
+        h = rng.randint(lo, hi)
+        tilt = rng.uniform(-lean, lean)
+        for k in range(h):
+            _dot(px, x + tilt * k, 15 - k, stem_colour)
+        _head(px, x + tilt * h, 15 - h, pattern, heads[rng.randrange(len(heads))])
+    return img
+
+
+def harebell_tex(seed):
+    """Harebell: hair-thin wiry stems, each nodding a blue bell off to one side."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    _foliage(px, rng, [(92, 132, 70), (76, 114, 58)], 13, 26)
+    for i in range(6):
+        x = 1.5 + (i + rng.uniform(0.2, 0.8)) * 13.0 / 6
+        h = rng.randint(7, 11)
+        for k in range(h):
+            _dot(px, x + math.sin(k * 0.5 + i) * 0.6, 15 - k, (96, 126, 70))
+        tx, ty = x + math.sin(h * 0.5 + i) * 0.6, 15 - h
+        side = 1 if i % 2 else -1
+        _dot(px, tx + side, ty, (96, 126, 70))
+        for dx, dy, c in ((1, 1, (132, 140, 226)), (2, 1, (112, 118, 212)),
+                          (1, 2, (104, 110, 204)), (2, 2, (88, 94, 186))):
+            _dot(px, tx + side * dx, ty + dy, c)
+    return img
+
+
+def ladys_slipper_tex(seed):
+    """Pink lady's slipper: two broad pleated leaves at the base, a bare stalk, a pink pouch."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    leaf = [(76, 124, 62), (60, 104, 50), (88, 138, 72)]
+    for x0 in (4, 11):
+        for s in (-1, 1):
+            cx, cy = x0 + s * 1.6, 13
+            for y in range(10, 16):
+                for x in range(16):
+                    u, v = (x - cx) / 1.9, (y - cy) / 3.0
+                    if u * u + v * v <= 1:
+                        _dot(px, x, y, leaf[0 if x == round(cx) else 1 + (x + y) % 2])
+        h = rng.randint(9, 11)
+        for k in range(h):
+            _dot(px, x0, 15 - k, (86, 110, 58))
+        ty = 15 - h
+        _dot(px, x0, ty, (104, 132, 64))  # the bract over the flower
+        _dot(px, x0 - 2, ty + 1, (122, 64, 60))  # the twisted maroon petals
+        _dot(px, x0 + 2, ty + 1, (122, 64, 60))
+        _head(px, x0, ty + 4, [".a.", "aca", "aca", ".a."],
+              {"a": (234, 142, 182), "c": (204, 100, 148)})
+    return img
+
+
+def iris_tex(seed):
+    """Japanese iris: upright sword leaves, and big flat purple flowers with a yellow signal."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    green = [(84, 130, 70), (68, 112, 58), (100, 146, 84)]
+    for i in range(11):
+        x = 1.5 + i * 1.3 + rng.uniform(-0.4, 0.4)
+        h = rng.randint(7, 12)
+        tilt = rng.uniform(-0.08, 0.08)
+        for k in range(h):
+            _dot(px, x + tilt * k, 15 - k, green[rng.randrange(3)])
+    for x in (3.5, 8.2, 12.6):
+        h = rng.randint(11, 13)
+        for k in range(h):
+            _dot(px, x, 15 - k, green[1])
+        _head(px, x, 15 - h + 3, [".a.", "aba", "aya", "b.b"],
+              {"a": (132, 88, 206), "b": (100, 60, 170), "y": (238, 204, 70)})
+    return img
+
+
+def yucca_tex(seed):
+    """Soapweed yucca: a rosette of stiff blue-green swords, and a stalk of cream bells."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    blade = [(128, 152, 124), (108, 132, 106), (148, 170, 140)]
+    for i in range(15):
+        ang = math.radians(-78 + i * 156 / 14 + rng.uniform(-4, 4))
+        length = rng.uniform(5.0, 8.5)
+        x0 = 8 + rng.uniform(-1, 1)
+        for t in range(int(length * 2)):
+            d = t / 2.0
+            _dot(px, x0 + math.sin(ang) * d, 15 - math.cos(ang) * d,
+                 blade[2] if d > length - 1.5 else blade[rng.randrange(2)])
+    for y in range(1, 9):
+        _dot(px, 8, y, (120, 132, 84))
+    for y in range(1, 7):
+        side = -1 if y % 2 else 1
+        _dot(px, 8 + side, y, (240, 236, 206))
+        _dot(px, 8 + side, y + 1, (218, 212, 176))
+    return img
+
+
+def fan_plant_tex(seed):
+    """Saw palmetto: stiff silvery fans on stalks, splayed out of a low clump."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    palette = [(146, 172, 146), (122, 150, 124), (100, 128, 104), (80, 106, 86)]
+    fans = [(2.5, 7.5, -0.9), (6.0, 4.0, -0.3), (10.0, 4.0, 0.3), (13.5, 7.5, 0.9),
+            (8.0, 9.5, 0.0)]
+    for cx, cy, facing in fans:
+        # The stalk down to the clump.
+        for t in range(12):
+            f = t / 11.0
+            _dot(px, 8 + (cx - 8) * f, 15 + (cy + 3 - 15) * f, (118, 118, 74))
+        for y in range(16):
+            for x in range(16):
+                dx, dy = x + 0.5 - cx, (cy + 3) - (y + 0.5)
+                r = math.hypot(dx, dy)
+                if r > 5.2 or r < 0.8:
+                    continue
+                ang = math.atan2(dx, dy) - facing
+                if abs(ang) > math.radians(78):
+                    continue
+                seg = (ang + math.radians(78)) / math.radians(156) * 9
+                frac = seg - int(seg)
+                if r > 3.6 and abs(frac - 0.5) < 0.18:
+                    continue  # split tips
+                shade = 0 if frac < 0.5 else 1
+                if r < 2:
+                    shade = 2
+                if frac < 0.1 or frac > 0.9:
+                    shade = 3
+                if rng.random() < 0.12:
+                    shade = min(3, shade + 1)
+                _dot(px, x, y, palette[shade])
+    return img
+
+
+def cycad_tex(seed):
+    """Coontie: short arching fronds of stiff dark leaflets from a buried trunk."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    leaf = [(62, 108, 54), (50, 92, 44), (78, 124, 64)]
+    for i in range(7):
+        ang = math.radians(-66 + i * 22 + rng.uniform(-5, 5))
+        length = rng.uniform(7.0, 9.0)
+        for t in range(int(length * 2)):
+            d = t / 2.0
+            # Up and out, then over: the tip droops.
+            x = 8 + math.sin(ang) * d
+            y = 15 - math.cos(ang) * d + 0.04 * d * d * (1 + abs(math.sin(ang)))
+            _dot(px, x, y, (96, 104, 60))
+            if t % 2 == 0 and d > 1:
+                for s in (-1, 1):
+                    _dot(px, x + math.cos(ang) * s * 1.2, y + math.sin(ang) * s * 1.2 - 0.6,
+                         leaf[rng.randrange(3)])
+    return img
+
+
+def bamboo_tex(seed):
+    """Bamboo canes with nodes and leaf sprays every eight pixels, so the texture tiles up a
+    stack of blocks into one tall grove."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    cane = [(132, 170, 78), (110, 150, 62)]
+    node = (80, 110, 48)
+    leaf = [(90, 146, 62), (112, 164, 74), (74, 126, 52)]
+    for x in (1, 4, 7, 10, 13):
+        x += rng.choice((0, 1))
+        for y in range(16):
+            _dot(px, x, y, node if y % 8 == 3 else cane[(y // 3) % 2])
+        for ny in (3, 11):
+            for s in (-1, 1):
+                if rng.random() < 0.75:
+                    length = rng.randint(2, 4)
+                    for k in range(1, length + 1):
+                        _dot(px, (x + s * k) % 16, (ny + k // 2) % 16, leaf[rng.randrange(3)])
+    return img
+
+
+def grass_tex2(kind, seed):
+    """The regional grasses, drawn as grass_tex draws the ornamental ones."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    if kind == "deergrass":
+        green = [(146, 160, 114), (126, 142, 98), (162, 172, 128)]
+        for b in range(30):
+            x = 7.5 + rng.uniform(-5, 5)
+            lean = (x - 7.5) / 5 * rng.uniform(0.1, 0.3)
+            h = rng.randint(9, 14)
+            for k in range(h):
+                _dot(px, x + lean * k, 15 - k, green[rng.randrange(3)])
+            if b % 3 == 0:
+                # A narrow upright plume, straight up past the blade.
+                for k in range(h, min(16, h + 4)):
+                    _dot(px, x + lean * h, 15 - k, (176, 156, 128) if k % 2 else (156, 136, 112))
+    elif kind == "blue_grama":
+        green = [(124, 152, 132), (104, 134, 116), (140, 164, 146)]
+        for _ in range(26):
+            x = 7.5 + rng.uniform(-6, 6)
+            lean = (x - 7.5) / 6 * rng.uniform(0.2, 0.5)
+            h = rng.randint(3, 6)
+            for k in range(h):
+                _dot(px, x + lean * k, 15 - k, green[rng.randrange(3)])
+        for i in range(6):
+            x = 2 + i * 2.4 + rng.uniform(-0.4, 0.4)
+            h = rng.randint(8, 11)
+            for k in range(h):
+                _dot(px, x + 0.08 * k, 15 - k, (138, 146, 110))
+            # The eyelash: a seed flag held out sideways at the top.
+            tx, ty = x + 0.08 * h, 15 - h
+            for d in range(1, 4):
+                _dot(px, tx + d, ty + d * 0.3, (132, 92, 112) if d % 2 else (156, 118, 128))
+    elif kind == "pink_muhly":
+        green = [(100, 134, 74), (86, 118, 62)]
+        for _ in range(22):
+            x = 7.5 + rng.uniform(-5, 5)
+            h = rng.randint(4, 7)
+            for k in range(h):
+                _dot(px, x + (x - 7.5) * 0.05 * k, 15 - k, green[rng.randrange(2)])
+        pink = [(232, 134, 182), (214, 112, 166), (244, 176, 208), (196, 98, 150)]
+        for y in range(1, 11):
+            for x in range(16):
+                u, v = (x - 7.5) / 8.0, (y - 6.0) / 5.5
+                if u * u + v * v <= 1 and rng.random() < 0.42:
+                    _dot(px, x, y, pink[rng.randrange(4)])
+    elif kind == "hakone":
+        gold = [(220, 202, 76), (194, 180, 58), (168, 158, 48), (150, 168, 70)]
+        for b in range(24):
+            d = 1 if rng.random() < 0.8 else -1
+            x0 = 8 + rng.uniform(-4, 3) * d
+            length = rng.randint(8, 13)
+            c = gold[rng.randrange(4)]
+            for t in range(length):
+                _dot(px, x0 + d * 0.55 * t, 15 - 1.2 * t + 0.06 * t * t, c)
+    else:
+        raise ValueError(kind)
+    return img
+
+
+def shrub_tex(palette, seed, flowers=None, density=0.0, berries=None, berry_count=0):
+    """A shrub's leafy texture: leafy(), with berries as single pixels over it."""
+    img = leafy(palette, seed, flowers, density)
+    if berries:
+        rng = random.Random(seed + 1000)
+        px = img.load()
+        for _ in range(berry_count):
+            x, y = rng.randrange(16), rng.randrange(16)
+            px[x, y] = clamp(berries[rng.randrange(len(berries))]) + (255,)
+    return img
+
+
+def twigs_tex(colours, seed, top):
+    """Bare stems for under a shrub's canopy: forking from the ground up to row `top`."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for i in range(5):
+        x = 3 + i * 2.5 + rng.uniform(-0.5, 0.5)
+        drift = rng.uniform(-0.35, 0.35) + (x - 8) * 0.06
+        for y in range(15, top - 1, -1):
+            _dot(px, x, y, colours[rng.randrange(len(colours))])
+            x += drift
+            if rng.random() < 0.18:
+                drift = -drift
+    return img
+
+
+def spikes_tex(seed):
+    """White sage's flower spikes: pale stems standing well clear of the mound, pale whorls."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for i in range(5):
+        x = 2.5 + i * 2.6 + rng.uniform(-0.4, 0.4)
+        h = rng.randint(11, 15)
+        for k in range(5, h):
+            y = 15 - k
+            _dot(px, x, y, (184, 190, 176))
+            if k > 7 and k % 2 == 0:
+                _dot(px, x - 1, y, (232, 226, 240))
+                _dot(px, x + 1, y, (214, 204, 230))
+    return img
+
+
+def pot_tex(seed):
+    """A black plastic nursery container: faint moulded ribs, and a lip at row 10, the top
+    of the window its 6 px sides sample."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            v = 40 + (6 if x % 4 == 0 else 0) + rng.randint(-3, 3)
+            if y == 10:
+                v += 14
+            px[x, y] = (v, v, v + 2, 255)
+    return img
+
+
+def pot_top_tex(seed):
+    """The pot seen from above: soil inside a lip, the lip at pixels 4 and 11 (the up face is
+    8 px across, from 4 to 12)."""
+    img = noise_tex(SOIL, seed, grain=0.8)
+    px = img.load()
+    for i in range(4, 12):
+        for x, y in ((i, 4), (i, 11), (4, i), (11, i)):
+            px[x, y] = (52, 52, 54, 255)
+    return img
+
+
+TEXTURES.update({
+    # California
+    "california_poppy": lambda: herb_tex(
+        40, [(126, 162, 142), (104, 140, 122), (86, 120, 104)], 10, 70, (5, 4, 8),
+        (104, 140, 122), [{"a": (248, 150, 34), "b": (226, 110, 22), "c": (196, 88, 24)}],
+        ["a.a", "aba", ".c."]),
+    "manzanita": lambda: shrub_tex([(132, 150, 118), (114, 134, 102), (96, 116, 88),
+                                    (80, 100, 74)], 41, [(242, 222, 226), (230, 190, 204)], 0.2),
+    "manzanita_stems": lambda: twigs_tex([(142, 50, 36), (118, 40, 30), (160, 64, 44)], 42, 9),
+    "ceanothus": lambda: shrub_tex([(60, 96, 52), (48, 82, 44), (38, 68, 36), (30, 56, 30)], 43,
+                                   [(76, 102, 204), (104, 130, 226), (90, 116, 214)], 0.75),
+    "white_sage": lambda: shrub_tex([(206, 212, 204), (186, 194, 186), (166, 176, 168),
+                                     (146, 158, 150)], 44),
+    "white_sage_spikes": lambda: spikes_tex(45),
+    "grass_deergrass": lambda: grass_tex2("deergrass", 46),
+    # New Hampshire
+    "mountain_laurel": lambda: shrub_tex([(62, 104, 60), (50, 90, 50), (40, 76, 42),
+                                          (32, 62, 34)], 47,
+                                         [(246, 226, 234), (234, 170, 198), (224, 140, 178)],
+                                         0.5),
+    "blueberry": lambda: shrub_tex([(104, 146, 74), (88, 130, 62), (72, 112, 52), (58, 94, 42)],
+                                   48, berries=[(64, 84, 150), (92, 112, 170), (52, 66, 124)],
+                                   berry_count=26),
+    "blueberry_stems": lambda: twigs_tex([(110, 92, 78), (130, 108, 90)], 49, 7),
+    "winterberry": lambda: shrub_tex([(78, 104, 58), (64, 90, 48), (52, 76, 40), (42, 62, 34)],
+                                     50, berries=[(214, 30, 36), (186, 20, 30), (236, 60, 56)],
+                                     berry_count=46),
+    "winterberry_stems": lambda: twigs_tex([(96, 88, 80), (116, 106, 96)], 51, 6),
+    "lupine": lambda: herb_tex(
+        52, [(96, 142, 72), (80, 124, 60), (112, 156, 84)], 10, 60, (5, 11, 15),
+        (86, 126, 64),
+        [{"a": (150, 126, 228), "b": (108, 84, 196)}, {"a": (236, 150, 196), "b": (206, 104, 164)},
+         {"a": (126, 108, 220), "b": (84, 70, 176)}, {"a": (246, 242, 246), "b": (214, 204, 226)}],
+        ["a", "ab", "ba", "ab", "ba", "ab", "ba"]),
+    "ladys_slipper": lambda: ladys_slipper_tex(53),
+    # Colorado
+    "columbine": lambda: herb_tex(
+        54, [(116, 150, 128), (98, 132, 112), (132, 164, 140)], 9, 64, (5, 9, 13),
+        (104, 132, 102), [{"a": (130, 118, 224), "b": (244, 244, 240), "y": (242, 212, 84)}],
+        ["a.a", ".b.", "byb", ".a."]),
+    "penstemon": lambda: herb_tex(
+        55, [(92, 132, 96), (76, 114, 82)], 12, 34, (6, 10, 14), (82, 116, 84),
+        [{"a": (96, 100, 218), "b": (132, 110, 222)}, {"a": (84, 92, 204), "b": (160, 108, 208)}],
+        ["a", ".a", "b.", ".a", "a.", ".b", "a."]),
+    "rabbitbrush": lambda: shrub_tex([(150, 164, 126), (132, 148, 110), (114, 130, 96),
+                                      (98, 114, 84)], 56, [(236, 198, 48), (220, 176, 36)], 0.35),
+    "rabbitbrush_top": lambda: shrub_tex([(150, 164, 126), (132, 148, 110), (114, 130, 96),
+                                          (98, 114, 84)], 57,
+                                         [(244, 206, 54), (226, 182, 38), (250, 222, 90)], 1.5),
+    "sagebrush": lambda: shrub_tex([(166, 176, 168), (146, 158, 150), (126, 140, 132),
+                                    (108, 122, 114)], 58),
+    "sagebrush_stems": lambda: twigs_tex([(110, 102, 92), (132, 124, 112)], 59, 7),
+    "grass_blue_grama": lambda: grass_tex2("blue_grama", 60),
+    "yucca": lambda: yucca_tex(61),
+    # Florida
+    "saw_palmetto": lambda: fan_plant_tex(62),
+    "coontie": lambda: cycad_tex(63),
+    "beautyberry": lambda: shrub_tex([(112, 154, 68), (96, 138, 58), (80, 120, 48), (64, 102, 40)],
+                                     64, [(176, 64, 176), (148, 44, 158), (196, 90, 196)], 0.6),
+    "beautyberry_stems": lambda: twigs_tex([(126, 104, 80), (104, 86, 66)], 65, 5),
+    "firebush": lambda: shrub_tex([(104, 128, 60), (90, 112, 50), (120, 96, 52), (72, 92, 42)], 66,
+                                  [(230, 80, 36), (204, 54, 30), (244, 120, 44)], 0.5),
+    "coreopsis": lambda: herb_tex(
+        67, [(100, 146, 70), (84, 128, 58)], 12, 36, (7, 6, 11), (92, 136, 64),
+        [{"a": (248, 204, 42), "d": (126, 74, 32)}], [".a.", "ada", ".a."]),
+    "grass_pink_muhly": lambda: grass_tex2("pink_muhly", 68),
+    # Japan
+    "satsuki_azalea": lambda: shrub_tex([(62, 96, 50), (50, 82, 42), (40, 68, 34), (32, 56, 28)],
+                                        69, [(230, 84, 152), (244, 126, 182), (212, 60, 132)],
+                                        1.1),
+    "camellia": lambda: shrub_tex([(44, 84, 50), (36, 72, 42), (28, 60, 36), (22, 48, 30)], 70,
+                                  [(206, 32, 52), (232, 74, 94), (176, 22, 40)], 0.4),
+    "japanese_iris": lambda: iris_tex(71),
+    "bamboo": lambda: bamboo_tex(72),
+    "grass_hakone": lambda: grass_tex2("hakone", 73),
+    # Sweden and Denmark
+    "heather": lambda: shrub_tex([(96, 110, 84), (80, 94, 70), (66, 80, 58), (54, 66, 48)], 74,
+                                 [(176, 96, 170), (200, 126, 190), (152, 78, 150)], 1.2),
+    "lingonberry": lambda: shrub_tex([(58, 100, 50), (46, 86, 42), (36, 72, 34), (28, 58, 28)],
+                                     75, berries=[(206, 28, 40), (180, 18, 32), (230, 64, 64)],
+                                     berry_count=30),
+    "wood_anemone": lambda: herb_tex(
+        76, [(72, 124, 60), (58, 106, 50), (88, 140, 72)], 10, 64, (8, 3, 6), (96, 120, 70),
+        [{"a": (248, 248, 246), "b": (234, 216, 228)}], ["ab", "ba"]),
+    "harebell": lambda: harebell_tex(77),
+    "marguerite": lambda: herb_tex(
+        78, [(70, 116, 56), (58, 100, 48)], 11, 40, (6, 8, 13), (80, 120, 60),
+        [{"a": (248, 248, 244), "y": (246, 204, 48)}], [".a.", "aya", ".a."]),
+    # The nursery pot
+    "nursery_pot": lambda: pot_tex(79),
+    "nursery_pot_top": lambda: pot_top_tex(80),
+})
+
+
+def shrub_els(leaves, parts, top=None, stems=None, spikes=None):
+    """A shrub: stacked leafy boxes, with bare stems under a raised canopy and spikes over it
+    where the species has them. Returns (textures, elements)."""
+    tex = {"leaves": T(leaves), "particle": T(leaves)}
+    per = None
+    if top:
+        tex["top"] = T(top)
+        per = {"up": "top"}
+    els = [box(a, b, "leaves", per=per) for a, b in parts]
+    if stems:
+        tex["stems"] = T(stems[0])
+        els += cross_planes("stems", stems[1], uv_top=16 - stems[1])
+    if spikes:
+        tex["spikes"] = T(spikes)
+        els += cross_planes("spikes", 16, four=True)
+    return tex, els
+
+
+def plant_els(texture, height):
+    """A plant drawn as four crossed planes, cut to its height."""
+    return ({"cross": T(texture), "particle": T(texture)},
+            cross_planes("cross", height, uv_top=16 - height, four=True))
+
+
+POT_LIFT = 6
+POT_SCALE = 0.6
+
+
+def potted(tex, els):
+    """The same plant at 60% in a nursery pot, standing on its soil."""
+    def sc(v, axis):
+        return round(POT_LIFT + v[1] * POT_SCALE, 3) if axis == 1 else \
+            round(8 + (v[axis] - 8) * POT_SCALE, 3)
+
+    out = []
+    for e in els:
+        e = json.loads(json.dumps(e))
+        e["from"] = [sc(e["from"], a) for a in range(3)]
+        e["to"] = [sc(e["to"], a) for a in range(3)]
+        if "rotation" in e:
+            e["rotation"]["origin"] = [sc(e["rotation"]["origin"], a) for a in range(3)]
+        out.append(e)
+    pot = box([4, 0, 4], [12, POT_LIFT, 12], "pot", per={"up": "pot_top"})
+    tex = dict(tex)
+    tex.update({"pot": T("nursery_pot"), "pot_top": T("nursery_pot_top")})
+    return tex, [pot] + out
+
+
+# (registry, kind, height, inset, names en/de/es/sv, (textures, elements), item texture for a
+# crossed-plane plant or None). Grouped by region (REGIONS), in tab order.
+REGIONAL = [
+    # --- California ---
+    ("flower_california_poppy", "PLANT", 8, 2,
+     ("California Poppy", "Kalifornischer Mohn", "Amapola de California", "Sömntuta"),
+     plant_els("california_poppy", 10), "california_poppy"),
+    ("shrub_manzanita", "SHRUB", 14, 1,
+     ("Manzanita", "Manzanita", "Manzanita", "Manzanita"),
+     shrub_els("manzanita", [([1, 5, 2], [10, 11, 11]), ([6, 7, 5], [15, 13, 14]),
+                             ([3, 10.5, 4], [11, 14, 12])], stems=("manzanita_stems", 9)), None),
+    ("shrub_ceanothus", "SHRUB", 12, 0,
+     ("California Lilac", "Säckelblume", "Lila de California", "Kaliforniskt syren"),
+     shrub_els("ceanothus", [([0.5, 0, 0.5], [15.5, 7, 15.5]), ([2, 6.5, 2], [14, 11, 14]),
+                             ([4.5, 10.5, 4.5], [11.5, 12, 11.5])]), None),
+    ("shrub_white_sage", "SHRUB", 8, 1,
+     ("White Sage", "Weißer Salbei", "Salvia blanca", "Vit salvia"),
+     shrub_els("white_sage", [([1, 0, 1], [15, 5, 15]), ([3, 4.5, 3], [13, 8, 13])],
+               spikes="white_sage_spikes"), None),
+    ("grass_deergrass", "PLANT", 14, 1,
+     ("Deergrass", "Hirschgras", "Zacate de venado", "Hjortgräs"),
+     plant_els("grass_deergrass", 16), "grass_deergrass"),
+    # --- New Hampshire ---
+    ("shrub_mountain_laurel", "SHRUB", 14, 1,
+     ("Mountain Laurel", "Berglorbeer", "Laurel de montaña", "Bredbladig kalmia"),
+     shrub_els("mountain_laurel", [([2, 0, 2], [14, 3, 14]), ([0.5, 2.5, 0.5], [15.5, 10, 15.5]),
+                                   ([1.5, 9.5, 2.5], [13.5, 13, 14.5]),
+                                   ([4, 12.5, 4], [11, 14, 11])]), None),
+    ("shrub_highbush_blueberry", "SHRUB", 16, 1,
+     ("Highbush Blueberry", "Amerikanische Heidelbeere", "Arándano alto", "Amerikanskt blåbär"),
+     shrub_els("blueberry", [([2.5, 6, 2.5], [13.5, 12, 13.5]), ([1, 10, 1], [15, 15, 15]),
+                             ([4, 14.5, 4], [12, 16, 12])], stems=("blueberry_stems", 7)), None),
+    ("shrub_winterberry", "SHRUB", 15, 1,
+     ("Winterberry", "Amerikanische Winterbeere", "Acebo de invierno", "Vinterbär"),
+     shrub_els("winterberry", [([2, 5, 2], [14, 13, 14]), ([3.5, 12.5, 3.5], [12.5, 15, 12.5])],
+               stems=("winterberry_stems", 6)), None),
+    ("flower_lupine", "PLANT", 14, 2,
+     ("Wild Lupine", "Wilde Lupine", "Lupino silvestre", "Vildlupin"),
+     plant_els("lupine", 16), "lupine"),
+    ("flower_ladys_slipper", "PLANT", 11, 3,
+     ("Pink Lady's Slipper", "Rosa Frauenschuh", "Zapatilla de dama rosa", "Rosa guckusko"),
+     plant_els("ladys_slipper", 12), "ladys_slipper"),
+    # --- Colorado ---
+    ("flower_columbine", "PLANT", 12, 2,
+     ("Colorado Blue Columbine", "Blaue Akelei", "Aguileña azul de Colorado", "Blå akleja"),
+     plant_els("columbine", 14), "columbine"),
+    ("flower_penstemon", "PLANT", 14, 2,
+     ("Rocky Mountain Penstemon", "Rocky-Mountain-Bartfaden", "Penstemon de las Rocosas",
+      "Blå penstemon"),
+     plant_els("penstemon", 16), "penstemon"),
+    ("shrub_rabbitbrush", "SHRUB", 12, 0,
+     ("Rubber Rabbitbrush", "Gummi-Kaninchenstrauch", "Arbusto de conejo", "Kaninbuske"),
+     shrub_els("rabbitbrush", [([2, 0, 2], [14, 4, 14]), ([0.5, 3.5, 0.5], [15.5, 12, 15.5])],
+               top="rabbitbrush_top"), None),
+    ("shrub_sagebrush", "SHRUB", 13, 1,
+     ("Big Sagebrush", "Dreizähniger Beifuß", "Artemisa tridentada", "Malörtsbuske"),
+     shrub_els("sagebrush", [([1, 4, 3], [9, 10, 12]), ([7, 5.5, 1], [15, 12, 10]),
+                             ([3, 9.5, 5], [12, 13, 14])], stems=("sagebrush_stems", 7)), None),
+    ("grass_blue_grama", "PLANT", 10, 1,
+     ("Blue Grama", "Moskitogras", "Navajita azul", "Moskitgräs"),
+     plant_els("grass_blue_grama", 12), "grass_blue_grama"),
+    ("plant_yucca", "PLANT", 15, 1,
+     ("Soapweed Yucca", "Palmlilie", "Yuca", "Palmlilja"),
+     plant_els("yucca", 16), "yucca"),
+    # --- Florida ---
+    ("plant_saw_palmetto", "PLANT", 14, 0,
+     ("Saw Palmetto", "Sägepalme", "Palmito de sierra", "Sågpalmetto"),
+     plant_els("saw_palmetto", 16), "saw_palmetto"),
+    ("plant_coontie", "PLANT", 9, 1,
+     ("Coontie", "Florida-Palmfarn", "Coontie", "Floridakottepalm"),
+     plant_els("coontie", 10), "coontie"),
+    ("shrub_beautyberry", "SHRUB", 13, 0,
+     ("American Beautyberry", "Amerikanische Schönfrucht", "Calicarpa americana",
+      "Amerikanskt praktbär"),
+     shrub_els("beautyberry", [([3, 4, 3], [13, 8, 13]), ([0.5, 7.5, 0.5], [15.5, 12, 15.5]),
+                               ([3, 11.5, 3], [13, 13, 13])], stems=("beautyberry_stems", 5)),
+     None),
+    ("shrub_firebush", "SHRUB", 16, 1,
+     ("Firebush", "Feuerbusch", "Arbusto de fuego", "Eldbuske"),
+     shrub_els("firebush", [([3, 0, 3], [13, 4, 13]), ([1.5, 3.5, 1.5], [14.5, 13, 14.5]),
+                            ([3.5, 12.5, 3.5], [12.5, 16, 12.5])]), None),
+    ("flower_coreopsis", "PLANT", 10, 2,
+     ("Coreopsis", "Mädchenauge", "Coreopsis", "Flicköga"),
+     plant_els("coreopsis", 12), "coreopsis"),
+    ("grass_pink_muhly", "PLANT", 14, 0,
+     ("Pink Muhly Grass", "Rosa Haargras", "Pasto muhly rosa", "Rosa muhlygräs"),
+     plant_els("grass_pink_muhly", 16), "grass_pink_muhly"),
+    # --- Japan ---
+    ("shrub_satsuki_azalea", "SHRUB", 10, 0,
+     ("Satsuki Azalea", "Satsuki-Azalee", "Azalea satsuki", "Satsukiazalea"),
+     shrub_els("satsuki_azalea", [([1, 0, 1], [15, 4, 15]), ([0.5, 3.5, 0.5], [15.5, 7, 15.5]),
+                                  ([2, 6.5, 2], [14, 9, 14]), ([4.5, 8.5, 4.5], [11.5, 10, 11.5])]),
+     None),
+    ("shrub_camellia", "SHRUB", 16, 1,
+     ("Camellia", "Kamelie", "Camelia", "Kamelia"),
+     shrub_els("camellia", [([3, 0, 3], [13, 3, 13]), ([1.5, 2.5, 1.5], [14.5, 12, 14.5]),
+                            ([3, 11.5, 3], [13, 15, 13]), ([5, 14.5, 5], [11, 16, 11])]), None),
+    ("flower_japanese_iris", "PLANT", 13, 1,
+     ("Japanese Iris", "Japanische Sumpf-Schwertlilie", "Lirio japonés", "Japansk iris"),
+     plant_els("japanese_iris", 14), "japanese_iris"),
+    ("plant_bamboo", "PLANT", 16, 0,
+     ("Bamboo", "Bambus", "Bambú", "Bambu"),
+     plant_els("bamboo", 16), "bamboo"),
+    ("grass_hakone", "PLANT", 7, 0,
+     ("Japanese Forest Grass", "Japanisches Waldgras", "Hierba japonesa del bosque",
+      "Japanskt skogsgräs"),
+     plant_els("grass_hakone", 10), "grass_hakone"),
+    # --- Sweden and Denmark ---
+    ("shrub_heather", "SHRUB", 8, 0,
+     ("Heather", "Besenheide", "Brezo", "Ljung"),
+     shrub_els("heather", [([0.5, 0, 0.5], [15.5, 5, 15.5]), ([2, 4.5, 2], [14, 8, 14])]), None),
+    ("shrub_lingonberry", "PLANT", 4, 0,
+     ("Lingonberry", "Preiselbeere", "Arándano rojo", "Lingon"),
+     shrub_els("lingonberry", [([0, 0, 0], [16, 2, 16]), ([1, 1.5, 1], [8, 4, 8]),
+                               ([7, 1.5, 7.5], [15, 3.5, 15]), ([1.5, 1.5, 9], [7, 3, 15])]),
+     None),
+    ("flower_wood_anemone", "PLANT", 6, 1,
+     ("Wood Anemone", "Buschwindröschen", "Anémona de bosque", "Vitsippa"),
+     plant_els("wood_anemone", 8), "wood_anemone"),
+    ("flower_harebell", "PLANT", 10, 2,
+     ("Harebell", "Rundblättrige Glockenblume", "Campanilla", "Blåklocka"),
+     plant_els("harebell", 12), "harebell"),
+    ("flower_marguerite", "PLANT", 12, 2,
+     ("Oxeye Daisy", "Margerite", "Margarita", "Prästkrage"),
+     plant_els("marguerite", 14), "marguerite"),
+]
+REGIONS = [0, 5, 10, 16, 22, 27, 32]  # where each region starts in REGIONAL
+
+
+def potted_names(names):
+    return ("Potted " + names[0], names[1] + " im Topf", names[2] + " en maceta",
+            names[3] + " i kruka")
+
+
+for start, end in zip(REGIONS, REGIONS[1:]):
+    for reg, kind, height, inset, names, (tex, els), item in REGIONAL[start:end]:
+        ao = kind == "SHRUB"
+        models = {reg: model(tex, els, ao=ao)}
+        state = simple_state(reg)
+        if item:
+            models[reg + "_item"] = {"parent": "item/generated", "textures": {"layer0": T(item)}}
+            state = simple_state(reg, item=MODEL + reg + "_item")
+        prop(reg, kind, height, inset, names, models, state)
+    # The same plants in nursery pots, after the region's plants.
+    for reg, kind, height, inset, names, (tex, els), item in REGIONAL[start:end]:
+        preg = "potted_" + reg
+        ptex, pels = potted(tex, els)
+        top = int(math.ceil(POT_LIFT + height * POT_SCALE))
+        prop(preg, "SHRUB", min(16, top), 3, potted_names(names),
+             {preg: model(ptex, pels, ao=False)}, simple_state(preg))
+
+
+# ------------------------------------------------------------------------------------------
 # Output
 # ------------------------------------------------------------------------------------------
 def dump(path, data):

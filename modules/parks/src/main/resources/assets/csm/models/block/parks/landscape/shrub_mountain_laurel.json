@@ -1,0 +1,254 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leaves": "csm:blocks/parks/landscape/mountain_laurel",
+    "particle": "csm:blocks/parks/landscape/mountain_laurel"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        3,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            13,
+            14,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            13,
+            14,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            13,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            13,
+            14,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        2.5,
+        0.5
+      ],
+      "to": [
+        15.5,
+        10,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            6,
+            15.5,
+            13.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            6,
+            15.5,
+            13.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            6,
+            15.5,
+            13.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            6,
+            15.5,
+            13.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            0.5,
+            15.5,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            0.5,
+            15.5,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        9.5,
+        2.5
+      ],
+      "to": [
+        13.5,
+        13,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            2.5,
+            3,
+            14.5,
+            6.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            3,
+            13.5,
+            6.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            3,
+            13.5,
+            6.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            2.5,
+            3,
+            14.5,
+            6.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            2.5,
+            13.5,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        12.5,
+        4
+      ],
+      "to": [
+        11,
+        14,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            5,
+            2,
+            12,
+            3.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            2,
+            11,
+            3.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            5,
+            2,
+            12,
+            3.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            2,
+            11,
+            3.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            4,
+            11,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

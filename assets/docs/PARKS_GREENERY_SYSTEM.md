@@ -182,12 +182,21 @@ That idea comes from Biomes O' Plenty's generator builders (see Decisions).
 
 | Shape | How it grows | Presets |
 |---|---|---|
-| Profile | Straight trunk, crown radius from a profile of height (rounded bottom, pointed top) | cypress, ginkgo, poplar, sweetgum, hornbeam, arborvitae |
-| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum |
-| Palm | Sideways offset grows with the square of the height, so the trunk curves; crown on the top log | fan palm, leaning feather palm, queen palm |
+| Profile | Straight trunk, crown radius from a profile of height (rounded bottom, pointed top) | cypress, ginkgo, poplar, sweetgum, hornbeam, arborvitae, Colorado blue spruce |
+| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum, paper birch, Japanese maple, Scots pine, European beech |
+| Palm | Sideways offset grows with the square of the height, so the trunk curves; crown on the top log | fan palm, leaning feather palm, queen palm, cabbage palm |
 | Head | Clear trunk and a clipped ball | ball-head plane |
 | Box | Clear trunk and a box crown, wide across the facing | pleached linden: a row joins into a hedge on stilts |
 | Pollard | Stout trunk cut back to knuckles, a tuft on each | pollarded plane |
+
+The last six presets are regional: paper birch (New Hampshire), Colorado blue spruce, cabbage
+palm (Florida), Japanese maple, Scots pine (Sweden) and European beech (Denmark). California was
+already covered by the coast live oak. They brought five woods (birch, maple, spruce, pine,
+beech) and eight leaves blocks, autumn sets for the birch, maple and beech among them. The
+Japanese maple's leaves are small five-lobed stars (the `palmate` sprite), and the spruce and
+pine wear a needle sprite across a whole cluster (`needle_wide`) with the broadleaf
+arrangement, since a wide conifer crown needs sheets rather than the cypress's upright cards.
+The cabbage palm is the fan palm's crowns on a shorter trunk, skirted more often than not.
 
 A limbed tree has **no leaves below its street clearance** (about 4 to 5 blocks over a road, 3
 in a park). Its canopy stays above traffic and its trunk stays clear.
@@ -256,6 +265,36 @@ model copies move the bracket plate back to the thinner pole's skin, as
 Their wall is drawn where the side is *not* joined (`side_when "false"`). A hedge or fence draws an
 arm where it *is* joined.
 
+### Regional plantings and nursery pots
+
+A handful of plants native to each of six places, so a garden or a plant nursery can be stocked
+by region. Each is one `BlockParkProp`, like the plantings above, grouped in the tab by region:
+
+| Region | Plants |
+|---|---|
+| California | California poppy, manzanita, California lilac (ceanothus), white sage, deergrass |
+| New Hampshire | mountain laurel, highbush blueberry, winterberry, wild lupine, pink lady's slipper |
+| Colorado | blue columbine, Rocky Mountain penstemon, rubber rabbitbrush, big sagebrush, blue grama, soapweed yucca |
+| Florida | saw palmetto, coontie, American beautyberry, firebush, coreopsis, pink muhly grass |
+| Japan | satsuki azalea, camellia, Japanese iris, bamboo, Japanese forest grass (the hydrangea already there is Japan's too) |
+| Sweden and Denmark | heather, lingonberry, wood anemone, harebell, oxeye daisy (marguerite) |
+
+- **Flowers, grasses and the palm-like plants** are four crossed planes (`PLANT`, walked
+  through), each its own drawing: a stem stand with a head per stem (`herb_tex`, which a lupine
+  stand fills with mixed colours and a poppy stand with one), or a drawing of its own where the
+  plant's shape is the point (the yucca's rosette and bell stalk, the saw palmetto's fans, the
+  coontie's arching fronds, the iris's swords, the lady's slipper's pouch).
+- **Shrubs** are stacked boxes as before, but shaped to the species (a clipped satsuki dome, a
+  tall camellia oval, a low heather mound, sagebrush and manzanita lopsided), with bare stems
+  under a raised canopy where the plant has them, white sage's spikes standing over it, and
+  berries dotted singly over the leaves.
+- **Bamboo's** canes, nodes and leaf sprays repeat every eight pixels, so blocks stacked on each
+  other read as one tall grove.
+- **Every regional plant also comes potted** (`potted_<name>`): the same model at 60% on the soil
+  of a black plastic nursery container (8 x 6 px), so a nursery's benches and rows can be filled
+  and a plant planted out beside its pot. The pot is added by the generator (`potted()`), not
+  drawn per plant. A potted plant is a `SHRUB`: it has a box to stand on and to bump into.
+
 ---
 
 ## Park amenities (Parks tab)
@@ -321,7 +360,8 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
   - logs cost planks by width (twig or thin 1, medium 2, thick 3, full 4);
   - leaves cost vanilla leaves (2 for a palm crown); moss costs a vine;
   - plantings cost what they are planted with or made of (saplings, tall grass, flowers, gravel,
-    sand, planks, stone);
+    sand, planks, stone), by name: `shrub_` and `plant_` a sapling, `grass_` tall grass,
+    `flower_` a flower; a `potted_` plant costs its plant and a flower pot;
   - grates and the pit fence take the generic steel cost.
 - **Parks:**
   - flower pots cost clay; the bird bath and fountains cost stone;
@@ -336,7 +376,7 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
 | Script | Writes |
 |---|---|
 | `gen_trees.py` | Bark and leaf-cluster textures; the palm crown sheets and icons; moss; the log and leaves placeholder models and blockstates; the lang for woods, leaves and presets; the tool's icon, model and messages. `--fragments` prints the tab lines |
-| `gen_park_plantings.py` | Every block in the accessories and plantings catalogue: textures, element models, blockstates, item models and lang. `--fragments` |
+| `gen_park_plantings.py` | Every block in the accessories and plantings catalogue, the regional plantings and their potted copies: textures, element models, blockstates, item models and lang. `--fragments` |
 | `gen_park_amenities.py` | The same for the amenities. It borrows `gen_park_plantings.py`'s helpers |
 | `gen_park_legacy_amenities.py` | The models, textures and blockstates of the five amenities that kept their old ids (both swing sets, the teeter totter, the trash can, the bird bath). It writes no lang and no tab lines, since those blocks already have them |
 
@@ -368,7 +408,8 @@ and fails when any preset grows more than 15% past its recorded budget.
 
 One pass (2026-09-23) took one of every preset from 82,178 quads to 31,199 without changing how
 the trees read. The adaptive generator that followed (forks, side branches, lopsided clusters)
-brought it back to about 33,700, the price of limbed trees that no longer all look alike. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
+brought it back to about 33,700, the price of limbed trees that no longer all look alike. The six
+regional presets added about 9,800 more (the beech, a big broad dome, is 3,951 of it). Leaves were about 85% of a tree, at 25 to 30 quads a cell.
 - **Sheeted leaves.** Every leaf type but clipped draws a leaf sheet on each open face (one quad,
   facing out, 1 px inside the face), a tuft card past each open side and the top, and one card
   inside, where they had drawn six interior cards, three fringe cards per open face and cover

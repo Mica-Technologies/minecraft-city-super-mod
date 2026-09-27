@@ -1,0 +1,282 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leaves": "csm:blocks/parks/landscape/beautyberry",
+    "particle": "csm:blocks/parks/landscape/beautyberry",
+    "stems": "csm:blocks/parks/landscape/beautyberry_stems"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        4,
+        3
+      ],
+      "to": [
+        13,
+        8,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            8,
+            13,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            8,
+            13,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            8,
+            13,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            8,
+            13,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        7.5,
+        0.5
+      ],
+      "to": [
+        15.5,
+        12,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            4,
+            15.5,
+            8.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            4,
+            15.5,
+            8.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            4,
+            15.5,
+            8.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            4,
+            15.5,
+            8.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            0.5,
+            15.5,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            0.5,
+            0.5,
+            15.5,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        11.5,
+        3
+      ],
+      "to": [
+        13,
+        13,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            3,
+            13,
+            4.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            3,
+            13,
+            4.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            3,
+            13,
+            4.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            3,
+            13,
+            4.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.8,
+        0,
+        8
+      ],
+      "to": [
+        15.2,
+        5,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": 45,
+        "rescale": true
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#stems",
+          "uv": [
+            0,
+            11,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#stems",
+          "uv": [
+            0,
+            11,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.8,
+        0,
+        8
+      ],
+      "to": [
+        15.2,
+        5,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": -45,
+        "rescale": true
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#stems",
+          "uv": [
+            0,
+            11,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#stems",
+          "uv": [
+            0,
+            11,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

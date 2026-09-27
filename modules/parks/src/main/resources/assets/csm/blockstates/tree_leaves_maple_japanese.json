@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/leaves_maple_japanese"
+    },
+    "inventory": {
+      "model": "csm:parks/leaves_maple_japanese"
+    }
+  }
+}

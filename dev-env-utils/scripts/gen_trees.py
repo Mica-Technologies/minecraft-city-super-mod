@@ -75,6 +75,12 @@ WOODS = [
     ("willow", "WILLOW", ("Weeping Willow", "Trauerweide", "sauce llorón", "tårpil"),
      "furrowed_deep"),
     ("linden", "LINDEN", ("Linden", "Linde", "tilo", "lind"), "smooth_grey"),
+    ("birch", "BIRCH", ("Paper Birch", "Papierbirke", "abedul blanco", "pappersbjörk"), "birch"),
+    ("maple", "MAPLE", ("Japanese Maple", "Fächerahorn", "arce japonés", "japansk lönn"),
+     "smooth_grey"),
+    ("spruce", "SPRUCE", ("Blue Spruce", "Stechfichte", "pícea azul", "blågran"), "scaly"),
+    ("pine", "PINE", ("Scots Pine", "Waldkiefer", "pino silvestre", "tall"), "scaly_orange"),
+    ("beech", "BEECH", ("European Beech", "Rotbuche", "haya", "bok"), "smooth_silver"),
 ]
 
 # id -> (Java constant, pixels across, name patterns en/de/es/sv). Order = TreeLogWidth order.
@@ -149,10 +155,27 @@ LEAVES = [
      [(114, 156, 70), (94, 136, 58), (76, 116, 48), (60, 96, 38)], LEAF_NAMES),
     ("linden_clipped", "CLIPPED", WOODS[14][2], "clipped",
      [(100, 144, 62), (84, 126, 52), (68, 108, 44), (54, 90, 36)], CLIPPED_NAMES),
+    ("birch", "BROADLEAF", WOODS[15][2], "broad",
+     [(146, 184, 82), (122, 164, 68), (100, 142, 56), (80, 118, 46)], LEAF_NAMES),
+    ("birch_autumn", "BROADLEAF", WOODS[15][2], "broad",
+     [(250, 222, 96), (236, 200, 70), (212, 172, 52), (176, 140, 40)], AUTUMN_NAMES),
+    ("maple_japanese", "BROADLEAF", WOODS[16][2], "palmate",
+     [(176, 44, 50), (150, 32, 44), (122, 26, 40), (94, 22, 34)], LEAF_NAMES),
+    ("maple_japanese_autumn", "BROADLEAF", WOODS[16][2], "palmate",
+     [(242, 84, 40), (224, 58, 34), (196, 40, 30), (158, 30, 28)], AUTUMN_NAMES),
+    ("spruce_blue", "BROADLEAF", WOODS[17][2], "needle_wide",
+     [(166, 194, 204), (138, 168, 182), (110, 142, 158), (84, 114, 130)], NEEDLE_NAMES),
+    ("pine", "BROADLEAF", WOODS[18][2], "needle_wide",
+     [(112, 140, 102), (92, 120, 86), (74, 100, 70), (58, 80, 56)], NEEDLE_NAMES),
+    ("beech", "BROADLEAF", WOODS[19][2], "broad",
+     [(128, 170, 70), (106, 150, 58), (86, 128, 48), (66, 106, 38)], LEAF_NAMES),
+    ("beech_autumn", "BROADLEAF", WOODS[19][2], "broad",
+     [(210, 136, 60), (186, 110, 46), (158, 86, 36), (124, 64, 28)], AUTUMN_NAMES),
 ]
 SEASON_OF = {"elm_autumn": "elm", "plane_autumn": "plane", "honeylocust_autumn": "honeylocust",
              "ginkgo_autumn": "ginkgo", "poplar_autumn": "poplar",
-             "sweetgum_autumn": "sweetgum"}
+             "sweetgum_autumn": "sweetgum", "birch_autumn": "birch",
+             "maple_japanese_autumn": "maple_japanese", "beech_autumn": "beech"}
 
 # Palm crowns: (id, TreeLeafType constant, sheet, names en/de/es/sv). Order = tab order.
 PALMS = [
@@ -200,6 +223,13 @@ PRESETS = [
                         "Spaljerad lind")),
     ("pollardedplane", ("Pollarded Plane", "Kopfplatane", "Plátano desmochado",
                         "Hamlad platan")),
+    ("paperbirch", ("Paper Birch", "Papierbirke", "Abedul blanco", "Pappersbjörk")),
+    ("bluespruce", ("Colorado Blue Spruce", "Blau-Fichte", "Pícea azul de Colorado",
+                    "Blågran")),
+    ("cabbagepalm", ("Cabbage Palm", "Palmettopalme", "Palmito de Florida", "Kålpalm")),
+    ("japanesemaple", ("Japanese Maple", "Fächerahorn", "Arce japonés", "Japansk lönn")),
+    ("scotspine", ("Scots Pine", "Waldkiefer", "Pino silvestre", "Tall")),
+    ("beech", ("European Beech", "Rotbuche", "Haya europea", "Bok")),
 ]
 
 # The tool's own lines: key -> en/de/es/sv.
@@ -349,6 +379,34 @@ def bark(recipe, seed):
     elif recipe in ("mottled", "white_smooth"):
         base, spread = (168, 160, 132), 0
         field = [[0.0] * SIZE for _ in range(SIZE)]
+    elif recipe == "birch":
+        # Chalk-white paper bark: dark horizontal lenticels and a few black scars.
+        base, spread = (224, 220, 210), 6
+        field = [[0.0] * SIZE for _ in range(SIZE)]
+        for _ in range(9):
+            x, y, length = rng.randrange(SIZE), rng.randrange(SIZE), rng.randint(2, 5)
+            for k in range(length):
+                field[y][(x + k) % SIZE] -= 150
+        for _ in range(3):
+            x, y = rng.randrange(SIZE), rng.randrange(SIZE)
+            for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1), (2, 0)):
+                field[(y + dy) % SIZE][(x + dx) % SIZE] -= 170
+    elif recipe == "smooth_silver":
+        base, spread = (160, 160, 154), 8
+        field = _furrows(rng, 2, 8, jitter=0)
+    elif recipe in ("scaly", "scaly_orange"):
+        # Small flaking plates: short dark cracks between patches.
+        base, spread = ((98, 84, 74), 10) if recipe == "scaly" else ((176, 104, 62), 12)
+        field = [[0.0] * SIZE for _ in range(SIZE)]
+        for y in range(0, SIZE, 3):
+            off = rng.randrange(4)
+            for x in range(SIZE):
+                if (x + off) % 4 == 0 or rng.random() < 0.15:
+                    field[y][x] -= 30
+        for x in range(0, SIZE, 4):
+            for y in range(SIZE):
+                if rng.random() < 0.35:
+                    field[y][(x + (y // 3) % 2 * 2) % SIZE] -= 22
     else:
         raise ValueError(recipe)
     grain = _noise(rng, 4)
@@ -471,8 +529,21 @@ def leaf_cluster(style, palette, seed):
         for _ in range(120):
             cx, cy = rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE)
             px[cx, cy] = tuple(palette[0]) + (255,)
-    elif style == "needle":
-        for _ in range(420):
+    elif style == "palmate":
+        # Japanese maple: small five-pointed stars, finely cut, a little light between them.
+        for _ in range(70):
+            cx, cy = rng.uniform(0, LEAF_SIZE), rng.uniform(0, LEAF_SIZE)
+            a = rng.uniform(0, 2 * math.pi)
+            shade = rng.randrange(len(palette) - 1)
+            put(int(cx), int(cy), palette[shade + 1])
+            for lobe in range(5):
+                ang = a + lobe * 2 * math.pi / 5
+                for r in (1, 2, 3):
+                    put(int(round(cx + r * math.cos(ang))), int(round(cy + r * math.sin(ang))),
+                        palette[shade + (1 if r == 3 else 0)])
+    elif style in ("needle", "needle_wide"):
+        # needle_wide: the same needles over a whole cluster, for a conifer's broad crown.
+        for _ in range(420 if style == "needle" else 560):
             x, y = rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE)
             shade = rng.randrange(len(palette))
             for d in range(3):

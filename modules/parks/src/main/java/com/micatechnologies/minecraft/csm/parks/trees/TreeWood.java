@@ -25,7 +25,12 @@ public enum TreeWood {
   HORNBEAM("hornbeam"),
   GUM("gum"),
   WILLOW("willow"),
-  LINDEN("linden");
+  LINDEN("linden"),
+  BIRCH("birch"),
+  MAPLE("maple"),
+  SPRUCE("spruce"),
+  PINE("pine"),
+  BEECH("beech");
 
   private final String id;
 
