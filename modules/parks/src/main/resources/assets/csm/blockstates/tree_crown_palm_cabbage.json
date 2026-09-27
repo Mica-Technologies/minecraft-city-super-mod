@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/palm_crown_cabbage"
+    },
+    "inventory": {
+      "model": "csm:parks/palm_crown_cabbage_item"
+    }
+  }
+}

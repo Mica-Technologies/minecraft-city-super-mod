@@ -81,6 +81,15 @@ WOODS = [
     ("spruce", "SPRUCE", ("Blue Spruce", "Stechfichte", "pícea azul", "blågran"), "scaly"),
     ("pine", "PINE", ("Scots Pine", "Waldkiefer", "pino silvestre", "tall"), "scaly_orange"),
     ("beech", "BEECH", ("European Beech", "Rotbuche", "haya", "bok"), "smooth_silver"),
+    ("sabal", "SABAL", ("Cabbage Palm", "Palmettopalme", "palmito de Florida", "kålpalm"),
+     "booted"),
+    ("redwood", "REDWOOD", ("Coast Redwood", "Küstenmammutbaum", "secuoya roja", "kustsequoia"),
+     "fibrous_red"),
+    ("whitepine", "WHITE_PINE", ("Eastern White Pine", "Weymouth-Kiefer", "pino blanco",
+                                 "weymouthtall"), "furrowed_deep"),
+    ("oak", "OAK", ("English Oak", "Stieleiche", "roble común", "skogsek"), "furrowed_oak"),
+    ("camphor", "CAMPHOR", ("Camphor Tree", "Kampferbaum", "alcanforero", "kamferträd"),
+     "fissured_brown"),
 ]
 
 # id -> (Java constant, pixels across, name patterns en/de/es/sv). Order = TreeLogWidth order.
@@ -171,11 +180,22 @@ LEAVES = [
      [(128, 170, 70), (106, 150, 58), (86, 128, 48), (66, 106, 38)], LEAF_NAMES),
     ("beech_autumn", "BROADLEAF", WOODS[19][2], "broad",
      [(210, 136, 60), (186, 110, 46), (158, 86, 36), (124, 64, 28)], AUTUMN_NAMES),
+    ("redwood", "BROADLEAF", WOODS[21][2], "needle_wide",
+     [(86, 116, 68), (68, 98, 56), (52, 80, 44), (38, 62, 34)], NEEDLE_NAMES),
+    ("pine_white", "BROADLEAF", WOODS[22][2], "needle_wide",
+     [(132, 162, 130), (110, 142, 110), (90, 122, 92), (70, 100, 74)], NEEDLE_NAMES),
+    ("oak", "BROADLEAF", WOODS[23][2], "broad",
+     [(104, 142, 58), (84, 122, 48), (66, 102, 40), (50, 82, 32)], LEAF_NAMES),
+    ("oak_autumn", "BROADLEAF", WOODS[23][2], "broad",
+     [(184, 124, 60), (158, 100, 46), (130, 80, 36), (100, 62, 28)], AUTUMN_NAMES),
+    ("camphor", "BROADLEAF", WOODS[24][2], "broad_large",
+     [(150, 184, 86), (124, 164, 70), (100, 142, 58), (78, 118, 46)], LEAF_NAMES),
 ]
 SEASON_OF = {"elm_autumn": "elm", "plane_autumn": "plane", "honeylocust_autumn": "honeylocust",
              "ginkgo_autumn": "ginkgo", "poplar_autumn": "poplar",
              "sweetgum_autumn": "sweetgum", "birch_autumn": "birch",
-             "maple_japanese_autumn": "maple_japanese", "beech_autumn": "beech"}
+             "maple_japanese_autumn": "maple_japanese", "beech_autumn": "beech",
+             "oak_autumn": "oak"}
 
 # Palm crowns: (id, TreeLeafType constant, sheet, names en/de/es/sv). Order = tab order.
 PALMS = [
@@ -186,8 +206,14 @@ PALMS = [
       "Copa de palmera de abanico con faldón", "Solfjäderspalmkrona med kjol")),
     ("palm_feather", "PALM_FEATHER", "feather",
      ("Feather Palm Crown", "Fiederpalmen-Krone", "Copa de palmera de pluma", "Fjäderpalmkrona")),
+    ("palm_cabbage", "PALM_CABBAGE", "cabbage",
+     ("Cabbage Palm Crown", "Palmettopalmen-Krone", "Copa de palmito de Florida",
+      "Kålpalmkrona")),
+    ("palm_cabbage_skirt", "PALM_CABBAGE_SKIRT", "cabbage",
+     ("Cabbage Palm Crown with Skirt", "Palmettopalmen-Krone mit Trockenwedeln",
+      "Copa de palmito de Florida con faldón", "Kålpalmkrona med kjol")),
 ]
-PALM_SHEETS = ["fan", "feather"]
+PALM_SHEETS = ["fan", "feather", "cabbage"]
 
 # Tree Planting Tool presets: TreePreset id -> names en/de/es/sv. Order = TreePreset order.
 PRESETS = [
@@ -230,6 +256,12 @@ PRESETS = [
     ("japanesemaple", ("Japanese Maple", "Fächerahorn", "Arce japonés", "Japansk lönn")),
     ("scotspine", ("Scots Pine", "Waldkiefer", "Pino silvestre", "Tall")),
     ("beech", ("European Beech", "Rotbuche", "Haya europea", "Bok")),
+    ("coastredwood", ("Coast Redwood", "Küstenmammutbaum", "Secuoya roja", "Kustsequoia")),
+    ("whitepine", ("Eastern White Pine", "Weymouth-Kiefer", "Pino blanco del este",
+                   "Weymouthtall")),
+    ("englishoak", ("Old English Oak", "Alte Stieleiche", "Roble común centenario",
+                    "Gammal skogsek")),
+    ("camphor", ("Camphor Tree", "Kampferbaum", "Alcanforero", "Kamferträd")),
 ]
 
 # The tool's own lines: key -> en/de/es/sv.
@@ -391,6 +423,28 @@ def bark(recipe, seed):
             x, y = rng.randrange(SIZE), rng.randrange(SIZE)
             for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1), (2, 0)):
                 field[(y + dy) % SIZE][(x + dx) % SIZE] -= 170
+    elif recipe == "booted":
+        # Cabbage palm: the criss-cross of old frond bases ("boots") left on the trunk.
+        base, spread = (122, 108, 82), 8
+        field = [[0.0] * SIZE for _ in range(SIZE)]
+        for y in range(SIZE):
+            for x in range(SIZE):
+                if (x + y) % 8 < 2 or (x - y) % 8 < 2:
+                    field[y][x] -= 34
+                elif ((x + y) // 8 + (x - y) // 8) % 2:
+                    field[y][x] += 10
+    elif recipe == "fibrous_red":
+        # Coast redwood: thick, soft, red-brown bark in long vertical fibres.
+        base, spread = (146, 78, 56), 8
+        field = _furrows(rng, 8, 26, jitter=0)
+    elif recipe == "furrowed_oak":
+        # Old oak: deep grey ridges broken across into blocks.
+        base, spread = (110, 102, 90), 10
+        field = _furrows(rng, 6, 40)
+        for y in range(0, SIZE, 4):
+            for x in range(SIZE):
+                if rng.random() < 0.35:
+                    field[(y + x // 5) % SIZE][x] -= 18
     elif recipe == "smooth_silver":
         base, spread = (160, 160, 154), 8
         field = _furrows(rng, 2, 8, jitter=0)
@@ -559,6 +613,7 @@ def leaf_cluster(style, palette, seed):
 FROND_GREEN = [(118, 150, 70), (96, 128, 56), (76, 106, 46), (58, 84, 36)]
 FROND_FEATHER = [(124, 156, 72), (100, 134, 58), (80, 112, 48), (70, 92, 40)]
 FROND_DEAD = [(196, 170, 118), (172, 146, 96), (146, 120, 76), (118, 94, 60)]
+FROND_SABAL = [(100, 134, 74), (80, 114, 62), (62, 94, 50), (46, 74, 40)]
 STALK = (104, 110, 60)
 
 
@@ -640,6 +695,8 @@ def palm_sheet(style, seed):
     px = img.load()
     if style == "fan":
         _fan_frond(px, 0, 0, FROND_GREEN, rng, ragged=False)
+    elif style == "cabbage":
+        _fan_frond(px, 0, 0, FROND_SABAL, rng, ragged=False)
     else:
         _feather_frond(px, 0, 0, FROND_FEATHER, rng)
     _fan_frond(px, 32, 0, FROND_DEAD, rng, ragged=True)

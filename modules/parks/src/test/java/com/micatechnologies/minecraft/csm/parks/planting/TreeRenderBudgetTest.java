@@ -31,13 +31,18 @@ class TreeRenderBudgetTest {
    * crown's underside) took one of every preset from 82,178 quads to 31,199; the adaptive
    * generator that followed it (forked leaders, side branches, lopsided clusters) brought that
    * back to about 33,700, the price of limbed trees that no longer all look alike. The six
-   * regional presets that followed (paper birch to beech) added about 9,800. A preset may grow
+   * regional presets that followed (paper birch to beech) added about 9,800. The cabbage palm's own
+   * full crown (2026-09-27) took it from 231 to 439, and the four big trees that followed (coast
+   * redwood, eastern white pine, old English oak, camphor) added about 29,400: the oak, the
+   * camphor and the white pine are some 9,000 each, twice and more a live oak's width or height,
+   * and nearly half of it their thick limbs. Plant them as specimens, not as a street. A preset
+   * may grow
    * 15% past this before the test fails; beyond that, look at what grew, and raise the number
    * here only if it earns its cost.
    */
   private static final Map<String, Integer> BUDGET = new HashMap<>();
   /** One of every preset together. */
-  private static final int TOTAL_BUDGET = 45000;
+  private static final int TOTAL_BUDGET = 76000;
 
   static {
     String[] rows = {"liveoak 3832", "elm 3210", "plane 3588", "honeylocust 1670", "cypress 188",
@@ -45,7 +50,8 @@ class TreeRenderBudgetTest {
         "peppertree 3562", "coastliveoak 2798", "weepingwillow 5708", "poplar 638",
         "sweetgum 372", "hornbeam 484", "queenpalm 178", "lemongum 1789", "arborvitae 74",
         "pleachedlinden 306", "pollardedplane 590", "paperbirch 1635", "bluespruce 974",
-        "cabbagepalm 231", "japanesemaple 1664", "scotspine 1368", "beech 3951"};
+        "cabbagepalm 439", "japanesemaple 1664", "scotspine 1368", "beech 3951",
+        "coastredwood 2455", "whitepine 8771", "englishoak 8899", "camphor 9273"};
     for (String row : rows) {
       String[] kv = row.split(" ");
       BUDGET.put(kv[0], Integer.parseInt(kv[1]));
@@ -53,6 +59,12 @@ class TreeRenderBudgetTest {
   }
 
   static TreeLeafType leafType(String block) {
+    if (block.startsWith("tree_crown_palm_cabbage_skirt")) {
+      return TreeLeafType.PALM_CABBAGE_SKIRT;
+    }
+    if (block.startsWith("tree_crown_palm_cabbage")) {
+      return TreeLeafType.PALM_CABBAGE;
+    }
     if (block.startsWith("tree_crown_palm_fan_skirt")) {
       return TreeLeafType.PALM_FAN_SKIRT;
     }

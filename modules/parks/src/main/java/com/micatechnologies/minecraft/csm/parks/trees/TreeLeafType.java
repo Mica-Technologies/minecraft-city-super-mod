@@ -23,7 +23,14 @@ public enum TreeLeafType {
   /** A fan palm's crown with the skirt of dead fronds that hangs down its trunk. */
   PALM_FAN_SKIRT(18, 26, 16, true),
   /** A queen or coconut palm's crown: long feather fronds that arch and droop. */
-  PALM_FEATHER(12, 30, 9, false);
+  PALM_FEATHER(12, 30, 9, false),
+  /**
+   * A cabbage palm's (sabal's) crown: a dense round head of big costapalmate fans in three tiers,
+   * the lowest drooping, on a boot sized for its stouter trunk.
+   */
+  PALM_CABBAGE(33, 48, 26, false, 4.4, 3),
+  /** A cabbage palm's crown with the dead fronds still hanging under it. */
+  PALM_CABBAGE_SKIRT(33, 48, 26, true, 4.4, 3);
 
   /** Cards inside the cell, at most. */
   final int interior;
@@ -41,6 +48,9 @@ public enum TreeLeafType {
   final double frondLength;
   final double frondWidth;
   final boolean skirt;
+  /** Palm crowns only: the boot's radius at its foot, in sixteenths, and the tiers of fronds. */
+  final double bootRadius;
+  final int tiers;
 
   TreeLeafType(int interior, double minSize, double maxSize, double tilt, boolean upright) {
     this.interior = interior;
@@ -53,9 +63,16 @@ public enum TreeLeafType {
     this.frondLength = 0;
     this.frondWidth = 0;
     this.skirt = false;
+    this.bootRadius = 0;
+    this.tiers = 0;
   }
 
   TreeLeafType(int fronds, double frondLength, double frondWidth, boolean skirt) {
+    this(fronds, frondLength, frondWidth, skirt, 2.4, 2);
+  }
+
+  TreeLeafType(int fronds, double frondLength, double frondWidth, boolean skirt,
+      double bootRadius, int tiers) {
     this.interior = 0;
     this.minSize = 0;
     this.maxSize = 0;
@@ -66,6 +83,8 @@ public enum TreeLeafType {
     this.frondLength = frondLength;
     this.frondWidth = frondWidth;
     this.skirt = skirt;
+    this.bootRadius = bootRadius;
+    this.tiers = tiers;
   }
 
   /** Whether this is a palm crown, drawn by {@link TreePalmGeometry}. */

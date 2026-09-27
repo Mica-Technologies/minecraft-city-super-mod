@@ -30,7 +30,12 @@ public enum TreeWood {
   MAPLE("maple"),
   SPRUCE("spruce"),
   PINE("pine"),
-  BEECH("beech");
+  BEECH("beech"),
+  SABAL("sabal"),
+  REDWOOD("redwood"),
+  WHITE_PINE("whitepine"),
+  OAK("oak"),
+  CAMPHOR("camphor");
 
   private final String id;
 

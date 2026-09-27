@@ -389,13 +389,15 @@ PRESETS = ['liveoak', 'elm', 'plane', 'honeylocust', 'cypress', 'ginkgo', 'fanpa
            'leaningpalm', 'lollipopplane', 'jacaranda', 'peppertree', 'coastliveoak',
            'weepingwillow', 'poplar', 'sweetgum', 'hornbeam', 'queenpalm', 'lemongum',
            'arborvitae', 'pleachedlinden', 'pollardedplane', 'paperbirch', 'bluespruce',
-           'cabbagepalm', 'japanesemaple', 'scotspine', 'beech']
+           'cabbagepalm', 'japanesemaple', 'scotspine', 'beech', 'coastredwood',
+           'whitepine', 'englishoak', 'camphor']
 NAMES = ['Southern Live Oak', 'American Elm', 'London Plane', 'Honey Locust', 'Italian Cypress',
          'Ginkgo', 'Mexican Fan Palm', 'Leaning Feather Palm', 'Ball-Head Plane', 'Jacaranda',
          'Pepper Tree', 'Coast Live Oak', 'Weeping Willow', 'Lombardy Poplar', 'Slender Sweetgum',
          'Columnar Hornbeam', 'Queen Palm', 'Lemon-scented Gum', 'Emerald Arborvitae',
          'Pleached Linden', 'Pollarded Plane', 'Paper Birch', 'Colorado Blue Spruce',
-         'Cabbage Palm', 'Japanese Maple', 'Scots Pine', 'European Beech']
+         'Cabbage Palm', 'Japanese Maple', 'Scots Pine', 'European Beech', 'Coast Redwood',
+         'Eastern White Pine', 'Old English Oak', 'Camphor Tree']
 PLAYER = _me['name']
 client.call('client_select_slot', slot=0)
 client.call('client_view', hideHud=True)
