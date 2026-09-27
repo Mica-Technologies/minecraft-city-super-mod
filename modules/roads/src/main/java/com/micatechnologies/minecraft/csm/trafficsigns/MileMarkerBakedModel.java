@@ -155,7 +155,7 @@ public class MileMarkerBakedModel extends BakedModelWrapper<IBakedModel> {
   }
 
   private List<BakedQuad> bake(Key key) {
-    ITransformation turn = transformation(key.facing);
+    ITransformation turn = transformation(key.facing, layout.getLift());
     List<BakedQuad> out = new ArrayList<>();
     for (MileMarkerFaces.Piece piece : MileMarkerFaces.pieces(layout, key.legend, key.shift)) {
       TextureAtlasSprite sprite = piece.source == MileMarkerFaces.Source.SHEET ? sheet
@@ -177,19 +177,28 @@ public class MileMarkerBakedModel extends BakedModelWrapper<IBakedModel> {
   }
 
   /**
-   * The turn the blockstate gives a facing, built as Forge's blockstate loader builds a
-   * {@code "transform": {"rotation": [{"x": 0}, {"y": a}, {"z": 0}]}}: a quaternion about y,
-   * moved from the block's centre to its corner.
+   * The transformation the blockstate gives a facing, built as Forge's blockstate loader builds a
+   * {@code "transform": {"translation": [0, lift, 0], "rotation": [{"x": 0}, {"y": a},
+   * {"z": 0}]}}: a quaternion about y and the plate's lift, moved from the block's centre to its
+   * corner.
+   *
+   * @param facing the facing
+   * @param lift   the plate's lift, in model units ({@link MileMarkerLayout#getLift()})
    */
-  static ITransformation transformation(DirectionEight facing) {
+  static ITransformation transformation(DirectionEight facing, float lift) {
     float degrees = facing.getRotationDegrees();
-    if (degrees == 0.0f) {
+    if (degrees == 0.0f && lift == 0.0f) {
       return TRSRTransformation.identity();
     }
-    Quat4f rotation = new Quat4f();
-    rotation.set(new AxisAngle4d(0, 1, 0, Math.toRadians(degrees)));
+    Quat4f rotation = null;
+    if (degrees != 0.0f) {
+      rotation = new Quat4f();
+      rotation.set(new AxisAngle4d(0, 1, 0, Math.toRadians(degrees)));
+    }
+    javax.vecmath.Vector3f translation =
+        lift == 0.0f ? null : new javax.vecmath.Vector3f(0, lift / 16.0f, 0);
     return TRSRTransformation.blockCenterToCorner(
-        new TRSRTransformation(null, rotation, null, null));
+        new TRSRTransformation(translation, rotation, null, null));
   }
 
   /** Writes an opaque 0xRRGGBB into every vertex's colour (ITEM format, ABGR in memory). */

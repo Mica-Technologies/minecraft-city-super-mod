@@ -186,6 +186,16 @@ def plate_units(p):
     return 8 - w / 2, top - h, 8 + w / 2, top
 
 
+def lift_of(p):
+    """How far the blockstate lifts the whole model, in model units, so that the plate's bottom
+    edge is on the block's floor and the number on it is not buried when the marker stands on
+    the ground. The plates are drawn about y 8 (0 to 36 or 40 would not fit a model element's
+    -16 to 32), and the lift is a translation in each facing's transform, which
+    MileMarkerBakedModel repeats for the legend (MileMarkerLayout.getLift); the post is drawn as
+    far below 0 as it is lifted, so it still stands on the floor."""
+    return max(0.0, -plate_units(p)[1])
+
+
 def y_of(p, inches):
     """A distance from the plate's top edge, in inches, as a model y."""
     return plate_units(p)[3] - inches / IN_PER_UNIT
@@ -337,8 +347,9 @@ def glyph_sheet():
 
 # --------------------------------------------------------------------------------- models
 
-def _post(z0):
-    """The standard five-bar sign post every sign model carries, front face at ``z0``."""
+def _post(z0, dy=0.0):
+    """The standard five-bar sign post every sign model carries, front face at ``z0``, drawn
+    ``dy`` lower (from -dy to 16 - dy) for a model the blockstate lifts by ``dy``."""
     bars = ((7.25, 8.75, 0.75, 3.25, None), (7.0, 9.0, 1.0, 3.0, None),
             (6.5, 9.5, 1.5, 2.5, None), (6.75, 9.25, 1.25, 2.75, None),
             (7.5, 8.5, 0.5, 3.5, "north"))
@@ -352,7 +363,7 @@ def _post(z0):
             if drop == "north" and side in ("up", "down"):
                 face["rotation"] = 90 if side == "up" else 270
             faces[side] = face
-        els.append({"from": [x0, 0, r4(za + z0)], "to": [x1, 16, r4(zb + z0)],
+        els.append({"from": [x0, r4(-dy), r4(za + z0)], "to": [x1, r4(16 - dy), r4(zb + z0)],
                     "rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]}, "faces": faces})
     return els
 
@@ -411,9 +422,10 @@ def _sign_model(p, elements):
 def mile_models(p):
     base = "mile_marker_" + p["key"]
     out = {}
-    out[base] = _sign_model(p, [_plate_box(p, 0, 0.5)] + _cells(p, 0, 0.01) + _post(0))
+    dy = lift_of(p)
+    out[base] = _sign_model(p, [_plate_box(p, 0, 0.5)] + _cells(p, 0, 0.01) + _post(0, dy))
     out[base + "_setback"] = _sign_model(p, [_plate_box(p, 12.5, 13)] + _cells(p, 12.5, 12.51)
-                                         + _post(12.5))
+                                         + _post(12.5, dy))
     x0, y0, x1, y1 = plate_units(p)
     backing = {"from": [r4(x0), r4(y0), 28.9], "to": [r4(x1), r4(y1), 29],
                "faces": {"north": {"uv": [0, 0, 16, 16], "texture": "#0"}}}
@@ -422,11 +434,17 @@ def mile_models(p):
     return out
 
 
-def _facing_variants():
+def _facing_variants(lift=0.0):
+    """Each facing's turn, and the lift (model units) that stands a mile marker's plate on the
+    floor; a y translation is the same before or after a turn about y."""
     out = {}
     for name, angle in FACINGS:
-        out[name] = ({"transform": {"rotation": [{"x": 0}, {"y": angle}, {"z": 0}]}}
-                     if angle else {})
+        transform = {}
+        if lift:
+            transform["translation"] = [0, r4(lift / 16), 0]
+        if angle:
+            transform["rotation"] = [{"x": 0}, {"y": angle}, {"z": 0}]
+        out[name] = {"transform": transform} if transform else {}
     return out
 
 
@@ -443,11 +461,13 @@ def mile_blockstate(p):
                          "glyphs": "csm:blocks/trafficsigns/" + GLYPHS},
         },
         "variants": {
-            "facing": _facing_variants(),
+            "facing": _facing_variants(lift_of(p)),
             "inventory": [{}],
+            # The facing's transform applies to the extension too, lift and all, so the
+            # extension is moved down by the lift as well as by the block.
             "downward": {"false": {}, "true": {"submodel": {"extension": {
                 "model": "csm:trafficsigns/sign_pole",
-                "transform": {"translation": [0.0, -1.0, 0.0]}}}}},
+                "transform": {"translation": [0.0, -1.0 - lift_of(p) / 16, 0.0]}}}}},
             "shift": {"none": {}, "setback": {"model": base + "_setback"},
                       "backtoback": {"model": base + "_back_to_back"}},
             "normal": [{}],
@@ -492,10 +512,11 @@ def java_source(recs):
     for p in PLATES:
         mile, tenth, direction, shield = _slots(p)
         digits = 3 if p.get("enhanced") else len(p["digits"])
-        lines.append('  %s("%s", "%s", %d, %s, %s,\n      %s,\n      %s,\n      %s,\n      %s)'
+        lines.append('  %s("%s", "%s", %d, %s, %s, %.4ff,\n      %s,\n      %s,\n      %s,\n'
+                     '      %s)'
                      % (p["key"].upper(), p["registry"], p["code"], digits,
                         "false" if p.get("enhanced") else "true",
-                        "true" if "tenth" in p else "false",
+                        "true" if "tenth" in p else "false", lift_of(p),
                         _farr(mile), _farr(tenth), _farr(direction), _farr(shield)))
     body = ",\n".join(lines) + ";"
 
@@ -517,7 +538,9 @@ def java_source(recs):
  * The eight mile marker plates (MUTCD D10-1 to D10-5) and where each draws what its tile entity
  * holds, in model units of the unturned model (the plate faces north, the reader stands north of
  * it, and the reader's x runs the other way from the model's: {@code modelX = 16 - readerX}).
- * Every legend is centred on the plate's centre line.
+ * Every legend is centred on the plate's centre line. {@code lift} is how far the blockstate's
+ * facing transform lifts the whole model so the plate's bottom edge is on the block's floor; the
+ * legend is lifted with it.
  *
  * <p>{@code mile} is, for a stacked plate, one {@code (centreY, cap)} pair per digit from the
  * top; for an enhanced plate one {@code (centreY, cap, maxWidth)} run. {@code tenth} and
@@ -547,19 +570,21 @@ public enum MileMarkerLayout {
   private final int digits;
   private final boolean stacked;
   private final boolean tenth;
+  private final float lift;
   private final float[] mileSlot;
   private final float[] tenthSlot;
   private final float[] directionSlot;
   private final float[] shieldSlot;
 
   MileMarkerLayout(String registryName, String code, int digits, boolean stacked,
-      boolean tenth, float[] mileSlot, float[] tenthSlot, float[] directionSlot,
+      boolean tenth, float lift, float[] mileSlot, float[] tenthSlot, float[] directionSlot,
       float[] shieldSlot) {
     this.registryName = registryName;
     this.code = code;
     this.digits = digits;
     this.stacked = stacked;
     this.tenth = tenth;
+    this.lift = lift;
     this.mileSlot = mileSlot;
     this.tenthSlot = tenthSlot;
     this.directionSlot = directionSlot;
@@ -594,6 +619,12 @@ public enum MileMarkerLayout {
   /** Whether the plate carries a direction, a route shield and a route number. */
   public boolean isEnhanced() {
     return shieldSlot != null;
+  }
+
+  /** How far the blockstate lifts the model, in model units: the plate's bottom edge is then
+   * on the block's floor. */
+  public float getLift() {
+    return lift;
   }
 
   public float[] getMileSlot() {

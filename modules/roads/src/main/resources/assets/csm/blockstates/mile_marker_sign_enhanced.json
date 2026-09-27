@@ -12,9 +12,22 @@
   },
   "variants": {
     "facing": {
-      "n": {},
+      "n": {
+        "transform": {
+          "translation": [
+            0,
+            0.625,
+            0
+          ]
+        }
+      },
       "nw": {
         "transform": {
+          "translation": [
+            0,
+            0.625,
+            0
+          ],
           "rotation": [
             {
               "x": 0
@@ -30,6 +43,11 @@
       },
       "w": {
         "transform": {
+          "translation": [
+            0,
+            0.625,
+            0
+          ],
           "rotation": [
             {
               "x": 0
@@ -45,6 +63,11 @@
       },
       "sw": {
         "transform": {
+          "translation": [
+            0,
+            0.625,
+            0
+          ],
           "rotation": [
             {
               "x": 0
@@ -60,6 +83,11 @@
       },
       "s": {
         "transform": {
+          "translation": [
+            0,
+            0.625,
+            0
+          ],
           "rotation": [
             {
               "x": 0
@@ -75,6 +103,11 @@
       },
       "se": {
         "transform": {
+          "translation": [
+            0,
+            0.625,
+            0
+          ],
           "rotation": [
             {
               "x": 0
@@ -90,6 +123,11 @@
       },
       "e": {
         "transform": {
+          "translation": [
+            0,
+            0.625,
+            0
+          ],
           "rotation": [
             {
               "x": 0
@@ -105,6 +143,11 @@
       },
       "ne": {
         "transform": {
+          "translation": [
+            0,
+            0.625,
+            0
+          ],
           "rotation": [
             {
               "x": 0
@@ -131,7 +174,7 @@
             "transform": {
               "translation": [
                 0.0,
-                -1.0,
+                -1.625,
                 0.0
               ]
             }
