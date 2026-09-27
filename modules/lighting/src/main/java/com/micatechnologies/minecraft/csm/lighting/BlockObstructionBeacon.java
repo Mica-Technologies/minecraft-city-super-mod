@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.lighting;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPostTopFixture;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,6 +19,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
@@ -32,9 +34,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * An aviation obstruction beacon for the top of a tall building, a tower or a mast: the red
  * flashing beacon (FAA L-864 style) and the white strobe (L-865 style).
  *
- * <p>The flash is the lens texture's animation, timed by its {@code .mcmeta}, so every beacon in
- * the world flashes in step and nothing ticks, has a tile entity or a renderer. A lit beacon gives
- * steady block light. The blockstate swaps the lens for its dark texture when unlit.
+ * <p>The flash is drawn by {@link TileEntityObstructionBeaconRenderer}: the lens at full
+ * brightness and a glow around it, only while the flash is on, timed from the wall clock so every
+ * beacon in the world flashes in step. It was first the lens texture's animation, which a baked
+ * model can only draw at the light around it: the red flash read as a slightly lighter lens and the
+ * white strobe's single frame was not seen at all. The tile entity holds nothing and never ticks.
+ * A lit beacon gives steady block light. The blockstate swaps the lens for its dark texture when
+ * unlit.
  *
  * <p>A beacon is lit unless redstone powers it. A real obstruction light burns all the time (the
  * red one by night, from its photocell), so it is placed lit, and a signal is an off switch: a
@@ -48,7 +54,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @since 2026.9
  */
-public class BlockObstructionBeacon extends AbstractBlock implements ICsmPostTopFixture {
+public class BlockObstructionBeacon extends AbstractBlock
+    implements ICsmPostTopFixture, ICsmTileEntityProvider {
 
   /** Where the beacon is fixed: on the block below, or on a bracket off a wall facing that way. */
   public enum Mount implements IStringSerializable {
@@ -112,6 +119,27 @@ public class BlockObstructionBeacon extends AbstractBlock implements ICsmPostTop
   @Override
   public String getBlockRegistryName() {
     return registryName != null ? registryName : PENDING.get();
+  }
+
+  /** Whether this is the white strobe (L-865) rather than the red flashing beacon (L-864). */
+  public boolean isStrobe() {
+    return getBlockRegistryName().endsWith("_white");
+  }
+
+  @Override
+  public Class<? extends TileEntity> getTileEntityClass() {
+    return TileEntityObstructionBeacon.class;
+  }
+
+  @Override
+  public String getTileEntityName() {
+    return "tileentityobstructionbeacon";
+  }
+
+  @Nullable
+  @Override
+  public TileEntity createNewTileEntity(@Nonnull World world, int meta) {
+    return new TileEntityObstructionBeacon();
   }
 
   @Override

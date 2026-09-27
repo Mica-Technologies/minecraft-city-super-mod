@@ -2,7 +2,7 @@
   "parent": "block/block",
   "textures": {
     "body": "csm:blocks/lighting/obstruction/body_red",
-    "lens": "csm:blocks/lighting/obstruction/lens_red",
+    "lens": "csm:blocks/lighting/obstruction/lens_red_off",
     "bracket": "csm:blocks/lighting/obstruction/bracket",
     "particle": "csm:blocks/lighting/obstruction/body_red"
   },

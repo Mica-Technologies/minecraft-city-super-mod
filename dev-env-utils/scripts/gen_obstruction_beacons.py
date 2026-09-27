@@ -7,19 +7,11 @@ the side of one (BlockObstructionBeacon).
     python dev-env-utils/scripts/gen_obstruction_beacons.py --check
     python dev-env-utils/scripts/gen_obstruction_beacons.py --fragments   # tab lines to paste
 
-The flash is the lit lens texture's animation, timed frame by frame in its .mcmeta, so every
-beacon in the world flashes in step and nothing ticks. The timings are FAA AC 150/5345-43J,
-Table 3-5 (Flash Characteristics for Obstruction Lights):
-
-- L-864, red: 30 flashes a minute (a two-second cycle, 40 ticks), and for a light that is not
-  incandescent a flash of 100 to 1333 ms. Drawn as the tower crane's L-864 flashes
-  (CONSTRUCTION_SITE.md): a 100 ms rise, a 700 ms hold and a 100 ms fade, then 1.1 s dark.
-- L-865, white: 40 flashes a minute (one every 1.5 s, 30 ticks), a flash of less than 100 ms by
-  day and twilight. Drawn as one 50 ms tick at full, then dark.
-
-Each lit strip has an `_e` companion for OptiFine's emissive rendering, transparent in its dark
-frames so only the flash glows. The unlit lens (the blockstate's `lit=false`) is the dark frame.
-Every model faces north; a bracket's wall is at z = 16.
+The models carry only the dark lens. The flash is TileEntityObstructionBeaconRenderer's: the
+lens at full brightness and a glow, which a baked model cannot draw (a lit lens texture read as a
+slightly lighter lens, and the strobe's one-tick frame was not seen at all). Its timings, from
+FAA AC 150/5345-43J, Table 3-5, are documented there; the lens sizes and heights here must match
+its Style constants. Every model faces north; a bracket's wall is at z = 16.
 """
 import os
 import sys
@@ -36,14 +28,6 @@ C = lc.Catalogue("gen_obstruction_beacons.py", "lighting/obstruction", "lighting
                  assets=ASSETS)
 TAB = "CsmTabLighting"
 LIGHT = 9                 # block light while lit, as the airside obstruction lights give
-
-# frame sequences: (frame index in the strip, ticks); strip frames are 0 dark, 1 half, 2 full
-SEQUENCES = {
-    "red": [(1, 2), (2, 14), (1, 2), (0, 22)],      # L-864: 30 fpm, 40 ticks
-    "white": [(2, 1), (0, 29)],                     # L-865: 40 fpm, 30 ticks
-}
-assert sum(t for _, t in SEQUENCES["red"]) == 40
-assert sum(t for _, t in SEQUENCES["white"]) == 30
 
 # lens colours: dark, half, full
 LENS = {
@@ -79,29 +63,11 @@ def lens_tile(colour, level, seed, emissive=False):
     return img
 
 
-def strip(colour, emissive=False):
-    img = Image.new("RGBA", (16, 48), (0, 0, 0, 0))
-    for level in range(3):
-        img.paste(lens_tile(colour, level, 900 + level + (10 if colour == "white" else 0),
-                            emissive), (0, 16 * level))
-    return img
-
-
-def mcmeta(colour):
-    frames = ",\n".join('      {"index": %d, "time": %d}' % f for f in SEQUENCES[colour])
-    return '{\n  "animation": {\n    "frames": [\n%s\n    ]\n  }\n}\n' % frames
-
-
 def register_textures():
     for colour in LENS:
-        C.texture("lens_%s" % colour)(lambda c=colour: strip(c))
-        C.texture("lens_%s_e" % colour)(lambda c=colour: strip(c, emissive=True))
         C.texture("lens_%s_off" % colour)(lambda c=colour: lens_tile(c, 0, 900 + (
             10 if c == "white" else 0)))
         C.texture("body_%s" % colour)(lambda c=colour: grain(BODY[c], 4, 920 + len(c)))
-        for suffix in ("", "_e"):
-            C.extra["textures/blocks/lighting/obstruction/lens_%s%s.png.mcmeta"
-                    % (colour, suffix)] = mcmeta(colour)
     C.texture("bracket")(lambda: grain((96, 98, 100), 4, 930))
 
 
@@ -167,7 +133,7 @@ def box_java(b):
 
 def beacon(colour, draw, height, names):
     reg = "obstruction_beacon_%s" % colour
-    tex = {"body": C.T("body_%s" % colour), "lens": C.T("lens_%s" % colour),
+    tex = {"body": C.T("body_%s" % colour), "lens": C.T("lens_%s_off" % colour),
            "bracket": C.T("bracket"), "particle": C.T("body_%s" % colour)}
     floor = lc.model(tex, draw(0), ao=False)
     floor["display"] = display(1.0)
@@ -180,7 +146,7 @@ def beacon(colour, draw, height, names):
                       "east": {"model": C.M(reg + "_wall"), "y": 90},
                       "south": {"model": C.M(reg + "_wall"), "y": 180},
                       "west": {"model": C.M(reg + "_wall"), "y": 270}},
-            "lit": {"true": {}, "false": {"textures": {"lens": C.T("lens_%s_off" % colour)}}},
+            "lit": {"true": {}, "false": {}},
             "inventory": [{}],
         },
     }
