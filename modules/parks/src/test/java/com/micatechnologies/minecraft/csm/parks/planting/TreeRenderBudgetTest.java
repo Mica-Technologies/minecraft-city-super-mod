@@ -30,20 +30,22 @@ class TreeRenderBudgetTest {
    * leaves, fewer log sides, straight-through tubes and a curtain hung only from a weeping
    * crown's underside) took one of every preset from 82,178 quads to 31,199; the adaptive
    * generator that followed it (forked leaders, side branches, lopsided clusters) brought that
-   * back to about 33,700, the price of limbed trees that no longer all look alike. A preset may
-   * grow 15% past this before the test fails; beyond that, look at what grew, and raise the
-   * number here only if it earns its cost.
+   * back to about 33,700, the price of limbed trees that no longer all look alike. The six
+   * regional presets that followed (paper birch to beech) added about 9,800. A preset may grow
+   * 15% past this before the test fails; beyond that, look at what grew, and raise the number
+   * here only if it earns its cost.
    */
   private static final Map<String, Integer> BUDGET = new HashMap<>();
   /** One of every preset together. */
-  private static final int TOTAL_BUDGET = 36000;
+  private static final int TOTAL_BUDGET = 45000;
 
   static {
     String[] rows = {"liveoak 3832", "elm 3210", "plane 3588", "honeylocust 1670", "cypress 188",
         "ginkgo 514", "fanpalm 228", "leaningpalm 244", "lollipopplane 576", "jacaranda 3122",
         "peppertree 3562", "coastliveoak 2798", "weepingwillow 5708", "poplar 638",
         "sweetgum 372", "hornbeam 484", "queenpalm 178", "lemongum 1789", "arborvitae 74",
-        "pleachedlinden 306", "pollardedplane 590"};
+        "pleachedlinden 306", "pollardedplane 590", "paperbirch 1635", "bluespruce 974",
+        "cabbagepalm 231", "japanesemaple 1664", "scotspine 1368", "beech 3951"};
     for (String row : rows) {
       String[] kv = row.split(" ");
       BUDGET.put(kv[0], Integer.parseInt(kv[1]));

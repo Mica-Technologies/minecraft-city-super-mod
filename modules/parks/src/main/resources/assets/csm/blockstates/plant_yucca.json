@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/landscape/plant_yucca"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "model": "csm:parks/landscape/plant_yucca_item"
+      }
+    ]
+  }
+}

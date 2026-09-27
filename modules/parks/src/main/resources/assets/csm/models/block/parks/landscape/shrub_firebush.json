@@ -1,0 +1,195 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leaves": "csm:blocks/parks/landscape/firebush",
+    "particle": "csm:blocks/parks/landscape/firebush"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        4,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            12,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            12,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            12,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            12,
+            13,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        3.5,
+        1.5
+      ],
+      "to": [
+        14.5,
+        13,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            3,
+            14.5,
+            12.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            3,
+            14.5,
+            12.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            3,
+            14.5,
+            12.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            3,
+            14.5,
+            12.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            1.5,
+            14.5,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            1.5,
+            14.5,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.5,
+        12.5,
+        3.5
+      ],
+      "to": [
+        12.5,
+        16,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            0,
+            12.5,
+            3.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            0,
+            12.5,
+            3.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            0,
+            12.5,
+            3.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            0,
+            12.5,
+            3.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            3.5,
+            3.5,
+            12.5,
+            12.5
+          ]
+        }
+      }
+    }
+  ]
+}

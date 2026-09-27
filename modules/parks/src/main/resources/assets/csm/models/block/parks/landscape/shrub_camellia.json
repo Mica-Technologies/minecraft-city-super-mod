@@ -1,0 +1,254 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leaves": "csm:blocks/parks/landscape/camellia",
+    "particle": "csm:blocks/parks/landscape/camellia"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        3,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            13,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            13,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            13,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            13,
+            13,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        2.5,
+        1.5
+      ],
+      "to": [
+        14.5,
+        12,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            4,
+            14.5,
+            13.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            4,
+            14.5,
+            13.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            4,
+            14.5,
+            13.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            4,
+            14.5,
+            13.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            1.5,
+            14.5,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            1.5,
+            1.5,
+            14.5,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        11.5,
+        3
+      ],
+      "to": [
+        13,
+        15,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            1,
+            13,
+            4.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            1,
+            13,
+            4.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            1,
+            13,
+            4.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            1,
+            13,
+            4.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        14.5,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            5,
+            0,
+            11,
+            1.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            5,
+            0,
+            11,
+            1.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            5,
+            0,
+            11,
+            1.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            5,
+            0,
+            11,
+            1.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

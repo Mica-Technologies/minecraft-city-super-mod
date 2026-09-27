@@ -1,0 +1,252 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cross": "csm:blocks/parks/landscape/saw_palmetto",
+    "particle": "csm:blocks/parks/landscape/saw_palmetto",
+    "pot": "csm:blocks/parks/landscape/nursery_pot",
+    "pot_top": "csm:blocks/parks/landscape/nursery_pot_top"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        6,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            10,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            10,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            10,
+            12,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            10,
+            12,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#pot_top",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.68,
+        6.0,
+        8.0
+      ],
+      "to": [
+        12.32,
+        15.6,
+        8.0
+      ],
+      "rotation": {
+        "origin": [
+          8.0,
+          10.8,
+          8.0
+        ],
+        "axis": "y",
+        "angle": 22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#cross",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cross",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.68,
+        6.0,
+        8.0
+      ],
+      "to": [
+        12.32,
+        15.6,
+        8.0
+      ],
+      "rotation": {
+        "origin": [
+          8.0,
+          10.8,
+          8.0
+        ],
+        "axis": "y",
+        "angle": -22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#cross",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cross",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8.0,
+        6.0,
+        3.68
+      ],
+      "to": [
+        8.0,
+        15.6,
+        12.32
+      ],
+      "rotation": {
+        "origin": [
+          8.0,
+          10.8,
+          8.0
+        ],
+        "axis": "y",
+        "angle": 22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "east": {
+          "texture": "#cross",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cross",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8.0,
+        6.0,
+        3.68
+      ],
+      "to": [
+        8.0,
+        15.6,
+        12.32
+      ],
+      "rotation": {
+        "origin": [
+          8.0,
+          10.8,
+          8.0
+        ],
+        "axis": "y",
+        "angle": -22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "east": {
+          "texture": "#cross",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cross",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

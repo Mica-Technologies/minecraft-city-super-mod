@@ -111,7 +111,38 @@ public enum TreePreset {
   /** Pollarded plane: a stout trunk cut back to knuckles, each with a tight tuft of shoots. */
   POLLARDED_PLANE("pollardedplane", Shape.POLLARD, TreeWood.PLANE, TreeLogWidth.THICK,
       TreeLogWidth.MEDIUM, "tree_leaves_plane", null,
-      p -> p.trunk(4, 5).limbs(4, 5).cluster(1.4, 1.1));
+      p -> p.trunk(4, 5).limbs(4, 5).cluster(1.4, 1.1)),
+  /** Paper birch, New Hampshire's state tree: a slim white trunk, often forked, a light crown. */
+  PAPER_BIRCH("paperbirch", Shape.LIMB, TreeWood.BIRCH, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_birch", null,
+      p -> p.trunk(5, 6).lean(0, 1).limbs(3, 4).reach(2, 3).rise(3, 5).cluster(2.2, 1.8)
+          .clearance(4).spread(1.4).fork(0.5)),
+  /** Colorado blue spruce: a dense, silver-blue cone from nearly the ground up. */
+  BLUE_SPRUCE("bluespruce", Shape.PROFILE, TreeWood.SPRUCE, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_spruce_blue", null,
+      p -> p.trunk(1, 2).height(12, 15).cluster(2.6, 0)),
+  /**
+   * Cabbage palm (sabal), Florida's state tree: shorter and stouter-headed than the Mexican fan
+   * palm, usually still wearing its dead fronds.
+   */
+  CABBAGE_PALM("cabbagepalm", Shape.PALM, TreeWood.PALM, TreeLogWidth.THIN, TreeLogWidth.THIN,
+      "tree_crown_palm_fan_skirt", "tree_crown_palm_fan",
+      p -> p.height(8, 12).lean(0, 2)),
+  /** Japanese maple: a low, many-limbed dome of red leaves, for a garden rather than a street. */
+  JAPANESE_MAPLE("japanesemaple", Shape.LIMB, TreeWood.MAPLE, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_maple_japanese", null,
+      p -> p.trunk(1, 2).lean(0, 1).limbs(4, 5).reach(2, 4).rise(1, 2).cluster(2.4, 1.2)
+          .clearance(2).spread(2.6).fork(0.5)),
+  /** Scots pine: a tall bare orange trunk and a flat-topped crown of blue-green clumps. */
+  SCOTS_PINE("scotspine", Shape.LIMB, TreeWood.PINE, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_pine", null,
+      p -> p.trunk(7, 9).lean(0, 2).limbs(3, 4).reach(2, 3).rise(1, 3).cluster(2.4, 1.2)
+          .clearance(7).spread(2.4)),
+  /** European beech, Denmark's national tree: a smooth grey trunk and a broad, dense dome. */
+  EUROPEAN_BEECH("beech", Shape.LIMB, TreeWood.BEECH, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
+      "tree_leaves_beech", null,
+      p -> p.trunk(3, 4).lean(0, 1).limbs(4, 5).reach(3, 5).rise(3, 5).cluster(3.0, 2.2)
+          .clearance(4).spread(2.2).fork(0.3));
 
   /** The generator shapes. */
   public enum Shape {

@@ -125,6 +125,31 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockTreeLog("tree_log_linden_medium", TreeWood.LINDEN, TreeLogWidth.MEDIUM));
     initTabBlock(new BlockTreeLog("tree_log_linden_thick", TreeWood.LINDEN, TreeLogWidth.THICK));
     initTabBlock(new BlockTreeLog("tree_log_linden_full", TreeWood.LINDEN, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_birch_twig", TreeWood.BIRCH, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_birch_thin", TreeWood.BIRCH, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_birch_medium", TreeWood.BIRCH, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_birch_thick", TreeWood.BIRCH, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_birch_full", TreeWood.BIRCH, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_maple_twig", TreeWood.MAPLE, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_maple_thin", TreeWood.MAPLE, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_maple_medium", TreeWood.MAPLE, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_maple_thick", TreeWood.MAPLE, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_maple_full", TreeWood.MAPLE, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_spruce_twig", TreeWood.SPRUCE, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_spruce_thin", TreeWood.SPRUCE, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_spruce_medium", TreeWood.SPRUCE, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_spruce_thick", TreeWood.SPRUCE, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_spruce_full", TreeWood.SPRUCE, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_pine_twig", TreeWood.PINE, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_pine_thin", TreeWood.PINE, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_pine_medium", TreeWood.PINE, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_pine_thick", TreeWood.PINE, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_pine_full", TreeWood.PINE, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_beech_twig", TreeWood.BEECH, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_beech_thin", TreeWood.BEECH, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_beech_medium", TreeWood.BEECH, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_beech_thick", TreeWood.BEECH, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_beech_full", TreeWood.BEECH, TreeLogWidth.FULL));
 
     // Leaves: one block a species and season, then the palm crowns and the hanging moss. Also
     // written by gen_trees.py.
@@ -174,6 +199,22 @@ public class CsmTabTreesPlants extends CsmTab {
         "csm:blocks/parks/leaves_linden"));
     initTabBlock(new BlockTreeLeaves("tree_leaves_linden_clipped", TreeLeafType.CLIPPED,
         "csm:blocks/parks/leaves_linden_clipped"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_birch", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_birch"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_birch_autumn", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_birch_autumn"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_maple_japanese", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_maple_japanese"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_maple_japanese_autumn", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_maple_japanese_autumn"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_spruce_blue", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_spruce_blue"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_pine", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_pine"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_beech", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_beech"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_beech_autumn", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_beech_autumn"));
     initTabBlock(new BlockTreeLeaves("tree_crown_palm_fan", TreeLeafType.PALM_FAN,
         "csm:blocks/parks/palm_crown_fan"));
     initTabBlock(new BlockTreeLeaves("tree_crown_palm_fan_skirt", TreeLeafType.PALM_FAN_SKIRT,
@@ -215,5 +256,78 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockParkFacing.TreeStake("tree_stake", new int[]{7, 0, 11, 9, 24, 13}, true));
     initTabBlock(new BlockParkFacing.PoleFitted("hanging_basket_petunia", new int[]{2, 0, 0, 14, 16, 12}, false));
     initTabBlock(new BlockParkFacing.PoleFitted("hanging_basket_mixed", new int[]{2, 0, 0, 14, 16, 12}, false));
+
+    // Native plants by region, each region's plants followed by the same plants in nursery
+    // pots, so a garden centre can be stocked in rows. Also written by gen_park_plantings.py.
+    // California
+    initTabBlock(new BlockParkProp("flower_california_poppy", BlockParkProp.Kind.PLANT, 8, 2));
+    initTabBlock(new BlockParkProp("shrub_manzanita", BlockParkProp.Kind.SHRUB, 14, 1));
+    initTabBlock(new BlockParkProp("shrub_ceanothus", BlockParkProp.Kind.SHRUB, 12, 0));
+    initTabBlock(new BlockParkProp("shrub_white_sage", BlockParkProp.Kind.SHRUB, 8, 1));
+    initTabBlock(new BlockParkProp("grass_deergrass", BlockParkProp.Kind.PLANT, 14, 1));
+    initTabBlock(new BlockParkProp("potted_flower_california_poppy", BlockParkProp.Kind.SHRUB, 11, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_manzanita", BlockParkProp.Kind.SHRUB, 15, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_ceanothus", BlockParkProp.Kind.SHRUB, 14, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_white_sage", BlockParkProp.Kind.SHRUB, 11, 3));
+    initTabBlock(new BlockParkProp("potted_grass_deergrass", BlockParkProp.Kind.SHRUB, 15, 3));
+    // New Hampshire
+    initTabBlock(new BlockParkProp("shrub_mountain_laurel", BlockParkProp.Kind.SHRUB, 14, 1));
+    initTabBlock(new BlockParkProp("shrub_highbush_blueberry", BlockParkProp.Kind.SHRUB, 16, 1));
+    initTabBlock(new BlockParkProp("shrub_winterberry", BlockParkProp.Kind.SHRUB, 15, 1));
+    initTabBlock(new BlockParkProp("flower_lupine", BlockParkProp.Kind.PLANT, 14, 2));
+    initTabBlock(new BlockParkProp("flower_ladys_slipper", BlockParkProp.Kind.PLANT, 11, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_mountain_laurel", BlockParkProp.Kind.SHRUB, 15, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_highbush_blueberry", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_winterberry", BlockParkProp.Kind.SHRUB, 15, 3));
+    initTabBlock(new BlockParkProp("potted_flower_lupine", BlockParkProp.Kind.SHRUB, 15, 3));
+    initTabBlock(new BlockParkProp("potted_flower_ladys_slipper", BlockParkProp.Kind.SHRUB, 13, 3));
+    // Colorado
+    initTabBlock(new BlockParkProp("flower_columbine", BlockParkProp.Kind.PLANT, 12, 2));
+    initTabBlock(new BlockParkProp("flower_penstemon", BlockParkProp.Kind.PLANT, 14, 2));
+    initTabBlock(new BlockParkProp("shrub_rabbitbrush", BlockParkProp.Kind.SHRUB, 12, 0));
+    initTabBlock(new BlockParkProp("shrub_sagebrush", BlockParkProp.Kind.SHRUB, 13, 1));
+    initTabBlock(new BlockParkProp("grass_blue_grama", BlockParkProp.Kind.PLANT, 10, 1));
+    initTabBlock(new BlockParkProp("plant_yucca", BlockParkProp.Kind.PLANT, 15, 1));
+    initTabBlock(new BlockParkProp("potted_flower_columbine", BlockParkProp.Kind.SHRUB, 14, 3));
+    initTabBlock(new BlockParkProp("potted_flower_penstemon", BlockParkProp.Kind.SHRUB, 15, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_rabbitbrush", BlockParkProp.Kind.SHRUB, 14, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_sagebrush", BlockParkProp.Kind.SHRUB, 14, 3));
+    initTabBlock(new BlockParkProp("potted_grass_blue_grama", BlockParkProp.Kind.SHRUB, 12, 3));
+    initTabBlock(new BlockParkProp("potted_plant_yucca", BlockParkProp.Kind.SHRUB, 15, 3));
+    // Florida
+    initTabBlock(new BlockParkProp("plant_saw_palmetto", BlockParkProp.Kind.PLANT, 14, 0));
+    initTabBlock(new BlockParkProp("plant_coontie", BlockParkProp.Kind.PLANT, 9, 1));
+    initTabBlock(new BlockParkProp("shrub_beautyberry", BlockParkProp.Kind.SHRUB, 13, 0));
+    initTabBlock(new BlockParkProp("shrub_firebush", BlockParkProp.Kind.SHRUB, 16, 1));
+    initTabBlock(new BlockParkProp("flower_coreopsis", BlockParkProp.Kind.PLANT, 10, 2));
+    initTabBlock(new BlockParkProp("grass_pink_muhly", BlockParkProp.Kind.PLANT, 14, 0));
+    initTabBlock(new BlockParkProp("potted_plant_saw_palmetto", BlockParkProp.Kind.SHRUB, 15, 3));
+    initTabBlock(new BlockParkProp("potted_plant_coontie", BlockParkProp.Kind.SHRUB, 12, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_beautyberry", BlockParkProp.Kind.SHRUB, 14, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_firebush", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_flower_coreopsis", BlockParkProp.Kind.SHRUB, 12, 3));
+    initTabBlock(new BlockParkProp("potted_grass_pink_muhly", BlockParkProp.Kind.SHRUB, 15, 3));
+    // Japan
+    initTabBlock(new BlockParkProp("shrub_satsuki_azalea", BlockParkProp.Kind.SHRUB, 10, 0));
+    initTabBlock(new BlockParkProp("shrub_camellia", BlockParkProp.Kind.SHRUB, 16, 1));
+    initTabBlock(new BlockParkProp("flower_japanese_iris", BlockParkProp.Kind.PLANT, 13, 1));
+    initTabBlock(new BlockParkProp("plant_bamboo", BlockParkProp.Kind.PLANT, 16, 0));
+    initTabBlock(new BlockParkProp("grass_hakone", BlockParkProp.Kind.PLANT, 7, 0));
+    initTabBlock(new BlockParkProp("potted_shrub_satsuki_azalea", BlockParkProp.Kind.SHRUB, 12, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_camellia", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_flower_japanese_iris", BlockParkProp.Kind.SHRUB, 14, 3));
+    initTabBlock(new BlockParkProp("potted_plant_bamboo", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_grass_hakone", BlockParkProp.Kind.SHRUB, 11, 3));
+    // Sweden and Denmark
+    initTabBlock(new BlockParkProp("shrub_heather", BlockParkProp.Kind.SHRUB, 8, 0));
+    initTabBlock(new BlockParkProp("shrub_lingonberry", BlockParkProp.Kind.PLANT, 4, 0));
+    initTabBlock(new BlockParkProp("flower_wood_anemone", BlockParkProp.Kind.PLANT, 6, 1));
+    initTabBlock(new BlockParkProp("flower_harebell", BlockParkProp.Kind.PLANT, 10, 2));
+    initTabBlock(new BlockParkProp("flower_marguerite", BlockParkProp.Kind.PLANT, 12, 2));
+    initTabBlock(new BlockParkProp("potted_shrub_heather", BlockParkProp.Kind.SHRUB, 11, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_lingonberry", BlockParkProp.Kind.SHRUB, 9, 3));
+    initTabBlock(new BlockParkProp("potted_flower_wood_anemone", BlockParkProp.Kind.SHRUB, 10, 3));
+    initTabBlock(new BlockParkProp("potted_flower_harebell", BlockParkProp.Kind.SHRUB, 12, 3));
+    initTabBlock(new BlockParkProp("potted_flower_marguerite", BlockParkProp.Kind.SHRUB, 14, 3));
   }
 }

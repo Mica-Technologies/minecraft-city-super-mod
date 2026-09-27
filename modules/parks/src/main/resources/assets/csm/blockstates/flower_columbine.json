@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/landscape/flower_columbine"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "model": "csm:parks/landscape/flower_columbine_item"
+      }
+    ]
+  }
+}

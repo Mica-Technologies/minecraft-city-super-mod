@@ -6,6 +6,8 @@ import com.micatechnologies.minecraft.csm.materials.FabricatorIngredient;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockHangingMoss;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -13,7 +15,8 @@ import net.minecraft.block.Block;
 /**
  * What the Fabricator charges for the Parks &amp; Greenery tabs.
  *
- * <p>Trees &amp; Plants: wood for wood, and a planting costs what it is planted with.</p>
+ * <p>Trees &amp; Plants: wood for wood, and a planting costs what it is planted with (a potted
+ * plant, the plant and a flower pot).</p>
  *
  * <p>A log costs planks in proportion to how much wood it is -- a twig one plank, a full-width
  * log four -- so building a tree in survival costs about what the wood in it would. Leaves cost
@@ -40,6 +43,7 @@ public final class ParksFabricatorRules {
   private static final String MC_SAND = "minecraft:sand";
   private static final String MC_WOOL = "minecraft:wool";
   private static final String MC_STICK = "minecraft:stick";
+  private static final String MC_FLOWER_POT = "minecraft:flower_pot";
 
   private ParksFabricatorRules() {
   }
@@ -89,6 +93,16 @@ public final class ParksFabricatorRules {
    */
   @Nullable
   private static List<FabricatorIngredient> plantingCost(String name) {
+    if (name.startsWith("potted_")) {
+      // A nursery pot: the plant in it, and a pot.
+      List<FabricatorIngredient> plant = plantingCost(name.substring("potted_".length()));
+      List<FabricatorIngredient> cost = new ArrayList<>();
+      if (plant != null) {
+        cost.addAll(plant);
+      }
+      cost.add(FabricatorIngredient.any(MC_FLOWER_POT, 1));
+      return Collections.unmodifiableList(cost);
+    }
     if (name.startsWith("hedge_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_LEAVES, 2));
     }
@@ -100,6 +114,12 @@ public final class ParksFabricatorRules {
     }
     if (name.startsWith("flower_bed_") || name.startsWith("hanging_basket_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_FLOWER, 2));
+    }
+    if (name.startsWith("flower_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_FLOWER, 1));
+    }
+    if (name.startsWith("plant_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SAPLING, 1));
     }
     if (name.equals("tree_stake")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STICK, 2));
