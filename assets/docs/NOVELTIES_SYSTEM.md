@@ -383,8 +383,8 @@ station, from the same generator: generic fittings with no maker's name or logo 
   states, pilasters and panels 32; nothing ticks and there is no tile entity.
 - **Lavatories.** `BlockSensorBasin` (the wall-hung lavatory, its rim at 0.86 m with the trap and
   supplies exposed under it) and `BlockTroughSink` (a `BlockResidentialRun` that joins into one
-  long trough, end caps only where it stops, a faucet over every block, in white solid surface
-  or stainless) both have `sensor_faucet()`'s spout. A bucket or a bottle is filled at it
+  long trough, end caps only where it stops, a faucet over every block, in white porcelain,
+  plain like the other white fixtures, or stainless) both have `sensor_faucet()`'s spout. A bucket or a bottle is filled at it
   (`IWaterTap`, so an appliance beside one is plumbed in), and an empty hand held under it runs
   it once (`SensorFaucet`: a short stream of water from the outlet, a splash, the shower spray
   quietly and higher). Nothing is stored.

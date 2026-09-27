@@ -1175,7 +1175,7 @@ PARTITIONS = [fin("beige", {"partition": T("partition_beige")}, "Beige", "Beige"
                   "beige"),
               fin("grey", {"partition": T("partition_grey")}, "Grey", "Grau", "gris", "grå"),
               fin("stainless", {"partition": T("stainless_v")}, *STAINLESS[2:])]
-TROUGHS = [fin("white", {"solid": T("counter_quartz")}, "White", "Weiß", "blanco", "vit"),
+TROUGHS = [fin("white", {"solid": T("porcelain")}, "White", "Weiß", "blanco", "vit"),
            fin("stainless", {"solid": T("stainless")}, *STAINLESS[2:])]
 CLASSIC_WHITE = fin("white", {"shell": T("appliance_white"), "handle": T("chrome")}, "White",
                     "Weiß", "blanco", "vit")
