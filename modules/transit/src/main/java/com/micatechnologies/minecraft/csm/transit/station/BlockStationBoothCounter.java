@@ -16,7 +16,8 @@ import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformFixture;
 public class BlockStationBoothCounter extends BlockPlatformFixture {
 
   /**
-   * Constructs a booth counter, drawn in the translucent layer for its glass.
+   * Constructs a booth counter, its glass drawn in the translucent layer and the rest in
+   * the cutout layer.
    *
    * @param registryName its registry name
    * @param box          its box facing north, in sixteenths

@@ -599,6 +599,24 @@ Each rule below exists because breaking it once produced a confident wrong answe
   `getMaxRenderDistanceSquared` overrides returning `128 * 128` *raise* vanilla's 64 blocks on
   purpose; do not lower them.
 
+**Glass and what is behind it: only the glass goes in the translucent layer.** The translucent
+pass writes no depth and orders a chunk's faces by the distance to each face's centre, which
+suits panes of glass and nothing else. A solid part drawn there is painted over by whichever face
+the sort puts after it, and a large face's centre can sort nearer than the small faces in front
+of it: the food in the hot food case vanished from some angles behind the case's own liner, and a
+glazed door's closer did the same (`DoorLayerModel`). So a block with glass in front of drawn
+contents implements `ICsmGlassFronted`: `AbstractBlock.canRenderInLayer` then draws it in the
+cutout-mipped and translucent layers, and `CsmGlassLayerModel` (put in place through
+`CsmBakedModelWrappers`, so VintageFix's dynamic bakes get it too) hands each pass its faces: the
+translucent pass the faces whose texture is named as glass (`CsmGlassLayer.isGlass`), the cutout
+pass the rest, which write depth, so the glass drawn after them is hidden behind them as it should
+be. An item in the hand or a slot is drawn whole. Keep `getBlockRenderLayer` translucent (other
+code asks it). Every other texture such a block wears must be opaque or fully clear, since the
+cutout pass draws a part-clear pixel opaque; `CsmGlassLayerTest` checks it. The blocks: the
+Market & Store displays and cases, the trophy case and shower (Furnishings), glazing, glazing
+panes, sheer curtains and the job trailer's window (Building), and the glass bus shelters,
+station entrance glass, booth counter and platform litter bin (Transit).
+
 **Considered and not done: an invisible render type for TESR-drawn blocks.** Every fully
 custom-rendered block still bakes a transparent full cube into chunk geometry -- 24 vertices each,
 rebuilt with the chunk and rasterised underneath the TESR. `EnumBlockRenderType.INVISIBLE` would

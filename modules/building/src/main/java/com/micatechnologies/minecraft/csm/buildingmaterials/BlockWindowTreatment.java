@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
@@ -54,7 +55,7 @@ import net.minecraft.world.World;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockWindowTreatment extends AbstractBlock {
+public class BlockWindowTreatment extends AbstractBlock implements ICsmGlassFronted {
 
   public static final PropertyDirection FACING = BlockHorizontal.FACING;
   public static final PropertyInteger STATE = PropertyInteger.create("state", 0, 3);
@@ -357,5 +358,13 @@ public class BlockWindowTreatment extends AbstractBlock {
   @Nonnull
   public BlockRenderLayer getBlockRenderLayer() {
     return isSheer() ? BlockRenderLayer.TRANSLUCENT : BlockRenderLayer.CUTOUT;
+  }
+
+  /**
+   * A sheer curtain's fabric draws apart from its rod.
+   */
+  @Override
+  public boolean isGlassFronted() {
+    return isSheer();
   }
 }

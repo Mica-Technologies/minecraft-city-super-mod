@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.ISwitchable;
 import com.micatechnologies.minecraft.csm.furniture.residential.LampSwitching;
@@ -37,12 +38,14 @@ import net.minecraft.world.World;
  * ({@link LampSwitching}: a change of power switches them) or by clicking it with an empty hand
  * while sneaking. Either switches the case and the cases joined to it in its line, up to
  * {@link DisplayLine#REACH}, so one light switch, linked or beside it, works a row. {@link #LIT} is
- * stored in the bit above the facing, {@link LampSwitching#POWERED} in the top bit. The glass is
- * a translucent texture, so the case draws in the translucent layer.</p>
+ * stored in the bit above the facing, {@link LampSwitching#POWERED} in the top bit. Its glass
+ * draws in the translucent layer and the rest, the stock behind it included, in the cutout
+ * layer ({@link ICsmGlassFronted}), or the stock is lost from some angles.</p>
  *
  * @since 2026.9
  */
-public class BlockDisplayCase extends BlockResidentialStorage implements ISwitchable {
+public class BlockDisplayCase extends BlockResidentialStorage implements ISwitchable,
+    ICsmGlassFronted {
 
   /** Whether its lights are on. */
   public static final PropertyBool LIT = PropertyBool.create("lit");

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.platform;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -23,7 +24,7 @@ import net.minecraft.world.IBlockAccess;
  *
  * @since 2026.9
  */
-public class BlockPlatformFixture extends AbstractBlockRotatableNSEW {
+public class BlockPlatformFixture extends AbstractBlockRotatableNSEW implements ICsmGlassFronted {
 
   private static final ThreadLocal<String> PENDING = new ThreadLocal<>();
 
@@ -113,5 +114,14 @@ public class BlockPlatformFixture extends AbstractBlockRotatableNSEW {
   @Nonnull
   public BlockRenderLayer getBlockRenderLayer() {
     return translucent ? BlockRenderLayer.TRANSLUCENT : BlockRenderLayer.CUTOUT;
+  }
+
+  /**
+   * A fixture with see-through parts draws them apart from the rest (the litter bin's bag,
+   * the booth counter's glass).
+   */
+  @Override
+  public boolean isGlassFronted() {
+    return translucent;
   }
 }

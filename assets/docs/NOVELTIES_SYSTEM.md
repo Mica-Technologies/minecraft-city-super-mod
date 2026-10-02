@@ -312,7 +312,7 @@ The bathroom, a commercial restroom's fittings and the laundry follow, drawn by
   bucket scoops a full one out, an empty hand on the tap end runs the tap (or pulls the plug),
   a bottle fills at the tap, and an empty hand on the head end sits the bather in it, looking
   along the tub to the taps.
-- `BlockShower` (a `BlockResidentialTall`, glass, drawn in the translucent layer) and
+- `BlockShower` (a `BlockResidentialTall`, glass-fronted: see Market & Store) and
   `BlockShowerHead` (a wall head at the top of its block) spray while `on` (stored): the block
   schedules its own update every two ticks, and `ShowerSpray` sends one particle packet of
   water (block dust of water, which the client tints and lets fall) from the rose and a splash
@@ -601,8 +601,8 @@ of offices, schools and studios, drawn by `gen_furniture_office.py` (textures an
   sloping down to the speaker, 1.2 m at its back edge, open with a shelf on the speaker's side)
   and the podium (wider, a raised panel to the audience, a gooseneck microphone) face whoever
   places them, so the speaker stands on the placing side; their slope is one element turned
-  22.5 degrees. The trophy case (`BlockTrophyCase`, a `BlockCloset` in the translucent layer for
-  its glass, 18 slots in its cupboard) joins into a row with glass sides only at its ends; its
+  22.5 degrees. The trophy case (`BlockTrophyCase`, a `BlockCloset`, glass-fronted as the coolers
+  are, 18 slots in its cupboard) joins into a row with glass sides only at its ends; its
   trophies (cups, figures, plaques) are a part drawn two ways that the multipart picks between by
   position, as the cork board's notes are. The desk globe is a counter piece; the wall pencil
   sharpener a `BlockBathroomFixture` that grinds (`pencil_sharpener`, synthesised); the classroom
@@ -657,8 +657,8 @@ classes' registry names, so placed ones load as they were.
 - **Refrigerated displays.** `BlockDisplayCooler` (a `BlockCloset`: two blocks tall, joining into
   a line, 27 slots in the lower half, the refrigerator's door sounds) is the glass-door reach-in
   cooler and freezer and the open multideck dairy case. A cooler's mullion is drawn half in each
-  block, so a line of doors has one between each pair; its door is a translucent pane, so the
-  block draws in the translucent layer. `BlockDisplayCase` (a `BlockResidentialStorage` run,
+  block, so a line of doors has one between each pair; its door is a translucent pane (see
+  "Glass and the stock behind it" below). `BlockDisplayCase` (a `BlockResidentialStorage` run,
   27 slots) is the island freezer (sliding glass lids, stock lying flat, double-sided), the ice
   cream dipping cabinet and the deli case (curved glass: three facets at 0, 22.5 and 45 degrees,
   since an element turns only by 22.5, and a flat top back to a light canopy over the server's
@@ -751,7 +751,7 @@ the tab.
   self-serve pastry case (translucent, group `pastry_case`) has two tiers of muffins, cinnamon
   rolls, cookies, bagels (`pastry`) and doughnuts behind acrylic doors. The hot food case is a
   `BlockDisplayCase` of its own group on the bakery case's straight glass: rotisserie chickens
-  in clear clamshells (translucent texels) and foil trays of hot food (`hot_food`) under amber
+  in clear clamshells (an outline and clear texels, since the stock is cutout) and foil trays of hot food (`hot_food`) under amber
   heat lamps and a lit HOT FOOD header, switched as the other displays are.
 - **The rotisserie oven, the commercial coffee brewer and the fountain drink machine** are
   `BlockCounterAppliance`s on the kitchen's machine framework with specs in `StoreAppliances`.
@@ -794,6 +794,18 @@ The traps:
 - **The rotisserie's glass is painted.** A counter appliance draws in the solid layer, so its
   door cannot be seen through; the spits of chickens are in the window texture, lit and unlit,
   as the oven's window is.
+- **Glass and the stock behind it.** Every glass-fronted piece (the coolers and freezers, the
+  dairy and floral coolers, every `BlockDisplayCase`, the bulk bins, the pastry and tobacco
+  cases, the lottery dispenser, the trophy case, the shower) is an `ICsmGlassFronted` block:
+  only its glass draws in the translucent layer, and the stock, shelves, frame and liner in the
+  cutout layer (`CsmGlassLayer`, `CsmGlassLayerModel`). Drawn whole in the translucent layer, the
+  stock vanished from some angles: that pass writes no depth and orders faces by their centres,
+  so the liner behind the hot food, whose centre sorted nearer, was painted over it. A face is
+  glass by its texture's name (`glass`, `glass_*`, `*_glass`), so a new glass texture must be
+  named so and every other texture such a block wears must be opaque or fully clear: a
+  part-clear pixel in the cutout layer is drawn opaque (the rotisserie clamshell was redrawn as
+  an outline for this). `CsmGlassLayerTest` fails the build on a part-clear texture that is not
+  named as glass. Nothing to write in a blockstate: the split is made from the textures.
 - **The ice bed's sides are open, so a run's ends close them.** It is a turned slab with only
   its top drawn, and the wedge under it once showed through the end glass. The end models carry
   the pan's end (`_ice_bed_end`): the slab's own end, a band turned with it under its slope, and

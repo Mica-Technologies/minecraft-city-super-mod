@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +34,7 @@ import net.minecraft.world.WorldServer;
  *
  * @since 2026.9
  */
-public class BlockCounterPiece extends BlockResidentialFurniture {
+public class BlockCounterPiece extends BlockResidentialFurniture implements ICsmGlassFronted {
 
   /** What the piece stands on. */
   public static final PropertyEnum<SurfaceRest> REST =
@@ -145,5 +146,14 @@ public class BlockCounterPiece extends BlockResidentialFurniture {
   @Nonnull
   public BlockRenderLayer getBlockRenderLayer() {
     return layer;
+  }
+
+  /**
+   * Glass-fronted when drawn in the translucent layer (the lottery dispenser): its glass apart
+   * from what is behind it.
+   */
+  @Override
+  public boolean isGlassFronted() {
+    return layer == BlockRenderLayer.TRANSLUCENT;
   }
 }
