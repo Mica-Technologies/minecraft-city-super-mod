@@ -35,7 +35,9 @@ A log draws an **arm** toward everything it joins:
 - leaves it reaches into (up, or opposite a log);
 - solid ground below, which gets a flared foot;
 - each of its **12 edge-diagonal** neighbours that is a log, when no face neighbour already joins
-  the two.
+  the two;
+- each of its **8 corner-diagonal** neighbours that is a log (a step on all three axes at once),
+  when none of the six cells between them (three face cells, three edge cells) is a log.
 
 The last rule is what makes a leaning tree work. A trunk leans the vanilla acacia and dark-oak way,
 by stepping diagonally (`- T / T -`). Without a bridge, a thin log stepping diagonally is a row of
@@ -43,14 +45,24 @@ separate sticks. With it, each block draws half a straight tube to the diagonal 
 and the stepped chain reads as one continuous trunk. Limbs that spread at 45 degrees in plan use
 the horizontal edge diagonals the same way.
 
+The corner bridge is the same arm, run to the shared corner instead of the shared edge, and it is
+there for **hand-built trees** (issue #250). A player stepping a limb up and across both ways at
+once had a row of floating stubs, because only edge diagonals were bridged; a generator never
+noticed, since it splits a corner step in two. The rule for skipping it is the edge bridge's, one
+level up: a log in any of the six cells between already joins the two through faces and edges the
+kit draws, so bridging the corner too would double the geometry. The six cells are the same six
+seen from either log, so both halves of a bridge are drawn or neither is. Like an edge bridge,
+each half keeps its own log's radius; the two rings meet vertex for vertex at the corner
+(`TreeLogGeometryTest` checks it for every width and corner).
+
 A wider log under a narrower one tapers into it. Where the arms bend, a slightly wider **knuckle**
 reads as a joint. Those two, the bridges and the flare are all the "angle supports" there are, and
 nothing more is added.
 
-18 booleans would be 262,144 block states per log, all built eagerly (the MAST_ARM_CURVE_SYSTEM
+26 booleans would be 67 million block states per log, all built eagerly (the MAST_ARM_CURVE_SYSTEM
 trap). Instead, `TreeLogConnections.compute` packs the connection mask into a long:
 
-- the faces, the diagonals and the leaves;
+- the faces, the edge and corner diagonals and the leaves;
 - the ground flag;
 - a 3-bit neighbour width per face, so a taper knows how far to narrow;
 - the axis.
@@ -226,10 +238,11 @@ lobes. They brought four woods (redwood, white pine, oak, camphor) and five leav
 A limbed tree has **no leaves below its street clearance** (about 4 to 5 blocks over a road, 3
 in a park). Its canopy stays above traffic and its trunk stays clear.
 
-A limb line never steps on all three axes at once. The log kit bridges edge diagonals, not corner
-diagonals, so a corner step is split in two. `TreeGeneratorsTest` grows every preset in every
-facing from 20 seeds and fails if the logs are not one piece joined through faces and edge
-diagonals. The same test fails if a limbed tree has leaves under its clearance, or if a palm's
+A limb line never steps on all three axes at once: a corner step is split in two. The log kit
+bridges corner diagonals too now, but only so a hand-built limb holds together; a generated tree
+keeps to faces and edges, so its shape and quad count never lean on a corner bridge (one is skipped
+whenever any log is beside the step). `TreeGeneratorsTest` grows every preset in every facing from
+20 seeds and fails if the logs are not one piece joined through faces and edge diagonals alone. The same test fails if a limbed tree has leaves under its clearance, or if a palm's
 crown is not on its top log. It also grows every preset against a wall and in a building's
 corner: nothing may grow into a wall, no limb may stand against one, a tree by a wall must reach
 mostly away from it, nothing grows under an awning, another tree's leaves are never entered, and
@@ -242,8 +255,8 @@ every leaf must be near enough a log that felling a neighbouring limb could not 
 Broken by a player, a tree log fells what it alone held up (`BlockTreeLog.removedByPlayer` to
 `TreeFelling.fell`). **Sneaking breaks just that block**, so a tree can still be edited by hand.
 
-- **Logs.** From each log joined to the broken one (through faces and edge diagonals, as the kit
-  draws them), the connected logs are searched. A piece is held up if any of its logs stands on
+- **Logs.** From each log joined to the broken one (through faces, edge diagonals and corner
+  diagonals, as the kit draws them), the connected logs are searched. A piece is held up if any of its logs stands on
   something solid that is not part of a tree, or is joined to a vanilla log; otherwise it falls,
   dropping its logs unless the player is in creative. Cut the trunk and the tree comes down; cut
   a limb and only the limb goes. A log touching a wall does not hold anything up: the generator
@@ -632,5 +645,11 @@ renderer.
 - **Leaf reach and cluster size go together.** Felling keeps leaves within `LEAF_REACH` of a log.
   A preset whose clusters reach further from their limbs would have part of its crown stripped
   whenever a neighbouring limb is cut; `TreeGeneratorsTest.everyLeafIsNearALog` catches it.
-- **Edge diagonals only.** Anything that lays logs (a generator, a player) must avoid corner-diagonal
-  steps, or the trunk falls apart into pieces.
+- **Corner steps are bridged, and only where nothing else joins.** A corner-diagonal log is
+  bridged only when none of the six cells between is a log; with one there, the join is drawn
+  through that log. Before the corner bridge (issue #250) a hand-built limb stepping on all three
+  axes fell apart into floating stubs. Felling joins every diagonal whether or not it is drawn
+  bridged, which is never less than the drawing joins. The generators still split corner steps,
+  and `TreeGeneratorsTest` still holds them to faces and edges: a corner bridge between two parts
+  of a generated tree is incidental (where two limbs pass corner to corner) and cost the presets
+  about 0.1% of their quads (61 of 73,100) when it was added.

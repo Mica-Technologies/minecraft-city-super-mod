@@ -18,6 +18,8 @@ import net.minecraft.util.math.AxisAlignedBB;
  * <ul>
  *   <li>to each face with a log beyond it, tapering to that log's radius if it is thinner;</li>
  *   <li>to the shared edge of each edge-diagonal log (the bridge that joins a stepped trunk);</li>
+ *   <li>to the shared corner of each corner-diagonal log (the same bridge, for a limb a player
+ *       stepped on all three axes at once);</li>
  *   <li>into leaves the mask says it reaches, narrowing to a twig;</li>
  *   <li>down to solid ground, flaring out;</li>
  *   <li>and, where a log has one connection and nothing on the other side, straight on to the
@@ -133,6 +135,18 @@ public final class TreeLogGeometry {
         onlyDir = d;
       }
     }
+    for (int i = 0; i < TreeLogConnections.CORNERS.length; i++) {
+      if (TreeLogConnections.corner(mask, i)) {
+        // To the shared corner, where the other log's bridge starts: the two halves are one
+        // straight tube between the logs' centres. Like an edge bridge, each half keeps its own
+        // log's radius.
+        int[] g = TreeLogConnections.CORNERS[i];
+        double[] d = {g[0], g[1], g[2]};
+        arms.add(new Arm(CENTRE, edge(d), r, r, false));
+        connections++;
+        onlyDir = d;
+      }
+    }
     for (EnumFacing f : EnumFacing.values()) {
       if (TreeLogConnections.faceLeaves(mask, f.getIndex())) {
         double[] d = {f.getXOffset(), f.getYOffset(), f.getZOffset()};
@@ -227,6 +241,8 @@ public final class TreeLogGeometry {
    */
   private static final Map<TreeLogWidth, Map<Long, List<AxisAlignedBB>>> BOXES =
       new ConcurrentHashMap<>();
+  /** The most masks kept per width before the cache starts over, as the baked model's does. */
+  private static final int BOXES_LIMIT = 4096;
 
   /**
    * The log's collision and selection boxes, in block units (0-1).
@@ -237,8 +253,17 @@ public final class TreeLogGeometry {
    * @return the boxes, unmodifiable and shared
    */
   public static List<AxisAlignedBB> boxes(TreeLogWidth width, long mask) {
-    return BOXES.computeIfAbsent(width, w -> new ConcurrentHashMap<>())
-        .computeIfAbsent(mask, m -> Collections.unmodifiableList(computeBoxes(width, m)));
+    Map<Long, List<AxisAlignedBB>> byMask =
+        BOXES.computeIfAbsent(width, w -> new ConcurrentHashMap<>());
+    List<AxisAlignedBB> boxes = byMask.get(mask);
+    if (boxes == null) {
+      if (byMask.size() > BOXES_LIMIT) {
+        byMask.clear();
+      }
+      boxes = Collections.unmodifiableList(computeBoxes(width, mask));
+      byMask.put(mask, boxes);
+    }
+    return boxes;
   }
 
   private static List<AxisAlignedBB> computeBoxes(TreeLogWidth width, long mask) {
