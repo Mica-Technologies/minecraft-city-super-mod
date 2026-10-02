@@ -106,6 +106,8 @@ neighbouring blocks differ but a given block always looks the same.
 | `WEEPING` | pepper tree, willow: from the crown's underside (a cell open below), long narrow strands hang down each open side and under the cell, reaching well below it, in place of the side tufts |
 | `CLIPPED` | the pleached linden: a flat leafy face flush with each open side, for topiary |
 | `PALM_FAN`, `PALM_FAN_SKIRT`, `PALM_FEATHER` | palm crowns, drawn by `TreePalmGeometry` |
+| `PALM_CABBAGE`, `PALM_CABBAGE_SKIRT`, `PALM_CANARY`, `PALM_COCONUT`, `PALM_KING` | the crowns with their own shape (Palm crowns, below) |
+| `ROSETTE` | the Joshua tree's rosette, drawn by the palm crown machinery |
 
 Leaves never decay on their own: a street tree that disappears would ruin a build. They go only
 when the logs holding them are felled (see Felling). They have **no collision**,
@@ -128,6 +130,34 @@ wide, against the fan palm's 26 and 16. The boot is sized for the stouter trunk 
 `bootRadius`), and the sheet has its own darker, bluer green. The lowest tier may bow half a block
 below the crown's cell; only a skirt hangs further. The trunk is its own wood, `sabal`, a medium
 log whose bark is the criss-cross of old frond bases.
+
+Three more crowns came with the trees of the West (GitHub #250), each its own leaf type and
+sheet, drawn in tiers of arching fronds (`tiers`/`arch` in `TreePalmGeometry`: each tier leaves at
+its own elevation and bends down by its own droop toward the tips):
+
+- **Canary Island date palm** (`PALM_CANARY`): 72 stiff fronds 72 px long, in three tiers from
+  steeply up to level, a huge dense round head. It stands on the "pineapple": an eight-sided knob
+  of trimmed leaf bases swelling past the trunk, wearing the same diamond pattern as the `canary`
+  bark. The trunk is a thick log, not a full one, since a full log is a square pillar.
+- **Coconut palm** (`PALM_COCONUT`): 24 fronds 60 px long that droop hard, a dead frond or two
+  hanging under them, and seven to eleven coconuts: small cubes round the boot, textured from the
+  sheet's fourth cell, which no other crown used.
+- **King palm** (`PALM_KING`): the boot is a smooth green crownshaft, an eight-sided prism a
+  little wider than the trunk and 20 px tall, swelling at the middle; the unopened spear stands
+  from its top, and 14 long fronds arch out round it.
+
+The **Joshua tree's rosette** (`ROSETTE`, `tree_crown_joshua`) is a crown too: one on the end of
+every branch. It has 36 straight dagger strips spread over the sphere from 35 degrees below level
+to straight up (a Fibonacci spiral, so no two point the same way), each strip three daggers of the
+sheet's live cell, and 14 dead leaves turned down over the branch below, the shag a Joshua tree
+wears; its boot is the thatch. A rosette counts as a palm crown for felling, the shears and the
+Fabricator. A palm crown's quads are not culled or clipped to its cell, so a frond may reach
+several blocks past it.
+
+The coconut and king palms lean in one plane (`planar`): their heading is snapped to an axis, and
+the lean is spread up the trunk (offset with the 1.4th power of the height rather than the
+square). A thin trunk stepped on two axes, or with its steps bunched near the top, read as a
+zigzag. The coconut palm also stands on a medium log (`base`), its swollen foot.
 
 ### Seasons
 
@@ -203,13 +233,23 @@ That idea comes from Biomes O' Plenty's generator builders (see Decisions).
 
 | Shape | How it grows | Presets |
 |---|---|---|
-| Profile | Straight trunk, crown radius from a profile of height (rounded bottom, pointed top) | cypress, ginkgo, poplar, sweetgum, hornbeam, arborvitae, Colorado blue spruce, coast redwood |
-| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum, paper birch, Japanese maple, Scots pine, European beech, old English oak, camphor |
-| Palm | Sideways offset grows with the square of the height, so the trunk curves; crown on the top log | fan palm, leaning feather palm, queen palm, cabbage palm |
+| Profile | Straight trunk, crown radius from a profile of height (rounded bottom, pointed top) | cypress, ginkgo, poplar, sweetgum, hornbeam, arborvitae, Colorado blue spruce, coast redwood, Douglas fir (a cone) |
+| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum, paper birch, Japanese maple, Scots pine, European beech, old English oak, camphor, California sycamore (several stems), blue gum |
+| Palm | Sideways offset grows with the square of the height, so the trunk curves; crown on the top log | fan palm, leaning feather palm, queen palm, cabbage palm, Canary Island date palm, coconut palm, king palm |
 | Head | Clear trunk and a clipped ball | ball-head plane |
 | Box | Clear trunk and a box crown, wide across the facing | pleached linden: a row joins into a hedge on stilts |
 | Pollard | Stout trunk cut back to knuckles, a tuft on each | pollarded plane |
 | Tiered | Tall trunk; above a clear stretch, a whorl of level limbs every two or three blocks, each tipped with a flat pad, shorter toward the top, each whorl turned from the last | eastern white pine |
+| Giant | A trunk three blocks across, straight up; short stout limbs in turned layers above a long clear stretch, each with a clump | giant sequoia |
+| Branching | A trunk forking again and again into short angular arms, a rosette on every end | Joshua tree, young Joshua tree |
+| Gnarled | A squat trunk and limbs that wander, turning at every step and climbing or sagging, some bare deadwood | Great Basin bristlecone pine |
+
+Douglas fir, coconut, king and Canary Island palms, California sycamore and blue gum use the
+older shapes with three new options: a profile tree may be a **cone** (a straight cone rather than
+the rounded spire, its outline stepped into three-block layers, each widest at its foot, which
+reads as branches drooping toward their tips); a limbed tree may have several **stems** from one
+foot (the second and third start a block up the first and lean apart at once, each its own leader
+with its own limbs); and a palm may lean **planar** with a wider **base** (Palm crowns).
 
 The last six presets are regional: paper birch (New Hampshire), Colorado blue spruce, cabbage
 palm (Florida), Japanese maple, Scots pine (Sweden) and European beech (Denmark). California was
@@ -229,6 +269,46 @@ Four big trees followed, for specimens and parks rather than streets:
 | Eastern white pine (New Hampshire's state tree) | Tiered | 22-27 tall | A tall straight trunk, layered pads of soft blue-green needles |
 | Old English oak (Denmark's Kongeegen, Sweden's old oaks) | Limb | 25-30 across | A full-width trunk and heavy limbs under a vast, dense crown |
 | Camphor tree (Japan's shrine trees) | Limb | a high dome some 25 across | A full-width trunk forking low into climbing limbs |
+
+Ten trees of the American West and its deserts followed (GitHub #250), each looked at in game
+against photographs of the real species until it read as that species:
+
+| # | Preset | Shape | Wood | Leaves | What it is |
+|---|---|---|---|---|---|
+| 31 | Giant sequoia | Giant | `sequoia` (new: cinnamon, rounded ridges) | `sequoia` (new: grey-green cords) | 28-33 tall, a trunk three across with buttress roots, a rounded crown of clumps high up |
+| 32 | Joshua tree | Branching | `joshua` (new: shaggy thatch) | `tree_crown_joshua` (new rosette) | a thick trunk forking three times into angular arms, four to eight rosettes |
+| 33 | Young Joshua tree | Branching | `joshua` | `tree_crown_joshua` | a single trunk, branched once if at all, one to three rosettes |
+| 34 | Canary Island date palm | Palm | `canary` (new: diamond leaf bases) | `tree_crown_palm_canary` (new) | 7-11 tall, a thick straight trunk and a huge round crown |
+| 35 | Coconut palm | Palm, planar | `palmgrey` (new: pale grey, ringed) | `tree_crown_palm_coconut` (new) | a slender trunk curving out from a swollen foot, drooping fronds, coconuts |
+| 36 | King palm | Palm, planar | `palmgrey` | `tree_crown_palm_king` (new) | a straight slender trunk, a green crownshaft, arching fronds |
+| 37 | Douglas fir | Profile, cone | `douglasfir` (new: deep furrows) | `douglasfir` (new: dark soft needles) | 22-27 tall, a narrow cone in drooping layers nearly to the ground |
+| 38 | Great Basin bristlecone pine | Gnarled | `bristlecone` (new: twisted silver deadwood) | `bristlecone` (new: foxtails flecked with resin) | low and wide, over half its limbs bare, the rest tipped with foxtails |
+| 39 | California sycamore | Limb, 2-3 stems | `sycamore` (new: white, tan and grey patches) | `plane` (the London plane's) | leaning trunks from one foot, an irregular open crown of big leaves |
+| 40 | Blue gum eucalyptus | Limb | `bluegum` (new: peeling streaks) | `bluegum` (new: hanging sickles, airy) | a tall straight trunk, steep limbs, an open crown high up |
+
+What was reused and why: the California sycamore wears the London plane's leaves (both are
+plane trees with big maple-like leaves; only the bark tells them apart, so the bark is new); the
+coconut and king palms share one pale grey ringed wood. Everything else is its own: the coast
+redwood's dark red bark and flat dark sprays are not a giant sequoia's cinnamon trunk and
+grey-green cords, the lemon-scented gum's powdery white bark is not a blue gum's peeling streaks,
+and the existing pine and spruce foliage is too blue for a Douglas fir and too open for a
+bristlecone. They brought eight woods (40 log blocks) and eight leaves and crown blocks.
+
+- **The giant sequoia's trunk** is a core column with a ring round it: full-width sides to half
+  its height and thick ones a little further, thick corners (rounding the section) to a quarter
+  of the way up, everything full at the foot, and thick and medium buttress roots a block out. A
+  full log is a plain cube and cheap; a thick corner log is a tube with arms and costs five times
+  as much, which is why the corners stop low. Its crown starts at 11 to 14 blocks: limbs from the
+  side of the trunk they leave, longest a quarter of the way up the crown, a big clump on top.
+- **A Joshua tree's** arms are one block out and one or two up, so they are angular, not arched.
+  Short arms from one node can land on the same cells, so an arm whose end or rosette cell is
+  already taken turns, in steps of 0.7 radians, until it has its own; past the first fork an arm
+  often carries on alone rather than forking, and forks spread wide, or the crown becomes a
+  lattice. In the open its first fork spreads round the trunk; against a wall it fans away.
+- **A bristlecone's** dead limbs are stubs (three fifths as long) that end thin, not in a twig; a
+  living one carries a tuft on every other one of its last five cells, so it reads as a foxtail
+  rather than a ball. If every living limb is cut back to nothing the tree keeps a tuft on its
+  trunk.
 
 A big broadleaf crown reads as one crown only when its clusters are nearly as wide as its limbs
 are long; with the reach of a small tree's and bigger clusters the crown broke into separate
@@ -269,6 +349,10 @@ Broken by a player, a tree log fells what it alone held up (`BlockTreeLog.remove
 - **Bounded.** More than 2,048 logs in a piece is taken as held up, and leaves are searched only
   within a box 26 blocks past what went, with the box's edge counted as held, so a felling can
   only ever do too little. The first 24 logs play their break effect; the rest go quietly.
+
+A giant sequoia stands on thirteen logs (its foot and buttress roots), each holding the tree up
+on its own: it comes down only when the last of them is cut. `TreeFellingTest` cuts every log at
+the foot for that reason.
 
 The searches are pure functions over a `Cells` view (`TreeFellingTest`).
 
@@ -610,7 +694,9 @@ brought it back to about 33,700, the price of limbed trees that no longer all lo
 regional presets added about 9,800 more (the beech, a big broad dome, is 3,951 of it). The
 cabbage palm's own crown took it from 231 to 439, and the four big trees added about 29,400: the
 old oak, the camphor and the white pine are some 9,000 each, nearly half of it their thick limbs.
-They are specimens: a street of them costs what a street of three times as many live oaks does. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
+They are specimens: a street of them costs what a street of three times as many live oaks does.
+The ten trees of the West added about 21,100 (one of every preset: 93,900): the giant sequoia
+8,500, over half of it trunk; the Joshua tree 1,800; each palm a few hundred. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
 - **Sheeted leaves.** Every leaf type but clipped draws a leaf sheet on each open face (one quad,
   facing out, 1 px inside the face), a tuft card past each open side and the top, and one card
   inside, where they had drawn six interior cards, three fringe cards per open face and cover

@@ -253,7 +253,8 @@ class TreeGeneratorsTest {
   @Test
   void palmsWearACrownOnTop() {
     for (TreePreset preset : new TreePreset[]{TreePreset.FAN_PALM, TreePreset.LEANING_PALM,
-        TreePreset.CABBAGE_PALM}) {
+        TreePreset.CABBAGE_PALM, TreePreset.CANARY_PALM, TreePreset.COCONUT_PALM,
+        TreePreset.KING_PALM}) {
       for (TreeSpace space : SPACES) {
         TreePlan plan = grow(preset, EnumFacing.SOUTH, 7, space);
         BlockPos topLog = null;

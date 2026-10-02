@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.parks.planting.TreeGenerators;
 import com.micatechnologies.minecraft.csm.parks.planting.TreePlan;
 import com.micatechnologies.minecraft.csm.parks.planting.TreePreset;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -45,13 +46,21 @@ class TreeFellingTest {
     for (TreePreset preset : TreePreset.values()) {
       TreePlan plan = TreeGenerators.grow(preset, EnumFacing.EAST, new Random(5));
       Map<BlockPos, TreeFelling.Kind> world = world(plan);
+      // Cut through the whole foot: a giant sequoia's trunk is many logs across, and only the
+      // last of them cut brings it down. Every other tree has one log there.
+      Set<BlockPos> foot = new HashSet<>();
+      for (BlockPos p : world.keySet()) {
+        if (p.getY() == 0 && world.get(p) == TreeFelling.Kind.LOG) {
+          foot.add(p);
+        }
+      }
+      foot.forEach(world::remove);
       BlockPos cut = BlockPos.ORIGIN;
-      world.remove(cut);
       Set<BlockPos> logs = TreeFelling.unsupportedLogs(cells(world), cut);
       assertEquals(count(world, TreeFelling.Kind.LOG), logs.size(),
           preset + ": every log above the cut should fall");
       logs.forEach(world::remove);
-      logs.add(cut);
+      logs.addAll(foot);
       Set<BlockPos> leaves = TreeFelling.orphanedLeaves(cells(world), logs);
       assertEquals(count(world, TreeFelling.Kind.LEAVES), leaves.size(),
           preset + ": every leaf should go with the tree");

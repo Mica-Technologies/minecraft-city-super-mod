@@ -30,7 +30,27 @@ public enum TreeLeafType {
    */
   PALM_CABBAGE(33, 48, 26, false, 4.4, 3),
   /** A cabbage palm's crown with the dead fronds still hanging under it. */
-  PALM_CABBAGE_SKIRT(33, 48, 26, true, 4.4, 3);
+  PALM_CABBAGE_SKIRT(33, 48, 26, true, 4.4, 3),
+  /**
+   * A Canary Island date palm's crown: a huge, dense round head of long, stiff feather fronds in
+   * three tiers, on the "pineapple", a knob of trimmed leaf bases wider than the trunk.
+   */
+  PALM_CANARY(72, 72, 19, false, 7.0, 3),
+  /**
+   * A coconut palm's crown: long feather fronds that droop hard, a dead one or two hanging, and a
+   * cluster of coconuts under the crown.
+   */
+  PALM_COCONUT(24, 60, 13, false, 2.6, 3),
+  /**
+   * A king palm's crown: a smooth green crownshaft standing on the trunk, and a few long feather
+   * fronds arching from its top.
+   */
+  PALM_KING(14, 60, 12, false, 3.0, 2),
+  /**
+   * A Joshua tree's rosette: stiff dagger leaves radiating every way from the end of a branch,
+   * the old ones turned down over it. Drawn by the palm crown machinery, one on each branch end.
+   */
+  ROSETTE(36, 17, 7, true, 2.6, 0);
 
   /** Cards inside the cell, at most. */
   final int interior;

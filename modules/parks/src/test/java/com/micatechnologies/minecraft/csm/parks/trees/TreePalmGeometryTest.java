@@ -31,7 +31,8 @@ class TreePalmGeometryTest {
   @Test
   void crownReachesWellPastTheCell() {
     for (TreeLeafType type : new TreeLeafType[]{TreeLeafType.PALM_FAN,
-        TreeLeafType.PALM_FEATHER, TreeLeafType.PALM_CABBAGE}) {
+        TreeLeafType.PALM_FEATHER, TreeLeafType.PALM_CABBAGE, TreeLeafType.PALM_CANARY,
+        TreeLeafType.PALM_COCONUT, TreeLeafType.PALM_KING}) {
       List<TreeLogGeometry.Quad> quads = TreePalmGeometry.quads(type, 0, true);
       assertFalse(quads.isEmpty());
       assertTrue(reach(quads) > 16, type + " fronds should reach past the neighbouring cells");
