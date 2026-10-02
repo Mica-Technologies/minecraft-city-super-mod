@@ -2,14 +2,26 @@
   "multipart": [
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "facing": "north"
       },
-      "apply": {
-        "model": "csm:furniture/office/cork_board_oak_body"
-      }
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface"
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_1"
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_2"
+        }
+      ]
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "left": "false",
         "facing": "north"
       },
@@ -19,6 +31,8 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "right": "false",
         "facing": "north"
       },
@@ -28,15 +42,167 @@
     },
     {
       "when": {
-        "facing": "east"
+        "up": "false",
+        "down": "true",
+        "facing": "north"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d"
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d_1"
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d_2"
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "left": "false",
+        "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/office/cork_board_oak_body",
-        "y": 90
+        "model": "csm:furniture/office/cork_board_oak_left_d"
       }
     },
     {
       "when": {
+        "up": "false",
+        "down": "true",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_d"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u"
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u_1"
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u_2"
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_u"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_u"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "facing": "north"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud"
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud_1"
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud_2"
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_ud"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_ud"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_top"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_bottom"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_1",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_2",
+          "y": 90
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
         "left": "false",
         "facing": "east"
       },
@@ -47,6 +213,8 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "right": "false",
         "facing": "east"
       },
@@ -57,15 +225,184 @@
     },
     {
       "when": {
-        "facing": "south"
+        "up": "false",
+        "down": "true",
+        "facing": "east"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d_1",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d_2",
+          "y": 90
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "left": "false",
+        "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/office/cork_board_oak_body",
-        "y": 180
+        "model": "csm:furniture/office/cork_board_oak_left_d",
+        "y": 90
       }
     },
     {
       "when": {
+        "up": "false",
+        "down": "true",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_d",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u_1",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u_2",
+          "y": 90
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "facing": "east"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud_1",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud_2",
+          "y": 90
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_ud",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_ud",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_1",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_2",
+          "y": 180
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
         "left": "false",
         "facing": "south"
       },
@@ -76,6 +413,8 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "right": "false",
         "facing": "south"
       },
@@ -86,30 +425,356 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "true",
+        "facing": "south"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d_1",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d_2",
+          "y": 180
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_d",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_d",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u_1",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u_2",
+          "y": 180
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "facing": "south"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud_1",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud_2",
+          "y": 180
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_ud",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_ud",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_1",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_2",
+          "y": 270
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "left": "false",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/office/cork_board_oak_body",
+        "model": "csm:furniture/office/cork_board_oak_left",
         "y": 270
       }
     },
     {
       "when": {
-        "left": "false",
-        "facing": "west"
-      },
-      "apply": {
-        "model": "csm:furniture/office/cork_board_oak_left",
-        "y": 270
-      }
-    },
-    {
-      "when": {
+        "up": "false",
+        "down": "false",
         "right": "false",
         "facing": "west"
       },
       "apply": {
         "model": "csm:furniture/office/cork_board_oak_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "facing": "west"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d_1",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_d_2",
+          "y": 270
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_d",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_d",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u_1",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_u_2",
+          "y": 270
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "facing": "west"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud_1",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/cork_board_oak_surface_ud_2",
+          "y": 270
+        }
+      ]
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_left_ud",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_right_ud",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cork_board_oak_bottom",
         "y": 270
       }
     }

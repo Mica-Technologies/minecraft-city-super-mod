@@ -1,0 +1,44 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/ceiling_projector",
+    "textures": {
+      "shell": "csm:blocks/furniture/residential/appliance_white",
+      "trim": "csm:blocks/furniture/office/plastic_light_grey",
+      "lens": "csm:blocks/furniture/office/projector_lens_on"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "lit": {
+      "true": {
+        "textures": {
+          "lens": "csm:blocks/furniture/office/projector_lens_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "lens": "csm:blocks/furniture/office/lens_glass"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/pull_down_map_closed",
+    "textures": {
+      "map": "csm:blocks/furniture/office/map_world",
+      "wood": "csm:blocks/furniture/residential/oak",
+      "wood_v": "csm:blocks/furniture/residential/oak_v",
+      "edge": "csm:blocks/furniture/residential/oak_edge"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "open": {
+      "true": {
+        "model": "csm:furniture/office/base/pull_down_map_open"
+      },
+      "false": {
+        "model": "csm:furniture/office/base/pull_down_map_closed"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/office/base/pull_down_map_open"
+      }
+    ]
+  }
+}

@@ -30,7 +30,7 @@ public enum SurfaceRest implements IStringSerializable {
   SIDEBOARD(2),
   /**
    * A dining table, a cafe table, a desk, an office desk, a conference table, a checkout's
-   * bagging end.
+   * bagging end, the AV cart, a cafeteria table.
    */
   TABLE(4),
   /** A side table, a nightstand. */
@@ -130,8 +130,10 @@ public enum SurfaceRest implements IStringSerializable {
       if (name.startsWith("desk_") && !name.startsWith("desk_chair_")) {
         return TABLE;
       }
-      // The teacher's desk, like the office desks, is a table's height.
-      if (name.startsWith("teacher_desk_")) {
+      // The teacher's desk, like the office desks, is a table's height; so are the AV cart's
+      // top shelf, where the overhead projector stands, and the cafeteria table.
+      if (name.startsWith("teacher_desk_") || name.startsWith("av_cart_")
+          || name.startsWith("cafeteria_table_")) {
         return TABLE;
       }
       if (name.startsWith("blanket_chest_")) {

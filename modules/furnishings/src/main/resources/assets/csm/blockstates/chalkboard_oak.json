@@ -2,14 +2,18 @@
   "multipart": [
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/office/chalkboard_oak_body"
+        "model": "csm:furniture/office/chalkboard_oak_surface"
       }
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "left": "false",
         "facing": "north"
       },
@@ -19,6 +23,8 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "right": "false",
         "facing": "north"
       },
@@ -28,7 +34,142 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_d"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_d"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
         "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_d"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_u"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_u"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_u"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_ud"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_ud"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_ud"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_top"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_bottom"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_tray"
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_tray"
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "false",
         "facing": "north"
       },
       "apply": {
@@ -37,15 +178,19 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/office/chalkboard_oak_body",
+        "model": "csm:furniture/office/chalkboard_oak_surface",
         "y": 90
       }
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "left": "false",
         "facing": "east"
       },
@@ -56,6 +201,8 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "right": "false",
         "facing": "east"
       },
@@ -66,7 +213,155 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_d",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_d",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
         "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_d",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_ud",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_ud",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_ud",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_tray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_tray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "false",
         "facing": "east"
       },
       "apply": {
@@ -76,15 +371,19 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "facing": "south"
       },
       "apply": {
-        "model": "csm:furniture/office/chalkboard_oak_body",
+        "model": "csm:furniture/office/chalkboard_oak_surface",
         "y": 180
       }
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "left": "false",
         "facing": "south"
       },
@@ -95,6 +394,8 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "right": "false",
         "facing": "south"
       },
@@ -105,7 +406,155 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_d",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_d",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
         "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_d",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_ud",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_ud",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_ud",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_tray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_tray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "false",
         "facing": "south"
       },
       "apply": {
@@ -115,15 +564,19 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/office/chalkboard_oak_body",
+        "model": "csm:furniture/office/chalkboard_oak_surface",
         "y": 270
       }
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "left": "false",
         "facing": "west"
       },
@@ -134,6 +587,8 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "false",
         "right": "false",
         "facing": "west"
       },
@@ -144,7 +599,155 @@
     },
     {
       "when": {
+        "up": "false",
+        "down": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_d",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_d",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
         "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_d",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_surface_ud",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_ud",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_ud",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_left_tray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/chalkboard_oak_right_tray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "down": "false",
         "facing": "west"
       },
       "apply": {

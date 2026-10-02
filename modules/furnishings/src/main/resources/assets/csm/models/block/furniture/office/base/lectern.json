@@ -1,0 +1,483 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "edge": "csm:blocks/furniture/office/laminate_grey_edge",
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "wood_v": "csm:blocks/furniture/office/laminate_grey",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        4
+      ],
+      "to": [
+        13,
+        1,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            3,
+            15,
+            12,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            4,
+            15,
+            13,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            3,
+            4,
+            13,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            3,
+            3,
+            13,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        1,
+        5
+      ],
+      "to": [
+        4.75,
+        16,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            11.25,
+            0,
+            12,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            4,
+            0,
+            4.75,
+            15
+          ]
+        },
+        "east": {
+          "texture": "#wood_v",
+          "uv": [
+            3.5,
+            0,
+            11,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#wood_v",
+          "uv": [
+            5,
+            0,
+            12.5,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            4,
+            5,
+            4.75,
+            12.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        11.25,
+        1,
+        5
+      ],
+      "to": [
+        12,
+        16,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            4,
+            0,
+            4.75,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            11.25,
+            0,
+            12,
+            15
+          ]
+        },
+        "east": {
+          "texture": "#wood_v",
+          "uv": [
+            3.5,
+            0,
+            11,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#wood_v",
+          "uv": [
+            5,
+            0,
+            12.5,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            11.25,
+            5,
+            12,
+            12.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.75,
+        1,
+        11.75
+      ],
+      "to": [
+        11.25,
+        16,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood_v",
+          "uv": [
+            4.75,
+            0,
+            11.25,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#wood_v",
+          "uv": [
+            4.75,
+            0,
+            11.25,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.75,
+        9.5,
+        5
+      ],
+      "to": [
+        11.25,
+        10.25,
+        11.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            4.75,
+            5.75,
+            11.25,
+            6.5
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            4.75,
+            5,
+            11.25,
+            11.75
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            4.75,
+            4.25,
+            11.25,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.8,
+        14.75,
+        4.25
+      ],
+      "to": [
+        12.2,
+        16.25,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            4,
+            0,
+            12.0,
+            1.5
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            4,
+            0,
+            12.0,
+            1.5
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            3.5,
+            0,
+            11.75,
+            1.5
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            4.25,
+            0,
+            12.5,
+            1.5
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            4,
+            3.5,
+            12,
+            11.75
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          16.25,
+          8
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    },
+    {
+      "from": [
+        2.5,
+        16.25,
+        2.5
+      ],
+      "to": [
+        13.5,
+        17,
+        13.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            0.75
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            0.75
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            0.75
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            0.75
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            2.5,
+            2.5,
+            13.5,
+            13.5
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            2.5,
+            2.5,
+            13.5,
+            13.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          16.25,
+          8
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    },
+    {
+      "from": [
+        2.5,
+        17,
+        2.5
+      ],
+      "to": [
+        13.5,
+        17.6,
+        3.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            0.6
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            0.6
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            12.9,
+            0,
+            13.5,
+            0.6
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            2.5,
+            0,
+            3.1,
+            0.6
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            2.5,
+            2.5,
+            13.5,
+            3.1
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          16.25,
+          8
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    }
+  ]
+}

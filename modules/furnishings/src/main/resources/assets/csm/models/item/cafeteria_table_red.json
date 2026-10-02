@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/office/base/cafeteria_table_item",
+  "textures": {
+    "seat": "csm:blocks/furniture/office/plastic_red",
+    "frame": "csm:blocks/furniture/residential/metal_steel",
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "edge": "csm:blocks/furniture/office/laminate_grey_edge"
+  }
+}

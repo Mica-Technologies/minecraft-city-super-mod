@@ -66,7 +66,8 @@ public enum FurnishingsSounds implements ICsmSound {
   CURTAIN_SLIDE("curtain_slide"),
   FLUSHOMETER_FLUSH("flushometer_flush"),
   HAND_DRYER_RUN("hand_dryer_run"),
-  HAND_DRYER_BLADE("hand_dryer_blade");
+  HAND_DRYER_BLADE("hand_dryer_blade"),
+  PENCIL_SHARPENER("pencil_sharpener");
 
   /**
    * The name of the sound.

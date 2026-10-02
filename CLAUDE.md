@@ -785,11 +785,15 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   `KitchenLine.DESK`, turned by `BlockKitchenCorner`), the reception desk (`RECEPTION`), filing
   cabinet, office shelving (the bookcase's parts with binders), conference table, cubicle panels
   (`BlockCubiclePanel`: arms and posts from the neighbours, stacking, a shelf per face), office
-  seating and the waiting bench, the whiteboard, chalkboard, cork board and projector screen, the
-  school desk, teacher's desk and lockers, the things on a desk (`BlockCounterLight` for the
+  seating and the waiting bench, the whiteboard, chalkboard and cork board (`BlockWallBoard`:
+  join both ways into one N x M board, frame round the outside, tray on the bottom row, all from
+  actual state) and projector screen, the school desk, teacher's desk and lockers, the school
+  set (tablet-arm desk, stacking chair, lectern, podium, desk globe, pencil sharpener, pull-down
+  map, wall flag, ceiling and overhead projectors on an AV cart, the cafeteria table that seats
+  eight, the trophy case), the things on a desk (`BlockCounterLight` for the
   screens and the desk lamp), the copier (`OfficeAppliances`, a supply slot on the appliance
   framework) and a streamer's set; `--check`, `--fragments`. `gen_furniture_sounds.py`
-  synthesises the copier's run and the locker door
+  synthesises the copier's run, the locker door and the pencil sharpener
 - `gen_furniture_living.py` -- the Residential tab's living extras: TVs (animated channel
   textures, one- and two-block, stand and wall, a tube TV), the disc-playing stereo, speakers,
   the playable upright piano and bench, the digital and wall clocks, photo frames, wall art,

@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/office/base/trophy_case_extra1_upper",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "edge": "csm:blocks/furniture/residential/oak_edge"
+  }
+}

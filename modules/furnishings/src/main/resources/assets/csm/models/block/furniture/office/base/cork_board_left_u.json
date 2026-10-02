@@ -1,0 +1,50 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        2.25,
+        14.75
+      ],
+      "to": [
+        0.75,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            15.25,
+            0,
+            16,
+            13.75
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            14.75,
+            0,
+            16,
+            13.75
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            0.75,
+            1.25
+          ]
+        }
+      }
+    }
+  ]
+}

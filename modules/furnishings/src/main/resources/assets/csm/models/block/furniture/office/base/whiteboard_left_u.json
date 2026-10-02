@@ -1,0 +1,50 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "trim": "csm:blocks/furniture/office/panel_trim",
+    "particle": "#trim"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        2.25,
+        14.75
+      ],
+      "to": [
+        0.75,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim",
+          "uv": [
+            15.25,
+            0,
+            16,
+            13.75
+          ]
+        },
+        "west": {
+          "texture": "#trim",
+          "uv": [
+            14.75,
+            0,
+            16,
+            13.75
+          ]
+        },
+        "down": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            0,
+            0.75,
+            1.25
+          ]
+        }
+      }
+    }
+  ]
+}

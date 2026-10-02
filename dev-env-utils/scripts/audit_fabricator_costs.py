@@ -874,6 +874,10 @@ def cost_for(registry, info, ancestors):
             return ("LED_MODULE x2", "iron_ingot")
         if registry.startswith("studio_camera_"):
             return ("LENS_ASSEMBLY", "CONTROL_BOARD", "iron_ingot")
+        if registry.startswith("ceiling_projector_"):
+            return ("LENS_ASSEMBLY", "CONTROL_BOARD", "LED_MODULE")
+        if registry.startswith("overhead_projector_"):
+            return ("LENS_ASSEMBLY", "glass", "WIRING_HARNESS")
         if registry.startswith("pen_holder_"):
             return ("iron_ingot",)
         if registry.startswith("paper_tray_"):
@@ -884,6 +888,10 @@ def cost_for(registry, info, ancestors):
             return ("iron_ingot", "wool")
         if registry.startswith("waiting_bench_"):
             return ("iron_ingot x2", "wool")
+        if registry.startswith("tablet_arm_desk_"):
+            return ("planks", "iron_ingot")
+        if registry.startswith("classroom_chair_"):
+            return ("iron_ingot",)
         if registry.startswith("school_desk_"):
             return ("planks x2", "iron_ingot")
         if registry.startswith(("office_desk_pedestal_", "teacher_desk_")):
@@ -910,6 +918,24 @@ def cost_for(registry, info, ancestors):
             return ("planks x2", "paper")
         if registry.startswith("projector_screen_"):
             return ("SHEET_METAL", "wool")
+        if registry.startswith("pull_down_map_"):
+            return ("paper x3", "SHEET_METAL")
+        if registry.startswith("lectern_"):
+            return ("planks x3", "FASTENER_KIT")
+        if registry.startswith("podium_"):
+            return ("planks x4", "FASTENER_KIT", "WIRING_HARNESS")
+        if registry.startswith("trophy_case_"):
+            return ("planks x3", "glass_pane x3", "gold_nugget x3")
+        if registry.startswith("desk_globe_"):
+            return ("paper x2", "iron_ingot")
+        if registry.startswith("pencil_sharpener_"):
+            return ("iron_ingot", "FASTENER_KIT")
+        if registry.startswith("classroom_flag_"):
+            return ("wool x2", "planks")
+        if registry.startswith("av_cart_"):
+            return ("SHEET_METAL", "iron_ingot")
+        if registry.startswith("cafeteria_table_"):
+            return ("planks x4", "iron_ingot x3", "FASTENER_KIT")
         if registry.startswith("locker_"):
             return ("SHEET_METAL x3", "FASTENER_KIT")
         if registry.startswith("green_screen_"):

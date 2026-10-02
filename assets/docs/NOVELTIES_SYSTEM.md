@@ -574,11 +574,50 @@ of offices, schools and studios, drawn by `gen_furniture_office.py` (textures an
   (`BlockResidentialFurniture`) and the waiting-room bench (`BlockResidentialRun`, a seat in every
   block on one beam, legs and arms at the ends); the school desk and chair sits too, facing its
   desk top.
-- **Boards**: the whiteboard, chalkboard and cork board are `BlockResidentialRun`s that join into
-  one long board, the frame's ends only where it stops and the markers or chalk (a `tools` part)
-  on the tray at its right-hand end. The projector screen and the streamer's green screen are
-  `BlockFoldingFixture`s (click to let the screen down or pull it up). Lockers are `BlockCloset`s
-  (two blocks tall, joining into a row, 9 slots each) with the locker door sounds.
+- **Boards**: the whiteboard, chalkboard and cork board are `BlockWallBoard`s (a
+  `BlockResidentialRun` that also knows `up` and `down`, the same board facing the same way above
+  and below; all four actual state, nothing stored, so boards placed before keep their metadata
+  and simply join). A board of any width and height reads as one: the frame is drawn only round
+  its outside (the top rail where nothing is above, the bottom rail and the tray only along the
+  bottom row, a side stile only where the run stops, reaching on up or down where the board goes
+  on), and the surface runs to the block's edge wherever the board continues, so it is one sheet.
+  The surface and the stile are each written four ways (`surface`, `surface_u`, `surface_d`,
+  `surface_ud`), one element each, rather than built of bands, so there is no seam inside a
+  block either; the whiteboard and chalkboard textures repeat exactly in their size so there is
+  none between blocks. A board alone draws exactly what the old one-block board did. The markers
+  or chalk (a `tools` part) lie on the tray at the bottom row's right-hand end. The cork board's
+  surface has three drawings of pinned notes and the multipart's `apply` lists all three, so the
+  game picks one for each block by its position and a big board does not repeat; the box grows to
+  the block's top or bottom where the board goes on. 64 states (facing x four joins), every one a
+  multipart of shared parts.
+- The projector screen, the streamer's green screen and the **pull-down map** are
+  `BlockFoldingFixture`s (click to let it down or roll it up); the map is an invented world in
+  pastel political colours on a 64 px sheet drawn squashed to its 14 x 24 face, rolled on a roller
+  in brackets with a slat and a pull ring. Lockers are `BlockCloset`s (two blocks tall, joining
+  into a row, 9 slots each) with the locker door sounds.
+- **School**: the tablet-arm desk (the stacking chair with a writing tablet on an arm at the
+  sitter's right and a wire book rack) and the stacking classroom chair (a moulded seat and back
+  with a hand slot, on steel tube) are `BlockResidentialFurniture` seats. The lectern (reading desk
+  sloping down to the speaker, 1.2 m at its back edge, open with a shelf on the speaker's side)
+  and the podium (wider, a raised panel to the audience, a gooseneck microphone) face whoever
+  places them, so the speaker stands on the placing side; their slope is one element turned
+  22.5 degrees. The trophy case (`BlockTrophyCase`, a `BlockCloset` in the translucent layer for
+  its glass, 18 slots in its cupboard) joins into a row with glass sides only at its ends; its
+  trophies (cups, figures, plaques) are a part drawn two ways that the multipart picks between by
+  position, as the cork board's notes are. The desk globe is a counter piece; the wall pencil
+  sharpener a `BlockBathroomFixture` that grinds (`pencil_sharpener`, synthesised); the classroom
+  flag hangs on a bracket with its staff leaning out from the wall at 45 degrees, a US-style flag
+  (stars and stripes, no emblem) flying from it.
+- **Classroom AV**: the ceiling projector is a `BlockKitchenLight` hanging from a drop pole (a click
+  or redstone switches it, its lens a disc the blockstate swaps between dark glass and lit, light
+  6). The overhead projector is a `BlockCounterLight` (its Fresnel stage and the head's window lit
+  by `glow`, light 8) that stands on a desk, a table or the AV cart, a plain fixture whose top shelf
+  is a table's height in `SurfaceRest`.
+- **The cafeteria table** (`BlockCafeteriaTable`, a `BlockResidentialWide`): the mobile fold-up
+  table with eight round stools on its frame, two blocks long, drawn whole and cut at the block
+  line; it folds at the middle, where it stands on two casters. A click sits the player on the
+  stool nearest the point clicked, on their side of the table, facing across it (each stool its
+  own occupancy box, so eight can sit). Its top is a table's height in `SurfaceRest`.
 - **On the desk**: `BlockCounterPiece`s (the computer tower, desk phone (beeps), fax (whirs),
   pen holder, paper tray) and `BlockCounterLight`, a counter piece that switches on and off on a
   click (`lit`, stored; the `glow` texture swapped, and light given while on): the desktop
@@ -595,7 +634,8 @@ of offices, schools and studios, drawn by `gen_furniture_office.py` (textures an
 
 Laminates are separate blocks: `_white` (white laminate on a white frame), `_grey` (a light grey
 laminate on a dark frame) and `_walnut`; seating in `_charcoal`, `_navy` and `_red`; cubicle
-panels in `_charcoal`, `_navy` and `_oatmeal`. The tab is priced by `OfficeFabricatorRules`
+panels in `_charcoal`, `_navy` and `_oatmeal`; the school's plastic in `_blue`, `_red` and
+`_charcoal`, its wood in `_oak` and `_walnut`. The tab is priced by `OfficeFabricatorRules`
 (registered by `CsmFurnishings.preInit`, mirrored in `audit_fabricator_costs.py`).
 
 ## Market & Store

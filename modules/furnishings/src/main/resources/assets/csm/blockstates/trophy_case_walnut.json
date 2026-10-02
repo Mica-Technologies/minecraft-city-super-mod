@@ -1,0 +1,378 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_body_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_left_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_right_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_body_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_left_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_right_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_body_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_left_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_right_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_body_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_left_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_right_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_body_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_left_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_right_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_body_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_left_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_right_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_body_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_left_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_right_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_body_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_left_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/office/trophy_case_walnut_right_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra0_lower"
+        },
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra1_lower"
+        }
+      ]
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra0_lower",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra1_lower",
+          "y": 90
+        }
+      ]
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra0_lower",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra1_lower",
+          "y": 180
+        }
+      ]
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra0_lower",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra1_lower",
+          "y": 270
+        }
+      ]
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra0_upper"
+        },
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra1_upper"
+        }
+      ]
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra0_upper",
+          "y": 90
+        },
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra1_upper",
+          "y": 90
+        }
+      ]
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra0_upper",
+          "y": 180
+        },
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra1_upper",
+          "y": 180
+        }
+      ]
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": [
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra0_upper",
+          "y": 270
+        },
+        {
+          "model": "csm:furniture/office/trophy_case_walnut_extra1_upper",
+          "y": 270
+        }
+      ]
+    }
+  ]
+}

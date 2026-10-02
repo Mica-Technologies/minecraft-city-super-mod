@@ -5,8 +5,11 @@ desks that join into long desks, their drawer pedestals and the L-desk corner th
 the reception desk, filing cabinet, office shelving of binders and the conference table, in three
 laminates (white, a light grey on a dark frame, walnut); cubicle panels in two heights and three
 fabrics; the task, guest, conference and gaming chairs and the waiting-room bench in the living
-room's fabrics; the whiteboard, chalkboard, cork notice board and pull-down projector screen; the
-school desk with its chair, the teacher's desk and a row of lockers; the things that sit on a
+room's fabrics; the whiteboard, chalkboard, cork notice board, pull-down projector screen and
+pull-down map; the school desk with its chair, the tablet-arm desk, the stacking classroom chair,
+the teacher's desk, lectern and podium, a row of lockers, the trophy case, a desk globe, the wall
+pencil sharpener and the classroom flag; the ceiling and overhead projectors and the AV cart; the
+cafeteria table with its stools; the things that sit on a
 desk (a desktop computer, a computer tower, a retro computer, a laptop, a desk phone, a fax, a
 pen holder, a paper tray, a desk lamp); the copier that copies written books; and a streamer's
 green screen, ring light and studio camera.
@@ -45,10 +48,11 @@ What joins (the Java classes compute it as actual state; nothing is stored):
   * cubicle panels join in any plan: an arm towards each panel or wall, a post only at a
     corner, tee or cross, and a run's last block carried on to the edge with an end post there;
     a full panel with another on it leaves off its top cap;
-  * whiteboards, chalkboards and cork boards join into one long board, the frame's ends (and
-    the markers or chalk on the tray) only where it stops;
+  * whiteboards, chalkboards and cork boards join left and right and stack up and down into
+    one board of any size, the frame only round its outside, the tray along its bottom row and
+    the markers or chalk at that row's end, the surface unbroken across the joins;
   * the waiting-room bench joins into a row of seats on one beam, legs and arms at its ends;
-  * lockers join into a row, end panels only at its ends.
+  * lockers and trophy cases join into a row, end panels only at its ends.
 
 Usage:
     python gen_furniture_office.py              # write everything
@@ -171,13 +175,15 @@ def binder_tops(seed, size=16):
 
 
 def whiteboard(size=16):
-    """A whiteboard's glossy white with a soft diagonal sheen."""
+    """A whiteboard's glossy white with a soft diagonal sheen. Every term repeats in 16 texels,
+    so boards joined side by side and stacked show no seam."""
     rng = random.Random(611)
     img = blank(size)
     px = img.load()
     for y in range(size):
         for x in range(size):
-            k = 1.0 + 0.015 * math.sin((x + y) * 0.5) + rng.uniform(-0.006, 0.006)
+            k = (1.0 + 0.015 * math.sin((x + y) * 2 * math.pi / size)
+                 + rng.uniform(-0.006, 0.006))
             c = (244, 246, 247)
             if (x - y) % 16 in (3, 4):
                 k += 0.01
@@ -186,14 +192,16 @@ def whiteboard(size=16):
 
 
 def chalkboard(size=32):
-    """Green slate with chalk dust wiped across it in broad strokes, and a few words' ghost."""
+    """Green slate with chalk dust wiped across it in broad strokes, and a few words' faint
+    ghost. The wipe repeats in the texture's width and height, so a board of several blocks
+    each way shows no seam."""
     rng = random.Random(612)
     img = blank(size)
     px = img.load()
     for y in range(size):
         for x in range(size):
             k = 1.0 + rng.uniform(-0.04, 0.04)
-            wipe = 0.08 * max(0.0, math.sin(x * 0.35 + y * 0.12) ** 8)
+            wipe = 0.08 * max(0.0, math.sin(2 * math.pi * (2 * x + y) / size) ** 8)
             c = R.shade((46, 72, 58), k)
             c = R.clamp(tuple(c[i] + wipe * (200 - c[i]) for i in range(3)))
             px[x, y] = c + (255,)
@@ -202,15 +210,33 @@ def chalkboard(size=32):
         while x < 26:
             ln = rng.randint(2, 5)
             for i in range(ln):
-                if rng.random() < 0.75:
-                    px[x + i, row] = (170, 186, 176, 255)
+                if rng.random() < 0.75 and row == 15:
+                    px[x + i, row] = (84, 108, 94, 255)
             x += ln + 2
     return img
 
 
-def cork_notes(size=32):
+CORK_NOTES = [
+    # (box, colour, lined, pin): the original sheet, and two more the blockstate picks between
+    # by position, so a big board is not the same four notes over and over
+    [((3, 4, 9, 10), (238, 214, 96), False, (200, 40, 40)),
+     ((14, 2, 23, 14), (242, 242, 236), True, (40, 90, 190)),
+     ((21, 18, 29, 25), (150, 196, 230), False, (40, 160, 70)),
+     ((5, 17, 13, 27), (242, 242, 236), True, (220, 180, 40))],
+    [((2, 3, 12, 11), (242, 242, 236), True, (40, 160, 70)),
+     ((17, 6, 24, 13), (240, 170, 190), False, (40, 90, 190)),
+     ((10, 19, 18, 29), (238, 214, 96), False, (200, 40, 40))],
+    [((5, 5, 11, 11), (150, 196, 230), False, (220, 180, 40)),
+     ((19, 3, 28, 16), (242, 242, 236), True, (200, 40, 40)),
+     ((3, 20, 10, 27), (180, 226, 160), False, (40, 90, 190)),
+     ((20, 21, 27, 28), (238, 214, 96), False, (40, 160, 70))],
+]
+
+
+def cork_notes(layout=0, size=32):
     """Cork board: a warm speckled brown, with notes pinned to it -- a yellow square, a lined
-    white sheet, a blue card -- each held by a coloured pin."""
+    white sheet, a blue card -- each held by a coloured pin. The speckle is noise with no
+    structure, so it tiles; the notes stay clear of the edges."""
     rng = random.Random(613)
     img = blank(size)
     px = img.load()
@@ -218,10 +244,7 @@ def cork_notes(size=32):
         for x in range(size):
             c = rng.choice(((176, 128, 80), (160, 112, 68), (190, 142, 92), (150, 104, 62)))
             px[x, y] = R.shade(c, 1.0 + rng.uniform(-0.05, 0.05)) + (255,)
-    notes = [((3, 4, 9, 10), (238, 214, 96), False, (200, 40, 40)),
-             ((14, 2, 23, 14), (242, 242, 236), True, (40, 90, 190)),
-             ((21, 18, 29, 25), (150, 196, 230), False, (40, 160, 70)),
-             ((5, 17, 13, 27), (242, 242, 236), True, (220, 180, 40))]
+    notes = CORK_NOTES[layout]
     for (x0, y0, x1, y1), col, lined, pin in notes:
         for y in range(y0, y1):
             for x in range(x0, x1):
@@ -410,6 +433,200 @@ def lens_glass(size=16):
     return img
 
 
+# --- the school's textures ----------------------------------------------------------------
+def vent_slots(size=16):
+    """A projector's side grille: dark slots in grey plastic."""
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            col = (20, 20, 22) if y % 2 == 1 and 1 <= x <= size - 2 else (70, 72, 76)
+            px[x, y] = col + (255,)
+    return img
+
+
+def ohp_stage(on, size=16):
+    """An overhead projector's stage, the Fresnel lens seen from above: fine rings about the
+    middle; dark glass when off, a warm white glare when its lamp is on (the same texture is the
+    head's window, where the light leaves)."""
+    img = blank(size)
+    px = img.load()
+    c = (size - 1) / 2.0
+    for y in range(size):
+        for x in range(size):
+            r = math.hypot(x - c, y - c)
+            ring = int(r * 1.6) % 2 == 0
+            if on:
+                k = 1.0 - 0.08 * r / c - (0.025 if ring else 0.0)
+                col = R.shade((255, 250, 230), k)
+            else:
+                col = (58, 62, 68) if ring else (46, 50, 56)
+                if 0 <= (x - y) % 16 < 2:
+                    col = R.shade(col, 1.5)
+            px[x, y] = tuple(col) + (255,)
+    return img
+
+
+def globe_map(size=16):
+    """A desk globe's surface: an ocean blue with land in greens and tans, invented shapes
+    (no real coastline at this size), and a faint graticule."""
+    rng = random.Random(631)
+    img = blank(size)
+    px = img.load()
+    blobs = [(3, 4, 3.2), (11, 3, 2.4), (9, 10, 3.6), (2, 12, 2.2), (14, 13, 1.8)]
+    for y in range(size):
+        for x in range(size):
+            land = sum(max(0.0, 1 - math.hypot(x - bx, y - by) / br) for bx, by, br in blobs)
+            land += rng.uniform(-0.15, 0.15)
+            if land > 0.35:
+                col = (112, 160, 82) if land < 0.75 else (196, 176, 112)
+            else:
+                col = (52, 108, 178)
+                if x % 8 == 0 or y % 8 == 0:
+                    col = (78, 134, 200)
+            px[x, y] = R.shade(col, 1.0 + rng.uniform(-0.04, 0.04)) + (255,)
+    return img
+
+
+def sharpener_dial(size=16):
+    """The front of a crank pencil sharpener: a chrome dial with six holes of different sizes
+    round it, the one in use at the top; clear outside the disc (the fitting is cutout)."""
+    def draw(r, a):
+        if r > 0.9:
+            return (120, 124, 130)
+        return R.shade((200, 204, 210), 1.05 - 0.2 * r)
+    img = A.disc(size, draw)
+    px = img.load()
+    c = size / 2.0
+    for i in range(6):
+        ang = -math.pi / 2 + i * math.pi / 3
+        hx, hy = c + 4.6 * math.cos(ang), c + 4.6 * math.sin(ang)
+        rad = 1.3 - 0.12 * i
+        for y in range(size):
+            for x in range(size):
+                if math.hypot(x + 0.5 - hx, y + 0.5 - hy) <= rad:
+                    px[x, y] = (24, 24, 28, 255)
+    return img
+
+
+def map_world(size=64):
+    """A pull-down classroom map of an invented world: a title band, pale blue sea with a
+    graticule, continents in pastel political colours with dark borders between their regions,
+    a white margin. Drawn for a face 14 wide and 24 tall, so everything is drawn squashed to
+    0.58 of its height here and stretched back on the sheet."""
+    rng = random.Random(641)
+    img = blank(size)
+    px = img.load()
+    squash = 14.0 / 24.0
+    # Each continent a cluster of overlapping blobs, so its coast wanders.
+    blobs = []
+    for cx, cy, n in ((14, 17, 6), (19, 37, 5), (42, 15, 7), (47, 33, 5), (31, 49, 3),
+                      (56, 50, 3)):
+        for _ in range(n):
+            blobs.append((cx + rng.uniform(-7, 7), cy + rng.uniform(-5, 5), rng.uniform(6, 10)))
+    seeds = [(rng.uniform(2, 62), rng.uniform(8, 56)) for _ in range(16)]
+    palette = [(236, 196, 120), (196, 222, 140), (236, 168, 150), (214, 190, 228),
+               (250, 226, 130), (168, 214, 196), (240, 200, 180)]
+
+    def land(x, y):
+        v = sum(max(0.0, 1 - math.hypot(x - bx, (y - by) / squash) / br) for bx, by, br in blobs)
+        return v + 0.08 * math.sin(x * 0.9) * math.sin(y * 1.3)
+
+    def region(x, y):
+        return min(range(len(seeds)), key=lambda i: math.hypot(x - seeds[i][0],
+                                                               (y - seeds[i][1]) / squash))
+    for y in range(size):
+        for x in range(size):
+            if y < 6:
+                col = (34, 52, 104)
+                if y in (2, 3) and 14 <= x < 50 and (x // 2) % 3 != 2:
+                    col = (226, 214, 160)
+            elif y >= size - 3 or x < 2 or x >= size - 2:
+                col = (240, 238, 230)
+            elif land(x, y) > 0.2:
+                g = region(x, y)
+                col = palette[g % len(palette)]
+                if region(x + 1, y) != g or region(x, y + 1) != g:
+                    col = (96, 90, 84)
+                elif land(x + 1, y) <= 0.2 or land(x, y + 1) <= 0.2 \
+                        or land(x - 1, y) <= 0.2 or land(x, y - 1) <= 0.2:
+                    col = R.shade(col, 0.75)
+            else:
+                col = (176, 210, 234)
+                if (x - 2) % 10 == 0 or (y - 6) % 9 == 0:
+                    col = (150, 188, 220)
+            px[x, y] = tuple(col) + (255,)
+    return img
+
+
+def flag_stars(size=64):
+    """A US-style classroom flag: thirteen red and white stripes, a blue canton of white stars
+    in staggered rows. Drawn square here and stretched onto the flag's 3:2 sheet."""
+    img = blank(size)
+    px = img.load()
+    cw, ch = int(size * 0.4), int(size * 7 / 13 + 0.5)
+    for y in range(size):
+        stripe = int(y * 13 / size)
+        for x in range(size):
+            if x < cw and y < ch:
+                col = (40, 52, 112)
+            else:
+                col = (178, 34, 52) if stripe % 2 == 0 else (244, 244, 240)
+            px[x, y] = col + (255,)
+    for row in range(9):
+        y = 2 + row * (ch - 4) / 8.0
+        cols = 6 if row % 2 == 0 else 5
+        for i in range(cols):
+            x = (2 + i * (cw - 4) / 5.0) if row % 2 == 0 else (2 + (i + 0.5) * (cw - 4) / 5.0)
+            px[int(round(x)), int(round(y))] = (250, 250, 250, 255)
+    return img
+
+
+def trophy_gold(size=16):
+    """Polished gold: a warm yellow metal with bright and dark bands down it, as a turned cup
+    catches the light."""
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            k = 1.0 + 0.22 * math.sin(x * 2 * math.pi / size * 2) - 0.03 * (y % 4 == 0)
+            px[x, y] = R.shade((214, 172, 60), k) + (255,)
+    return img
+
+
+def projector_lens_on(size=16):
+    """A projector's lens with its lamp on, seen from the front: a white-hot middle going cool
+    blue to the rim, the barrel's black round it, as lens_glass is when off."""
+    def draw(r, a):
+        if r > 0.88:
+            return (40, 40, 44)
+        k = max(0.0, 1.0 - r / 0.88)
+        return R.clamp(tuple(170 + (255 - 170) * k ** 0.6 for _ in range(2)) + (235,))
+    img = A.disc(size, draw)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            if px[x, y][3] == 0:
+                px[x, y] = (26, 26, 30, 255)
+    return img
+
+
+def case_glass(size=16):
+    """A display case's glass: nearly clear with a faint cool tint, and one thin, faint
+    highlight near a corner, so what is behind it reads plainly."""
+    img = blank(size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            a, c = 18, (214, 232, 242)
+            if x + y == 4 and 1 <= x <= 3:
+                a, c = 46, (246, 250, 252)
+            elif x + y == 6 and 2 <= x <= 4:
+                a, c = 32, (246, 250, 252)
+            px[x, y] = c + (a,)
+    return img
+
+
 TEXTURES = {
     "laminate_grey": lambda: R.laminate((200, 202, 204), 601),
     "laminate_grey_edge": lambda: R.flat((78, 80, 84), 602, grain=3),
@@ -420,6 +637,18 @@ TEXTURES = {
     "whiteboard": whiteboard,
     "chalkboard": chalkboard,
     "cork_notes": cork_notes,
+    "cork_notes_b": lambda: cork_notes(1),
+    "cork_notes_c": lambda: cork_notes(2),
+    "vent_slots": vent_slots,
+    "ohp_stage_off": lambda: ohp_stage(False),
+    "ohp_stage_on": lambda: ohp_stage(True),
+    "globe_map": globe_map,
+    "sharpener_dial": sharpener_dial,
+    "map_world": map_world,
+    "flag_stars": flag_stars,
+    "trophy_gold": trophy_gold,
+    "case_glass": case_glass,
+    "projector_lens_on": projector_lens_on,
     "mesh": mesh,
     "vinyl_black": lambda: noisy((36, 36, 40), 607, 16, 0.04),
     "screen_off": lambda: screen("desktop", False),
@@ -498,6 +727,12 @@ DEFAULT_TEX.update({
     "glass": OT("lens_glass"), "chalk": OT("chalk"), "felt": OT("felt_grey"),
     "keypad": OT("keypad"), "face": OT("tower_front"), "tally": OT("lamp_red"),
     "pen_a": T("ceramic_blue"), "pen_b": T("ceramic_red"), "pen_c": T("appliance_black"),
+    # the school's
+    "seat": OT("plastic_blue"), "gold": OT("trophy_gold"), "backing": T("navy_dark"),
+    "pane": OT("case_glass"), "map": OT("map_world"),
+    "flag": OT("flag_stars"), "globe": OT("globe_map"), "dial": OT("sharpener_dial"),
+    "chrome": T("chrome"), "brass": T("brass"), "grille": OT("vent_slots"),
+    "dark_wood": T("walnut"),
 })
 
 
@@ -780,21 +1015,70 @@ SCHOOL_DESK = (_SCHOOL_FRAME + mirror_x(_SCHOOL_FRAME)
 # ------------------------------------------------------------------------------------------
 
 
-def wall_board(tray, frame_tex):
-    body = [el([0, 3, 15], [16, 14, 15.75], "board", ("north", "south"), {"south": frame_tex}),
-            el([0, 14, 14.75], [16, 14.75, 16], frame_tex, ("north", "up", "down")),
-            el([0, 2.25, 14.75], [16, 3, 16], frame_tex, ("north", "up", "down"))]
-    end = [el([0, 2.25, 14.75], [0.75, 14.75, 16], frame_tex, ("north", "west", "up", "down"))]
+def joined(up, down):
+    """The suffix of a board part drawn for a board continuing up and / or down."""
+    s = ("u" if up else "") + ("d" if down else "")
+    return "_" + s if s else ""
+
+
+def wall_board(tray, frame_tex, tools=None):
+    """A wall board's parts. A board joins left and right and stacks up and down into one
+    board of any size: the surface reaches the block's top where another board is above it and
+    its bottom where one is below, so it runs on unbroken; the frame's top rail is drawn only
+    where nothing is above, the bottom rail (and the tray on it) only where nothing is below,
+    and a side stile only where the run stops, reaching on up or down past the rail's place
+    where the board goes on. The tools lie on the tray at the bottom right-hand corner. One
+    block on its own draws exactly what the old one-block board did."""
+    parts = {}
+    for up in (False, True):
+        for down in (False, True):
+            sfx = joined(up, down)
+            y0, y1 = (0 if down else 3), (16 if up else 14)
+            parts["surface" + sfx] = [el([0, y0, 15], [16, y1, 15.75], "board",
+                                         ("north", "south"), {"south": frame_tex})]
+            faces = ["north", "west"] + ([] if up else ["up"]) + ([] if down else ["down"])
+            stile = [el([0, 0 if down else 2.25, 14.75], [0.75, 16 if up else 14.75, 16],
+                        frame_tex, faces)]
+            parts["left" + sfx] = stile
+            parts["right" + sfx] = mirror_x(stile)
+    parts["top"] = [el([0, 14, 14.75], [16, 14.75, 16], frame_tex, ("north", "up", "down"))]
+    parts["bottom"] = [el([0, 2.25, 14.75], [16, 3, 16], frame_tex, ("north", "up", "down"))]
     if tray:
-        body += [el([0, 2, 13], [16, 2.25, 16], frame_tex, ("north", "up", "down")),
-                 el([0, 2.25, 13], [16, 2.75, 13.5], frame_tex, ("north", "south", "up"))]
-        end += [el([0, 2, 13], [0.75, 2.75, 14.75], frame_tex, ("west", "north", "up"))]
-    return body, end
+        parts["bottom"] += [el([0, 2, 13], [16, 2.25, 16], frame_tex, ("north", "up", "down")),
+                            el([0, 2.25, 13], [16, 2.75, 13.5], frame_tex,
+                               ("north", "south", "up"))]
+        tray_end = [el([0, 2, 13], [0.75, 2.75, 14.75], frame_tex, ("west", "north", "up"))]
+        parts["left_tray"] = tray_end
+        parts["right_tray"] = mirror_x(tray_end)
+    if tools:
+        parts["tools"] = tools
+    return parts
 
 
-WHITEBOARD_BODY, WHITEBOARD_END = wall_board(True, "trim")
-CHALKBOARD_BODY, CHALKBOARD_END = wall_board(True, "wood")
-CORK_BODY, CORK_END = wall_board(False, "wood")
+def board_rules(parts):
+    pw = []
+    for up in (False, True):
+        for down in (False, True):
+            sfx = joined(up, down)
+            when = {"up": str(up).lower(), "down": str(down).lower()}
+            pw += [("surface" + sfx, dict(when)),
+                   ("left" + sfx, dict(when, left="false")),
+                   ("right" + sfx, dict(when, right="false"))]
+    pw += [("top", {"up": "false"}), ("bottom", {"down": "false"})]
+    if "left_tray" in parts:
+        pw += [("left_tray", {"left": "false", "down": "false"}),
+               ("right_tray", {"right": "false", "down": "false"})]
+    if "tools" in parts:
+        pw.append(("tools", {"right": "false", "down": "false"}))
+    return R.faced(pw)
+
+
+def board_item(parts):
+    """The board in the inventory: one block on its own."""
+    return [s for name in ("surface", "top", "bottom", "left", "right", "left_tray",
+                           "right_tray", "tools") for s in parts.get(name, [])]
+
+
 # What lies on the tray at the right-hand end: markers and an eraser, or chalk and a duster.
 MARKERS = [el([10, 2.25, 13.75], [12, 2.75, 14.25], "pen_a", NO_DOWN),
            el([10.5, 2.25, 14.5], [12.5, 2.75, 14.75], "pen_b", NO_DOWN),
@@ -802,6 +1086,9 @@ MARKERS = [el([10, 2.25, 13.75], [12, 2.75, 14.25], "pen_a", NO_DOWN),
 CHALK = [el([10, 2.25, 13.75], [11.75, 2.6, 14.1], "chalk", NO_DOWN),
          el([11, 2.25, 14.3], [12.25, 2.6, 14.65], "chalk", NO_DOWN),
          el([12.75, 2.25, 13.6], [14.75, 3.5, 14.75], "felt", NO_DOWN, {"up": "wood"})]
+WHITEBOARD = wall_board(True, "trim", MARKERS)
+CHALKBOARD = wall_board(True, "wood", CHALK)
+CORK = wall_board(False, "wood")
 
 # The projector screen: its case at the top of the block, the screen let down a metre and a half.
 PROJ_CASE = [el([0.5, 14, 13.5], [15.5, 16, 16], "case"),
@@ -814,6 +1101,347 @@ PROJ_OPEN = (PROJ_CASE
                 el([0.75, -11.75, 14.25], [15.25, -11, 15], "case"),
                 el([7, -12.75, 14.5], [9, -11.75, 14.75], "case", ("north", "south", "east",
                                                                    "west", "down"))])
+
+
+def octagon_x(cy, cz, r, x0, x1, tex, caps=("east", "west")):
+    """A round bar lying along x (a roller), as octagon() is about y: four rectangles, two
+    turned 45 degrees about x."""
+    a = r * R.TAN_22_5
+    out = []
+    for k, (h1, h2, turned) in enumerate(((r, a, False), (a, r, False), (r, a, True),
+                                          (a, r, True))):
+        eps = 0.004 * k
+        sides = ["up", "down"] if h1 == r else ["north", "south"]
+        out.append(el([x0 - eps, cy - h1, cz - h2], [x1 + eps, cy + h1, cz + h2], tex,
+                      sides + list(caps), rot=("x", 45, [x0, cy, cz]) if turned else None))
+    return out
+
+
+def octagon_z(cx, cy, r, z0, z1, tex, caps=("north", "south"), cap_tex=None):
+    """A round thing facing north (its axis along z): a lens barrel, a dial."""
+    a = r * R.TAN_22_5
+    out = []
+    for k, (h1, h2, turned) in enumerate(((r, a, False), (a, r, False), (r, a, True),
+                                          (a, r, True))):
+        eps = 0.004 * k
+        sides = ["east", "west"] if h1 == r else ["up", "down"]
+        per = {c: cap_tex for c in caps} if cap_tex else {}
+        out.append(el([cx - h1, cy - h2, z0 - eps], [cx + h1, cy + h2, z1 + eps], tex,
+                      sides + list(caps), per, rot=("z", 45, [cx, cy, z0]) if turned else None))
+    return out
+
+
+# The pull-down map: a roller in its brackets high on the wall; pulled down, a map 1.5 m long on
+# a wooden slat with a ring to pull it by.
+MAP_BRACKETS = [el([0.25, 13, 13.25], [1.25, 16, 16], "frame", NO_BACK + ("south",)),
+                el([14.75, 13, 13.25], [15.75, 16, 16], "frame", NO_BACK + ("south",))]
+MAP_CLOSED = (MAP_BRACKETS
+              + octagon_x(14.5, 14.5, 1.1, 1.25, 14.75, "paper", caps=())
+              + [el([1.5, 12.75, 13.85], [14.5, 13.4, 14.35], "wood"),
+                 el([7.5, 11.75, 13.95], [8.5, 12.75, 14.25], "brass", SIDES)])
+MAP_OPEN = (MAP_BRACKETS
+            + octagon_x(14.5, 14.5, 1.1, 1.25, 14.75, "paper", caps=())
+            + [ALL_UV(el([1.5, -9.25, 14.5], [14.5, 14, 14.6], "map", ("north", "south"),
+                         {"south": "paper"}), ["north"]),
+               el([1.25, -10, 14.25], [14.75, -9.25, 14.85], "wood"),
+               el([7.5, -11, 14.4], [8.5, -10, 14.7], "brass", SIDES)])
+
+# ------------------------------------------------------------------------------------------
+# School: seating, the lectern and podium, the trophy case, the things on the wall and desk
+# ------------------------------------------------------------------------------------------
+# The stacking classroom chair: a moulded polypropylene seat and back (a hand slot in the
+# back's top) on four steel tube legs, the seat at 0.46 m.
+_CC_LEGS = [el([3.75, 0, 3.75], [4.5, 7, 4.5], "frame", SIDES),
+            el([3.75, 0, 11.25], [4.5, 7, 12], "frame", SIDES),
+            el([3.75, 0, 3.75], [4.5, 0.25, 12], "frame", ("down", "east", "west")),
+            el([3.9, 6.75, 11.5], [4.65, 9.75, 12.9], "frame", SIDES)]
+_CC_SHELL = [el([3.25, 6.75, 3.25], [12.75, 7.5, 12.25], "seat"),
+             el([3.25, 6.25, 3.25], [12.75, 6.75, 3.75], "seat", NO_UP),
+             el([3.5, 9.5, 12.5], [12.5, 13.25, 13.25], "seat"),
+             el([3.5, 13.25, 12.5], [6.5, 14, 13.25], "seat"),
+             el([9.5, 13.25, 12.5], [12.5, 14, 13.25], "seat"),
+             el([3.5, 14, 12.5], [12.5, 14.75, 13.25], "seat")]
+CLASSROOM_CHAIR = _CC_LEGS + mirror_x(_CC_LEGS) + _CC_SHELL
+# The tablet-arm desk: the same chair with a writing tablet on an arm at the sitter's right
+# and a wire book rack under the seat.
+TABLET_ARM_DESK = (CLASSROOM_CHAIR
+                   + [board([6.25, 11, 0.5], [14.5, 11.6, 8.25]),
+                      el([13, 7.5, 6.5], [13.75, 11, 7.25], "frame", SIDES),
+                      el([12.75, 7, 6.5], [13.75, 7.5, 9], "frame"),
+                      el([12.75, 10.4, 1.5], [13.75, 11, 7.25], "frame", NO_UP),
+                      el([4.5, 1.75, 4.5], [11.5, 2.1, 11.5], "frame", ("up", "down")),
+                      el([4.5, 2.1, 4.5], [11.5, 3.1, 4.75], "frame", ("north", "south"))])
+
+
+def tilted(spec, angle, origin, axis="x"):
+    """spec turned angle degrees about axis through origin (only one turn an element may have:
+    keep it out of mirror_x and turn)."""
+    spec["rot"] = (axis, angle, list(origin))
+    return spec
+
+
+# The lectern: a pedestal on a plinth, open to the speaker with a shelf, its reading desk
+# sloping down to the speaker with a ledge, 1.2 m at the back edge.
+SLOPE = (8, 16.25, 8)
+LECTERN = ([board([3, 0, 4], [13, 1, 13]),
+            board([4, 1, 5], [4.75, 16, 12.5], grain="v"),
+            board([11.25, 1, 5], [12, 16, 12.5], grain="v"),
+            board([4.75, 1, 11.75], [11.25, 16, 12.5], grain="v", faces=("north", "south")),
+            board([4.75, 9.5, 5], [11.25, 10.25, 11.75], faces=("north", "up", "down")),
+            tilted(board([4, 14.75, 4.25], [12, 16.25, 12.5]), -22.5, SLOPE),
+            tilted(board([2.5, 16.25, 2.5], [13.5, 17, 13.5]), -22.5, SLOPE),
+            tilted(el([2.5, 17, 2.5], [13.5, 17.6, 3.1], "edge"), -22.5, SLOPE)])
+# The podium: wider, its front to the audience a raised panel on a deeper plinth, and a
+# gooseneck microphone rising from the back of its desk toward the speaker.
+_MIC = (11.5, 21.5, 11)
+PODIUM = ([board([0.5, 0, 3.5], [15.5, 1.25, 14]),
+           board([1.25, 1.25, 4.5], [2, 16, 13], grain="v"),
+           board([14, 1.25, 4.5], [14.75, 16, 13], grain="v"),
+           board([2, 1.25, 12.25], [14, 16, 13], grain="v", faces=("north", "south")),
+           board([3.25, 3, 13], [12.75, 13.5, 13.5], grain="v",
+                 faces=("south", "east", "west", "up", "down")),
+           board([2, 9.5, 4.5], [14, 10.25, 12.25], faces=("north", "up", "down")),
+           tilted(board([1.25, 14.75, 4.25], [14.75, 16.25, 13]), -22.5, SLOPE),
+           tilted(board([0.5, 16.25, 2.75], [15.5, 17, 13.75]), -22.5, SLOPE),
+           tilted(el([0.5, 17, 2.75], [15.5, 17.6, 3.35], "edge"), -22.5, SLOPE),
+           el([10.75, 18.3, 10.25], [12.25, 18.8, 11.75], "case"),
+           el([11.3, 18.8, 10.8], [11.7, 21.5, 11.2], "frame", SIDES),
+           tilted(el([11.3, 21.5, 10.8], [11.7, 24.5, 11.2], "frame", SIDES), -45, _MIC),
+           tilted(el([11.05, 24.5, 10.55], [11.95, 26.25, 11.45], "case"), -45, _MIC)])
+
+# The trophy case, 2 m tall and half a metre deep, drawn whole and cut in two: a cupboard below
+# with two doors, the display above it behind a glass front with two glass shelves, a felt
+# back, a cornice on top; glass sides only where the row ends.
+TROPHY_BODY = ([el([0, 0, 9], [16, 1, 9.25], "edge", ("north",)),
+                board([0, 1, 8.75], [16, 11, 9], faces=("north",)),
+                board([0, 11, 8.25], [16, 11.75, 16], faces=("north", "up", "down")),
+                el([0, 11.75, 15.5], [16, 30.25, 16], "backing", ("north",)),
+                el([0, 0, 15.75], [16, 32, 16], "wood_v", ("south",)),
+                el([0, 11.75, 8.75], [16, 30.25, 9], "pane", ("north", "south")),
+                el([0, 11.75, 8.5], [0.35, 30.25, 9.25], "wood", ("north", "east")),
+                el([15.65, 11.75, 8.5], [16, 30.25, 9.25], "wood", ("north", "west")),
+                board([0, 30.25, 8], [16, 32, 16], faces=("north", "up", "down"))]
+               + [el([0.35, y, 9], [15.65, y + 0.25, 15.5], "pane", ("up", "down", "north"))
+                  for y in (17.5, 23.5)]
+               + front(0.5, 7.85, 1.5, 10.5, 8.25) + front(8.15, 15.5, 1.5, 10.5, 8.25)
+               + [el([6.75, 7.5, 7.75], [7.35, 8.1, 8.25], "brass", NO_BACK),
+                  el([8.65, 7.5, 7.75], [9.25, 8.1, 8.25], "brass", NO_BACK)])
+TROPHY_END = [board([0, 0, 8.75], [0.5, 11.75, 16], grain="v",
+                    faces=("west", "north", "up", "down")),
+              board([0, 30.25, 8], [0.5, 32, 16], grain="v", faces=("west", "north", "up")),
+              el([0.1, 11.75, 9.25], [0.35, 30.25, 15.5], "pane", ("west", "east")),
+              el([0, 11.75, 8.5], [0.75, 30.25, 9.25], "wood", ("north", "west", "east")),
+              el([0, 11.75, 15.25], [0.75, 30.25, 16], "wood", ("west", "east"))]
+
+
+def cup(cx, cz, y, s=1.0):
+    """A cup trophy: a dark wood base, a stem, a gold bowl and its two handles."""
+    return ([el([cx - 1.2 * s, y, cz - 1.2 * s], [cx + 1.2 * s, y + 0.9 * s, cz + 1.2 * s],
+                "dark_wood", NO_DOWN),
+             el([cx - 0.3 * s, y + 0.9 * s, cz - 0.3 * s], [cx + 0.3 * s, y + 1.9 * s,
+                                                           cz + 0.3 * s], "gold", SIDES)]
+            + octagon(cx, cz, 1.1 * s, y + 1.9 * s, y + 3.5 * s, "gold")
+            + [el([cx - 1.75 * s, y + 2.4 * s, cz - 0.15], [cx - 1.1 * s, y + 3.2 * s,
+                                                           cz + 0.15], "gold"),
+               el([cx + 1.1 * s, y + 2.4 * s, cz - 0.15], [cx + 1.75 * s, y + 3.2 * s,
+                                                          cz + 0.15], "gold")])
+
+
+def figure(cx, cz, y, h=3.0):
+    """A figure trophy: a column on a base with a small gold figure on top."""
+    return [el([cx - 1, y, cz - 1], [cx + 1, y + 0.75, cz + 1], "dark_wood", NO_DOWN),
+            el([cx - 0.6, y + 0.75, cz - 0.6], [cx + 0.6, y + h, cz + 0.6], "gold", NO_DOWN),
+            el([cx - 0.35, y + h, cz - 0.25], [cx + 0.35, y + h + 1.4, cz + 0.25], "gold",
+               NO_DOWN),
+            el([cx - 0.25, y + h + 1.4, cz - 0.25], [cx + 0.25, y + h + 1.9, cz + 0.25], "gold",
+               NO_DOWN)]
+
+
+def plaque(cx, cz, y, w=3.5, h=3.25):
+    """A plaque standing on a shelf, leaning back on the felt: wood with a brass plate."""
+    o = (cx, y, cz + 1)
+    return [tilted(el([cx - w / 2, y, cz + 0.6], [cx + w / 2, y + h, cz + 1.1], "dark_wood"),
+                   22.5, o),
+            tilted(el([cx - w / 2 + 0.5, y + 0.6, cz + 0.5], [cx + w / 2 - 0.5, y + h - 0.6,
+                                                             cz + 0.6], "brass", ("north",)),
+                   22.5, o)]
+
+
+CASE_Z = 12.25
+TROPHIES = [
+    cup(4.25, CASE_Z, 11.75) + plaque(11, CASE_Z, 11.75)
+    + figure(3.5, CASE_Z, 17.75) + cup(8.25, CASE_Z, 17.75, 0.8) + figure(12.5, CASE_Z, 17.75,
+                                                                          2.4)
+    + plaque(5, CASE_Z, 23.75, 3, 3) + cup(11.5, CASE_Z, 23.75, 1.15),
+    figure(4, CASE_Z, 11.75, 2) + cup(10.5, CASE_Z, 11.75, 1.1)
+    + plaque(4.5, CASE_Z, 17.75) + figure(11.5, CASE_Z, 17.75, 2.8)
+    + cup(4, CASE_Z, 23.75, 0.9) + figure(8.25, CASE_Z, 23.75, 2.2) + cup(12.25, CASE_Z, 23.75,
+                                                                          0.9),
+]
+
+
+def split_turned(specs, cut=16):
+    """split_y for pieces with turned elements: an element wholly on one side goes to that half
+    (each trophy is placed so none straddles the cut)."""
+    lower, upper = [], []
+    for s in specs:
+        if s["rot"]:
+            y0, y1 = s["from"][1], s["to"][1]
+            if y1 <= cut + 0.75 and y0 < cut:
+                lower.append(s)
+            elif y0 >= cut:
+                upper.append(B.shift([s], dy=-cut)[0])
+            else:
+                raise ValueError("a turned element straddles the cut: %s" % s)
+        else:
+            lo, up = K.split_y([s], cut)
+            lower += lo
+            upper += up
+    return lower, upper
+
+
+# The ceiling projector: a plate on the ceiling, a drop pole and the mount, the projector
+# hanging under it with its lens at the front left and grilles on its sides.
+CEILING_PROJECTOR = (octagon(8, 8, 1.75, 15.5, 16, "frame", caps=("down",))
+                     + [el([7.5, 11.75, 7.5], [8.5, 15.5, 8.5], "frame", SIDES),
+                        el([6, 11.25, 6], [10, 11.75, 10], "frame"),
+                        el([3.5, 8.5, 3.75], [12.5, 11.25, 12], "shell"),
+                        el([3.75, 8.25, 4], [12.25, 8.5, 11.75], "trim", NO_UP),
+                        ALL_UV(el([12.5, 9, 5.5], [12.55, 10.75, 10.5], "grille", ("east",)),
+                               ["east"]),
+                        ALL_UV(el([3.45, 9, 5.5], [3.5, 10.75, 10.5], "grille", ("west",)),
+                               ["west"]),
+                        el([10, 11.25, 4.75], [11.5, 11.5, 5.75], "trim", NO_DOWN)]
+                     + octagon_z(6, 9.85, 1.15, 2.85, 3.75, "frame", caps=())
+                     + [ALL_UV(el([4.75, 8.6, 2.8], [7.25, 11.1, 2.85], "lens", ("north",)),
+                               ["north"])])
+
+# The overhead projector, for a desk or the AV cart: a boxy base with its glass stage (the
+# Fresnel lens), a post at the back carrying the head over the stage, its window toward the
+# speaker and the screen behind them, and the mirror tilted over it. Lit, the stage and the
+# window glow. About 1.25 times real size, as the other things on a desk are.
+OHP = ([el([3.5, 0.25, 3], [12.5, 3, 12], "shell", NO_DOWN)]
+       + [el([x, 0, z], [x + 1, 0.25, z + 1], "rubber", SIDES)
+          for x in (4, 11) for z in (3.5, 10.5)]
+       + [ALL_UV(el([4.5, 3, 4], [11.5, 3.05, 11], "glow", ("up",)), ["up"]),
+          el([3.5, 3, 3], [12.5, 3.25, 4], "trim", NO_DOWN),
+          el([3.5, 3, 11], [12.5, 3.25, 12], "trim", NO_DOWN),
+          el([3.5, 3, 4], [4.5, 3.25, 11], "trim", NO_DOWN),
+          el([11.5, 3, 4], [12.5, 3.25, 11], "trim", NO_DOWN),
+          el([9.5, 1.25, 2.75], [11, 2.1, 3], "trim", NO_BACK),
+          el([7, 0.75, 12], [9, 3.5, 13], "shell", NO_DOWN),
+          el([7.4, 3.5, 12.1], [8.6, 13.25, 12.9], "frame", SIDES),
+          el([8.6, 8.75, 12.15], [9.6, 9.75, 12.85], "trim"),
+          el([7.5, 12.25, 9.25], [8.5, 13.25, 12.1], "frame", NO_BACK),
+          el([6.25, 10.75, 5.75], [9.75, 12.75, 9.25], "shell"),
+          el([6.75, 10, 6.25], [9.25, 10.75, 8.75], "trim", NO_UP),
+          ALL_UV(el([6.6, 11, 5.7], [9.4, 12.5, 5.75], "glow", ("north",)), ["north"]),
+          tilted(el([6.25, 12.75, 5.25], [9.75, 13, 9.25], "trim"), 22.5, (8, 12.75, 9.25))])
+
+# The AV cart: three moulded shelves with raised lips on four steel posts and casters, an
+# outlet strip on a back post; its top at 0.75 m, a table's height, so the projector rests on it.
+AV_CART = ([el([x, 0, z], [x + 1, 1, z + 1], "rubber", SIDES)
+            for x in (2.25, 12.75) for z in (2.75, 12.25)]
+           + [el([x, 1, z], [x + 1, 11.25, z + 1], "frame", SIDES)
+              for x in (2.25, 12.75) for z in (2.75, 12.25)]
+           + [s for y in (1.5, 6.25, 11.25) for s in
+              [el([2, y, 2.5], [14, y + 0.75, 13.5], "case"),
+               el([2, y + 0.75, 2.5], [14, y + 1.25 if y < 11 else 12, 3], "case", NO_DOWN),
+               el([2, y + 0.75, 13], [14, y + 1.25 if y < 11 else 12, 13.5], "case", NO_DOWN),
+               el([2, y + 0.75, 3], [2.5, y + 1.25 if y < 11 else 12, 13], "case", NO_DOWN),
+               el([13.5, y + 0.75, 3], [14, y + 1.25 if y < 11 else 12, 13], "case",
+                  NO_DOWN)]]
+           + [el([12.9, 3, 13.75], [13.85, 9, 14.25], "shell")])
+
+# The desk globe: a wooden foot, a brass stem, the globe built of five octagonal slices and a
+# brass half-meridian round its west side from pole to pole.
+
+
+def arc_bar(cx, cy, r, mid, z0, z1, w, tex):
+    """The chord of 45 degrees of a circle of radius r about (cx, cy) in the x-y plane, centred
+    on the angle mid (degrees from +x toward +y): a bar turned by a multiple of 22.5 degrees,
+    as an element must be."""
+    m = math.radians(mid)
+    k = r * math.cos(math.pi / 8)
+    length = 2 * r * math.sin(math.pi / 8)
+    px_, py_ = cx + k * math.cos(m), cy + k * math.sin(m)
+    t = (mid + 90) % 180
+    if t > 90:
+        t -= 180
+    if abs(t) <= 45:
+        frm, to, ang = [px_ - length / 2, py_ - w / 2, z0], [px_ + length / 2, py_ + w / 2, z1], t
+    else:
+        frm, to = [px_ - w / 2, py_ - length / 2, z0], [px_ + w / 2, py_ + length / 2, z1]
+        ang = t - 90 if t > 0 else t + 90
+    return el(frm, to, tex, ALL, rot=("z", ang, [px_, py_, z0]) if ang else None)
+
+
+GLOBE_Y, GLOBE_R = 6.25, 3.2
+DESK_GLOBE = (octagon(8, 8, 2.6, 0, 0.75, "dark_wood")
+              + [el([7.6, 0.75, 7.6], [8.4, 2.75, 8.4], "brass", SIDES)]
+              + octagon(8, 8, 1.9, 2.95, 3.75, "globe")
+              + octagon(8, 8, 2.8, 3.75, 4.95, "globe")
+              + octagon(8, 8, GLOBE_R, 4.95, 7.55, "globe")
+              + octagon(8, 8, 2.8, 7.55, 8.75, "globe")
+              + octagon(8, 8, 1.9, 8.75, 9.55, "globe")
+              + [arc_bar(8, GLOBE_Y, 3.9, mid, 7.75, 8.25, 0.5, "brass")
+                 for mid in (112.5, 157.5, 202.5, 247.5)]
+              + [el([7.75, 9.55, 7.75], [8.25, 10.05, 8.25], "brass")])
+
+# The wall pencil sharpener: a plate on the wall, the mechanism's housing, the chrome shavings
+# canister reaching forward with the hole dial on its end, the crank on the right.
+PENCIL_SHARPENER = ([el([6.5, 9.75, 15.25], [9.5, 13.25, 16], "frame", NO_BACK),
+                     el([6.5, 10.25, 12.5], [9.5, 12.75, 15.25], "chrome", NO_BACK)]
+                    + octagon_z(8, 11.5, 1.35, 9.5, 12.5, "chrome", caps=())
+                    + octagon_z(8, 11.5, 1.55, 9.0, 9.5, "chrome", caps=("north",))
+                    + [ALL_UV(el([6.45, 9.95, 8.95], [9.55, 13.05, 9.0], "dial", ("north",)),
+                              ["north"]),
+                       el([9.5, 11.25, 13.5], [10.5, 11.75, 14], "chrome"),
+                       el([10.5, 10.75, 13.4], [11, 13.75, 14.1], "chrome"),
+                       el([11, 13, 13.35], [12.25, 13.75, 14.15], "case")])
+
+# The classroom flag on its angled wall bracket: the staff leans out from the wall at 45
+# degrees, the flag flying from it, a gold ball on the staff's tip. Drawn upright and turned,
+# so the flag's hoist runs along the staff.
+FLAG_PIVOT = (8, 10.5, 15.25)
+CLASSROOM_FLAG = ([el([7, 8.5, 15.5], [9, 12.5, 16], "brass", NO_BACK),
+                   el([7.4, 9.9, 14.6], [8.6, 11.1, 15.5], "brass", NO_BACK)]
+                  + [tilted(s, -45, FLAG_PIVOT) for s in [
+                      el([7.65, 10.5, 14.9], [8.35, 26, 15.6], "wood_v", SIDES + ("up",)),
+                      el([7.35, 10.5, 14.6], [8.65, 12.5, 15.9], "brass", SIDES),
+                      el([7.5, 26, 14.75], [8.5, 27, 15.75], "brass"),
+                      el([7.95, 17.5, 2.9], [8.05, 25.5, 14.9], "flag", ("east", "west"),
+                         uv={"east": [0, 0, 16, 16], "west": [16, 0, 0, 16]})]])
+
+# The cafeteria table: the classic mobile fold-up table with its stools, 2 m long, drawn whole
+# across two blocks (x 0 to 32) and cut at the block line. Laminate top at 0.75 m on a steel
+# frame folding at the middle, where it stands on two casters; four round stools a side on
+# rails under the top, the seats at 0.47 m; legs at the ends.
+_CAF_STOOLS = []
+for _x in (4, 12, 20, 28):
+    for _z in (2.5, 13.5):
+        _CAF_STOOLS += (octagon(_x, _z, 2.1, 6.75, 7.5, "seat")
+                        + [el([_x - 0.4, 5.75, _z - 0.4], [_x + 0.4, 6.75, _z + 0.4], "frame",
+                              SIDES)])
+CAFETERIA_TABLE = ([board([0.25, 11.25, 3.25], [31.75, 12, 12.75])]
+                   + [el([1, 10.5, z], [31, 11.25, z + 0.75], "frame", ("north", "south", "down"))
+                      for z in (4.5, 10.75)]
+                   + [el([0.75, 5, z], [31.25, 5.75, z + 0.8], "frame", ("north", "south", "up",
+                                                                           "down", "east",
+                                                                           "west"))
+                      for z in (2.1, 13.1)]
+                   + [s for x in (1.25, 29.75, 15.25) for s in
+                      [el([x, 0.25 if x != 15.25 else 1.5, 4.5], [x + 1, 10.5, 5.25], "frame",
+                          SIDES),
+                       el([x, 0.25 if x != 15.25 else 1.5, 10.75], [x + 1, 10.5, 11.5], "frame",
+                          SIDES),
+                       el([x, 4.75, 2.1], [x + 1, 5.5, 13.9], "frame",
+                          ("east", "west", "up", "down", "north", "south"))]]
+                   + [el([x, 0, z], [x + 1, 0.25, z + 2], "rubber", NO_UP + ("up",))
+                      for x in (1.25, 29.75) for z in (4, 10.25)]
+                   + [el([15.25, 0, z], [16.75, 1.5, z + 1.5], "rubber")
+                      for z in (4.1, 10.4)]
+                   + _CAF_STOOLS)
 
 # ------------------------------------------------------------------------------------------
 # Lockers: 1.8 m, two doors a block, vents top and bottom, drawn whole and cut in two
@@ -985,6 +1613,29 @@ def jbox(box):
     return ", ".join(R._num(v) for v in box)
 
 
+def turned_box(specs):
+    """The Java box of a piece with turned elements: every corner of every element turned as
+    the game turns it, in whole pixels, inside the block across and up to 32 high."""
+    pts = []
+    for s in specs:
+        x0, y0, z0 = s["from"]
+        x1, y1, z1 = s["to"]
+        corners = [[x, y, z] for x in (x0, x1) for y in (y0, y1) for z in (z0, z1)]
+        if s["rot"]:
+            axis, angle, o = s["rot"]
+            a = math.radians(angle)
+            c, n = math.cos(a), math.sin(a)
+            i, j = {"x": (1, 2), "y": (2, 0), "z": (0, 1)}[axis]
+            for p in corners:
+                u, v = p[i] - o[i], p[j] - o[j]
+                p[i], p[j] = o[i] + c * u - n * v, o[j] + n * u + c * v
+        pts += corners
+    lo = [max(0, int(math.floor(min(p[k] for p in pts) + 1e-6))) for k in range(3)]
+    hi = [min(32 if k == 1 else 16, int(math.ceil(max(p[k] for p in pts) - 1e-6)))
+          for k in range(3)]
+    return lo + hi
+
+
 def box_of(specs):
     """The Java box of a piece: its elements' extent in whole pixels, inside -16..32."""
     built = [R.build(s) for s in specs]
@@ -1086,29 +1737,37 @@ PIECES = [
      run(BENCH_BODY, BENCH_END,
          'new BlockResidentialRun("%s", new int[]{0, 0, 3, 16, 14, 13}, true, 7.25, 0.75)')),
     # ---- boards ----
-    ("whiteboard", "run",
+    ("whiteboard", "board",
      [fin("aluminium", {"trim": T("stainless")}, "Aluminium", "Aluminium", "aluminio",
           "aluminium")],
      ("Whiteboard", "Whiteboard", "Pizarra blanca", "Whiteboard"),
-     run(WHITEBOARD_BODY, WHITEBOARD_END,
-         'new BlockResidentialRun("%s", new int[]{0, 2, 13, 16, 15, 16}, false)', MARKERS)),
-    ("chalkboard", "run",
+     {"parts": WHITEBOARD, "particle": "trim",
+      "java": 'new BlockWallBoard("%s", new int[]{0, 2, 13, 16, 15, 16})'}),
+    ("chalkboard", "board",
      [fin("oak", {"wood": T("oak"), "wood_v": T("oak_v"), "edge": T("oak_edge"),
                   "board": OT("chalkboard")}, "Oak", "Eiche", "roble", "ek")],
      ("Chalkboard", "Kreidetafel", "Pizarra de tiza", "Krittavla"),
-     run(CHALKBOARD_BODY, CHALKBOARD_END,
-         'new BlockResidentialRun("%s", new int[]{0, 2, 13, 16, 15, 16}, false)', CHALK)),
-    ("cork_board", "run",
+     {"parts": CHALKBOARD, "particle": "wood",
+      "java": 'new BlockWallBoard("%s", new int[]{0, 2, 13, 16, 15, 16})'}),
+    ("cork_board", "board",
      [fin("oak", {"wood": T("oak"), "wood_v": T("oak_v"), "edge": T("oak_edge"),
                   "board": OT("cork_notes")}, "Oak", "Eiche", "roble", "ek")],
      ("Cork Notice Board", "Pinnwand", "Tablón de corcho", "Anslagstavla"),
-     run(CORK_BODY, CORK_END,
-         'new BlockResidentialRun("%s", new int[]{0, 2, 14, 16, 15, 16}, false)')),
+     {"parts": CORK, "particle": "wood",
+      "alts": [OT("cork_notes"), OT("cork_notes_b"), OT("cork_notes_c")],
+      "java": 'new BlockWallBoard("%s", new int[]{0, 2, 14, 16, 15, 16})'}),
     ("projector_screen", "folding",
      [fin("white", {"screen": OT("projector_screen")}, "White", "Weiß", "blanca", "vit")],
      ("Projector Screen", "Projektionsleinwand", "Pantalla de proyección", "Projektorduk"),
      {"closed": PROJ_CLOSED, "open": PROJ_OPEN, "particle": "case",
       "java": 'new BlockFoldingFixture("%s", new int[]{0, 13, 13, 16, 16, 16}, '
+              'new int[]{0, 0, 13, 16, 16, 16}, FixtureMaterial.PLASTIC)'}),
+    ("pull_down_map", "folding",
+     [fin("world", {"map": OT("map_world"), "wood": T("oak"), "wood_v": T("oak_v"),
+                    "edge": T("oak_edge")}, "World", "Welt", "mundial", "världen")],
+     ("Pull-Down Map", "Rollkarte", "Mapa enrollable", "Rullkarta"),
+     {"closed": MAP_CLOSED, "open": MAP_OPEN, "particle": "map",
+      "java": 'new BlockFoldingFixture("%s", new int[]{0, 11, 13, 16, 16, 16}, '
               'new int[]{0, 0, 13, 16, 16, 16}, FixtureMaterial.PLASTIC)'}),
     # ---- school ----
     ("school_desk", "single",
@@ -1119,6 +1778,34 @@ PIECES = [
      ("School Desk and Chair", "Schulbank mit Stuhl", "Pupitre con silla", "Skolbänk med stol"),
      {"geo": SCHOOL_DESK, "particle": "plastic", "seat": (7.5, -2.75, 0),
       "upholstered": False}),
+    ("tablet_arm_desk", "single",
+     [fin("blue", {"seat": OT("plastic_blue"), "frame": T("metal_steel"), "wood": T("oak"),
+                   "edge": T("oak_edge")}, "Blue", "Blau", "azul", "blå"),
+      fin("charcoal", {"seat": OT("plastic_dark_grey"), "frame": T("metal_steel"),
+                       "wood": T("oak"), "edge": T("oak_edge")},
+          "Charcoal", "Anthrazit", "antracita", "antracit")],
+     ("Tablet-Arm Desk", "Stuhl mit Schreibplatte", "Pupitre de paleta", "Stol med skrivskiva"),
+     {"geo": TABLET_ARM_DESK, "particle": "seat", "seat": (7.5, 0.25, 0),
+      "upholstered": False}),
+    ("classroom_chair", "single",
+     [fin(c, {"seat": OT(t), "frame": T("metal_steel")}, *n)
+      for c, t, n in (("blue", "plastic_blue", ("Blue", "Blau", "azul", "blå")),
+                      ("red", "plastic_red", ("Red", "Rot", "roja", "röd")),
+                      ("charcoal", "plastic_dark_grey",
+                       ("Charcoal", "Anthrazit", "antracita", "antracit")))],
+     ("Stacking Classroom Chair", "Stapelbarer Schulstuhl", "Silla apilable de aula",
+      "Stapelbar skolstol"),
+     {"geo": CLASSROOM_CHAIR, "particle": "seat", "seat": (7.5, 0.25, 0),
+      "upholstered": False}),
+    ("lectern", "single", [W for W in R.WOODS if W[0] in ("oak", "walnut")],
+     ("Lectern", "Lesepult", "Atril", "Talarstol"),
+     {"geo": LECTERN, "particle": "wood",
+      "java": 'new BlockBathroomFixture("%s", new int[]{{rbox}}, FixtureMaterial.WOOD)'}),
+    ("podium", "single", [W for W in R.WOODS if W[0] in ("oak", "walnut")],
+     ("Podium with Microphone", "Rednerpult mit Mikrofon", "Podio con micrófono",
+      "Podium med mikrofon"),
+     {"geo": PODIUM, "particle": "wood",
+      "java": 'new BlockBathroomFixture("%s", new int[]{{rbox}}, FixtureMaterial.WOOD)'}),
     ("locker", "locker",
      [fin(c, {"steel": OT("locker_" + c)}, *n)
       for c, n in (("blue", ("Blue", "Blau", "azul", "blå")),
@@ -1127,6 +1814,62 @@ PIECES = [
      ("Locker", "Spind", "Taquilla", "Klädskåp"),
      {"java": 'new BlockCloset("%s", new int[]{0, 0, 7, 16, 29, 16}, 9, ' + LOCKER_SOUNDS
               + ')'}),
+    ("trophy_case", "closet", [W for W in R.WOODS if W[0] in ("oak", "walnut")],
+     ("Trophy Case", "Pokalvitrine", "Vitrina de trofeos", "Prisskåp"),
+     {"body": TROPHY_BODY, "end": TROPHY_END, "extra": TROPHIES,
+      "java": 'new BlockTrophyCase("%s", new int[]{0, 0, 8, 16, 32, 16}, 18, '
+              'FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE)'}),
+    ("desk_globe", "counter",
+     [fin("blue", {"globe": OT("globe_map"), "brass": T("brass"), "dark_wood": T("walnut")},
+          "Blue", "Blau", "azul", "blå")],
+     ("Desk Globe", "Tischglobus", "Globo terráqueo", "Skrivbordsglob"),
+     {"geo": DESK_GLOBE, "particle": "globe",
+      "java": 'new BlockCounterPiece("%%s", new int[]{%%s}, %s)' % PIECE_METAL}),
+    ("pencil_sharpener", "single",
+     [fin("silver", {"chrome": T("chrome"), "dial": OT("sharpener_dial")}, "Silver", "Silber",
+          "plateado", "silver")],
+     ("Wall Pencil Sharpener", "Wand-Bleistiftspitzer", "Sacapuntas de pared",
+      "Väggpennvässare"),
+     {"geo": PENCIL_SHARPENER, "particle": "chrome",
+      "java": 'new BlockBathroomFixture("%s", new int[]{{box}}, FixtureMaterial.METAL, '
+              'FurnishingsSounds.PENCIL_SHARPENER, 1.0F)'}),
+    ("classroom_flag", "single",
+     [fin("stars", {"flag": OT("flag_stars"), "brass": T("brass"), "wood_v": T("oak_v")},
+          "Stars and Stripes", "Sterne und Streifen", "barras y estrellas",
+          "stjärnor och ränder")],
+     ("Classroom Flag", "Klassenzimmerflagge", "Bandera de aula", "Klassrumsflagga"),
+     {"geo": CLASSROOM_FLAG, "particle": "flag",
+      "java": 'new BlockBathroomFixture("%s", new int[]{{rbox}}, '
+              'FixtureMaterial.WOOD)'}),
+    # ---- classroom AV ----
+    ("ceiling_projector", "light",
+     [fin("white", {"shell": T("appliance_white"), "trim": OT("plastic_light_grey")},
+          "White", "Weiß", "blanco", "vit")],
+     ("Ceiling Projector", "Deckenprojektor", "Proyector de techo", "Takprojektor"),
+     {"geo": CEILING_PROJECTOR, "particle": "shell",
+      "lens": (OT("lens_glass"), OT("projector_lens_on")),
+      "java": 'new BlockKitchenLight("%s", new int[]{3, 8, 2, 13, 16, 12}, 6)'}),
+    ("overhead_projector", "counter_lit",
+     [fin("grey", {"shell": OT("plastic_light_grey"), "trim": OT("plastic_dark_grey")},
+          "Grey", "Grau", "gris", "grå")],
+     ("Overhead Projector", "Overheadprojektor", "Retroproyector", "Overheadprojektor"),
+     {"geo": OHP, "particle": "shell", "glow": (OT("ohp_stage_off"), OT("ohp_stage_on")),
+      "java": 'new BlockCounterLight("%%s", new int[]{%%s}, %s, 8)' % PIECE_METAL}),
+    ("av_cart", "single",
+     [fin("black", {"case": OT("case_black"), "frame": T("metal_steel")}, "Black", "Schwarz",
+          "negro", "svart")],
+     ("AV Cart", "Medienwagen", "Carro audiovisual", "AV-vagn"),
+     {"geo": AV_CART, "particle": "case",
+      "java": 'new BlockBathroomFixture("%s", new int[]{{box}}, FixtureMaterial.METAL)'}),
+    # ---- cafeteria ----
+    ("cafeteria_table", "wide",
+     [fin(c, {"seat": OT(t), "frame": T("metal_steel"), "wood": OT("laminate_grey"),
+              "edge": OT("laminate_grey_edge")}, *n)
+      for c, t, n in (("blue", "plastic_blue", ("Blue", "Blau", "azul", "blå")),
+                      ("red", "plastic_red", ("Red", "Rot", "roja", "röd")))],
+     ("Cafeteria Table", "Mensatisch", "Mesa de comedor escolar", "Matsalsbord"),
+     {"geo": CAFETERIA_TABLE, "particle": "wood",
+      "java": 'new BlockCafeteriaTable("%s", new int[]{0, 0, 0, 32, 12, 16})'}),
     # ---- on the desk ----
     ("desktop_computer", "counter_lit", [BLACK],
      ("Desktop Computer", "Desktop-Computer", "Ordenador de sobremesa", "Stationär dator"),
@@ -1203,7 +1946,8 @@ PIECES = [
 ]
 PIECE = {p[0]: p for p in PIECES}
 GROUPS = {"office_desk": "Office", "cubicle_panel": "Cubicles", "task_chair": "Seating",
-          "whiteboard": "Boards", "school_desk": "School", "desktop_computer": "On the desk",
+          "whiteboard": "Boards", "school_desk": "School", "ceiling_projector": "Classroom AV",
+          "cafeteria_table": "Cafeteria", "desktop_computer": "On the desk",
           "copier": "Copier", "green_screen": "Streaming"}
 GROUP_OF = {}
 _g = None
@@ -1224,6 +1968,10 @@ def java_for(piece, reg):
         return spec["java"] % jbox(box_of(spec["geo"])) % reg
     if kind == "storage":
         return spec["java"] % jbox(box_of(spec["geo"])) % reg
+    if "{rbox}" in spec.get("java", ""):
+        return spec["java"].replace("{rbox}", jbox(turned_box(spec["geo"]))) % reg
+    if "{box}" in spec.get("java", ""):
+        return spec["java"].replace("{box}", jbox(box_of(spec["geo"]))) % reg
     if kind == "single" and "seat" in spec:
         seat = spec["seat"]
         return ('new BlockResidentialFurniture("%s", new int[]{%s}, %s, %s, %s, %s)'
@@ -1256,9 +2004,29 @@ def base_models():
     """Every base geometry model: (name, geometry json)."""
     out = []
     for piece, kind, _f, _n, spec in PIECES:
-        if kind in ("run", "corner", "table"):
-            particle = "fabric" if piece == "waiting_bench" else (
-                "trim" if piece == "whiteboard" else "wood")
+        if kind == "board":
+            for part, geo in spec["parts"].items():
+                out.append(("%s_%s" % (piece, part), geometry(geo, spec["particle"])))
+            out.append(("%s_item" % piece, geometry(board_item(spec["parts"]),
+                                                    spec["particle"])))
+        elif kind == "closet":
+            pieces = [("body", spec["body"]), ("left", spec["end"]),
+                      ("right", mirror_x(spec["end"]))]
+            pieces += [("extra%d" % i, geo) for i, geo in enumerate(spec["extra"])]
+            for name, geo in pieces:
+                lower, upper = split_turned(copy.deepcopy(geo))
+                out.append(("%s_%s_lower" % (piece, name), geometry(lower, "wood")))
+                out.append(("%s_%s_upper" % (piece, name), geometry(upper, "wood")))
+            item = spec["body"] + spec["end"] + mirror_x(spec["end"]) + spec["extra"][0]
+            out.append(("%s_item" % piece, geometry(item, "wood", display=big(item))))
+        elif kind == "wide":
+            geo = spec["geo"]
+            for i, cell in enumerate(B.cut_cells(copy.deepcopy(geo), [(0, 0, 0), (1, 0, 0)])):
+                out.append(("%s_cell%d" % (piece, i), geometry(cell, spec["particle"])))
+            out.append(("%s_item" % piece, geometry(B.centred(geo), spec["particle"],
+                                                    display=big(geo))))
+        elif kind in ("run", "corner", "table"):
+            particle = "fabric" if piece == "waiting_bench" else "wood"
             for part, geo in spec["parts"].items():
                 out.append(("%s_%s" % (piece, part), geometry(geo, particle)))
             out.append(("%s_item" % piece, geometry(spec["item"], particle)))
@@ -1308,9 +2076,15 @@ def facing_variants():
 def multipart_state(reg, rules):
     parts = []
     for part, when, r in rules:
-        apply = {"model": MODEL + "%s_%s" % (reg, part)}
-        if r:
-            apply["y"] = r
+        # A tuple of parts: one of them, picked by the game for each block by its position.
+        names = part if isinstance(part, tuple) else (part,)
+        apply = []
+        for name in names:
+            a = {"model": MODEL + "%s_%s" % (reg, name)}
+            if r:
+                a["y"] = r
+            apply.append(a)
+        apply = apply[0] if len(apply) == 1 else apply
         parts.append({"when": when, "apply": apply} if when else {"apply": apply})
     return {"multipart": parts}
 
@@ -1363,7 +2137,21 @@ def locker_rules():
     return rules
 
 
+def closet_rules(extras):
+    """The closet's rules, and the extra parts (the trophies), one of which the game picks for
+    each block by its position."""
+    rules = locker_rules()
+    for half in ("lower", "upper"):
+        rules += R.faced([(tuple("extra%d_%s" % (i, half) for i in range(extras)),
+                           {"upper": "true" if half == "upper" else "false"})])
+    return rules
+
+
 def rules_for(piece, kind, spec):
+    if kind == "board":
+        return board_rules(spec["parts"])
+    if kind == "closet":
+        return closet_rules(len(spec["extra"]))
     if kind in ("run", "corner"):
         return spec["rules"]
     if kind == "table":
@@ -1430,7 +2218,38 @@ def generate(assets):
                 ftex[key] = DEFAULT_TEX[key]
         blk = "models/block/%s/%s_%%s.json" % (SUB, reg)
         item = "models/item/%s.json" % reg
-        if kind in ("run", "corner", "table", "panel"):
+        if kind == "board":
+            for part in spec["parts"]:
+                copy_model(blk % part, "%s_%s" % (piece, part), ftex)
+            copy_model(item, "%s_item" % piece, ftex)
+            rules = board_rules(spec["parts"])
+            alts = spec.get("alts")
+            if alts:
+                # The surface in each of its drawings: the game picks one by position.
+                for part in [p for p in spec["parts"] if p.startswith("surface")]:
+                    for i, tex in enumerate(alts[1:], 1):
+                        copy_model(blk % ("%s_%d" % (part, i)), "%s_%s" % (piece, part),
+                                   dict(ftex, board=tex))
+                rules = [((part,) + tuple("%s_%d" % (part, i) for i in range(1, len(alts)))
+                          if part.startswith("surface") else part, when, r)
+                         for part, when, r in rules]
+            state = multipart_state(reg, rules)
+        elif kind == "closet":
+            for side in ["body", "left", "right"] + ["extra%d" % i
+                                                     for i in range(len(spec["extra"]))]:
+                for half in ("lower", "upper"):
+                    copy_model(blk % ("%s_%s" % (side, half)), "%s_%s_%s" % (piece, side, half),
+                               ftex)
+            copy_model(item, "%s_item" % piece, ftex)
+            state = multipart_state(reg, closet_rules(len(spec["extra"])))
+        elif kind == "wide":
+            copy_model(item, "%s_item" % piece, ftex)
+            state = {"forge_marker": 1,
+                     "defaults": {"model": BASE + piece + "_cell0", "textures": dict(ftex)},
+                     "variants": {"facing": facing_variants(),
+                                  "part": {str(p): {"model": BASE + "%s_cell%d" % (piece, p)}
+                                           for p in (0, 1)}}}
+        elif kind in ("run", "corner", "table", "panel"):
             for part in spec["parts"]:
                 copy_model(blk % part, "%s_%s" % (piece, part), ftex)
             copy_model(item, "%s_item" % piece, ftex)
@@ -1459,8 +2278,9 @@ def generate(assets):
         elif kind == "single":
             state = single_state(piece, ftex)
         elif kind == "light":
-            state = single_state(piece, dict(ftex, lens=T("lens_on")),
-                                 {"lit": switch(T("lens_off"), T("lens_on"), "lens"),
+            off, on = spec.get("lens", (T("lens_off"), T("lens_on")))
+            state = single_state(piece, dict(ftex, lens=on),
+                                 {"lit": switch(off, on, "lens"),
                                   "powered": {"true": {}, "false": {}}})
         elif kind == "appliance":
             off, on = spec["glow"]
