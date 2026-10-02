@@ -633,6 +633,34 @@ for gid, names in (
          {reg: model(tex, [box([0, 0, 0], [16, 1, 16], "all")])}, simple_state(reg))
 
 
+def cherry_petals_tex():
+    """Fallen cherry petals: a drift of small blush ovals on nothing, so the ground shows."""
+    rng = random.Random(260)
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = img.load()
+    pinks = [(255, 238, 243), (250, 216, 228), (243, 190, 210), (230, 158, 188)]
+    for _ in range(26):
+        x, y = rng.randrange(16), rng.randrange(16)
+        c = pinks[rng.randrange(len(pinks))]
+        px[x, y] = c + (255,)
+        if rng.random() < 0.6:
+            dx, dy = rng.choice(((1, 0), (0, 1)))
+            px[(x + dx) % 16, (y + dy) % 16] = pinks[min(3, pinks.index(c) + 1)] + (255,)
+    return img
+
+
+# Fallen cherry petals: one cutout face just over the ground, which the Tree Planting Tool's
+# cherries scatter under their crowns (TreePreset ground cover).
+TEXTURES["cherry_petals"] = cherry_petals_tex
+prop("ground_cherry_petals", "COVER", 1, 0,
+     ("Fallen Cherry Petals", "Abgefallene Kirschblüten", "Pétalos de cerezo caídos",
+      "Fallna körsbärsblad"),
+     {"ground_cherry_petals": model({"all": T("cherry_petals"), "particle": T("cherry_petals")},
+                                    [box([0, 0, 0], [16, 0.25, 16], "all", faces=("up",))],
+                                    ao=False)},
+     simple_state("ground_cherry_petals"))
+
+
 # --- facing: the stake and the hanging baskets ---
 def facing_state(model_name, fitted=False):
     variants = {

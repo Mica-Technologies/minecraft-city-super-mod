@@ -2,7 +2,7 @@
 
 Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings.
 
-!!! info "421 blocks in this tab"
+!!! info "475 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -27,7 +27,9 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Autumn Lombardy Poplar Leaves | `csm:tree_leaves_poplar_autumn` | 0.2 | 1.0 |  | 0 |
 | Autumn London Plane Leaves | `csm:tree_leaves_plane_autumn` | 0.2 | 1.0 |  | 0 |
 | Autumn Paper Birch Leaves | `csm:tree_leaves_birch_autumn` | 0.2 | 1.0 |  | 0 |
+| Autumn Sugar Maple Leaves | `csm:tree_leaves_sugarmaple_autumn` | 0.2 | 1.0 |  | 0 |
 | Autumn Sweetgum Leaves | `csm:tree_leaves_sweetgum_autumn` | 0.2 | 1.0 |  | 0 |
+| Autumn Trident Maple Leaves | `csm:tree_leaves_tridentmaple_autumn` | 0.2 | 1.0 |  | 0 |
 | Avocado Log | `csm:tree_log_avocado_medium` | 2.0 | 5.0 | axe | 0 |
 | Avocado Twig | `csm:tree_log_avocado_twig` | 2.0 | 5.0 | axe | 0 |
 | Bamboo | `csm:plant_bamboo` |  |  |  |  |
@@ -68,6 +70,8 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Canary Island Date Palm Twig | `csm:tree_log_canary_twig` | 2.0 | 5.0 | axe | 0 |
 | Cedar Planter | `csm:planter_wood` |  |  |  |  |
 | Century Plant | `csm:plant_agave` |  |  |  |  |
+| Chinese Chestnut Log | `csm:tree_log_chestnut_medium` | 2.0 | 5.0 | axe | 0 |
+| Chinese Chestnut Twig | `csm:tree_log_chestnut_twig` | 2.0 | 5.0 | axe | 0 |
 | Citrus Leaves | `csm:tree_leaves_citrus` | 0.2 | 1.0 |  | 0 |
 | Citrus Log | `csm:tree_log_citrus_medium` | 2.0 | 5.0 | axe | 0 |
 | Citrus Twig | `csm:tree_log_citrus_twig` | 2.0 | 5.0 | axe | 0 |
@@ -82,6 +86,8 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Coontie | `csm:plant_coontie` |  |  |  |  |
 | Coreopsis | `csm:flower_coreopsis` |  |  |  |  |
 | Corten Steel Planter | `csm:planter_corten` |  |  |  |  |
+| Crape Myrtle Log | `csm:tree_log_crapemyrtle_medium` | 2.0 | 5.0 | axe | 0 |
+| Crape Myrtle Twig | `csm:tree_log_crapemyrtle_twig` | 2.0 | 5.0 | axe | 0 |
 | Daffodils | `csm:flower_daffodils` |  |  |  |  |
 | Decomposed Granite | `csm:ground_decomposed_granite` |  |  |  |  |
 | Deergrass | `csm:grass_deergrass` |  |  |  |  |
@@ -102,14 +108,18 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | European Beech Leaves | `csm:tree_leaves_beech` | 0.2 | 1.0 |  | 0 |
 | European Beech Log | `csm:tree_log_beech_medium` | 2.0 | 5.0 | axe | 0 |
 | European Beech Twig | `csm:tree_log_beech_twig` | 2.0 | 5.0 | axe | 0 |
+| Fallen Cherry Petals | `csm:ground_cherry_petals` |  |  |  |  |
 | Fan Palm Crown | `csm:tree_crown_palm_fan` | 0.2 | 1.0 |  | 0 |
 | Fan Palm Crown with Skirt | `csm:tree_crown_palm_fan_skirt` | 0.2 | 1.0 |  | 0 |
 | Feather Palm Crown | `csm:tree_crown_palm_feather` | 0.2 | 1.0 |  | 0 |
 | Feather Reed Grass | `csm:grass_feather_reed` |  |  |  |  |
 | Firebush | `csm:shrub_firebush` |  |  |  |  |
+| Flowering Crape Myrtle Leaves | `csm:tree_leaves_crapemyrtle` | 0.2 | 1.0 |  | 0 |
+| Flowering Southern Magnolia Leaves | `csm:tree_leaves_magnolia` | 0.2 | 1.0 |  | 0 |
 | Fountain Grass | `csm:grass_fountain` |  |  |  |  |
 | Foxtail Fern | `csm:plant_foxtail_fern` |  |  |  |  |
 | Fruiting Avocado Leaves | `csm:tree_leaves_avocado` | 0.2 | 1.0 |  | 0 |
+| Fruiting Chinese Chestnut Leaves | `csm:tree_leaves_chestnut` | 0.2 | 1.0 |  | 0 |
 | Fruiting Golden Delicious Apple Leaves | `csm:tree_leaves_apple_golden` | 0.2 | 1.0 |  | 0 |
 | Fruiting Granny Smith Apple Leaves | `csm:tree_leaves_apple_granny` | 0.2 | 1.0 |  | 0 |
 | Fruiting Grapefruit Leaves | `csm:tree_leaves_citrus_grapefruit` | 0.2 | 1.0 |  | 0 |
@@ -128,8 +138,10 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Full California Sycamore Log | `csm:tree_log_sycamore_full` | 2.0 | 5.0 | axe | 0 |
 | Full Camphor Tree Log | `csm:tree_log_camphor_full` | 2.0 | 5.0 | axe | 0 |
 | Full Canary Island Date Palm Log | `csm:tree_log_canary_full` | 2.0 | 5.0 | axe | 0 |
+| Full Chinese Chestnut Log | `csm:tree_log_chestnut_full` | 2.0 | 5.0 | axe | 0 |
 | Full Citrus Log | `csm:tree_log_citrus_full` | 2.0 | 5.0 | axe | 0 |
 | Full Coast Redwood Log | `csm:tree_log_redwood_full` | 2.0 | 5.0 | axe | 0 |
+| Full Crape Myrtle Log | `csm:tree_log_crapemyrtle_full` | 2.0 | 5.0 | axe | 0 |
 | Full Douglas Fir Log | `csm:tree_log_douglasfir_full` | 2.0 | 5.0 | axe | 0 |
 | Full Eastern White Pine Log | `csm:tree_log_whitepine_full` | 2.0 | 5.0 | axe | 0 |
 | Full Elm Log | `csm:tree_log_elm_full` | 2.0 | 5.0 | axe | 0 |
@@ -142,6 +154,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Full Hornbeam Log | `csm:tree_log_hornbeam_full` | 2.0 | 5.0 | axe | 0 |
 | Full Italian Cypress Log | `csm:tree_log_cypress_full` | 2.0 | 5.0 | axe | 0 |
 | Full Jacaranda Log | `csm:tree_log_jacaranda_full` | 2.0 | 5.0 | axe | 0 |
+| Full Japanese Cherry Log | `csm:tree_log_cherry_full` | 2.0 | 5.0 | axe | 0 |
 | Full Japanese Maple Log | `csm:tree_log_maple_full` | 2.0 | 5.0 | axe | 0 |
 | Full Joshua Tree Log | `csm:tree_log_joshua_full` | 2.0 | 5.0 | axe | 0 |
 | Full Lemon-scented Gum Log | `csm:tree_log_gum_full` | 2.0 | 5.0 | axe | 0 |
@@ -149,13 +162,18 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Full Live Oak Log | `csm:tree_log_liveoak_full` | 2.0 | 5.0 | axe | 0 |
 | Full Lombardy Poplar Log | `csm:tree_log_poplar_full` | 2.0 | 5.0 | axe | 0 |
 | Full London Plane Log | `csm:tree_log_plane_full` | 2.0 | 5.0 | axe | 0 |
+| Full Mahogany Log | `csm:tree_log_mahogany_full` | 2.0 | 5.0 | axe | 0 |
 | Full Mulberry Log | `csm:tree_log_mulberry_full` | 2.0 | 5.0 | axe | 0 |
 | Full Olive Log | `csm:tree_log_olive_full` | 2.0 | 5.0 | axe | 0 |
 | Full Palm Log | `csm:tree_log_palm_full` | 2.0 | 5.0 | axe | 0 |
 | Full Paper Birch Log | `csm:tree_log_birch_full` | 2.0 | 5.0 | axe | 0 |
 | Full Pepper Tree Log | `csm:tree_log_pepper_full` | 2.0 | 5.0 | axe | 0 |
+| Full Plumeria Log | `csm:tree_log_plumeria_full` | 2.0 | 5.0 | axe | 0 |
 | Full Scots Pine Log | `csm:tree_log_pine_full` | 2.0 | 5.0 | axe | 0 |
+| Full Southern Magnolia Log | `csm:tree_log_magnolia_full` | 2.0 | 5.0 | axe | 0 |
+| Full Sugar Maple Log | `csm:tree_log_sugarmaple_full` | 2.0 | 5.0 | axe | 0 |
 | Full Sweetgum Log | `csm:tree_log_sweetgum_full` | 2.0 | 5.0 | axe | 0 |
+| Full Trident Maple Log | `csm:tree_log_tridentmaple_full` | 2.0 | 5.0 | axe | 0 |
 | Full Weeping Willow Log | `csm:tree_log_willow_full` | 2.0 | 5.0 | axe | 0 |
 | Garden Trellis with Clematis | `csm:trellis_clematis` | 1.0 | 2.0 | axe | 0 |
 | Giant Sequoia Foliage | `csm:tree_leaves_sequoia` | 0.2 | 1.0 |  | 0 |
@@ -188,6 +206,8 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Jacaranda Log | `csm:tree_log_jacaranda_medium` | 2.0 | 5.0 | axe | 0 |
 | Jacaranda Twig | `csm:tree_log_jacaranda_twig` | 2.0 | 5.0 | axe | 0 |
 | Jade Plant | `csm:plant_jade` |  |  |  |  |
+| Japanese Cherry Log | `csm:tree_log_cherry_medium` | 2.0 | 5.0 | axe | 0 |
+| Japanese Cherry Twig | `csm:tree_log_cherry_twig` | 2.0 | 5.0 | axe | 0 |
 | Japanese Forest Grass | `csm:grass_hakone` |  |  |  |  |
 | Japanese Iris | `csm:flower_japanese_iris` |  |  |  |  |
 | Japanese Maple Leaves | `csm:tree_leaves_maple_japanese` | 0.2 | 1.0 |  | 0 |
@@ -196,6 +216,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Joshua Tree Log | `csm:tree_log_joshua_medium` | 2.0 | 5.0 | axe | 0 |
 | Joshua Tree Rosette | `csm:tree_crown_joshua` | 0.2 | 1.0 |  | 0 |
 | Joshua Tree Twig | `csm:tree_log_joshua_twig` | 2.0 | 5.0 | axe | 0 |
+| Kanzan Cherry Blossom | `csm:tree_leaves_cherry_kanzan` | 0.2 | 1.0 |  | 0 |
 | King Palm Crown | `csm:tree_crown_palm_king` | 0.2 | 1.0 |  | 0 |
 | Large Terracotta Pot | `csm:planter_terracotta_large` |  |  |  |  |
 | Lemon-scented Gum Leaves | `csm:tree_leaves_gum` | 0.2 | 1.0 |  | 0 |
@@ -217,6 +238,9 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | London Plane Twig | `csm:tree_log_plane_twig` | 2.0 | 5.0 | axe | 0 |
 | Low Boxwood Hedge | `csm:hedge_boxwood_low` |  |  |  |  |
 | Low Privet Hedge | `csm:hedge_privet_low` |  |  |  |  |
+| Mahogany Leaves | `csm:tree_leaves_mahogany` | 0.2 | 1.0 |  | 0 |
+| Mahogany Log | `csm:tree_log_mahogany_medium` | 2.0 | 5.0 | axe | 0 |
+| Mahogany Twig | `csm:tree_log_mahogany_twig` | 2.0 | 5.0 | axe | 0 |
 | Manzanita | `csm:shrub_manzanita` |  |  |  |  |
 | Marigolds | `csm:flower_marigolds` |  |  |  |  |
 | Mexican Bush Sage | `csm:shrub_mexican_bush_sage` |  |  |  |  |
@@ -244,6 +268,9 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Petunia Hanging Basket | `csm:hanging_basket_petunia` | 1.0 | 2.0 | axe | 0 |
 | Pink Lady's Slipper | `csm:flower_ladys_slipper` |  |  |  |  |
 | Pink Muhly Grass | `csm:grass_pink_muhly` |  |  |  |  |
+| Plumeria Leaf Tuft | `csm:tree_crown_plumeria` | 0.2 | 1.0 |  | 0 |
+| Plumeria Log | `csm:tree_log_plumeria_medium` | 2.0 | 5.0 | axe | 0 |
+| Plumeria Twig | `csm:tree_log_plumeria_twig` | 2.0 | 5.0 | axe | 0 |
 | Pole Lima Bean Row | `csm:crop_row_lima_bean` | 0.2 | 0.4 |  | 0 |
 | Potted Aloe Vera | `csm:potted_plant_aloe_vera` |  |  |  |  |
 | Potted American Beautyberry | `csm:potted_shrub_beautyberry` |  |  |  |  |
@@ -323,11 +350,16 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Shrub Rose | `csm:shrub_rose` |  |  |  |  |
 | Small Terracotta Pot | `csm:planter_terracotta_small` |  |  |  |  |
 | Soapweed Yucca | `csm:plant_yucca` |  |  |  |  |
+| Southern Magnolia Log | `csm:tree_log_magnolia_medium` | 2.0 | 5.0 | axe | 0 |
+| Southern Magnolia Twig | `csm:tree_log_magnolia_twig` | 2.0 | 5.0 | axe | 0 |
 | Spanish Moss | `csm:spanish_moss` | 0.1 | 0.1 |  | 0 |
 | Square Tree Grate | `csm:tree_grate_square` |  |  |  |  |
 | Stacked Nursery Pots | `csm:nursery_pot_stack` |  |  |  |  |
 | Staked Tomato Row | `csm:crop_row_tomato` | 0.2 | 0.4 |  | 0 |
 | Star Jasmine | `csm:shrub_star_jasmine` |  |  |  |  |
+| Sugar Maple Leaves | `csm:tree_leaves_sugarmaple` | 0.2 | 1.0 |  | 0 |
+| Sugar Maple Log | `csm:tree_log_sugarmaple_medium` | 2.0 | 5.0 | axe | 0 |
+| Sugar Maple Twig | `csm:tree_log_sugarmaple_twig` | 2.0 | 5.0 | axe | 0 |
 | Sunflower | `csm:flower_sunflower` |  |  |  |  |
 | Sweetgum Leaves | `csm:tree_leaves_sweetgum` | 0.2 | 1.0 |  | 0 |
 | Sweetgum Log | `csm:tree_log_sweetgum_medium` | 2.0 | 5.0 | axe | 0 |
@@ -344,8 +376,10 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Thick California Sycamore Log | `csm:tree_log_sycamore_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Camphor Tree Log | `csm:tree_log_camphor_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Canary Island Date Palm Log | `csm:tree_log_canary_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Chinese Chestnut Log | `csm:tree_log_chestnut_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Citrus Log | `csm:tree_log_citrus_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Coast Redwood Log | `csm:tree_log_redwood_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Crape Myrtle Log | `csm:tree_log_crapemyrtle_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Douglas Fir Log | `csm:tree_log_douglasfir_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Eastern White Pine Log | `csm:tree_log_whitepine_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Elm Log | `csm:tree_log_elm_thick` | 2.0 | 5.0 | axe | 0 |
@@ -358,6 +392,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Thick Hornbeam Log | `csm:tree_log_hornbeam_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Italian Cypress Log | `csm:tree_log_cypress_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Jacaranda Log | `csm:tree_log_jacaranda_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Japanese Cherry Log | `csm:tree_log_cherry_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Japanese Maple Log | `csm:tree_log_maple_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Joshua Tree Log | `csm:tree_log_joshua_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Lemon-scented Gum Log | `csm:tree_log_gum_thick` | 2.0 | 5.0 | axe | 0 |
@@ -365,13 +400,18 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Thick Live Oak Log | `csm:tree_log_liveoak_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Lombardy Poplar Log | `csm:tree_log_poplar_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick London Plane Log | `csm:tree_log_plane_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Mahogany Log | `csm:tree_log_mahogany_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Mulberry Log | `csm:tree_log_mulberry_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Olive Log | `csm:tree_log_olive_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Palm Log | `csm:tree_log_palm_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Paper Birch Log | `csm:tree_log_birch_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Pepper Tree Log | `csm:tree_log_pepper_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Plumeria Log | `csm:tree_log_plumeria_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Scots Pine Log | `csm:tree_log_pine_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Southern Magnolia Log | `csm:tree_log_magnolia_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Sugar Maple Log | `csm:tree_log_sugarmaple_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Sweetgum Log | `csm:tree_log_sweetgum_thick` | 2.0 | 5.0 | axe | 0 |
+| Thick Trident Maple Log | `csm:tree_log_tridentmaple_thick` | 2.0 | 5.0 | axe | 0 |
 | Thick Weeping Willow Log | `csm:tree_log_willow_thick` | 2.0 | 5.0 | axe | 0 |
 | Thin Apple Log | `csm:tree_log_apple_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Avocado Log | `csm:tree_log_avocado_thin` | 2.0 | 5.0 | axe | 0 |
@@ -383,8 +423,10 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Thin California Sycamore Log | `csm:tree_log_sycamore_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Camphor Tree Log | `csm:tree_log_camphor_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Canary Island Date Palm Log | `csm:tree_log_canary_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Chinese Chestnut Log | `csm:tree_log_chestnut_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Citrus Log | `csm:tree_log_citrus_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Coast Redwood Log | `csm:tree_log_redwood_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Crape Myrtle Log | `csm:tree_log_crapemyrtle_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Douglas Fir Log | `csm:tree_log_douglasfir_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Eastern White Pine Log | `csm:tree_log_whitepine_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Elm Log | `csm:tree_log_elm_thin` | 2.0 | 5.0 | axe | 0 |
@@ -397,6 +439,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Thin Hornbeam Log | `csm:tree_log_hornbeam_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Italian Cypress Log | `csm:tree_log_cypress_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Jacaranda Log | `csm:tree_log_jacaranda_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Japanese Cherry Log | `csm:tree_log_cherry_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Japanese Maple Log | `csm:tree_log_maple_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Joshua Tree Log | `csm:tree_log_joshua_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Lemon-scented Gum Log | `csm:tree_log_gum_thin` | 2.0 | 5.0 | axe | 0 |
@@ -404,25 +447,35 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Thin Live Oak Log | `csm:tree_log_liveoak_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Lombardy Poplar Log | `csm:tree_log_poplar_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin London Plane Log | `csm:tree_log_plane_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Mahogany Log | `csm:tree_log_mahogany_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Mulberry Log | `csm:tree_log_mulberry_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Olive Log | `csm:tree_log_olive_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Palm Log | `csm:tree_log_palm_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Paper Birch Log | `csm:tree_log_birch_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Pepper Tree Log | `csm:tree_log_pepper_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Plumeria Log | `csm:tree_log_plumeria_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Scots Pine Log | `csm:tree_log_pine_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Southern Magnolia Log | `csm:tree_log_magnolia_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Sugar Maple Log | `csm:tree_log_sugarmaple_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Sweetgum Log | `csm:tree_log_sweetgum_thin` | 2.0 | 5.0 | axe | 0 |
+| Thin Trident Maple Log | `csm:tree_log_tridentmaple_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Weeping Willow Log | `csm:tree_log_willow_thin` | 2.0 | 5.0 | axe | 0 |
 | Trained Boysenberry Row | `csm:crop_row_boysenberry` | 0.2 | 0.4 |  | 0 |
 | Tree Pit Hoop Fence | `csm:tree_pit_fence` |  |  |  |  |
 | Tree Stake | `csm:tree_stake` | 1.0 | 2.0 | axe | 0 |
+| Trident Maple Leaves | `csm:tree_leaves_tridentmaple` | 0.2 | 1.0 |  | 0 |
+| Trident Maple Log | `csm:tree_log_tridentmaple_medium` | 2.0 | 5.0 | axe | 0 |
+| Trident Maple Twig | `csm:tree_log_tridentmaple_twig` | 2.0 | 5.0 | axe | 0 |
 | Tulips | `csm:flower_tulips` |  |  |  |  |
 | Upright Juniper | `csm:shrub_juniper` |  |  |  |  |
 | Watermelon Patch Row | `csm:crop_row_watermelon` | 0.2 | 0.4 |  | 0 |
+| Weeping Cherry Blossom | `csm:tree_leaves_cherry_weeping` | 0.2 | 1.0 |  | 0 |
 | Weeping Willow Leaves | `csm:tree_leaves_willow` | 0.2 | 1.0 |  | 0 |
 | Weeping Willow Log | `csm:tree_log_willow_medium` | 2.0 | 5.0 | axe | 0 |
 | Weeping Willow Twig | `csm:tree_log_willow_twig` | 2.0 | 5.0 | axe | 0 |
 | Wheelbarrow | `csm:wheelbarrow` | 1.0 | 2.0 | axe | 0 |
 | White Sage | `csm:shrub_white_sage` |  |  |  |  |
+| White Willow Leaves | `csm:tree_leaves_whitewillow` | 0.2 | 1.0 |  | 0 |
 | Wild Lupine | `csm:flower_lupine` |  |  |  |  |
 | Wild Mustard | `csm:flower_wild_mustard` |  |  |  |  |
 | Willow Strands | `csm:willow_strands` | 0.1 | 0.1 |  | 0 |
@@ -431,6 +484,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Wood Anemone | `csm:flower_wood_anemone` |  |  |  |  |
 | Wooden Compost Bin | `csm:compost_bin` |  |  |  |  |
 | Yellow Flower Bed | `csm:flower_bed_yellow` |  |  |  |  |
+| Yoshino Cherry Blossom | `csm:tree_leaves_cherry_yoshino` | 0.2 | 1.0 |  | 0 |
 | Zinnias | `csm:flower_zinnias` |  |  |  |  |
 
 </div>

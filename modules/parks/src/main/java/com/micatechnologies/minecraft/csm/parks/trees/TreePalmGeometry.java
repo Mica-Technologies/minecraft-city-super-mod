@@ -67,6 +67,9 @@ public final class TreePalmGeometry {
       case ROSETTE:
         rosette(quads, type, rng, variant, fancy);
         return quads;
+      case PALM_PLUMERIA:
+        plumeria(quads, type, rng, variant, fancy);
+        return quads;
       case PALM_BANANA:
       case PALM_BANANA_FRUIT:
         banana(quads, type, rng, variant, fancy, type == TreeLeafType.PALM_BANANA_FRUIT);
@@ -357,6 +360,46 @@ public final class TreePalmGeometry {
     prismAt(quads, 4, cx, cz, 0.6, 0.6, -18, -14, BOOT);
     prismAt(quads, 8, cx, cz, 0.3, 2.3, -26, -18, BELL);
     capAt(quads, 8, cx, cz, 2.3, -18, true, BELL);
+  }
+
+  /**
+   * A plumeria's tuft on the end of its branch: big oblong leaves spread up and out from the
+   * blunt tip, a little bent, and over them a few clusters of flowers, each a card of four held
+   * nearly flat, facing up as the flowers do.
+   */
+  private static void plumeria(List<TreeLogGeometry.Quad> quads, TreeLeafType type, Random rng,
+      int variant, boolean fancy) {
+    prism(quads, 6, type.bootRadius, type.bootRadius * 0.9, 0, 4, BOOT);
+    int count = fancy ? type.fronds : type.fronds * 2 / 3;
+    double turn = variant * 1.1 + rng.nextDouble();
+    for (int i = 0; i < count; i++) {
+      double yaw = turn + i * 2.39996 + (rng.nextDouble() - 0.5) * 0.3;
+      double elevation = Math.toRadians(15 + rng.nextDouble() * 55);
+      arch(quads, new double[]{8 + Math.cos(yaw), 3.5, 8 + Math.sin(yaw)}, yaw, elevation, 0.5,
+          type.frondLength * (0.8 + rng.nextDouble() * 0.35), 2, type.frondWidth,
+          (rng.nextDouble() - 0.5) * 0.5, LIVE);
+    }
+    int clusters = fancy ? 2 + rng.nextInt(2) : 1;
+    for (int i = 0; i < clusters; i++) {
+      double yaw = turn + i * 2 * Math.PI / clusters + rng.nextDouble();
+      double out = 1.5 + rng.nextDouble() * 2;
+      double[] c = {8 + Math.cos(yaw) * out, 9 + rng.nextDouble() * 3, 8 + Math.sin(yaw) * out};
+      double h = 3.6;
+      double tilt = 0.25 + rng.nextDouble() * 0.2;
+      double ca = Math.cos(yaw);
+      double sa = Math.sin(yaw);
+      double[][] corners = new double[4][];
+      double[][] local = {{-h, -h}, {h, -h}, {h, h}, {-h, h}};
+      for (int k = 0; k < 4; k++) {
+        double u = local[k][0];
+        double w = local[k][1];
+        // Nearly flat, tipped up a little toward the outside.
+        corners[k] = new double[]{c[0] + u * ca - w * sa, c[1] + u * tilt,
+            c[2] + u * sa + w * ca};
+      }
+      twoSided(quads, corners, new double[][]{{DEAD[0], DEAD[3]}, {DEAD[2], DEAD[3]},
+          {DEAD[2], DEAD[1]}, {DEAD[0], DEAD[1]}});
+    }
   }
 
   /** A tapering n-sided tube from {@code y0} to {@code y1}, facing out, the region round it. */

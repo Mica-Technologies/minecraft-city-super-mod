@@ -133,6 +133,9 @@ public final class TreeGenerators {
         .anyMatch(part -> part.kind == TreePlan.Kind.LEAVES)) {
       g.plan.noRoom(); // a bare trunk is not a tree
     }
+    if (!g.plan.hasNoRoom() && preset.groundCover != null) {
+      g.scatter();
+    }
     return g.plan;
   }
 
@@ -606,7 +609,34 @@ public final class TreeGenerators {
       List<BlockPos> leaders = new ArrayList<>();
       List<Double> leaderHeadings = new ArrayList<>();
       int stems = range(p.stemsMin, p.stemsMax);
-      if (stems > 1 && trunk.size() >= 3) {
+      if (stems > 1 && p.footStems) {
+        // Stems from the foot, round the first, a vase: each from the cell beside the foot,
+        // stepping straight out a block before it rises, and once more halfway up. Rising from
+        // the first stem's side, they would stand beside it and be joined to it at every height,
+        // which reads as a ladder.
+        leaders.add(top);
+        leaderHeadings.add(h);
+        List<EnumFacing> sides = new ArrayList<>();
+        Collections.addAll(sides, EnumFacing.HORIZONTALS);
+        Collections.shuffle(sides, rng);
+        for (int s = 1; s < stems && s <= sides.size(); s++) {
+          EnumFacing side = sides.get(s - 1);
+          BlockPos foot = BlockPos.ORIGIN.offset(side);
+          if (!canLog(foot)) {
+            continue;
+          }
+          int stemHeight = Math.max(3, trunkHeight - rng.nextInt(2));
+          int bend = stemHeight / 2;
+          List<BlockPos> stem = trunkFrom(foot, stemHeight, heading(side), 2,
+              y -> y == 0 || y == bend, y -> thinner(p.trunkWidth));
+          if (stem.size() >= 3) {
+            leaders.add(stem.get(stem.size() - 1));
+            leaderHeadings.add(heading(side));
+          } else {
+            stem.forEach(plan.parts()::remove);
+          }
+        }
+      } else if (stems > 1 && trunk.size() >= 3) {
         // More trunks from the same foot, leaning apart: each its own leader, from a block up
         // the first, stepping off it at once.
         leaders.add(top);
@@ -672,6 +702,26 @@ public final class TreeGenerators {
       }
       if (p.extra != null) {
         hangMoss(top);
+      }
+    }
+
+    /**
+     * A ground cover (fallen petals) on open ground under the crown: in some of the cells at the
+     * foot whose column has leaves over it, never on the trunk's cell, only where the cell is open
+     * and something solid is under it.
+     */
+    void scatter() {
+      Set<BlockPos> under = new HashSet<>();
+      for (Map.Entry<BlockPos, TreePlan.Part> e : plan.parts().entrySet()) {
+        if (e.getValue().kind == TreePlan.Kind.LEAVES) {
+          under.add(new BlockPos(e.getKey().getX(), 0, e.getKey().getZ()));
+        }
+      }
+      for (BlockPos at : under) {
+        if (plan.isEmpty(at) && space.free(at) && space.blocked(at.down())
+            && rng.nextDouble() < p.groundChance) {
+          plan.cover(at, p.groundCover);
+        }
       }
     }
 

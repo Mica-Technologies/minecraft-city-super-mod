@@ -393,7 +393,10 @@ PRESETS = ['liveoak', 'elm', 'plane', 'honeylocust', 'cypress', 'ginkgo', 'fanpa
            'whitepine', 'englishoak', 'camphor', 'giantsequoia', 'joshuatree', 'youngjoshua',
            'canarypalm', 'coconutpalm', 'kingpalm', 'douglasfir', 'bristlecone', 'sycamore',
            'bluegum', 'orange', 'lemon', 'lime', 'grapefruit', 'avocado', 'olive', 'banana',
-           'applehoneycrisp', 'applegranny', 'applegolden', 'mulberry']
+           'applehoneycrisp', 'applegranny', 'applegolden', 'mulberry', 'sugarmaple', 'magnolia',
+           'whitewillow', 'mahogany', 'crapemyrtle', 'crapemyrtledwarf', 'chinesechestnut',
+           'tridentmaple', 'dwarfjacaranda', 'plumeria', 'cherryyoshino', 'cherrykanzan',
+           'cherryweeping']
 NAMES = ['Southern Live Oak', 'American Elm', 'London Plane', 'Honey Locust', 'Italian Cypress',
          'Ginkgo', 'Mexican Fan Palm', 'Leaning Feather Palm', 'Ball-Head Plane', 'Jacaranda',
          'Pepper Tree', 'Coast Live Oak', 'Weeping Willow', 'Lombardy Poplar', 'Slender Sweetgum',
@@ -404,7 +407,9 @@ NAMES = ['Southern Live Oak', 'American Elm', 'London Plane', 'Honey Locust', 'I
          'Joshua Tree', 'Young Joshua', 'Canary Palm', 'Coconut Palm', 'King Palm', 'Douglas Fir',
          'Bristlecone', 'Ca. Sycamore', 'Blue Gum', 'Orange', 'Lemon', 'Lime', 'Grapefruit',
          'Avocado', 'Olive', 'Banana', 'Honeycrisp', 'Granny Smith', 'Golden Delicious',
-         'Mulberry']
+         'Mulberry', 'Sugar Maple', 'S. Magnolia', 'White Willow', 'Mahogany', 'Crape Myrtle',
+         'Dwarf Crape', 'Ch. Chestnut', 'Trident Maple', 'Dwarf Jacaranda', 'Plumeria',
+         'Yoshino Cherry', 'Kanzan Cherry', 'Weeping Cherry']
 PLAYER = _me['name']
 client.call('client_select_slot', slot=0)
 client.call('client_view', hideHud=True)

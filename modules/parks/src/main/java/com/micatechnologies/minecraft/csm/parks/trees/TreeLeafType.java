@@ -57,7 +57,12 @@ public enum TreeLeafType {
    */
   PALM_BANANA(8, 46, 13, true, 3.0, 0),
   /** A banana plant's crown with its bunch: green hands of fruit and the purple bell below. */
-  PALM_BANANA_FRUIT(8, 46, 13, true, 3.0, 0);
+  PALM_BANANA_FRUIT(8, 46, 13, true, 3.0, 0),
+  /**
+   * A plumeria's leaf tuft, on the blunt end of a branch: big oblong leaves spread up and out,
+   * and its flowers held over them. Drawn by the palm crown machinery, one on each branch end.
+   */
+  PALM_PLUMERIA(13, 20, 7, false, 1.6, 0);
 
   /** Cards inside the cell, at most. */
   final int interior;

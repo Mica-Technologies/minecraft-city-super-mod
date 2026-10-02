@@ -21,7 +21,9 @@ public final class TreePlan {
 
   /** What a cell holds. */
   public enum Kind {
-    LOG, LEAVES, HANGING
+    LOG, LEAVES, HANGING,
+    /** A thin covering on the ground under the tree: fallen petals. Placed last, never felled. */
+    COVER
   }
 
   /** One cell's part. */
@@ -59,6 +61,11 @@ public final class TreePlan {
     if (there == null || there.kind == Kind.HANGING) {
       parts.put(pos, new Part(Kind.LEAVES, block, null));
     }
+  }
+
+  /** Lays a ground cover where there is nothing. */
+  public void cover(BlockPos pos, String block) {
+    parts.putIfAbsent(pos, new Part(Kind.COVER, block, null));
   }
 
   /** Hangs moss where there is nothing. */
