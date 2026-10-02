@@ -310,6 +310,31 @@ device that keeps its own link (pull stations, detectors, door holders, annuncia
 device's `lp` too (`TileEntityFireAlarmSensor.clearLinkedPanel`). On a panel it unlinks every
 device of that panel's that is missing, since a device that is gone cannot be clicked.
 
+### Linking a whole building at once
+
+One aimed click a device does not scale: the City of Alto's office tower took 479 appliance
+clicks, each needing the crosshair on a speaker plate an eighth of a block deep. Three ways
+around it, all on `FireAlarmAreaLink`, which treats every device in a box exactly as a linker
+click on it would:
+
+- **The Fire Alarm Area Linker** (`ItemFireAlarmAreaLinker`, a silver key): click a panel, then
+  two opposite corners of the building; sneak-click the second corner to unlink the box instead.
+  It is its own item, not a mode of the linker, because linking is scripted (a client driven
+  device by device) and a mode one stray click into the air could flip would turn the next device
+  click into a corner. It extends `ItemFireAlarmLinker`, so every block that steps aside for a
+  linker in hand steps aside for it.
+- **`/csmfirealarm`** (permission level 2): `link|unlink <panel x y z> <x1 y1 z1> <x2 y2 z2>`,
+  `status <panel x y z>` (counts, missing devices, how many are unloaded) and
+  `prune <panel x y z>` (unlinks the missing ones, as a sneak-click on the panel does).
+- **`appsList`**: `/blockdata x y z {appsList:[I;x,y,z,x,y,z,...]}` on a panel adds every triple to
+  `apps` when the panel reads it and is never written back. `apps` itself is a newline-separated
+  string, which chat cannot type, so `/blockdata` could add only one appliance at a time.
+
+A box is capped at 128 x 128 x 128 blocks (every cell is read in one tick). Cells in unloaded
+chunks are skipped and counted, so the report says when part of a building was not reached.
+An appliance linked to another panel is not taken off it, as with a click: appliances keep no
+back-reference to find that panel by.
+
 ### Devices that follow a panel (door holders, annunciators)
 
 The magnetic door holders and the remote annunciator (`IFireAlarmPanelFollower`, base

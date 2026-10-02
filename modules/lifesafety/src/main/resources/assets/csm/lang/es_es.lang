@@ -31,6 +31,7 @@ csm.exitsign.mount.wall=Pared
 csm.firealarmcontrolpanel.note=Clic Derecho para Abrir el Panel
 item.firealarmconfigtool.name=Herramienta de Configuración de Alarma de Incendio
 item.firealarmlinker.name=Enlazador de Dispositivos de Alarma de Incendio
+item.firealarmarealinker.name=Enlazador de Área de Alarma de Incendio
 itemGroup.tablifesafety=CSM: Alarma y Detección de Incendios
 itemGroup.tabexitsemergency=CSM: Salidas e Iluminación de Emergencia
 itemGroup.tabfireprotection=CSM: Protección Contra Incendios

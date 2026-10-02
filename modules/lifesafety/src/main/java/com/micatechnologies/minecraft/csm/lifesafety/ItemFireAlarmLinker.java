@@ -76,7 +76,7 @@ public class ItemFireAlarmLinker extends AbstractItem {
   /**
    * Remembers a panel on the stack, or forgets it when given null.
    */
-  private static void setSelectedPanel(ItemStack stack, BlockPos panelPos) {
+  static void setSelectedPanel(ItemStack stack, BlockPos panelPos) {
     if (stack == null || stack.isEmpty()) {
       return;
     }
@@ -199,11 +199,11 @@ public class ItemFireAlarmLinker extends AbstractItem {
               new TextComponentString("Successfully linked to voice evac circuit of fire " +
                   "alarm control panel at " +
                   "(" +
-                  pos.getX() +
+                  alarmPanelPos.getX() +
                   "," +
-                  pos.getY() +
+                  alarmPanelPos.getY() +
                   "," +
-                  pos.getZ() +
+                  alarmPanelPos.getZ() +
                   ")"));
         }
         return EnumActionResult.SUCCESS;
