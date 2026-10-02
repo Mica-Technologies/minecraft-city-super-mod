@@ -172,9 +172,9 @@ public class CommandHvac extends CommandBase {
             + "  control+physics %.2f  players %.2f ms", p.rescanNanos / 1e6 / steps,
         p.attachNanos / 1e6 / steps, p.couplingNanos / 1e6 / steps, p.stepNanos / 1e6 / steps,
         p.playerNanos / 1e6 / steps));
-    say(sender, String.format("  rescans: %d on a change, %d periodic; %d couplings;"
-            + " %d floods of %d cells", p.dirtyRescans, p.periodicRescans, p.couplings, p.scans,
-        p.scannedCells));
+    say(sender, String.format("  rescans: %d on a change, %d periodic; couplings resolved for"
+            + " %d spaces; %d floods of %d cells", p.dirtyRescans, p.periodicRescans, p.couplings,
+        p.scans, p.scannedCells));
     say(sender, String.format("  block changes: %d seen, %d changed a room", p.blockUpdates,
         p.relevantBlockUpdates));
     int waiting = 0;
