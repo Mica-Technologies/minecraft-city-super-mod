@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
 import javax.annotation.Nonnull;
@@ -29,7 +30,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockMarketRun extends BlockResidentialStorage {
+public class BlockMarketRun extends BlockResidentialStorage implements ICsmGlassFronted {
 
   private final String group;
   private final BlockRenderLayer layer;
@@ -112,5 +113,14 @@ public class BlockMarketRun extends BlockResidentialStorage {
   @Nonnull
   public BlockRenderLayer getBlockRenderLayer() {
     return layer;
+  }
+
+  /**
+   * Glass-fronted when drawn in the translucent layer (the bulk bins, the pastry and tobacco
+   * cases): their glass apart from what is behind it.
+   */
+  @Override
+  public boolean isGlassFronted() {
+    return layer == BlockRenderLayer.TRANSLUCENT;
   }
 }

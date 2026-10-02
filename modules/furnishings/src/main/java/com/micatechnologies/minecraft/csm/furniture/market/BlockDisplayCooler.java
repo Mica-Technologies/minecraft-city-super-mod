@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCloset;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialRun;
 import com.micatechnologies.minecraft.csm.furniture.residential.ISwitchable;
@@ -37,12 +38,13 @@ import net.minecraft.world.World;
  * cooler and the coolers joined to it in its line, up to {@link DisplayLine#REACH} doors, so one
  * light switch works a row and a long row takes more than one. {@code LIT} is stored in both halves, in the bit above
  * {@code UPPER}; whether it was powered is kept by the lower half's
- * {@link TileEntityDisplayCase}, the metadata being full. The glass is translucent, so it draws
- * in the translucent layer.</p>
+ * {@link TileEntityDisplayCase}, the metadata being full. Its glass draws in the
+ * translucent layer and the rest, the stock included, in the cutout layer
+ * ({@link ICsmGlassFronted}).</p>
  *
  * @since 2026.9
  */
-public class BlockDisplayCooler extends BlockCloset implements ISwitchable {
+public class BlockDisplayCooler extends BlockCloset implements ISwitchable, ICsmGlassFronted {
 
   /**
    * Constructs a two-block display.

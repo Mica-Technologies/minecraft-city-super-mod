@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,7 +49,7 @@ import net.minecraft.world.World;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockGlazingPane extends AbstractBlock {
+public class BlockGlazingPane extends AbstractBlock implements ICsmGlassFronted {
 
   /**
    * What a pane does toward one side.

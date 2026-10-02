@@ -661,7 +661,8 @@ def top_bagels(px, x0, body, accent, rng):
 
 def col_chicken(px, x0, ht, rng):
     """A rotisserie chicken in its clamshell: the black base, the golden bird, the clear dome
-    over it (translucent, the case draws in the translucent layer)."""
+    over it as an outline with nothing between. The stock draws in the cutout layer (only a
+    case's glass is translucent: CsmGlassLayer), where a part-clear pixel would be opaque."""
     for dy in range(ht):
         y = 31 - dy
         for dx in range(8):
@@ -670,12 +671,12 @@ def col_chicken(px, x0, ht, rng):
             elif dx in (0, 7) or dy == ht - 1:
                 if dy == ht - 1 and dx in (0, 7):
                     continue
-                col = (226, 236, 240, 110)
+                col = (214, 224, 230)
             else:
                 t = (dy - 0.5) / max(1.0, ht - 2)
                 w = 3.1 * math.sqrt(max(0.0, 1 - ((t - 0.3) / 0.75) ** 2))
                 if abs(dx + 0.5 - 4) > w:
-                    col = (226, 236, 240, 70)
+                    continue
                 else:
                     col = shade((190, 108, 40), 0.72 + 0.5 * t - 0.1 * abs(dx + 0.5 - 4))
                     if dy == 1 and dx in (1, 6):
@@ -693,7 +694,7 @@ def top_chicken(px, x0, rng):
             elif d < 0.8:
                 col = shade((200, 124, 50), 1.2 - 0.4 * d)
             else:
-                col = (226, 236, 240, 110)
+                col = (112, 117, 120)   # the clear lid over the black base, seen from above
             put(px, x0 + dx, y, col)
 
 

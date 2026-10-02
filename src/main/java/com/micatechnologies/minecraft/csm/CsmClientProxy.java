@@ -63,6 +63,9 @@ public class CsmClientProxy implements ICsmProxy {
         new com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils.FrameClock());
     // Puts the modules' model wrappers in place, in the game's bake and in VintageFix's.
     com.micatechnologies.minecraft.csm.codeutils.CsmBakedModelWrappers.install();
+    // Draws a glass-fronted block's glass in the translucent pass and the rest in the cutout pass.
+    com.micatechnologies.minecraft.csm.codeutils.CsmBakedModelWrappers.register(
+        com.micatechnologies.minecraft.csm.codeutils.CsmGlassLayerModel::wrap);
     // Before the stitch, makes the element copies Forge made to retexture variants share one
     // element per distinct element.
     MinecraftForge.EVENT_BUS.register(

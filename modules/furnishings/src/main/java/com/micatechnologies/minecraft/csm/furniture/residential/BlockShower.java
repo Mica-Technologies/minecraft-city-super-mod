@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import java.util.List;
 import java.util.Random;
@@ -22,8 +23,8 @@ import net.minecraft.world.World;
 /**
  * The shower enclosure: a porcelain tray, glass screens on its two sides and a fixed glass
  * panel at the front beside an open entry, and a rain head on a riser against the wall behind
- * it, two blocks tall and placed and broken as one ({@link BlockResidentialTall}). The glass is
- * a translucent texture, so the block draws in the translucent layer.
+ * it, two blocks tall and placed and broken as one ({@link BlockResidentialTall}). Its glass
+ * draws in the translucent layer and the rest in the cutout layer ({@link ICsmGlassFronted}).
  *
  * <p>It can be walked into: only the tray and the glass panes collide, so a player stands in
  * the tray under the rose. Right-click either half turns the water on and off
@@ -32,7 +33,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockShower extends BlockResidentialTall {
+public class BlockShower extends BlockResidentialTall implements ICsmGlassFronted {
 
   /** The top of the tray, in blocks: where the water lands. */
   public static final double TRAY_TOP = 1.5 / 16.0;

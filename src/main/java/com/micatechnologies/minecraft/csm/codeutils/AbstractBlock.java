@@ -221,6 +221,24 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
   }
 
   /**
+   * Whether the block draws in {@code layer}. A glass-fronted block ({@link ICsmGlassFronted})
+   * draws in two passes, its glass in the translucent one and the rest in the cutout one
+   * ({@link CsmGlassLayer}); any other block in its own layer only.
+   *
+   * @param state the block state
+   * @param layer the pass
+   *
+   * @return whether the block has faces in the pass
+   */
+  @Override
+  public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+    if (this instanceof ICsmGlassFronted && ((ICsmGlassFronted) this).isGlassFronted()) {
+      return CsmGlassLayer.drawsIn(layer);
+    }
+    return super.canRenderInLayer(state, layer);
+  }
+
+  /**
    * Indicates whether the block has a tile entity. This method returns {@code true} if the block
    * implements the {@link ICsmTileEntityProvider} interface.
    *

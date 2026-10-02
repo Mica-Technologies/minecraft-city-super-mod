@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.transit.station;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,7 +31,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockStationGlass extends AbstractBlock {
+public class BlockStationGlass extends AbstractBlock implements ICsmGlassFronted {
 
   public static final PropertyBool NORTH = PropertyBool.create("north");
   public static final PropertyBool EAST = PropertyBool.create("east");

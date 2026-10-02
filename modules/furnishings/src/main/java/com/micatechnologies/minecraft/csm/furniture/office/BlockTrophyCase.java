@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.office;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCloset;
 import javax.annotation.Nonnull;
@@ -13,11 +14,12 @@ import net.minecraft.util.BlockRenderLayer;
  * part of the model; the game picks one of two arrangements for each block by its position, so a
  * row does not repeat. The cupboard holds what is put in it.
  *
- * <p>Drawn in the translucent layer for its glass, as the store's display coolers are.</p>
+ * <p>Its glass is drawn in the translucent layer and the rest, the trophies included, in the
+ * cutout layer ({@link ICsmGlassFronted}), as the store's display coolers are.</p>
  *
  * @since 2026.10
  */
-public class BlockTrophyCase extends BlockCloset {
+public class BlockTrophyCase extends BlockCloset implements ICsmGlassFronted {
 
   /**
    * Constructs a trophy case.

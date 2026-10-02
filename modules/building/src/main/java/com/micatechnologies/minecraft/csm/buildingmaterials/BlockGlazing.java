@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
@@ -40,7 +41,7 @@ import net.minecraft.world.World;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockGlazing extends AbstractBlock {
+public class BlockGlazing extends AbstractBlock implements ICsmGlassFronted {
 
   public static final PropertyDirection FACING = BlockHorizontal.FACING;
   public static final PropertyBool NORTH = PropertyBool.create("north");

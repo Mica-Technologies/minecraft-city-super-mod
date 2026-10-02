@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -45,7 +46,7 @@ import net.minecraft.world.IBlockAccess;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockJobTrailer extends AbstractBlock {
+public class BlockJobTrailer extends AbstractBlock implements ICsmGlassFronted {
 
   public static final PropertyEnum<TrailerSide> NORTH =
       PropertyEnum.create("north", TrailerSide.class);
@@ -211,5 +212,13 @@ public class BlockJobTrailer extends AbstractBlock {
   @Nonnull
   public BlockRenderLayer getBlockRenderLayer() {
     return isWindow() ? BlockRenderLayer.TRANSLUCENT : BlockRenderLayer.CUTOUT;
+  }
+
+  /**
+   * The window's glass draws apart from the wall around it.
+   */
+  @Override
+  public boolean isGlassFronted() {
+    return isWindow();
   }
 }
