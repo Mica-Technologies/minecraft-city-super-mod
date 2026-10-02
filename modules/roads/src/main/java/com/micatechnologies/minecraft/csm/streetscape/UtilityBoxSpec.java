@@ -32,6 +32,8 @@ public final class UtilityBoxSpec {
   private final AxisAlignedBB unitBox;
   @Nullable
   private final Label label;
+  @Nullable
+  private final Phone phone;
 
   /**
    * @param width   cells across, toward the placing player's right
@@ -43,6 +45,17 @@ public final class UtilityBoxSpec {
    */
   public UtilityBoxSpec(int width, int depth, int height, AxisAlignedBB unitBox,
       @Nullable Label label) {
+    this(width, depth, height, unitBox, label, null);
+  }
+
+  /**
+   * A unit whose trouble sticker carries a phone number the player can set, as a pad-mount
+   * transformer's does.
+   *
+   * @param phone where the phone number is printed, or {@code null} for no phone sticker
+   */
+  public UtilityBoxSpec(int width, int depth, int height, AxisAlignedBB unitBox,
+      @Nullable Label label, @Nullable Phone phone) {
     if (width < 1 || depth < 1 || height < 1 || width > MAX_CELLS || depth > MAX_CELLS
         || height > MAX_CELLS) {
       throw new IllegalArgumentException("A utility box is 1 to " + MAX_CELLS + " cells a side");
@@ -52,6 +65,7 @@ public final class UtilityBoxSpec {
     this.height = height;
     this.unitBox = unitBox;
     this.label = label;
+    this.phone = phone;
   }
 
   public boolean isMultiBlock() {
@@ -61,6 +75,12 @@ public final class UtilityBoxSpec {
   @Nullable
   public Label getLabel() {
     return label;
+  }
+
+  /** Where the trouble sticker's phone number is printed, or {@code null} if it has none. */
+  @Nullable
+  public Phone getPhone() {
+    return phone;
   }
 
   /**
@@ -246,6 +266,59 @@ public final class UtilityBoxSpec {
 
     public int getBackColour() {
       return backColour;
+    }
+  }
+
+  /**
+   * Where a pad-mount transformer's trouble sticker leaves room for its phone number ("IN CASE
+   * OF TROUBLE / CALL ..."), facing north, in pixels from the root cell's origin. The sticker
+   * itself is baked into the model; only the number is drawn, dark on the sticker's yellow.
+   * {@code gen_streetscape_utility.py} measures these off the sticker's texture layout.
+   */
+  public static final class Phone {
+
+    /** The sticker's print colour, a browner black. */
+    public static final int INK = 0x34240C;
+
+    private final float centreX;
+    private final float centreY;
+    private final float faceZ;
+    private final float textHeight;
+    private final float maxWidth;
+
+    /**
+     * @param centreX    the blank's centre across the face, in pixels
+     * @param centreY    the blank's centre, in pixels up
+     * @param faceZ      the sticker's face, in pixels
+     * @param textHeight a character's height, in pixels
+     * @param maxWidth   the blank's width: a longer number is drawn narrower to fit it
+     */
+    public Phone(float centreX, float centreY, float faceZ, float textHeight, float maxWidth) {
+      this.centreX = centreX;
+      this.centreY = centreY;
+      this.faceZ = faceZ;
+      this.textHeight = textHeight;
+      this.maxWidth = maxWidth;
+    }
+
+    public float getCentreX() {
+      return centreX;
+    }
+
+    public float getCentreY() {
+      return centreY;
+    }
+
+    public float getFaceZ() {
+      return faceZ;
+    }
+
+    public float getTextHeight() {
+      return textHeight;
+    }
+
+    public float getMaxWidth() {
+      return maxWidth;
     }
   }
 }

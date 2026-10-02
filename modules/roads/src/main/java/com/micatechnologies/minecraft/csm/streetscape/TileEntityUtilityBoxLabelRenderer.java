@@ -24,6 +24,10 @@ import org.lwjgl.opengl.GL11;
  * {@link CsmFontRenderer#drawString} binds the font atlas and leaves it bound, so the backing is
  * drawn first and binds its own texture.</p>
  *
+ * <p>A pad-mount transformer's trouble sticker is baked into its model with the phone number's
+ * place left blank; the number ({@link TileEntityUtilityBoxLabel#getShownPhone}) is drawn here
+ * into that blank, in the sticker's ink with no backing, condensed if it would outgrow it.</p>
+ *
  * @version 1.0
  */
 public class TileEntityUtilityBoxLabelRenderer
@@ -49,8 +53,10 @@ public class TileEntityUtilityBoxLabelRenderer
     if (!(block instanceof BlockUtilityBoxLabelled)) {
       return;
     }
-    UtilityBoxSpec.Label label = ((BlockUtilityBoxLabelled) block).getSpec().getLabel();
-    if (label == null) {
+    UtilityBoxSpec spec = ((BlockUtilityBoxLabelled) block).getSpec();
+    UtilityBoxSpec.Label label = spec.getLabel();
+    UtilityBoxSpec.Phone phone = spec.getPhone();
+    if (label == null && phone == null) {
       return;
     }
     EnumFacing facing = state.getValue(BlockUtilityBox.FACING);
@@ -76,24 +82,29 @@ public class TileEntityUtilityBoxLabelRenderer
     GlStateManager.disableCull();
 
     CsmFontRenderer fr = CsmFontRenderer.highwayGothic();
-    float scale = label.getTextHeight() / (fr.FONT_HEIGHT * CAP_SHARE);
-    float pitch = label.getTextHeight() * LINE_PITCH;
-    int count = Math.min(label.getLines(), lines.length);
-    float rowY = label.getCentreY();
-    for (int i = 0; i < count; i++) {
-      String text = lines[i];
-      if (text == null || text.isEmpty()) {
-        continue;
-      }
-      if (label.isVertical()) {
-        for (char c : text.toCharArray()) {
-          drawLine(fr, String.valueOf(c), label, rowY, scale);
+    if (label != null) {
+      float scale = label.getTextHeight() / (fr.FONT_HEIGHT * CAP_SHARE);
+      float pitch = label.getTextHeight() * LINE_PITCH;
+      int count = Math.min(label.getLines(), lines.length);
+      float rowY = label.getCentreY();
+      for (int i = 0; i < count; i++) {
+        String text = lines[i];
+        if (text == null || text.isEmpty()) {
+          continue;
+        }
+        if (label.isVertical()) {
+          for (char c : text.toCharArray()) {
+            drawLine(fr, String.valueOf(c), label, rowY, scale);
+            rowY -= pitch;
+          }
+        } else {
+          drawLine(fr, text, label, rowY, scale);
           rowY -= pitch;
         }
-      } else {
-        drawLine(fr, text, label, rowY, scale);
-        rowY -= pitch;
       }
+    }
+    if (phone != null) {
+      drawPhone(fr, te.getShownPhone(), phone);
     }
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -133,6 +144,29 @@ public class TileEntityUtilityBoxLabelRenderer
     GlStateManager.scale(scale, -scale, scale);
     fr.drawString(text, -fr.getStringWidth(text) / 2, -fr.FONT_HEIGHT / 2,
         label.getTextColour());
+    GlStateManager.depthMask(true);
+    GlStateManager.popMatrix();
+  }
+
+  /**
+   * The phone number centred in its blank on the trouble sticker: the sticker's ink, no
+   * backing, at the sticker's cap height, condensed if it would outgrow the blank.
+   */
+  private void drawPhone(CsmFontRenderer fr, String text, UtilityBoxSpec.Phone phone) {
+    if (text.isEmpty()) {
+      return;
+    }
+    int width = fr.getStringWidth(text);
+    float scale = phone.getTextHeight() / (fr.FONT_HEIGHT * CAP_SHARE);
+    // Too long for the blank, it is condensed rather than shrunk, as the sticker's own print is.
+    float scaleX = Math.min(scale, phone.getMaxWidth() / Math.max(1, width));
+    GlStateManager.pushMatrix();
+    // Just proud of the sticker, which is itself proud of the box.
+    GlStateManager.translate(phone.getCentreX(), phone.getCentreY(), phone.getFaceZ() - 0.04f);
+    GlStateManager.rotate(180, 0, 1, 0);
+    GlStateManager.depthMask(false);
+    GlStateManager.scale(scaleX, -scale, scale);
+    fr.drawString(text, -width / 2, -fr.FONT_HEIGHT / 2, UtilityBoxSpec.Phone.INK);
     GlStateManager.depthMask(true);
     GlStateManager.popMatrix();
   }

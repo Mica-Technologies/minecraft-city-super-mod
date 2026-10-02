@@ -58,6 +58,17 @@ anywhere. A part stores nothing: it finds its root by scanning the few cells a r
 `BlockUtilityBoxLabelled` adds the editable ID number (`TileEntityUtilityBoxLabel`, GUI 32,
 `UtilityBoxLabelPacket`), drawn by a TESR on the face the spec names.
 
+Every pad-mount transformer also wears a HIGH VOLTAGE sticker and, under it, the utility's
+"IN CASE OF TROUBLE / CALL" sticker with the black DWP square (the mod's fictional Alto
+Department of Water and Power). Both are baked into the model from one 128 px texture
+(`hv_stickers`, HIGH VOLTAGE in its top half), with the phone number's place left blank. The
+number is the player's: the same GUI has a phone field for any spec with a
+`UtilityBoxSpec.Phone`, stored as `ph` (empty means `DEFAULT_PHONE`, `555-DWP-0100`) and sent as
+an optional trailing string on the packet. The TESR draws it into the blank in the sticker's ink,
+condensed rather than shrunk when it is long. The generator measures the blank off the texture's
+layout and writes it into the tab line, and places the stickers' decals 0.2 px proud, where
+`model_depth.py` would move them anyway, so the spec's face and the model's agree.
+
 ## Covers, bollards, hydrants, news racks
 
 - **Covers** (`BlockStreetCover`, `gen_streetscape_covers.py`): flat cutout plates. Textures are

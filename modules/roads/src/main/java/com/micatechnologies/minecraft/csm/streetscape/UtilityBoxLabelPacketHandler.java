@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.streetscape;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -30,6 +31,11 @@ public class UtilityBoxLabelPacketHandler
       }
       TileEntityUtilityBoxLabel label = (TileEntityUtilityBoxLabel) te;
       label.setLines(message.getLine1(), message.getLine2());
+      Block block = world.getBlockState(message.getPos()).getBlock();
+      if (message.getPhone() != null && block instanceof BlockUtilityBoxLabelled
+          && ((BlockUtilityBoxLabelled) block).getSpec().getPhone() != null) {
+        label.setPhone(message.getPhone());
+      }
       label.markDirtySync(world, message.getPos(), true);
     });
     return null;
