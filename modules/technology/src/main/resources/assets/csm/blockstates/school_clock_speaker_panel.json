@@ -1,0 +1,33 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/school/school_clock_speaker_panel_clock"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "secondary": {
+      "false": {
+        "model": "csm:technology/school/school_clock_speaker_panel_clock"
+      },
+      "true": {
+        "model": "csm:technology/school/school_clock_speaker_panel_speaker"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:technology/school/school_clock_speaker_panel_item"
+      }
+    ]
+  }
+}

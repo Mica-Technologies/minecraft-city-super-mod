@@ -10,7 +10,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | Tab | Blocks | What is in it |
 |---|---|---|
 | [Building Materials](building-materials.md) | 203 | Bulk material sets, with matching stairs, slabs and fences. |
-| [Commercial & Office](commercial-office.md) | 68 | The furniture of offices, schools and studios: desks that join into runs and L-shapes, cubicle panels, office seating, boards, lockers, the things on a desk and a copier that copies books. |
+| [Commercial & Office](commercial-office.md) | 88 | The furniture of offices, schools and studios: desks that join into runs and L-shapes, cubicle panels, office seating, boards that join into one of any size, classroom seating, lecterns, lockers, a trophy case, projectors, the cafeteria table, the things on a desk and a copier that copies books. |
 | [Construction Site](construction-site.md) | 42 | What stands around a building while it goes up: scaffolding, formwork, earthworks, site logistics and facilities. |
 | [Furniture](furniture.md) | 21 | Interior fittings: seating, counters, appliances and fixtures. |
 | [Gaming](gaming.md) | 13 | Arcade cabinets and the playable machines that go with them. |
@@ -31,14 +31,14 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Signage & Advertising](signage.md) | 6 | Street ad kiosks, wall poster boards and billboards built to size. |
 | [Streetscape](streetscape.md) | 102 | Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals, news racks, mailboxes and parking meters. |
 | [Structure & Framing](structure-framing.md) | 32 | Steel and wood stud walls, the structure that spans between them, and structural steel. |
-| [Technology](technology.md) | 45 | Servers, routers, screens and consumer electronics. |
+| [Technology](technology.md) | 54 | Servers, routers, screens and consumer electronics. |
 | [Traffic Accessories](traffic-accessories.md) | 386 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 87 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Transit](transit.md) | 119 | Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, bus station departure boards, fare gates, the fare vending machine and the tickets and cards they take, station and platform fit-out, station entrances and fare lines, and the airport terminal and airside. |
 | [Trees & Plants](trees-and-plants.md) | 475 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Utilities](utilities.md) | 82 | The services a city runs to its buildings: electric meters single and in banks, the meter socket, service disconnect, main breaker panel and switchboard, gas meters single and in banks, the water meter setter and utility room labels; and the water system: the water tower built to size (legs, riser, bracing, the pedestal column, tanks with their balcony and name band, the caged ladder), ground storage tanks, the pump station's pipes, valves, pumps and panel, air release and backflow enclosures, and the treatment skid; and sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall's headwall, flap gate, wingwalls and riprap, the detention pond's outlet riser and emergency spillway, and precast manhole sections whole and cut away; the gas yard: a regulator station's skid, gas pipe, ball valves, pressure regulator, turbine meter, line heater, vent stack and odorant tank, and its warning signs; and telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna array, and a small cell's canister antenna and radio for the street poles. |
 | [Unlisted](unlisted.md) | 136 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **3638** | |
+| **Total** | **3667** | |
 
 ## How to read the table
 

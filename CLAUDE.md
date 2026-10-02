@@ -88,7 +88,7 @@ container per jar.
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
 | `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall headwall, flap gate, wingwalls and riprap, the pond outlet riser and emergency spillway, manhole sections whole and cut away; the gas yard: a regulator station built from a skid, gas pipe, ball valves, a regulator, a turbine meter, a line heater and a vent stack, the odorant tank, and warning signs that hang on a wall or a chain-link fence; telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna arrays, and a small cell's canister antenna and radio for the street poles); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
-| `modules/technology` | `csm_technology` | CSM: Technology | `technology` |
+| `modules/technology` | `csm_technology` | CSM: Technology | `technology`; also the school time and PA set (`technology.school`: Micaplex clocks with renderer hands on game time, clock/speaker panels, PA speakers, the bell schedule controller and hallway bell; see `assets/docs/SCHOOL_TIME_AND_PA.md`) |
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology) |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
@@ -436,6 +436,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   palm crowns, the Tree Planting Tool and its six generator shapes (street clearance, one volume
   check, presets appended by ordinal), the plantings and amenities (why nothing shares a trunk's
   cell, bench runs, the irrigation controller and sprinklers), and the traps
+- `assets/docs/SCHOOL_TIME_AND_PA.md` -- The school time and PA set in Technology: clocks whose
+  hands a renderer draws from game time (dials supplied per block), the two-block clock/speaker
+  panels whose speaker half is an ordinary TTS-linkable speaker, the PA speakers, and the bell
+  schedule controller (game-time periods, linked devices, a minute check, no chunk loads)
 - `assets/docs/TRANSIT_SYSTEM.md` -- The Transit module: the fare gates (ticket, card and exit
   sensing, the gate's states, operator modes), the fare vending machine and its purchases, the
   ticket and stored-trip card, why the move from Technology kept every registry name, GUI id and
@@ -868,6 +872,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `audit_model_weight.py` -- how heavy every JSON block model is: quads per model and module, the
   heaviest models, and how many of their faces are hidden by the model's own closed opaque boxes
   (what `model_depth.py`'s pruning would remove). Offline, a few seconds a module
+- `gen_technology_school.py` -- the Technology tab's school set: the Micaplex clocks (dial
+  textures; each block's dial centres, radii and planes written into its tab line from the
+  numbers the model is drawn with, so `TileEntitySchoolClockRenderer` draws the hands exactly on
+  the face), the clock/speaker panels (two halves), the PA speakers, the bell schedule controller
+  and the hallway bell; `--check`, `--fragments`. `gen_technology_school_sounds.py` synthesises
+  the bell, tone and chime
 - `gen_transit_fare_vending.py` -- the fare vending machine's model, textures and blockstate
   (Transit): a free-standing machine two blocks tall in the invented CITYLINE livery, drawn from one
   block (so placed machines keep their metadata) with ambient occlusion off, since its upper half

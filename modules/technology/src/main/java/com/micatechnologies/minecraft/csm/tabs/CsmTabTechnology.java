@@ -10,10 +10,17 @@ import com.micatechnologies.minecraft.csm.technology.BlockMacBookPro;
 import com.micatechnologies.minecraft.csm.technology.BlockDeskDeviceFactory;
 import com.micatechnologies.minecraft.csm.technology.BlockSpeakerFactory;
 import com.micatechnologies.minecraft.csm.technology.ItemApplePencil;
+import com.micatechnologies.minecraft.csm.technology.school.BlockBellController;
+import com.micatechnologies.minecraft.csm.technology.school.BlockSchoolBell;
+import com.micatechnologies.minecraft.csm.technology.school.BlockSchoolClock;
+import com.micatechnologies.minecraft.csm.technology.school.BlockSchoolClockSpeakerPanel;
+import com.micatechnologies.minecraft.csm.technology.school.ItemBellLinker;
+import com.micatechnologies.minecraft.csm.technology.school.SchoolClockDial;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -135,6 +142,18 @@ public class CsmTabTechnology extends CsmTab {
         "com.micatechnologies.minecraft.csm.tts.BlockRedstoneTTS", fmlPreInitializationEvent);
     initTabItemIfLoaded("csm_tts",
         "com.micatechnologies.minecraft.csm.tts.ItemTtsLinker", fmlPreInitializationEvent);
+    // The school set: PA speakers, clocks, clock/speaker panels, the bell schedule controller,
+    // the hallway bell and the linker (gen_technology_school.py --fragments).
+    initTabBlock(new BlockSpeakerFactory("school_pa_speaker_cube", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.156250, 0.156250, 0.437500, 0.843750, 0.843750, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockSpeakerFactory("school_pa_speaker_wallbox", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.062500, 0.062500, 0.593750, 0.937500, 0.937500, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockSchoolClock("school_wall_clock", new double[]{1.4, 1.4, 12.8, 14.6, 14.6, 16.0}, new SchoolClockDial(EnumFacing.NORTH, 8.0, 8.0, 13.0, 6.6, true)));
+    initTabBlock(new BlockSchoolClock("school_double_clock", new double[]{5.2, 2.8, 0.6, 10.8, 14.4, 16.0}, new SchoolClockDial(EnumFacing.WEST, 5.4, 8.6, 6.4, 5.8, true), new SchoolClockDial(EnumFacing.EAST, 10.6, 8.6, 6.4, 5.8, true)));
+    initTabBlock(new BlockSchoolClock("school_hanging_clock", new double[]{2.2, 1.6, 5.4, 13.8, 16.0, 10.6}, new SchoolClockDial(EnumFacing.NORTH, 8.0, 7.4, 5.6, 5.8, true), new SchoolClockDial(EnumFacing.SOUTH, 8.0, 7.4, 10.4, 5.8, true)));
+    initTabBlock(new BlockSchoolClockSpeakerPanel("school_clock_speaker_panel", false, new double[]{0.0, 1.7, 13.2, 16.0, 14.3, 16.0}, new double[]{0.0, 2.0, 15.0, 16.0, 14.0, 16.0}, new SchoolClockDial(EnumFacing.NORTH, 8.0, 8.0, 13.4, 6.3, true)));
+    initTabBlock(new BlockSchoolClockSpeakerPanel("school_clock_speaker_panel_vertical", true, new double[]{1.7, 0.0, 13.2, 14.3, 16.0, 16.0}, new double[]{2.0, 0.0, 15.0, 14.0, 16.0, 16.0}, new SchoolClockDial(EnumFacing.NORTH, 8.0, 8.0, 13.4, 6.3, true)));
+    initTabBlock(new BlockBellController("school_bell_controller", new double[]{3.0, 2.0, 13.5, 13.0, 14.0, 16.0}));
+    initTabBlock(new BlockSchoolBell("school_bell_gong", new double[]{2.2, 1.0, 8.6, 13.8, 13.8, 16.0}));
+    initTabItem(ItemBellLinker.class, fmlPreInitializationEvent);
     initTabItem(new ItemDecorativeFactory("appleipadpro", "This iPad does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appleiphonese2020", "This iPhone does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appleiphonexr", "This iPhone does nothing and is only for looks!"));

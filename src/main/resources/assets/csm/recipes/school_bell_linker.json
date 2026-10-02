@@ -1,0 +1,29 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_technology"
+    }
+  ],
+  "pattern": [
+    " W ",
+    "SCS",
+    " S "
+  ],
+  "key": {
+    "S": {
+      "item": "csm:part_sheet_metal"
+    },
+    "W": {
+      "item": "csm:part_wiring_harness"
+    },
+    "C": {
+      "item": "csm:part_control_board"
+    }
+  },
+  "result": {
+    "item": "csm:school_bell_linker",
+    "count": 1
+  }
+}

@@ -7,5 +7,32 @@
         "stream": false
       }
     ]
+  },
+  "school_bell_ring": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:school_bell_ring",
+        "stream": false
+      }
+    ]
+  },
+  "school_tone": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:school_tone",
+        "stream": false
+      }
+    ]
+  },
+  "school_chime": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:school_chime",
+        "stream": false
+      }
+    ]
   }
 }
