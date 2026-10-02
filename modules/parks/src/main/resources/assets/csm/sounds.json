@@ -1,0 +1,38 @@
+{
+  "chainsaw_pull": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "csm:chainsaw_pull",
+        "stream": false
+      }
+    ]
+  },
+  "chainsaw_start": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "csm:chainsaw_start",
+        "stream": false
+      }
+    ]
+  },
+  "chainsaw_idle": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "csm:chainsaw_idle",
+        "stream": false
+      }
+    ]
+  },
+  "chainsaw_cut": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "csm:chainsaw_cut",
+        "stream": false
+      }
+    ]
+  }
+}

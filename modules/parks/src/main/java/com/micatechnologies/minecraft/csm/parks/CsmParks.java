@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.parks;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
+import com.micatechnologies.minecraft.csm.parks.tools.TreeToolEvents;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -60,6 +62,9 @@ public class CsmParks {
     CsmFabricatorCosts.registerRule(ParksFabricatorRules.TAB_ID, ParksFabricatorRules::price);
     CsmFabricatorCosts.registerRule(ParksFabricatorRules.PARKS_TAB_ID,
         ParksFabricatorRules::priceParks);
+
+    ParksSounds.registerSounds();
+    MinecraftForge.EVENT_BUS.register(new TreeToolEvents());
 
     proxy.preInit(event);
   }

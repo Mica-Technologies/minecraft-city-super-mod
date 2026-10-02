@@ -289,10 +289,12 @@ public final class TreeFelling {
    * @param world  the world
    * @param cut    where the log was
    * @param player who broke it
+   *
+   * @return the logs felled (not counting the one at {@code cut}), empty on the client
    */
-  public static void fell(World world, BlockPos cut, EntityPlayer player) {
+  public static Set<BlockPos> fell(World world, BlockPos cut, EntityPlayer player) {
     if (world.isRemote) {
-      return;
+      return new HashSet<>();
     }
     Cells cells = pos -> world.isBlockLoaded(pos) ? kind(world, pos) : Kind.GROUND;
     Set<BlockPos> logs = unsupportedLogs(cells, cut);
@@ -315,5 +317,6 @@ public final class TreeFelling {
     for (BlockPos p : orphanedLeaves(now, gone)) {
       world.setBlockState(p, Blocks.AIR.getDefaultState(), 3);
     }
+    return logs;
   }
 }
