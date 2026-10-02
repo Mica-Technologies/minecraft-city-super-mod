@@ -1,0 +1,14 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "csm:items/parks/chainsaw"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "csm:running": 1
+      },
+      "model": "csm:item/chainsaw_running"
+    }
+  ]
+}

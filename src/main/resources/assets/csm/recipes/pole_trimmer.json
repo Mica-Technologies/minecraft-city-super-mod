@@ -1,0 +1,27 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_parks"
+    }
+  ],
+  "pattern": [
+    "  H",
+    " S ",
+    "S  "
+  ],
+  "key": {
+    "H": {
+      "item": "csm:tree_shears"
+    },
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "stickWood"
+    }
+  },
+  "result": {
+    "item": "csm:pole_trimmer",
+    "count": 1
+  }
+}

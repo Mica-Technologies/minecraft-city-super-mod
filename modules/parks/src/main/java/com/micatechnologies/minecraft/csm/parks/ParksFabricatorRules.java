@@ -122,7 +122,7 @@ public final class ParksFabricatorRules {
     if (name.startsWith("plant_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SAPLING, 1));
     }
-    if (name.equals("tree_stake")) {
+    if (name.equals("tree_stake") || name.equals("brush_pile")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STICK, 2));
     }
     if (name.equals("ground_pea_gravel")) {

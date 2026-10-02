@@ -2,7 +2,7 @@
 
 Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings.
 
-!!! info "278 blocks in this tab"
+!!! info "279 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -32,6 +32,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Blue Spruce Log | `csm:tree_log_spruce_medium` | 2.0 | 5.0 | axe | 0 |
 | Blue Spruce Twig | `csm:tree_log_spruce_twig` | 2.0 | 5.0 | axe | 0 |
 | Boxwood Ball | `csm:shrub_boxwood` |  |  |  |  |
+| Brush Pile | `csm:brush_pile` | 0.0 | 0.0 |  | 0 |
 | Cabbage Palm Crown | `csm:tree_crown_palm_cabbage` | 0.2 | 1.0 |  | 0 |
 | Cabbage Palm Crown with Skirt | `csm:tree_crown_palm_cabbage_skirt` | 0.2 | 1.0 |  | 0 |
 | Cabbage Palm Log | `csm:tree_log_sabal_medium` | 2.0 | 5.0 | axe | 0 |

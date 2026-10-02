@@ -261,6 +261,90 @@ The searches are pure functions over a `Cells` view (`TreeFellingTest`).
 
 ---
 
+## Tree tools
+
+Next to the Tree Planting Tool in the Trees & Plants tab, three tools take trees down and back
+(`parks/tools/`): the **chainsaw** (`ItemChainsaw`), the **pole trimmer** (`ItemPoleTrimmer`) and
+the **tree shears** (`ItemTreeShears`). None is enchantable and none is repairable by combining:
+the chainsaw is not an axe to be given Efficiency or Unbreaking, and fuel and wear are its cost.
+The chipper, stump grinder and any vehicle were left out on purpose.
+
+### The chainsaw
+
+| Action | What it does |
+|---|---|
+| Right-click (off) | Pulls the cord. It catches on a random third to fifth pull; each pull has its sound, the last the start, then it idles |
+| Sneak + right-click (off) | Refuels: one item from the inventory, the one burning longest that still fits; a lava bucket hands back its bucket. In creative, with no fuel to hand, it fills the tank |
+| Sneak + right-click (running) | Stops it |
+| Left-click a log (running) | Cuts fast, and the tree standing on the log falls at once. Sneaking cuts only that log, as with a hand-broken tree log |
+
+- **Fuel, because a free tree-feller is a free wood farm.** It burns what a furnace burns
+  (`TileEntityFurnace.getItemBurnTime`, which includes Forge's fuel event), kept on the stack in
+  burn ticks (`ChainsawFuel`). The tank holds 20,000 ticks, a lava bucket's worth, so a lava bucket
+  only goes into an empty saw. It burns one tick a tick while running in the hand and 40 a log
+  felled: a piece of coal is 80 seconds of idling or 40 logs. It also wears one durability a log
+  (1,200 in all).
+- **Running state.** The stack holds whether it runs, the pulls so far and the pulls needed. It
+  stops when the tank runs dry, when it has not been the selected item for three seconds, or when
+  it is dropped. Fuel is written once a second, not every tick, so the held item is not resent to
+  the client each tick, and `shouldCauseReequipAnimation` keeps a fuel change from bobbing it. The
+  item model swaps to its running sprite by the `csm:running` property, registered in the client
+  proxy because `IItemPropertyGetter` is client-only.
+- **Felling.** `onBlockStartBreak` takes over the break of a log (after the break event has
+  passed): it removes and harvests the cut log itself, then fells. This module's trees fall by
+  `TreeFelling`, exactly as a hand-broken log fells them. Any other tree falls by
+  `AnyTreeFelling`, a guess kept timid: logs of any mod (`BlockLog`, `isWood`, or an ore
+  dictionary `log*` name) joined to the cut through faces, edges and corners, **at or above the
+  cut** and within 12 blocks sideways, and only when they touch at least two **natural** leaves
+  (vanilla marks a leaves block a player placed as not decaying). A log cabin has no leaves, so a
+  wall log is cut alone. More than 512 logs is taken as a build and nothing past the cut falls.
+  Leaves within 8 steps of the felled logs go, except those within 4 of a log that stays (a
+  neighbouring tree's, as vanilla leaves live within four of a log) or of leaves past the search;
+  at most 2,048. Leaves drop what decaying leaves drop. A cell the player may not change is skipped.
+- **The mess.** A felling leaves brush piles (`BlockBrushPile`: low, walked through, broken
+  instantly, two to four sticks) around the stump, `chainsawBrushPiles` in Core's `csm.cfg`
+  (`parks` category): `NONE`, `FEW` (default, one to three) or `MANY` (three to eight). A pile goes
+  only in an air cell on a solid top **open to the sky**, within four blocks of the stump and two
+  up or down, one a column, never replacing anything. The sky test is what keeps them out of
+  buildings: a tree felled beside a house leaves nothing on its floor, under its porch or in its
+  basement. Placing a block over a pile replaces it, as with tall grass.
+- **Sounds** (`ParksSounds`, `gen_parks_tool_sounds.py`): the pull, the start, a one-second idle
+  played back to back from the server while it runs, and the cut. All synthesised.
+
+### The pole trimmer and the tree shears
+
+Manual, no fuel, durability (350 and 476). Both cut small growth only (`BranchCutting`): leaves
+of any mod, this module's hanging moss, and its twig and thin logs, and of a log only when what
+falls with it is a branch: no more than 48 logs, every one twig or thin (`isBranch`). A thin
+leader carrying the crown, a thicker log, a palm crown or another mod's log is too big: a
+left-click on one is cancelled with the hint "Too big for the ... -- use a chainsaw"
+(`TreeToolEvents`). On what they may cut they mine fast.
+
+Right-click cuts: the shears within normal reach, the pole trimmer up to 8 blocks away by its own
+ray trace from the eyes, for trimming a canopy from the ground. A cut log goes through
+`TreeFelling.fell`, so the branch past the cut falls with the leaves only it held, and the tree
+stays (`BranchCutTest` cuts every small log of every preset to hold that). A cut leaves block takes
+the leaves it alone kept within reach of a log (`TreeFelling.orphanedLeaves`). Each cut fires the
+break event, so protection mods can refuse it.
+
+### Bounds
+
+| | Limit |
+|---|---|
+| Logs felled by the chainsaw on another mod's tree | 512 (more: nothing past the cut falls) |
+| Sideways reach of that felling | 12 blocks from the cut |
+| Leaves taken with it | 2,048, within 8 steps of a felled log |
+| Logs taken by one branch tool cut | 48, all twig or thin |
+| Brush piles | 0, 1-3 or 3-8; within 4 blocks of the stump |
+| This module's trees | `TreeFelling`'s own bounds (2,048 logs, 16,384 leaves) |
+
+The searches are pure over cell views and tested without a world (`AnyTreeFellingTest`,
+`ChainsawFuelTest`, `BranchCutTest`). Recipes (Core's `recipes/`, on `forge:mod_loaded`
+`csm_parks`): the chainsaw from iron, sheet metal and a piston; the tree shears from shears and two
+sticks; the pole trimmer from the tree shears and two sticks.
+
+---
+
 ## Street tree accessories and plantings (Trees & Plants tab)
 
 All written by `gen_park_plantings.py`, and built from three classes:
@@ -439,6 +523,8 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
 | `gen_park_plantings.py` | Every block in the accessories and plantings catalogue, the regional plantings and their potted copies, and the nursery, garden centre and farm pieces: textures, element models, blockstates, item models and lang. `--fragments` |
 | `gen_park_amenities.py` | The same for the amenities. It borrows `gen_park_plantings.py`'s helpers |
 | `gen_park_legacy_amenities.py` | The models, textures and blockstates of the five amenities that kept their old ids (both swing sets, the teeter totter, the trash can, the bird bath). It writes no lang and no tab lines, since those blocks already have them |
+| `gen_parks_tools.py` | The tree tools' item sprites and models (the chainsaw's running sprite by its `csm:running` override) and the brush pile's textures, model and blockstate. `--check`. The tools' lang and tab lines are hand-written |
+| `gen_parks_tool_sounds.py` | The chainsaw's four sounds, synthesised (numpy to ffmpeg to OGG), and their `sounds.json` entries. No `--check`: Vorbis is not byte-stable |
 
 All three take `--check`. Each writes lang lines by key in all four languages, leaving every other
 line in place, so the three can share the module's lang files.

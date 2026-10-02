@@ -1,0 +1,26 @@
+{
+  "type": "forge:ore_shapeless",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_parks"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "minecraft:shears"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "stickWood"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "stickWood"
+    }
+  ],
+  "result": {
+    "item": "csm:tree_shears",
+    "count": 1
+  }
+}

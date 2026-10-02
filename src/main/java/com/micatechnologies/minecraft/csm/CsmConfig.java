@@ -133,6 +133,19 @@ public class CsmConfig {
   private static final int FIELD_DEFAULT_PARKING_CAP_EMERALDS = 64;
   private static final double FIELD_DEFAULT_PARKING_CAP_MONEY = 100.0;
 
+  private static final String CATEGORY_PARKS = "parks";
+  private static final String CATEGORY_PARKS_DESCRIPTION =
+      "Parks & Greenery (csm_parks): the tree tools.";
+  private static final String FIELD_KEY_CHAINSAW_BRUSH_PILES = "chainsawBrushPiles";
+  private static final String FIELD_DESCRIPTION_CHAINSAW_BRUSH_PILES =
+      "How many brush piles a tree felled with the chainsaw leaves around its stump: NONE, FEW "
+          + "or MANY. They are placed only on open ground under the sky, never replacing a "
+          + "block.";
+  private static final String FIELD_DEFAULT_CHAINSAW_BRUSH_PILES = "FEW";
+  private static final String[] FIELD_VALUES_CHAINSAW_BRUSH_PILES = {"NONE", "FEW", "MANY"};
+
+  private static String chainsawBrushPiles = FIELD_DEFAULT_CHAINSAW_BRUSH_PILES;
+
   private static int parkingEmeraldsPerBlock = FIELD_DEFAULT_PARKING_EMERALDS_PER_BLOCK;
   private static int parkingMinutesPerBlock = FIELD_DEFAULT_PARKING_MINUTES_PER_BLOCK;
   private static int parkingMaxMinutes = FIELD_DEFAULT_PARKING_MAX_MINUTES;
@@ -261,6 +274,10 @@ public class CsmConfig {
         FIELD_DEFAULT_PARKING_MONEY_PER_BLOCK,
         "Money a new meter charges per block of time, in the economy's currency.", 0.01,
         1000000.0).getDouble();
+    config.setCategoryComment(CATEGORY_PARKS, CATEGORY_PARKS_DESCRIPTION);
+    chainsawBrushPiles = config.getString(FIELD_KEY_CHAINSAW_BRUSH_PILES, CATEGORY_PARKS,
+        FIELD_DEFAULT_CHAINSAW_BRUSH_PILES, FIELD_DESCRIPTION_CHAINSAW_BRUSH_PILES,
+        FIELD_VALUES_CHAINSAW_BRUSH_PILES);
     configVersion++;
 
     if (config.hasChanged()) {
@@ -324,6 +341,24 @@ public class CsmConfig {
             FIELD_DESCRIPTION_TRAFFIC_POLE_IGNORE_BLOCKS)
         .setValues(serialized);
     config.save();
+  }
+
+  /**
+   * How many brush piles a chainsaw-felled tree leaves: {@code NONE}, {@code FEW} or
+   * {@code MANY}, upper case. Read by the Parks &amp; Greenery module.
+   *
+   * @return the setting, {@code FEW} if it is not one of the three
+   *
+   * @since 2026.10
+   */
+  public static String getChainsawBrushPiles() {
+    String v = chainsawBrushPiles == null ? "" : chainsawBrushPiles.trim().toUpperCase();
+    for (String allowed : FIELD_VALUES_CHAINSAW_BRUSH_PILES) {
+      if (allowed.equals(v)) {
+        return v;
+      }
+    }
+    return FIELD_DEFAULT_CHAINSAW_BRUSH_PILES;
   }
 
   /** Emeralds a newly placed parking meter charges per block of time. */

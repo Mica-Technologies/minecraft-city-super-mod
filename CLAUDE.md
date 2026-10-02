@@ -93,7 +93,7 @@ container per jar.
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
-| `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, plantings and park amenities; two tabs, Trees & Plants and Parks |
+| `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears), plantings and park amenities; two tabs, Trees & Plants and Parks |
 | `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, bus station departure boards and bay displays (`transit.board`: listing the stops around them, paging across a bank, spoken call-outs only through Core's TTS service), and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), stations (`transit.station`: the subway entrance kiosk built from glass and roof pieces with agency fascias and name boards, the open stair entrance's railing and lit globe lamps, the fare line railing that joins the fare gates, its service gate, line bullets and the agent's booth counter), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass) and airside pieces (the same package: airfield lights and signs switched a circuit at a time by redstone, the wind sock, beacon and masts, the stand sign, ground equipment on Roads' utility box, and a walk-through jet bridge; no aircraft); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -724,6 +724,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_park_legacy_amenities.py` -- the five Parks amenities that kept their old ids: both swing
   sets (OBJ, 2.78 m to the beam), the teeter totter, the slatted trash can and the low-poly bird
   bath; writes no lang or tab lines; `--check`
+- `gen_parks_tools.py` -- the tree tools' item sprites and models (the chainsaw with a running
+  sprite) and the brush pile a felled tree leaves; `--check`. `gen_parks_tool_sounds.py`
+  synthesises the chainsaw's pull, start, idle and cut sounds (numpy to ffmpeg to OGG) and writes
+  the Parks module's `sounds.json`
 - `gen_produce_crates.py`, `gen_furnishings_gameroom.py`, `gen_novelties.py`,
   `gen_novelties_seasonal.py`, `gen_furnishings_showpieces.py` -- the Furniture & Novelties
   models rebuilt in 2026-09: produce crates; bar and game room pieces and the wooden barrel;

@@ -1,0 +1,30 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_parks"
+    }
+  ],
+  "pattern": [
+    " II",
+    "SPI",
+    "SS "
+  ],
+  "key": {
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "S": {
+      "item": "csm:part_sheet_metal"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    }
+  },
+  "result": {
+    "item": "csm:chainsaw",
+    "count": 1
+  }
+}
