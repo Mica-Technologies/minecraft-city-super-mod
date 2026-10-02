@@ -103,6 +103,13 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   private final List<TooLarge> tooLarge = new ArrayList<>();
 
+  /**
+   * Floods that stopped at an unloaded chunk, while an anchor still waits on one: an anchor whose
+   * cell is in one shares its result instead of flooding the same room up to the same chunk, and
+   * a block change inside one ends the wait of the anchors that made it.
+   */
+  private final List<UnloadedFlood> unloadedFloods = new ArrayList<>();
+
   /** Spaces taken apart this step for a rescan, kept until their cells are re-homed. */
   private final List<ThermalSpace> detached = new ArrayList<>();
 
@@ -132,12 +139,27 @@ public final class HvacThermalWorld implements IWorldEventListener {
     long scannedCells;
     long blockUpdates;
     long relevantBlockUpdates;
+    long waitSkips;
 
     void reset(long now) {
       sinceTick = now;
       steps = rescanNanos = attachNanos = couplingNanos = stepNanos = playerNanos = 0;
       maxTickNanos = dirtyRescans = periodicRescans = couplings = scans = scannedCells = 0;
-      blockUpdates = relevantBlockUpdates = 0;
+      blockUpdates = relevantBlockUpdates = waitSkips = 0;
+    }
+  }
+
+  /** A flood that reached an unloaded chunk: the cells it covered, and that chunk. */
+  static final class UnloadedFlood {
+    final LongOpenHashSet cells;
+    final long chunk;
+
+    /** Set once the chunk has loaded or a block inside the cells changed: no longer shared. */
+    boolean stale;
+
+    UnloadedFlood(LongOpenHashSet cells, long chunk) {
+      this.cells = cells;
+      this.chunk = chunk;
     }
   }
 
@@ -230,13 +252,84 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   // region Space lifecycle
 
-  /** Tries to attach every unattached anchor that is due. */
+  /**
+   * Tries to attach every unattached anchor that is due. An anchor waiting for a chunk is passed
+   * over without a flood until that chunk loads.
+   */
   private void attachPending(long now) {
+    // Keep only the unloaded floods some anchor still waits on, so the list cannot grow.
+    java.util.Set<UnloadedFlood> live = java.util.Collections.newSetFromMap(
+        new IdentityHashMap<>());
     for (ThermalAnchor a : new ArrayList<>(anchors.values())) {
-      if (a.space == null && now >= a.retryTick) {
-        attach(a, now);
+      if (a.space != null || now < a.retryTick) {
+        if (a.space == null && a.waitFlood != null && !a.waitFlood.stale) {
+          live.add(a.waitFlood);
+        }
+        continue;
+      }
+      if (stillWaiting(a)) {
+        perf.waitSkips++;
+        if (a.waitFlood != null) {
+          live.add(a.waitFlood);
+        }
+        continue;
+      }
+      attach(a, now);
+      if (a.waitFlood != null) {
+        live.add(a.waitFlood);
       }
     }
+    unloadedFloods.retainAll(live);
+  }
+
+  /**
+   * Whether an anchor's last attach stopped at chunks none of which has loaded since, with no
+   * block changed in the room it flooded: another attempt would fail the same way.
+   */
+  private boolean stillWaiting(ThermalAnchor a) {
+    if (a.waitChunks == null) {
+      return false;
+    }
+    if ((a.waitFlood == null || !a.waitFlood.stale) && noneLoaded(a.waitChunks)) {
+      return true;
+    }
+    a.waitChunks = null;
+    a.waitFlood = null;
+    return false;
+  }
+
+  private boolean noneLoaded(long[] chunkKeys) {
+    for (long key : chunkKeys) {
+      if (chunkLoaded(key)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean chunkLoaded(long key) {
+    return world.getChunkProvider().getLoadedChunk((int) key, (int) (key >>> 32)) != null;
+  }
+
+  /**
+   * An unloaded flood from earlier this step (or still waiting) that already holds this cell: an
+   * anchor in the same room would only flood up to the same unloaded chunk again.
+   */
+  @Nullable
+  private UnloadedFlood unloadedFloodHolding(long key) {
+    for (UnloadedFlood f : unloadedFloods) {
+      if (f.stale) {
+        continue;
+      }
+      if (chunkLoaded(f.chunk)) {
+        f.stale = true;
+        continue;
+      }
+      if (f.cells.contains(key)) {
+        return f;
+      }
+    }
+    return null;
   }
 
   /**
@@ -247,6 +340,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
   private void attach(ThermalAnchor a, long now) {
     ThermalCellSource cellSource = HvacAirflow.worldSource(world);
     ThermalScanner.Status last = ThermalScanner.Status.NOT_ENCLOSED;
+    it.unimi.dsi.fastutil.longs.LongArrayList waitOn = null;
+    UnloadedFlood flood = null;
     BlockPos p = a.pos;
     for (int i = -1; i < 6; i++) {
       int x = p.getX();
@@ -261,6 +356,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
       byte kind = cellSource.classify(x, y, z);
       if (kind == ThermalCellSource.UNLOADED) {
         last = ThermalScanner.Status.UNLOADED;
+        waitOn = addChunk(waitOn, chunkKey(x >> 4, z >> 4));
         continue;
       }
       if (kind != ThermalCellSource.AIR) {
@@ -273,6 +369,14 @@ public final class HvacThermalWorld implements IWorldEventListener {
           last = ThermalScanner.Status.TOO_LARGE;
           continue;
         }
+        UnloadedFlood shared = unloadedFloodHolding(key);
+        if (shared != null) {
+          // Another anchor in this room flooded it and stopped at a chunk still unloaded.
+          last = ThermalScanner.Status.UNLOADED;
+          flood = shared;
+          waitOn = addChunk(waitOn, shared.chunk);
+          break;
+        }
         ThermalScanner.Result r = scan(cellSource, x, y, z);
         if (r.status == ThermalScanner.Status.OK) {
           s = createSpace(r, key, now);
@@ -282,6 +386,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
           }
           last = r.status;
           if (r.status == ThermalScanner.Status.UNLOADED) {
+            flood = new UnloadedFlood(r.cells, chunkKey(r.unloadedX >> 4, r.unloadedZ >> 4));
+            unloadedFloods.add(flood);
+            waitOn = addChunk(waitOn, flood.chunk);
             break; // the other faces will reach the same unloaded chunk
           }
           continue;
@@ -291,7 +398,12 @@ public final class HvacThermalWorld implements IWorldEventListener {
       return;
     }
     a.status = last;
-    if (last != ThermalScanner.Status.UNLOADED) {
+    if (last == ThermalScanner.Status.UNLOADED) {
+      a.waitChunks = waitOn.toLongArray();
+      a.waitFlood = flood;
+    } else {
+      a.waitChunks = null;
+      a.waitFlood = null;
       // Open to the sky or part of something too big: whatever it saved no longer describes a
       // room, and must not seed one if the room is closed up later.
       a.savedTemp = Float.NaN;
@@ -299,6 +411,17 @@ public final class HvacThermalWorld implements IWorldEventListener {
     a.retryTick = now + (last == ThermalScanner.Status.UNLOADED ? RETRY_UNLOADED_TICKS
         : last == ThermalScanner.Status.TOO_LARGE ? RETRY_TOO_LARGE_TICKS
             : RETRY_NOT_ENCLOSED_TICKS);
+  }
+
+  private static it.unimi.dsi.fastutil.longs.LongArrayList addChunk(
+      @Nullable it.unimi.dsi.fastutil.longs.LongArrayList list, long key) {
+    if (list == null) {
+      list = new it.unimi.dsi.fastutil.longs.LongArrayList(2);
+    }
+    if (!list.contains(key)) {
+      list.add(key);
+    }
+    return list;
   }
 
   private ThermalScanner.Result scan(ThermalCellSource src, int x, int y, int z) {
@@ -313,6 +436,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
     a.cell = cell;
     a.region = s.regionOfCell(cell);
     a.status = ThermalScanner.Status.OK;
+    a.waitChunks = null;
+    a.waitFlood = null;
     s.anchors.add(a);
     // The saved value has been used (or the space was already live); a later detach refreshes it.
     a.savedTemp = Float.NaN;
@@ -497,6 +622,13 @@ public final class HvacThermalWorld implements IWorldEventListener {
       if (s.idle) {
         continue; // asleep: rescanned, if dirty, once something wakes it
       }
+      if (s.waitChunks != null) {
+        if (noneLoaded(s.waitChunks)) {
+          perf.waitSkips++;
+          continue; // its last rescan stopped at a chunk that is still not loaded
+        }
+        s.waitChunks = null;
+      }
       long age = now - s.lastScanTick;
       if (s.dirty && age >= RESCAN_DEBOUNCE_TICKS) {
         due.add(s);
@@ -562,6 +694,14 @@ public final class HvacThermalWorld implements IWorldEventListener {
   }
 
   private void restore(ThermalSpace s, List<ThermalAnchor> list, long now) {
+    it.unimi.dsi.fastutil.longs.LongArrayList waitOn = null;
+    for (ThermalAnchor a : list) {
+      if (a.status == ThermalScanner.Status.UNLOADED && a.waitChunks != null) {
+        for (long key : a.waitChunks) {
+          waitOn = addChunk(waitOn, key);
+        }
+      }
+    }
     LongIterator it = s.cells.iterator();
     while (it.hasNext()) {
       long c = it.nextLong();
@@ -571,6 +711,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
     }
     s.dirty = true;
     s.lastScanTick = now + RETRY_UNLOADED_TICKS; // try again shortly
+    s.waitChunks = waitOn == null ? null : waitOn.toLongArray(); // once one of them loads
     spaces.add(s);
     for (ThermalAnchor a : list) {
       if (a.space == null && (anchors.get(a.pos) == a || a.kind == ThermalAnchor.PLAYER)) {
@@ -877,7 +1018,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
       }
     }
     // Cheapest first: most changes in a world are nowhere near a room.
-    if (!waiting && !nearSpace(pos.getX(), pos.getY(), pos.getZ()) && !inAnyTooLarge(key)) {
+    if (!waiting && !nearSpace(pos.getX(), pos.getY(), pos.getZ()) && !inAnyTooLarge(key)
+        && !inAnyUnloadedFlood(key)) {
       return;
     }
     // A change that leaves the cell as it was to air and heat (a lamp switching, a machine
@@ -890,11 +1032,20 @@ public final class HvacThermalWorld implements IWorldEventListener {
     long now = world.getTotalWorldTime();
     markDirtyAround(pos.getX(), pos.getY(), pos.getZ());
     tooLarge.removeIf(t -> t.cells.contains(key));
+    for (UnloadedFlood f : unloadedFloods) {
+      if (f.cells.contains(key)) {
+        f.stale = true; // the room changed: the anchors that flooded it try again
+      }
+    }
     // A roof going on may enclose an anchor that could not find a space: let it try again soon.
     if (waiting) {
       for (ThermalAnchor a : list) {
-        if (a.space == null && a.retryTick > now + RESCAN_DEBOUNCE_TICKS) {
-          a.retryTick = now + RESCAN_DEBOUNCE_TICKS;
+        if (a.space == null) {
+          a.waitChunks = null;
+          a.waitFlood = null;
+          if (a.retryTick > now + RESCAN_DEBOUNCE_TICKS) {
+            a.retryTick = now + RESCAN_DEBOUNCE_TICKS;
+          }
         }
       }
     }
@@ -926,6 +1077,15 @@ public final class HvacThermalWorld implements IWorldEventListener {
     return false;
   }
 
+  private boolean inAnyUnloadedFlood(long key) {
+    for (UnloadedFlood f : unloadedFloods) {
+      if (!f.stale && f.cells.contains(key)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private boolean inAnyTooLarge(long key) {
     for (TooLarge t : tooLarge) {
       if (t.cells.contains(key)) {
@@ -946,6 +1106,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
     ThermalSpace s = cellToSpace.get(cell);
     if (s != null) {
       s.dirty = true;
+      s.waitChunks = null; // a change in the room: the rescan may no longer reach that chunk
     }
   }
 
