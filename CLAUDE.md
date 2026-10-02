@@ -708,7 +708,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   the stack-aware post shore, and rebar mat, dowels, column cage and bundle. Reuses gen_scaffold's
   element helpers so every face has fitted UVs; `--check` fails on drift
 - `gen_trees.py` -- the Parks & Greenery tree kit: bark and leaf-cluster textures (an autumn set
-  drawn with its summer sibling's seed), palm crown sheets (the Joshua tree's rosette among them),
+  drawn with its summer sibling's seed, and the fruit trees' fruiting sets the same way with the
+  fruit dotted on), palm crown sheets (the Joshua tree's rosette and the banana among them),
   moss, the log and leaves placeholder models and blockstates, and the lang for woods, leaves and planting presets. Logs and leaves are
   drawn in Java from their connections; the catalogue only appends, so existing textures never
   change. `--fragments` prints the tab lines; `--check` fails on drift

@@ -109,6 +109,14 @@ WOODS = [
                               "plátano de California", "kalifornisk platan"), "mottled_white"),
     ("bluegum", "BLUE_GUM", ("Blue Gum", "Blauer Eukalyptus", "eucalipto azul",
                              "blå eukalyptus"), "streaky"),
+    # GitHub #250, fruit trees. The banana's "log" is its pseudostem of leaf sheaths.
+    ("citrus", "CITRUS", ("Citrus", "Zitrus", "cítrico", "citrus"), "smooth_brown"),
+    ("avocado", "AVOCADO", ("Avocado", "Avocado", "aguacate", "avokado"), "fissured_dark"),
+    ("olive", "OLIVE", ("Olive", "Olivenbaum", "olivo", "olivträd"), "twisted_grey"),
+    ("apple", "APPLE", ("Apple", "Apfelbaum", "manzano", "äppelträd"), "scaly_grey"),
+    ("mulberry", "MULBERRY", ("Mulberry", "Maulbeerbaum", "morera", "mullbärsträd"),
+     "furrowed_orange"),
+    ("banana", "BANANA", ("Banana", "Banane", "platanera", "banan"), "sheath"),
 ]
 
 # id -> (Java constant, pixels across, name patterns en/de/es/sv). Order = TreeLogWidth order.
@@ -132,6 +140,18 @@ CLIPPED_NAMES = ("Clipped {w} Leaves", "Geschnittenes Laub ({w})", "Hojas recort
 ARBORVITAE = ("Arborvitae", "Lebensbaum", "tuya", "tuja")
 AUTUMN_NAMES = ("Autumn {w} Leaves", "Herbstlaub ({w})", "Hojas otoñales de {w}",
                 "Höstlöv ({w})")
+FRUITING_NAMES = ("Fruiting {w} Leaves", "Laub mit Früchten ({w})", "Hojas con fruto de {w}",
+                  "Löv med frukt ({w})")
+ORANGE_NAMES = ("Orange", "Orange", "naranjo", "apelsin")
+LEMON_NAMES = ("Lemon", "Zitrone", "limonero", "citron")
+LIME_NAMES = ("Lime", "Limette", "limero", "lime")
+GRAPEFRUIT_NAMES = ("Grapefruit", "Grapefruit", "pomelo", "grapefrukt")
+HONEYCRISP_NAMES = ("Honeycrisp Apple", "Apfel 'Honeycrisp'", "manzano Honeycrisp",
+                    "äpple 'Honeycrisp'")
+GRANNY_NAMES = ("Granny Smith Apple", "Apfel 'Granny Smith'", "manzano Granny Smith",
+                "äpple 'Granny Smith'")
+GOLDEN_NAMES = ("Golden Delicious Apple", "Apfel 'Golden Delicious'",
+                "manzano Golden Delicious", "äpple 'Golden Delicious'")
 
 # Leaves: (id, TreeLeafType constant, species names en/de/es/sv, texture style, palette light to
 # dark, name patterns). Order = tab order. A season is a separate block whose sprite is drawn
@@ -220,12 +240,58 @@ LEAVES = [
      [(92, 120, 92), (72, 100, 76), (56, 82, 62), (42, 64, 50)], NEEDLE_NAMES),
     ("bluegum", "AIRY", WOODS[32][2], "sickle",
      [(126, 146, 118), (104, 126, 100), (84, 106, 84), (66, 86, 68)], LEAF_NAMES),
+    # GitHub #250, fruit trees. A fruiting set is its plain sibling's sprite (drawn with the same
+    # seed, SEASON_OF) with the fruit dotted over it (FRUIT), so a crown of it bears fruit on
+    # every face that shows.
+    ("citrus", "BROADLEAF", WOODS[33][2], "broad",
+     [(84, 130, 56), (64, 110, 44), (48, 90, 36), (34, 70, 28)], LEAF_NAMES),
+    ("citrus_orange", "BROADLEAF", ORANGE_NAMES, "broad",
+     [(84, 130, 56), (64, 110, 44), (48, 90, 36), (34, 70, 28)], FRUITING_NAMES),
+    ("citrus_lemon", "BROADLEAF", LEMON_NAMES, "broad",
+     [(84, 130, 56), (64, 110, 44), (48, 90, 36), (34, 70, 28)], FRUITING_NAMES),
+    ("citrus_lime", "BROADLEAF", LIME_NAMES, "broad",
+     [(84, 130, 56), (64, 110, 44), (48, 90, 36), (34, 70, 28)], FRUITING_NAMES),
+    ("citrus_grapefruit", "BROADLEAF", GRAPEFRUIT_NAMES, "broad",
+     [(84, 130, 56), (64, 110, 44), (48, 90, 36), (34, 70, 28)], FRUITING_NAMES),
+    ("avocado", "BROADLEAF", WOODS[34][2], "broad_large",
+     [(88, 124, 54), (68, 104, 44), (52, 86, 36), (38, 66, 28)], FRUITING_NAMES),
+    ("olive", "AIRY", WOODS[35][2], "lanceolate",
+     [(184, 192, 168), (154, 166, 138), (122, 138, 108), (94, 110, 84)], LEAF_NAMES),
+    ("apple", "BROADLEAF", WOODS[36][2], "broad",
+     [(116, 154, 68), (96, 134, 56), (76, 114, 46), (60, 94, 38)], LEAF_NAMES),
+    ("apple_honeycrisp", "BROADLEAF", HONEYCRISP_NAMES, "broad",
+     [(116, 154, 68), (96, 134, 56), (76, 114, 46), (60, 94, 38)], FRUITING_NAMES),
+    ("apple_granny", "BROADLEAF", GRANNY_NAMES, "broad",
+     [(116, 154, 68), (96, 134, 56), (76, 114, 46), (60, 94, 38)], FRUITING_NAMES),
+    ("apple_golden", "BROADLEAF", GOLDEN_NAMES, "broad",
+     [(116, 154, 68), (96, 134, 56), (76, 114, 46), (60, 94, 38)], FRUITING_NAMES),
+    ("mulberry", "BROADLEAF", WOODS[37][2], "broad_large",
+     [(108, 156, 66), (86, 136, 54), (68, 114, 44), (52, 94, 36)], FRUITING_NAMES),
 ]
 SEASON_OF = {"elm_autumn": "elm", "plane_autumn": "plane", "honeylocust_autumn": "honeylocust",
              "ginkgo_autumn": "ginkgo", "poplar_autumn": "poplar",
              "sweetgum_autumn": "sweetgum", "birch_autumn": "birch",
              "maple_japanese_autumn": "maple_japanese", "beech_autumn": "beech",
-             "oak_autumn": "oak"}
+             "oak_autumn": "oak",
+             "citrus_orange": "citrus", "citrus_lemon": "citrus", "citrus_lime": "citrus",
+             "citrus_grapefruit": "citrus", "apple_honeycrisp": "apple",
+             "apple_granny": "apple", "apple_golden": "apple"}
+
+# Fruit dotted over a fruiting set's sprite: leaf id -> [(light, mid, dark, radius across,
+# radius down, how many)], each a little shaded ball (or a pear, or a berry) on the leaves.
+FRUIT = {
+    "citrus_orange": [((252, 176, 52), (238, 140, 26), (196, 102, 18), 1.6, 1.6, 9)],
+    "citrus_lemon": [((254, 240, 104), (238, 214, 52), (194, 168, 30), 1.4, 1.8, 9)],
+    "citrus_lime": [((156, 206, 76), (114, 172, 46), (78, 128, 32), 1.2, 1.3, 9)],
+    "citrus_grapefruit": [((254, 220, 132), (242, 188, 108), (212, 138, 96), 2.2, 2.2, 6)],
+    "avocado": [((104, 118, 60), (62, 76, 38), (32, 40, 22), 1.5, 2.3, 7)],
+    "olive": [((92, 74, 92), (60, 46, 62), (36, 26, 38), 0.8, 1.0, 6)],
+    "apple_honeycrisp": [((236, 104, 64), (202, 48, 42), (144, 30, 32), 1.8, 1.7, 8)],
+    "apple_granny": [((178, 220, 98), (142, 194, 68), (102, 150, 46), 1.8, 1.7, 8)],
+    "apple_golden": [((248, 226, 110), (230, 198, 70), (186, 156, 48), 1.8, 1.7, 8)],
+    "mulberry": [((112, 44, 84), (74, 24, 52), (42, 12, 30), 0.9, 1.4, 11),
+                 ((214, 64, 70), (182, 36, 52), (130, 24, 40), 0.9, 1.4, 4)],
+}
 
 # Palm crowns: (id, TreeLeafType constant, sheet, names en/de/es/sv). Order = tab order.
 PALMS = [
@@ -254,8 +320,13 @@ PALMS = [
     ("joshua", "ROSETTE", "joshua",
      ("Joshua Tree Rosette", "Josua-Palmlilien-Rosette", "Roseta de árbol de Josué",
       "Josuaträdsrosett")),
+    ("banana", "PALM_BANANA", "banana",
+     ("Banana Crown", "Bananenstauden-Krone", "Copa de platanera", "Bananplantkrona")),
+    ("banana_fruit", "PALM_BANANA_FRUIT", "banana",
+     ("Banana Crown with Fruit", "Bananenstauden-Krone mit Früchten",
+      "Copa de platanera con racimo", "Bananplantkrona med klase")),
 ]
-PALM_SHEETS = ["fan", "feather", "cabbage", "canary", "coconut", "king", "joshua"]
+PALM_SHEETS = ["fan", "feather", "cabbage", "canary", "coconut", "king", "joshua", "banana"]
 
 # Tree Planting Tool presets: TreePreset id -> names en/de/es/sv. Order = TreePreset order.
 PRESETS = [
@@ -320,6 +391,21 @@ PRESETS = [
                   "Kalifornisk platan")),
     ("bluegum", ("Blue Gum Eucalyptus", "Blauer Eukalyptus", "Eucalipto azul",
                  "Blå eukalyptus")),
+    # GitHub #250, fruit trees.
+    ("orange", ("Orange Tree", "Orangenbaum", "Naranjo", "Apelsinträd")),
+    ("lemon", ("Lemon Tree", "Zitronenbaum", "Limonero", "Citronträd")),
+    ("lime", ("Lime Tree", "Limettenbaum", "Limero", "Limeträd")),
+    ("grapefruit", ("Grapefruit Tree", "Grapefruitbaum", "Pomelo", "Grapefruktträd")),
+    ("avocado", ("Avocado Tree", "Avocadobaum", "Aguacate", "Avokadoträd")),
+    ("olive", ("Olive Tree", "Olivenbaum", "Olivo", "Olivträd")),
+    ("banana", ("Banana Plant", "Bananenstaude", "Platanera", "Bananplanta")),
+    ("applehoneycrisp", ("Honeycrisp Apple Tree", "Apfelbaum 'Honeycrisp'",
+                         "Manzano Honeycrisp", "Äppelträd 'Honeycrisp'")),
+    ("applegranny", ("Granny Smith Apple Tree", "Apfelbaum 'Granny Smith'",
+                     "Manzano Granny Smith", "Äppelträd 'Granny Smith'")),
+    ("applegolden", ("Golden Delicious Apple Tree", "Apfelbaum 'Golden Delicious'",
+                     "Manzano Golden Delicious", "Äppelträd 'Golden Delicious'")),
+    ("mulberry", ("Mulberry Tree", "Maulbeerbaum", "Morera", "Mullbärsträd")),
 ]
 
 # The tool's own lines: key -> en/de/es/sv.
@@ -506,9 +592,10 @@ def bark(recipe, seed):
     elif recipe == "smooth_silver":
         base, spread = (160, 160, 154), 8
         field = _furrows(rng, 2, 8, jitter=0)
-    elif recipe in ("scaly", "scaly_orange"):
-        # Small flaking plates: short dark cracks between patches.
-        base, spread = ((98, 84, 74), 10) if recipe == "scaly" else ((176, 104, 62), 12)
+    elif recipe in ("scaly", "scaly_orange", "scaly_grey"):
+        # Small flaking plates: short dark cracks between patches. Apple: grey-brown flakes.
+        base, spread = ((98, 84, 74), 10) if recipe == "scaly" else ((176, 104, 62), 12) \
+            if recipe == "scaly_orange" else ((122, 112, 100), 10)
         field = [[0.0] * SIZE for _ in range(SIZE)]
         for y in range(0, SIZE, 3):
             off = rng.randrange(4)
@@ -613,6 +700,52 @@ def bark(recipe, seed):
             x, y0 = rng.randrange(SIZE), rng.randrange(SIZE)
             for k in range(rng.randint(4, 9)):
                 field[(y0 + k) % SIZE][x] -= 40
+    elif recipe == "smooth_brown":
+        # Citrus: smooth grey-brown bark, finely fissured.
+        base, spread = (118, 108, 92), 8
+        field = _furrows(rng, 3, 16)
+    elif recipe == "fissured_dark":
+        # Avocado: dark grey-brown, roughly fissured.
+        base, spread = (94, 86, 78), 10
+        field = _furrows(rng, 5, 30)
+    elif recipe == "furrowed_orange":
+        # Mulberry: brown bark with an orange cast in its furrows' bottoms.
+        base, spread = (124, 94, 70), 10
+        field = _furrows(rng, 6, 32)
+    elif recipe == "twisted_grey":
+        # Olive: grey bark twisted into a spiral, deeply grooved; the bands climb one pixel
+        # across for every two up, repeating every 8 px, so it tiles both ways.
+        bands = [(150, 146, 134), (128, 124, 114), (92, 88, 80), (140, 136, 124),
+                 (112, 106, 96), (76, 72, 64), (134, 130, 120), (120, 114, 104)]
+        img = Image.new("RGBA", (SIZE, SIZE))
+        px = img.load()
+        for y in range(SIZE):
+            for x in range(SIZE):
+                c = bands[(x - y // 2) % 8]
+                px[x, y] = tuple(max(0, min(255, ch + rng.randint(-8, 8))) for ch in c) + (255,)
+        return img
+    elif recipe == "sheath":
+        # Banana pseudostem: overlapping leaf sheaths, green streaked lengthwise, with brown,
+        # dried strips of the old outer sheaths.
+        img = Image.new("RGBA", (SIZE, SIZE))
+        px = img.load()
+        cols = []
+        x = 0
+        while x < SIZE:
+            w = rng.randint(2, 4)
+            dry = rng.random() < 0.3
+            cols += [dry] * w
+            x += w
+        for y in range(SIZE):
+            for x in range(SIZE):
+                if cols[x]:
+                    c = (132, 108, 72) if (x + y) % 5 else (104, 84, 56)
+                else:
+                    c = (112, 146, 72) if x % 3 else (92, 126, 60)
+                if y % 8 == (x // 4 * 3) % 8:
+                    c = tuple(ch - 26 for ch in c)  # a sheath's edge
+                px[x, y] = tuple(max(0, min(255, ch + rng.randint(-6, 6))) for ch in c) + (255,)
+        return img
     elif recipe == "mottled_white":
         base, spread = (210, 204, 188), 0
         field = [[0.0] * SIZE for _ in range(SIZE)]
@@ -760,6 +893,15 @@ def leaf_cluster(style, palette, seed):
             shade = rng.randrange(len(palette))
             for d in range(3):
                 put(x, y + d, palette[min(len(palette) - 1, shade + (1 if d == 2 else 0))])
+    elif style == "lanceolate":
+        # Olive: narrow willow-like leaves, silver-grey above and paler beneath, light between.
+        for _ in range(230):
+            cx, cy = rng.uniform(0, LEAF_SIZE), rng.uniform(0, LEAF_SIZE)
+            a = rng.uniform(0, math.pi)
+            shade = rng.randrange(len(palette))
+            for t in range(-2, 3):
+                put(int(round(cx + t * math.cos(a))), int(round(cy + t * math.sin(a))),
+                    palette[min(len(palette) - 1, shade + (1 if abs(t) == 2 else 0))])
     elif style == "cord":
         # Giant sequoia: short scale-leaved cords, branching every way, in clumps with light
         # between them.
@@ -808,6 +950,30 @@ def leaf_cluster(style, palette, seed):
                         put(int(round(x)) + 1, int(y), palette[shade])
     else:
         raise ValueError(style)
+    return img
+
+
+def add_fruit(img, fruits, seed):
+    """Dots fruit over a leaf sprite, only on leaves, each a shaded ball, pear or berry."""
+    rng = random.Random(seed * 31 + 7)
+    px = img.load()
+    for light, mid, dark, rx, ry, count in fruits:
+        placed = 0
+        for _ in range(count * 40):
+            if placed >= count:
+                break
+            cx, cy = rng.uniform(3, LEAF_SIZE - 3), rng.uniform(3, LEAF_SIZE - 3)
+            cells = [(x, y) for y in range(int(cy - ry - 1), int(cy + ry + 2))
+                     for x in range(int(cx - rx - 1), int(cx + rx + 2))
+                     if ((x + 0.5 - cx) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2 <= 1]
+            if not cells or any(not (0 <= x < LEAF_SIZE and 0 <= y < LEAF_SIZE)
+                                or px[x, y][3] == 0 for x, y in cells):
+                continue
+            for x, y in cells:
+                u, v = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
+                c = light if u + v < -0.6 else dark if u + v > 0.7 else mid
+                px[x, y] = c + (255,)
+            placed += 1
     return img
 
 
@@ -974,10 +1140,68 @@ def _daggers(px, ox, oy, palette, rng, ragged):
                 px[ox + x, y] = palette[shade] + (255,)
 
 
+BANANA_LEAF = [(136, 184, 70), (114, 164, 56), (92, 140, 46), (70, 112, 38)]
+BANANA_DRY = [(176, 150, 98), (150, 124, 78), (122, 98, 62), (96, 76, 48)]
+
+
+def _paddle(px, ox, oy, palette, rng, torn):
+    """A banana leaf: a long paddle either side of a pale midrib, torn across into strips."""
+    cx = ox + 16
+    # Tears run from the edge to the midrib, square across the blade, on one side at a time.
+    tears = {v: rng.choice((-1, 1)) for v in rng.sample(range(5, 28), 7 if torn else 3)}
+    for y in range(oy, oy + 32):
+        v = y - oy
+        t = (31 - v) / 31.0
+        # Nearly the same width all along: narrowing at the stalk, rounded at the tip.
+        tip = 1.0 if t < 0.82 else math.sqrt(max(0.0, 1 - ((t - 0.82) / 0.18) ** 2))
+        half = 15 * min(1.0, (t + 0.03) * 5) * tip
+        for x in range(ox, ox + 32):
+            d = abs(x + 0.5 - cx)
+            if d > half:
+                continue
+            if torn and v in tears and d > 1.5 and (x + 0.5 - cx) * tears[v] > 0:
+                continue
+            if not torn and d > 1.5 and int(d) % 3 == 0:
+                continue  # a dry leaf is shredded lengthwise, into ribbons
+            if d < 1:
+                c = palette[0]
+            else:
+                c = palette[1 if (d // 2) % 2 else 2]
+                if d > half - 1:
+                    c = palette[3]
+            px[x, y] = tuple(max(0, min(255, ch + rng.randint(-5, 5))) for ch in c) + (255,)
+
+
+def _banana_fruit(px, ox, oy, rng):
+    """Top half: a bunch of green bananas, row on row of curved fingers. Bottom half: the
+    purple bell (the male flower bud) that hangs below the bunch."""
+    for y in range(oy, oy + 16):
+        for x in range(ox, ox + 32):
+            u, v = x - ox, y - oy
+            c = (126, 164, 66) if (u % 4) else (84, 116, 46)
+            if v % 8 == 7:
+                c = (70, 92, 40)
+            px[x, y] = tuple(max(0, min(255, ch + rng.randint(-6, 6))) for ch in c) + (255,)
+    for y in range(oy + 16, oy + 32):
+        for x in range(ox, ox + 32):
+            u = x - ox
+            c = (112, 42, 76) if (u // 4 + (y - oy) // 4) % 2 else (90, 30, 62)
+            px[x, y] = tuple(max(0, min(255, ch + rng.randint(-6, 6))) for ch in c) + (255,)
+
+
 def palm_sheet(style, seed):
     rng = random.Random(seed)
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     px = img.load()
+    if style == "banana":
+        _paddle(px, 0, 0, BANANA_LEAF, rng, torn=True)
+        _paddle(px, 32, 0, BANANA_DRY, rng, torn=False)
+        for y in range(32, 64):
+            for x in range(0, 32):
+                g = (108, 142, 70) if x % 4 else (88, 120, 56)
+                px[x, y] = tuple(ch + rng.randint(-6, 6) for ch in g) + (255,)
+        _banana_fruit(px, 32, 32, rng)
+        return img
     if style == "canary":
         # Stiff, dense leaflets in a V; the boot is the pineapple of trimmed leaf bases.
         _feather_frond(px, 0, 0, FROND_CANARY, rng, lift=0.6)
@@ -1244,7 +1468,10 @@ def generate(assets):
     for leaf_id, _, _, style, palette, _ in LEAVES:
         seed = 20260923 + seed_index[SEASON_OF.get(leaf_id, leaf_id)]
         rel = "textures/blocks/parks/leaves_%s.png" % leaf_id
-        save_png(os.path.join(assets, rel), leaf_cluster(style, palette, seed))
+        sprite = leaf_cluster(style, palette, seed)
+        if leaf_id in FRUIT:
+            sprite = add_fruit(sprite, FRUIT[leaf_id], seed_index[leaf_id])
+        save_png(os.path.join(assets, rel), sprite)
         written.append(rel)
         rel = "models/block/parks/leaves_%s.json" % leaf_id
         dump(os.path.join(assets, rel), leaves_model(leaf_id))

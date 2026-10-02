@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/leaves_apple_honeycrisp"
+    },
+    "inventory": {
+      "model": "csm:parks/leaves_apple_honeycrisp"
+    }
+  }
+}

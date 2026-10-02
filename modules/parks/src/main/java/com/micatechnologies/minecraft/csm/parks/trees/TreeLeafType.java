@@ -50,7 +50,14 @@ public enum TreeLeafType {
    * A Joshua tree's rosette: stiff dagger leaves radiating every way from the end of a branch,
    * the old ones turned down over it. Drawn by the palm crown machinery, one on each branch end.
    */
-  ROSETTE(36, 17, 7, true, 2.6, 0);
+  ROSETTE(36, 17, 7, true, 2.6, 0),
+  /**
+   * A banana plant's crown: a few huge paddle leaves, torn across into strips, arching from the
+   * top of the pseudostem, and an old one or two hanging dry down it.
+   */
+  PALM_BANANA(8, 46, 13, true, 3.0, 0),
+  /** A banana plant's crown with its bunch: green hands of fruit and the purple bell below. */
+  PALM_BANANA_FRUIT(8, 46, 13, true, 3.0, 0);
 
   /** Cards inside the cell, at most. */
   final int interior;
