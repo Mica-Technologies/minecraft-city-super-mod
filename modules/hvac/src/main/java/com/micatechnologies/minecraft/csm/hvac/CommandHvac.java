@@ -177,6 +177,14 @@ public class CommandHvac extends CommandBase {
         p.scannedCells));
     say(sender, String.format("  block changes: %d seen, %d changed a room", p.blockUpdates,
         p.relevantBlockUpdates));
+    int waiting = 0;
+    for (ThermalAnchor a : w.anchors()) {
+      if (a.space == null && a.waitChunks != null) {
+        waiting++;
+      }
+    }
+    say(sender, String.format("  %d anchors waiting for a chunk to load; %d retries skipped",
+        waiting, p.waitSkips));
   }
 
   private static void say(ICommandSender sender, String text) {

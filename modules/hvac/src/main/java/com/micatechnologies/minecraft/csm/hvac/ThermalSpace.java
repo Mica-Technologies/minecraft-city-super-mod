@@ -126,6 +126,13 @@ public final class ThermalSpace {
   /** World tick of the last scan. */
   long lastScanTick;
 
+  /**
+   * After a rescan that could not finish because part of the space was unloaded (the space was
+   * put back as it was): the chunks it was stopped at. It is not rescanned again until one of them
+   * loads or a block on or beside it changes. Null when not waiting.
+   */
+  long[] waitChunks;
+
   /** False until the temperatures have been set from saved, inherited or equilibrium data. */
   boolean temperatureKnown;
 

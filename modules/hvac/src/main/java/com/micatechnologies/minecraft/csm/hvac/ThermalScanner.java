@@ -146,6 +146,13 @@ public final class ThermalScanner {
     /** Total openings, for reports. */
     public int openingFaces;
 
+    /**
+     * For {@link Status#UNLOADED}: the x and z of the first unloaded cell the flood reached, so
+     * the caller can wait for that chunk rather than flood again while it is still unloaded.
+     */
+    public int unloadedX;
+    public int unloadedZ;
+
     /** Region index of a cell of this space. */
     public int regionOfCell(int x, int y, int z) {
       return regionOf.getOrDefault(regionKey(x, y, z), -1);
@@ -173,6 +180,8 @@ public final class ThermalScanner {
     byte startKind = src.classify(sx, sy, sz);
     if (startKind == ThermalCellSource.UNLOADED) {
       r.status = Status.UNLOADED;
+      r.unloadedX = sx;
+      r.unloadedZ = sz;
       return r;
     }
     if (startKind != ThermalCellSource.AIR) {
@@ -202,6 +211,8 @@ public final class ThermalScanner {
         byte kind = src.classify(nx, ny, nz);
         if (kind == ThermalCellSource.UNLOADED) {
           r.status = Status.UNLOADED;
+          r.unloadedX = nx;
+          r.unloadedZ = nz;
           return r;
         }
         if (kind != ThermalCellSource.AIR) {

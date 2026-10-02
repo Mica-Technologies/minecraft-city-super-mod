@@ -43,6 +43,16 @@ final class ThermalAnchor {
   /** Why the last attach failed, or {@link ThermalScanner.Status#OK}. */
   ThermalScanner.Status status = ThermalScanner.Status.OK;
 
+  /**
+   * After an attach that failed because part of the room is not loaded: the chunks it reached
+   * that were not loaded. Until one of them loads (or a block in the room changes) another
+   * attempt can only fail the same way, so none is made. Null when not waiting.
+   */
+  long[] waitChunks;
+
+  /** The flood that stopped at an unloaded chunk, if any: a block change in it ends the wait. */
+  HvacThermalWorld.UnloadedFlood waitFlood;
+
   ThermalAnchor(BlockPos pos, int kind) {
     this.pos = pos.toImmutable();
     this.kind = kind;
