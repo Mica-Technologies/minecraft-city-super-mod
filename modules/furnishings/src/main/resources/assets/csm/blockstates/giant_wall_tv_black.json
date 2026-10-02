@@ -1,0 +1,90 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/living/base/giant_wall_tv_c0r0",
+    "textures": {
+      "bezel": "csm:blocks/furniture/living/tv_bezel",
+      "screen": "csm:blocks/furniture/living/tv_off"
+    }
+  },
+  "variants": {
+    "cell": {
+      "0": {
+        "model": "csm:furniture/living/base/giant_wall_tv_c0r0"
+      },
+      "1": {
+        "model": "csm:furniture/living/base/giant_wall_tv_c1r0"
+      },
+      "2": {
+        "model": "csm:furniture/living/base/giant_wall_tv_c2r0"
+      },
+      "3": {
+        "model": "csm:furniture/living/base/giant_wall_tv_c3r0"
+      },
+      "4": {
+        "model": "csm:furniture/living/base/giant_wall_tv_c0r1"
+      },
+      "5": {
+        "model": "csm:furniture/living/base/giant_wall_tv_c1r1"
+      },
+      "6": {
+        "model": "csm:furniture/living/base/giant_wall_tv_c2r1"
+      },
+      "7": {
+        "model": "csm:furniture/living/base/giant_wall_tv_c3r1"
+      }
+    },
+    "channel": {
+      "off": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_off"
+        }
+      },
+      "news": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_news"
+        }
+      },
+      "sports": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_sports"
+        }
+      },
+      "nature": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      },
+      "bars": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_bars"
+        }
+      },
+      "static": {
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_static"
+        }
+      }
+    },
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/living/base/giant_wall_tv_item",
+        "textures": {
+          "screen": "csm:blocks/furniture/living/tv_nature"
+        }
+      }
+    ]
+  }
+}

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 gen_furniture_living.py -- the Residential tab's living extras in the Furniture & Novelties
-module: flat-screen TVs on a stand or on the wall, in one- and two-block sizes, and an old tube
-TV, all changing channel on a click; a hi-fi stereo that plays music discs, bookshelf speakers
-and a subwoofer; an upright piano that plays and its bench; a bedside digital clock and a wall
+module: flat-screen TVs on a stand or on the wall, in one- and two-block sizes and the big
+3 x 2 and 4 x 2 screens, and an old tube TV, all changing channel on a click; a hi-fi stereo
+that plays music discs, bookshelf speakers and a subwoofer; an upright piano that plays and its bench; a bedside digital clock and a wall
 clock that tell the world's time; photo frames, wall art and house plants; a fireplace, a
 ceiling fan with a light, floor and table lamps and candles; a door mat, a light switch, a
 doorbell and a storage crate.
@@ -32,8 +32,9 @@ clocks' time, the fan's blades) is its Java class's; the positions those classes
 and fan renderers read are named here: PIANO_KEYS, FIREBOX, DIGITAL_DISPLAY, WALL_CLOCK_DIAL.
 
 Two-block pieces (the large TVs, the piano, the fireplace, the wide wall art) are drawn whole,
-two blocks wide, and cut into the two blocks; a picture drawn across both (a screen, the keys,
-the flames, a canvas) keeps one texture across the cut (spanned UVs).
+two blocks wide, and cut into the two blocks (the big TVs into every block of their grid,
+cut_grid); a picture drawn across both (a screen, the keys, the flames, a canvas) keeps one
+texture across the cut (spanned UVs).
 
 Usage:
     python gen_furniture_living.py              # write everything
@@ -1210,6 +1211,72 @@ TV_STAND_2 = (tv_panel(3.75, 28.25, 2.0, 15.5, 7.5, 8.25)
 TV_WALL_2 = (tv_panel(3.75, 28.25, 1.5, 15.0, 14.5, 15.25)
              + [el([10, 4, 15.25], [22, 12, 16], "back", ("east", "west", "up", "down"))])
 
+# The big screens, several blocks wide and two high, drawn whole (x 0 to 16 * cols, y 0 to 32)
+# and cut into a model per cell (cut_grid), the picture spanned across all of them. The picture
+# is exactly 16:9 in a quarter-pixel bezel: 46 x 25.875 px across three blocks (the screen
+# fills the width), 52 x 29.25 px across four (the height is what limits it: a 16:9 picture
+# filling four blocks' width would be 35 px tall, more than two blocks). A stand TV stands on
+# a centre pedestal whose foot is in column (cols - 1) // 2, the column BlockLargeTelevision
+# reads the rest under; the panel is set back over a TV stand's top (z 9 to 16).
+BIG_TV_ROWS = 2
+BIG_RESTS = [("floor", 0.0), ("tv_stand", 8.0)]
+
+
+def big_tv(cols, pic_w, wall):
+    pic_h = pic_w * 9.0 / 16.0
+    pw, ph = pic_w + 0.5, pic_h + 0.5
+    x0 = (16 * cols - pw) / 2.0
+    x1 = x0 + pw
+    cx = 8.0 * cols
+    if wall:
+        y0 = (16 * BIG_TV_ROWS - ph) / 2.0
+        y1 = y0 + ph
+        return (tv_panel(x0, x1, y0, y1, 14.5, 15.25)
+                + [el([x0 + 5, y0 + 4, 15.25], [x1 - 5, y1 - 4, 15.75], "back",
+                      ("east", "west", "up", "down")),
+                   el([cx - 6, y0 + 8, 15.75], [cx + 6, y1 - 8, 16], "back",
+                      ("east", "west", "up", "down"))])
+    y0 = 2.0
+    y1 = y0 + ph
+    foot = 16 * ((cols - 1) // 2) + 8 if cols % 2 else cx
+    return (tv_panel(x0, x1, y0, y1, 10.25, 11.0)
+            + [el([x0 + 6, y0 + 3, 11.0], [x1 - 6, y1 - 4, 12.25], "back",
+                  ("east", "west", "up", "down", "south")),
+               el([foot - 2.5, 0.5, 11.25], [foot + 2.5, y0 + 3, 12.25], "bezel", SIDES),
+               el([foot - 8, 0, 9.0], [foot + 8, 0.5, 15.0], "bezel")])
+
+
+def cut_grid(specs, cols, rows=BIG_TV_ROWS):
+    """A piece drawn across cols x rows blocks cut into its cells' models, {(col, row): specs},
+    each moved into its own block; spanned faces keep their share of the one picture."""
+    cells = {}
+    for c in range(cols):
+        for r in range(rows):
+            part = B.clip(B.clip(specs, 0, 16 * c, 16 * c + 16), 1, 16 * r, 16 * r + 16)
+            for s in part:
+                if s.get("span"):
+                    fit_span(s)
+            cells[(c, r)] = move(part, -16 * c, -16 * r)
+    return cells
+
+
+def scaled(specs, k):
+    """The whole piece at k times its size about its footprint's middle, standing on y 0, its
+    middle on the block's: a big TV's item, which would not fit the -16 to 32 an element may
+    reach. Spanned pictures keep their UVs."""
+    lo, hi = B.extent(specs)
+    mx, mz = (lo[0] + hi[0]) / 2.0, (lo[2] + hi[2]) / 2.0
+    out = []
+    for s in specs:
+        n = copy.deepcopy(s)
+        if n.get("span"):
+            fit_span(n)
+            del n["span"]
+        n["from"] = [8 + (n["from"][0] - mx) * k, n["from"][1] * k, 8 + (n["from"][2] - mz) * k]
+        n["to"] = [8 + (n["to"][0] - mx) * k, n["to"][1] * k, 8 + (n["to"][2] - mz) * k]
+        out.append(n)
+    return out
+
 # A 21 in tube TV, deep behind its screen, rabbit ears on top.
 _CRT_SCREEN = el([2.5, 3.5, 2.6], [11.5, 10.5, 3.0], "screen", NO_BACK,
                  {f: "crt_dark" for f in ("east", "west", "up", "down")})
@@ -1500,6 +1567,22 @@ PIECES = [
      ("Large Wall-Mounted TV", "Großer Wandfernseher", "Televisor de pared grande",
       "Stor väggmonterad TV"),
      {"geo": TV_WALL_2, "wide": True, "wall": True}),
+    ("xl_flat_screen_tv", "bigtv", [BLACK],
+     ("Extra-Large Flat-Screen TV", "Extragroßer Flachbildfernseher",
+      "Televisor de pantalla plana extragrande", "Extra stor platt-TV"),
+     {"geo": big_tv(3, 46.0, False), "cols": 3, "wall": False}),
+    ("xl_wall_tv", "bigtv", [BLACK],
+     ("Extra-Large Wall-Mounted TV", "Extragroßer Wandfernseher",
+      "Televisor de pared extragrande", "Extra stor väggmonterad TV"),
+     {"geo": big_tv(3, 46.0, True), "cols": 3, "wall": True}),
+    ("giant_flat_screen_tv", "bigtv", [BLACK],
+     ("Giant Flat-Screen TV", "Riesiger Flachbildfernseher",
+      "Televisor de pantalla plana gigante", "Jättestor platt-TV"),
+     {"geo": big_tv(4, 52.0, False), "cols": 4, "wall": False}),
+    ("giant_wall_tv", "bigtv", [BLACK],
+     ("Giant Wall-Mounted TV", "Riesiger Wandfernseher", "Televisor de pared gigante",
+      "Jättestor väggmonterad TV"),
+     {"geo": big_tv(4, 52.0, True), "cols": 4, "wall": True}),
     ("crt_tv", "tv", [fin("grey", {"crt": T("crt_grey")}, "Grey", "Grau", "gris", "grå")],
      ("CRT TV", "Röhrenfernseher", "Televisor de tubo", "Tjock-TV"),
      {"geo": CRT, "wide": False, "wall": False, "particle": "crt", "box": [1, 0, 2, 15, 13, 14]}),
@@ -1681,6 +1764,12 @@ def java_for(piece, kind, spec, reg):
         return 'new BlockTelevision("%s", new int[]{%s}, %s, %s)' % (
             reg, jbox(box), "true" if spec["wide"] else "false",
             "true" if spec["wall"] else "false")
+    if kind == "bigtv":
+        built = [R.build(s) for s in spec["geo"]]
+        lo = [max(0, int(math.floor(min(e["from"][i] for e in built)))) for i in range(3)]
+        hi = [int(math.ceil(max(e["to"][i] for e in built))) for i in range(3)]
+        return 'new BlockLargeTelevision("%s", new int[]{%s}, %d, %d, %s)' % (
+            reg, jbox(lo + hi), spec["cols"], BIG_TV_ROWS, "true" if spec["wall"] else "false")
     if kind == "fan":
         return j % (reg, jbox(box_of(FAN_BODY + FAN_BOWL)))
     if kind == "switch":
@@ -1758,6 +1847,15 @@ def base_models():
             disp = B.big_display(item) if spec["wide"] else None
             out.append(("%s_item" % piece, geometry(item, particle, display=disp,
                                                     centre=not spec["wide"])))
+        elif kind == "bigtv":
+            rests = [("", 0.0)] if spec["wall"] else BIG_RESTS
+            for (c, r), cell in sorted(cut_grid(geo, spec["cols"]).items()):
+                for rest, drop in rests:
+                    name = "%s_c%dr%d" % (piece, c, r) + ("_" + rest if rest else "")
+                    out.append((name, geometry(cell, particle, drop)))
+            item = scaled(geo, 0.5)
+            out.append(("%s_item" % piece, geometry(item, particle,
+                                                    display=B.big_display(item))))
         elif kind == "counter":
             for rest, drop in A.RESTS:
                 out.append(("%s_%s" % (piece, rest), geometry(geo, particle, drop)))
@@ -1852,6 +1950,35 @@ def tv_state(piece, spec, ftex):
         variants["rest"] = {r: {"model": BASE + "%s_%s" % (piece, r)} for r, _d in A.RESTS}
         model = BASE + piece + "_floor"
     return forge(model, tex, variants, item, item_tex)
+
+
+def big_tv_state(piece, spec, ftex):
+    """A big TV's cell (row * cols + col, actual state) picks its model; on a stand the rest
+    does too, so those combinations are written out, as the large stand TV's are."""
+    tex = dict(ftex, screen=T("tv_off"))
+    cols = spec["cols"]
+    cells = range(cols * BIG_TV_ROWS)
+    item = BASE + piece + "_item"
+    item_tex = {"screen": T("tv_nature")}
+
+    def cell_model(i, rest=""):
+        return BASE + "%s_c%dr%d" % (piece, i % cols, i // cols) + ("_" + rest if rest else "")
+    if spec["wall"]:
+        variants = {"cell": {str(i): {"model": cell_model(i)} for i in cells},
+                    "channel": {c: {"textures": {"screen": T("tv_" + c)}} for c in CHANNELS},
+                    "facing": facing_variants()}
+        return forge(cell_model(0), tex, variants, item, item_tex)
+    state = forge(cell_model(0, "floor"), tex, {}, item, item_tex)
+    for i in cells:
+        for c in CHANNELS:
+            for f, r in sorted(ROT.items()):
+                for rest, _d in BIG_RESTS:
+                    v = {"model": cell_model(i, rest), "textures": {"screen": T("tv_" + c)}}
+                    if r:
+                        v["y"] = r
+                    state["variants"]["cell=%d,channel=%s,facing=%s,rest=%s" % (
+                        i, c, f, rest)] = [v]
+    return state
 
 
 def counter_state(piece, spec, ftex):
@@ -1992,6 +2119,8 @@ def generate(assets):
         item = "models/item/%s.json" % reg
         if kind == "tv":
             state = tv_state(piece, spec, ftex)
+        elif kind == "bigtv":
+            state = big_tv_state(piece, spec, ftex)
         elif kind == "counter":
             state = counter_state(piece, spec, ftex)
         elif kind == "single":

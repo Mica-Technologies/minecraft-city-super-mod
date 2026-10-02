@@ -412,6 +412,25 @@ The living room's extras follow, drawn by `gen_furniture_living.py` (textures an
   channel in both blocks and a click on either changes both. The stand TV two wide is the one
   blockstate written out in full keys (channel x facing x block x rest), since both the block and
   the rest pick its model.
+- **Big TVs** (`BlockLargeTelevision`): the Extra-Large (3 x 2 blocks) and Giant (4 x 2) flat
+  screens, each on the wall or standing on a centre pedestal. The picture is exactly 16:9 inside
+  a quarter-pixel bezel: 46 x 25.875 px across three blocks (the width limits it), 52 x 29.25 px
+  across four (the height does: 16:9 across the full four blocks would be 35 px tall, more than
+  two blocks, so the giant panel leaves 5.75 px clear at each side). Drawn whole by `big_tv` and
+  cut by `cut_grid` into one model per block (`<piece>_c<col>r<row>`), the screen spanned across
+  all of them on the same channel textures, so no new texture and no seam; each block is lit from
+  its own position. The item (`ItemLargeTelevision`) places every block at once, centred on the
+  block clicked (the left middle column for four) and rising from it, and refuses unless every
+  block is free; breaking any block clears the rest (`setBlockToAir`, so only the block broken
+  drops the TV, and an explosion drops it once). The metadata holds the facing and the column; the
+  row is actual state, counted from the TV's own blocks below in the same column, round the
+  height, and `cell` (row x cols + col, actual state) picks the model. A click on any block sets
+  the channel in every block's `TileEntityTelevision`. A stand TV reads the rest under its
+  pedestal's column (`(cols - 1) / 2`) for all its blocks, so the picture never tears, and is
+  drawn for two rests only, the floor and a TV stand (anything else draws as the floor): its
+  blockstate is written out in full keys (cell x channel x facing x rest), 288 and 384 variants;
+  the wall TVs pick the model by `cell` alone. The panel stands set back (z 10.25) so the
+  pedestal sits on a TV stand run's top.
 - **Two-block pieces** (`WidePieces`, `BlockResidentialWide`): placed as one by their own item
   (`ItemWidePiece`, which refuses unless both blocks are free), broken as one, `part` 0 where it
   was placed and 1 to the right of someone facing it; drawn whole and cut into the two blocks,

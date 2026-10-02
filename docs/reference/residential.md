@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard.
 
-!!! info "349 blocks in this tab"
+!!! info "353 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -126,6 +126,8 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Electric Kettle (White) | `csm:kettle_white` | 1.5 | 3.0 | axe | 0 |
 | Electric Range (Stainless Steel) | `csm:kitchen_range_stainless` | 1.5 | 3.0 | axe | 0 |
 | Electric Range (White) | `csm:kitchen_range_white` | 1.5 | 3.0 | axe | 0 |
+| Extra-Large Flat-Screen TV (Black) | `csm:xl_flat_screen_tv_black` | 1.5 | 3.0 | axe | 0 |
+| Extra-Large Wall-Mounted TV (Black) | `csm:xl_wall_tv_black` | 1.5 | 3.0 | axe | 0 |
 | Fiddle-Leaf Fig (Terracotta Pot) | `csm:fiddle_leaf_fig_terracotta` | 1.5 | 3.0 | axe | 0 |
 | Fire Pit (Steel) | `csm:fire_pit_steel` | 1.5 | 3.0 | axe | 0 |
 | Fire Pit (Stone) | `csm:fire_pit_stone` | 1.5 | 3.0 | axe | 0 |
@@ -144,6 +146,8 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Garden Hose Reel (Green) | `csm:hose_reel_green` | 1.5 | 3.0 | axe | 0 |
 | Gas Grill (Black) | `csm:gas_grill_black` | 1.5 | 3.0 | axe | 0 |
 | Gas Grill (Stainless Steel) | `csm:gas_grill_stainless` | 1.5 | 3.0 | axe | 0 |
+| Giant Flat-Screen TV (Black) | `csm:giant_flat_screen_tv_black` | 1.5 | 3.0 | axe | 0 |
+| Giant Wall-Mounted TV (Black) | `csm:giant_wall_tv_black` | 1.5 | 3.0 | axe | 0 |
 | Grab Bar (Stainless Steel) | `csm:grab_bar_stainless` | 1.5 | 3.0 | axe | 0 |
 | Hand Dryer (Blade, Grey) | `csm:hand_dryer_blade_grey` | 1.5 | 3.0 | axe | 0 |
 | Hand Dryer (Blade, Stainless Steel) | `csm:hand_dryer_blade_stainless` | 1.5 | 3.0 | axe | 0 |
