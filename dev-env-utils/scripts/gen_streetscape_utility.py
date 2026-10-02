@@ -131,6 +131,84 @@ def danger_label():
     return img
 
 
+# The transformer's warning stickers (issue #252): a HIGH VOLTAGE sticker, and under it a
+# smaller one reading IN CASE OF TROUBLE / CALL with the utility's black DWP square at its
+# right. Both live on one square texture (a block texture must be square), HIGH VOLTAGE in its
+# top half and the trouble sticker under it; the phone number's place after CALL is left blank,
+# because the number is the player's to set and TileEntityUtilityBoxLabelRenderer draws it
+# there. Every number the Java needs about that blank is measured from these constants.
+STICKER_TEX = 128
+HV_H = 64                       # HIGH VOLTAGE: texture rows 0..64, 2:1
+TROUBLE_TOP, TROUBLE_H = 64, 53  # the trouble sticker: rows 64..117, about 2.4:1
+TROUBLE_CAP = 12                # its legend's cap height, texels
+TROUBLE_LINE1_TOP, TROUBLE_LINE2_TOP = 8, 33
+TROUBLE_TEXT_X0, TROUBLE_TEXT_X1 = 5, 97
+STICKER_YELLOW = (246, 192, 18)
+STICKER_EDGE = (204, 150, 8)
+STICKER_INK = (26, 22, 14)
+TROUBLE_INK = (52, 36, 12)      # the trouble sticker's print is a browner black
+FONT_DIR = os.path.join(REPO, "assets", "fonts")
+
+
+def legend_mask(text, series, cap_h, squash=1.0):
+    """A legend in one of the committed FHWA-style fonts as an alpha mask: cap_h texels from
+    cap line to baseline, its width scaled by squash. Drawn large and reduced, so the result
+    is the same on every run."""
+    from PIL import ImageDraw, ImageFont
+    big = 240
+    font = ImageFont.truetype(os.path.join(FONT_DIR, "MicaOpenHighway-Series%s.ttf" % series),
+                              big)
+    top, bottom = font.getbbox("H")[1], font.getbbox("H")[3]
+    l, _, r, _ = font.getbbox(text)
+    img = Image.new("L", (r - l + 8, bottom + 8), 0)
+    ImageDraw.Draw(img).text((4 - l, 0), text, font=font, fill=255)
+    img = img.crop((4, top, 4 + r - l, bottom))
+    k = cap_h / float(bottom - top)
+    w = max(1, int(round(img.width * k * squash)))
+    return img.resize((w, cap_h), Image.LANCZOS)
+
+
+def stamp(img, mask, x, y, colour):
+    img.paste(Image.new("RGBA", mask.size, colour + (255,)), (x, y), mask)
+
+
+def trouble_layout():
+    """Where the trouble sticker's legend sits, in its own texels: line 1's mask, CALL's mask,
+    their common squash, and the blank the phone number goes in (x0, x1)."""
+    width = TROUBLE_TEXT_X1 - TROUBLE_TEXT_X0
+    line1 = legend_mask("IN CASE OF TROUBLE", "E", TROUBLE_CAP)
+    squash = min(1.0, width / float(line1.width))
+    line1 = legend_mask("IN CASE OF TROUBLE", "E", TROUBLE_CAP, squash)
+    call = legend_mask("CALL", "E", TROUBLE_CAP, squash)
+    blank_x0 = TROUBLE_TEXT_X0 + call.width + 4
+    return line1, call, (blank_x0, TROUBLE_TEXT_X1)
+
+
+def hv_stickers():
+    img = Image.new("RGBA", (STICKER_TEX, STICKER_TEX), (0, 0, 0, 0))
+    # HIGH VOLTAGE, filling its sticker
+    lc.rect(img, 0, 0, STICKER_TEX, HV_H, STICKER_EDGE)
+    lc.rect(img, 1, 1, STICKER_TEX - 1, HV_H - 1, STICKER_YELLOW)
+    m = legend_mask("HIGH VOLTAGE", "EM", 50)
+    m = m.resize((STICKER_TEX - 10, 50), Image.LANCZOS)
+    stamp(img, m, 5, (HV_H - 50) // 2, STICKER_INK)
+    # IN CASE OF TROUBLE / CALL ..., and the utility's square
+    t0, t1 = TROUBLE_TOP, TROUBLE_TOP + TROUBLE_H
+    lc.rect(img, 0, t0, STICKER_TEX, t1, STICKER_EDGE)
+    lc.rect(img, 1, t0 + 1, STICKER_TEX - 1, t1 - 1, STICKER_YELLOW)
+    line1, call, _ = trouble_layout()
+    stamp(img, line1, TROUBLE_TEXT_X0, t0 + TROUBLE_LINE1_TOP, TROUBLE_INK)
+    stamp(img, call, TROUBLE_TEXT_X0, t0 + TROUBLE_LINE2_TOP, TROUBLE_INK)
+    sq0, sq1 = TROUBLE_TEXT_X1 + 3, STICKER_TEX - 4
+    lc.rect(img, sq0, t0 + 5, sq1, t1 - 5, (18, 18, 16))
+    # D, W and P stepping diagonally down the square, each kept two texels inside it
+    for i, ch in enumerate("DWP"):
+        g = legend_mask(ch, "EM", 11)
+        lo, hi = sq0 + 2, sq1 - 2 - g.width
+        stamp(img, g, int(round(lo + (hi - lo) * i / 2.0)), t0 + 8 + i * 12, STICKER_YELLOW)
+    return img
+
+
 def telecom_emblem(seed):
     """The round moulded emblem on a telecom enclosure's lid: a ring and a generic legend."""
     img = lc.fill(PLASTIC, 32, 3, seed)
@@ -164,6 +242,7 @@ def register_textures():
         "concrete": concrete(14),
         "dark": paint(DARK, 15, grain=3),
         "danger": danger_label(),
+        "hv_stickers": hv_stickers(),
         "emblem": telecom_emblem(16),
         "marker_electric": marker_face(RED),
         "marker_gas": marker_face(YELLOW),
@@ -190,6 +269,39 @@ def decal(frm, to, tex, face):
     el = box(frm, to, tex, faces=(face,))
     el["faces"][face]["uv"] = [0, 0, 16, 16]
     return el
+
+
+def hv_decals(cx, top, width, face_z):
+    """The HIGH VOLTAGE sticker, width wide and half as tall, centred at cx with its top edge
+    at top, and the trouble sticker centred under it at 0.7 of its width; both stuck on the
+    north face at face_z. Returns the elements and where the phone number goes: the blank after
+    CALL, as the renderer wants it (its centre, the face it sits on, a cap height and the width
+    it may not outgrow), measured off the texture's own layout."""
+    hv_h = width * HV_H / float(STICKER_TEX)
+    tw = width * 0.7
+    th = tw * TROUBLE_H / float(STICKER_TEX)
+    gap = width * 0.06
+    hx0, hx1 = cx - width / 2.0, cx + width / 2.0
+    tx0, tx1 = cx - tw / 2.0, cx + tw / 2.0
+    ty1 = top - hv_h - gap
+    ty0 = ty1 - th
+    z = face_z - 0.2  # where model_depth.py would move a decal on this face to anyway
+    hv = decal([hx0, top - hv_h, z], [hx1, top, face_z], "hv_stickers", "north")
+    hv["faces"]["north"]["uv"] = [0, 0, 16, 16.0 * HV_H / STICKER_TEX]
+    tr = decal([tx0, ty0, z], [tx1, ty1, face_z], "hv_stickers", "north")
+    tr["faces"]["north"]["uv"] = [0, 16.0 * TROUBLE_TOP / STICKER_TEX, 16,
+                                  16.0 * (TROUBLE_TOP + TROUBLE_H) / STICKER_TEX]
+    # Facing north the texture's left edge is at the face's +x end.
+    bx0, bx1 = trouble_layout()[2]
+    per_texel = tw / float(STICKER_TEX)
+    phone = {
+        "x": round(tx1 - (bx0 + bx1) / 2.0 * per_texel, 4),
+        "y": round(ty1 - (TROUBLE_LINE2_TOP + TROUBLE_CAP / 2.0) * per_texel, 4),
+        "z": round(z, 4),
+        "height": round(TROUBLE_CAP * per_texel, 4),
+        "width": round((bx1 - bx0) * per_texel, 4),
+    }
+    return [hv, tr], phone
 
 
 def element_corners(el):
@@ -260,7 +372,7 @@ def pad(x0, z0, x1, z1):
     return slab([x0, 0, z0], [x1, 1, z1], "pad")
 
 
-def low_profile(x0, x1, z0, z1, h, hinges=True):
+def low_profile(x0, x1, z0, z1, h, stickers, hinges=True):
     """A single-phase pad-mount transformer: a squat box whose top edge is rounded (a stepped
     chamfer), with the lid's hinges along the back and a padlock hasp at the front."""
     r = 1.0
@@ -281,10 +393,13 @@ def low_profile(x0, x1, z0, z1, h, hinges=True):
         decal([x0 + 1.2, h - r - 5.6, z0 - 0.04], [x0 + 3.6, h - r - 2.4, z0], "danger",
               "north"),
     ]
+    # HIGH VOLTAGE and the trouble sticker: stickers is (centre x, top edge, width)
+    hv, phone = hv_decals(stickers[0], stickers[1], stickers[2], z0)
+    els += hv
     if hinges:
         for hx in (x0 + 2.5, x1 - 4.5):
             els.append(slab([hx, h, z1 - 3], [hx + 2, h + 0.5, z1 - 1.5], "dark"))
-    return els
+    return els, phone
 
 
 def three_phase():
@@ -306,12 +421,15 @@ def three_phase():
         slab([-2.2, 12, z0 - 0.9], [-0.6, 12.8, z0], "dark"),
         # DANGER sticker on the left-hand door
         decal([5.5, 18, z0 - 0.04], [8.5, 22, z0], "danger", "north"),
-        # lifting lugs, two a side
     ]
+    # HIGH VOLTAGE and the trouble sticker under the DANGER sticker, on the same door
+    hv, phone = hv_decals(7.0, 16.5, 10.0, z0)
+    els += hv
+    # lifting lugs, two a side
     for lz in (z0 + 3, z1 - 5):
         els.append(slab([x0 - 1.2, h - 3, lz], [x0, h - 1.5, lz + 2], "dark"))
         els.append(slab([x1, h - 3, lz], [x1 + 1.2, h - 1.5, lz + 2], "dark"))
-    return els
+    return els, phone
 
 
 def square_pedestal(height):
@@ -370,7 +488,7 @@ def marker_post(face_tex):
 # ------------------------------------------------------------------------------------------
 # Catalogue
 # ------------------------------------------------------------------------------------------
-def spec_java(els, cells, label):
+def spec_java(els, cells, label, phone=None):
     x0, y0, z0, x1, y1, z1 = bounds(els)
     k = 1 / 16.0
     aabb = "new AxisAlignedBB(%s)" % ", ".join(
@@ -380,11 +498,15 @@ def spec_java(els, cells, label):
         lab = "new UtilityBoxSpec.Label(%sf, %sf, %sf, %d, %sf, %s)" % (
             label["x"], label["y"], label["z"], label["lines"], label["height"],
             "true" if label.get("vertical") else "false")
+    if phone:
+        lab += ",\n        new UtilityBoxSpec.Phone(%sf, %sf, %sf, %sf, %sf)" % (
+            phone["x"], phone["y"], phone["z"], phone["height"], phone["width"])
     return "new UtilityBoxSpec(%d, %d, %d,\n        %s,\n        %s)" % (
         cells[0], cells[1], cells[2], aabb, lab)
 
 
-def add_box(registry, names, els, textures, cells, label=None, rusted_names=None):
+def add_box(registry, names, els, textures, cells, label=None, rusted_names=None,
+            phone=None):
     variants = [(registry, textures, names)]
     if rusted_names:
         rt = {k: ("paint_rusted" if v == "paint" else v) for k, v in textures.items()}
@@ -398,7 +520,7 @@ def add_box(registry, names, els, textures, cells, label=None, rusted_names=None
             models[reg + "_inventory"] = model_for(tex, inventory_elements(els))
             state["variants"]["inventory"] = [{"model": C.M(reg + "_inventory")}]
         cls = "BlockUtilityBoxLabelled" if label else "BlockUtilityBox"
-        java = 'new %s("%s", %s)' % (cls, reg, spec_java(els, cells, label))
+        java = 'new %s("%s", %s)' % (cls, reg, spec_java(els, cells, label, phone))
         C.add(reg, java, nm, models, state, tab=TAB)
 
 
@@ -420,33 +542,39 @@ def _sv_rusted(sv):
     return "%s (%s)" % (sv, word) if "(" not in sv else sv[:-1] + ", %s)" % word
 
 
-METAL = {"body": "paint", "pad": "concrete", "dark": "dark", "danger": "danger"}
+METAL = {"body": "paint", "pad": "concrete", "dark": "dark", "danger": "danger",
+         "hv_stickers": "hv_stickers"}
 
 
 def transformers():
-    small = low_profile(1.5, 14.5, 2.5, 14.5, 12)
+    # The stickers sit under the ID number, clear of the DANGER sticker and the hasp.
+    small, phone = low_profile(1.5, 14.5, 2.5, 14.5, 12, (8.0, 5.8, 5.0))
     n = names("Pad-Mount Transformer (Small)", "Pad-Mount-Transformator (Klein)",
               "Transformador de Pedestal (Pequeño)", "Markstation (Liten)")
     add_box("transformer_padmount_small", n, small, METAL, (1, 1, 1),
-            {"x": 8.0, "y": 8.4, "z": 2.5, "lines": 2, "height": 1.1}, rusted_names(n))
+            {"x": 8.0, "y": 8.4, "z": 2.5, "lines": 2, "height": 1.1}, rusted_names(n),
+            phone)
 
-    medium = low_profile(-11, 11, 2, 14.5, 13)
+    medium, phone = low_profile(-11, 11, 2, 14.5, 13, (-2.5, 8.6, 7.0))
     n = names("Pad-Mount Transformer (Medium)", "Pad-Mount-Transformator (Mittel)",
               "Transformador de Pedestal (Mediano)", "Markstation (Mellan)")
     add_box("transformer_padmount_medium", n, medium, METAL, (2, 1, 1),
-            {"x": 5.0, "y": 9.0, "z": 2.0, "lines": 2, "height": 1.4}, rusted_names(n))
+            {"x": 5.0, "y": 9.0, "z": 2.0, "lines": 2, "height": 1.4}, rusted_names(n),
+            phone)
 
-    large = low_profile(-12, 12, 2, 24, 15)
+    large, phone = low_profile(-12, 12, 2, 24, 15, (-3.0, 10.4, 8.0))
     n = names("Pad-Mount Transformer (Large)", "Pad-Mount-Transformator (Groß)",
               "Transformador de Pedestal (Grande)", "Markstation (Stor)")
     add_box("transformer_padmount_large", n, large, METAL, (2, 2, 1),
-            {"x": 5.0, "y": 10.6, "z": 2.0, "lines": 2, "height": 1.6}, rusted_names(n))
+            {"x": 5.0, "y": 10.6, "z": 2.0, "lines": 2, "height": 1.6}, rusted_names(n),
+            phone)
 
-    tall = three_phase()
+    tall, phone = three_phase()
     n = names("Pad-Mount Transformer (Three-Phase)", "Pad-Mount-Transformator (Drehstrom)",
               "Transformador de Pedestal (Trifásico)", "Markstation (Trefas)")
     add_box("transformer_padmount_three_phase", n, tall, METAL, (2, 2, 2),
-            {"x": -6.5, "y": 23.5, "z": 2.0, "lines": 1, "height": 2.2}, rusted_names(n))
+            {"x": -6.5, "y": 23.5, "z": 2.0, "lines": 1, "height": 2.2}, rusted_names(n),
+            phone)
 
 
 def pedestals():
@@ -503,6 +631,26 @@ def part():
           tab="CsmTabRoadsHidden")
 
 
+def gui_lang():
+    """The ID number and trouble phone editor (UtilityBoxLabelGui)."""
+    for key, en, de, es, sv in (
+            ("title", "Utility Box Number", "Nummer des Versorgungskastens",
+             "Número de la caja de servicios", "Kopplingsskåpets nummer"),
+            ("number", "Number", "Nummer", "Número", "Nummer"),
+            ("line", "Line %d", "Zeile %d", "Línea %d", "Rad %d"),
+            ("automatic", "Leave the number empty for an automatic one",
+             "Nummer leer lassen für eine automatische",
+             "Deje el número vacío para uno automático",
+             "Lämna numret tomt för ett automatiskt"),
+            ("phone", "Trouble Phone Number", "Störungsrufnummer",
+             "Teléfono de averías", "Felanmälningsnummer"),
+            ("phone_default", "Leave the phone number empty for %s",
+             "Rufnummer leer lassen für %s", "Deje el teléfono vacío para %s",
+             "Lämna telefonnumret tomt för %s")):
+        C.add_lang("gui.csm.utility_box." + key, (en, de, es, sv))
+
+
+gui_lang()
 transformers()
 pedestals()
 telecom()

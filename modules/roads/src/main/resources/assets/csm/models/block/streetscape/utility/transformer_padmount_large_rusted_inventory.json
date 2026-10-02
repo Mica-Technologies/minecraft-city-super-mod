@@ -5,6 +5,7 @@
     "pad": "csm:blocks/streetscape/utility/concrete",
     "dark": "csm:blocks/streetscape/utility/dark",
     "danger": "csm:blocks/streetscape/utility/danger",
+    "hv_stickers": "csm:blocks/streetscape/utility/hv_stickers",
     "particle": "csm:blocks/streetscape/utility/paint_rusted"
   },
   "elements": [
@@ -363,6 +364,52 @@
             0,
             16,
             16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.0227,
+        4.1364,
+        1.6352
+      ],
+      "to": [
+        8.5682,
+        6.4091,
+        1.8352
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hv_stickers",
+          "uv": [
+            0,
+            0,
+            16,
+            8.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.7045,
+        2.546,
+        1.6352
+      ],
+      "to": [
+        7.8864,
+        3.8636,
+        1.8352
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hv_stickers",
+          "uv": [
+            0,
+            8.0,
+            16,
+            14.625
           ]
         }
       }

@@ -229,35 +229,43 @@ public class CsmTabStreetscape extends CsmTab {
     initTabBlock(new BlockUtilityBoxLabelled("transformer_padmount_small",
         new UtilityBoxSpec(1, 1, 1,
         new AxisAlignedBB(0.018750, 0.000000, 0.062500, 0.981250, 0.781250, 0.981250),
-        new UtilityBoxSpec.Label(8.0f, 8.4f, 2.5f, 2, 1.1f, false))));
+        new UtilityBoxSpec.Label(8.0f, 8.4f, 2.5f, 2, 1.1f, false),
+        new UtilityBoxSpec.Phone(8.0f, 1.9336f, 2.3f, 0.3281f, 1.8047f))));
     initTabBlock(new BlockUtilityBoxLabelled("transformer_padmount_small_rusted",
         new UtilityBoxSpec(1, 1, 1,
         new AxisAlignedBB(0.018750, 0.000000, 0.062500, 0.981250, 0.781250, 0.981250),
-        new UtilityBoxSpec.Label(8.0f, 8.4f, 2.5f, 2, 1.1f, false))));
+        new UtilityBoxSpec.Label(8.0f, 8.4f, 2.5f, 2, 1.1f, false),
+        new UtilityBoxSpec.Phone(8.0f, 1.9336f, 2.3f, 0.3281f, 1.8047f))));
     initTabBlock(new BlockUtilityBoxLabelled("transformer_padmount_medium",
         new UtilityBoxSpec(2, 1, 1,
         new AxisAlignedBB(-0.762500, 0.000000, 0.031250, 0.762500, 0.843750, 0.981250),
-        new UtilityBoxSpec.Label(5.0f, 9.0f, 2.0f, 2, 1.4f, false))));
+        new UtilityBoxSpec.Label(5.0f, 9.0f, 2.0f, 2, 1.4f, false),
+        new UtilityBoxSpec.Phone(-2.5f, 3.187f, 1.8f, 0.4594f, 2.5266f))));
     initTabBlock(new BlockUtilityBoxLabelled("transformer_padmount_medium_rusted",
         new UtilityBoxSpec(2, 1, 1,
         new AxisAlignedBB(-0.762500, 0.000000, 0.031250, 0.762500, 0.843750, 0.981250),
-        new UtilityBoxSpec.Label(5.0f, 9.0f, 2.0f, 2, 1.4f, false))));
+        new UtilityBoxSpec.Label(5.0f, 9.0f, 2.0f, 2, 1.4f, false),
+        new UtilityBoxSpec.Phone(-2.5f, 3.187f, 1.8f, 0.4594f, 2.5266f))));
     initTabBlock(new BlockUtilityBoxLabelled("transformer_padmount_large",
         new UtilityBoxSpec(2, 2, 1,
         new AxisAlignedBB(-0.825000, 0.000000, 0.031250, 0.825000, 0.968750, 1.575000),
-        new UtilityBoxSpec.Label(5.0f, 10.6f, 2.0f, 2, 1.6f, false))));
+        new UtilityBoxSpec.Label(5.0f, 10.6f, 2.0f, 2, 1.6f, false),
+        new UtilityBoxSpec.Phone(-3.0f, 4.2138f, 1.8f, 0.525f, 2.8875f))));
     initTabBlock(new BlockUtilityBoxLabelled("transformer_padmount_large_rusted",
         new UtilityBoxSpec(2, 2, 1,
         new AxisAlignedBB(-0.825000, 0.000000, 0.031250, 0.825000, 0.968750, 1.575000),
-        new UtilityBoxSpec.Label(5.0f, 10.6f, 2.0f, 2, 1.6f, false))));
+        new UtilityBoxSpec.Label(5.0f, 10.6f, 2.0f, 2, 1.6f, false),
+        new UtilityBoxSpec.Phone(-3.0f, 4.2138f, 1.8f, 0.525f, 2.8875f))));
     initTabBlock(new BlockUtilityBoxLabelled("transformer_padmount_three_phase",
         new UtilityBoxSpec(2, 2, 2,
         new AxisAlignedBB(-0.937500, 0.000000, 0.000000, 0.937500, 1.725000, 1.687500),
-        new UtilityBoxSpec.Label(-6.5f, 23.5f, 2.0f, 1, 2.2f, false))));
+        new UtilityBoxSpec.Label(-6.5f, 23.5f, 2.0f, 1, 2.2f, false),
+        new UtilityBoxSpec.Phone(7.0f, 8.7672f, 1.8f, 0.6562f, 3.6094f))));
     initTabBlock(new BlockUtilityBoxLabelled("transformer_padmount_three_phase_rusted",
         new UtilityBoxSpec(2, 2, 2,
         new AxisAlignedBB(-0.937500, 0.000000, 0.000000, 0.937500, 1.725000, 1.687500),
-        new UtilityBoxSpec.Label(-6.5f, 23.5f, 2.0f, 1, 2.2f, false))));
+        new UtilityBoxSpec.Label(-6.5f, 23.5f, 2.0f, 1, 2.2f, false),
+        new UtilityBoxSpec.Phone(7.0f, 8.7672f, 1.8f, 0.6562f, 3.6094f))));
     initTabBlock(new BlockUtilityBox("utility_pedestal_square_tall", new UtilityBoxSpec(1, 1, 2,
         new AxisAlignedBB(0.262500, 0.000000, 0.262500, 0.737500, 1.262500, 0.737500),
         null)));

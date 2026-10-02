@@ -48,9 +48,11 @@ public class StreetscapeGuiProvider implements ICsmGuiProvider {
     if (!(te instanceof TileEntityUtilityBoxLabel) || !(block instanceof BlockUtilityBoxLabelled)) {
       return null;
     }
-    UtilityBoxSpec.Label label = ((BlockUtilityBoxLabelled) block).getSpec().getLabel();
+    UtilityBoxSpec spec = ((BlockUtilityBoxLabelled) block).getSpec();
+    UtilityBoxSpec.Label label = spec.getLabel();
     int lines = label != null ? label.getLines() : 1;
-    return new UtilityBoxLabelGui((TileEntityUtilityBoxLabel) te, lines);
+    return new UtilityBoxLabelGui((TileEntityUtilityBoxLabel) te, lines,
+        spec.getPhone() != null);
   }
 
   @Nullable
