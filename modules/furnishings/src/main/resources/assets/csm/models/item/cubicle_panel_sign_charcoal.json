@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/office/base/cubicle_panel_sign_item",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/charcoal",
+    "fabric_dark": "csm:blocks/furniture/residential/charcoal_dark",
+    "holder": "csm:blocks/furniture/residential/metal_black"
+  }
+}

@@ -1,0 +1,294 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "north": "panel|end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_arm"
+      }
+    },
+    {
+      "when": {
+        "north": "panel|end",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_cap"
+      }
+    },
+    {
+      "when": {
+        "north": "panel|end",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_fill"
+      }
+    },
+    {
+      "when": {
+        "north": "end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_end"
+      }
+    },
+    {
+      "when": {
+        "east": "panel|end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "panel|end",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_cap",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "panel|end",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_fill",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_end",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "panel|end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "panel|end",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_cap",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "panel|end",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_fill",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_end",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "panel|end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "panel|end",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_cap",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "panel|end",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_fill",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "end"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_end",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "panel",
+            "east": "panel"
+          },
+          {
+            "east": "panel",
+            "south": "panel"
+          },
+          {
+            "south": "panel",
+            "west": "panel"
+          },
+          {
+            "west": "panel",
+            "north": "panel"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_post"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "wide": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_plate"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "wide": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_plate_wide"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shelf": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_shelf"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "wide": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_plate",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "wide": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_plate_wide",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shelf": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_shelf",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "wide": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_plate",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "wide": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_plate_wide",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shelf": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_shelf",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "wide": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_plate",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "wide": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_plate_wide",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shelf": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/cubicle_panel_sign_charcoal_shelf",
+        "y": 270
+      }
+    }
+  ]
+}

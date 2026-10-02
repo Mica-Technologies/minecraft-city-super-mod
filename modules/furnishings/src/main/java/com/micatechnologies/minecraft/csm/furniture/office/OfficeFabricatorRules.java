@@ -10,8 +10,8 @@ import net.minecraft.block.Block;
 /**
  * What the Fabricator charges for the Commercial &amp; Office tab: desks and tables are timber
  * on a steel frame, storage timber and fittings, a filing cabinet and a locker sheet steel;
- * cubicle panels and seating are wool on steel; the boards are their surface in a frame; the
- * things on a desk and the copier are electronics priced as the Technology tab's are, the ring
+ * cubicle panels and seating are wool on steel (a name plate or sign adds its paper insert);
+ * the boards are their surface in a frame; the things on a desk and the copier are electronics priced as the Technology tab's are, the ring
  * light and the desk lamp by their lamps, the camera and the projectors by their lenses. The
  * school's plastic seating is steel, the lectern and podium timber, the trophy case timber and
  * glass with a little gold, the map and the globe paper.
@@ -82,6 +82,11 @@ public final class OfficeFabricatorRules {
     if (registryName.startsWith("conference_table_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
           FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("cubicle_panel_nameplate_")
+        || registryName.startsWith("cubicle_panel_sign_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 2),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1), FabricatorIngredient.any(MC_PAPER, 1));
     }
     if (registryName.startsWith("cubicle_panel_half_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 1),

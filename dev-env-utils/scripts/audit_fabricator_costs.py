@@ -910,6 +910,8 @@ def cost_for(registry, info, ancestors):
             return ("planks x3", "paper x2")
         if registry.startswith("conference_table_"):
             return ("planks x3", "iron_ingot")
+        if registry.startswith(("cubicle_panel_nameplate_", "cubicle_panel_sign_")):
+            return ("wool x2", "iron_ingot", "paper")
         if registry.startswith("cubicle_panel_half_"):
             return ("wool", "iron_ingot")
         if registry.startswith("cubicle_panel_"):

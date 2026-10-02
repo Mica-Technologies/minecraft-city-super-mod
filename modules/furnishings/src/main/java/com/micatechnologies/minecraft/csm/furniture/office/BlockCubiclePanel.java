@@ -42,6 +42,10 @@ import net.minecraft.world.World;
  * to hang one there, again to take it down ({@link #SHELF}, stored, with the axis the lone
  * panel stands along).</p>
  *
+ * <p>{@link BlockCubiclePanelNamed} is this panel with a name plate on one face; it stores other
+ * properties, through {@link #defaultPanelState}, {@link #standsAlongX} and
+ * {@link #shelfFace}.</p>
+ *
  * @since 2026.9
  */
 public class BlockCubiclePanel extends AbstractBlock {
@@ -125,10 +129,55 @@ public class BlockCubiclePanel extends AbstractBlock {
     this.registryName = registryName;
     this.height = height;
     PENDING.remove();
-    setDefaultState(blockState.getBaseState().withProperty(NORTH, Side.NONE)
+    setDefaultState(defaultPanelState(blockState.getBaseState().withProperty(NORTH, Side.NONE)
         .withProperty(EAST, Side.NONE).withProperty(SOUTH, Side.NONE)
-        .withProperty(WEST, Side.NONE).withProperty(UP, false).withProperty(ALONG_X, true)
-        .withProperty(SHELF, Shelf.NONE));
+        .withProperty(WEST, Side.NONE).withProperty(UP, false)));
+  }
+
+  /**
+   * The default state's stored properties, set on a base state whose sides are all
+   * {@link Side#NONE}. A subclass with other stored properties sets its own.
+   *
+   * @param base the base state
+   *
+   * @return the default state
+   */
+  protected IBlockState defaultPanelState(IBlockState base) {
+    return base.withProperty(ALONG_X, true).withProperty(SHELF, Shelf.NONE);
+  }
+
+  /**
+   * Whether the panel, standing with no neighbour, runs east-west.
+   *
+   * @param state its stored state
+   *
+   * @return true for east-west
+   */
+  protected boolean standsAlongX(IBlockState state) {
+    return state.getValue(ALONG_X);
+  }
+
+  /**
+   * The face of the panel its shelf hangs on.
+   *
+   * @param state its state
+   *
+   * @return the face, or null for no shelf
+   */
+  @Nullable
+  protected EnumFacing shelfFace(IBlockState state) {
+    switch (state.getValue(SHELF)) {
+      case NORTH:
+        return EnumFacing.NORTH;
+      case SOUTH:
+        return EnumFacing.SOUTH;
+      case EAST:
+        return EnumFacing.EAST;
+      case WEST:
+        return EnumFacing.WEST;
+      default:
+        return null;
+    }
   }
 
   private static Material stash(String registryName) {
@@ -196,7 +245,7 @@ public class BlockCubiclePanel extends AbstractBlock {
     }
     if (joined == 0) {
       // Alone: across the way it was placed, an end post at each edge.
-      boolean alongX = state.getValue(ALONG_X);
+      boolean alongX = standsAlongX(state);
       EnumFacing a = alongX ? EnumFacing.EAST : EnumFacing.NORTH;
       sides[a.getHorizontalIndex()] = Side.END;
       sides[a.getOpposite().getHorizontalIndex()] = Side.END;
@@ -240,11 +289,7 @@ public class BlockCubiclePanel extends AbstractBlock {
         || side.getAxis() == EnumFacing.Axis.Y) {
       return false;
     }
-    IBlockState actual = getActualState(state, world, pos);
-    // The face clicked must be a broad face: the panel runs across it.
-    Side left = actual.getValue(property(side.rotateY()));
-    Side right = actual.getValue(property(side.rotateYCCW()));
-    if (left == Side.NONE && right == Side.NONE) {
+    if (!isBroadFace(world, pos, state, side)) {
       return false;
     }
     if (!world.isRemote) {
@@ -255,6 +300,25 @@ public class BlockCubiclePanel extends AbstractBlock {
           : SoundEvents.BLOCK_WOOD_PLACE, SoundCategory.BLOCKS, 0.8F, 1.1F);
     }
     return true;
+  }
+
+  /**
+   * Whether a face of the panel is a broad one: the panel runs across it, so something can
+   * hang on it.
+   *
+   * @param world the world
+   * @param pos   the panel
+   * @param state its stored state
+   * @param side  a horizontal face
+   *
+   * @return whether the panel runs across that face
+   */
+  protected boolean isBroadFace(IBlockAccess world, BlockPos pos, IBlockState state,
+      EnumFacing side) {
+    IBlockState actual = getActualState(state, world, pos);
+    Side left = actual.getValue(property(side.rotateY()));
+    Side right = actual.getValue(property(side.rotateYCCW()));
+    return left != Side.NONE || right != Side.NONE;
   }
 
   private static PropertyEnum<Side> property(EnumFacing side) {
@@ -291,21 +355,22 @@ public class BlockCubiclePanel extends AbstractBlock {
     if (a.getValue(SOUTH) != Side.NONE) {
       z1 = 1;
     }
-    switch (a.getValue(SHELF)) {
-      case NORTH:
-        z0 = Math.min(z0, 0.5 - HALF - SHELF_DEPTH);
-        break;
-      case SOUTH:
-        z1 = Math.max(z1, 0.5 + HALF + SHELF_DEPTH);
-        break;
-      case EAST:
-        x1 = Math.max(x1, 0.5 + HALF + SHELF_DEPTH);
-        break;
-      case WEST:
-        x0 = Math.min(x0, 0.5 - HALF - SHELF_DEPTH);
-        break;
-      default:
-        break;
+    EnumFacing shelf = shelfFace(a);
+    if (shelf != null) {
+      switch (shelf) {
+        case NORTH:
+          z0 = Math.min(z0, 0.5 - HALF - SHELF_DEPTH);
+          break;
+        case SOUTH:
+          z1 = Math.max(z1, 0.5 + HALF + SHELF_DEPTH);
+          break;
+        case EAST:
+          x1 = Math.max(x1, 0.5 + HALF + SHELF_DEPTH);
+          break;
+        default:
+          x0 = Math.min(x0, 0.5 - HALF - SHELF_DEPTH);
+          break;
+      }
     }
     return new AxisAlignedBB(x0, 0, z0, x1, height / 16.0, z1);
   }

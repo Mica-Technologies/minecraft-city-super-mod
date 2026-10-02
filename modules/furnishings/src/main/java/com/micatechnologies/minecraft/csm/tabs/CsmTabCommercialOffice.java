@@ -4,6 +4,8 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.furniture.office.BlockCafeteriaTable;
 import com.micatechnologies.minecraft.csm.furniture.office.BlockCubiclePanel;
+import com.micatechnologies.minecraft.csm.furniture.office.BlockCubiclePanelNamed;
+import com.micatechnologies.minecraft.csm.furniture.office.CubicleSignStyle;
 import com.micatechnologies.minecraft.csm.furniture.office.BlockTrophyCase;
 import com.micatechnologies.minecraft.csm.furniture.office.BlockWallBoard;
 import com.micatechnologies.minecraft.csm.furniture.office.OfficeAppliances;
@@ -124,6 +126,16 @@ public class CsmTabCommercialOffice extends CsmTab {
     initTabBlock(new BlockCubiclePanel("cubicle_panel_half_charcoal", 8));
     initTabBlock(new BlockCubiclePanel("cubicle_panel_half_navy", 8));
     initTabBlock(new BlockCubiclePanel("cubicle_panel_half_oatmeal", 8));
+
+    // Cubicle Panel with Nameplate
+    initTabBlock(new BlockCubiclePanelNamed("cubicle_panel_nameplate_charcoal", CubicleSignStyle.NAME_PLATE));
+    initTabBlock(new BlockCubiclePanelNamed("cubicle_panel_nameplate_navy", CubicleSignStyle.NAME_PLATE));
+    initTabBlock(new BlockCubiclePanelNamed("cubicle_panel_nameplate_oatmeal", CubicleSignStyle.NAME_PLATE));
+
+    // Cubicle Panel with Sign
+    initTabBlock(new BlockCubiclePanelNamed("cubicle_panel_sign_charcoal", CubicleSignStyle.SIGN));
+    initTabBlock(new BlockCubiclePanelNamed("cubicle_panel_sign_navy", CubicleSignStyle.SIGN));
+    initTabBlock(new BlockCubiclePanelNamed("cubicle_panel_sign_oatmeal", CubicleSignStyle.SIGN));
 
     // ---- Seating ----
     // Task Chair
