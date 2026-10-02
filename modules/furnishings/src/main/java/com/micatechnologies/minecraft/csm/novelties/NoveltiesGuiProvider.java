@@ -5,6 +5,9 @@ import com.micatechnologies.minecraft.csm.furniture.appliance.ContainerAppliance
 import com.micatechnologies.minecraft.csm.furniture.appliance.GuiAppliance;
 import com.micatechnologies.minecraft.csm.furniture.appliance.IAppliance;
 import com.micatechnologies.minecraft.csm.furniture.appliance.TileEntityAppliance;
+import com.micatechnologies.minecraft.csm.furniture.office.BlockCubiclePanelNamed;
+import com.micatechnologies.minecraft.csm.furniture.office.CubicleNamePlateGui;
+import com.micatechnologies.minecraft.csm.furniture.office.TileEntityCubicleNamePlate;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.ContainerResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.GuiResidentialStorage;
@@ -21,7 +24,7 @@ import net.minecraft.world.World;
  * Supplies the Furniture &amp; Novelties module's GUI screens: the multi-game arcade cabinet, and
  * the storage of the Residential tab's TV stands, sideboards, kitchen cabinets, refrigerators,
  * freezers and cookie jar, and the working appliances' screen (both with a server-side
- * container).
+ * container), and the editor for a cubicle panel's name plate.
  *
  * @version 1.2
  * @since 2026.9
@@ -53,6 +56,13 @@ public class NoveltiesGuiProvider implements ICsmGuiProvider {
       if (container != null) {
         returnValue = new GuiAppliance(player.inventory, container,
             world.getBlockState(pos).getBlock().getLocalizedName());
+      }
+    } else if (id == BlockCubiclePanelNamed.GUI_ID
+        && tileEntity instanceof TileEntityCubicleNamePlate) {
+      Block block = world.getBlockState(pos).getBlock();
+      if (block instanceof BlockCubiclePanelNamed) {
+        returnValue = new CubicleNamePlateGui((TileEntityCubicleNamePlate) tileEntity,
+            ((BlockCubiclePanelNamed) block).getStyle(), block.getLocalizedName());
       }
     }
     return returnValue;

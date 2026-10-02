@@ -47,7 +47,8 @@ What joins (the Java classes compute it as actual state; nothing is stored):
   * the office shelving joins and stacks like the bookcase;
   * cubicle panels join in any plan: an arm towards each panel or wall, a post only at a
     corner, tee or cross, and a run's last block carried on to the edge with an end post there;
-    a full panel with another on it leaves off its top cap;
+    a full panel with another on it leaves off its top cap; the panels with a name plate or a
+    sign on one face are full panels in every other way;
   * whiteboards, chalkboards and cork boards join left and right and stack up and down into
     one board of any size, the frame only round its outside, the tray along its bottom row and
     the markers or chalk at that row's end, the surface unbroken across the joins;
@@ -733,6 +734,8 @@ DEFAULT_TEX.update({
     "flag": OT("flag_stars"), "globe": OT("globe_map"), "dial": OT("sharpener_dial"),
     "chrome": T("chrome"), "brass": T("brass"), "grille": OT("vent_slots"),
     "dark_wood": T("walnut"),
+    # the cubicle name plate's holder
+    "holder": OT("silver"),
 })
 
 
@@ -915,6 +918,71 @@ def panel_rules():
 def panel_item(parts):
     lone = parts["arm"] + parts["cap"] + parts["end"]
     return turn(lone, 90) + turn(lone, 270)
+
+
+# A full panel with a name on one face: a slide-in name plate in a satin aluminium holder, or a
+# larger sign in a black frame with the department on a dark band. The holder and the blank
+# insert are drawn here; the words are TileEntityCubicleNamePlateRenderer's, laid out by
+# CubicleSignStyle.java, which repeats these numbers. Drawn on the north face of a panel running
+# east-west (its fabric at z 7.25): the holder's bars stand 1 proud of the fabric, the insert
+# is set 0.25 back from their front, and nothing is drawn against the fabric, so no face lies on
+# another. (outer x0, y0, x1, y1), the insert's inset, and the band's top (None for no band).
+# The sign is drawn twice: within its block, and a block and a half wide (sign_wide, reaching a
+# quarter block over each neighbour) for a sign with a full plain panel either side, the case
+# BlockCubiclePanelNamed's WIDE property picks out; the wide one is what reads across an aisle.
+PLATE_Z0, PLATE_FACE, PLATE_Z1 = 6.25, 6.5, 7.25
+NAMED_STYLES = {
+    "nameplate": ((2.5, 10.5, 13.5, 14.5), 0.5, None),
+    "sign": ((1.5, 6, 14.5, 15), 0.5, 8.5),
+    "sign_wide": ((-4, 6, 20, 15), 0.5, 8.5),
+}
+
+
+def _span_uv(spec):
+    """A part reaching past the block's sides: its faces that run along x take the whole
+    texture's width (or their own, if narrower), since a default UV past 0..16 samples the neighbouring sprites."""
+    x0, x1 = spec["from"][0], spec["to"][0]
+    if x0 >= 0 and x1 <= 16:
+        return spec
+    y0, y1 = spec["from"][1], spec["to"][1]
+    z0, z1 = spec["from"][2], spec["to"][2]
+    w = min(16, x1 - x0)
+    uv = {"north": [0, 16 - y1, w, 16 - y0], "south": [0, 16 - y1, w, 16 - y0],
+          "up": [0, z0, w, z1], "down": [0, 16 - z1, w, 16 - z0]}
+    spec["uv"] = {f: uv[f] for f in spec["faces"] if f in uv}
+    return spec
+
+
+def plate_parts(style):
+    """The holder and its insert, for the north face."""
+    (x0, y0, x1, y1), inset, band = NAMED_STYLES[style]
+    ix0, iy0, ix1, iy1 = x0 + inset, y0 + inset, x1 - inset, y1 - inset
+    z0, z1 = PLATE_Z0, PLATE_Z1
+    out = [el([x0, iy1, z0], [x1, y1, z1], "holder", ("north", "up", "down", "east", "west")),
+           el([x0, y0, z0], [x1, iy0, z1], "holder", ("north", "up", "down", "east", "west")),
+           el([x0, iy0, z0], [ix0, iy1, z1], "holder", ("north", "east", "west")),
+           el([ix1, iy0, z0], [x1, iy1, z1], "holder", ("north", "east", "west"))]
+    if band is None:
+        out.append(el([ix0, iy0, PLATE_FACE], [ix1, iy1, z1], "paper", ("north",)))
+    else:
+        out += [el([ix0, band, PLATE_FACE], [ix1, iy1, z1], "paper", ("north",)),
+                el([ix0, iy0, PLATE_FACE], [ix1, band, z1], "case", ("north",))]
+    return [_span_uv(spec) for spec in out]
+
+
+def named_panel_rules(wide=False):
+    """The full panel's rules with the plate on its face and the shelf only behind it; with a
+    wide plate, the wide one where the panel is wide."""
+    opposite = {"north": "south", "south": "north", "east": "west", "west": "east"}
+    rules = [rule for rule in panel_rules() if rule[0] != "shelf"]
+    for side, r in ROT.items():
+        if wide:
+            rules += [("plate", {"facing": side, "wide": "false"}, r),
+                      ("plate_wide", {"facing": side, "wide": "true"}, r)]
+        else:
+            rules.append(("plate", {"facing": side}, r))
+        rules.append(("shelf", {"facing": opposite[side], "shelf": "true"}, r))
+    return rules
 
 
 # ------------------------------------------------------------------------------------------
@@ -1668,6 +1736,7 @@ CAB = 'new BlockKitchenCabinet("%%s", new int[]{%s}, KitchenLine.%s, %d, Kitchen
 #   tall: two blocks, cut in halves (geo, box, java)
 #   locker: a tall run
 #   panel: a cubicle panel (parts, height)
+#   named_panel: a full cubicle panel with a name plate or sign on one face (plate, tex)
 #   storage: a faced storage block drawn whole (geo, java)
 #   single: one model turned by facing (geo, java), with an optional display
 #   folding: closed and open models (closed, open, java)
@@ -1718,6 +1787,17 @@ PIECES = [
      ("Half-Height Cubicle Panel", "Halbhohe Stellwand", "Panel de cubículo bajo",
       "Låg skärmvägg"),
      {"parts": PANEL_HALF, "java": 'new BlockCubiclePanel("%s", 8)'}),
+    ("cubicle_panel_nameplate", "named_panel", PANEL_FABRICS,
+     ("Cubicle Panel with Nameplate", "Stellwand mit Namensschild",
+      "Panel de cubículo con placa de nombre", "Skärmvägg med namnskylt"),
+     {"plate": plate_parts("nameplate"),
+      "java": 'new BlockCubiclePanelNamed("%s", CubicleSignStyle.NAME_PLATE)'}),
+    ("cubicle_panel_sign", "named_panel", PANEL_FABRICS,
+     ("Cubicle Panel with Sign", "Stellwand mit Schild", "Panel de cubículo con letrero",
+      "Skärmvägg med skylt"),
+     {"plate": plate_parts("sign"), "plate_wide": plate_parts("sign_wide"),
+      "tex": {"holder": T("metal_black")},
+      "java": 'new BlockCubiclePanelNamed("%s", CubicleSignStyle.SIGN)'}),
     # ---- seating ----
     ("task_chair", "single", SEAT_FABRICS,
      ("Task Chair", "Bürodrehstuhl", "Silla de oficina", "Kontorsstol"),
@@ -1983,10 +2063,11 @@ def java_for(piece, reg):
 def entries():
     """Every block: (registry, piece, kind, finish textures, names, java)."""
     out = []
-    for piece, kind, finishes, names, _spec in PIECES:
+    for piece, kind, finishes, names, spec in PIECES:
         for fid, ftex, *fnames in finishes:
             reg = "%s_%s" % (piece, fid)
             tex = dict(ftex)
+            tex.update(spec.get("tex", {}))
             if kind == "shelving":
                 tex.update(BINDERS)
             out.append((reg, piece, kind, tex, names_with(names, fnames), java_for(piece, reg)))
@@ -2042,6 +2123,13 @@ def base_models():
             for part, geo in spec["parts"].items():
                 out.append(("%s_%s" % (piece, part), geometry(geo, "fabric")))
             out.append(("%s_item" % piece, geometry(panel_item(spec["parts"]), "fabric")))
+        elif kind == "named_panel":
+            # The panel's own parts are the full panel's; only the plate is new.
+            out.append(("%s_plate" % piece, geometry(spec["plate"], "fabric")))
+            if "plate_wide" in spec:
+                out.append(("%s_plate_wide" % piece, geometry(spec["plate_wide"], "fabric")))
+            out.append(("%s_item" % piece, geometry(panel_item(PANEL_FULL) + spec["plate"],
+                                                    "fabric")))
         elif kind in ("single", "light", "appliance"):
             geo = spec["geo"]
             lo, hi = B.extent(geo)
@@ -2170,6 +2258,13 @@ def rules_for(piece, kind, spec):
 EXTRA_LANG = {
     "itemGroup.tabcommercialoffice": ("CSM: Commercial & Office", "CSM: Gewerbe & Büro",
                                       "CSM: Comercial y oficina", "CSM: Kommersiellt & kontor"),
+    "gui.csm.cubicle_name.name": ("Name", "Name", "Nombre", "Namn"),
+    "gui.csm.cubicle_name.role": ("Title", "Funktion", "Cargo", "Titel"),
+    "gui.csm.cubicle_name.department": ("Department", "Abteilung", "Departamento", "Avdelning"),
+    "gui.csm.cubicle_name.hint": ("Long lines are condensed to fit",
+                                  "Lange Zeilen werden schmaler gesetzt",
+                                  "Las líneas largas se estrechan para caber",
+                                  "Långa rader trycks ihop så att de får plats"),
     "csm.furnishings.appliance.supply.copier": (
         "A book and quill for each copy", "Ein Buch und Feder je Kopie",
         "Un libro y pluma por cada copia", "En bok och fjäderpenna per kopia"),
@@ -2254,6 +2349,14 @@ def generate(assets):
                 copy_model(blk % part, "%s_%s" % (piece, part), ftex)
             copy_model(item, "%s_item" % piece, ftex)
             state = multipart_state(reg, rules_for(piece, kind, spec))
+        elif kind == "named_panel":
+            for part in PANEL_FULL:
+                copy_model(blk % part, "cubicle_panel_%s" % part, ftex)
+            copy_model(blk % "plate", "%s_plate" % piece, ftex)
+            if "plate_wide" in spec:
+                copy_model(blk % "plate_wide", "%s_plate_wide" % piece, ftex)
+            copy_model(item, "%s_item" % piece, ftex)
+            state = multipart_state(reg, named_panel_rules("plate_wide" in spec))
         elif kind == "shelving":
             for part in R.MULTI["bookcase"]["parts"]:
                 copy_model(blk % part, "bookcase_%s" % part, ftex, R.SUB)

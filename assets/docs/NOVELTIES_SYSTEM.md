@@ -589,6 +589,33 @@ of offices, schools and studios, drawn by `gen_furniture_office.py` (textures an
   with a panel on it drops its top cap (`up`), so a half on a full reads as one 1.5 m panel.
   Right-clicking a panel's face with an empty hand hangs a shelf on it (`shelf`, stored: the
   world side), again takes it down.
+- **Cubicle panels with a name** (`BlockCubiclePanelNamed`, a `BlockCubiclePanel` subclass, full
+  height, the three fabrics): one with a slide-in nameplate in a satin aluminium holder (name and
+  title, 11 x 4 sixteenths) and one with a larger sign in a black frame (name, title, and the
+  department reversed out of a dark band; 13 x 9 sixteenths), `CubicleSignStyle`. They replace a
+  vanilla sign stuck on a post: the plate is part of the panel, so it joins, stacks and turns
+  corners with the plain panels. The plate is on the face toward whoever placed it (`facing`,
+  stored), so placing it from the aisle puts the name on the aisle side; alone it stands across
+  that view as a plain panel does. The sign widens to a block and a half (`wide`, actual state,
+  a quarter block over each neighbour) where a full-height plain panel runs on from it on both
+  sides; that is the size that reads across an aisle, since a name of a dozen letters is limited
+  by the insert's width, not its height. Put the sign one block in from the opening to get it.
+  The holder and blank insert are the baked model (`plate`, and `plate_wide` for the sign, per
+  facing; the parts past the block's sides carry explicit UVs); only the words are drawn, by
+  `TileEntityCubicleNamePlateRenderer` from `TileEntityCubicleNamePlate` (up to 24 printable
+  ASCII characters a line, NBT `l1`..`l3`, condensed rather than shrunk when a line outgrows the
+  insert, nothing drawn past 32 blocks or for a blank plate, `getBakedModelKey` 0 so an edit never
+  rebuilds the chunk; `wide` read from the world at most once a second and kept on the tile
+  entity). The print is the game's own font: CSM's Highway Gothic ships in the Roads module, which
+  Furniture & Novelties does not require. Right-click the plate with an empty hand, or sneak-click
+  anywhere on the panel, to open `CubicleNamePlateGui` (GUI id 45); every keystroke goes as a
+  `CubicleNamePlatePacket` that the server applies only within reach and where the player may edit
+  blocks. The face behind the plate still takes a shelf (`shelf`, a boolean here). Meta: facing
+  index, shelf bit 4. The plate stands on the lower panel of a 1.5 m wall at about desk height, or
+  on the upper one of a two-metre wall at eye height, whichever layer it is placed as. The insert
+  is set 0.25 px into its holder at z 6.5, clear of the corner post's face at 6.75 (an insert
+  within 0.2 of it is moved by `model_depth.py`, which once pushed it in front of the print);
+  `CubicleSignStyle` repeats the generator's `NAMED_STYLES` numbers, so change both together.
 - **Seating** on Core's `EntityCsmSeat`: the task, guest, conference and gaming chairs
   (`BlockResidentialFurniture`) and the waiting-room bench (`BlockResidentialRun`, a seat in every
   block on one beam, legs and arms at the ends); the school desk and chair sits too, facing its
@@ -653,9 +680,12 @@ of offices, schools and studios, drawn by `gen_furniture_office.py` (textures an
 
 Laminates are separate blocks: `_white` (white laminate on a white frame), `_grey` (a light grey
 laminate on a dark frame) and `_walnut`; seating in `_charcoal`, `_navy` and `_red`; cubicle
-panels in `_charcoal`, `_navy` and `_oatmeal`; the school's plastic in `_blue`, `_red` and
-`_charcoal`, its wood in `_oak` and `_walnut`. The tab is priced by `OfficeFabricatorRules`
-(registered by `CsmFurnishings.preInit`, mirrored in `audit_fabricator_costs.py`).
+panels (plain, half, with a nameplate, with a sign) in `_charcoal`, `_navy` and `_oatmeal`;
+the school's plastic in `_blue`, `_red` and `_charcoal`, its wood in `_oak` and `_walnut`. The
+tab is priced by `OfficeFabricatorRules` (registered by `CsmFurnishings.preInit`, mirrored in
+`audit_fabricator_costs.py`); a panel with a nameplate or sign costs a plain panel's wool and
+steel plus a paper for its insert. Its display name ends in "Nameplate", not "Name Plate":
+Core's mounting-hardware rule prices anything whose English name ends in "plate" as a bracket.
 
 ## Market & Store
 
@@ -764,6 +794,18 @@ the tab.
   group (`"service_case"`): the deli, butcher and seafood cases join one another in any order and
   one light switch works across them. The deli joined only itself before and now joins the
   group. Each block carries a scale on its top, its display read from both sides.
+- **Glass and the stock behind it.** Every glass-fronted piece (the coolers and freezers, the
+  dairy and floral coolers, every `BlockDisplayCase`, the bulk bins, the pastry and tobacco
+  cases, the lottery dispenser, the trophy case, the shower) is an `ICsmGlassFronted` block:
+  only its glass draws in the translucent layer, and the stock, shelves, frame and liner in the
+  cutout layer (`CsmGlassLayer`, `CsmGlassLayerModel`). Drawn whole in the translucent layer, the
+  stock vanished from some angles: that pass writes no depth and orders faces by their centres,
+  so the liner behind the hot food, whose centre sorted nearer, was painted over it. A face is
+  glass by its texture's name (`glass`, `glass_*`, `*_glass`), so a new glass texture must be
+  named so and every other texture such a block wears must be opaque or fully clear: a
+  part-clear pixel in the cutout layer is drawn opaque (the rotisserie clamshell was redrawn as
+  an outline for this). `CsmGlassLayerTest` fails the build on a part-clear texture that is not
+  named as glass. Nothing to write in a blockstate: the split is made from the textures.
 - **Bakery.** The bread rack (`BlockMarketRun`, group `bread_rack`, oak and walnut) is three
   shelves stepping back with a lip each, bagged sliced bread and crusty loaves (the `bread`
   stock) on the outer two and the bakery case's stock on the middle, under a BREAD sign. The
@@ -813,18 +855,6 @@ The traps:
 - **The rotisserie's glass is painted.** A counter appliance draws in the solid layer, so its
   door cannot be seen through; the spits of chickens are in the window texture, lit and unlit,
   as the oven's window is.
-- **Glass and the stock behind it.** Every glass-fronted piece (the coolers and freezers, the
-  dairy and floral coolers, every `BlockDisplayCase`, the bulk bins, the pastry and tobacco
-  cases, the lottery dispenser, the trophy case, the shower) is an `ICsmGlassFronted` block:
-  only its glass draws in the translucent layer, and the stock, shelves, frame and liner in the
-  cutout layer (`CsmGlassLayer`, `CsmGlassLayerModel`). Drawn whole in the translucent layer, the
-  stock vanished from some angles: that pass writes no depth and orders faces by their centres,
-  so the liner behind the hot food, whose centre sorted nearer, was painted over it. A face is
-  glass by its texture's name (`glass`, `glass_*`, `*_glass`), so a new glass texture must be
-  named so and every other texture such a block wears must be opaque or fully clear: a
-  part-clear pixel in the cutout layer is drawn opaque (the rotisserie clamshell was redrawn as
-  an outline for this). `CsmGlassLayerTest` fails the build on a part-clear texture that is not
-  named as glass. Nothing to write in a blockstate: the split is made from the textures.
 - **The ice bed's sides are open, so a run's ends close them.** It is a turned slab with only
   its top drawn, and the wedge under it once showed through the end glass. The end models carry
   the pan's end (`_ice_bed_end`): the slab's own end, a band turned with it under its slope, and

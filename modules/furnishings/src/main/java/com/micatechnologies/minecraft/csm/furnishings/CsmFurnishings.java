@@ -6,6 +6,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.furniture.market.MarketFabricatorRules;
+import com.micatechnologies.minecraft.csm.furniture.office.CubicleNamePlatePacket;
+import com.micatechnologies.minecraft.csm.furniture.office.CubicleNamePlatePacketHandler;
 import com.micatechnologies.minecraft.csm.furniture.office.OfficeFabricatorRules;
 import com.micatechnologies.minecraft.csm.furniture.outdoor.Bounce;
 import com.micatechnologies.minecraft.csm.furniture.residential.BedSleepClientHandler;
@@ -109,6 +111,11 @@ public class CsmFurnishings {
     NETWORK.registerMessage(
         ArcadeHighScoreHandler.class,
         ArcadeHighScorePacket.class,
+        Side.SERVER);
+    // A cubicle panel's name plate, from its editor.
+    NETWORK.registerMessage(
+        CubicleNamePlatePacketHandler.class,
+        CubicleNamePlatePacket.class,
         Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's

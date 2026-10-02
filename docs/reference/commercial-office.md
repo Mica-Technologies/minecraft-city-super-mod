@@ -2,7 +2,7 @@
 
 The furniture of offices, schools and studios: desks that join into runs and L-shapes, cubicle panels, office seating, boards that join into one of any size, classroom seating, lecterns, lockers, a trophy case, projectors, the cafeteria table, the things on a desk and a copier that copies books.
 
-!!! info "88 blocks in this tab"
+!!! info "94 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -29,6 +29,12 @@ The furniture of offices, schools and studios: desks that join into runs and L-s
 | Cubicle Panel (Charcoal) | `csm:cubicle_panel_charcoal` | 1.0 | 2.0 | axe | 0 |
 | Cubicle Panel (Navy) | `csm:cubicle_panel_navy` | 1.0 | 2.0 | axe | 0 |
 | Cubicle Panel (Oatmeal) | `csm:cubicle_panel_oatmeal` | 1.0 | 2.0 | axe | 0 |
+| Cubicle Panel with Nameplate (Charcoal) | `csm:cubicle_panel_nameplate_charcoal` | 1.0 | 2.0 | axe | 0 |
+| Cubicle Panel with Nameplate (Navy) | `csm:cubicle_panel_nameplate_navy` | 1.0 | 2.0 | axe | 0 |
+| Cubicle Panel with Nameplate (Oatmeal) | `csm:cubicle_panel_nameplate_oatmeal` | 1.0 | 2.0 | axe | 0 |
+| Cubicle Panel with Sign (Charcoal) | `csm:cubicle_panel_sign_charcoal` | 1.0 | 2.0 | axe | 0 |
+| Cubicle Panel with Sign (Navy) | `csm:cubicle_panel_sign_navy` | 1.0 | 2.0 | axe | 0 |
+| Cubicle Panel with Sign (Oatmeal) | `csm:cubicle_panel_sign_oatmeal` | 1.0 | 2.0 | axe | 0 |
 | Desk Globe (Blue) | `csm:desk_globe_blue` | 1.5 | 3.0 | axe | 0 |
 | Desk Lamp (Black) | `csm:desk_lamp_black` | 1.5 | 3.0 | axe | 0 |
 | Desk Lamp (White) | `csm:desk_lamp_white` | 1.5 | 3.0 | axe | 0 |
