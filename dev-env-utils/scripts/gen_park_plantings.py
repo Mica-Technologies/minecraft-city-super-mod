@@ -361,6 +361,42 @@ def model(textures, elements, parent="block/block", ao=True):
     return m
 
 
+def wbox(frm, to, tex, faces=("north", "south", "east", "west", "up", "down"), per=None):
+    """box(), for an element reaching past the cell: each face's UV window is slid into 0..16
+    whole rather than clamped, so it keeps its size instead of stretching."""
+    el = box([min(15.99, max(0, v)) for v in frm], [min(16, max(0.01, v)) for v in to], tex,
+             faces, per)
+    el["from"], el["to"] = [round(v, 3) for v in frm], [round(v, 3) for v in to]
+    x0, y0, z0 = frm
+    x1, y1, z1 = to
+    raw = {"north": [16 - x1, 16 - y1, 16 - x0, 16 - y0], "south": [x0, 16 - y1, x1, 16 - y0],
+           "east": [16 - z1, 16 - y1, 16 - z0, 16 - y0], "west": [z0, 16 - y1, z1, 16 - y0],
+           "up": [x0, z0, x1, z1], "down": [x0, 16 - z1, x1, 16 - z0]}
+    for f in el["faces"]:
+        u = raw[f]
+        for a, b in ((0, 2), (1, 3)):
+            if u[a] < 0:
+                u[b] -= u[a]
+                u[a] = 0
+            if u[b] > 16:
+                u[a] -= u[b] - 16
+                u[b] = 16
+        el["faces"][f]["uv"] = [round(v, 3) for v in u]
+    return el
+
+
+def plane(frm, to, tex, uv=(0, 0, 16, 16), angle=0, origin=None):
+    """A zero-thickness card, drawn from both sides: a crop plant, a seedling row, a trellis."""
+    axis_z = frm[2] == to[2]
+    faces = ("north", "south") if axis_z else ("east", "west")
+    el = {"from": list(frm), "to": list(to), "shade": False,
+          "faces": {f: face(tex, list(uv)) for f in faces}}
+    if angle:
+        el["rotation"] = {"origin": origin or [8, 8, 8], "axis": "y", "angle": angle,
+                          "rescale": False}
+    return el
+
+
 def cross_planes(tex, height, uv_top=0, four=False):
     """Crossed planes, as a plant is drawn, cut to a height: two at 45 degrees, or four at
     22.5 either side of each axis for a fuller clump (an element turns at most 45 degrees, in
@@ -1135,6 +1171,849 @@ def potted(tex, els):
     return tex, [pot] + out
 
 
+# ------------------------------------------------------------------------------------------
+# Herbs and garden plants, cacti and succulents, garden flowers (GitHub #250). Drawn as the
+# regional plants are: crossed planes for an open plant, stacked boxes for a dense one, a solid
+# ribbed body for a cactus. Each one is drawn from the real plant's habit at 1 px = 6.25 cm.
+# ------------------------------------------------------------------------------------------
+def arching_spikes_tex(seed, count, length, spread, arch, stem, spike, spike_len, base_row,
+                       dots=None):
+    """Flower spikes standing out of a mound: stems from the mound's top (row `base_row`),
+    leaning out by up to `spread` radians and curving further out along their length (`arch`),
+    the last `spike_len` pixels in the spike's colours (with an odd pale dot where the species
+    shows its corollas)."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for i in range(count):
+        f = (i + 0.5) / count * 2 - 1
+        ang = f * spread + rng.uniform(-0.08, 0.08)
+        L = rng.uniform(*length)
+        x, y = 8 + f * 3.5 + rng.uniform(-0.5, 0.5), base_row
+        d = 0.0
+        while d < L:
+            a = ang * (1 + arch * d / L)
+            x += math.sin(a) * 0.5
+            y -= math.cos(a) * 0.5
+            d += 0.5
+            if d < L - spike_len:
+                _dot(px, x, y, stem)
+            else:
+                c = spike[int(d * 2) % len(spike)]
+                if dots and rng.random() < 0.18:
+                    c = dots
+                _dot(px, x, y, c)
+    return img
+
+
+def russian_sage_tex(seed):
+    """Russian sage: a see-through haze of silvery stems and side shoots, misted lavender-blue
+    with tiny flowers over the top two-thirds."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    _foliage(px, rng, [(140, 160, 140), (120, 142, 122)], 11, 28)
+    silver = [(204, 210, 210), (184, 192, 194), (218, 222, 220)]
+    blue = [(126, 128, 210), (150, 150, 226), (108, 112, 196), (170, 166, 232)]
+    for i in range(8):
+        x = 1.5 + (i + rng.uniform(0.2, 0.8)) * 13.0 / 8
+        h = rng.randint(11, 16)
+        lean = (x - 8) * 0.025 + rng.uniform(-0.05, 0.05)
+        for k in range(h):
+            xx, yy = x + lean * k, 15 - k
+            _dot(px, xx, yy, silver[k % 3])
+            if k > 5 and k % 4 == i % 4:
+                side = 1 if (k + i) % 2 else -1
+                _dot(px, xx + side, yy - 1, silver[1])
+                _dot(px, xx + side * 2, yy - 2, blue[rng.randrange(4)])
+            if k > 4 and rng.random() < 0.8:
+                _dot(px, xx + rng.choice((-1, 1)), yy, blue[rng.randrange(4)])
+    return img
+
+
+def bird_of_paradise_tex(seed):
+    """Strelitzia: a fan of paddle leaves on long stalks, blue-green with a pale midrib and the
+    odd tear, and two flowers held at leaf height: a grey-green beak, an orange crest, a blue
+    tongue."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    blade = [(70, 116, 92), (60, 104, 82), (82, 128, 102)]
+    for ang, L in ((-0.62, 9), (0.66, 9.5), (-0.34, 12), (0.38, 12), (-0.1, 13.5), (0.14, 12.5)):
+        for t in range(int((L - 3) * 2)):
+            d = t / 2.0
+            _dot(px, 8 + math.sin(ang) * d, 15 - math.cos(ang) * d, (104, 132, 100))
+        cx, cy = 8 + math.sin(ang) * L, 15 - math.cos(ang) * L
+        for y in range(16):
+            for x in range(16):
+                dx, dy = x - cx, y - cy
+                u = dx * math.sin(ang) - dy * math.cos(ang)  # along the leaf
+                v = dx * math.cos(ang) + dy * math.sin(ang)  # across it
+                if (u / 3.5) ** 2 + (v / 1.9) ** 2 > 1:
+                    continue
+                if abs(v) < 0.45:
+                    c = (150, 172, 140)
+                elif abs(v) > 0.9 and rng.random() < 0.08:
+                    continue  # a tear in the blade
+                else:
+                    c = blade[rng.randrange(3)]
+                _dot(px, x, y, c)
+    for x0, h, side in ((6.5, 11, 1), (10.0, 9, -1)):
+        for k in range(h):
+            _dot(px, x0, 15 - k, (110, 132, 104))
+        tx, ty = x0, 15 - h
+        for d in range(4):  # the beak, held out sideways
+            _dot(px, tx + side * d, ty + (1 if d < 2 else 0), (112, 96, 104) if d % 2 else
+                 (96, 110, 98))
+        for dx, dy, c in ((1, -1, (248, 140, 30)), (2, -2, (252, 172, 44)),
+                          (1, -2, (240, 118, 22)), (2, -1, (248, 150, 34)),
+                          (3, -3, (250, 160, 40)), (2, 0, (56, 78, 200))):
+            _dot(px, tx + side * dx, ty + dy, c)
+    return img
+
+
+def foxtail_tex(seed):
+    """Foxtail fern: dense, bright green, cylindrical plumes arching out of the crown, each
+    tapering to a point."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    green = [(110, 168, 62), (92, 150, 50), (130, 184, 78), (76, 128, 44)]
+    for i in range(8):
+        f = (i + 0.5) / 8 * 2 - 1
+        ang = f * 0.95 + rng.uniform(-0.06, 0.06)
+        L = 9.0 - abs(f) * 2.5 + rng.uniform(-0.5, 0.5)
+        x, y, d = 8 + f * 1.5, 15.0, 0.0
+        while d < L:
+            a = ang * (1 + 0.35 * d / L)
+            x += math.sin(a) * 0.5
+            y -= math.cos(a) * 0.5
+            d += 0.5
+            if d < 1.5:
+                _dot(px, x, y, (100, 140, 60))
+                continue
+            w = 1.2 if d < L - 2 else 0.5
+            for s in (-w, -w / 2, 0, w / 2, w):
+                if rng.random() < 0.8:
+                    _dot(px, x + math.cos(a) * s, y + math.sin(a) * s, green[rng.randrange(4)])
+    return img
+
+
+def mustard_tex(seed):
+    """Wild mustard: tall, branching, rather bare stems over lobed basal leaves, each tip a
+    loose cluster of small bright yellow flowers with thin seed pods held out below it."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    _foliage(px, rng, [(70, 112, 52), (58, 98, 44), (84, 124, 60)], 11, 44)
+    head = {"a": (246, 222, 48), "b": (226, 196, 30)}
+    for i in range(5):
+        x = 2 + (i + rng.uniform(0.2, 0.8)) * 12.0 / 5
+        h = rng.randint(11, 15)
+        tilt = rng.uniform(-0.1, 0.1)
+        for k in range(h):
+            _dot(px, x + tilt * k, 15 - k, (110, 140, 70))
+            if 3 < k < h - 2 and k % 2 == 0:
+                _dot(px, x + tilt * k + (1 if k % 4 else -1), 15 - k, (150, 170, 92))  # pods
+        _head(px, x + tilt * h, 15 - h, [".a.", "aba", "a.a"], head)
+        # A side branch with a smaller cluster of its own.
+        side = 1 if i % 2 else -1
+        k0 = h // 2 + 1
+        bx, by = x + tilt * k0, 15 - k0
+        for d in range(1, 4):
+            _dot(px, bx + side * d * 0.7, by - d, (110, 140, 70))
+        _head(px, bx + side * 2.1, by - 3, ["a.", "ba"], head)
+    return img
+
+
+def saguaro_tex(seed):
+    """A saguaro's pleated skin: ribs every 2 px, a pale spine cluster (areole) every third row
+    along each rib's crest, staggered from rib to rib."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            n = rng.randint(-5, 5)
+            if x % 2 == 0:
+                c = (72 + n, 104 + n, 62 + n)
+            else:
+                c = (100 + n, 136 + n, 82 + n)
+                if y % 3 == (x // 2) % 3:
+                    c = (196, 186, 152)
+            px[x, y] = clamp(c) + (255,)
+    return img
+
+
+def saguaro_top_tex(seed):
+    """The crown from above: the ribs meeting at a tuft of tan felt."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x - 7.5, y - 7.5
+            r = math.hypot(dx, dy)
+            n = rng.randint(-5, 5)
+            if r < 1.6:
+                c = (194 + n, 178 + n, 132 + n)
+            else:
+                rib = int((math.atan2(dy, dx) + math.pi) / (2 * math.pi) * 16) % 2
+                c = (100 + n, 136 + n, 82 + n) if rib else (72 + n, 104 + n, 62 + n)
+                if rib and r < 3.2 and rng.random() < 0.4:
+                    c = (196, 186, 152)
+            px[x, y] = clamp(c) + (255,)
+    return img
+
+
+def barrel_side_tex(seed):
+    """A golden barrel cactus's side: green ribs every 3 px, their crests thick with golden
+    spines that splay over the grooves."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    gold = [(238, 206, 88), (214, 180, 64), (248, 222, 120)]
+    for y in range(16):
+        for x in range(16):
+            n = rng.randint(-5, 5)
+            rib = x % 3
+            c = [(58 + n, 100 + n, 46 + n), (86 + n, 132 + n, 60 + n),
+                 (104 + n, 148 + n, 70 + n)][rib]
+            if rib == 2 and y % 2 == 0:
+                c = gold[rng.randrange(3)]
+            elif rib != 0 and rng.random() < 0.28:
+                c = gold[rng.randrange(3)]
+            px[x, y] = clamp(c) + (255,)
+    return img
+
+
+def barrel_top_tex(seed):
+    """The barrel from above: radial ribs crested with spines round a woolly yellow crown."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    gold = [(238, 206, 88), (214, 180, 64), (248, 222, 120)]
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x - 7.5, y - 7.5
+            r = math.hypot(dx, dy)
+            n = rng.randint(-6, 6)
+            if r < 2.0:
+                c = (228 + n, 206 + n, 128 + n)
+            else:
+                rib = int((math.atan2(dy, dx) + math.pi) / (2 * math.pi) * 20) % 2
+                c = (100 + n, 146 + n, 68 + n) if rib else (60 + n, 102 + n, 48 + n)
+                if rib and rng.random() < 0.6:
+                    c = gold[rng.randrange(3)]
+            px[x, y] = clamp(c) + (255,)
+    return img
+
+
+def pad_tex(seed, fruit=False):
+    """A prickly pear pad: an obovate cladode, narrowing to where it joins the pad below, with
+    areoles in a diagonal lattice; the fruiting pad carries magenta-red fruit along its top."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    body = [(112, 156, 78), (100, 144, 70), (124, 168, 88)]
+    for y in range(16):
+        for x in range(16):
+            v = (y + 0.5 - 8.0) / 7.8
+            if abs(v) > 1:
+                continue
+            hw = 7.2 * math.sqrt(1 - v * v) * (1 - 0.38 * max(0.0, v))
+            u = abs(x + 0.5 - 8.0)
+            if u > hw:
+                continue
+            c = body[rng.randrange(3)]
+            if hw - u < 1.0 or abs(v) > 0.93:
+                c = (84, 124, 58)
+            elif (x + 2 * y) % 4 == 0 and y % 2 == 0:
+                c = (176, 158, 112)
+            px[x, y] = clamp(c) + (255,)
+    if fruit:
+        for fx in (4, 8, 12):
+            fy = 1 if fx == 8 else 2
+            for dx, dy, c in ((0, 0, (206, 56, 110)), (1, 0, (178, 30, 86)),
+                              (0, 1, (178, 30, 86)), (1, 1, (150, 22, 66)),
+                              (0, 2, (150, 22, 66)), (1, 2, (130, 20, 58))):
+                _dot(px, fx - 1 + dx, fy - 1 + dy, c)
+    return img
+
+
+def rosette_tex(seed, count, spread, length, half_width, palette, edge, tip, lift,
+                speckle=None, teeth=None):
+    """A rosette of thick tapering leaves from one crown (agave, aloe): the outer leaves drawn
+    first, so the inner ones lie over them; each curves up toward the vertical by `lift`."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    angles = [math.radians(-spread + i * 2 * spread / (count - 1) + rng.uniform(-4, 4))
+              for i in range(count)]
+    angles.sort(key=lambda a: -abs(a))
+    for ang in angles:
+        L = rng.uniform(*length) * (1.0 + 0.25 * (1 - abs(ang) / math.radians(spread)))
+        x, y, d = 8.0 + rng.uniform(-0.6, 0.6), 15.5, 0.0
+        while d < L:
+            a = ang * (1 - lift * d / L)
+            w = half_width * (1 - d / L) ** 0.8
+            s = -w
+            while s <= w + 0.01:
+                xx, yy = x + math.cos(a) * s, y + math.sin(a) * s
+                if d > L - 0.6:
+                    c = tip
+                elif abs(s) > w - 0.5:
+                    c = teeth if (teeth and int(d * 2) % 5 == 0) else edge
+                else:
+                    c = palette[0 if abs(s) < 0.4 else 1 + rng.randrange(len(palette) - 1)]
+                    if speckle and rng.random() < 0.12:
+                        c = speckle
+                _dot(px, xx, yy, c)
+                s += 0.5
+            x += math.sin(a) * 0.5
+            y -= math.cos(a) * 0.5
+            d += 0.5
+    return img
+
+
+def aloe_tex(seed):
+    """Aloe vera: upright, fleshy grey-green leaves with pale flecks and soft pale teeth, and a
+    flower stalk of hanging yellow tubes out of the middle."""
+    img = rosette_tex(seed, 9, 42, (6.0, 7.5), 1.6, [(140, 170, 124), (120, 156, 108),
+                                                      (104, 140, 96)],
+                      (96, 130, 88), (128, 132, 92), 0.35, speckle=(196, 210, 176),
+                      teeth=(206, 212, 170))
+    px = img.load()
+    for y in range(5, 12):
+        _dot(px, 8, y, (122, 132, 92))
+    for y in range(5, 9):
+        for side in (-1, 1):
+            if (y + side) % 2:
+                _dot(px, 8 + side, y, (246, 200, 56) if y < 7 else (236, 160, 40))
+    return img
+
+
+def bulb_tex(seed, heads, pattern, stems, leaf_len, leaf_count, broad):
+    """Bulbs in flower (tulips, daffodils): strap leaves up from the ground, broad and grey-green
+    for a tulip, and one flower to a bare stem."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    leaf = [(104, 150, 98), (88, 134, 86), (120, 162, 110)]
+    for i in range(leaf_count):
+        x = 1.5 + (i + rng.uniform(0.1, 0.9)) * 13.0 / leaf_count
+        n = rng.randint(*leaf_len)
+        lean = rng.uniform(-0.3, 0.3)
+        for k in range(n):
+            c = leaf[rng.randrange(3)]
+            _dot(px, x + lean * k, 15 - k, c)
+            if broad and k < n - 2:
+                _dot(px, x + lean * k + 1, 15 - k, leaf[1])
+    count, lo, hi = stems
+    for i in range(count):
+        x = 1.5 + (i + rng.uniform(0.2, 0.8)) * 13.0 / count
+        h = rng.randint(lo, hi)
+        for k in range(h):
+            _dot(px, x, 15 - k, (96, 140, 80))
+        _head(px, x, 15 - h, pattern, heads[rng.randrange(len(heads))])
+    return img
+
+
+def sunflower_stem_tex(seed):
+    """A sunflower's lower stem: a thick hairy stalk with big heart-shaped leaves on stalks,
+    alternating up it (the cross planes' lower block)."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    leaf = [(78, 128, 48), (66, 112, 40), (92, 142, 58)]
+    for y in range(16):
+        _dot(px, 7, y, (96, 140, 58))
+        _dot(px, 8, y, (82, 124, 48) if y % 3 else (130, 160, 96))
+    for row, side in ((3, 1), (7, -1), (11, 1), (14, -1)):
+        cx = 8 + side * 4.5 if side > 0 else 7 + side * 4.5
+        for d in (1, 2):
+            _dot(px, (8 if side > 0 else 7) + side * d, row - d * 0.5, (96, 140, 58))
+        for y in range(16):
+            for x in range(16):
+                u, v = (x - cx) / 3.0, (y - row) / 2.1
+                if u * u + v * v <= 1:
+                    _dot(px, x, y, (110, 156, 76) if abs(y - row) < 0.5 else
+                         leaf[rng.randrange(3)])
+    return img
+
+
+def sunflower_head_tex(seed):
+    """The sunflower's head on the top of its stalk: a broad brown disc in a ring of yellow
+    rays, a leaf below it."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(9, 16):
+        _dot(px, 7, y, (96, 140, 58))
+        _dot(px, 8, y, (82, 124, 48))
+    leaf = [(78, 128, 48), (66, 112, 40), (92, 142, 58)]
+    for y in range(16):
+        for x in range(16):
+            u, v = (x - 3.5) / 3.0, (y - 12.5) / 2.0
+            if u * u + v * v <= 1:
+                _dot(px, x, y, leaf[rng.randrange(3)])
+    cx, cy = 7.5, 5.0
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x - cx, y - cy
+            r = math.hypot(dx, dy)
+            if r < 2.7:
+                c = [(92, 56, 26), (70, 40, 20), (112, 72, 34)][(x * 3 + y * 5) % 3]
+            elif r < 5.2:
+                ray = (math.atan2(dy, dx) + math.pi) / (2 * math.pi) * 18
+                if r > 4.2 and (ray - int(ray)) > 0.6:
+                    continue  # the gaps between the rays' tips
+                c = [(250, 200, 30), (240, 176, 20), (252, 216, 60)][rng.randrange(3)]
+            else:
+                continue
+            _dot(px, x, y, c)
+    return img
+
+
+def sunflower_item_tex(seed):
+    """The sunflower's inventory sprite: the whole plant, head and all, in one square."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(6, 16):
+        _dot(px, 8, y, (90, 134, 54))
+    leaf = [(78, 128, 48), (66, 112, 40), (92, 142, 58)]
+    for cx, cy in ((5.0, 12.0), (11.0, 9.5)):
+        for y in range(16):
+            for x in range(16):
+                u, v = (x - cx) / 2.3, (y - cy) / 1.5
+                if u * u + v * v <= 1:
+                    _dot(px, x, y, leaf[rng.randrange(3)])
+    for y in range(9):
+        for x in range(16):
+            r = math.hypot(x - 7.5, y - 4.0)
+            if r < 1.8:
+                _dot(px, x, y, (92, 56, 26) if (x + y) % 2 else (70, 40, 20))
+            elif r < 3.9:
+                _dot(px, x, y, (250, 200, 30) if (x + y) % 2 else (240, 176, 20))
+    return img
+
+
+def vine_tex(seed, leaf, leaf_size, flowers, top):
+    """A sprawling cucurbit vine seen from the side: leaves held up on stalks from runners along
+    the ground, from row `top` down, and the odd yellow flower."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for x in range(16):
+        _dot(px, x, 15 - (1 if (x // 3) % 2 else 0), (96, 132, 62))
+    for i in range(6):
+        x = 1.5 + (i + rng.uniform(0.1, 0.9)) * 13.0 / 6
+        h = rng.randint(2, 15 - top - 2)
+        for k in range(1, h):
+            _dot(px, x + 0.15 * k * (1 if i % 2 else -1), 15 - k, (110, 146, 74))
+        lx, ly = x + 0.15 * h * (1 if i % 2 else -1), 15 - h
+        rx, ry = leaf_size
+        for y in range(16):
+            for xx in range(16):
+                u, v = (xx - lx) / rx, (y - ly) / ry
+                if u * u + v * v <= 1:
+                    c = leaf[rng.randrange(len(leaf))]
+                    if abs(xx - lx) < 0.5 or rng.random() < 0.06:
+                        c = (150, 182, 120)  # midrib and the mottling
+                    _dot(px, xx, y, c)
+    for _ in range(flowers):
+        _head(px, rng.uniform(2, 14), rng.randint(top + 3, 13), ["a.a", ".a."],
+              {"a": (246, 196, 40)})
+    return img
+
+
+def bean_tex(seed):
+    """A pole lima bean: a twining stem up the middle, trifoliate leaves off it, the odd white
+    flower, and flat broad pods hanging in pairs."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    leaf = [(84, 140, 60), (70, 124, 50), (98, 154, 70)]
+    for y in range(16):
+        _dot(px, 8 + round(math.sin(y * 0.8)), y, (92, 128, 58))
+    for cy in range(1, 15, 3):
+        side = 1 if cy % 2 else -1
+        for dx, dy in ((2, 0), (3, -1), (3, 1), (4, 0), (2, -1), (5, 0), (4, 1)):
+            _dot(px, 8 + side * dx, cy + dy, leaf[rng.randrange(3)])
+    for cx, cy in ((5, 4), (11, 7), (6, 10), (10, 12), (12, 2)):
+        for k in range(3):
+            _dot(px, cx, cy + k, (152, 192, 92) if k else (132, 176, 80))
+            _dot(px, cx + 1, cy + k + 1, (140, 184, 86))
+    for cx, cy in ((4, 1), (12, 10)):
+        _dot(px, cx, cy, (244, 242, 232))
+        _dot(px, cx + 1, cy, (226, 222, 236))
+    return img
+
+
+def ribbed_tex(seed, colours, groove, period=3):
+    """A ribbed fruit's skin (pumpkin): vertical lobes with darker grooves every `period` px."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            c = groove if x % period == 0 else colours[rng.randrange(len(colours))]
+            px[x, y] = clamp(tuple(v + rng.randint(-4, 4) for v in c)) + (255,)
+    return img
+
+
+def melon_tex(seed):
+    """A watermelon's rind: pale green with dark wavy stripes along its length."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    for y in range(16):
+        for x in range(16):
+            dark = (y + int(round(math.sin(x * 0.9 + y) * 0.8))) % 4 < 2
+            c = (44, 92, 38) if dark else (140, 186, 96)
+            px[x, y] = clamp(tuple(v + rng.randint(-5, 5) for v in c)) + (255,)
+    return img
+
+
+def boysenberry_tex(seed):
+    """Boysenberry canes trained along two wires: canes up from the crown to the wires and
+    tied along them, three-leaflet leaves, and clusters of berries ripening from red to the
+    near-black purple they are picked at."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    leaf = [(76, 128, 56), (62, 112, 46), (90, 142, 66)]
+    cane = [(124, 72, 62), (106, 60, 52)]
+    for wire in (3, 8):
+        for x in range(16):
+            _dot(px, x, wire, (156, 158, 160))
+            _dot(px, x, wire + (1 if math.sin(x * 0.8 + wire) > 0 else -1), cane[x % 2])
+    for x0 in (2, 8, 13):
+        for y in range(4, 16):
+            _dot(px, x0 + (1 if y % 4 == 0 else 0), y, cane[y % 2])
+    for _ in range(70):
+        _dot(px, rng.randrange(16), rng.choice((0, 1, 2, 4, 5, 6, 7, 9, 10, 11)),
+             leaf[rng.randrange(3)])
+    for cx, cy, ripe in ((2, 5, True), (6, 10, True), (10, 5, True), (13, 9, False),
+                         (5, 0, True), (14, 1, True), (9, 10, False), (11, 0, True)):
+        c = [(52, 18, 40), (84, 30, 56), (40, 14, 30)] if ripe else [(176, 40, 52),
+                                                                   (150, 30, 44)]
+        for ox, oy in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            _dot(px, cx + ox, cy + oy, c[(ox + oy) % len(c)])
+    return img
+
+
+def lavender_tex(seed):
+    """English lavender as a card: a loose mound of narrow, upright silvery-green leaves, and
+    many slender stems standing well clear of it, each topped with a purple spike in whorls."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    leaf = [(132, 164, 120), (116, 150, 106), (150, 178, 136), (100, 134, 94)]
+    for _ in range(34):
+        x = rng.uniform(1.0, 15.0)
+        dist = abs(x - 8) / 7.0
+        h = int((1 - dist * dist) * 5) + rng.randint(1, 2)
+        lean = (x - 8) * 0.06
+        for k in range(h):
+            _dot(px, x + lean * k, 15 - k, leaf[rng.randrange(4)])
+    purple = [(124, 96, 178), (98, 74, 156), (150, 122, 204)]
+    for i in range(13):
+        f = (i + 0.5) / 13 * 2 - 1
+        x = 8 + f * 6 + rng.uniform(-0.4, 0.4)
+        top = int(4 + abs(f) * 3 + rng.randint(0, 1))
+        lean = f * 0.12
+        for y in range(15, top - 1, -1):
+            k = 15 - y
+            xx = x + lean * k
+            if y <= top + 3:
+                c = purple[(y + i) % 3] if (y - top) % 2 == 0 or y == top else purple[1]
+            else:
+                c = (126, 150, 112)
+            if y < 11 or y <= top + 3:
+                _dot(px, xx, y, c)
+    return img
+
+
+def rosemary_tex(seed):
+    """Rosemary as a card: an upright, dense shrub taller than it is wide, of stiff stems clothed
+    in dark needle leaves, woody at the base, small pale-blue flowers scattered through it."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    needle = [(62, 94, 62), (50, 80, 54), (78, 108, 74), (44, 70, 48)]
+    for i in range(11):
+        f = (i + 0.5) / 11 * 2 - 1
+        x = 8 + f * 4.6 + rng.uniform(-0.3, 0.3)
+        h = int(14 - abs(f) * 5 + rng.randint(-1, 0))
+        lean = f * 0.08
+        for k in range(h):
+            xx, y = x + lean * k, 15 - k
+            if k < 2:
+                if i % 2 == 0:
+                    _dot(px, xx, y, (110, 96, 76))
+                continue
+            _dot(px, xx, y, needle[rng.randrange(4)])
+            for side in (-1, 1):
+                if rng.random() < 0.75:
+                    _dot(px, xx + side, y, needle[rng.randrange(4)])
+            if rng.random() < 0.22 and k > 4:
+                _dot(px, xx + rng.choice((-1, 1)), y, (170, 186, 232) if rng.random() < 0.6
+                     else (146, 164, 222))
+    return img
+
+
+def mexican_bush_sage_tex(seed):
+    """Mexican bush sage as a card: arching grey-green leafy stems in a loose low clump, and long
+    velvety purple spikes curving outward over it, the odd white corolla showing."""
+    img = arching_spikes_tex(seed, 13, (9.0, 11.0), 1.15, 1.0, (120, 138, 108),
+                             [(132, 58, 150), (150, 78, 170), (112, 46, 132)], 5.5, 15,
+                             dots=(236, 230, 242))
+    rng = random.Random(seed + 1)
+    px = img.load()
+    leaf = [(118, 146, 104), (102, 130, 92), (136, 160, 118)]
+    for i in range(16):
+        f = (i + 0.5) / 16 * 2 - 1
+        x, y, d = 8 + f * 2.0, 15.0, 0.0
+        ang, L = f * 1.2, rng.uniform(5.0, 7.0)
+        while d < L:
+            a = ang * (1 + 0.6 * d / L)
+            x += math.sin(a) * 0.5
+            y -= math.cos(a) * 0.5
+            d += 0.5
+            _dot(px, x, y, leaf[rng.randrange(3)])
+            if rng.random() < 0.5:
+                _dot(px, x + math.cos(a), y + math.sin(a), leaf[rng.randrange(3)])
+    return img
+
+
+def fringe_tex(seed, palette, top, bottom, blooms=(), bloom_count=0, stems=None, droop=0,
+               sprays=None):
+    """A shrub's outline card: leaves filling a rounded, ragged-edged mound from row `top` to
+    row `bottom`, bare stems below it to the ground, and flowers over it; drawn on four crossed
+    planes round a smaller solid core, so the shrub reads as rounded and leafy, not a cube.
+    blooms: (pattern, colours) pairs; droop: cascading sprays off each side ending in `sprays`."""
+    rng = random.Random(seed)
+    img, px = _canvas()
+    cy, ry, rx = (top + bottom) / 2.0, (bottom - top) / 2.0, 7.6
+    if stems:
+        for x0 in (5.5, 7.5, 9.5, 11):
+            for y in range(int(bottom) - 1, 16):
+                _dot(px, x0 + (y % 3 == 0) * 0.6, y, stems[y % len(stems)])
+    for y in range(16):
+        for x in range(16):
+            u, v = (x + 0.5 - 8) / rx, (y + 0.5 - cy) / ry
+            r = u * u + v * v
+            if r > 1.0:
+                continue
+            if rng.random() > (0.95 if r < 0.55 else 0.95 - (r - 0.55) * 1.7):
+                continue
+            px[x, y] = clamp(palette[rng.randrange(len(palette))]) + (255,)
+    for k in range(droop):
+        for side in (-1, 1):
+            x, y = 8 + side * rng.uniform(3.5, 5.5), top + 1.5 + k * 2.2
+            for d in range(5):
+                x += side * 0.8
+                y += 0.25 + d * 0.15
+                _dot(px, x, y, palette[rng.randrange(len(palette))])
+                _dot(px, x, y + 1, palette[rng.randrange(len(palette))])
+            if sprays:
+                _head(px, x, y + 1, ["ab", "ba", "a."], sprays)
+    for pattern, colours in blooms:
+        for _ in range(bloom_count):
+            for _try in range(20):
+                x, y = rng.uniform(2, 14), rng.uniform(top + 1, bottom - 1)
+                u, v = (x - 8) / rx, (y - cy) / ry
+                if u * u + v * v < 0.8:
+                    break
+            _head(px, x, y, pattern, colours)
+    return img
+
+
+TULIPS = [{"a": (220, 36, 44), "b": (176, 24, 36)}, {"a": (250, 214, 52), "b": (222, 180, 30)},
+          {"a": (242, 128, 170), "b": (210, 92, 140)}, {"a": (246, 244, 238), "b": (214, 210, 200)},
+          {"a": (128, 58, 140), "b": (98, 40, 112)}, {"a": (244, 126, 40), "b": (212, 96, 26)}]
+
+TEXTURES.update({
+    # Herbs and garden
+    "lavender": lambda: lavender_tex(101),
+    "rosemary": lambda: rosemary_tex(103),
+    "mexican_bush_sage": lambda: mexican_bush_sage_tex(106),
+    "russian_sage": lambda: russian_sage_tex(107),
+    "star_jasmine": lambda: shrub_tex([(46, 96, 46), (36, 80, 38), (30, 66, 32), (62, 116, 58)], 108,
+                                      berries=[(248, 248, 242), (234, 234, 224)],
+                                      berry_count=7),
+    "star_jasmine_fringe": lambda: fringe_tex(
+        138, [(46, 96, 46), (36, 80, 38), (30, 66, 32), (62, 116, 58)], 6, 16,
+        blooms=[(["a"], {"a": (250, 250, 244)}), ([".a.", "aya", ".a."],
+                                                  {"a": (246, 246, 238), "y": (240, 230, 170)})],
+        bloom_count=4),
+    "bird_of_paradise": lambda: bird_of_paradise_tex(109),
+    "foxtail_fern": lambda: foxtail_tex(110),
+    "wild_mustard": lambda: mustard_tex(111),
+    # Desert
+    "saguaro": lambda: saguaro_tex(112),
+    "saguaro_top": lambda: saguaro_top_tex(113),
+    "golden_barrel": lambda: barrel_side_tex(114),
+    "golden_barrel_top": lambda: barrel_top_tex(115),
+    "prickly_pear_pad": lambda: pad_tex(116),
+    "prickly_pear_fruit": lambda: pad_tex(116, fruit=True),
+    "agave": lambda: rosette_tex(117, 11, 66, (7.0, 9.0), 2.3,
+                                 [(162, 190, 194), (140, 170, 178), (120, 152, 162)],
+                                 (112, 142, 150), (84, 70, 58), 0.2, teeth=(132, 112, 92)),
+    "aloe_vera": lambda: aloe_tex(118),
+    "echeveria": lambda: noise_tex([(170, 200, 190), (150, 186, 178), (134, 172, 166),
+                                    (118, 158, 154)], 119, grain=0.7, speckle=0.1,
+                                   speck_colour=[(212, 150, 172), (196, 128, 156)]),
+    "jade": lambda: shrub_tex([(98, 164, 96), (84, 150, 84), (70, 134, 72), (58, 118, 62)], 120,
+                              berries=[(176, 72, 62), (150, 62, 54)], berry_count=14),
+    "jade_stems": lambda: twigs_tex([(112, 108, 72), (126, 120, 80), (98, 96, 62)], 121, 12),
+    # Garden flowers
+    "tulips": lambda: bulb_tex(122, TULIPS, ["a.a", "aba", "aba"], (6, 4, 6), (3, 5), 7, True),
+    "daffodils": lambda: bulb_tex(
+        123, [{"a": (250, 236, 120), "b": (246, 206, 40), "y": (236, 170, 24)},
+              {"a": (246, 244, 232), "b": (246, 206, 40), "y": (236, 170, 24)}],
+        ["a..", "aby", "a.."], (6, 4, 6), (4, 6), 8, False),
+    "shrub_rose": lambda: shrub_tex([(58, 96, 48), (48, 82, 40), (38, 68, 32), (70, 108, 56)], 124,
+                                    [(196, 20, 40), (170, 12, 32), (224, 52, 66)], 0.3),
+    "shrub_rose_fringe": lambda: fringe_tex(
+        139, [(58, 96, 48), (48, 82, 40), (38, 68, 32), (70, 108, 56)], 1, 13,
+        blooms=[([".a.", "aba", ".a."], {"a": (206, 24, 44), "b": (150, 10, 28)})],
+        bloom_count=7, stems=[(92, 84, 52), (110, 98, 60)]),
+    "sunflower_stem": lambda: sunflower_stem_tex(125),
+    "sunflower_head": lambda: sunflower_head_tex(126),
+    "sunflower_item": lambda: sunflower_item_tex(127),
+    "marigolds": lambda: herb_tex(
+        128, [(58, 100, 44), (46, 86, 36), (70, 114, 52)], 10, 90, (9, 3, 5), (60, 100, 44),
+        [{"a": (244, 140, 20), "b": (220, 100, 14)}, {"a": (250, 200, 30), "b": (232, 160, 20)},
+         {"a": (200, 70, 20), "b": (244, 160, 30)}], [".a.", "aba", ".b."]),
+    "zinnias": lambda: herb_tex(
+        129, [(86, 140, 60), (72, 124, 50)], 10, 60, (7, 7, 11), (90, 136, 62),
+        [{"a": (220, 40, 140), "b": (180, 24, 110), "y": (250, 210, 60)},
+         {"a": (248, 120, 30), "b": (214, 90, 20), "y": (250, 210, 60)},
+         {"a": (214, 30, 40), "b": (170, 20, 30), "y": (250, 210, 60)},
+         {"a": (248, 210, 50), "b": (220, 176, 30), "y": (196, 120, 30)},
+         {"a": (246, 140, 180), "b": (220, 104, 150), "y": (250, 210, 60)}],
+        ["aya", "bab"]),
+    "hibiscus": lambda: shrub_tex([(44, 96, 46), (36, 82, 38), (54, 110, 54), (28, 68, 32)], 130,
+                                  [(220, 30, 40), (240, 70, 60), (190, 20, 36)], 0.08),
+    "hibiscus_fringe": lambda: fringe_tex(
+        140, [(44, 96, 46), (36, 82, 38), (54, 110, 54), (28, 68, 32)], 0, 12,
+        blooms=[(["aa.", "aya", ".aa"], {"a": (224, 32, 44), "y": (248, 214, 64)})],
+        bloom_count=4, stems=[(96, 86, 62), (114, 102, 72)]),
+    "bougainvillea": lambda: shrub_tex([(70, 118, 52), (58, 102, 44), (84, 130, 60), (48, 88, 38)], 131,
+                                       [(214, 40, 150), (232, 70, 170), (190, 28, 130),
+                                        (240, 110, 190)], 0.45),
+    "bougainvillea_fringe": lambda: fringe_tex(
+        141, [(70, 118, 52), (58, 102, 44), (84, 130, 60), (48, 88, 38)], 2, 14, blooms=[(["ab", "ba"], {"a": (220, 46, 156), "b": (240, 112, 192)})], bloom_count=9, droop=3,
+        sprays={"a": (220, 46, 156), "b": (240, 112, 192)}, stems=[(110, 92, 64), (126, 106, 74)]),
+    # Crops
+    "lima_bean_plant": lambda: bean_tex(132),
+    "pumpkin_vine": lambda: vine_tex(133, [(54, 108, 44), (46, 94, 38), (64, 120, 52)],
+                                     (2.6, 1.8), 3, 8),
+    "pumpkin": lambda: ribbed_tex(134, [(236, 130, 30), (244, 146, 44), (226, 120, 26)],
+                                  (196, 92, 20)),
+    "watermelon_vine": lambda: vine_tex(135, [(96, 138, 84), (82, 124, 72), (110, 150, 96)],
+                                        (1.8, 1.3), 1, 10),
+    "watermelon": lambda: melon_tex(136),
+    "boysenberry_canes": lambda: boysenberry_tex(137),
+})
+
+
+def cross_band(tex, y0, y1, uv_top):
+    """Four crossed planes from y0 to y1, as cross_planes draws them, for a plant taller than a
+    block (a sunflower's head plane above its stem's)."""
+    els = cross_planes(tex, y1 - y0, uv_top=uv_top, four=True)
+    for e in els:
+        e["from"][1], e["to"][1] = y0, y1
+    return els
+
+
+def rosette_boxes(cx, cz, w, h, tex):
+    """A succulent rosette (echeveria) of square layers, each turned 45 degrees from the one
+    under it and narrower, so its outline is a star of pointed leaves."""
+    els = []
+    for scale, y0, y1, turn in ((1.0, 0, 0.45, 0), (0.8, 0.3, 0.72, 45), (0.56, 0.58, 0.9, 0),
+                                (0.32, 0.8, 1.0, 45)):
+        s = w * scale / 2
+        el = box([cx - s, round(h * y0, 2), cz - s], [cx + s, round(h * y1, 2), cz + s], tex,
+                 faces=("north", "south", "east", "west", "up"))
+        if turn:
+            el["rotation"] = {"origin": [cx, 0, cz], "axis": "y", "angle": turn, "rescale": False}
+        els.append(el)
+    return els
+
+
+def prickly_pear_els():
+    tex = {"pad": T("prickly_pear_pad"), "fruit": T("prickly_pear_fruit"),
+           "particle": T("prickly_pear_pad")}
+    els = [plane([2.5, 0, 8], [10.5, 9, 8], "pad", angle=22.5, origin=[6.5, 0, 8]),
+           plane([6.5, 0, 7], [13.5, 8, 7], "pad", angle=-45, origin=[10, 0, 7]),
+           plane([1, 7.5, 8.5], [7.5, 15, 8.5], "fruit", angle=-22.5, origin=[4.25, 0, 8.5]),
+           plane([8.5, 6.5, 7.5], [14.5, 13.5, 7.5], "fruit", angle=45, origin=[11.5, 0, 7.5]),
+           plane([5, 11, 8], [10, 16, 8], "pad", angle=0)]
+    return tex, els
+
+
+SAGUARO_TEX = {"ribs": T("saguaro"), "top": T("saguaro_top"), "particle": T("saguaro")}
+SIDES4 = ("north", "south", "east", "west")
+
+
+def saguaro_young():
+    """A young saguaro, a column with no arms yet (they come at about 5 m): what is potted."""
+    return SAGUARO_TEX, [box([5, 0, 5], [11, 13, 11], "ribs", faces=SIDES4),
+                         box([5.5, 13, 5.5], [10.5, 14.5, 10.5], "ribs", per={"up": "top"},
+                             faces=SIDES4 + ("up",))]
+
+
+def saguaro_block(reg, names):
+    """The saguaro is stacked from blocks (BlockParkSaguaro): the trunk in every block, the
+    rounded crown on the top one, and a pair of arms on the second block of a saguaro three or
+    more blocks tall, rising past the block into the one above, as a real saguaro branches only
+    once it is several metres tall."""
+    shaft = box([4, 0, 4], [12, 16, 12], "ribs", faces=SIDES4)
+    crown = [box([4, 0, 4], [12, 14, 12], "ribs", faces=SIDES4),
+             box([4.5, 14, 4.5], [11.5, 15.25, 11.5], "ribs", per={"up": "top"},
+                 faces=SIDES4 + ("up",)),
+             box([5.5, 15.25, 5.5], [10.5, 16, 10.5], "ribs", per={"up": "top"},
+                 faces=SIDES4 + ("up",))]
+    arms = []
+    for x0, x1, ex0, ex1, y0, top in ((15, 21, 12, 15, 2, 25), (-5, 1, 1, 4, 5, 22)):
+        arms += [wbox([ex0, y0, 5], [ex1, y0 + 5.5, 11], "ribs",
+                      faces=("north", "south", "up", "down")),
+                 wbox([x0, y0, 5], [x1, top, 11], "ribs",
+                      faces=("north", "south", "east", "west", "down")),
+                 wbox([x0 + 0.75, top, 5.75], [x1 - 0.75, top + 1.5, 10.25], "ribs",
+                      per={"up": "top"}, faces=SIDES4 + ("up",))]
+    item = [box([5, 0, 5], [11, 14, 11], "ribs", faces=SIDES4 + ("down",)),
+            box([5.5, 14, 5.5], [10.5, 15, 10.5], "ribs", per={"up": "top"},
+                faces=SIDES4 + ("up",)),
+            box([11, 4, 6], [13, 7.5, 10], "ribs", faces=("north", "south", "up", "down")),
+            box([13, 4, 6], [16, 11, 10], "ribs", faces=SIDES4 + ("down",)),
+            box([13.5, 11, 6.5], [15.5, 12, 9.5], "ribs", per={"up": "top"},
+                faces=SIDES4 + ("up",)),
+            box([3, 6, 6], [5, 9, 10], "ribs", faces=("north", "south", "up", "down")),
+            box([0, 6, 6], [3, 10.5, 10], "ribs", faces=SIDES4 + ("down",)),
+            box([0.5, 10.5, 6.5], [2.5, 11.5, 9.5], "ribs", per={"up": "top"},
+                faces=SIDES4 + ("up",))]
+    add(reg, 'new BlockParkSaguaro("%s", 4)' % reg, names,
+        {reg + "_shaft": model(SAGUARO_TEX, [shaft]),
+         reg + "_crown": model(SAGUARO_TEX, crown),
+         reg + "_arms": model(SAGUARO_TEX, arms),
+         reg + "_item": model(SAGUARO_TEX, item)},
+        {"multipart": [
+            {"when": {"cap": "false"}, "apply": {"model": MODEL + reg + "_shaft"}},
+            {"when": {"cap": "true"}, "apply": {"model": MODEL + reg + "_crown"}},
+            {"when": {"arms": "true"}, "apply": {"model": MODEL + reg + "_arms"}}]},
+        {"parent": "csm:block/parks/landscape/" + reg + "_item"})
+
+
+def barrel_els():
+    tex = {"body": T("golden_barrel"), "top": T("golden_barrel_top"),
+           "particle": T("golden_barrel")}
+    up = {"up": "top"}
+    return tex, [box([4.5, 0, 4.5], [11.5, 1, 11.5], "body", faces=SIDES4),
+                 box([3, 1, 3], [13, 6.5, 13], "body", per=up, faces=SIDES4 + ("up",)),
+                 box([3.75, 6.5, 3.75], [12.25, 8.25, 12.25], "body", per=up,
+                     faces=SIDES4 + ("up",)),
+                 box([5.25, 8.25, 5.25], [10.75, 9.25, 10.75], "body", per=up,
+                     faces=SIDES4 + ("up",))]
+
+
+def echeveria_els():
+    tex = {"leaves": T("echeveria"), "particle": T("echeveria")}
+    els = rosette_boxes(8.5, 8.5, 8, 5, "leaves")
+    for cx, cz, w, h in ((3, 3, 3.5, 3), (13, 4, 3, 2.5), (3.5, 13, 3.5, 3),
+                         (13.5, 13, 3.5, 2.75)):
+        els += rosette_boxes(cx, cz, w, h, "leaves")
+    return tex, els
+
+
+def sunflower_els():
+    tex = {"stem": T("sunflower_stem"), "head": T("sunflower_head"),
+           "particle": T("sunflower_head")}
+    return tex, cross_band("stem", 0, 16, 0) + cross_band("head", 15, 30, 1)
+
+
 # (registry, kind, height, inset, names en/de/es/sv, (textures, elements), item texture for a
 # crossed-plane plant or None). Grouped by region (REGIONS), in tab order.
 REGIONAL = [
@@ -1260,8 +2139,89 @@ REGIONAL = [
     ("flower_marguerite", "PLANT", 12, 2,
      ("Oxeye Daisy", "Margerite", "Margarita", "Prästkrage"),
      plant_els("marguerite", 14), "marguerite"),
+    # --- Herbs and garden (GitHub #250) ---
+    ("shrub_lavender", "SHRUB", 11, 2,
+     ("English Lavender", "Echter Lavendel", "Lavanda inglesa", "Lavendel"),
+     plant_els("lavender", 12), "lavender", {"ao": False}),
+    ("shrub_rosemary", "SHRUB", 15, 2,
+     ("Rosemary", "Rosmarin", "Romero", "Rosmarin"),
+     plant_els("rosemary", 15), "rosemary", {"ao": False}),
+    ("shrub_mexican_bush_sage", "SHRUB", 16, 0,
+     ("Mexican Bush Sage", "Mexikanischer Buschsalbei", "Salvia mexicana",
+      "Mexikansk busksalvia"),
+     plant_els("mexican_bush_sage", 16), "mexican_bush_sage", {"ao": False}),
+    ("shrub_russian_sage", "PLANT", 16, 1,
+     ("Russian Sage", "Blauraute", "Salvia rusa", "Perovskia"),
+     plant_els("russian_sage", 16), "russian_sage"),
+    ("shrub_star_jasmine", "SHRUB", 9, 0,
+     ("Star Jasmine", "Sternjasmin", "Jazmín estrella", "Stjärnjasmin"),
+     shrub_els("star_jasmine", [([3.5, 0, 3.5], [12.5, 4, 12.5]), ([5, 3.5, 5.5], [11, 6, 11])],
+               spikes="star_jasmine_fringe"), None),
+    ("plant_bird_of_paradise", "PLANT", 16, 1,
+     ("Bird of Paradise", "Paradiesvogelblume", "Ave del paraíso", "Papegojblomma"),
+     plant_els("bird_of_paradise", 16), "bird_of_paradise"),
+    ("plant_foxtail_fern", "PLANT", 10, 2,
+     ("Foxtail Fern", "Fuchsschwanz-Spargel", "Helecho cola de zorro", "Rävsvansspargel"),
+     plant_els("foxtail_fern", 10), "foxtail_fern"),
+    ("flower_wild_mustard", "PLANT", 16, 2,
+     ("Wild Mustard", "Acker-Senf", "Mostaza silvestre", "Åkersenap"),
+     plant_els("wild_mustard", 16), "wild_mustard"),
+    # --- Desert: cacti and succulents ---
+    ("cactus_saguaro", "CACTUS", 15, 4,
+     ("Saguaro", "Saguaro-Kaktus", "Saguaro", "Saguarokaktus"),
+     saguaro_young(), None, {"custom": saguaro_block}),
+    ("cactus_golden_barrel", "CACTUS", 10, 3,
+     ("Golden Barrel Cactus", "Goldkugelkaktus", "Biznaga dorada", "Gyllene tunnkaktus"),
+     barrel_els(), None),
+    ("cactus_prickly_pear", "CACTUS", 16, 1,
+     ("Prickly Pear", "Feigenkaktus", "Nopal", "Fikonkaktus"),
+     prickly_pear_els(), None, {"ao": False}),
+    ("plant_agave", "SHRUB", 12, 1,
+     ("Century Plant", "Hundertjährige Agave", "Agave americano", "Amerikansk agave"),
+     plant_els("agave", 12), "agave", {"ao": False}),
+    ("plant_aloe_vera", "PLANT", 11, 3,
+     ("Aloe Vera", "Aloe vera", "Aloe vera", "Aloe vera"),
+     plant_els("aloe_vera", 11), "aloe_vera"),
+    ("plant_echeveria", "PLANT", 5, 0,
+     ("Echeveria", "Echeverie", "Echeveria", "Echeveria"),
+     echeveria_els(), None),
+    ("plant_jade", "SHRUB", 12, 2,
+     ("Jade Plant", "Geldbaum", "Árbol de jade", "Paradisträd"),
+     shrub_els("jade", [([3, 3.5, 3], [9, 8.5, 9]), ([7, 4, 6], [14, 10, 13]),
+                        ([2, 6.5, 7], [9, 11, 14]), ([5, 9.5, 4], [11, 12, 10])],
+               stems=("jade_stems", 4)), None),
+    # --- Garden flowers ---
+    ("flower_tulips", "PLANT", 9, 2,
+     ("Tulips", "Tulpen", "Tulipanes", "Tulpaner"),
+     plant_els("tulips", 10), "tulips"),
+    ("flower_daffodils", "PLANT", 8, 2,
+     ("Daffodils", "Osterglocken", "Narcisos", "Påskliljor"),
+     plant_els("daffodils", 9), "daffodils"),
+    ("shrub_rose", "SHRUB", 15, 1,
+     ("Shrub Rose", "Strauchrose", "Rosal arbustivo", "Buskros"),
+     shrub_els("shrub_rose", [([4, 4, 4], [12, 11.5, 12]), ([5.5, 11, 5.5], [10.5, 13, 10.5])],
+               spikes="shrub_rose_fringe"), None),
+    ("flower_sunflower", "PLANT", 28, 3,
+     ("Sunflower", "Sonnenblume", "Girasol", "Solros"),
+     sunflower_els(), "sunflower_item"),
+    ("flower_marigolds", "PLANT", 7, 1,
+     ("Marigolds", "Studentenblumen", "Tagetes", "Tagetes"),
+     plant_els("marigolds", 8), "marigolds"),
+    ("flower_zinnias", "PLANT", 12, 2,
+     ("Zinnias", "Zinnien", "Zinnias", "Zinnior"),
+     plant_els("zinnias", 13), "zinnias"),
+    ("shrub_hibiscus", "SHRUB", 16, 1,
+     ("Hibiscus", "Chinesischer Roseneibisch", "Hibisco", "Hibiskus"),
+     shrub_els("hibiscus", [([4, 5, 4], [12, 13.5, 12]), ([5.5, 13, 5.5], [10.5, 15, 10.5])],
+               spikes="hibiscus_fringe"), None),
+    ("shrub_bougainvillea", "SHRUB", 14, 0,
+     ("Bougainvillea", "Bougainvillea", "Buganvilla", "Bougainvillea"),
+     shrub_els("bougainvillea", [([4, 3, 4], [12, 10, 12]), ([5.5, 9.5, 5.5], [10.5, 12, 10.5])],
+               spikes="bougainvillea_fringe"), None),
 ]
-REGIONS = [0, 5, 10, 16, 22, 27, 32]  # where each region starts in REGIONAL
+# where each group starts in REGIONAL: the six regions, then herbs and garden plants,
+# cacti and succulents, and garden flowers
+REGIONS = [0, 5, 10, 16, 22, 27, 32, 40, 47, 55]
 
 
 def potted_names(names):
@@ -1270,8 +2230,15 @@ def potted_names(names):
 
 
 for start, end in zip(REGIONS, REGIONS[1:]):
-    for reg, kind, height, inset, names, (tex, els), item in REGIONAL[start:end]:
-        ao = kind == "SHRUB"
+    for row in REGIONAL[start:end]:
+        reg, kind, height, inset, names, (tex, els), item = row[:7]
+        # An optional eighth entry: "custom", a function that adds the block itself (the
+        # stacking saguaro), or "ao" for a box-kind plant drawn as planes.
+        extra = row[7] if len(row) > 7 else {}
+        if "custom" in extra:
+            extra["custom"](reg, names)
+            continue
+        ao = extra.get("ao", kind in ("SHRUB", "CACTUS"))
         models = {reg: model(tex, els, ao=ao)}
         state = simple_state(reg)
         if item:
@@ -1279,7 +2246,8 @@ for start, end in zip(REGIONS, REGIONS[1:]):
             state = simple_state(reg, item=MODEL + reg + "_item")
         prop(reg, kind, height, inset, names, models, state)
     # The same plants in nursery pots, after the region's plants.
-    for reg, kind, height, inset, names, (tex, els), item in REGIONAL[start:end]:
+    for row in REGIONAL[start:end]:
+        reg, kind, height, inset, names, (tex, els), item = row[:7]
         preg = "potted_" + reg
         ptex, pels = potted(tex, els)
         top = int(math.ceil(POT_LIFT + height * POT_SCALE))
@@ -1501,42 +2469,6 @@ TEXTURES.update({
     "tomato_plant": lambda: tomato_tex(99),
     "trellis_clematis": lambda: trellis_tex(100),
 })
-
-
-def wbox(frm, to, tex, faces=("north", "south", "east", "west", "up", "down"), per=None):
-    """box(), for an element reaching past the cell: each face's UV window is slid into 0..16
-    whole rather than clamped, so it keeps its size instead of stretching."""
-    el = box([min(15.99, max(0, v)) for v in frm], [min(16, max(0.01, v)) for v in to], tex,
-             faces, per)
-    el["from"], el["to"] = [round(v, 3) for v in frm], [round(v, 3) for v in to]
-    x0, y0, z0 = frm
-    x1, y1, z1 = to
-    raw = {"north": [16 - x1, 16 - y1, 16 - x0, 16 - y0], "south": [x0, 16 - y1, x1, 16 - y0],
-           "east": [16 - z1, 16 - y1, 16 - z0, 16 - y0], "west": [z0, 16 - y1, z1, 16 - y0],
-           "up": [x0, z0, x1, z1], "down": [x0, 16 - z1, x1, 16 - z0]}
-    for f in el["faces"]:
-        u = raw[f]
-        for a, b in ((0, 2), (1, 3)):
-            if u[a] < 0:
-                u[b] -= u[a]
-                u[a] = 0
-            if u[b] > 16:
-                u[a] -= u[b] - 16
-                u[b] = 16
-        el["faces"][f]["uv"] = [round(v, 3) for v in u]
-    return el
-
-
-def plane(frm, to, tex, uv=(0, 0, 16, 16), angle=0, origin=None):
-    """A zero-thickness card, drawn from both sides: a crop plant, a seedling row, a trellis."""
-    axis_z = frm[2] == to[2]
-    faces = ("north", "south") if axis_z else ("east", "west")
-    el = {"from": list(frm), "to": list(to), "shade": False,
-          "faces": {f: face(tex, list(uv)) for f in faces}}
-    if angle:
-        el["rotation"] = {"origin": origin or [8, 8, 8], "axis": "y", "angle": angle,
-                          "rescale": False}
-    return el
 
 
 def facing_prop(registry, box6, names, models, collides=True, crop=False):
@@ -1799,6 +2731,68 @@ facing_prop("trellis_clematis", [0, 0, 7, 16, 16, 9],
                 box([14.5, 0, 7], [16, 16, 9], "post"),
                 plane([1.5, 0, 8], [14.5, 16, 8], "lattice", uv=(1.5, 0, 14.5, 16)),
             ], ao=False)}, collides=False)
+
+# --- more crop rows (GitHub #250): pole lima beans, pumpkin and watermelon patches, and
+# boysenberries trained on wires ---
+lima = []
+for x in (3, 8, 13):
+    lima += [box([x - 0.5, 2, 9], [x + 0.5, 16, 10], "stake", faces=hoop[:5]),
+             plane([x - 3.5, 2, 8], [x + 3.5, 16, 8], "plant", uv=(4.5, 2, 11.5, 16),
+                   angle=45, origin=[x, 8, 8]),
+             plane([x - 3.5, 2, 8], [x + 3.5, 16, 8], "plant", uv=(4.5, 2, 11.5, 16),
+                   angle=-45, origin=[x, 8, 8])]
+facing_prop("crop_row_lima_bean", [0, 0, 2, 16, 16, 14],
+            ("Pole Lima Bean Row", "Limabohnenreihe an Stangen",
+             "Hilera de habas de lima con tutores", "Limabönrad med stänger"),
+            {"crop_row_lima_bean": model({"soil": T("soil"), "tilled": T("tilled_soil"),
+                                          "stake": T("stake"), "plant": T("lima_bean_plant"),
+                                          "particle": T("lima_bean_plant")},
+                                         row_soil + lima, ao=False)}, crop=True)
+
+
+def patch_row(vine_rows, fruit, along=(5.5, 10.5), diag=(8,)):
+    """A cucurbit patch on the ridge: vine cards along and across it, the fruit lying on it
+    (a low melon with the diagonal cards only, so cards along the row do not hide it)."""
+    lo = 16 - vine_rows
+    els = [plane([0, 2, z], [16, 2 + vine_rows, z], "vine", uv=(0, lo, 16, 16)) for z in along]
+    for cx in diag:
+        for turn in (45, -45):
+            els.append(plane([cx - 5, 2, 8], [cx + 5, 2 + vine_rows, 8], "vine",
+                             uv=(3, lo, 13, 16), angle=turn, origin=[cx, 8, 8]))
+    return row_soil + els + fruit
+
+
+facing_prop("crop_row_pumpkin", [0, 0, 2, 16, 10, 14],
+            ("Pumpkin Patch Row", "Kürbisreihe", "Hilera de calabazas", "Pumparad"),
+            {"crop_row_pumpkin": model(
+                {"soil": T("soil"), "tilled": T("tilled_soil"), "vine": T("pumpkin_vine"),
+                 "fruit": T("pumpkin"), "stem": T("tie"), "particle": T("pumpkin")},
+                patch_row(8, [box([2, 2, 3.5], [7.5, 6.5, 9], "fruit", faces=hoop[:5]),
+                              box([4.25, 6.5, 5.75], [5.25, 7.5, 6.75], "stem", faces=hoop[:5]),
+                              box([10, 2, 8], [14, 5, 12], "fruit", faces=hoop[:5]),
+                              box([11.5, 5, 9.5], [12.5, 6, 10.5], "stem", faces=hoop[:5])]),
+                ao=False)}, crop=True)
+facing_prop("crop_row_watermelon", [0, 0, 2, 16, 8, 14],
+            ("Watermelon Patch Row", "Wassermelonenreihe", "Hilera de sandías",
+             "Vattenmelonrad"),
+            {"crop_row_watermelon": model(
+                {"soil": T("soil"), "tilled": T("tilled_soil"), "vine": T("watermelon_vine"),
+                 "fruit": T("watermelon"), "particle": T("watermelon")},
+                patch_row(6, [box([1.5, 2, 6], [8.5, 6, 10.5], "fruit", faces=hoop[:5]),
+                              box([9.5, 2, 3.5], [15, 5.5, 7.5], "fruit", faces=hoop[:5])],
+                          along=(), diag=(2.5, 8, 13.5)),
+                ao=False)}, crop=True)
+facing_prop("crop_row_boysenberry", [0, 0, 2, 16, 15, 14],
+            ("Trained Boysenberry Row", "Boysenbeerenreihe am Spalier",
+             "Hilera de moras boysen en espaldera", "Boysenbärsrad på spaljé"),
+            {"crop_row_boysenberry": model(
+                {"soil": T("soil"), "tilled": T("tilled_soil"), "post": T("stake"),
+                 "canes": T("boysenberry_canes"), "particle": T("boysenberry_canes")},
+                row_soil + [box([0.5, 2, 7.25], [2, 15, 8.75], "post", faces=hoop[:5]),
+                            box([14, 2, 7.25], [15.5, 15, 8.75], "post", faces=hoop[:5]),
+                            plane([0, 2, 7.5], [16, 15, 7.5], "canes", uv=(0, 3, 16, 16)),
+                            plane([0, 2, 8.5], [16, 15, 8.5], "canes", uv=(0, 3, 16, 16))],
+                ao=False)}, crop=True)
 
 
 # ------------------------------------------------------------------------------------------

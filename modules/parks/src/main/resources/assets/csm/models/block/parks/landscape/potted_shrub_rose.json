@@ -1,0 +1,380 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leaves": "csm:blocks/parks/landscape/shrub_rose",
+    "particle": "csm:blocks/parks/landscape/shrub_rose",
+    "spikes": "csm:blocks/parks/landscape/shrub_rose_fringe",
+    "pot": "csm:blocks/parks/landscape/nursery_pot",
+    "pot_top": "csm:blocks/parks/landscape/nursery_pot_top"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        6,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            10,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            10,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            10,
+            12,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            10,
+            12,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#pot_top",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#pot",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.6,
+        8.4,
+        5.6
+      ],
+      "to": [
+        10.4,
+        12.9,
+        10.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            4.5,
+            12,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            4.5,
+            12,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            4.5,
+            12,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            4.5,
+            12,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        12.6,
+        6.5
+      ],
+      "to": [
+        9.5,
+        13.8,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            3,
+            10.5,
+            5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            3,
+            10.5,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            3,
+            10.5,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            3,
+            10.5,
+            5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.68,
+        6.0,
+        8.0
+      ],
+      "to": [
+        12.32,
+        15.6,
+        8.0
+      ],
+      "rotation": {
+        "origin": [
+          8.0,
+          10.8,
+          8.0
+        ],
+        "axis": "y",
+        "angle": 22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.68,
+        6.0,
+        8.0
+      ],
+      "to": [
+        12.32,
+        15.6,
+        8.0
+      ],
+      "rotation": {
+        "origin": [
+          8.0,
+          10.8,
+          8.0
+        ],
+        "axis": "y",
+        "angle": -22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8.0,
+        6.0,
+        3.68
+      ],
+      "to": [
+        8.0,
+        15.6,
+        12.32
+      ],
+      "rotation": {
+        "origin": [
+          8.0,
+          10.8,
+          8.0
+        ],
+        "axis": "y",
+        "angle": 22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "east": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8.0,
+        6.0,
+        3.68
+      ],
+      "to": [
+        8.0,
+        15.6,
+        12.32
+      ],
+      "rotation": {
+        "origin": [
+          8.0,
+          10.8,
+          8.0
+        ],
+        "axis": "y",
+        "angle": -22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "east": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

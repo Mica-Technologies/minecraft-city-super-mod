@@ -1,0 +1,60 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "ribs": "csm:blocks/parks/landscape/saguaro",
+    "top": "csm:blocks/parks/landscape/saguaro_top",
+    "particle": "csm:blocks/parks/landscape/saguaro"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        16,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#ribs",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ribs",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ribs",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ribs",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

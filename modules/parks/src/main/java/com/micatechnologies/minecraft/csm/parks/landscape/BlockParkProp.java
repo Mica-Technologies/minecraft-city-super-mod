@@ -7,17 +7,21 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 /**
  * A landscape block with nothing to decide at run time: its look is the JSON model its blockstate
  * names, and the constructor says how big it is, whether it can be walked through and how it
  * draws. One class, constructed by name, for the tree grates and pits, ground covers, shrubs,
- * ornamental grasses and flower beds (see {@code gen_park_plantings.py}).
+ * ornamental grasses, flower beds and cacti (see {@code gen_park_plantings.py}).
  *
  * @since 2026.9
  */
@@ -45,7 +49,13 @@ public class BlockParkProp extends AbstractBlock {
     SHRUB(Material.LEAVES, SoundType.PLANT, null, 0.3F, BlockRenderLayer.CUTOUT_MIPPED, true,
         false),
     /** A plant to walk through: grasses and flower beds. */
-    PLANT(Material.PLANTS, SoundType.PLANT, null, 0.1F, BlockRenderLayer.CUTOUT, false, false);
+    PLANT(Material.PLANTS, SoundType.PLANT, null, 0.1F, BlockRenderLayer.CUTOUT, false, false),
+    /**
+     * A cactus: solid to its own size, and it pricks a living thing pressed against it as a
+     * vanilla cactus does (its box stands in from the cell, so touching it is entering the
+     * cell).
+     */
+    CACTUS(Material.CACTUS, SoundType.CLOTH, null, 0.4F, BlockRenderLayer.CUTOUT, true, false);
 
     final Material material;
     final SoundType sound;
@@ -160,6 +170,13 @@ public class BlockParkProp extends AbstractBlock {
   @Nonnull
   public BlockRenderLayer getBlockRenderLayer() {
     return getKind().layer;
+  }
+
+  @Override
+  public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+    if (getKind() == Kind.CACTUS && entity instanceof EntityLivingBase) {
+      entity.attackEntityFrom(DamageSource.CACTUS, 1.0F);
+    }
   }
 
   @Override

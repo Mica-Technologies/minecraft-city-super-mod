@@ -45,6 +45,9 @@ public final class ParksFabricatorRules {
   private static final String MC_STICK = "minecraft:stick";
   private static final String MC_FLOWER_POT = "minecraft:flower_pot";
   private static final String MC_SEEDS = "minecraft:wheat_seeds";
+  private static final String MC_PUMPKIN_SEEDS = "minecraft:pumpkin_seeds";
+  private static final String MC_MELON_SEEDS = "minecraft:melon_seeds";
+  private static final String MC_CACTUS = "minecraft:cactus";
 
   private ParksFabricatorRules() {
   }
@@ -119,6 +122,9 @@ public final class ParksFabricatorRules {
     if (name.startsWith("flower_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_FLOWER, 1));
     }
+    if (name.startsWith("cactus_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CACTUS, 1));
+    }
     if (name.startsWith("plant_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SAPLING, 1));
     }
@@ -175,8 +181,16 @@ public final class ParksFabricatorRules {
       case "crop_row_lettuce":
         return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SEEDS, 2));
       case "crop_row_tomato":
+      case "crop_row_lima_bean":
         return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SEEDS, 2),
             FabricatorIngredient.any(MC_STICK, 3));
+      case "crop_row_pumpkin":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PUMPKIN_SEEDS, 2));
+      case "crop_row_watermelon":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_MELON_SEEDS, 2));
+      case "crop_row_boysenberry":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_SAPLING, 1),
+            FabricatorIngredient.any(MC_STICK, 2));
       case "trellis_clematis":
         return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_STICK, 4),
             FabricatorIngredient.any(MC_VINE, 1));

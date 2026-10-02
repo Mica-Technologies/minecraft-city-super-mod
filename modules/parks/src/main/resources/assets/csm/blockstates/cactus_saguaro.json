@@ -1,0 +1,28 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "cap": "false"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/cactus_saguaro_shaft"
+      }
+    },
+    {
+      "when": {
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/cactus_saguaro_crown"
+      }
+    },
+    {
+      "when": {
+        "arms": "true"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/cactus_saguaro_arms"
+      }
+    }
+  ]
+}

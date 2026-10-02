@@ -1,0 +1,265 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "soil": "csm:blocks/parks/landscape/soil",
+    "tilled": "csm:blocks/parks/landscape/tilled_soil",
+    "post": "csm:blocks/parks/landscape/stake",
+    "canes": "csm:blocks/parks/landscape/boysenberry_canes",
+    "particle": "csm:blocks/parks/landscape/boysenberry_canes"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        2
+      ],
+      "to": [
+        16,
+        2,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#soil",
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#soil",
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#soil",
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#soil",
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#tilled",
+          "uv": [
+            0,
+            2,
+            16,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#soil",
+          "uv": [
+            0,
+            2,
+            16,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        2,
+        7.25
+      ],
+      "to": [
+        2,
+        15,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            14,
+            1,
+            15.5,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            0.5,
+            1,
+            2,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            7.25,
+            1,
+            8.75,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            7.25,
+            1,
+            8.75,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            0.5,
+            7.25,
+            2,
+            8.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14,
+        2,
+        7.25
+      ],
+      "to": [
+        15.5,
+        15,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            0.5,
+            1,
+            2,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            14,
+            1,
+            15.5,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            7.25,
+            1,
+            8.75,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            7.25,
+            1,
+            8.75,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            14,
+            7.25,
+            15.5,
+            8.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        2,
+        7.5
+      ],
+      "to": [
+        16,
+        15,
+        7.5
+      ],
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#canes",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#canes",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        2,
+        8.5
+      ],
+      "to": [
+        16,
+        15,
+        8.5
+      ],
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#canes",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#canes",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

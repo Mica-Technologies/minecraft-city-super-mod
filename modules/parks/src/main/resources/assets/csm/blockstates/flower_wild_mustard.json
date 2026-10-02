@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/landscape/flower_wild_mustard"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "model": "csm:parks/landscape/flower_wild_mustard_item"
+      }
+    ]
+  }
+}
