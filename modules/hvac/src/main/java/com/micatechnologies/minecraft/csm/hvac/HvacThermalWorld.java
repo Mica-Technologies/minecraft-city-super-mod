@@ -73,6 +73,10 @@ public final class HvacThermalWorld implements IWorldEventListener {
   /** How long a too-large flood's cells are remembered, so neighbours do not repeat it. */
   private static final long TOO_LARGE_MEMORY_TICKS = 600L;
 
+  /**
+   * Every space's couplings and outdoor temperature are refreshed within this many ticks, a
+   * slice of the spaces each step, as a backstop to the refresh a change triggers.
+   */
   private static final long COUPLING_REFRESH_TICKS = 200L;
 
   /**
@@ -125,8 +129,21 @@ public final class HvacThermalWorld implements IWorldEventListener {
   /** Spaces taken apart this step for a rescan, kept until their cells are re-homed. */
   private final List<ThermalSpace> detached = new ArrayList<>();
 
-  private boolean topologyChanged;
-  private long lastCouplingTick = Long.MIN_VALUE;
+  /**
+   * For each 16-block cube ({@link ThermalSpace#sectionOf}), the change stamp of the last time a
+   * space appeared in it, went from it or was put back in it: the only things that change which
+   * space owns a cell. A space's couplings depend on nothing but who owns the cells beyond its
+   * walls, so they need resolving again only when a cube those cells lie in has a stamp newer
+   * than the space's own. Cubes rather than chunk columns, so a rescan of one floor of a tower
+   * does not send every floor of it back to be resolved.
+   */
+  private final it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap sectionStamp =
+      new it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap();
+
+  private long stampCounter;
+
+  /** Where the rolling refresh of the spaces' outdoor temperatures has got to. */
+  private int couplingCursor;
 
   /** Counts steps; tile entities use it to tell whether a system claimed them this step. */
   long stepId;
@@ -577,7 +594,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
       cellToSpace.put(it2.nextLong(), s);
     }
     spaces.add(s);
-    topologyChanged = true;
+    stampSections(s);
     return s;
   }
 
@@ -628,7 +645,28 @@ public final class HvacThermalWorld implements IWorldEventListener {
         cellToSpace.remove(c);
       }
     }
-    topologyChanged = true;
+    stampSections(s); // its neighbours couple to it
+  }
+
+  /** Records that which space owns the cells in a space's cubes has just changed. */
+  private void stampSections(ThermalSpace s) {
+    stampCounter++;
+    for (long c : s.sections) {
+      sectionStamp.put(c, stampCounter);
+    }
+  }
+
+  /** Whether anything has changed the owners of the cells beyond a space's walls. */
+  private boolean couplingsStale(ThermalSpace s) {
+    if (s.couplingStamp < 0) {
+      return true;
+    }
+    for (long c : s.beyondSections) {
+      if (sectionStamp.get(c) > s.couplingStamp) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void removeSpace(ThermalSpace s) {
@@ -751,47 +789,80 @@ public final class HvacThermalWorld implements IWorldEventListener {
     }
     if (s.anchors.isEmpty()) {
       removeSpace(s);
+    } else {
+      stampSections(s);
     }
-    topologyChanged = true;
   }
 
-  /** Resolves which region of which space lies beyond each wall face, and refreshes outdoors. */
-  private void resolveCouplings(long now) {
-    for (ThermalSpace s : spaces) {
-      s.outdoor = outdoorAt(s.sampleCell);
-      java.util.Arrays.fill(s.unconditionedUA, 0f);
-      Long2IntOpenHashMap index = new Long2IntOpenHashMap();
-      index.defaultReturnValue(-1);
-      IntList regions = new IntList();
-      List<ThermalSpace> others = new ArrayList<>();
-      IntList otherRegions = new IntList();
-      FloatList uas = new FloatList();
-      for (int i = 0; i < s.beyondCell.length; i++) {
-        long cell = s.beyondCell[i];
-        int r = s.beyondRegion[i];
-        ThermalSpace other = cellToSpace.get(cell);
-        if (other == null || other == s) {
-          s.unconditionedUA[r] += s.beyondUA[i];
-          continue;
-        }
-        int or = other.regionOfCell(cell);
-        long key = ((long) r << 40) ^ ((long) other.id << 20) ^ or;
-        int at = index.get(key);
-        if (at < 0) {
-          index.put(key, regions.size());
-          regions.add(r);
-          others.add(other);
-          otherRegions.add(or);
-          uas.add(s.beyondUA[i]);
-        } else {
-          uas.set(at, uas.get(at) + s.beyondUA[i]);
-        }
-      }
-      s.coupleRegion = regions.toArray();
-      s.coupleSpace = others.toArray(new ThermalSpace[0]);
-      s.coupleOtherRegion = otherRegions.toArray();
-      s.coupleUA = uas.toArray();
+  /**
+   * Resolves which region of which space lies beyond each wall face for every space whose
+   * neighbourhood has changed since it was last resolved, and with {@code rolling} refreshes the
+   * outdoor temperature of the next slice of spaces, so each is refreshed every
+   * {@link #COUPLING_REFRESH_TICKS}. Every space used to be resolved again whenever anything
+   * anywhere changed, and every ten seconds regardless: some 14 ms for a city of 288 rooms, and
+   * every second once the five-minute rescans came round. The result is the same, since a
+   * space's couplings are a function of who owns the cells beyond its walls.
+   */
+  private void resolveCouplings(boolean rolling) {
+    int n = spaces.size();
+    int slice = 0;
+    int from = 0;
+    if (rolling && n > 0) {
+      slice = (int) Math.min(n, (n * STEP_TICKS + COUPLING_REFRESH_TICKS - 1)
+          / COUPLING_REFRESH_TICKS);
+      from = couplingCursor % n;
+      couplingCursor = (from + slice) % n;
     }
+    for (int i = 0; i < n; i++) {
+      ThermalSpace s = spaces.get(i);
+      if (couplingsStale(s)) {
+        resolveCouplings(s);
+      } else if (slice > 0 && (i - from + n) % n < slice) {
+        s.outdoor = outdoorAt(s.sampleCell);
+      }
+    }
+    settleNewSpaces();
+  }
+
+  private void resolveCouplings(ThermalSpace s) {
+    perf.couplings++;
+    s.couplingStamp = stampCounter;
+    s.outdoor = outdoorAt(s.sampleCell);
+    java.util.Arrays.fill(s.unconditionedUA, 0f);
+    Long2IntOpenHashMap index = new Long2IntOpenHashMap();
+    index.defaultReturnValue(-1);
+    IntList regions = new IntList();
+    List<ThermalSpace> others = new ArrayList<>();
+    IntList otherRegions = new IntList();
+    FloatList uas = new FloatList();
+    for (int i = 0; i < s.beyondCell.length; i++) {
+      long cell = s.beyondCell[i];
+      int r = s.beyondRegion[i];
+      ThermalSpace other = cellToSpace.get(cell);
+      if (other == null || other == s) {
+        s.unconditionedUA[r] += s.beyondUA[i];
+        continue;
+      }
+      int or = other.regionOfCell(cell);
+      long key = ((long) r << 40) ^ ((long) other.id << 20) ^ or;
+      int at = index.get(key);
+      if (at < 0) {
+        index.put(key, regions.size());
+        regions.add(r);
+        others.add(other);
+        otherRegions.add(or);
+        uas.add(s.beyondUA[i]);
+      } else {
+        uas.set(at, uas.get(at) + s.beyondUA[i]);
+      }
+    }
+    s.coupleRegion = regions.toArray();
+    s.coupleSpace = others.toArray(new ThermalSpace[0]);
+    s.coupleOtherRegion = otherRegions.toArray();
+    s.coupleUA = uas.toArray();
+  }
+
+  private void settleNewSpaces() {
     // Rooms that appear together (a new building's floors) are coupled to each other, and each
     // settles against the others' temperatures: start them all at the outdoor temperature rather
     // than the 0°F a new array holds, and settle them together a few rounds.
@@ -811,9 +882,6 @@ public final class HvacThermalWorld implements IWorldEventListener {
       s.needsEquilibrium = false;
       s.temperatureKnown = true;
     }
-    topologyChanged = false;
-    lastCouplingTick = now;
-    perf.couplings++;
   }
 
   private float outdoorAt(long cell) {
@@ -865,9 +933,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
     long t1 = System.nanoTime();
     attachPending(now, attachBudgetNanos);
     long t2 = System.nanoTime();
-    if (topologyChanged || now - lastCouplingTick >= COUPLING_REFRESH_TICKS) {
-      resolveCouplings(now);
-    }
+    resolveCouplings(true);
     long t3 = System.nanoTime();
     perf.rescanNanos += t1 - t0;
     perf.attachNanos += t2 - t1;
@@ -1009,7 +1075,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
             pa = new ThermalAnchor(pos, ThermalAnchor.PLAYER);
             join(pa, s, key);
             playerAnchors.put(id, pa);
-            resolveCouplings(now);
+            resolveCouplings(false);
             here = s;
           } else if (r.status == ThermalScanner.Status.TOO_LARGE) {
             tooLarge.add(new TooLarge(r.cells, now + TOO_LARGE_MEMORY_TICKS));

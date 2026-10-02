@@ -105,6 +105,18 @@ public final class ThermalSpace {
   /** Chunks the space's cells lie in, as {@link HvacThermalWorld#chunkKey} values. */
   final long[] chunks;
 
+  /** The 16-block cubes its cells lie in ({@link #sectionOf}). */
+  final long[] sections;
+
+  /** The 16-block cubes the cells beyond its walls lie in: where a change can alter couplings. */
+  final long[] beyondSections;
+
+  /**
+   * The world's change stamp when the couplings were last resolved, or -1 before the first time;
+   * see {@link HvacThermalWorld}'s coupling resolution.
+   */
+  long couplingStamp = -1;
+
   /**
    * Set for a step in which part of the space, or part of a system serving it, is not loaded.
    * A frozen space keeps its temperature exactly: a building never cools (or warms) because the
@@ -178,13 +190,28 @@ public final class ThermalSpace {
     beyondUA = scan.beyondUA.toFloatArray();
 
     LongOpenHashSet chunkSet = new LongOpenHashSet();
+    LongOpenHashSet sectionSet = new LongOpenHashSet();
     it.unimi.dsi.fastutil.longs.LongIterator it = cells.iterator();
     while (it.hasNext()) {
       long c = it.nextLong();
       chunkSet.add(HvacThermalWorld.chunkKey(ThermalScanner.unpackX(c) >> 4,
           ThermalScanner.unpackZ(c) >> 4));
+      sectionSet.add(sectionOf(c));
     }
     chunks = chunkSet.toLongArray();
+    sections = sectionSet.toLongArray();
+
+    LongOpenHashSet beyondSet = new LongOpenHashSet();
+    for (long c : beyondCell) {
+      beyondSet.add(sectionOf(c));
+    }
+    beyondSections = beyondSet.toLongArray();
+  }
+
+  /** The 16-block cube a packed cell lies in, packed the same way. */
+  static long sectionOf(long packedCell) {
+    return ThermalScanner.pack(ThermalScanner.unpackX(packedCell) >> 4,
+        ThermalScanner.unpackY(packedCell) >> 4, ThermalScanner.unpackZ(packedCell) >> 4);
   }
 
   /** Region of a cell of this space, or -1. */
