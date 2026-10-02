@@ -517,6 +517,11 @@ public class TrafficSignalControllerCircuit {
 
     // Loop through each sensor and count appropriately
     for (BlockPos sensorPos : sensors) {
+      // A sensor whose chunk is not loaded has nothing to detect. Asking for its tile entity
+      // would load the chunk from disk on every poll, and keep it loaded with nobody near it.
+      if (!world.isBlockLoaded(sensorPos)) {
+        continue;
+      }
       TileEntity tileEntity = world.getTileEntity(sensorPos);
       if (tileEntity instanceof TileEntityTrafficSignalSensor) {
         TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
@@ -577,6 +582,9 @@ public class TrafficSignalControllerCircuit {
   public int getPedestrianAccessoriesRequestCount(World world) {
     int count = 0;
     for (BlockPos accessoryPos : pedestrianAccessorySignals) {
+      if (!world.isBlockLoaded(accessoryPos)) {
+        continue; // as for sensors: never load a chunk to ask
+      }
       TileEntity tileEntity = world.getTileEntity(accessoryPos);
       if (tileEntity instanceof TileEntityTrafficSignalTickableRequester) {
         TileEntityTrafficSignalTickableRequester tileEntityTrafficSignalTickableRequester
@@ -594,6 +602,9 @@ public class TrafficSignalControllerCircuit {
    */
   public void resetPedestrianAccessoriesRequestCount(World world) {
     for (BlockPos accessoryPos : pedestrianAccessorySignals) {
+      if (!world.isBlockLoaded(accessoryPos)) {
+        continue;
+      }
       TileEntity tileEntity = world.getTileEntity(accessoryPos);
       if (tileEntity instanceof TileEntityTrafficSignalTickableRequester) {
         TileEntityTrafficSignalTickableRequester tileEntityTrafficSignalTickableRequester

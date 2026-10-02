@@ -2410,6 +2410,9 @@ public class TrafficSignalControllerTickerUtilities {
    * states from chunk-edge or unloaded-block conditions).
    */
   private static EnumFacing signalFacingOrNull(World world, BlockPos pos) {
+    if (!world.isBlockLoaded(pos)) {
+      return null; // on the server, getBlockState would load the chunk to answer
+    }
     IBlockState state = world.getBlockState(pos);
     if (state.getPropertyKeys().contains(BlockHorizontal.FACING)) {
       return state.getValue(BlockHorizontal.FACING);
@@ -2447,7 +2450,7 @@ public class TrafficSignalControllerTickerUtilities {
    *
    * <p>Circuits with no sensors or no signal facings are skipped — there's nothing to validate.
    * Sensors in unloaded chunks or with malformed states (no FACING property) are also skipped
-   * defensively, since {@link World#getBlockState} returns air for unloaded positions.</p>
+   * without being read, since on the server {@link World#getBlockState} would load them.</p>
    *
    * <p>Convenience overload of {@link #validateSensorFacings(Function, TrafficSignalControllerCircuits)}
    * — wraps the {@code World} as a position-to-facing resolver. Production callers use this form
