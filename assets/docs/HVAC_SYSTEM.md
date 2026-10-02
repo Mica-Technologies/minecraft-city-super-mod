@@ -136,8 +136,15 @@ winter in about 10 minutes; a properly sized system warms it from freezing in 4-
   (or unregisters) from `readNBT`, since `onLoad` has already run: it used to join only when its
   chunk next loaded (issue #243).
 - An anchor without a space tries its own cell, then its six neighbours (a full-block heater sits
-  beside its room). A failure is retried 5 s later if open to the sky, 30 s if too large (and the
-  too-large flood's cells are remembered so its neighbours do not repeat it).
+  beside its room). A failure is retried 5 s later if open to the sky, 30 s if too large.
+- A too-large flood's cells are remembered, so neither a retry nor a neighbouring anchor floods it
+  again, until something that could make the space smaller happens: a block change in a column of
+  its cells or a column beside one (a block placed inside it, a roof over it removed so part of it
+  sees the sky), or a chunk it lies in unloading. Nothing else can shrink it. It used to be
+  forgotten after 30 s, just as its anchors came round to retry, so a hall too large to condition
+  was flooded to 40,000 cells every 30 s for as long as it was loaded (about 10 ms each); now once.
+  At most 16 floods and 640,000 cells are remembered, the least recently used forgotten first.
+  Walling the 49,000-cell test hall in two made both halves rooms within 25 s, as before.
 - A failure because the room reaches an **unloaded chunk** is not retried on a timer. The anchor
   remembers the chunks it stopped at and waits, checking once a step, until one of them loads or a
   block inside the cells it flooded changes; anything else would fail the same way. The flood is

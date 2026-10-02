@@ -111,8 +111,10 @@ never skipped when a cell holds the state.
 world autosave.
 
 What has not been measured, and needs the real world: how many anchors sit in partly loaded rooms
-at typical player positions, whether its buildings contain spaces too large to condition (each
-re-floods 40,000 cells every 30 s, about 10 ms), and its player count. `/csmhvac perf` on that
+at typical player positions, how many spaces too large to condition its buildings contain (each
+flooded 40,000 cells every 30 s, about 10 ms; now once, until something that could shrink it
+changes: six floods in three minutes to none for the 49,000-cell test hall, the attach phase from
+0.25 to 0.05 ms a step), and its player count. `/csmhvac perf` on that
 server now reports anchors waiting for a chunk and the retries saved, alongside the rest.
 
 ### Memory
