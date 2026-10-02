@@ -99,7 +99,7 @@ public class CommandHvac extends CommandBase {
         s.dirty = true;
         s.lastScanTick = Long.MIN_VALUE / 2;
         long t0 = System.nanoTime();
-        w.maintain(w.world.getTotalWorldTime());
+        w.maintain(w.world.getTotalWorldTime(), Long.MAX_VALUE);
         say(sender, String.format("Rescanned room #%d (%d cells) in %.1f ms.", s.id, s.volume,
             (System.nanoTime() - t0) / 1e6));
         break;
