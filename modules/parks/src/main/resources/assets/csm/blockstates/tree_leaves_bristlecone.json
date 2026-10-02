@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/leaves_bristlecone"
+    },
+    "inventory": {
+      "model": "csm:parks/leaves_bristlecone"
+    }
+  }
+}

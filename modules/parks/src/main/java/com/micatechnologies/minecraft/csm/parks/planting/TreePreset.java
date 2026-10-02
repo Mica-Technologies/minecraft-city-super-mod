@@ -173,11 +173,82 @@ public enum TreePreset {
   CAMPHOR_TREE("camphor", Shape.LIMB, TreeWood.CAMPHOR, TreeLogWidth.FULL, TreeLogWidth.THICK,
       "tree_leaves_camphor", null,
       p -> p.trunk(4, 5).lean(0, 1).limbs(6, 7).reach(4, 6).rise(5, 7).cluster(4.4, 3.4)
-          .clearance(5).spread(3.0).fork(0.6));
+          .clearance(5).spread(3.0).fork(0.6)),
+
+  // GitHub #250: trees of the American West and its deserts.
+
+  /**
+   * Giant sequoia, the Sierra Nevada's: the most massive tree there is, a cinnamon trunk three
+   * blocks across flaring into buttresses at its foot and hardly narrowing up to a rounded crown
+   * of clumped foliage high up. Not the coast redwood's slender spire.
+   */
+  GIANT_SEQUOIA("giantsequoia", Shape.GIANT, TreeWood.SEQUOIA, TreeLogWidth.FULL,
+      TreeLogWidth.MEDIUM, "tree_leaves_sequoia", null,
+      p -> p.trunk(11, 14).height(28, 33).limbs(2, 3).reach(4, 6).rise(0, 2)
+          .cluster(2.0, 1.3)),
+  /**
+   * Joshua tree (Yucca brevifolia), the Mojave's: a shaggy trunk branching again and again into
+   * thick, angular arms, each ending in a rosette of stiff dagger leaves. The limbs are how many
+   * times it branches.
+   */
+  JOSHUA_TREE("joshuatree", Shape.BRANCHING, TreeWood.JOSHUA, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_crown_joshua", null,
+      p -> p.trunk(3, 4).lean(0, 1).limbs(3, 3).reach(1, 1).rise(1, 2)),
+  /** A young Joshua tree: one trunk, branched once if at all, one to three rosettes. */
+  YOUNG_JOSHUA_TREE("youngjoshua", Shape.BRANCHING, TreeWood.JOSHUA, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_crown_joshua", null,
+      p -> p.trunk(2, 3).lean(0, 1).limbs(0, 1).reach(1, 1).rise(1, 2)),
+  /**
+   * Canary Island date palm, the "pineapple palm" of California avenues: a very thick straight
+   * trunk patterned with diamond leaf bases, the pineapple knob, and a huge, dense round crown.
+   */
+  CANARY_PALM("canarypalm", Shape.PALM, TreeWood.CANARY, TreeLogWidth.THICK, TreeLogWidth.THICK,
+      "tree_crown_palm_canary", null,
+      p -> p.height(7, 11).lean(0, 0)),
+  /** Coconut palm: a slender grey ringed trunk curving out from a swollen foot, drooping fronds. */
+  COCONUT_PALM("coconutpalm", Shape.PALM, TreeWood.PALM_GREY, TreeLogWidth.THIN,
+      TreeLogWidth.THIN, "tree_crown_palm_coconut", null,
+      p -> p.height(9, 13).lean(2, 3).base(TreeLogWidth.MEDIUM).planar()),
+  /** King palm: a slender smooth grey trunk, a bright green crownshaft and arching fronds. */
+  KING_PALM("kingpalm", Shape.PALM, TreeWood.PALM_GREY, TreeLogWidth.THIN, TreeLogWidth.THIN,
+      "tree_crown_palm_king", null,
+      p -> p.height(10, 14).lean(0, 0).planar()),
+  /**
+   * Douglas fir, of the Pacific Northwest: a tall, narrow cone of soft, dark foliage in drooping
+   * layers nearly to the ground, on thick, deeply furrowed bark.
+   */
+  DOUGLAS_FIR("douglasfir", Shape.PROFILE, TreeWood.DOUGLAS_FIR, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_douglasfir", null,
+      p -> p.trunk(2, 4).height(22, 27).cluster(3.6, 0).cone(0.35)),
+  /**
+   * Great Basin bristlecone pine, the oldest trees alive: low and wide rather than tall, a squat
+   * twisted trunk and gnarled limbs, many of them bare silver deadwood, the living ones tipped
+   * with short foxtails of needles.
+   */
+  BRISTLECONE_PINE("bristlecone", Shape.GNARLED, TreeWood.BRISTLECONE, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_bristlecone", null,
+      p -> p.trunk(2, 3).lean(0, 1).limbs(4, 6).reach(3, 5).cluster(1.0, 1.1).clearance(1)
+          .spread(2.6).dead(0.55)),
+  /**
+   * California sycamore (Platanus racemosa): leaning, often several trunks from one foot,
+   * mottled white bark, and an irregular, open crown of big maple-like leaves.
+   */
+  CALIFORNIA_SYCAMORE("sycamore", Shape.LIMB, TreeWood.SYCAMORE, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_plane", null,
+      p -> p.trunk(3, 5).lean(1, 3).limbs(5, 6).reach(2, 5).rise(4, 7).cluster(2.0, 1.7)
+          .clearance(4).spread(2.2).stems(2, 3)),
+  /**
+   * Blue gum eucalyptus, planted all over California: very tall and straight, bark peeling in
+   * long streaks, and an open, airy crown of hanging sickle leaves high up.
+   */
+  BLUE_GUM("bluegum", Shape.LIMB, TreeWood.BLUE_GUM, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
+      "tree_leaves_bluegum", null,
+      p -> p.trunk(9, 12).lean(0, 1).limbs(5, 6).reach(3, 5).rise(6, 10).cluster(1.8, 1.8)
+          .clearance(9).spread(2.2).fork(0.7));
 
   /** The generator shapes. */
   public enum Shape {
-    PROFILE, LIMB, PALM, HEAD, BOX, POLLARD, TIERED
+    PROFILE, LIMB, PALM, HEAD, BOX, POLLARD, TIERED, GIANT, BRANCHING, GNARLED
   }
 
   public final String id;
@@ -214,6 +285,18 @@ public enum TreePreset {
   double forkChance;
   /** The chance a long limb puts out a side branch with its own cluster. */
   double branchChance = 0.45;
+  /** Limbed trees: how many trunks grow from the one foot. */
+  int stemsMin = 1;
+  int stemsMax = 1;
+  /** Palms: the trunk's width at its foot, or null to keep it the same all the way up. */
+  TreeLogWidth baseWidth;
+  /** Profile trees: a straight cone rather than a rounded spire, and how deep its layers are. */
+  boolean cone;
+  double layering;
+  /** Palms: whether the trunk leans in one plane (along an axis), so its curve is smooth. */
+  boolean planar;
+  /** Gnarled trees: the share of limbs that are bare deadwood. */
+  double deadChance;
 
   TreePreset(String id, Shape shape, TreeWood wood, TreeLogWidth trunkWidth,
       TreeLogWidth limbWidth, String leaves, String extra, Consumer<TreePreset> setup) {
@@ -287,6 +370,34 @@ public enum TreePreset {
 
   private TreePreset fork(double chance) {
     forkChance = chance;
+    return this;
+  }
+
+  private TreePreset stems(int min, int max) {
+    stemsMin = min;
+    stemsMax = max;
+    return this;
+  }
+
+  private TreePreset base(TreeLogWidth width) {
+    baseWidth = width;
+    return this;
+  }
+
+  /** A straight cone, its outline stepped in drooping layers by {@code layers} (0 smooth). */
+  private TreePreset cone(double layers) {
+    cone = true;
+    layering = layers;
+    return this;
+  }
+
+  private TreePreset planar() {
+    planar = true;
+    return this;
+  }
+
+  private TreePreset dead(double chance) {
+    deadChance = chance;
     return this;
   }
 

@@ -35,7 +35,16 @@ public enum TreeWood {
   REDWOOD("redwood"),
   WHITE_PINE("whitepine"),
   OAK("oak"),
-  CAMPHOR("camphor");
+  CAMPHOR("camphor"),
+  SEQUOIA("sequoia"),
+  JOSHUA("joshua"),
+  CANARY("canary"),
+  /** Coconut and king palms: smooth pale grey, ringed with leaf scars. */
+  PALM_GREY("palmgrey"),
+  DOUGLAS_FIR("douglasfir"),
+  BRISTLECONE("bristlecone"),
+  SYCAMORE("sycamore"),
+  BLUE_GUM("bluegum");
 
   private final String id;
 

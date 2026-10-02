@@ -14,7 +14,9 @@ surrounds them, so what this script writes is only what the game needs from file
   * models/block/parks/leaves_<leaf>.json     a leaves cube with the cluster: the item's model and
                                               the world placeholder
   * textures/blocks/parks/palm_crown_<style>.png  a palm crown's 2x2 sheet: live frond, dead frond,
-                                              boot (TreePalmGeometry), plus a _icon for the item
+                                              boot (TreePalmGeometry), and the coconut palm's
+                                              nuts in the fourth cell, plus a _icon for the item;
+                                              the Joshua tree's rosette is a crown sheet too
   * textures/blocks/parks/<moss>[_tip].png     the hanging moss strands and a curtain's ragged tip
   * blockstates for every log, leaves, crown and moss block
   * textures/items/parks/tree_planting_tool.png and its item model
@@ -90,6 +92,23 @@ WOODS = [
     ("oak", "OAK", ("English Oak", "Stieleiche", "roble común", "skogsek"), "furrowed_oak"),
     ("camphor", "CAMPHOR", ("Camphor Tree", "Kampferbaum", "alcanforero", "kamferträd"),
      "fissured_brown"),
+    # GitHub #250, West and desert.
+    ("sequoia", "SEQUOIA", ("Giant Sequoia", "Riesenmammutbaum", "secuoya gigante",
+                            "jättesequoia"), "fibrous_cinnamon"),
+    ("joshua", "JOSHUA", ("Joshua Tree", "Josua-Palmlilie", "árbol de Josué", "josuaträd"),
+     "shaggy"),
+    ("canary", "CANARY", ("Canary Island Date Palm", "Kanarische Dattelpalme", "palmera canaria",
+                          "kanariedadelpalm"), "diamond"),
+    ("palmgrey", "PALM_GREY", ("Grey Palm", "Graue Palme", "palmera gris", "grå palm"),
+     "ringed_grey"),
+    ("douglasfir", "DOUGLAS_FIR", ("Douglas Fir", "Douglasie", "abeto de Douglas",
+                                   "douglasgran"), "furrowed_douglas"),
+    ("bristlecone", "BRISTLECONE", ("Bristlecone Pine", "Grannenkiefer", "pino longevo",
+                                    "borsttall"), "twisted_silver"),
+    ("sycamore", "SYCAMORE", ("California Sycamore", "Kalifornische Platane",
+                              "plátano de California", "kalifornisk platan"), "mottled_white"),
+    ("bluegum", "BLUE_GUM", ("Blue Gum", "Blauer Eukalyptus", "eucalipto azul",
+                             "blå eukalyptus"), "streaky"),
 ]
 
 # id -> (Java constant, pixels across, name patterns en/de/es/sv). Order = TreeLogWidth order.
@@ -190,6 +209,17 @@ LEAVES = [
      [(184, 124, 60), (158, 100, 46), (130, 80, 36), (100, 62, 28)], AUTUMN_NAMES),
     ("camphor", "BROADLEAF", WOODS[24][2], "broad_large",
      [(150, 184, 86), (124, 164, 70), (100, 142, 58), (78, 118, 46)], LEAF_NAMES),
+    # GitHub #250, West and desert. The giant sequoia's scale-leaved cords are grey-blue-green,
+    # the Douglas fir's soft needles a deep green, the bristlecone's foxtails dark and flecked
+    # with resin, the blue gum's adult leaves dark grey-green sickles hanging straight down.
+    ("sequoia", "BROADLEAF", WOODS[25][2], "cord",
+     [(150, 172, 134), (126, 150, 114), (102, 128, 96), (80, 106, 78)], NEEDLE_NAMES),
+    ("douglasfir", "BROADLEAF", WOODS[29][2], "needle_wide",
+     [(80, 118, 76), (62, 98, 62), (46, 80, 50), (34, 62, 40)], NEEDLE_NAMES),
+    ("bristlecone", "BROADLEAF", WOODS[30][2], "bottlebrush",
+     [(92, 120, 92), (72, 100, 76), (56, 82, 62), (42, 64, 50)], NEEDLE_NAMES),
+    ("bluegum", "AIRY", WOODS[32][2], "sickle",
+     [(126, 146, 118), (104, 126, 100), (84, 106, 84), (66, 86, 68)], LEAF_NAMES),
 ]
 SEASON_OF = {"elm_autumn": "elm", "plane_autumn": "plane", "honeylocust_autumn": "honeylocust",
              "ginkgo_autumn": "ginkgo", "poplar_autumn": "poplar",
@@ -212,8 +242,20 @@ PALMS = [
     ("palm_cabbage_skirt", "PALM_CABBAGE_SKIRT", "cabbage",
      ("Cabbage Palm Crown with Skirt", "Palmettopalmen-Krone mit Trockenwedeln",
       "Copa de palmito de Florida con faldón", "Kålpalmkrona med kjol")),
+    # GitHub #250. The Joshua tree's rosette is drawn by the same machinery as a palm crown.
+    ("palm_canary", "PALM_CANARY", "canary",
+     ("Canary Island Date Palm Crown", "Kanarische Dattelpalmen-Krone",
+      "Copa de palmera canaria", "Kanariedadelpalmkrona")),
+    ("palm_coconut", "PALM_COCONUT", "coconut",
+     ("Coconut Palm Crown", "Kokospalmen-Krone", "Copa de cocotero", "Kokospalmkrona")),
+    ("palm_king", "PALM_KING", "king",
+     ("King Palm Crown", "Alexanderpalmen-Krone", "Copa de palmera real australiana",
+      "Kungspalmkrona")),
+    ("joshua", "ROSETTE", "joshua",
+     ("Joshua Tree Rosette", "Josua-Palmlilien-Rosette", "Roseta de árbol de Josué",
+      "Josuaträdsrosett")),
 ]
-PALM_SHEETS = ["fan", "feather", "cabbage"]
+PALM_SHEETS = ["fan", "feather", "cabbage", "canary", "coconut", "king", "joshua"]
 
 # Tree Planting Tool presets: TreePreset id -> names en/de/es/sv. Order = TreePreset order.
 PRESETS = [
@@ -262,6 +304,22 @@ PRESETS = [
     ("englishoak", ("Old English Oak", "Alte Stieleiche", "Roble común centenario",
                     "Gammal skogsek")),
     ("camphor", ("Camphor Tree", "Kampferbaum", "Alcanforero", "Kamferträd")),
+    # GitHub #250, West and desert.
+    ("giantsequoia", ("Giant Sequoia", "Riesenmammutbaum", "Secuoya gigante", "Jättesequoia")),
+    ("joshuatree", ("Joshua Tree", "Josua-Palmlilie", "Árbol de Josué", "Josuaträd")),
+    ("youngjoshua", ("Young Joshua Tree", "Junge Josua-Palmlilie", "Árbol de Josué joven",
+                     "Ungt josuaträd")),
+    ("canarypalm", ("Canary Island Date Palm", "Kanarische Dattelpalme", "Palmera canaria",
+                    "Kanariedadelpalm")),
+    ("coconutpalm", ("Coconut Palm", "Kokospalme", "Cocotero", "Kokospalm")),
+    ("kingpalm", ("King Palm", "Alexanderpalme", "Palmera real australiana", "Kungspalm")),
+    ("douglasfir", ("Douglas Fir", "Douglasie", "Abeto de Douglas", "Douglasgran")),
+    ("bristlecone", ("Great Basin Bristlecone Pine", "Langlebige Grannenkiefer",
+                     "Pino longevo de la Gran Cuenca", "Borsttall")),
+    ("sycamore", ("California Sycamore", "Kalifornische Platane", "Plátano de California",
+                  "Kalifornisk platan")),
+    ("bluegum", ("Blue Gum Eucalyptus", "Blauer Eukalyptus", "Eucalipto azul",
+                 "Blå eukalyptus")),
 ]
 
 # The tool's own lines: key -> en/de/es/sv.
@@ -461,17 +519,117 @@ def bark(recipe, seed):
             for y in range(SIZE):
                 if rng.random() < 0.35:
                     field[y][(x + (y // 3) % 2 * 2) % SIZE] -= 22
+    elif recipe == "fibrous_cinnamon":
+        # Giant sequoia: soft cinnamon-orange bark in broad rounded ridges between deep furrows,
+        # brighter and redder than the coast redwood's.
+        base, spread = (180, 96, 60), 16
+        field = _furrows(rng, 5, 52)
+        edge = [[False] * SIZE for _ in range(SIZE)]
+        for y in range(SIZE):
+            for x in range(SIZE):
+                # Each ridge is shaded beside its furrows and lit along its crown.
+                edge[y][x] = field[y][(x - 1) % SIZE] < -20 or field[y][(x + 1) % SIZE] < -20
+        for y in range(SIZE):
+            for x in range(SIZE):
+                if field[y][x] > -20:
+                    field[y][x] += -16 if edge[y][x] else 10 + rng.choice((0, 0, 8, -8))
+    elif recipe == "shaggy":
+        # Joshua tree: the trunk wears its dead leaves, a thatch of grey-brown blades pointing
+        # down, over dark gaps.
+        base, spread = (64, 56, 46), 6
+        field = [[0.0] * SIZE for _ in range(SIZE)]
+        for row in range(0, SIZE, 3):
+            off = rng.randrange(4)
+            for x0 in range(off, SIZE + off, 3):
+                length = rng.randint(3, 5)
+                lean = rng.choice((-1, 0, 1))
+                light = rng.randint(54, 86)
+                for k in range(length):
+                    x = (x0 + (lean * k) // 2) % SIZE
+                    y = (row + k) % SIZE
+                    field[y][x] = max(field[y][x], light - k * 6)
+    elif recipe == "diamond":
+        # Canary Island date palm: the "pineapple" of old leaf bases trimmed flush, diamonds with
+        # a lit upper edge and a shadowed lower one.
+        base, spread = (124, 104, 76), 6
+        field = [[0.0] * SIZE for _ in range(SIZE)]
+        for y in range(SIZE):
+            for x in range(SIZE):
+                a, b = (x + y) % 8, (x - y) % 8
+                if a == 0 or b == 0:
+                    field[y][x] -= 40
+                elif a == 1 or b == 7:
+                    field[y][x] += 22
+                elif a >= 6 or b <= 2:
+                    field[y][x] -= 12
+    elif recipe == "ringed_grey":
+        # Coconut and king palms: smooth pale grey, a leaf-scar ring every few pixels.
+        base, spread = (156, 152, 142), 6
+        field = [[0.0] * SIZE for _ in range(SIZE)]
+        for y in range(SIZE):
+            for x in range(SIZE):
+                if y % 4 == 0:
+                    field[y][x] -= 30 if (x + y // 4) % 7 else 16
+                elif y % 4 == 1:
+                    field[y][x] += 8
+        for _ in range(4):
+            x = rng.randrange(SIZE)
+            for y in range(SIZE):
+                field[y][x] -= 6
+    elif recipe == "furrowed_douglas":
+        # Douglas fir: thick, corky, dark brown bark in deep furrows, red-brown in their bottoms.
+        base, spread = (96, 72, 58), 10
+        field = _furrows(rng, 6, 44)
+        for y in range(0, SIZE, 5):
+            for x in range(SIZE):
+                if rng.random() < 0.3:
+                    field[(y + x // 4) % SIZE][x] -= 16
+    elif recipe == "twisted_silver":
+        # Bristlecone pine: weathered silver deadwood twisted into a spiral, with ochre and rust
+        # where a strip of living bark still runs up it, and dark grain between. The bands climb
+        # one pixel across for every two up, so they repeat every 8 px and tile both ways.
+        bands = [(198, 194, 182), (212, 208, 196), (164, 156, 142), (204, 200, 188),
+                 (182, 148, 102), (156, 112, 74), (128, 120, 108), (196, 192, 180)]
+        img = Image.new("RGBA", (SIZE, SIZE))
+        px = img.load()
+        for y in range(SIZE):
+            for x in range(SIZE):
+                c = bands[(x - y // 2) % 8]
+                px[x, y] = tuple(max(0, min(255, ch + rng.randint(-7, 7))) for ch in c) + (255,)
+        return img
+    elif recipe == "streaky":
+        # Blue gum: bark shedding in long ribbons, streaks of white, grey, tan and blue-grey.
+        base, spread = (172, 164, 146), 6
+        field = [[0.0] * SIZE for _ in range(SIZE)]
+        x = 0
+        while x < SIZE:
+            w = rng.randint(1, 3)
+            shade = rng.choice((44, 30, -30, -46, 12, -14))
+            for k in range(w):
+                for y in range(SIZE):
+                    field[y][(x + k) % SIZE] += shade
+            x += w
+        for _ in range(3):
+            x, y0 = rng.randrange(SIZE), rng.randrange(SIZE)
+            for k in range(rng.randint(4, 9)):
+                field[(y0 + k) % SIZE][x] -= 40
+    elif recipe == "mottled_white":
+        base, spread = (210, 204, 188), 0
+        field = [[0.0] * SIZE for _ in range(SIZE)]
     else:
         raise ValueError(recipe)
     grain = _noise(rng, 4)
     img = Image.new("RGBA", (SIZE, SIZE))
     px = img.load()
-    if recipe in ("mottled", "white_smooth"):
+    if recipe in ("mottled", "white_smooth", "mottled_white"):
         # London plane: flaking patches of cream, olive and grey. Lemon-scented gum: powdery
-        # white with pink and grey where the old bark has just shed.
+        # white with pink and grey where the old bark has just shed. California sycamore: mostly
+        # bright white, in big patches of tan and grey.
         patches = ([(186, 180, 150), (150, 146, 104), (128, 124, 116), (196, 188, 160)]
                    if recipe == "mottled" else
-                   [(222, 218, 210), (236, 232, 226), (206, 196, 196), (228, 222, 214)])
+                   [(222, 218, 210), (236, 232, 226), (206, 196, 196), (228, 222, 214)]
+                   if recipe == "white_smooth" else
+                   [(150, 146, 136), (186, 164, 128), (232, 228, 216), (240, 238, 228)])
         patch = _noise(rng, 3)
         patch2 = _noise(rng, 5)
         for y in range(SIZE):
@@ -602,6 +760,52 @@ def leaf_cluster(style, palette, seed):
             shade = rng.randrange(len(palette))
             for d in range(3):
                 put(x, y + d, palette[min(len(palette) - 1, shade + (1 if d == 2 else 0))])
+    elif style == "cord":
+        # Giant sequoia: short scale-leaved cords, branching every way, in clumps with light
+        # between them.
+        for _ in range(130):
+            x, y = rng.uniform(0, LEAF_SIZE), rng.uniform(0, LEAF_SIZE)
+            a = rng.uniform(0, 2 * math.pi)
+            shade = rng.randrange(len(palette) - 1)
+            for step in range(rng.randint(4, 8)):
+                put(int(x), int(y), palette[shade + (1 if step % 3 == 2 else 0)])
+                put(int(x) + 1, int(y), palette[min(3, shade + 1)])
+                x += math.cos(a)
+                y += math.sin(a)
+                a += rng.uniform(-0.6, 0.6)
+    elif style == "bottlebrush":
+        # Bristlecone pine: needles packed all round the twig in a dense foxtail, flecked white
+        # with the resin each needle carries.
+        for _ in range(620):
+            x, y = rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE)
+            shade = rng.randrange(len(palette))
+            dx = rng.choice((-1, 0, 1))
+            for d in range(2):
+                put(x + dx * d, y + d, palette[min(len(palette) - 1, shade + d)])
+        for _ in range(26):
+            put(rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE), (226, 228, 216))
+    elif style == "sickle":
+        # Blue gum: long, narrow, sickle-curved adult leaves hanging straight down from their
+        # twigs, mostly gaps between them.
+        for _ in range(22):
+            x0, y0 = rng.uniform(0, 26), rng.uniform(2, 20)
+            # The twig, then leaves hanging off it.
+            twig = rng.uniform(-0.5, 0.5)
+            for k in range(rng.randint(4, 7)):
+                tx, ty = x0 + k * 1.6, y0 + k * twig
+                put(int(tx), int(ty), (92, 74, 60))
+                if k % 2 == 0:
+                    continue
+                length = rng.randint(8, 13)
+                bend = rng.choice((-1, 1)) * rng.uniform(1.5, 3.0)
+                shade = rng.randrange(len(palette) - 1)
+                for j in range(length):
+                    t = j / float(length)
+                    x = tx + bend * math.sin(t * math.pi) * (1 - t * 0.3)
+                    y = ty + 1 + j
+                    put(int(round(x)), int(y), palette[shade + (1 if j > length - 3 else 0)])
+                    if 2 <= j < length - 3:
+                        put(int(round(x)) + 1, int(y), palette[shade])
     else:
         raise ValueError(style)
     return img
@@ -658,19 +862,20 @@ def _fan_frond(px, ox, oy, palette, rng, ragged):
             px[x, y] = palette[max(0, min(3, shade))] + (255,)
 
 
-def _feather_frond(px, ox, oy, palette, rng):
-    """A pinnate frond: a midrib bottom to top, leaflets angled toward the tip."""
+def _feather_frond(px, ox, oy, palette, rng, pitch=2, lift=0.45):
+    """A pinnate frond: a midrib bottom to top, leaflets angled toward the tip (by lift), one
+    pair every pitch rows."""
     cx = ox + 16
     for y in range(oy, oy + 32):
         px[cx, y] = palette[3] + (255,)
-    for y in range(oy + 30, oy + 1, -2):
+    for y in range(oy + 30, oy + 1, -pitch):
         t = (oy + 31 - y) / 31.0
         length = 15 * math.sin(math.pi * min(1.0, t * 1.1 + 0.08)) ** 0.7
         for side in (-1, 1):
             shade = rng.randrange(3)
             for k in range(1, int(length) + 1):
                 x = cx + side * k
-                yy = y - int(k * 0.45) + (1 if k > length * 0.7 else 0)
+                yy = y - int(k * lift) + (1 if k > length * 0.7 else 0)
                 if ox <= x < ox + 32 and oy <= yy < oy + 32:
                     px[x, yy] = palette[shade] + (255,)
                     if k < length * 0.6 and oy <= yy + 1 < oy + 32 and rng.random() < 0.5:
@@ -689,10 +894,111 @@ def _boot(px, ox, oy, rng):
             px[x, y] = tuple(max(0, min(255, ch + rng.randint(-8, 8))) for ch in c) + (255,)
 
 
+FROND_CANARY = [(98, 134, 62), (80, 114, 50), (62, 94, 40), (50, 74, 32)]
+FROND_COCONUT = [(156, 176, 80), (132, 156, 66), (108, 132, 52), (88, 108, 42)]
+FROND_KING = [(112, 154, 70), (90, 134, 58), (72, 112, 48), (58, 90, 38)]
+FROND_DEAD_FEATHER = [(170, 136, 92), (146, 112, 74), (122, 92, 60), (98, 74, 48)]
+YUCCA_LIVE = [(156, 176, 134), (128, 152, 112), (104, 128, 94), (80, 104, 76)]
+YUCCA_DEAD = [(168, 152, 122), (142, 126, 100), (116, 102, 80), (90, 78, 62)]
+
+
+def _diamond_boot(px, ox, oy, rng):
+    """The Canary Island date palm's "pineapple": trimmed leaf bases in diamonds, lit above."""
+    for y in range(oy, oy + 32):
+        for x in range(ox, ox + 32):
+            u, v = x - ox, y - oy
+            a, b = (u + v) % 8, (u - v) % 8
+            c = (128, 108, 78)
+            if a == 0 or b == 0:
+                c = (84, 66, 46)
+            elif a == 1 or b == 7:
+                c = (156, 136, 100)
+            elif a >= 6 or b <= 2:
+                c = (110, 92, 66)
+            px[x, y] = tuple(max(0, min(255, ch + rng.randint(-6, 6)))
+                             for ch in c) + (255,)
+
+
+def _crownshaft(px, ox, oy, rng):
+    """The king palm's crownshaft: smooth, waxy, bright green, faintly streaked lengthwise."""
+    streak = [rng.randint(-10, 10) for _ in range(32)]
+    for y in range(oy, oy + 32):
+        for x in range(ox, ox + 32):
+            u = x - ox
+            c = (118, 168, 74)
+            px[x, y] = tuple(max(0, min(255, ch + streak[u] + rng.randint(-4, 4)))
+                             for ch in c) + (255,)
+
+
+def _shaggy_boot(px, ox, oy, rng):
+    """The Joshua tree's thatch of dead leaves round the end of a branch."""
+    for y in range(oy, oy + 32):
+        for x in range(ox, ox + 32):
+            px[x, y] = (66, 58, 48, 255)
+    for row in range(0, 32, 3):
+        for x0 in range(rng.randrange(4), 32, 3):
+            light = rng.randint(120, 160)
+            for k in range(rng.randint(4, 7)):
+                x, y = ox + (x0 + k // 3) % 32, oy + (row + k) % 32
+                g = light - k * 7
+                px[x, y] = (g, g - 10, g - 26, 255)
+
+
+def _coconuts(px, ox, oy, rng):
+    """A coconut's husk: green, ripening to yellow-brown in patches."""
+    for y in range(oy, oy + 32):
+        for x in range(ox, ox + 32):
+            u, v = x - ox, y - oy
+            c = (112, 140, 52) if ((u // 6) + (v // 5)) % 3 else (164, 142, 62)
+            edge = u % 16 in (0, 15) or v % 16 in (0, 15)
+            if edge:
+                c = (84, 104, 40)
+            px[x, y] = tuple(max(0, min(255, ch + rng.randint(-8, 8))) for ch in c) + (255,)
+
+
+def _daggers(px, ox, oy, palette, rng, ragged):
+    """Three stiff, pointed yucca leaves from the cell's bottom edge, fanning slightly."""
+    for base_x, tip_x in ((7, 3), (16, 16), (25, 29)):
+        tip_y = rng.randint(4, 9) if ragged else rng.randint(0, 2)
+        for y in range(oy + tip_y, oy + 32):
+            t = (oy + 31 - y) / float(31 - tip_y)
+            cx = base_x + (tip_x - base_x) * t
+            half = 4.2 * (1 - t) + 0.4
+            for x in range(int(cx - half - 1), int(cx + half + 2)):
+                d = abs(x + 0.5 - cx)
+                if d > half or not 0 <= x < 32:
+                    continue
+                shade = 0 if d < half * 0.3 else 1 if d < half * 0.75 else 2
+                if ragged and rng.random() < 0.2:
+                    shade = 3
+                px[ox + x, y] = palette[shade] + (255,)
+
+
 def palm_sheet(style, seed):
     rng = random.Random(seed)
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     px = img.load()
+    if style == "canary":
+        # Stiff, dense leaflets in a V; the boot is the pineapple of trimmed leaf bases.
+        _feather_frond(px, 0, 0, FROND_CANARY, rng, lift=0.6)
+        _diamond_boot(px, 0, 32, rng)
+        return img
+    if style == "coconut":
+        _feather_frond(px, 0, 0, FROND_COCONUT, rng, lift=0.3)
+        _feather_frond(px, 32, 0, FROND_DEAD_FEATHER, rng, lift=0.15)
+        _boot(px, 0, 32, rng)
+        _coconuts(px, 32, 32, rng)
+        return img
+    if style == "king":
+        # Long leaflets standing nearly square to the rachis; the boot is the crownshaft.
+        _feather_frond(px, 0, 0, FROND_KING, rng, lift=0.15)
+        _crownshaft(px, 0, 32, rng)
+        return img
+    if style == "joshua":
+        _daggers(px, 0, 0, YUCCA_LIVE, rng, ragged=False)
+        _daggers(px, 32, 0, YUCCA_DEAD, rng, ragged=True)
+        _shaggy_boot(px, 0, 32, rng)
+        return img
     if style == "fan":
         _fan_frond(px, 0, 0, FROND_GREEN, rng, ragged=False)
     elif style == "cabbage":
