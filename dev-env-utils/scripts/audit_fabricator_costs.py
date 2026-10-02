@@ -660,6 +660,10 @@ def cost_for(registry, info, ancestors):
         if registry.startswith("outdoor_wall_light_"):
             return ("LED_MODULE", "SHEET_METAL")
         # The living room's extras.
+        if registry.startswith(("giant_flat_screen_tv_", "giant_wall_tv_")):
+            return ("ENCLOSURE_SHELL x4", "CONTROL_BOARD", "LED_MODULE x6")
+        if registry.startswith(("xl_flat_screen_tv_", "xl_wall_tv_")):
+            return ("ENCLOSURE_SHELL x3", "CONTROL_BOARD", "LED_MODULE x4")
         if registry.startswith(("large_flat_screen_tv_", "large_wall_tv_")):
             return ("ENCLOSURE_SHELL x2", "CONTROL_BOARD", "LED_MODULE x2")
         if registry.startswith(("flat_screen_tv_", "wall_tv_")):

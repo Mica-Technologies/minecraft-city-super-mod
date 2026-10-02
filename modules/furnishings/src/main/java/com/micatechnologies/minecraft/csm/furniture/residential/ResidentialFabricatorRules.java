@@ -466,6 +466,18 @@ public final class ResidentialFabricatorRules {
    */
   @Nullable
   private static List<FabricatorIngredient> living(String registryName) {
+    // The big screens, three and four blocks wide: a panel a block, and their LEDs.
+    if (registryName.startsWith("giant_flat_screen_tv_")
+        || registryName.startsWith("giant_wall_tv_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 4),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 6));
+    }
+    if (registryName.startsWith("xl_flat_screen_tv_") || registryName.startsWith("xl_wall_tv_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 3),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 4));
+    }
     if (registryName.startsWith("large_flat_screen_tv_")
         || registryName.startsWith("large_wall_tv_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 2),

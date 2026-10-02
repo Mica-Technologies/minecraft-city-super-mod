@@ -1,0 +1,116 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "back": "csm:blocks/furniture/living/tv_back",
+    "bezel": "csm:blocks/furniture/living/tv_bezel",
+    "screen": "csm:blocks/furniture/living/tv_off",
+    "particle": "#bezel"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        14.5
+      ],
+      "to": [
+        10.25,
+        14.875,
+        15.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bezel",
+          "uv": [
+            5.75,
+            1.125,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#bezel",
+          "uv": [
+            0,
+            1.125,
+            10.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#bezel",
+          "uv": [
+            0.75,
+            1.125,
+            1.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#bezel",
+          "uv": [
+            0,
+            14.5,
+            10.25,
+            15.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        14.3
+      ],
+      "to": [
+        10.0,
+        14.625,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#screen",
+          "uv": [
+            0.0,
+            3.5,
+            3.077,
+            8.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        15.25
+      ],
+      "to": [
+        5.25,
+        10.875,
+        15.75
+      ],
+      "faces": {
+        "east": {
+          "texture": "#back",
+          "uv": [
+            0.25,
+            5.125,
+            0.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#back",
+          "uv": [
+            0,
+            15.25,
+            5.25,
+            15.75
+          ]
+        }
+      }
+    }
+  ]
+}

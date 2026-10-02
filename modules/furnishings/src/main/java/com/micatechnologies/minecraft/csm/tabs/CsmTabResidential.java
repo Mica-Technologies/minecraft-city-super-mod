@@ -43,6 +43,7 @@ import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCabi
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenCorner;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenLight;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockKitchenSink;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockLargeTelevision;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockLaundryAppliance;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockLightSwitch;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockLivingDecor;
@@ -598,6 +599,18 @@ public class CsmTabResidential extends CsmTab {
 
     // Large Wall-Mounted TV
     initTabBlock(new BlockTelevision("large_wall_tv_black", new int[]{3, 1, 14, 29, 15, 16}, true, true));
+
+    // Extra-Large Flat-Screen TV
+    initTabBlock(new BlockLargeTelevision("xl_flat_screen_tv_black", new int[]{0, 0, 9, 48, 29, 15}, 3, 2, false));
+
+    // Extra-Large Wall-Mounted TV
+    initTabBlock(new BlockLargeTelevision("xl_wall_tv_black", new int[]{0, 2, 14, 48, 30, 16}, 3, 2, true));
+
+    // Giant Flat-Screen TV
+    initTabBlock(new BlockLargeTelevision("giant_flat_screen_tv_black", new int[]{5, 0, 9, 59, 32, 15}, 4, 2, false));
+
+    // Giant Wall-Mounted TV
+    initTabBlock(new BlockLargeTelevision("giant_wall_tv_black", new int[]{5, 1, 14, 59, 31, 16}, 4, 2, true));
 
     // CRT TV
     initTabBlock(new BlockTelevision("crt_tv_grey", new int[]{1, 0, 2, 15, 13, 14}, false, false));
