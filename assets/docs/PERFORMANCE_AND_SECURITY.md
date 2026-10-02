@@ -93,13 +93,22 @@ the noise; the cost is the per-tick update itself, about 0.11 microseconds a but
 region assignment, quadratic on paper but 2-3 ms on a 37,000-cell hall (made linear anyway, 20-60%
 faster, same result); a per-scan cache of cell kinds (world reads are a fifth of a big rescan).
 
+**Chunk loading.** Arriving from far away also showed 30-40 ms ticks of chunk loading, and in them
+`CsmTileEntityBackfillHandler`, which walks every block of every non-empty section of every chunk
+that loads, every time, looking for a CSM block missing its tile entity (it must walk every load,
+not just the first: a world editor's fast path can paste such a block into a chunk visited
+before). It now first reads the section's palette, the list of states the section uses
+(`CsmSectionPalette`, one protected field found by its SRG name with the MCP name as the dev
+fallback, a full walk if neither resolves), and skips a section none of whose states is a CSM block
+with a tile entity, which no cell of it can then be. A section past 256 states uses the global
+palette and is walked as before. Over an arrival at the towers (about 600 chunks) the handler's
+time fell from 22-30 ms to 4-7 ms (three runs each, CPU samples), and from 11-15 to 1-5 samples
+of the ticks over 15 ms; what is left of those is HVAC's step and the autosave.
+`CsmSectionPaletteTest` checks on real sections, through all three palettes, that a section is
+never skipped when a cell holds the state.
+
 **Left as they are, worth knowing:** the worst tick in every steady window, about 25 ms, is the
-world autosave. Arriving from far away still shows 30-40 ms ticks; profiled, they are chunk loading
-itself, about a third of it `CsmTileEntityBackfillHandler` walking every block of every newly loaded
-chunk for CSM blocks missing a tile entity. It walks every load, not just the first; skipping
-sections whose palette has no such block would need reflection into the block state container, and
-a marker saved with the chunk would miss blocks pasted later by a world editor's fast path, which
-is one of the cases it exists for.
+world autosave.
 
 What has not been measured, and needs the real world: how many anchors sit in partly loaded rooms
 at typical player positions, whether its buildings contain spaces too large to condition (each
