@@ -111,6 +111,8 @@ run/config/*
 logs/
 # written by .github/scripts/server-smoke-test.sh when run locally
 server-smoke.log
+# a Gradle task's console output redirected to a file at the root
+/*.log
 .claude/settings.local.json
 .claude/worktrees/
 dev-env-utils/target/
