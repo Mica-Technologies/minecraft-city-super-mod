@@ -4,7 +4,9 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmSoundRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 
 /**
- * The sounds shipped by the CSM: Technology module: the speaker's ambient music. (The payment
+ * The sounds shipped by the CSM: Technology module: the speaker's ambient music and the school
+ * bells (the hallway bell's ring, the class-change tone and the three-tone chime, synthesised by
+ * {@code gen_technology_school_sounds.py}). (The payment
  * terminal and its tone moved to the Furniture &amp; Novelties module's Market &amp; Store tab.)
  *
  * <p>Each constant's name is the sound's {@code sounds.json} key and the path of its registry
@@ -16,7 +18,10 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
  * @since 2026.9
  */
 public enum TechnologySounds implements ICsmSound {
-  MII_CHANNEL_REMIX("mii_channel_remix");
+  MII_CHANNEL_REMIX("mii_channel_remix"),
+  SCHOOL_BELL_RING("school_bell_ring"),
+  SCHOOL_TONE("school_tone"),
+  SCHOOL_CHIME("school_chime");
 
   /**
    * The name of the sound.

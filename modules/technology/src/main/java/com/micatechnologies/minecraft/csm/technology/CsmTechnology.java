@@ -3,14 +3,23 @@ package com.micatechnologies.minecraft.csm.technology;
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.technology.school.BellAnnounceHandler;
+import com.micatechnologies.minecraft.csm.technology.school.BellAnnouncePacket;
+import com.micatechnologies.minecraft.csm.technology.school.BellScheduleUpdateHandler;
+import com.micatechnologies.minecraft.csm.technology.school.BellScheduleUpdatePacket;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The CSM: Technology module — computers, servers, routers, televisions and speakers.
+ * The CSM: Technology module — computers, servers, routers, televisions and speakers, and the
+ * school set: PA speakers, clocks, clock/speaker panels, the bell schedule controller and the
+ * hallway bell.
  *
  * <p>A module's mod container exists so that Forge serves the module jar's {@code assets/csm}
  * resources and shows it in the mod list. Content registration is entirely Core's: the creative
@@ -41,6 +50,11 @@ public class CsmTechnology {
    * @since 2026.9
    */
   public static final CsmNetwork NETWORK = CsmNetwork.create(MOD_ID);
+
+  @SidedProxy(
+      clientSide = "com.micatechnologies.minecraft.csm.technology.CsmTechnologyClientProxy",
+      serverSide = "com.micatechnologies.minecraft.csm.technology.CsmTechnologyCommonProxy")
+  public static ICsmProxy proxy;
 
   @Mod.Instance(MOD_ID)
   public static CsmTechnology instance;
@@ -74,10 +88,25 @@ public class CsmTechnology {
         SpeakerAmbientPacketHandler.class,
         SpeakerAmbientPacket.class,
         Side.CLIENT);
+    NETWORK.registerMessage(
+        BellScheduleUpdateHandler.class,
+        BellScheduleUpdatePacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        BellAnnounceHandler.class,
+        BellAnnouncePacket.class,
+        Side.CLIENT);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
     // pre-initialization before it fires the sound registry event, so Core sees the complete
     // union when it creates the sound events.
     TechnologySounds.registerSounds();
+
+    proxy.preInit(event);
+  }
+
+  @Mod.EventHandler
+  public void init(FMLInitializationEvent event) {
+    proxy.init(event);
   }
 }

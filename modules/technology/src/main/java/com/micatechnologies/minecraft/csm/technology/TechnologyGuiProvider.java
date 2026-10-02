@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.codeutils.gui.ICsmGuiProvider;
+import com.micatechnologies.minecraft.csm.technology.school.BellControllerGui;
+import com.micatechnologies.minecraft.csm.technology.school.BlockBellController;
+import com.micatechnologies.minecraft.csm.technology.school.TileEntityBellController;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -8,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * Supplies the technology package's GUI screen: the computer.
+ * Supplies the technology package's GUI screens: the computer and the bell schedule controller.
  *
  * <p>GUI id 0 — the Redstone TTS Module — is not here. That block ships in the Text to Speech
  * module, which registers its own provider for that id.</p>
@@ -30,6 +33,9 @@ public class TechnologyGuiProvider implements ICsmGuiProvider {
     Object returnValue = null;
     if (id == 15 && tileEntity instanceof TileEntityComputer) {
       returnValue = new ComputerGui((TileEntityComputer) tileEntity);
+    } else if (id == BlockBellController.GUI_ID
+        && tileEntity instanceof TileEntityBellController) {
+      returnValue = new BellControllerGui((TileEntityBellController) tileEntity);
     }
     return returnValue;
   }

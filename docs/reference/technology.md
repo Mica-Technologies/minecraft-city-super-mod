@@ -2,7 +2,7 @@
 
 Servers, routers, screens and consumer electronics.
 
-!!! info "45 blocks in this tab"
+!!! info "54 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -38,6 +38,12 @@ Servers, routers, screens and consumer electronics.
 | FourJay Speaker 2 | `csm:fjs2` |  |  |  |  |
 | JBL Control Speaker (Black) | `csm:jblc2` |  |  |  |  |
 | JBL Control Speaker (White) | `csm:jblc1` |  |  |  |  |
+| Micaplex Bell Schedule Controller | `csm:school_bell_controller` | 2.0 | 6.0 | pickaxe | 1 |
+| Micaplex Classroom Clock | `csm:school_wall_clock` | 2.0 | 6.0 | pickaxe | 1 |
+| Micaplex Clock/Speaker Panel | `csm:school_clock_speaker_panel` | 2.0 | 6.0 | pickaxe | 1 |
+| Micaplex Clock/Speaker Panel (Vertical) | `csm:school_clock_speaker_panel_vertical` | 2.0 | 6.0 | pickaxe | 1 |
+| Micaplex Double-Dial Clock (Ceiling) | `csm:school_hanging_clock` | 2.0 | 6.0 | pickaxe | 1 |
+| Micaplex Double-Dial Clock (Wall) | `csm:school_double_clock` | 2.0 | 6.0 | pickaxe | 1 |
 | Micarolla ONT | `csm:micarolla_ont` |  |  |  |  |
 | NEMA Enclosure | `csm:nema_enclosure` |  |  |  |  |
 | Polk Audio Speaker (Black) | `csm:polk_audio_speaker_black` |  |  |  |  |
@@ -45,6 +51,9 @@ Servers, routers, screens and consumer electronics.
 | Redstone TTS Module | `csm:redstonetts` | 2 | 10 | pickaxe | 1 |
 | Sat TV Dish | `csm:tvdish` |  |  |  |  |
 | Sat TV Dish (Side) | `csm:tvdishside` |  |  |  |  |
+| School Hallway Bell | `csm:school_bell_gong` | 2.0 | 6.0 | pickaxe | 1 |
+| School PA Speaker (Cube) | `csm:school_pa_speaker_cube` |  |  |  |  |
+| School PA Speaker (Wall Box) | `csm:school_pa_speaker_wallbox` |  |  |  |  |
 | Spectrum Technicolor Wireless Gateway | `csm:wg` |  |  |  |  |
 | TP-Link Omada EAP225 | `csm:waptpl225` |  |  |  |  |
 | Valcom Speaker 1 | `csm:vcs1` |  |  |  |  |
