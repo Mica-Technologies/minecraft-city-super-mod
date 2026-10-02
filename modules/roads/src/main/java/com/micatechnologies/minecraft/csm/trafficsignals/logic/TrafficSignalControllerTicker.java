@@ -1100,6 +1100,9 @@ public class TrafficSignalControllerTicker {
 
       // Scan ALL sensors in this circuit (supports multiple sensors for curved roads, etc.)
       for (BlockPos sensorPos : circuit.getSensors()) {
+        if (!world.isBlockLoaded(sensorPos)) {
+          continue; // never load a sensor's chunk to poll it
+        }
         TileEntity te = world.getTileEntity(sensorPos);
         if (te instanceof TileEntityTrafficSignalSensor) {
           TileEntityTrafficSignalSensor sensor = (TileEntityTrafficSignalSensor) te;
@@ -1239,6 +1242,9 @@ public class TrafficSignalControllerTicker {
 
       // Scan ALL sensors in this circuit (supports multiple sensor pairs per circuit)
       for (BlockPos sensorPos : circuit.getSensors()) {
+        if (!world.isBlockLoaded(sensorPos)) {
+          continue; // never load a sensor's chunk to poll it
+        }
         TileEntity te = world.getTileEntity(sensorPos);
         if (te instanceof TileEntityOverheightDetectionSensor) {
           TileEntityOverheightDetectionSensor sensor =
