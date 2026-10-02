@@ -42,14 +42,18 @@ class TreeRenderBudgetTest {
    * up), another specimen tree; the palms and the young Joshua tree are a few hundred each. The
    * eleven fruit trees that followed added about 13,000 (the citrus are clipped heads of a few
    * hundred quads; the avocado and mulberry, the biggest, about 2,400; the fruit itself is in
-   * the leaves' sprites and costs nothing), and the blue gum's fix took 900 off it. A
+   * the leaves' sprites and costs nothing), and the blue gum's fix took 900 off it. The ten
+   * ornamental trees and three flowering cherries after them added about 31,900: the sugar maple
+   * and the mahogany, broad street trees, about 4,000 each; the cherries 3,100 to 3,400; the
+   * dwarf crape myrtle 229. A cherry's fallen petals are a quad a cell, and none in this test
+   * (open ground everywhere, so nothing solid for them to lie on). A
    * preset may grow
    * 15% past this before the test fails; beyond that, look at what grew, and raise the number
    * here only if it earns its cost.
    */
   private static final Map<String, Integer> BUDGET = new HashMap<>();
   /** One of every preset together. */
-  private static final int TOTAL_BUDGET = 110000;
+  private static final int TOTAL_BUDGET = 142000;
 
   static {
     String[] rows = {"liveoak 3832", "elm 3210", "plane 3588", "honeylocust 1670", "cypress 188",
@@ -63,7 +67,11 @@ class TreeRenderBudgetTest {
         "coconutpalm 398", "kingpalm 222", "douglasfir 2284", "bristlecone 930",
         "sycamore 2853", "bluegum 2122", "orange 552", "lemon 435", "lime 322",
         "grapefruit 604", "avocado 2466", "olive 1858", "banana 404", "applehoneycrisp 1323",
-        "applegranny 1323", "applegolden 1323", "mulberry 2397"};
+        "applegranny 1323", "applegolden 1323", "mulberry 2397", "sugarmaple 4031",
+        "magnolia 1225", "whitewillow 3654", "mahogany 3961", "crapemyrtle 1897",
+        "crapemyrtledwarf 229", "chinesechestnut 3141", "tridentmaple 1773",
+        "dwarfjacaranda 1175", "plumeria 1077", "cherryyoshino 3397", "cherrykanzan 3076",
+        "cherryweeping 3254"};
     for (String row : rows) {
       String[] kv = row.split(" ");
       BUDGET.put(kv[0], Integer.parseInt(kv[1]));
@@ -82,6 +90,12 @@ class TreeRenderBudgetTest {
     }
     if (block.startsWith("tree_crown_joshua")) {
       return TreeLeafType.ROSETTE;
+    }
+    if (block.startsWith("tree_crown_plumeria")) {
+      return TreeLeafType.PALM_PLUMERIA;
+    }
+    if (block.contains("whitewillow")) {
+      return TreeLeafType.BROADLEAF;
     }
     if (block.startsWith("tree_crown_banana_fruit")) {
       return TreeLeafType.PALM_BANANA_FRUIT;
@@ -113,7 +127,8 @@ class TreeRenderBudgetTest {
     if (block.contains("honeylocust") || block.contains("jacaranda") || block.endsWith("_gum")) {
       return TreeLeafType.AIRY;
     }
-    if (block.contains("pepper") || block.contains("willow")) {
+    if (block.contains("pepper") || block.contains("willow")
+        || block.contains("cherry_weeping")) {
       return TreeLeafType.WEEPING;
     }
     if (block.contains("clipped")) {
@@ -192,8 +207,10 @@ class TreeRenderBudgetTest {
         leaves += TreeLeavesGeometry.quads(type, TreeLeavesGeometry.key(open, variant), true)
             .size();
         cells++;
-      } else {
+      } else if (part.kind == TreePlan.Kind.HANGING) {
         hanging += 4;
+      } else {
+        hanging += 1; // a ground cover: one face
       }
     }
     return new int[]{logs, leaves, hanging, cells};

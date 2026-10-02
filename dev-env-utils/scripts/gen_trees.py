@@ -117,6 +117,22 @@ WOODS = [
     ("mulberry", "MULBERRY", ("Mulberry", "Maulbeerbaum", "morera", "mullbärsträd"),
      "furrowed_orange"),
     ("banana", "BANANA", ("Banana", "Banane", "platanera", "banan"), "sheath"),
+    # GitHub #250, ornamental trees. The white willow wears the weeping willow's bark.
+    ("sugarmaple", "SUGAR_MAPLE", ("Sugar Maple", "Zuckerahorn", "arce azucarero", "sockerlönn"),
+     "furrowed_grey"),
+    ("magnolia", "MAGNOLIA", ("Southern Magnolia", "Immergrüne Magnolie", "magnolio",
+                              "storblommig magnolia"), "smooth_grey"),
+    ("mahogany", "MAHOGANY", ("Mahogany", "Mahagoni", "caoba", "mahogny"), "furrowed_red"),
+    ("crapemyrtle", "CRAPE_MYRTLE", ("Crape Myrtle", "Kräuselmyrte", "árbol de Júpiter",
+                                     "kräppmyrten"), "mottled_pink"),
+    ("chestnut", "CHESTNUT", ("Chinese Chestnut", "Chinesische Kastanie", "castaño chino",
+                              "kinesisk kastanj"), "furrowed_deep"),
+    ("tridentmaple", "TRIDENT_MAPLE", ("Trident Maple", "Dreispitz-Ahorn", "arce tridente",
+                                       "treuddig lönn"), "peeling_orange"),
+    ("plumeria", "PLUMERIA", ("Plumeria", "Frangipani", "plumeria", "frangipani"),
+     "smooth_succulent"),
+    ("cherry", "CHERRY", ("Japanese Cherry", "Japanische Kirsche", "cerezo japonés",
+                          "japanskt körsbär"), "lenticel"),
 ]
 
 # id -> (Java constant, pixels across, name patterns en/de/es/sv). Order = TreeLogWidth order.
@@ -142,6 +158,12 @@ AUTUMN_NAMES = ("Autumn {w} Leaves", "Herbstlaub ({w})", "Hojas otoñales de {w}
                 "Höstlöv ({w})")
 FRUITING_NAMES = ("Fruiting {w} Leaves", "Laub mit Früchten ({w})", "Hojas con fruto de {w}",
                   "Löv med frukt ({w})")
+FLOWERING_NAMES = ("Flowering {w} Leaves", "Laub mit Blüten ({w})", "Hojas con flores de {w}",
+                   "Löv med blommor ({w})")
+WHITE_WILLOW_NAMES = ("White Willow", "Silberweide", "sauce blanco", "vitpil")
+YOSHINO_NAMES = ("Yoshino Cherry", "Yoshino-Kirsche", "cerezo Yoshino", "Yoshino-körsbär")
+KANZAN_NAMES = ("Kanzan Cherry", "Kanzan-Kirsche", "cerezo Kanzan", "Kanzan-körsbär")
+WEEPING_CHERRY_NAMES = ("Weeping Cherry", "Hänge-Kirsche", "cerezo llorón", "hängkörsbär")
 ORANGE_NAMES = ("Orange", "Orange", "naranjo", "apelsin")
 LEMON_NAMES = ("Lemon", "Zitrone", "limonero", "citron")
 LIME_NAMES = ("Lime", "Limette", "limero", "lime")
@@ -267,6 +289,36 @@ LEAVES = [
      [(116, 154, 68), (96, 134, 56), (76, 114, 46), (60, 94, 38)], FRUITING_NAMES),
     ("mulberry", "BROADLEAF", WOODS[37][2], "broad_large",
      [(108, 156, 66), (86, 136, 54), (68, 114, 44), (52, 94, 36)], FRUITING_NAMES),
+    # GitHub #250, ornamental trees.
+    ("sugarmaple", "BROADLEAF", WOODS[39][2], "maple",
+     [(116, 160, 66), (96, 140, 54), (76, 120, 44), (60, 98, 36)], LEAF_NAMES),
+    ("sugarmaple_autumn", "BROADLEAF", WOODS[39][2], "maple",
+     [(246, 150, 44), (232, 104, 36), (204, 64, 34), (156, 40, 30)], AUTUMN_NAMES),
+    ("magnolia", "BROADLEAF", WOODS[40][2], "broad_large",
+     [(78, 112, 52), (60, 92, 42), (46, 74, 34), (36, 58, 26)], FLOWERING_NAMES),
+    ("whitewillow", "BROADLEAF", WHITE_WILLOW_NAMES, "lanceolate",
+     [(178, 198, 150), (150, 174, 124), (122, 150, 100), (96, 124, 80)], LEAF_NAMES),
+    ("mahogany", "BROADLEAF", WOODS[41][2], "pinnate",
+     [(108, 150, 62), (88, 130, 52), (70, 110, 42), (54, 90, 34)], LEAF_NAMES),
+    ("crapemyrtle", "BROADLEAF", WOODS[42][2], "crape",
+     [(240, 118, 196), (220, 84, 174), (186, 58, 146), (86, 124, 66)], FLOWERING_NAMES),
+    ("chestnut", "BROADLEAF", WOODS[43][2], "broad",
+     [(112, 152, 62), (92, 132, 52), (72, 112, 42), (56, 92, 34)], FRUITING_NAMES),
+    ("tridentmaple", "BROADLEAF", WOODS[44][2], "trilobe",
+     [(122, 164, 72), (100, 144, 58), (80, 122, 48), (62, 100, 38)], LEAF_NAMES),
+    ("tridentmaple_autumn", "BROADLEAF", WOODS[44][2], "trilobe",
+     [(248, 140, 50), (230, 96, 40), (200, 60, 36), (150, 40, 32)], AUTUMN_NAMES),
+    # The cherries in blossom: palette from the palest petal to the deepest pink at a flower's
+    # heart, then the anthers' dark rose.
+    ("cherry_yoshino", "BROADLEAF", YOSHINO_NAMES, "sakura",
+     [(255, 232, 242), (255, 204, 226), (252, 178, 212), (246, 148, 194), (222, 104, 154)],
+     BLOSSOM_NAMES),
+    ("cherry_kanzan", "BROADLEAF", KANZAN_NAMES, "sakura_double",
+     [(255, 196, 224), (253, 160, 204), (248, 128, 186), (236, 98, 170), (204, 66, 134)],
+     BLOSSOM_NAMES),
+    ("cherry_weeping", "WEEPING", WEEPING_CHERRY_NAMES, "sakura",
+     [(255, 222, 238), (254, 190, 218), (250, 162, 202), (240, 132, 186), (214, 88, 146)],
+     BLOSSOM_NAMES),
 ]
 SEASON_OF = {"elm_autumn": "elm", "plane_autumn": "plane", "honeylocust_autumn": "honeylocust",
              "ginkgo_autumn": "ginkgo", "poplar_autumn": "poplar",
@@ -275,7 +327,8 @@ SEASON_OF = {"elm_autumn": "elm", "plane_autumn": "plane", "honeylocust_autumn":
              "oak_autumn": "oak",
              "citrus_orange": "citrus", "citrus_lemon": "citrus", "citrus_lime": "citrus",
              "citrus_grapefruit": "citrus", "apple_honeycrisp": "apple",
-             "apple_granny": "apple", "apple_golden": "apple"}
+             "apple_granny": "apple", "apple_golden": "apple",
+             "sugarmaple_autumn": "sugarmaple", "tridentmaple_autumn": "tridentmaple"}
 
 # Fruit dotted over a fruiting set's sprite: leaf id -> [(light, mid, dark, radius across,
 # radius down, how many)], each a little shaded ball (or a pear, or a berry) on the leaves.
@@ -291,6 +344,11 @@ FRUIT = {
     "apple_golden": [((248, 226, 110), (230, 198, 70), (186, 156, 48), 1.8, 1.7, 8)],
     "mulberry": [((112, 44, 84), (74, 24, 52), (42, 12, 30), 0.9, 1.4, 11),
                  ((214, 64, 70), (182, 36, 52), (130, 24, 40), 0.9, 1.4, 4)],
+    # Not fruit: the magnolia's big white cup flowers, the chestnut's spiny burs.
+    # The magnolia's leaves turned to show their rusty undersides, then its flowers.
+    "magnolia": [((156, 110, 66), (130, 88, 50), (100, 66, 38), 1.2, 2.6, 6),
+                 ((255, 254, 246), (240, 236, 220), (204, 196, 170), 2.5, 2.3, 5)],
+    "chestnut": [((206, 214, 116), (160, 180, 70), (112, 132, 44), 1.9, 1.9, 7)],
 }
 
 # Palm crowns: (id, TreeLeafType constant, sheet, names en/de/es/sv). Order = tab order.
@@ -325,8 +383,12 @@ PALMS = [
     ("banana_fruit", "PALM_BANANA_FRUIT", "banana",
      ("Banana Crown with Fruit", "Bananenstauden-Krone mit Früchten",
       "Copa de platanera con racimo", "Bananplantkrona med klase")),
+    ("plumeria", "PALM_PLUMERIA", "plumeria",
+     ("Plumeria Leaf Tuft", "Frangipani-Blattschopf", "Penacho de plumeria",
+      "Frangipanitofs")),
 ]
-PALM_SHEETS = ["fan", "feather", "cabbage", "canary", "coconut", "king", "joshua", "banana"]
+PALM_SHEETS = ["fan", "feather", "cabbage", "canary", "coconut", "king", "joshua", "banana",
+               "plumeria"]
 
 # Tree Planting Tool presets: TreePreset id -> names en/de/es/sv. Order = TreePreset order.
 PRESETS = [
@@ -406,6 +468,26 @@ PRESETS = [
     ("applegolden", ("Golden Delicious Apple Tree", "Apfelbaum 'Golden Delicious'",
                      "Manzano Golden Delicious", "Äppelträd 'Golden Delicious'")),
     ("mulberry", ("Mulberry Tree", "Maulbeerbaum", "Morera", "Mullbärsträd")),
+    # GitHub #250, ornamental trees.
+    ("sugarmaple", ("Sugar Maple", "Zuckerahorn", "Arce azucarero", "Sockerlönn")),
+    ("magnolia", ("Southern Magnolia", "Immergrüne Magnolie", "Magnolio",
+                  "Storblommig magnolia")),
+    ("whitewillow", ("White Willow", "Silberweide", "Sauce blanco", "Vitpil")),
+    ("mahogany", ("West Indies Mahogany", "Echtes Mahagoni", "Caoba antillana",
+                  "Västindisk mahogny")),
+    ("crapemyrtle", ("Crape Myrtle", "Kräuselmyrte", "Árbol de Júpiter", "Kräppmyrten")),
+    ("crapemyrtledwarf", ("Dwarf Crape Myrtle", "Zwerg-Kräuselmyrte", "Árbol de Júpiter enano",
+                          "Dvärgkräppmyrten")),
+    ("chinesechestnut", ("Chinese Chestnut", "Chinesische Kastanie", "Castaño chino",
+                         "Kinesisk kastanj")),
+    ("tridentmaple", ("Trident Maple", "Dreispitz-Ahorn", "Arce tridente", "Treuddig lönn")),
+    ("dwarfjacaranda", ("Dwarf Jacaranda", "Zwerg-Jacaranda", "Jacarandá enano",
+                        "Dvärgjakaranda")),
+    ("plumeria", ("Plumeria", "Frangipani", "Plumeria", "Frangipani")),
+    ("cherryyoshino", ("Yoshino Cherry", "Yoshino-Kirsche", "Cerezo Yoshino",
+                       "Yoshino-körsbär")),
+    ("cherrykanzan", ("Kanzan Cherry", "Kanzan-Kirsche", "Cerezo Kanzan", "Kanzan-körsbär")),
+    ("cherryweeping", ("Weeping Cherry", "Hänge-Kirsche", "Cerezo llorón", "Hängkörsbär")),
 ]
 
 # The tool's own lines: key -> en/de/es/sv.
@@ -746,6 +828,46 @@ def bark(recipe, seed):
                     c = tuple(ch - 26 for ch in c)  # a sheath's edge
                 px[x, y] = tuple(max(0, min(255, ch + rng.randint(-6, 6))) for ch in c) + (255,)
         return img
+    elif recipe == "furrowed_red":
+        # Mahogany: dark reddish-brown, furrowed and breaking into scaly plates.
+        base, spread = (110, 66, 50), 10
+        field = _furrows(rng, 6, 34)
+        for y in range(0, SIZE, 4):
+            for x in range(SIZE):
+                if rng.random() < 0.3:
+                    field[(y + x // 4) % SIZE][x] -= 16
+    elif recipe == "lenticel":
+        # Japanese cherry: glossy, dark reddish-brown bark, banded across with pale lenticels.
+        img = Image.new("RGBA", (SIZE, SIZE))
+        px = img.load()
+        shine = [rng.randint(-6, 6) for _ in range(SIZE)]
+        for y in range(SIZE):
+            for x in range(SIZE):
+                c = (98, 54, 48)
+                if x % 8 in (2, 3):
+                    c = (118, 70, 60)  # the gloss down the curve of the stem
+                px[x, y] = tuple(max(0, min(255, ch + shine[x] + rng.randint(-5, 5)))
+                                 for ch in c) + (255,)
+        for row in range(1, SIZE, 4):
+            x = rng.randrange(SIZE)
+            while x < SIZE + 16:
+                length = rng.randint(3, 6)
+                for k in range(length):
+                    px[(x + k) % SIZE, row] = (168, 128, 112, 255)
+                    px[(x + k) % SIZE, (row + 1) % SIZE] = (70, 36, 34, 255)
+                x += length + rng.randint(2, 5)
+        return img
+    elif recipe == "smooth_succulent":
+        # Plumeria: smooth, grey, swollen and succulent, ringed faintly with old leaf scars.
+        base, spread = (152, 154, 142), 8
+        field = _furrows(rng, 2, 8, jitter=0)
+        for y in range(0, SIZE, 6):
+            for x in range(SIZE):
+                if (x + y) % 5:
+                    field[y][x] -= 16
+    elif recipe in ("mottled_pink", "peeling_orange"):
+        base, spread = (180, 150, 130), 0
+        field = [[0.0] * SIZE for _ in range(SIZE)]
     elif recipe == "mottled_white":
         base, spread = (210, 204, 188), 0
         field = [[0.0] * SIZE for _ in range(SIZE)]
@@ -754,7 +876,7 @@ def bark(recipe, seed):
     grain = _noise(rng, 4)
     img = Image.new("RGBA", (SIZE, SIZE))
     px = img.load()
-    if recipe in ("mottled", "white_smooth", "mottled_white"):
+    if recipe in ("mottled", "white_smooth", "mottled_white", "mottled_pink", "peeling_orange"):
         # London plane: flaking patches of cream, olive and grey. Lemon-scented gum: powdery
         # white with pink and grey where the old bark has just shed. California sycamore: mostly
         # bright white, in big patches of tan and grey.
@@ -762,7 +884,13 @@ def bark(recipe, seed):
                    if recipe == "mottled" else
                    [(222, 218, 210), (236, 232, 226), (206, 196, 196), (228, 222, 214)]
                    if recipe == "white_smooth" else
-                   [(150, 146, 136), (186, 164, 128), (232, 228, 216), (240, 238, 228)])
+                   [(150, 146, 136), (186, 164, 128), (232, 228, 216), (240, 238, 228)]
+                   if recipe == "mottled_white" else
+                   # Crape myrtle: smooth, shedding in patches of pinkish tan, cinnamon and grey.
+                   [(150, 146, 140), (198, 160, 136), (172, 132, 108), (218, 188, 164)]
+                   if recipe == "mottled_pink" else
+                   # Trident maple: grey bark peeling away in orange-brown plates.
+                   [(126, 118, 108), (178, 118, 70), (150, 96, 60), (196, 140, 92)])
         patch = _noise(rng, 3)
         patch2 = _noise(rng, 5)
         for y in range(SIZE):
@@ -893,6 +1021,95 @@ def leaf_cluster(style, palette, seed):
             shade = rng.randrange(len(palette))
             for d in range(3):
                 put(x, y + d, palette[min(len(palette) - 1, shade + (1 if d == 2 else 0))])
+    elif style in ("maple", "trilobe"):
+        # Sugar maple: big five-lobed leaves. Trident maple: smaller, three-lobed.
+        lobes = 5 if style == "maple" else 3
+        for _ in range(48 if style == "maple" else 70):
+            cx, cy = rng.uniform(0, LEAF_SIZE), rng.uniform(0, LEAF_SIZE)
+            a = rng.uniform(0, 2 * math.pi)
+            shade = rng.randrange(len(palette) - 1)
+            reach = (1, 2, 3, 4) if style == "maple" else (1, 2, 3)
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    put(int(cx) + dx, int(cy) + dy, palette[shade])
+            for lobe in range(lobes):
+                ang = a + lobe * 2 * math.pi / lobes
+                for r in reach:
+                    for w in (0, 1) if r < reach[-1] else (0,):
+                        put(int(round(cx + r * math.cos(ang) - w * math.sin(ang))),
+                            int(round(cy + r * math.sin(ang) + w * math.cos(ang))),
+                            palette[shade + (1 if r == reach[-1] else 0)])
+    elif style in ("sakura", "sakura_double"):
+        # Cherry blossom: a cloud of small five-petalled flowers (single, Yoshino) or full
+        # pom-poms of them (double, Kanzan), layered from near-white to blush, each a little
+        # deeper at its heart with a few rose anthers, and hardly a leaf. The edge is left loose:
+        # flowers spill past the cloud's outline, so a crown's sheets read as fluffy, not cut.
+        double = style == "sakura_double"
+        light, pale, mid, deep, anther = palette
+
+        def flower(cx, cy, shade):
+            # Five round petals about a heart one pixel across.
+            petals = [light, pale, mid][shade]
+            a0 = rng.uniform(0, 2 * math.pi)
+            for k in range(5):
+                ang = a0 + k * 2 * math.pi / 5
+                put(int(round(cx + 1.2 * math.cos(ang))), int(round(cy + 1.2 * math.sin(ang))),
+                    petals)
+            put(int(round(cx)), int(round(cy)), deep if shade else mid)
+            if rng.random() < 0.15:
+                put(int(round(cx + rng.choice((-1, 1)))), int(round(cy)), anther)
+
+        # Underneath: soft pink, so the gaps between flowers are blossom, not sky.
+        for _ in range(420 if double else 380):
+            x, y = rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE)
+            put(x, y, mid if rng.random() < 0.5 else pale)
+        if double:
+            for _ in range(30):
+                cx, cy = rng.uniform(3, 29), rng.uniform(3, 29)
+                for k in range(9):
+                    r = 2.4 * math.sqrt(rng.random())
+                    a = rng.uniform(0, 2 * math.pi)
+                    flower(cx + r * math.cos(a), cy + r * math.sin(a),
+                           0 if r > 1.6 else rng.choice((1, 2)))
+        else:
+            for _ in range(130):
+                flower(rng.uniform(1, 31), rng.uniform(1, 31), rng.choice((0, 0, 1, 1, 2)))
+        # A very few young leaves, bronze-green, as on a tree in full bloom.
+        for _ in range(4):
+            x, y = rng.randrange(LEAF_SIZE), rng.randrange(LEAF_SIZE)
+            put(x, y, (150, 132, 92))
+    elif style == "crape":
+        # Crape myrtle in flower: small leaves almost hidden under big panicles of crinkled
+        # flowers, bright pink to magenta.
+        greens = [(96, 134, 70), (78, 114, 58), (62, 96, 46)]
+        for _ in range(240):
+            cx, cy = rng.uniform(0, LEAF_SIZE), rng.uniform(0, LEAF_SIZE)
+            a = rng.uniform(0, math.pi)
+            g = greens[rng.randrange(3)]
+            for t in (-1, 0, 1):
+                put(int(round(cx + t * math.cos(a))), int(round(cy + t * math.sin(a))), g)
+        for _ in range(40):
+            cx, cy = rng.uniform(2, 30), rng.uniform(2, 30)
+            shade = rng.randrange(3)
+            for _ in range(16):
+                dx, dy = rng.randint(-3, 3), rng.randint(-2, 2)
+                if dx * dx / 10.0 + dy * dy / 5.0 <= 1:
+                    put(int(cx) + dx, int(cy) + dy,
+                        palette[min(2, shade + rng.choice((0, 0, 1)))])
+    elif style == "pinnate":
+        # Mahogany: small paired leaflets on short stalks, denser than the honey locust's.
+        for _ in range(34):
+            x, y = rng.uniform(2, 30), rng.uniform(2, 30)
+            a = rng.uniform(0, math.pi)
+            for step in range(9):
+                x += math.cos(a)
+                y += math.sin(a)
+                put(int(x), int(y), palette[-1])
+                for side in (-1, 1):
+                    for k in (1, 2):
+                        lx = x + math.cos(a + side * 1.3) * k
+                        ly = y + math.sin(a + side * 1.3) * k
+                        put(int(round(lx)), int(round(ly)), palette[rng.randrange(3)])
     elif style == "lanceolate":
         # Olive: narrow willow-like leaves, silver-grey above and paler beneath, light between.
         for _ in range(230):
@@ -1189,10 +1406,61 @@ def _banana_fruit(px, ox, oy, rng):
             px[x, y] = tuple(max(0, min(255, ch + rng.randint(-6, 6))) for ch in c) + (255,)
 
 
+PLUMERIA_LEAF = [(98, 150, 64), (76, 128, 50), (58, 106, 40), (44, 84, 32)]
+
+
+def _oblong_leaf(px, ox, oy, palette, rng):
+    """A plumeria leaf: long, oblong and blunt, a pale midrib and parallel veins."""
+    cx = ox + 16
+    for y in range(oy, oy + 32):
+        v = y - oy
+        t = (31 - v) / 31.0
+        tip = 1.0 if t < 0.8 else math.sqrt(max(0.0, 1 - ((t - 0.8) / 0.2) ** 2))
+        half = 13 * min(1.0, (t + 0.05) * 3.5) * tip
+        for x in range(ox, ox + 32):
+            d = abs(x + 0.5 - cx)
+            if d > half:
+                continue
+            c = palette[0] if d < 1 else palette[3] if d > half - 1 else \
+                palette[2] if (v + int(d)) % 5 == 0 else palette[1]
+            px[x, y] = tuple(max(0, min(255, ch + rng.randint(-4, 4))) for ch in c) + (255,)
+
+
+def _plumeria_flowers(px, ox, oy, rng):
+    """Plumeria flowers, seen from above: five broad white petals turned like a pinwheel round
+    a yellow throat, four to a cell."""
+    for fx, fy in ((9, 9), (23, 10), (10, 23), (23, 23)):
+        a0 = rng.uniform(0, 2 * math.pi)
+        for y in range(oy + fy - 7, oy + fy + 8):
+            for x in range(ox + fx - 7, ox + fx + 8):
+                dx, dy = x + 0.5 - (ox + fx), y + 0.5 - (oy + fy)
+                r = math.hypot(dx, dy)
+                ang = (math.atan2(dy, dx) - a0) % (2 * math.pi / 5)
+                # Each petal is widest a little off its centre line: the pinwheel twist.
+                petal = 6.5 * math.sin(math.pi * min(1.0, ang / (2 * math.pi / 5) * 1.1))
+                if r > petal + 0.5 or r > 7:
+                    continue
+                if r < 1.8:
+                    c = (246, 206, 62)
+                elif r < 3.2:
+                    c = (252, 236, 150)
+                else:
+                    c = (252, 250, 244) if (x + y) % 3 else (236, 232, 222)
+                px[x, y] = c + (255,)
+
+
 def palm_sheet(style, seed):
     rng = random.Random(seed)
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     px = img.load()
+    if style == "plumeria":
+        _oblong_leaf(px, 0, 0, PLUMERIA_LEAF, rng)
+        _plumeria_flowers(px, 32, 0, rng)
+        for y in range(32, 64):
+            for x in range(0, 32):
+                g = (150, 152, 140) if (y % 6) else (130, 132, 120)
+                px[x, y] = tuple(ch + rng.randint(-5, 5) for ch in g) + (255,)
+        return img
     if style == "banana":
         _paddle(px, 0, 0, BANANA_LEAF, rng, torn=True)
         _paddle(px, 32, 0, BANANA_DRY, rng, torn=False)

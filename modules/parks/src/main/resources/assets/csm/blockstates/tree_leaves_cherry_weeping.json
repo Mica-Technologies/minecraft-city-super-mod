@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:parks/leaves_cherry_weeping"
+    },
+    "inventory": {
+      "model": "csm:parks/leaves_cherry_weeping"
+    }
+  }
+}

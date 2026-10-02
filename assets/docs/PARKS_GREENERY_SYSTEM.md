@@ -109,6 +109,7 @@ neighbouring blocks differ but a given block always looks the same.
 | `PALM_CABBAGE`, `PALM_CABBAGE_SKIRT`, `PALM_CANARY`, `PALM_COCONUT`, `PALM_KING` | the crowns with their own shape (Palm crowns, below) |
 | `ROSETTE` | the Joshua tree's rosette, drawn by the palm crown machinery |
 | `PALM_BANANA`, `PALM_BANANA_FRUIT` | a banana plant's crown, without and with its bunch |
+| `PALM_PLUMERIA` | a plumeria's leaf tuft and flowers, one on each branch end |
 
 Leaves never decay on their own: a street tree that disappears would ruin a build. They go only
 when the logs holding them are felled (see Felling). They have **no collision**,
@@ -171,6 +172,11 @@ a hanging dry leaf read as a ladder). The fruiting crown adds the bunch: the sta
 the top and down, the green hands as an eight-sided prism hanging beside the stem, and the purple
 bell below them, both from the sheet's fourth cell.
 
+The **plumeria's tuft** (`PALM_PLUMERIA`, `tree_crown_plumeria`) sits on the blunt end of each of
+its branches, as a Joshua tree's rosette does: 13 big oblong leaves spread up and out on a short
+stub, and two or three clusters of flowers over them, each a card of four white flowers with
+yellow throats held nearly flat and tipped up a little, as plumeria flowers face the sky.
+
 ### Seasons
 
 Autumn and blossom sets are separate blocks: `tree_leaves_<species>_autumn`, and
@@ -195,8 +201,9 @@ blocks. It works in three steps:
    tree would have no leaves at all; the action bar then says there is no room for its trunk.
    Clicking a ground cover plants through it: the trunk replaces the cover and stands on the
    ground, where it would otherwise stand a block up, on top of a one-pixel layer.
-3. **Place.** Logs first, then leaves, then moss, so each has what it hangs from. If anything was
-   pruned to fit, the action bar says how many blocks were cut back.
+3. **Place.** Logs first, then leaves, then moss, then a ground cover (a cherry's fallen
+   petals), so each has what it hangs from. If anything was pruned to fit, the action bar says
+   how many blocks were cut back.
 
 In the open the tree leans and reaches the way the player looks (the yaw, not the nearest
 facing). Stand on a sidewalk facing the road and the tree arches over the road. Sneak and
@@ -245,15 +252,15 @@ That idea comes from Biomes O' Plenty's generator builders (see Decisions).
 
 | Shape | How it grows | Presets |
 |---|---|---|
-| Profile | Straight trunk, crown radius from a profile of height (rounded bottom, pointed top) | cypress, ginkgo, poplar, sweetgum, hornbeam, arborvitae, Colorado blue spruce, coast redwood, Douglas fir (a cone) |
-| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum, paper birch, Japanese maple, Scots pine, European beech, old English oak, camphor, California sycamore (several stems), blue gum, avocado, olive (several stems), the three apples, mulberry |
+| Profile | Straight trunk, crown radius from a profile of height (rounded bottom, pointed top) | cypress, ginkgo, poplar, sweetgum, hornbeam, arborvitae, Colorado blue spruce, coast redwood, Douglas fir (a cone), southern magnolia |
+| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum, paper birch, Japanese maple, Scots pine, European beech, old English oak, camphor, California sycamore (several stems), blue gum, avocado, olive (several stems), the three apples, mulberry, sugar maple, white willow, mahogany, crape myrtle (stems from the foot), Chinese chestnut, trident maple, dwarf jacaranda, the three cherries |
 | Palm | Sideways offset grows with the square of the height, so the trunk curves; crown on the top log | fan palm, leaning feather palm, queen palm, cabbage palm, Canary Island date palm, coconut palm, king palm |
-| Head | Clear trunk and a clipped ball | ball-head plane, orange, lemon, lime, grapefruit |
+| Head | Clear trunk and a clipped ball | ball-head plane, orange, lemon, lime, grapefruit, dwarf crape myrtle |
 | Box | Clear trunk and a box crown, wide across the facing | pleached linden: a row joins into a hedge on stilts |
 | Pollard | Stout trunk cut back to knuckles, a tuft on each | pollarded plane |
 | Tiered | Tall trunk; above a clear stretch, a whorl of level limbs every two or three blocks, each tipped with a flat pad, shorter toward the top, each whorl turned from the last | eastern white pine |
 | Giant | A trunk three blocks across, straight up; short stout limbs in turned layers above a long clear stretch, each with a clump | giant sequoia |
-| Branching | A trunk forking again and again into short angular arms, a rosette on every end | Joshua tree, young Joshua tree |
+| Branching | A trunk forking again and again into short angular arms, a rosette on every end | Joshua tree, young Joshua tree, plumeria |
 | Gnarled | A squat trunk and limbs that wander, turning at every step and climbing or sagging, some bare deadwood | Great Basin bristlecone pine |
 | Clump | A stem with a crown on top, and younger, shorter suckers from the same foot, each with its own crown | banana |
 
@@ -347,6 +354,42 @@ tree shows it:
   out before they rise. Two stems side by side are joined by the log kit at every height, which
   read as a ladder.
 
+Ten ornamental trees and three flowering cherries came last (presets 52 to 64):
+
+| # | Preset | Shape | Wood | Leaves |
+|---|---|---|---|---|
+| 52 | Sugar maple | Limb: a broad, dense oval crown | `sugarmaple` (furrowed grey) | `sugarmaple` (big five-lobed leaves), `_autumn` (orange-red) |
+| 53 | Southern magnolia | Profile: a dense pyramid to oval nearly to the ground | `magnolia` (smooth grey) | `magnolia` (big glossy dark leaves, a few turned to show their rusty undersides, big white cup flowers) |
+| 54 | White willow | Limb: upright and broad, irregular, not weeping | `willow` (the weeping willow's) | `whitewillow` (narrow silvery leaves) |
+| 55 | West Indies mahogany | Limb: a tall straight trunk, a broad umbrella | `mahogany` (dark red-brown, furrowed) | `mahogany` (small pinnate leaves) |
+| 56 | Crape myrtle | Limb, four or five stems from the foot: a vase | `crapemyrtle` (mottled pink-tan and grey) | `crapemyrtle` (crinkled pink panicles over small leaves) |
+| 57 | Dwarf crape myrtle | Head: a ball of flowers two or three blocks high | `crapemyrtle` | `crapemyrtle` |
+| 58 | Chinese chestnut | Limb: low, broad, rounded, spreading | `chestnut` | `chestnut` (spiny green burs) |
+| 59 | Trident maple | Limb: small and rounded | `tridentmaple` (grey peeling to orange-brown) | `tridentmaple` (three-lobed), `_autumn` |
+| 60 | Dwarf jacaranda | Limb: a jacaranda's umbrella three to five blocks high | `jacaranda` | `jacaranda_blossom` |
+| 61 | Plumeria | Branching: thick blunt grey branches like a candelabra | `plumeria` (smooth, succulent, ringed) | `tree_crown_plumeria` |
+| 62 | Yoshino cherry | Limb: a wide spreading umbrella on a short trunk | `cherry` (glossy dark red-brown, banded with lenticels) | `cherry_yoshino` (pale blush) |
+| 63 | Kanzan cherry | Limb: a more upright vase | `cherry` | `cherry_kanzan` (deeper pink pom-poms) |
+| 64 | Weeping cherry | Limb, weeping leaves | `cherry` | `cherry_weeping` (`WEEPING`: curtains of blossom) |
+
+- **The cherries' blossom** is a cloud of small five-petalled flowers (or, for the Kanzan, full
+  pom-poms of them) over a pink underlayer, so the gaps between flowers are blossom and not sky,
+  layered from the palest petal to a deeper pink at each heart, with a few rose anthers and
+  hardly a leaf. The pinks are a little more saturated than a petal is: Minecraft shades a side
+  face to 60-80%, and the palest blush turned a dusty mauve there.
+- **Fallen petals.** A preset may scatter a ground cover under its crown (`ground`): in a share
+  of the cells at the foot whose column has leaves over it, never the trunk's, only where the cell
+  is open and something solid lies under it. The cherries scatter `ground_cherry_petals`, a
+  Trees & Plants block in its own right (`gen_park_plantings.py`): one cutout face a quarter of a
+  pixel over the ground, blush petals on nothing so the grass shows. It is a `TreePlan.Kind.COVER`
+  part, placed after everything else, and not felled with the tree.
+- **The crape myrtle's stems rise from round the foot** (`footStems`): each from the cell beside
+  the first stem, stepping a block straight out before it rises and once more halfway up, so the
+  stems fan into a vase. Rising from the first stem's side, they stood beside it and the log kit
+  joined them at every height, a ladder (the banana's suckers do the same).
+- **The white willow** shares the weeping willow's bark: they are both willows, and it is the
+  crown, upright rather than weeping, that tells them apart.
+
 Two of the West's trees were fixed with them:
 
 - **Blue gum**: three or four long limbs (reach 4-6) from high up, fanned wide (spread 2.8), and
@@ -398,7 +441,8 @@ Broken by a player, a tree log fells what it alone held up (`BlockTreeLog.remove
 A giant sequoia stands on thirteen logs (its foot and buttress roots), each holding the tree up
 on its own: it comes down only when the last of them is cut. A banana's suckers each stand on
 their own piece of the corm, so cutting the main stem leaves them, as cutting a real one does.
-`TreeFellingTest` cuts every log at the foot, and fells from each, for that reason.
+`TreeFellingTest` cuts every log at the foot, and fells from each, for that reason. A cherry's
+fallen petals are a ground cover, not part of the tree, and stay.
 
 The searches are pure functions over a `Cells` view (`TreeFellingTest`).
 
@@ -744,7 +788,9 @@ They are specimens: a street of them costs what a street of three times as many 
 The ten trees of the West added about 21,100 (one of every preset: 93,900): the giant sequoia
 8,500, over half of it trunk; the Joshua tree 1,800; each palm a few hundred. The eleven fruit
 trees added about 13,000 (one of every preset: 105,900), the citrus a few hundred each and the
-avocado and mulberry about 2,400; their fruit is in the leaves' sprites and costs nothing. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
+avocado and mulberry about 2,400; their fruit is in the leaves' sprites and costs nothing. The
+ornamental trees and cherries added about 31,900 more (one of every preset: 137,800): the sugar
+maple and mahogany about 4,000 each, the cherries 3,100 to 3,400, the dwarf crape myrtle 229. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
 - **Sheeted leaves.** Every leaf type but clipped draws a leaf sheet on each open face (one quad,
   facing out, 1 px inside the face), a tuft card past each open side and the top, and one card
   inside, where they had drawn six interior cards, three fringe cards per open face and cover

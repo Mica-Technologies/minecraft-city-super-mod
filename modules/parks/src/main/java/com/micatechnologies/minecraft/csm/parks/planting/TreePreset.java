@@ -309,7 +309,97 @@ public enum TreePreset {
   MULBERRY("mulberry", Shape.LIMB, TreeWood.MULBERRY, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
       "tree_leaves_mulberry", null,
       p -> p.trunk(2, 3).lean(0, 1).limbs(5, 6).reach(2, 3).rise(2, 3).cluster(2.5, 2.0)
-          .clearance(2).spread(2.8).fork(0.3));
+          .clearance(2).spread(2.8).fork(0.3)),
+
+  // GitHub #250: ornamental trees.
+
+  /** Sugar maple: the big street and forest maple, a broad dense oval crown, five-lobed leaves. */
+  SUGAR_MAPLE("sugarmaple", Shape.LIMB, TreeWood.SUGAR_MAPLE, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_sugarmaple", null,
+      p -> p.trunk(3, 4).lean(0, 1).limbs(5, 6).reach(2, 3).rise(5, 7).cluster(2.8, 3.0)
+          .clearance(3).spread(2.2).fork(0.5)),
+  /**
+   * Southern magnolia: an evergreen of big glossy dark leaves, rusty beneath, in a dense
+   * pyramid to oval nearly to the ground, big white cup flowers over its outside.
+   */
+  MAGNOLIA("magnolia", Shape.PROFILE, TreeWood.MAGNOLIA, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_magnolia", null,
+      p -> p.trunk(2, 3).height(12, 15).cluster(3.6, 0)),
+  /** White willow: upright and broad, an irregular crown of narrow silvery leaves, not weeping. */
+  WHITE_WILLOW("whitewillow", Shape.LIMB, TreeWood.WILLOW, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_whitewillow", null,
+      p -> p.trunk(3, 4).lean(0, 1).limbs(5, 6).reach(2, 4).rise(5, 7).cluster(2.4, 2.4)
+          .clearance(4).spread(1.8).fork(0.6)),
+  /**
+   * West Indies mahogany: a tall straight trunk of dark reddish-brown furrowed bark and a broad,
+   * umbrella-like crown of small pinnate leaves.
+   */
+  MAHOGANY("mahogany", Shape.LIMB, TreeWood.MAHOGANY, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
+      "tree_leaves_mahogany", null,
+      p -> p.trunk(7, 9).lean(0, 1).limbs(5, 6).reach(4, 6).rise(2, 4).cluster(3.0, 1.8)
+          .clearance(7).spread(2.8).fork(0.4)),
+  /**
+   * Crape myrtle: three to five smooth, mottled, peeling stems from one foot in a vase, the crown
+   * covered in crinkled pink flowers.
+   */
+  CRAPE_MYRTLE("crapemyrtle", Shape.LIMB, TreeWood.CRAPE_MYRTLE, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_crapemyrtle", null,
+      p -> p.trunk(4, 5).lean(0, 1).limbs(4, 5).reach(1, 2).rise(2, 3).cluster(1.9, 2.0)
+          .clearance(3).spread(2.0).stems(4, 5).footStems()),
+  /** A dwarf crape myrtle: a shrubby ball of flowers two or three blocks high. */
+  DWARF_CRAPE_MYRTLE("crapemyrtledwarf", Shape.HEAD, TreeWood.CRAPE_MYRTLE, TreeLogWidth.THIN,
+      TreeLogWidth.THIN, "tree_leaves_crapemyrtle", null,
+      p -> p.trunk(1, 1).cluster(1.3, 1.3)),
+  /**
+   * Chinese chestnut: low, broad and rounded, spreading, long glossy leaves and spiny green burs
+   * dotted through the crown.
+   */
+  CHINESE_CHESTNUT("chinesechestnut", Shape.LIMB, TreeWood.CHESTNUT, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_chestnut", null,
+      p -> p.trunk(2, 3).lean(0, 1).limbs(5, 6).reach(3, 4).rise(2, 3).cluster(2.8, 1.9)
+          .clearance(3).spread(2.8).fork(0.5)),
+  /** Trident maple: a small rounded tree, three-lobed leaves, peeling orange-brown bark. */
+  TRIDENT_MAPLE("tridentmaple", Shape.LIMB, TreeWood.TRIDENT_MAPLE, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_tridentmaple", null,
+      p -> p.trunk(2, 3).lean(0, 1).limbs(4, 5).reach(2, 3).rise(2, 3).cluster(2.3, 1.9)
+          .clearance(2).spread(2.6).fork(0.4)),
+  /** A dwarf jacaranda: the jacaranda's purple umbrella on a tree three to five blocks high. */
+  DWARF_JACARANDA("dwarfjacaranda", Shape.LIMB, TreeWood.JACARANDA, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_jacaranda_blossom", null,
+      p -> p.trunk(2, 2).lean(0, 1).limbs(4, 5).reach(2, 3).rise(1, 2).cluster(2.2, 1.0)
+          .clearance(2).spread(2.6).fork(0.4)),
+  /**
+   * Plumeria (frangipani): thick, blunt grey branches forking like a candelabra, bare but for a
+   * tuft of big leaves and flowers on the end of each.
+   */
+  PLUMERIA("plumeria", Shape.BRANCHING, TreeWood.PLUMERIA, TreeLogWidth.MEDIUM,
+      TreeLogWidth.MEDIUM, "tree_crown_plumeria", null,
+      p -> p.trunk(2, 2).lean(0, 1).limbs(2, 3).reach(1, 1).rise(1, 2)),
+  /**
+   * Yoshino cherry (Somei-yoshino), the cherry of Japan's hanami and Washington's Tidal Basin: a
+   * short dark trunk, limbs arching out and a little up into a wide, spreading umbrella, a soft
+   * cloud of pale blush blossom with hardly a leaf, and its petals fallen on the ground beneath.
+   */
+  YOSHINO_CHERRY("cherryyoshino", Shape.LIMB, TreeWood.CHERRY, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_cherry_yoshino", null,
+      p -> p.trunk(2, 3).lean(0, 1).limbs(5, 6).reach(3, 5).rise(2, 3).cluster(3.0, 1.7)
+          .clearance(2).spread(2.8).fork(0.6).ground("ground_cherry_petals", 0.4)),
+  /**
+   * Kanzan cherry: a more upright vase of limbs carrying full pom-poms of double, deeper pink
+   * flowers.
+   */
+  KANZAN_CHERRY("cherrykanzan", Shape.LIMB, TreeWood.CHERRY, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_cherry_kanzan", null,
+      p -> p.trunk(2, 3).lean(0, 1).limbs(5, 6).reach(2, 3).rise(4, 5).cluster(2.5, 2.0)
+          .clearance(3).spread(2.0).fork(0.7).ground("ground_cherry_petals", 0.4)),
+  /**
+   * Weeping cherry (Shidare-zakura): limbs arching out and over, the blossom hanging from them
+   * in curtains of pink.
+   */
+  WEEPING_CHERRY("cherryweeping", Shape.LIMB, TreeWood.CHERRY, TreeLogWidth.THICK,
+      TreeLogWidth.MEDIUM, "tree_leaves_cherry_weeping", null,
+      p -> p.trunk(3, 4).lean(0, 1).limbs(5, 6).reach(2, 4).rise(2, 3).cluster(2.6, 1.8)
+          .clearance(3).spread(2.8).fork(0.4).ground("ground_cherry_petals", 0.35));
 
   /** The generator shapes. */
   public enum Shape {
@@ -360,6 +450,11 @@ public enum TreePreset {
   double layering;
   /** Palms: whether the trunk leans in one plane (along an axis), so its curve is smooth. */
   boolean planar;
+  /** Limbed trees: whether the extra stems rise from round the foot (a vase), not from it. */
+  boolean footStems;
+  /** A ground cover scattered under the crown (fallen petals), and the share of cells it takes. */
+  String groundCover;
+  double groundChance;
   /** Gnarled trees: the share of limbs that are bare deadwood. */
   double deadChance;
 
@@ -458,6 +553,17 @@ public enum TreePreset {
 
   private TreePreset planar() {
     planar = true;
+    return this;
+  }
+
+  private TreePreset footStems() {
+    footStems = true;
+    return this;
+  }
+
+  private TreePreset ground(String block, double chance) {
+    groundCover = block;
+    groundChance = chance;
     return this;
   }
 
