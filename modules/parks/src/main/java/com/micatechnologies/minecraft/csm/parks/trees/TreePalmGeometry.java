@@ -32,6 +32,9 @@ public final class TreePalmGeometry {
   static final double[] BOOT = {0, 8, 8, 16};
   /** The fourth cell, where a sheet has one: the coconut palm's coconuts. */
   static final double[] NUT = {8, 8, 16, 16};
+  /** The banana's fourth cell: the green hands above, the purple bell below. */
+  static final double[] HANDS = {8, 8, 16, 12};
+  static final double[] BELL = {8, 12, 16, 16};
 
   /** Where the fronds leave the boot, in sixteenths above the crown block's floor. */
   static final double FROND_BASE_Y = 7;
@@ -63,6 +66,10 @@ public final class TreePalmGeometry {
         return quads;
       case ROSETTE:
         rosette(quads, type, rng, variant, fancy);
+        return quads;
+      case PALM_BANANA:
+      case PALM_BANANA_FRUIT:
+        banana(quads, type, rng, variant, fancy, type == TreeLeafType.PALM_BANANA_FRUIT);
         return quads;
       default:
         break;
@@ -299,19 +306,78 @@ public final class TreePalmGeometry {
     }
   }
 
+  /**
+   * A banana plant's crown: the sheaths running up out of the pseudostem, huge paddle leaves
+   * arching out and down from its top, the youngest still rolled and standing up, a dry one or
+   * two hanging down the stem. A fruiting crown adds its bunch: the stalk arching out of the top
+   * and down, the green hands hanging beside the stem, and the purple bell at the stalk's end.
+   */
+  private static void banana(List<TreeLogGeometry.Quad> quads, TreeLeafType type, Random rng,
+      int variant, boolean fancy, boolean fruit) {
+    double r = type.bootRadius;
+    prism(quads, 8, r, r - 0.8, 0, 12, BOOT);
+    cap(quads, 8, r - 0.8, 12, BOOT);
+    int count = fancy ? type.fronds : type.fronds * 3 / 4;
+    double turn = variant * 0.9 + rng.nextDouble();
+    for (int i = 0; i < count; i++) {
+      double yaw = turn + i * 2 * Math.PI / count + (rng.nextDouble() - 0.5) * 0.4;
+      double elevation = Math.toRadians(42 + rng.nextDouble() * 32);
+      double length = type.frondLength * (0.8 + rng.nextDouble() * 0.3);
+      arch(quads, new double[]{8 + Math.cos(yaw) * 1.5, 9 + rng.nextDouble() * 4,
+          8 + Math.sin(yaw) * 1.5}, yaw, elevation, 1.5 + rng.nextDouble() * 0.6, length, 4,
+          type.frondWidth, (rng.nextDouble() - 0.5) * 0.6, LIVE);
+    }
+    // The youngest leaf, still rolled, standing straight up.
+    strip(quads, new double[][]{{8, 11, 8}, {8.3, 22, 8.2}, {8.6, 30, 8.4}},
+        side(rng.nextDouble() * Math.PI, 0), 3, LIVE);
+    int dry = fancy ? 1 + rng.nextInt(2) : 1;
+    for (int i = 0; i < dry; i++) {
+      double yaw = rng.nextDouble() * 2 * Math.PI;
+      double dx = Math.cos(yaw);
+      double dz = Math.sin(yaw);
+      strip(quads, new double[][]{{8 + dx * 2, 7, 8 + dz * 2}, {8 + dx * 5, -3, 8 + dz * 5},
+          {8 + dx * 5.5, -24 - rng.nextDouble() * 6, 8 + dz * 5.5}},
+          side(yaw, (rng.nextDouble() - 0.5) * 0.3), type.frondWidth * 0.5, DEAD);
+    }
+    if (!fruit) {
+      return;
+    }
+    double yaw = turn + Math.PI / count;
+    double dx = Math.cos(yaw);
+    double dz = Math.sin(yaw);
+    double out = r + 6;
+    double cx = 8 + dx * out;
+    double cz = 8 + dz * out;
+    // The stalk, out of the top of the crown and over, down to the bunch.
+    strip(quads, new double[][]{{8 + dx, 13, 8 + dz}, {8 + dx * (out - 2), 12, 8 + dz * (out - 2)},
+        {cx, 4, cz}}, side(yaw, 0), 2.5, BOOT);
+    prismAt(quads, 8, cx, cz, 2.8, 4.3, -14, 3, HANDS);
+    capAt(quads, 8, cx, cz, 4.3, 3, true, HANDS);
+    capAt(quads, 8, cx, cz, 2.8, -14, false, HANDS);
+    prismAt(quads, 4, cx, cz, 0.6, 0.6, -18, -14, BOOT);
+    prismAt(quads, 8, cx, cz, 0.3, 2.3, -26, -18, BELL);
+    capAt(quads, 8, cx, cz, 2.3, -18, true, BELL);
+  }
+
   /** A tapering n-sided tube from {@code y0} to {@code y1}, facing out, the region round it. */
   static void prism(List<TreeLogGeometry.Quad> quads, int sides, double r0, double r1,
       double y0, double y1, double[] region) {
+    prismAt(quads, sides, 8, 8, r0, r1, y0, y1, region);
+  }
+
+  /** {@link #prism} round the vertical line through {@code (cx, cz)}. */
+  static void prismAt(List<TreeLogGeometry.Quad> quads, int sides, double cx, double cz,
+      double r0, double r1, double y0, double y1, double[] region) {
     for (int i = 0; i < sides; i++) {
       double a0 = 2 * Math.PI * i / sides;
       double a1 = 2 * Math.PI * (i + 1) / sides;
       double u0 = region[0] + (region[2] - region[0]) * i / sides;
       double u1 = region[0] + (region[2] - region[0]) * (i + 1) / sides;
       double[][] corners = {
-          {8 + Math.cos(a0) * r0, y0, 8 + Math.sin(a0) * r0},
-          {8 + Math.cos(a0) * r1, y1, 8 + Math.sin(a0) * r1},
-          {8 + Math.cos(a1) * r1, y1, 8 + Math.sin(a1) * r1},
-          {8 + Math.cos(a1) * r0, y0, 8 + Math.sin(a1) * r0},
+          {cx + Math.cos(a0) * r0, y0, cz + Math.sin(a0) * r0},
+          {cx + Math.cos(a0) * r1, y1, cz + Math.sin(a0) * r1},
+          {cx + Math.cos(a1) * r1, y1, cz + Math.sin(a1) * r1},
+          {cx + Math.cos(a1) * r0, y0, cz + Math.sin(a1) * r0},
       };
       double am = (a0 + a1) / 2;
       oneSided(quads, corners, new double[][]{{u0, region[3]}, {u0, region[1]}, {u1, region[1]},
@@ -322,6 +388,12 @@ public final class TreePalmGeometry {
   /** The flat top of a prism: a fan of quads from the centre. */
   static void cap(List<TreeLogGeometry.Quad> quads, int sides, double r, double y,
       double[] region) {
+    capAt(quads, sides, 8, 8, r, y, true, region);
+  }
+
+  /** {@link #cap} round {@code (cx, cz)}, facing up or down. */
+  static void capAt(List<TreeLogGeometry.Quad> quads, int sides, double cx, double cz, double r,
+      double y, boolean up, double[] region) {
     double cu = (region[0] + region[2]) / 2;
     double cv = (region[1] + region[3]) / 2;
     double hu = (region[2] - region[0]) / 2;
@@ -329,14 +401,14 @@ public final class TreePalmGeometry {
     for (int i = 0; i < sides; i += 2) {
       double[][] corners = new double[4][];
       double[][] uv = new double[4][];
-      corners[0] = new double[]{8, y, 8};
+      corners[0] = new double[]{cx, y, cz};
       uv[0] = new double[]{cu, cv};
       for (int k = 0; k < 3; k++) {
         double a = 2 * Math.PI * (i + k) / sides;
-        corners[k + 1] = new double[]{8 + Math.cos(a) * r, y, 8 + Math.sin(a) * r};
+        corners[k + 1] = new double[]{cx + Math.cos(a) * r, y, cz + Math.sin(a) * r};
         uv[k + 1] = new double[]{cu + Math.cos(a) * hu, cv + Math.sin(a) * hv};
       }
-      oneSided(quads, corners, uv, new double[]{0, 1, 0});
+      oneSided(quads, corners, uv, new double[]{0, up ? 1 : -1, 0});
     }
   }
 

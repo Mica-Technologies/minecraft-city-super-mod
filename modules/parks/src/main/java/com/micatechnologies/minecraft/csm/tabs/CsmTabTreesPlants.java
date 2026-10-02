@@ -226,6 +226,36 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockTreeLog("tree_log_bluegum_medium", TreeWood.BLUE_GUM, TreeLogWidth.MEDIUM));
     initTabBlock(new BlockTreeLog("tree_log_bluegum_thick", TreeWood.BLUE_GUM, TreeLogWidth.THICK));
     initTabBlock(new BlockTreeLog("tree_log_bluegum_full", TreeWood.BLUE_GUM, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_citrus_twig", TreeWood.CITRUS, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_citrus_thin", TreeWood.CITRUS, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_citrus_medium", TreeWood.CITRUS, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_citrus_thick", TreeWood.CITRUS, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_citrus_full", TreeWood.CITRUS, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_avocado_twig", TreeWood.AVOCADO, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_avocado_thin", TreeWood.AVOCADO, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_avocado_medium", TreeWood.AVOCADO, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_avocado_thick", TreeWood.AVOCADO, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_avocado_full", TreeWood.AVOCADO, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_olive_twig", TreeWood.OLIVE, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_olive_thin", TreeWood.OLIVE, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_olive_medium", TreeWood.OLIVE, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_olive_thick", TreeWood.OLIVE, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_olive_full", TreeWood.OLIVE, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_apple_twig", TreeWood.APPLE, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_apple_thin", TreeWood.APPLE, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_apple_medium", TreeWood.APPLE, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_apple_thick", TreeWood.APPLE, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_apple_full", TreeWood.APPLE, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_mulberry_twig", TreeWood.MULBERRY, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_mulberry_thin", TreeWood.MULBERRY, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_mulberry_medium", TreeWood.MULBERRY, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_mulberry_thick", TreeWood.MULBERRY, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_mulberry_full", TreeWood.MULBERRY, TreeLogWidth.FULL));
+    initTabBlock(new BlockTreeLog("tree_log_banana_twig", TreeWood.BANANA, TreeLogWidth.TWIG));
+    initTabBlock(new BlockTreeLog("tree_log_banana_thin", TreeWood.BANANA, TreeLogWidth.THIN));
+    initTabBlock(new BlockTreeLog("tree_log_banana_medium", TreeWood.BANANA, TreeLogWidth.MEDIUM));
+    initTabBlock(new BlockTreeLog("tree_log_banana_thick", TreeWood.BANANA, TreeLogWidth.THICK));
+    initTabBlock(new BlockTreeLog("tree_log_banana_full", TreeWood.BANANA, TreeLogWidth.FULL));
 
     // Leaves: one block a species and season, then the palm crowns and the hanging moss. Also
     // written by gen_trees.py.
@@ -309,6 +339,30 @@ public class CsmTabTreesPlants extends CsmTab {
         "csm:blocks/parks/leaves_bristlecone"));
     initTabBlock(new BlockTreeLeaves("tree_leaves_bluegum", TreeLeafType.AIRY,
         "csm:blocks/parks/leaves_bluegum"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_citrus", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_citrus"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_citrus_orange", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_citrus_orange"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_citrus_lemon", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_citrus_lemon"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_citrus_lime", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_citrus_lime"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_citrus_grapefruit", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_citrus_grapefruit"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_avocado", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_avocado"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_olive", TreeLeafType.AIRY,
+        "csm:blocks/parks/leaves_olive"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_apple", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_apple"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_apple_honeycrisp", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_apple_honeycrisp"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_apple_granny", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_apple_granny"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_apple_golden", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_apple_golden"));
+    initTabBlock(new BlockTreeLeaves("tree_leaves_mulberry", TreeLeafType.BROADLEAF,
+        "csm:blocks/parks/leaves_mulberry"));
     initTabBlock(new BlockTreeLeaves("tree_crown_palm_fan", TreeLeafType.PALM_FAN,
         "csm:blocks/parks/palm_crown_fan"));
     initTabBlock(new BlockTreeLeaves("tree_crown_palm_fan_skirt", TreeLeafType.PALM_FAN_SKIRT,
@@ -327,6 +381,10 @@ public class CsmTabTreesPlants extends CsmTab {
         "csm:blocks/parks/palm_crown_king"));
     initTabBlock(new BlockTreeLeaves("tree_crown_joshua", TreeLeafType.ROSETTE,
         "csm:blocks/parks/palm_crown_joshua"));
+    initTabBlock(new BlockTreeLeaves("tree_crown_banana", TreeLeafType.PALM_BANANA,
+        "csm:blocks/parks/palm_crown_banana"));
+    initTabBlock(new BlockTreeLeaves("tree_crown_banana_fruit", TreeLeafType.PALM_BANANA_FRUIT,
+        "csm:blocks/parks/palm_crown_banana"));
     initTabBlock(new BlockHangingMoss("spanish_moss"));
     initTabBlock(new BlockHangingMoss("willow_strands"));
 

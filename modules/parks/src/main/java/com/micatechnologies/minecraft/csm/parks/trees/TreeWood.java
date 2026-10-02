@@ -44,7 +44,14 @@ public enum TreeWood {
   DOUGLAS_FIR("douglasfir"),
   BRISTLECONE("bristlecone"),
   SYCAMORE("sycamore"),
-  BLUE_GUM("bluegum");
+  BLUE_GUM("bluegum"),
+  CITRUS("citrus"),
+  AVOCADO("avocado"),
+  OLIVE("olive"),
+  APPLE("apple"),
+  MULBERRY("mulberry"),
+  /** A banana's pseudostem: not wood at all, but its leaf sheaths rolled one round another. */
+  BANANA("banana");
 
   private final String id;
 

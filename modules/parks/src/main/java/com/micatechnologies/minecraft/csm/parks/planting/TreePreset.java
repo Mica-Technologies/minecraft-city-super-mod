@@ -208,7 +208,7 @@ public enum TreePreset {
   /** Coconut palm: a slender grey ringed trunk curving out from a swollen foot, drooping fronds. */
   COCONUT_PALM("coconutpalm", Shape.PALM, TreeWood.PALM_GREY, TreeLogWidth.THIN,
       TreeLogWidth.THIN, "tree_crown_palm_coconut", null,
-      p -> p.height(9, 13).lean(2, 3).base(TreeLogWidth.MEDIUM).planar()),
+      p -> p.height(9, 13).lean(1, 2).base(TreeLogWidth.MEDIUM).planar()),
   /** King palm: a slender smooth grey trunk, a bright green crownshaft and arching fronds. */
   KING_PALM("kingpalm", Shape.PALM, TreeWood.PALM_GREY, TreeLogWidth.THIN, TreeLogWidth.THIN,
       "tree_crown_palm_king", null,
@@ -239,16 +239,81 @@ public enum TreePreset {
           .clearance(4).spread(2.2).stems(2, 3)),
   /**
    * Blue gum eucalyptus, planted all over California: very tall and straight, bark peeling in
-   * long streaks, and an open, airy crown of hanging sickle leaves high up.
+   * long streaks, a few long limbs rising steeply from high up and diverging, and an open crown
+   * of hanging sickle leaves in clumps. Few limbs and no forked leader, or the steep limbs stand
+   * side by side like the rungs of a ladder.
    */
   BLUE_GUM("bluegum", Shape.LIMB, TreeWood.BLUE_GUM, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
       "tree_leaves_bluegum", null,
-      p -> p.trunk(9, 12).lean(0, 1).limbs(5, 6).reach(3, 5).rise(6, 10).cluster(1.8, 1.8)
-          .clearance(9).spread(2.2).fork(0.7));
+      p -> p.trunk(10, 13).lean(0, 1).limbs(3, 4).reach(4, 6).rise(5, 8).cluster(2.0, 1.7)
+          .clearance(10).spread(2.8).fork(0.15)),
+
+  // GitHub #250: fruit trees. Each bears its fruit on its leaves block (a fruiting set), so the
+  // fruit shows wherever the crown does, at no cost in quads.
+
+  /**
+   * Orange: a small, dense, rounded evergreen on a short trunk, glossy dark leaves, oranges all
+   * over it. Citrus are the head shape: a grove's trees are a dome nearly to the ground.
+   */
+  ORANGE("orange", Shape.HEAD, TreeWood.CITRUS, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_citrus_orange", null,
+      p -> p.trunk(1, 2).cluster(2.3, 2.3)),
+  /** Lemon: a little smaller than the orange, yellow lemons. */
+  LEMON("lemon", Shape.HEAD, TreeWood.CITRUS, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_citrus_lemon", null,
+      p -> p.trunk(1, 2).cluster(2.1, 2.1)),
+  /** Lime: the smallest citrus, small green limes. */
+  LIME("lime", Shape.HEAD, TreeWood.CITRUS, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_citrus_lime", null,
+      p -> p.trunk(1, 1).cluster(2.0, 2.0)),
+  /** Grapefruit: the largest citrus, on a taller trunk, big pale yellow-pink fruit. */
+  GRAPEFRUIT("grapefruit", Shape.HEAD, TreeWood.CITRUS, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_leaves_citrus_grapefruit", null,
+      p -> p.trunk(2, 2).cluster(2.7, 2.7)),
+  /** Avocado: taller, a broad dense crown of big leathery leaves, dark fruit hanging inside. */
+  AVOCADO("avocado", Shape.LIMB, TreeWood.AVOCADO, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
+      "tree_leaves_avocado", null,
+      p -> p.trunk(2, 3).lean(0, 1).limbs(5, 5).reach(1, 3).rise(4, 6).cluster(2.4, 2.3)
+          .clearance(2).spread(2.0).fork(0.4)),
+  /**
+   * Olive: a short, gnarled, twisted grey trunk, often split into several from the foot, and an
+   * open, silvery grey-green crown.
+   */
+  OLIVE("olive", Shape.LIMB, TreeWood.OLIVE, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
+      "tree_leaves_olive", null,
+      p -> p.trunk(3, 3).lean(1, 2).limbs(4, 5).reach(2, 3).rise(2, 3).cluster(2.2, 1.5)
+          .clearance(2).spread(2.6).stems(2, 3)),
+  /**
+   * Banana: not a tree. A pseudostem of leaf sheaths with a crown of huge torn paddle leaves and
+   * a hanging bunch with its purple bell, and younger suckers round it from the same corm.
+   */
+  BANANA("banana", Shape.CLUMP, TreeWood.BANANA, TreeLogWidth.MEDIUM, TreeLogWidth.THIN,
+      "tree_crown_banana_fruit", "tree_crown_banana",
+      p -> p.height(3, 4).stems(2, 3)),
+  /** Honeycrisp apple: an orchard tree, short trunk and wide low limbs, red-blushed apples. */
+  HONEYCRISP_APPLE("applehoneycrisp", Shape.LIMB, TreeWood.APPLE, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_apple_honeycrisp", null,
+      p -> p.trunk(2, 2).lean(0, 1).limbs(4, 5).reach(2, 3).rise(2, 3).cluster(1.8, 1.4)
+          .clearance(2).spread(2.8)),
+  /** Granny Smith apple: the same orchard tree, green apples. */
+  GRANNY_SMITH_APPLE("applegranny", Shape.LIMB, TreeWood.APPLE, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_apple_granny", null,
+      p -> p.trunk(2, 2).lean(0, 1).limbs(4, 5).reach(2, 3).rise(2, 3).cluster(1.8, 1.4)
+          .clearance(2).spread(2.8)),
+  /** Golden Delicious apple: the same orchard tree, yellow apples. */
+  GOLDEN_DELICIOUS_APPLE("applegolden", Shape.LIMB, TreeWood.APPLE, TreeLogWidth.MEDIUM,
+      TreeLogWidth.THIN, "tree_leaves_apple_golden", null,
+      p -> p.trunk(2, 2).lean(0, 1).limbs(4, 5).reach(2, 3).rise(2, 3).cluster(1.8, 1.4)
+          .clearance(2).spread(2.8)),
+  /** Mulberry: a broad, rounded, dense crown of big glossy leaves, dark and red berries. */
+  MULBERRY("mulberry", Shape.LIMB, TreeWood.MULBERRY, TreeLogWidth.THICK, TreeLogWidth.MEDIUM,
+      "tree_leaves_mulberry", null,
+      p -> p.trunk(2, 3).lean(0, 1).limbs(5, 6).reach(2, 3).rise(2, 3).cluster(2.5, 2.0)
+          .clearance(2).spread(2.8).fork(0.3));
 
   /** The generator shapes. */
   public enum Shape {
-    PROFILE, LIMB, PALM, HEAD, BOX, POLLARD, TIERED, GIANT, BRANCHING, GNARLED
+    PROFILE, LIMB, PALM, HEAD, BOX, POLLARD, TIERED, GIANT, BRANCHING, GNARLED, CLUMP
   }
 
   public final String id;

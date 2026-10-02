@@ -39,14 +39,17 @@ class TreeRenderBudgetTest {
    * trees of the West and its deserts (GitHub #250, giant sequoia to blue gum) added about 21,100:
    * the giant sequoia is 8,500 of it, over half its trunk three blocks across (full-width cubes
    * are cheap; the thick corner logs that round it are not, so they stop a quarter of the way
-   * up), another specimen tree; the palms and the young Joshua tree are a few hundred each. A
+   * up), another specimen tree; the palms and the young Joshua tree are a few hundred each. The
+   * eleven fruit trees that followed added about 13,000 (the citrus are clipped heads of a few
+   * hundred quads; the avocado and mulberry, the biggest, about 2,400; the fruit itself is in
+   * the leaves' sprites and costs nothing), and the blue gum's fix took 900 off it. A
    * preset may grow
    * 15% past this before the test fails; beyond that, look at what grew, and raise the number
    * here only if it earns its cost.
    */
   private static final Map<String, Integer> BUDGET = new HashMap<>();
   /** One of every preset together. */
-  private static final int TOTAL_BUDGET = 98000;
+  private static final int TOTAL_BUDGET = 110000;
 
   static {
     String[] rows = {"liveoak 3832", "elm 3210", "plane 3588", "honeylocust 1670", "cypress 188",
@@ -57,8 +60,10 @@ class TreeRenderBudgetTest {
         "cabbagepalm 439", "japanesemaple 1664", "scotspine 1368", "beech 3951",
         "coastredwood 2455", "whitepine 8771", "englishoak 8899", "camphor 9273",
         "giantsequoia 8536", "joshuatree 1769", "youngjoshua 332", "canarypalm 687",
-        "coconutpalm 433", "kingpalm 222", "douglasfir 2284", "bristlecone 930",
-        "sycamore 2853", "bluegum 3031"};
+        "coconutpalm 398", "kingpalm 222", "douglasfir 2284", "bristlecone 930",
+        "sycamore 2853", "bluegum 2122", "orange 552", "lemon 435", "lime 322",
+        "grapefruit 604", "avocado 2466", "olive 1858", "banana 404", "applehoneycrisp 1323",
+        "applegranny 1323", "applegolden 1323", "mulberry 2397"};
     for (String row : rows) {
       String[] kv = row.split(" ");
       BUDGET.put(kv[0], Integer.parseInt(kv[1]));
@@ -78,7 +83,13 @@ class TreeRenderBudgetTest {
     if (block.startsWith("tree_crown_joshua")) {
       return TreeLeafType.ROSETTE;
     }
-    if (block.contains("bluegum")) {
+    if (block.startsWith("tree_crown_banana_fruit")) {
+      return TreeLeafType.PALM_BANANA_FRUIT;
+    }
+    if (block.startsWith("tree_crown_banana")) {
+      return TreeLeafType.PALM_BANANA;
+    }
+    if (block.contains("bluegum") || block.contains("olive")) {
       return TreeLeafType.AIRY;
     }
     if (block.startsWith("tree_crown_palm_cabbage_skirt")) {

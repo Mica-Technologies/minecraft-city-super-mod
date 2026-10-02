@@ -47,7 +47,8 @@ class TreeFellingTest {
       TreePlan plan = TreeGenerators.grow(preset, EnumFacing.EAST, new Random(5));
       Map<BlockPos, TreeFelling.Kind> world = world(plan);
       // Cut through the whole foot: a giant sequoia's trunk is many logs across, and only the
-      // last of them cut brings it down. Every other tree has one log there.
+      // last of them cut brings it down; a banana's suckers each stand on their own piece of the
+      // corm. Every other tree has one log there.
       Set<BlockPos> foot = new HashSet<>();
       for (BlockPos p : world.keySet()) {
         if (p.getY() == 0 && world.get(p) == TreeFelling.Kind.LOG) {
@@ -55,8 +56,10 @@ class TreeFellingTest {
         }
       }
       foot.forEach(world::remove);
-      BlockPos cut = BlockPos.ORIGIN;
-      Set<BlockPos> logs = TreeFelling.unsupportedLogs(cells(world), cut);
+      Set<BlockPos> logs = new HashSet<>();
+      for (BlockPos cut : foot) {
+        logs.addAll(TreeFelling.unsupportedLogs(cells(world), cut));
+      }
       assertEquals(count(world, TreeFelling.Kind.LOG), logs.size(),
           preset + ": every log above the cut should fall");
       logs.forEach(world::remove);

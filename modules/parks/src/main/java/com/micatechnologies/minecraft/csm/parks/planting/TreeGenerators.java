@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 
 /**
  * Grows a {@link TreePreset} into a {@link TreePlan}, relative to the base of the trunk at the
- * origin, into the room a {@link TreeSpace} gives it. Ten shapes cover the catalogue:
+ * origin, into the room a {@link TreeSpace} gives it. Eleven shapes cover the catalogue:
  *
  * <ul>
  *   <li><b>Profile</b>: a straight trunk and a crown whose radius at each height comes from a
@@ -39,6 +39,8 @@ import net.minecraft.util.math.BlockPos;
  *       end of each. Joshua tree.</li>
  *   <li><b>Gnarled</b>: a squat trunk and twisting limbs that wander up and down, some bare
  *       deadwood, the rest tipped with foxtails. Bristlecone pine.</li>
+ *   <li><b>Clump</b>: a stem with a crown on top and younger, shorter ones beside it from the
+ *       same foot. Banana.</li>
  * </ul>
  *
  * <p><b>Growing into the room there is.</b> A street tree next to a building has grown away from
@@ -119,6 +121,9 @@ public final class TreeGenerators {
         break;
       case GNARLED:
         g.gnarled(heading);
+        break;
+      case CLUMP:
+        g.clump();
         break;
       default:
         g.head(heading);
@@ -771,9 +776,9 @@ public final class TreeGenerators {
       int[] offset = {0};
       List<BlockPos> trunk = trunk(height, settled[0], leanFor, y -> {
         double t = (y + 1) / (double) height;
-        // A planar lean is spread more evenly up the trunk, so its steps do not bunch into
-        // a kink.
-        double curve = p.planar ? Math.pow(t, 1.4) * 1.15 : t * t * 1.25;
+        // A planar lean is spread evenly up the trunk, one step every few blocks, so it reads
+        // as one gentle lean rather than bunching its steps into kinks.
+        double curve = p.planar ? t * 1.1 : t * t * 1.25;
         int want = (int) Math.round(leanFor * Math.min(1, curve));
         if (want > offset[0] && y < height - 1) { // the crown sits straight on the top log
           offset[0]++;
@@ -1128,6 +1133,54 @@ public final class TreeGenerators {
         // Foxtails: dense tufts round the last few cells, not one ball at the end.
         for (int k = n - 1; k >= Math.max(0, n - 5); k -= 2) {
           cluster(cells.get(k), k == n - 1 ? 1.1 : 0.85);
+        }
+      }
+    }
+
+    /**
+     * A banana clump: one stem with its fruiting crown on top, and younger suckers from the same
+     * corm, each a block out at the foot and a block further before it rises, shorter, with a
+     * crown of its own and no fruit yet.
+     */
+    void clump() {
+      int height = range(p.heightMin, p.heightMax);
+      List<BlockPos> stem = trunk(height, 0, 0, y -> false, y -> p.trunkWidth);
+      while (!stem.isEmpty() && !roomForLeaves(stem.get(stem.size() - 1).up())) {
+        plan.parts().remove(stem.remove(stem.size() - 1));
+        plan.trim();
+      }
+      if (stem.size() < 2) {
+        plan.noRoom();
+        return;
+      }
+      plan.leaves(stem.get(stem.size() - 1).up(), p.leaves);
+      List<EnumFacing> sides = new ArrayList<>();
+      Collections.addAll(sides, EnumFacing.HORIZONTALS);
+      Collections.shuffle(sides, rng);
+      int suckers = range(p.stemsMin, p.stemsMax) - 1;
+      for (int i = 0; i < suckers; i++) {
+        EnumFacing side = sides.get(i);
+        BlockPos foot = BlockPos.ORIGIN.offset(side);
+        if (!canLog(foot)) {
+          continue;
+        }
+        // From the corm beside the first stem, a step further out before it rises: two stems
+        // side by side are joined by the log kit at every height, which reads as a ladder.
+        int h = 1 + rng.nextInt(Math.max(1, stem.size() - 1));
+        List<BlockPos> sucker = trunkFrom(foot, h + 1, heading(side), 1, y -> y == 0,
+            y -> p.limbWidth);
+        if (sucker.size() < 2) {
+          plan.parts().remove(foot);
+          continue;
+        }
+        while (!sucker.isEmpty()) {
+          BlockPos crown = sucker.get(sucker.size() - 1).up();
+          if (plan.isEmpty(crown) && roomForLeaves(crown)) {
+            plan.leaves(crown, p.extra != null ? p.extra : p.leaves);
+            break;
+          }
+          plan.parts().remove(sucker.remove(sucker.size() - 1));
+          plan.trim();
         }
       }
     }

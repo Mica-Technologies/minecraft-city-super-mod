@@ -108,6 +108,7 @@ neighbouring blocks differ but a given block always looks the same.
 | `PALM_FAN`, `PALM_FAN_SKIRT`, `PALM_FEATHER` | palm crowns, drawn by `TreePalmGeometry` |
 | `PALM_CABBAGE`, `PALM_CABBAGE_SKIRT`, `PALM_CANARY`, `PALM_COCONUT`, `PALM_KING` | the crowns with their own shape (Palm crowns, below) |
 | `ROSETTE` | the Joshua tree's rosette, drawn by the palm crown machinery |
+| `PALM_BANANA`, `PALM_BANANA_FRUIT` | a banana plant's crown, without and with its bunch |
 
 Leaves never decay on their own: a street tree that disappears would ruin a build. They go only
 when the logs holding them are felled (see Felling). They have **no collision**,
@@ -155,9 +156,20 @@ Fabricator. A palm crown's quads are not culled or clipped to its cell, so a fro
 several blocks past it.
 
 The coconut and king palms lean in one plane (`planar`): their heading is snapped to an axis, and
-the lean is spread up the trunk (offset with the 1.4th power of the height rather than the
-square). A thin trunk stepped on two axes, or with its steps bunched near the top, read as a
-zigzag. The coconut palm also stands on a medium log (`base`), its swollen foot.
+the lean's steps are spread evenly up the trunk (the offset grows in proportion to the height,
+not with its square). A thin trunk stepped on two axes, or with its steps bunched near the top,
+read as a zigzag. Even so, every step of a thin log shows, so the coconut palm leans one or two
+steps only: a single gentle lean reads better at a distance than a curve of several. It also
+stands on a medium log (`base`), its swollen foot.
+
+The **banana plant** (`PALM_BANANA`, and `_FRUIT` with its bunch) is no tree: its "log" is the
+pseudostem, the `banana` wood, leaf sheaths rolled round each other (green, streaked, with brown
+strips of old sheath). Its crown is eight huge paddle leaves (46 px by 13), torn across into
+strips on one side or the other, arching out and down, the youngest still rolled and standing
+up, and a dry one or two hanging down the stem, shredded lengthwise into ribbons (torn across,
+a hanging dry leaf read as a ladder). The fruiting crown adds the bunch: the stalk arching out of
+the top and down, the green hands as an eight-sided prism hanging beside the stem, and the purple
+bell below them, both from the sheet's fourth cell.
 
 ### Seasons
 
@@ -234,15 +246,16 @@ That idea comes from Biomes O' Plenty's generator builders (see Decisions).
 | Shape | How it grows | Presets |
 |---|---|---|
 | Profile | Straight trunk, crown radius from a profile of height (rounded bottom, pointed top) | cypress, ginkgo, poplar, sweetgum, hornbeam, arborvitae, Colorado blue spruce, coast redwood, Douglas fir (a cone) |
-| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum, paper birch, Japanese maple, Scots pine, European beech, old English oak, camphor, California sycamore (several stems), blue gum |
+| Limb | Trunk leaning by diagonal steps, then limbs drawn as voxel lines to flattened clusters | live oak, elm, plane, honey locust, jacaranda, pepper tree, coast live oak, willow, lemon-scented gum, paper birch, Japanese maple, Scots pine, European beech, old English oak, camphor, California sycamore (several stems), blue gum, avocado, olive (several stems), the three apples, mulberry |
 | Palm | Sideways offset grows with the square of the height, so the trunk curves; crown on the top log | fan palm, leaning feather palm, queen palm, cabbage palm, Canary Island date palm, coconut palm, king palm |
-| Head | Clear trunk and a clipped ball | ball-head plane |
+| Head | Clear trunk and a clipped ball | ball-head plane, orange, lemon, lime, grapefruit |
 | Box | Clear trunk and a box crown, wide across the facing | pleached linden: a row joins into a hedge on stilts |
 | Pollard | Stout trunk cut back to knuckles, a tuft on each | pollarded plane |
 | Tiered | Tall trunk; above a clear stretch, a whorl of level limbs every two or three blocks, each tipped with a flat pad, shorter toward the top, each whorl turned from the last | eastern white pine |
 | Giant | A trunk three blocks across, straight up; short stout limbs in turned layers above a long clear stretch, each with a clump | giant sequoia |
 | Branching | A trunk forking again and again into short angular arms, a rosette on every end | Joshua tree, young Joshua tree |
 | Gnarled | A squat trunk and limbs that wander, turning at every step and climbing or sagging, some bare deadwood | Great Basin bristlecone pine |
+| Clump | A stem with a crown on top, and younger, shorter suckers from the same foot, each with its own crown | banana |
 
 Douglas fir, coconut, king and Canary Island palms, California sycamore and blue gum use the
 older shapes with three new options: a profile tree may be a **cone** (a straight cone rather than
@@ -279,12 +292,12 @@ against photographs of the real species until it read as that species:
 | 32 | Joshua tree | Branching | `joshua` (new: shaggy thatch) | `tree_crown_joshua` (new rosette) | a thick trunk forking three times into angular arms, four to eight rosettes |
 | 33 | Young Joshua tree | Branching | `joshua` | `tree_crown_joshua` | a single trunk, branched once if at all, one to three rosettes |
 | 34 | Canary Island date palm | Palm | `canary` (new: diamond leaf bases) | `tree_crown_palm_canary` (new) | 7-11 tall, a thick straight trunk and a huge round crown |
-| 35 | Coconut palm | Palm, planar | `palmgrey` (new: pale grey, ringed) | `tree_crown_palm_coconut` (new) | a slender trunk curving out from a swollen foot, drooping fronds, coconuts |
+| 35 | Coconut palm | Palm, planar | `palmgrey` (new: pale grey, ringed) | `tree_crown_palm_coconut` (new) | a slender trunk leaning gently from a swollen foot, drooping fronds, coconuts |
 | 36 | King palm | Palm, planar | `palmgrey` | `tree_crown_palm_king` (new) | a straight slender trunk, a green crownshaft, arching fronds |
 | 37 | Douglas fir | Profile, cone | `douglasfir` (new: deep furrows) | `douglasfir` (new: dark soft needles) | 22-27 tall, a narrow cone in drooping layers nearly to the ground |
 | 38 | Great Basin bristlecone pine | Gnarled | `bristlecone` (new: twisted silver deadwood) | `bristlecone` (new: foxtails flecked with resin) | low and wide, over half its limbs bare, the rest tipped with foxtails |
 | 39 | California sycamore | Limb, 2-3 stems | `sycamore` (new: white, tan and grey patches) | `plane` (the London plane's) | leaning trunks from one foot, an irregular open crown of big leaves |
-| 40 | Blue gum eucalyptus | Limb | `bluegum` (new: peeling streaks) | `bluegum` (new: hanging sickles, airy) | a tall straight trunk, steep limbs, an open crown high up |
+| 40 | Blue gum eucalyptus | Limb | `bluegum` (new: peeling streaks) | `bluegum` (new: hanging sickles, airy) | a tall straight trunk, a few long diverging limbs from high up, an open crown |
 
 What was reused and why: the California sycamore wears the London plane's leaves (both are
 plane trees with big maple-like leaves; only the bark tells them apart, so the bark is new); the
@@ -309,6 +322,38 @@ bristlecone. They brought eight woods (40 log blocks) and eight leaves and crown
   living one carries a tuft on every other one of its last five cells, so it reads as a foxtail
   rather than a ball. If every living limb is cut back to nothing the tree keeps a tuft on its
   trunk.
+
+Eleven fruit trees followed (GitHub #250, presets 41 to 51), each bearing its fruit where the real
+tree shows it:
+
+| # | Preset | Shape | Wood | Leaves |
+|---|---|---|---|---|
+| 41-44 | Orange, lemon, lime, grapefruit | Head on a 1-2 block trunk, a dome from 1.8 (lime) to 2.7 (grapefruit) across its radius | `citrus` | `citrus_orange`, `_lemon`, `_lime`, `_grapefruit` |
+| 45 | Avocado | Limb: taller, steep limbs, a broad dense dome | `avocado` | `avocado` (dark pear-shaped fruit) |
+| 46 | Olive | Limb, two or three stems: a short twisted trunk split from the foot, an open crown | `olive` (twisted grey) | `olive` (narrow silvery leaves, a few olives, airy) |
+| 47 | Banana | Clump | `banana` (the pseudostem) | `tree_crown_banana_fruit` on the main stem, `tree_crown_banana` on the suckers |
+| 48-50 | Honeycrisp, Granny Smith, Golden Delicious apples | Limb: an orchard tree, a short trunk and wide low limbs | `apple` | `apple_honeycrisp`, `_granny`, `_golden` |
+| 51 | Mulberry | Limb: a broad rounded dense crown | `mulberry` | `mulberry` (dark and some red berries) |
+
+- **Fruit is in the leaves, not in geometry.** A fruiting set is its plain sibling's sprite, drawn
+  with the same seed (`SEASON_OF`), with the fruit dotted over it (`FRUIT` in `gen_trees.py`:
+  each fruit a shaded ball, a pear or a berry, placed only where it lies wholly on leaves), so a
+  crown of it bears fruit on every face that shows and costs not one quad more. The plain `citrus`
+  and `apple` leaves are for building a tree out of season. An orange is about 2.5 px of the 32 px
+  sprite, a lime 2, a grapefruit 4; limes and Granny Smith apples are green on green, as they are.
+- **Citrus are heads**, not limbed trees: a limbed citrus was a broad, flat umbrella twice the
+  size of a grove tree, where the real thing is a dense dome nearly to the ground.
+- **The banana's suckers** stand a block from the main stem at the foot and step a block further
+  out before they rise. Two stems side by side are joined by the log kit at every height, which
+  read as a ladder.
+
+Two of the West's trees were fixed with them:
+
+- **Blue gum**: three or four long limbs (reach 4-6) from high up, fanned wide (spread 2.8), and
+  hardly ever a forked leader. With five or six steep limbs and a fork, neighbouring limbs climbed
+  side by side, stepped, and read as scaffolding.
+- **Coconut palm**: the lean's steps spread evenly up the trunk, and one or two of them only
+  (Palm crowns, above).
 
 A big broadleaf crown reads as one crown only when its clusters are nearly as wide as its limbs
 are long; with the reach of a small tree's and bigger clusters the crown broke into separate
@@ -351,8 +396,9 @@ Broken by a player, a tree log fells what it alone held up (`BlockTreeLog.remove
   only ever do too little. The first 24 logs play their break effect; the rest go quietly.
 
 A giant sequoia stands on thirteen logs (its foot and buttress roots), each holding the tree up
-on its own: it comes down only when the last of them is cut. `TreeFellingTest` cuts every log at
-the foot for that reason.
+on its own: it comes down only when the last of them is cut. A banana's suckers each stand on
+their own piece of the corm, so cutting the main stem leaves them, as cutting a real one does.
+`TreeFellingTest` cuts every log at the foot, and fells from each, for that reason.
 
 The searches are pure functions over a `Cells` view (`TreeFellingTest`).
 
@@ -696,7 +742,9 @@ cabbage palm's own crown took it from 231 to 439, and the four big trees added a
 old oak, the camphor and the white pine are some 9,000 each, nearly half of it their thick limbs.
 They are specimens: a street of them costs what a street of three times as many live oaks does.
 The ten trees of the West added about 21,100 (one of every preset: 93,900): the giant sequoia
-8,500, over half of it trunk; the Joshua tree 1,800; each palm a few hundred. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
+8,500, over half of it trunk; the Joshua tree 1,800; each palm a few hundred. The eleven fruit
+trees added about 13,000 (one of every preset: 105,900), the citrus a few hundred each and the
+avocado and mulberry about 2,400; their fruit is in the leaves' sprites and costs nothing. Leaves were about 85% of a tree, at 25 to 30 quads a cell.
 - **Sheeted leaves.** Every leaf type but clipped draws a leaf sheet on each open face (one quad,
   facing out, 1 px inside the face), a tuft card past each open side and the top, and one card
   inside, where they had drawn six interior cards, three fringe cards per open face and cover
