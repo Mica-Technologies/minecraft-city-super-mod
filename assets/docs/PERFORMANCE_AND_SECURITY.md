@@ -13,7 +13,8 @@ method; that one holds the numbers.
 
 ## Where the time goes
 
-**Client frame time is the whole story. CSM's server tick cost is negligible.**
+**Client frame time is most of the story. CSM's server tick cost is small, except where work
+scales with the city rather than with what is in view: see "The server tick at city scale".**
 
 | Scene | Server tick time |
 |---|---|
@@ -23,9 +24,9 @@ method; that one holds the numbers.
 
 That scene is 400 signal heads, 400 crosswalk signals and 100 live controllers. Percentage deltas
 on a 0.2 ms quantity are noise. The server-side caching that has shipped (controller config
-validation, powered state, sensor scans) removes genuine waste and stays, but the server tick is
-not a place worth hunting. **Never quote a tick-time percentage without the absolute milliseconds
-beside it.**
+validation, powered state, sensor scans) removes genuine waste and stays. That table predates the
+HVAC thermal simulation and the Life Safety expansion and says nothing about either. **Never quote
+a tick-time percentage without the absolute milliseconds beside it.**
 
 On the client, CSM was 81% of a 4.65 ms frame at the dense, front-facing benchmark pose:
 
@@ -50,6 +51,60 @@ emergency lights at 20-30, against 2.2-2.9 for a plain signal head, none of them
 a cliff rather than a cost: past 1,024 visible signal heads the display-list cache thrashed and a
 frame went from 3.4 ms to 500 ms. That is fixed (see "Rules for render code"). Numbers, method and the ranked
 fix list are in `PERFORMANCE_INVENTORY.md`.
+
+### The server tick at city scale
+
+A server reported TPS dropping badly after the HVAC thermal revamp (2026-09). The HVAC lab (one
+building, fully loaded) had measured 0.03 ms a tick, so the cause had to be something that grows
+with a city rather than with a building. Measured 2026-10-02 in a dev world built for it over
+MCMCP: five 24-floor towers 96 blocks apart, three rooms a floor (each a primary thermostat, a
+heater and four vents: 360 rooms, 2,160 anchors), a 37,000-cell warehouse with eight systems, a
+49,000-cell hall too large to condition, a fire alarm panel wired to 192 appliances and 216
+initiating devices (one tower), 400 APS push buttons and 400 crosswalk heads, and a signal
+controller in the spawn chunks with sensors 20 chunks away. View distance 12, so standing at
+x = 200 the edge of view cuts the fifth tower.
+
+| What | Before | After |
+|---|---|---|
+| HVAC, tower cut by the edge of view, nothing changing | 6.3 ms a step, 0.32 ms a tick, 25 ms worst; 4,320 floods of 1.3 M cells a minute | 1.7 ms a step, 0.09 ms a tick, 9 ms worst; no floods |
+| HVAC, arriving at four towers (288 rooms) from far away | one 235 ms tick | worst HVAC step 17-21 ms (three runs) |
+| HVAC, rooms over 5 minutes old (one safety-net rescan a second) | 17.5 ms a step, 0.88 ms a tick | 4.2 ms a step, 0.21 ms a tick |
+| HVAC, steady with no rescans due | 2.8 ms a step, 0.14 ms a tick | 1.6 ms a step, 0.08 ms a tick |
+| Signal controller, sensors outside every player's view | both sensor chunks kept loaded indefinitely | stay unloaded |
+| Fire alarm panel, idle | 3 microseconds a tick; pull stations, detectors and sprinklers' scheduled ticks 0.05 ms a tick | unchanged |
+| Fire alarm panel, in alarm (player inside, 192 appliances sounding) | 3.4-4.5 microseconds a tick | unchanged |
+| 400 APS buttons (player more than 16 blocks away / among them) | 45-52 / 51-63 microseconds a tick | unchanged |
+
+The HVAC fixes, each in `HVAC_SYSTEM.md`: an attach that stops at an unloaded chunk waits for that
+chunk instead of flooding again every 2 s, and anchors in one room share the flood; new rooms are
+flooded for at most 4 ms a tick, so a building arriving is spread over a second or two; and a
+room's couplings are resolved again only when the cells beyond its walls changed owner (they were
+resolved for every room whenever anything changed, 14 ms at this size, every second once the
+5-minute rescans came round). The controller fix: sensor, push-button and signal-facing lookups
+skip unloaded chunks, as the signal heads already did.
+
+**The fire alarm is not the problem.** A 408-device panel costs microseconds a tick idle or in
+alarm. Unmeasured: how often SUM's NPCs call `CsmFireAlarmQuery` during an alarm, which copies
+each panel's appliance list per call.
+
+**Not worth changing, measured:** the APS buttons' every-second locate tone (skipping the packet
+when nobody was in hearing range moved 400 buttons from 46-52 to 44-46 microseconds a tick, inside
+the noise; the cost is the per-tick update itself, about 0.11 microseconds a button); the HVAC
+region assignment, quadratic on paper but 2-3 ms on a 37,000-cell hall (made linear anyway, 20-60%
+faster, same result); a per-scan cache of cell kinds (world reads are a fifth of a big rescan).
+
+**Left as they are, worth knowing:** the worst tick in every steady window, about 25 ms, is the
+world autosave. Arriving from far away still shows 30-40 ms ticks; profiled, they are chunk loading
+itself, about a third of it `CsmTileEntityBackfillHandler` walking every block of every newly loaded
+chunk for CSM blocks missing a tile entity. It walks every load, not just the first; skipping
+sections whose palette has no such block would need reflection into the block state container, and
+a marker saved with the chunk would miss blocks pasted later by a world editor's fast path, which
+is one of the cases it exists for.
+
+What has not been measured, and needs the real world: how many anchors sit in partly loaded rooms
+at typical player positions, whether its buildings contain spaces too large to condition (each
+re-floods 40,000 cells every 30 s, about 10 ms), and its player count. `/csmhvac perf` on that
+server now reports anchors waiting for a chunk and the retries saved, alongside the rest.
 
 ### Memory
 
@@ -541,6 +596,23 @@ cracks were looked at live and kept. An empty model loses them too. What is left
 a single quad, both visual trade-offs to cost against measured numbers before proposing.
 
 ## Rules for tick code
+
+- **Never read a linked position without `isBlockLoaded` first.** On the server `getBlockState` and
+  `getTileEntity` load the chunk from disk to answer, and a chunk loaded that way with no player
+  near it stays loaded, ticking. A signal controller polling a sensor 20 chunks from anyone kept
+  that chunk loaded for as long as it ran. Treat an unloaded position as having nothing to report.
+- **A result that cannot change until a chunk loads should wait for that chunk, not a timer.** HVAC
+  retried rooms that reached an unloaded chunk every 2 s, every device separately, forever; at the
+  edge of a player's view that was thousands of floods a minute. Remember what stopped it, check
+  `getLoadedChunk` once a step, and let anyone else asking the same question share the answer.
+- **Work that arrives with a chunk load needs a budget.** Every tile entity in a building loads in
+  the same tick, so per-tile-entity work that is cheap alone lands as one long tick: a building's
+  rooms flooded together were 235 ms. Do a slice a tick and leave the rest due.
+- **Recompute what a change touched, not everything.** HVAC resolved every room's couplings after
+  any change anywhere (14 ms for 288 rooms); stamping the 16-block cubes a change touches and
+  resolving only rooms whose neighbourhood has a newer stamp gives the same answer for almost
+  nothing. A periodic full refresh as a backstop multiplies with the number of objects; check it
+  scales before relying on it.
 
 - **`AbstractTickableTileEntity` gates ticks by a cached rate.** A subclass whose rate varies must
   call `invalidateTickRateCache()`. Each tile entity's phase comes from its position hash run

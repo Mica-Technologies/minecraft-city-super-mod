@@ -136,8 +136,21 @@ winter in about 10 minutes; a properly sized system warms it from freezing in 4-
   (or unregisters) from `readNBT`, since `onLoad` has already run: it used to join only when its
   chunk next loaded (issue #243).
 - An anchor without a space tries its own cell, then its six neighbours (a full-block heater sits
-  beside its room). A failure is retried: 2 s if unloaded, 5 s if open to the sky, 30 s if too
-  large (and the too-large flood's cells are remembered so its neighbours do not repeat it).
+  beside its room). A failure is retried 5 s later if open to the sky, 30 s if too large (and the
+  too-large flood's cells are remembered so its neighbours do not repeat it).
+- A failure because the room reaches an **unloaded chunk** is not retried on a timer. The anchor
+  remembers the chunks it stopped at and waits, checking once a step, until one of them loads or a
+  block inside the cells it flooded changes; anything else would fail the same way. The flood is
+  kept while anyone waits on it, and another anchor whose cell is in it shares its answer instead
+  of flooding the same room again. Before 2026-10 every anchor in such a room flooded it every
+  2 s, all on the same tick, for as long as the chunk stayed unloaded: a building cut by a
+  player's view distance was rescanned continuously (in a test city, 4,320 floods of 1.3 million
+  cells a minute for one tower at the edge of view, with nothing changing).
+- New rooms are flooded for at most 4 ms a tick (`ATTACH_BUDGET_NANOS`); anchors left over are
+  picked up on the following ticks, between steps as well as on them. When a building's chunks
+  load, all its anchors come due together, and four 24-floor towers arriving at once were one
+  235 ms tick; spread out, the worst HVAC step is 17-21 ms. An anchor joining a room that already
+  exists is never held back, and the `/csmhvac` commands run their work at once.
 - A space with no anchors left is dropped.
 - A player standing in enclosed air near HVAC that no device's space covers (a hallway, a
   storeroom) anchors a space of their own, started at its equilibrium, so the HUD there comes from
@@ -158,7 +171,18 @@ winter in about 10 minutes; a properly sized system warms it from freezing in 4-
   25,714-cell store takes 15-25 ms, a 2,600-cell office floor 4-5 ms.
 - A rescan keeps each cell's temperature: new regions start from the cells they took over (from
   live spaces, or ones taken apart this step), so opening a door mixes two rooms and closing it
-  leaves each as it was. A rescan that hits an unloaded chunk puts the old space back unchanged.
+  leaves each as it was. A rescan that hits an unloaded chunk puts the old space back unchanged,
+  and it is not rescanned again until one of the chunks it stopped at loads or a block on or beside
+  it changes (it used to retry every 3 s).
+- **Couplings** (which region of which space lies beyond each wall face) depend only on who owns the
+  cells beyond a space's walls, and that changes only where a space appears, goes or is put back.
+  Each of those stamps the 16-block cubes the space's cells lie in, and a space is resolved again
+  only when a cube beyond its walls has a newer stamp; the outdoor temperature is refreshed for every
+  space every 10 s, a tenth of them a step. Every space used to be resolved again whenever anything
+  anywhere changed, and every 10 s regardless: about 14 ms for a city of 288 rooms, and every second
+  once the 5-minute rescans came round (one a step past 300 spaces). Cubes rather than chunk columns,
+  so rescanning one floor of a tower sends only the floors around it, not the whole tower, back to
+  be resolved.
 
 ### Holding temperature while unloaded
 
@@ -278,7 +302,7 @@ the new world's clock was behind the old one's (found in the lab: a desert room 
 | `settemp <F>` | sets your room's every region (start a test from cold or hot) |
 | `ff <seconds>` | runs that much simulated time now (an hour of the whole lab: ~0.2 s) |
 | `rescan` | rescans your room now and reports the time |
-| `perf [reset]` | what the simulation has cost since the counters were reset: ms a step and a tick, by phase (rescan, attach, couplings, control and physics, players), rescans on a change and periodic, floods and their cells, block changes seen and those that changed a room |
+| `perf [reset]` | what the simulation has cost since the counters were reset: ms a step and a tick, by phase (rescan, attach, couplings, control and physics, players), rescans on a change and periodic, spaces whose couplings were resolved, floods and their cells, block changes seen and those that changed a room, anchors waiting for a chunk to load and the retries that saved |
 
 What it costs (issue #246, a ten-storey tower of 2,600-cell floors, each with a thermostat, a
 heater and eight vents): idle, 0.6-0.8 ms a step, 0.03-0.04 ms a tick; a lamp toggled beside every
@@ -288,6 +312,27 @@ vanishing inside every room each second, which does change them, is the load the
 spreads out: 190 rescans in 40 s, worst step 43 ms, before it; 160 rescans, worst step 27 ms, after
 (0.5 ms a tick on average). `perf` on the server that reported the lag is how to find
 what it is doing there.
+
+At city scale (2026-10, a dev server: five 24-floor towers of three rooms a floor, each room a
+thermostat, a heater and four vents; a 37,000-cell warehouse; a hall too large to condition; 289
+rooms and 1,900 anchors in view), the cost was not in the controllers or the physics but in three
+things that grow with a city: rooms at the edge of view, rooms arriving with their chunks, and the
+couplings resolved after every change. The method and the rest of the server tick are in
+`PERFORMANCE_AND_SECURITY.md`, "The server tick at city scale":
+
+| Scene | Before | After |
+|---|---|---|
+| A tower cut by the edge of view, nothing changing | 6.3 ms a step, 0.32 ms a tick; 4,320 floods a minute | 1.7 ms a step, 0.09 ms a tick; no floods |
+| Arriving at four towers from far away | one 235 ms step | worst step 17-21 ms |
+| Steady, every room more than 5 minutes old (one safety-net rescan a second) | 17.5 ms a step, 0.88 ms a tick | 4.2 ms a step, 0.21 ms a tick |
+| Steady, no rescans due | 2.8 ms a step, 0.14 ms a tick | 1.6 ms a step, 0.08 ms a tick |
+
+What is left of a step is the controllers and physics (about 1.2 ms for 289 rooms) and, once rooms
+are old, the safety-net rescan and the couplings it touches. The worst tick in every scene, about
+25 ms, is the world autosave, not HVAC. Not done, because measuring showed it would not pay: a
+cache of cell kinds per scan (the world reads are about a fifth of a 37,000-cell rescan; the rest is
+hash-set work on its cells), and stretching the 5-minute safety net (with the couplings fixed, one
+rescan a second costs about 2.5 ms a second).
 
 ### The lab
 

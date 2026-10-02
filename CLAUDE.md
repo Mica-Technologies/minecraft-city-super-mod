@@ -464,8 +464,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   server-sent HUD, `/csmhvac` and the test lab, and why the old offset engine was replaced
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 - `assets/docs/PERFORMANCE_AND_SECURITY.md` -- Where frame time and memory actually go (client frame time is
-  the whole story; the server tick is 0.4%), the block atlas budget (`atlas_budget.py`), how to measure
-  without fooling yourself, the rules render and
+  most of it; the server tick is small except for work that scales with a city -- HVAC rooms at the
+  edge of view or arriving with their chunks, controllers loading their sensors' chunks -- measured
+  at city scale, with the fire alarm cleared), the block atlas budget (`atlas_budget.py`), how to
+  measure without fooling yourself, the rules render and
   tick code follow, NBT short keys, and the conventions every network packet follows
 
 Agent progress/tracking docs are in `assets/docs/agent_progress/`.
