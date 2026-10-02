@@ -112,26 +112,13 @@ class TreeRenderBudgetTest {
   /** TreeLogConnections.compute, on a plan (the ground is everything below y = 0). */
   static long mask(TreePlan plan, BlockPos pos, EnumFacing.Axis axis) {
     long mask = ((long) axis.ordinal()) << TreeLogConnections.AXIS_SHIFT;
+    mask |= TreeLogConnections.links((dx, dy, dz) -> {
+      TreePlan.Part part = plan.get(pos.add(dx, dy, dz));
+      return part != null && part.kind == TreePlan.Kind.LOG ? width(part.block).getMaskIndex() : 0;
+    });
     boolean[] faceLog = new boolean[6];
     for (EnumFacing f : EnumFacing.values()) {
-      BlockPos q = pos.offset(f);
-      if (isLog(plan, q)) {
-        faceLog[f.getIndex()] = true;
-        mask |= 1L << (TreeLogConnections.FACE_LOG_SHIFT + f.getIndex());
-        mask |= ((long) width(plan.get(q).block).getMaskIndex())
-            << (TreeLogConnections.WIDTH_SHIFT + 3 * f.getIndex());
-      }
-    }
-    for (int i = 0; i < TreeLogConnections.DIAGONALS.length; i++) {
-      int[] d = TreeLogConnections.DIAGONALS[i];
-      if (!isLog(plan, pos.add(d[0], d[1], d[2]))) {
-        continue;
-      }
-      int[][] between = TreeLogConnections.betweenCells(d);
-      if (!isLog(plan, pos.add(between[0][0], between[0][1], between[0][2]))
-          && !isLog(plan, pos.add(between[1][0], between[1][1], between[1][2]))) {
-        mask |= 1L << (TreeLogConnections.DIAGONAL_SHIFT + i);
-      }
+      faceLog[f.getIndex()] = TreeLogConnections.faceLog(mask, f.getIndex());
     }
     for (EnumFacing f : EnumFacing.values()) {
       if (isLeaves(plan, pos.offset(f))

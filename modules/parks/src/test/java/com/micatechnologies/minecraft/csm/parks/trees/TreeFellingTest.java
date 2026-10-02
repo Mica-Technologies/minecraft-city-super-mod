@@ -122,4 +122,48 @@ class TreeFellingTest {
     assertEquals(1, logs.size());
     assertTrue(logs.contains(new BlockPos(4, 5, 0)));
   }
+
+  /**
+   * A hand-built tree whose limb steps on all three axes at once (issue #250): a trunk four logs
+   * tall on the ground, and a limb off its top at (+1, +1, +1), (+2, +2, +2), (+3, +3, +3).
+   */
+  private static Map<BlockPos, TreeFelling.Kind> cornerSteppedTree() {
+    Map<BlockPos, TreeFelling.Kind> world = new HashMap<>();
+    for (int y = 0; y < 4; y++) {
+      world.put(new BlockPos(0, y, 0), TreeFelling.Kind.LOG);
+    }
+    for (int k = 1; k <= 3; k++) {
+      world.put(new BlockPos(k, 3 + k, k), TreeFelling.Kind.LOG);
+    }
+    return world;
+  }
+
+  @Test
+  void aCornerSteppedLimbFallsWithItsTree() {
+    Map<BlockPos, TreeFelling.Kind> world = cornerSteppedTree();
+    BlockPos cut = BlockPos.ORIGIN;
+    world.remove(cut);
+    Set<BlockPos> logs = TreeFelling.unsupportedLogs(cells(world), cut);
+    assertEquals(6, logs.size(), "the trunk and the whole limb: " + logs);
+    assertTrue(logs.contains(new BlockPos(3, 6, 3)));
+  }
+
+  @Test
+  void cuttingACornerSteppedLimbTakesWhatIsBeyondTheCut() {
+    Map<BlockPos, TreeFelling.Kind> world = cornerSteppedTree();
+    BlockPos cut = new BlockPos(1, 4, 1);
+    world.remove(cut);
+    Set<BlockPos> logs = TreeFelling.unsupportedLogs(cells(world), cut);
+    assertEquals(2, logs.size(), "the rest of the limb: " + logs);
+    assertTrue(logs.contains(new BlockPos(2, 5, 2)));
+    assertTrue(logs.contains(new BlockPos(3, 6, 3)));
+  }
+
+  @Test
+  void aCornerSteppedLimbHoldsOnWhileItsTrunkStands() {
+    Map<BlockPos, TreeFelling.Kind> world = cornerSteppedTree();
+    BlockPos cut = new BlockPos(3, 6, 3);
+    world.remove(cut);
+    assertTrue(TreeFelling.unsupportedLogs(cells(world), cut).isEmpty());
+  }
 }

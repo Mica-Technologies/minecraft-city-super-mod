@@ -45,7 +45,11 @@ class TreeGeneratorsTest {
     return cells;
   }
 
-  /** Face and edge-diagonal neighbours: what the log kit joins. Corner diagonals are not. */
+  /**
+   * Face and edge-diagonal neighbours. The log kit joins corner diagonals too, but only so a
+   * hand-built limb holds together: the generators split a corner step in two, and this holds them
+   * to it, so a planted tree's shape and quad count never lean on a corner bridge.
+   */
   private static boolean joined(BlockPos a, BlockPos b) {
     int dx = Math.abs(a.getX() - b.getX());
     int dy = Math.abs(a.getY() - b.getY());

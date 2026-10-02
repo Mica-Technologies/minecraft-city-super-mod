@@ -21,13 +21,13 @@ import net.minecraft.world.World;
  * left too far from any log. Cut a trunk and the tree above comes down; cut a limb and the limb
  * goes with its foliage, and the rest of the tree stays.
  *
- * <p>Logs are joined as the log kit draws them, through faces and edge diagonals. A log holds up
- * the logs joined to it when it stands on something solid that is not part of the tree, or is
- * joined to a vanilla log; nothing else of a tree touching a wall counts, since the generator
- * keeps logs a block off walls anyway. Leaves are kept within {@link #LEAF_REACH} steps, through
- * leaves, of a log, much as vanilla leaves decay, or when they stand straight on a log through
- * leaves, as a one-wide column of cypress does; every tree the planting tool grows keeps all of
- * its leaves that close, so cutting one limb never thins the rest of the crown.</p>
+ * <p>Logs are joined as the log kit draws them, through faces, edge diagonals and corner diagonals.
+ * A log holds up the logs joined to it when it stands on something solid that is not part of the
+ * tree, or is joined to a vanilla log; nothing else of a tree touching a wall counts, since the
+ * generator keeps logs a block off walls anyway. Leaves are kept within {@link #LEAF_REACH} steps,
+ * through leaves, of a log, much as vanilla leaves decay, or when they stand straight on a log
+ * through leaves, as a one-wide column of cypress does; every tree the planting tool grows keeps
+ * all of its leaves that close, so cutting one limb never thins the rest of the crown.</p>
  *
  * <p>The search is bounded ({@link #MAX_LOGS}, {@link #MAX_LEAVES}): a log structure too big to
  * search is taken as held up, and leaves at the edge of the searched box as kept, so a felling
@@ -76,7 +76,11 @@ public final class TreeFelling {
   private TreeFelling() {
   }
 
-  /** Face and edge-diagonal offsets: the neighbours a log is drawn joined to. */
+  /**
+   * Face, edge-diagonal and corner-diagonal offsets: every neighbour a log can be drawn joined to.
+   * Wider than the drawing in one way only: a diagonal counts here even where a log between them
+   * means the kit draws the join through that log instead, which joins the same logs.
+   */
   private static final List<BlockPos> JOINS = new ArrayList<>();
 
   static {
@@ -84,7 +88,7 @@ public final class TreeFelling {
       for (int y = -1; y <= 1; y++) {
         for (int z = -1; z <= 1; z++) {
           int moved = (x != 0 ? 1 : 0) + (y != 0 ? 1 : 0) + (z != 0 ? 1 : 0);
-          if (moved == 1 || moved == 2) {
+          if (moved > 0) {
             JOINS.add(new BlockPos(x, y, z));
           }
         }
