@@ -2,7 +2,6 @@ package com.micatechnologies.minecraft.csm.hvac;
 
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
@@ -306,7 +305,7 @@ public final class ThermalScanner {
    * space's cells (the sliver a wall or ceiling line leaves in the next grid cell) joins its
    * largest neighbour instead of standing alone.
    */
-  private static void assignRegions(Result r) {
+  static void assignRegions(Result r) {
     Long2IntOpenHashMap bucketVolume = new Long2IntOpenHashMap();
     LongIterator it = r.cells.iterator();
     while (it.hasNext()) {
@@ -332,6 +331,10 @@ public final class ThermalScanner {
     boolean compact = maxX - minX < SINGLE_REGION_SPAN && maxZ - minZ < SINGLE_REGION_SPAN
         && maxY - minY < SINGLE_REGION_HEIGHT;
     Long2LongOpenHashMap parent = new Long2LongOpenHashMap();
+    // Cells in each merged group, kept at its root, so a group's volume is one lookup. It was
+    // summed over every bucket each time a sliver asked, which grows with the square of the
+    // buckets in a space of many small ones (a comb of corridors).
+    Long2IntOpenHashMap groupVolume = new Long2IntOpenHashMap(bucketVolume);
     if (r.cells.size() <= SINGLE_REGION_MAX && compact) {
       long root = bucketVolume.keySet().iterator().nextLong();
       for (long b : bucketVolume.keySet()) {
@@ -342,7 +345,7 @@ public final class ThermalScanner {
       for (int pass = 0; pass < 2; pass++) {
         for (long b : bucketVolume.keySet()) {
           long rootB = find(parent, b);
-          if (volumeOf(bucketVolume, parent, rootB) >= MIN_REGION_CELLS) {
+          if (groupVolume.get(rootB) >= MIN_REGION_CELLS) {
             continue;
           }
           int bx = unpackX(b);
@@ -360,7 +363,7 @@ public final class ThermalScanner {
             if (rootN == rootB) {
               continue;
             }
-            int v = volumeOf(bucketVolume, parent, rootN);
+            int v = groupVolume.get(rootN);
             if (v > bestVolume) {
               bestVolume = v;
               best = rootN;
@@ -369,6 +372,7 @@ public final class ThermalScanner {
           }
           if (found) {
             parent.put(rootB, best);
+            groupVolume.addTo(best, groupVolume.get(rootB));
           }
         }
       }
@@ -396,18 +400,6 @@ public final class ThermalScanner {
       cur = parent.get(cur);
     }
     return cur;
-  }
-
-  /** Cells in the merged group whose root is {@code root}. */
-  private static int volumeOf(Long2IntOpenHashMap bucketVolume, Long2LongOpenHashMap parent,
-      long root) {
-    int v = 0;
-    for (Long2IntMap.Entry e : bucketVolume.long2IntEntrySet()) {
-      if (find(parent, e.getLongKey()) == root) {
-        v += e.getIntValue();
-      }
-    }
-    return v;
   }
 
   private static void classifyWallFace(ThermalCellSource src, Result r, int region,
