@@ -89,7 +89,11 @@ public class CsmTileEntityBackfillHandler {
    *
    * <p>Reads the sections directly rather than asking the world for each position, because the
    * world's own lookup would go back through the chunk map for all sixty-five thousand of them.
-   * Empty sections are skipped outright, which on most chunks is most of them.
+   * Empty sections are skipped outright, which on most chunks is most of them, and so is a section
+   * whose palette (the list of states it uses, {@link CsmSectionPalette}) holds no CSM state with a
+   * tile entity: every block in it is one of those states, so walking its 4,096 cells could find
+   * nothing. That is most of what is left; the walk is the same as ever wherever it could matter,
+   * including in a chunk visited before, so a block pasted in later is still repaired.
    *
    * @param world the server world the chunk belongs to.
    * @param chunk the chunk to walk.
@@ -106,15 +110,17 @@ public class CsmTileEntityBackfillHandler {
       if (section == Chunk.NULL_BLOCK_STORAGE || section.isEmpty()) {
         continue;
       }
+      // A section whose palette holds no CSM state with a tile entity has none in any cell.
+      if (!CsmSectionPalette.mayContain(section.getData(), WANTS_TILE_ENTITY)) {
+        continue;
+      }
       final int baseY = section.getYLocation();
       for (int y = 0; y < SECTION_EDGE; y++) {
         for (int z = 0; z < SECTION_EDGE; z++) {
           for (int x = 0; x < SECTION_EDGE; x++) {
             final IBlockState state = section.get(x, y, z);
             final Block block = state.getBlock();
-            // hasTileEntity first: it is a cheap virtual call and false for nearly every block,
-            // so the registry-name check below runs only on the handful that matter.
-            if (!block.hasTileEntity(state) || !isCsmBlock(block)) {
+            if (!wantsTileEntity(block, state)) {
               continue;
             }
             pos.setPos(baseX + x, baseY + y, baseZ + z);
@@ -137,6 +143,19 @@ public class CsmTileEntityBackfillHandler {
       }
     }
     return created;
+  }
+
+  /** {@link #wantsTileEntity} as a predicate on states, for the section palette check. */
+  private static final java.util.function.Predicate<IBlockState> WANTS_TILE_ENTITY =
+      state -> wantsTileEntity(state.getBlock(), state);
+
+  /**
+   * Whether this state is a CSM block's that should have a tile entity. hasTileEntity first: it is
+   * a cheap virtual call and false for nearly every block, so the registry-name check runs only on
+   * the handful that matter.
+   */
+  static boolean wantsTileEntity(Block block, IBlockState state) {
+    return block.hasTileEntity(state) && isCsmBlock(block);
   }
 
   /**
