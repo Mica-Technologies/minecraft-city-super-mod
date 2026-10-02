@@ -1,0 +1,34 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/cafeteria_table_cell0",
+    "textures": {
+      "seat": "csm:blocks/furniture/office/plastic_blue",
+      "frame": "csm:blocks/furniture/residential/metal_steel",
+      "wood": "csm:blocks/furniture/office/laminate_grey",
+      "edge": "csm:blocks/furniture/office/laminate_grey_edge"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "part": {
+      "0": {
+        "model": "csm:furniture/office/base/cafeteria_table_cell0"
+      },
+      "1": {
+        "model": "csm:furniture/office/base/cafeteria_table_cell1"
+      }
+    }
+  }
+}

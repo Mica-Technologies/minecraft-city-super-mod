@@ -1,0 +1,69 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/overhead_projector_floor",
+    "textures": {
+      "shell": "csm:blocks/furniture/office/plastic_light_grey",
+      "trim": "csm:blocks/furniture/office/plastic_dark_grey",
+      "glow": "csm:blocks/furniture/office/ohp_stage_on"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/office/base/overhead_projector_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/office/base/overhead_projector_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/office/base/overhead_projector_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/office/base/overhead_projector_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/office/base/overhead_projector_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/office/base/overhead_projector_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/office/base/overhead_projector_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/office/base/overhead_projector_item"
+      }
+    ],
+    "lit": {
+      "true": {
+        "textures": {
+          "glow": "csm:blocks/furniture/office/ohp_stage_on"
+        }
+      },
+      "false": {
+        "textures": {
+          "glow": "csm:blocks/furniture/office/ohp_stage_off"
+        }
+      }
+    },
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

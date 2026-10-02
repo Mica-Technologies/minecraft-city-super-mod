@@ -1,0 +1,132 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "trim": "csm:blocks/furniture/office/panel_trim",
+    "particle": "#trim"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        2.25,
+        14.75
+      ],
+      "to": [
+        16,
+        3,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            13,
+            16,
+            13.75
+          ]
+        },
+        "up": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            14.75,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            0,
+            16,
+            1.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        2,
+        13
+      ],
+      "to": [
+        16,
+        2.25,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            13.75,
+            16,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            13,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            0,
+            16,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        2.25,
+        13
+      ],
+      "to": [
+        16,
+        2.75,
+        13.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            13.25,
+            16,
+            13.75
+          ]
+        },
+        "south": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            13.25,
+            16,
+            13.75
+          ]
+        },
+        "up": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            13,
+            16,
+            13.5
+          ]
+        }
+      }
+    }
+  ]
+}

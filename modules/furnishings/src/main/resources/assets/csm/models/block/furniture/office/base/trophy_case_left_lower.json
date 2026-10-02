@@ -1,0 +1,167 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "edge": "csm:blocks/furniture/office/laminate_grey_edge",
+    "pane": "csm:blocks/furniture/office/case_glass",
+    "wood": "csm:blocks/furniture/office/laminate_grey",
+    "wood_v": "csm:blocks/furniture/office/laminate_grey",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        8.55
+      ],
+      "to": [
+        0.5,
+        11.95,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wood_v",
+          "uv": [
+            8.75,
+            4.25,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            15.5,
+            4.25,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            8.75,
+            0.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            0,
+            0.5,
+            7.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.2,
+        11.75,
+        9.25
+      ],
+      "to": [
+        0.35,
+        16,
+        15.5
+      ],
+      "faces": {
+        "west": {
+          "texture": "#pane",
+          "uv": [
+            9.25,
+            0,
+            15.5,
+            4.25
+          ]
+        },
+        "east": {
+          "texture": "#pane",
+          "uv": [
+            0.5,
+            0,
+            6.75,
+            4.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -0.2,
+        11.75,
+        8.35
+      ],
+      "to": [
+        0.75,
+        16,
+        9.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            15.25,
+            0,
+            16,
+            4.25
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            8.5,
+            0,
+            9.25,
+            4.25
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            6.75,
+            0,
+            7.5,
+            4.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -0.2,
+        11.75,
+        15.25
+      ],
+      "to": [
+        0.75,
+        16,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            15.25,
+            0,
+            16,
+            4.25
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            0.75,
+            4.25
+          ]
+        }
+      }
+    }
+  ]
+}

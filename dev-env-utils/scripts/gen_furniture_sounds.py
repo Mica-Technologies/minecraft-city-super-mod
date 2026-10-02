@@ -4,7 +4,7 @@ The kitchen's cabinet doors, drawers and refrigerator door, and its appliances' 
 toaster pop, blender whirr, coffee gurgle, dishwasher hum, kettle whistle and jar lid, and the
 bathroom's toilet flush and shower spray, the commercial restroom's flushometer flush and
 its two hand dryers, the laundry's washing machine, dryer and steam iron, the
-office's copier and school locker door, the living room's doorbell chime and fireplace crackle,
+office's copier, school locker door and wall pencil sharpener, the living room's doorbell chime and fireplace crackle,
 the backyard's grill sizzle and trampoline boing, and the store's card terminal beep, checkout
 scanner and cash drawer and the fitting room's curtain (the locker sounds and the card terminal's beep replace recordings of
 unknown origin the mod used to ship), made here from filtered noise, decaying sines and envelopes,
@@ -565,6 +565,28 @@ def hand_dryer_blade():
     return ((0.25 * whine + 0.7 * jet + 0.4 * roar) * speed) * env_ad(n, 0.01, 0.05)
 
 
+def pencil_sharpener():
+    """A crank pencil sharpener on a classroom wall: five quick turns of the handle, the twin
+    cutters rasping the wood away in a buzz of tooth strikes that swells and eases with each
+    turn, the crank's gear ticking under it."""
+    total = 1.7
+    n = int(RATE * total)
+    t = t_of(total)
+    turn = 0.3
+    phase = (t % turn) / turn
+    swell = np.clip(t / 0.1, 0, 1) * np.clip((total - t) / 0.15, 0, 1)
+    swell = swell * (0.55 + 0.45 * np.sin(np.pi * phase) ** 2)
+    teeth = 0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 34 * t))
+    rasp = band(noise(total, 191), 900, 6500)
+    rasp /= max(1e-9, np.max(np.abs(rasp)))
+    grit = band(noise(total, 192), 250, 1200)
+    grit /= max(1e-9, np.max(np.abs(grit)))
+    body = (0.8 * rasp * (0.55 + 0.45 * teeth) + 0.35 * grit) * swell * env_ad(n, 0.01, 0.05)
+    ticks = [(k * turn + 0.02, knock(0.05, [(2400, 1.0), (4100, 0.4)], 120, 193 + k, click=0.6),
+              0.25) for k in range(int(total / turn))]
+    return place(total, [(0.0, body, 1.0)] + ticks)
+
+
 SOUNDS = {
     'cabinet_open': (cabinet_open, 2600),
     'cabinet_close': (cabinet_close, 3600),
@@ -599,6 +621,7 @@ SOUNDS = {
     'flushometer_flush': (flushometer_flush, 3200),
     'hand_dryer_run': (hand_dryer_run, 2400),
     'hand_dryer_blade': (hand_dryer_blade, 2600),
+    'pencil_sharpener': (pencil_sharpener, 2400),
 }
 
 

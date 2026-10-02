@@ -1,0 +1,53 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/desk_globe_floor",
+    "textures": {
+      "globe": "csm:blocks/furniture/office/globe_map",
+      "brass": "csm:blocks/furniture/residential/brass",
+      "dark_wood": "csm:blocks/furniture/residential/walnut"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/office/base/desk_globe_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/office/base/desk_globe_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/office/base/desk_globe_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/office/base/desk_globe_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/office/base/desk_globe_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/office/base/desk_globe_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/office/base/desk_globe_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/office/base/desk_globe_item"
+      }
+    ]
+  }
+}

@@ -2,7 +2,10 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.furniture.office.BlockCafeteriaTable;
 import com.micatechnologies.minecraft.csm.furniture.office.BlockCubiclePanel;
+import com.micatechnologies.minecraft.csm.furniture.office.BlockTrophyCase;
+import com.micatechnologies.minecraft.csm.furniture.office.BlockWallBoard;
 import com.micatechnologies.minecraft.csm.furniture.office.OfficeAppliances;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBathroomFixture;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBookcase;
@@ -33,9 +36,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * The tab for the furniture of offices, schools and studios: office desks that join into long
  * desks with their pedestals and L corners, the reception desk, filing cabinets, office shelving
  * and the conference table, each in three laminates; cubicle panels in two heights and three
- * fabrics; office seating and the waiting-room bench; the whiteboard, chalkboard, cork board and
- * projector screen; the school desk, the teacher's desk and lockers; the things on a desk and
- * the copier that copies written books; and a streamer's green screen, ring light and camera.
+ * fabrics; office seating and the waiting-room bench; the whiteboard, chalkboard and cork board
+ * (each joining into one board of any size), the projector screen and the pull-down map; the
+ * school: the school desk, tablet-arm desk and stacking chair, the teacher's desk, lectern and
+ * podium, lockers, the trophy case, a desk globe, the wall pencil sharpener and the classroom
+ * flag; the classroom's ceiling and overhead projectors and the AV cart; the cafeteria table;
+ * the things on a desk and the copier that copies written books; and a streamer's green screen,
+ * ring light and camera.
  * The lines below are printed by {@code gen_furniture_office.py --fragments}.
  *
  * @version 1.0
@@ -146,26 +153,74 @@ public class CsmTabCommercialOffice extends CsmTab {
 
     // ---- Boards ----
     // Whiteboard
-    initTabBlock(new BlockResidentialRun("whiteboard_aluminium", new int[]{0, 2, 13, 16, 15, 16}, false));
+    initTabBlock(new BlockWallBoard("whiteboard_aluminium", new int[]{0, 2, 13, 16, 15, 16}));
 
     // Chalkboard
-    initTabBlock(new BlockResidentialRun("chalkboard_oak", new int[]{0, 2, 13, 16, 15, 16}, false));
+    initTabBlock(new BlockWallBoard("chalkboard_oak", new int[]{0, 2, 13, 16, 15, 16}));
 
     // Cork Notice Board
-    initTabBlock(new BlockResidentialRun("cork_board_oak", new int[]{0, 2, 14, 16, 15, 16}, false));
+    initTabBlock(new BlockWallBoard("cork_board_oak", new int[]{0, 2, 14, 16, 15, 16}));
 
     // Projector Screen
     initTabBlock(new BlockFoldingFixture("projector_screen_white", new int[]{0, 13, 13, 16, 16, 16}, new int[]{0, 0, 13, 16, 16, 16}, FixtureMaterial.PLASTIC));
+
+    // Pull-Down Map
+    initTabBlock(new BlockFoldingFixture("pull_down_map_world", new int[]{0, 11, 13, 16, 16, 16}, new int[]{0, 0, 13, 16, 16, 16}, FixtureMaterial.PLASTIC));
 
     // ---- School ----
     // School Desk and Chair
     initTabBlock(new BlockResidentialFurniture("school_desk_blue", new int[]{2, 0, 0, 14, 14, 15}, false, 7.5, -2.75, 0));
     initTabBlock(new BlockResidentialFurniture("school_desk_red", new int[]{2, 0, 0, 14, 14, 15}, false, 7.5, -2.75, 0));
 
+    // Tablet-Arm Desk
+    initTabBlock(new BlockResidentialFurniture("tablet_arm_desk_blue", new int[]{3, 0, 0, 15, 15, 14}, false, 7.5, 0.25, 0));
+    initTabBlock(new BlockResidentialFurniture("tablet_arm_desk_charcoal", new int[]{3, 0, 0, 15, 15, 14}, false, 7.5, 0.25, 0));
+
+    // Stacking Classroom Chair
+    initTabBlock(new BlockResidentialFurniture("classroom_chair_blue", new int[]{3, 0, 3, 13, 15, 14}, false, 7.5, 0.25, 0));
+    initTabBlock(new BlockResidentialFurniture("classroom_chair_red", new int[]{3, 0, 3, 13, 15, 14}, false, 7.5, 0.25, 0));
+    initTabBlock(new BlockResidentialFurniture("classroom_chair_charcoal", new int[]{3, 0, 3, 13, 15, 14}, false, 7.5, 0.25, 0));
+
+    // Lectern
+    initTabBlock(new BlockBathroomFixture("lectern_oak", new int[]{2, 0, 2, 14, 20, 14}, FixtureMaterial.WOOD));
+    initTabBlock(new BlockBathroomFixture("lectern_walnut", new int[]{2, 0, 2, 14, 20, 14}, FixtureMaterial.WOOD));
+
+    // Podium with Microphone
+    initTabBlock(new BlockBathroomFixture("podium_oak", new int[]{0, 0, 2, 16, 26, 14}, FixtureMaterial.WOOD));
+    initTabBlock(new BlockBathroomFixture("podium_walnut", new int[]{0, 0, 2, 16, 26, 14}, FixtureMaterial.WOOD));
+
     // Locker
     initTabBlock(new BlockCloset("locker_blue", new int[]{0, 0, 7, 16, 29, 16}, 9, FurnishingsSounds.LOCKER_DOOR_OPEN, FurnishingsSounds.LOCKER_DOOR_CLOSE));
     initTabBlock(new BlockCloset("locker_grey", new int[]{0, 0, 7, 16, 29, 16}, 9, FurnishingsSounds.LOCKER_DOOR_OPEN, FurnishingsSounds.LOCKER_DOOR_CLOSE));
     initTabBlock(new BlockCloset("locker_red", new int[]{0, 0, 7, 16, 29, 16}, 9, FurnishingsSounds.LOCKER_DOOR_OPEN, FurnishingsSounds.LOCKER_DOOR_CLOSE));
+
+    // Trophy Case
+    initTabBlock(new BlockTrophyCase("trophy_case_oak", new int[]{0, 0, 8, 16, 32, 16}, 18, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+    initTabBlock(new BlockTrophyCase("trophy_case_walnut", new int[]{0, 0, 8, 16, 32, 16}, 18, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));
+
+    // Desk Globe
+    initTabBlock(new BlockCounterPiece("desk_globe_blue", new int[]{4, 0, 4, 12, 11, 12}, Material.WOOD, SoundType.METAL, BlockRenderLayer.SOLID));
+
+    // Wall Pencil Sharpener
+    initTabBlock(new BlockBathroomFixture("pencil_sharpener_silver", new int[]{6, 9, 8, 13, 14, 16}, FixtureMaterial.METAL, FurnishingsSounds.PENCIL_SHARPENER, 1.0F));
+
+    // Classroom Flag
+    initTabBlock(new BlockBathroomFixture("classroom_flag_stars", new int[]{7, 6, 0, 9, 23, 16}, FixtureMaterial.WOOD));
+
+    // ---- Classroom AV ----
+    // Ceiling Projector
+    initTabBlock(new BlockKitchenLight("ceiling_projector_white", new int[]{3, 8, 2, 13, 16, 12}, 6));
+
+    // Overhead Projector
+    initTabBlock(new BlockCounterLight("overhead_projector_grey", new int[]{3, 0, 2, 13, 14, 13}, Material.WOOD, SoundType.METAL, BlockRenderLayer.SOLID, 8));
+
+    // AV Cart
+    initTabBlock(new BlockBathroomFixture("av_cart_black", new int[]{2, 0, 2, 14, 12, 15}, FixtureMaterial.METAL));
+
+    // ---- Cafeteria ----
+    // Cafeteria Table
+    initTabBlock(new BlockCafeteriaTable("cafeteria_table_blue", new int[]{0, 0, 0, 32, 12, 16}));
+    initTabBlock(new BlockCafeteriaTable("cafeteria_table_red", new int[]{0, 0, 0, 32, 12, 16}));
 
     // ---- On the desk ----
     // Desktop Computer

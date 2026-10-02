@@ -135,8 +135,10 @@ TABS = {
                  "irrigation."),
     "tabcommercialoffice": ("commercial-office", "Commercial & Office",
                             "The furniture of offices, schools and studios: desks that join "
-                            "into runs and L-shapes, cubicle panels, office seating, boards, "
-                            "lockers, the things on a desk and a copier that copies books."),
+                            "into runs and L-shapes, cubicle panels, office seating, boards "
+                            "that join into one of any size, classroom seating, lecterns, "
+                            "lockers, a trophy case, projectors, the cafeteria table, the "
+                            "things on a desk and a copier that copies books."),
     "tabresidential": ("residential", "Residential",
                        "The furniture of homes: dining and living room furniture and sofas "
                        "that join into runs, kitchens with working appliances, beds you can "

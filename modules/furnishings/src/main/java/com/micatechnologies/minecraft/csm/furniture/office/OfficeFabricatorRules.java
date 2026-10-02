@@ -12,7 +12,9 @@ import net.minecraft.block.Block;
  * on a steel frame, storage timber and fittings, a filing cabinet and a locker sheet steel;
  * cubicle panels and seating are wool on steel; the boards are their surface in a frame; the
  * things on a desk and the copier are electronics priced as the Technology tab's are, the ring
- * light and the desk lamp by their lamps, the camera by its lens.
+ * light and the desk lamp by their lamps, the camera and the projectors by their lenses. The
+ * school's plastic seating is steel, the lectern and podium timber, the trophy case timber and
+ * glass with a little gold, the map and the globe paper.
  *
  * <p>Priced by registry name, whose piece is its first words and whose finish is its last
  * ({@code office_desk_pedestal_walnut}). {@code audit_fabricator_costs.py} mirrors this.</p>
@@ -30,6 +32,8 @@ public final class OfficeFabricatorRules {
   private static final String MC_PAPER = "minecraft:paper";
   private static final String MC_GLASS = "minecraft:glass";
   private static final String MC_COAL = "minecraft:coal";
+  private static final String MC_GLASS_PANE = "minecraft:glass_pane";
+  private static final String MC_GOLD_NUGGET = "minecraft:gold_nugget";
 
   private OfficeFabricatorRules() {
   }
@@ -103,6 +107,45 @@ public final class OfficeFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
           FabricatorIngredient.any(MC_WOOL, 1));
     }
+    if (registryName.startsWith("pull_down_map_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PAPER, 3),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (registryName.startsWith("lectern_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("podium_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("trophy_case_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 3),
+          FabricatorIngredient.any(MC_GLASS_PANE, 3),
+          FabricatorIngredient.any(MC_GOLD_NUGGET, 3));
+    }
+    if (registryName.startsWith("desk_globe_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PAPER, 2),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("pencil_sharpener_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("classroom_flag_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_WOOL, 2),
+          FabricatorIngredient.any(MC_PLANKS, 1));
+    }
+    if (registryName.startsWith("av_cart_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("cafeteria_table_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 4),
+          FabricatorIngredient.any(MC_IRON_INGOT, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
     if (registryName.startsWith("locker_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
@@ -137,6 +180,13 @@ public final class OfficeFabricatorRules {
     if (registryName.startsWith("waiting_bench_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 2),
           FabricatorIngredient.any(MC_WOOL, 1));
+    }
+    if (registryName.startsWith("tablet_arm_desk_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 1),
+          FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("classroom_chair_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1));
     }
     if (registryName.startsWith("school_desk_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_PLANKS, 2),
@@ -190,6 +240,16 @@ public final class OfficeFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.any(MC_IRON_INGOT, 1));
+    }
+    if (registryName.startsWith("ceiling_projector_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
+    if (registryName.startsWith("overhead_projector_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
+          FabricatorIngredient.any(MC_GLASS, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
     }
     if (registryName.startsWith("pen_holder_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_IRON_INGOT, 1));

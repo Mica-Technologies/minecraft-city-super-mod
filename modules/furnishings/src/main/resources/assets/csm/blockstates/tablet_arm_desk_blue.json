@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/tablet_arm_desk",
+    "textures": {
+      "seat": "csm:blocks/furniture/office/plastic_blue",
+      "frame": "csm:blocks/furniture/residential/metal_steel",
+      "wood": "csm:blocks/furniture/residential/oak",
+      "edge": "csm:blocks/furniture/residential/oak_edge"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

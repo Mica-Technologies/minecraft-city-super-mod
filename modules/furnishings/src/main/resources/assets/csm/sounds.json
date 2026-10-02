@@ -412,5 +412,14 @@
         "stream": false
       }
     ]
+  },
+  "pencil_sharpener": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:pencil_sharpener",
+        "stream": false
+      }
+    ]
   }
 }

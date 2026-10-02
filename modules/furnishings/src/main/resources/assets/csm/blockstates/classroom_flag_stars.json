@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/office/base/classroom_flag",
+    "textures": {
+      "flag": "csm:blocks/furniture/office/flag_stars",
+      "brass": "csm:blocks/furniture/residential/brass",
+      "wood_v": "csm:blocks/furniture/residential/oak_v"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

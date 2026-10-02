@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/office/base/whiteboard_right_tray",
+  "textures": {
+    "trim": "csm:blocks/furniture/residential/stainless"
+  }
+}
