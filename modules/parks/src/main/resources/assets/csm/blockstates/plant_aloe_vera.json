@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/landscape/plant_aloe_vera"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "model": "csm:parks/landscape/plant_aloe_vera_item"
+      }
+    ]
+  }
+}

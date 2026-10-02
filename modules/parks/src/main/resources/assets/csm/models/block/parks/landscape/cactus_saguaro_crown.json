@@ -1,0 +1,178 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "ribs": "csm:blocks/parks/landscape/saguaro",
+    "top": "csm:blocks/parks/landscape/saguaro_top",
+    "particle": "csm:blocks/parks/landscape/saguaro"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        14,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#ribs",
+          "uv": [
+            4,
+            2,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ribs",
+          "uv": [
+            4,
+            2,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ribs",
+          "uv": [
+            4,
+            2,
+            12,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ribs",
+          "uv": [
+            4,
+            2,
+            12,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.5,
+        14,
+        4.5
+      ],
+      "to": [
+        11.5,
+        15.25,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#ribs",
+          "uv": [
+            4.5,
+            0.75,
+            11.5,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#ribs",
+          "uv": [
+            4.5,
+            0.75,
+            11.5,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#ribs",
+          "uv": [
+            4.5,
+            0.75,
+            11.5,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#ribs",
+          "uv": [
+            4.5,
+            0.75,
+            11.5,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            4.5,
+            4.5,
+            11.5,
+            11.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        15.25,
+        5.5
+      ],
+      "to": [
+        10.5,
+        16,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#ribs",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            0.75
+          ]
+        },
+        "south": {
+          "texture": "#ribs",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            0.75
+          ]
+        },
+        "east": {
+          "texture": "#ribs",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            0.75
+          ]
+        },
+        "west": {
+          "texture": "#ribs",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            0.75
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        }
+      }
+    }
+  ]
+}

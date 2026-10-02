@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkCrop;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkFacing;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkJoining;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkProp;
+import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkSaguaro;
 import com.micatechnologies.minecraft.csm.parks.planting.ItemTreePlantingTool;
 import com.micatechnologies.minecraft.csm.parks.tools.BlockBrushPile;
 import com.micatechnologies.minecraft.csm.parks.tools.ItemChainsaw;
@@ -378,6 +379,55 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockParkProp("potted_flower_wood_anemone", BlockParkProp.Kind.SHRUB, 10, 3));
     initTabBlock(new BlockParkProp("potted_flower_harebell", BlockParkProp.Kind.SHRUB, 12, 3));
     initTabBlock(new BlockParkProp("potted_flower_marguerite", BlockParkProp.Kind.SHRUB, 14, 3));
+    // Herbs and garden plants
+    initTabBlock(new BlockParkProp("shrub_lavender", BlockParkProp.Kind.SHRUB, 11, 2));
+    initTabBlock(new BlockParkProp("shrub_rosemary", BlockParkProp.Kind.SHRUB, 15, 2));
+    initTabBlock(new BlockParkProp("shrub_mexican_bush_sage", BlockParkProp.Kind.SHRUB, 16, 0));
+    initTabBlock(new BlockParkProp("shrub_russian_sage", BlockParkProp.Kind.PLANT, 16, 1));
+    initTabBlock(new BlockParkProp("shrub_star_jasmine", BlockParkProp.Kind.SHRUB, 9, 0));
+    initTabBlock(new BlockParkProp("plant_bird_of_paradise", BlockParkProp.Kind.PLANT, 16, 1));
+    initTabBlock(new BlockParkProp("plant_foxtail_fern", BlockParkProp.Kind.PLANT, 10, 2));
+    initTabBlock(new BlockParkProp("flower_wild_mustard", BlockParkProp.Kind.PLANT, 16, 2));
+    initTabBlock(new BlockParkProp("potted_shrub_lavender", BlockParkProp.Kind.SHRUB, 13, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_rosemary", BlockParkProp.Kind.SHRUB, 15, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_mexican_bush_sage", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_russian_sage", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_star_jasmine", BlockParkProp.Kind.SHRUB, 12, 3));
+    initTabBlock(new BlockParkProp("potted_plant_bird_of_paradise", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_plant_foxtail_fern", BlockParkProp.Kind.SHRUB, 12, 3));
+    initTabBlock(new BlockParkProp("potted_flower_wild_mustard", BlockParkProp.Kind.SHRUB, 16, 3));
+    // Desert: cacti and succulents
+    initTabBlock(new BlockParkSaguaro("cactus_saguaro", 4));
+    initTabBlock(new BlockParkProp("cactus_golden_barrel", BlockParkProp.Kind.CACTUS, 10, 3));
+    initTabBlock(new BlockParkProp("cactus_prickly_pear", BlockParkProp.Kind.CACTUS, 16, 1));
+    initTabBlock(new BlockParkProp("plant_agave", BlockParkProp.Kind.SHRUB, 12, 1));
+    initTabBlock(new BlockParkProp("plant_aloe_vera", BlockParkProp.Kind.PLANT, 11, 3));
+    initTabBlock(new BlockParkProp("plant_echeveria", BlockParkProp.Kind.PLANT, 5, 0));
+    initTabBlock(new BlockParkProp("plant_jade", BlockParkProp.Kind.SHRUB, 12, 2));
+    initTabBlock(new BlockParkProp("potted_cactus_saguaro", BlockParkProp.Kind.SHRUB, 15, 3));
+    initTabBlock(new BlockParkProp("potted_cactus_golden_barrel", BlockParkProp.Kind.SHRUB, 12, 3));
+    initTabBlock(new BlockParkProp("potted_cactus_prickly_pear", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_plant_agave", BlockParkProp.Kind.SHRUB, 14, 3));
+    initTabBlock(new BlockParkProp("potted_plant_aloe_vera", BlockParkProp.Kind.SHRUB, 13, 3));
+    initTabBlock(new BlockParkProp("potted_plant_echeveria", BlockParkProp.Kind.SHRUB, 9, 3));
+    initTabBlock(new BlockParkProp("potted_plant_jade", BlockParkProp.Kind.SHRUB, 14, 3));
+    // Garden flowers
+    initTabBlock(new BlockParkProp("flower_tulips", BlockParkProp.Kind.PLANT, 9, 2));
+    initTabBlock(new BlockParkProp("flower_daffodils", BlockParkProp.Kind.PLANT, 8, 2));
+    initTabBlock(new BlockParkProp("shrub_rose", BlockParkProp.Kind.SHRUB, 15, 1));
+    initTabBlock(new BlockParkProp("flower_sunflower", BlockParkProp.Kind.PLANT, 28, 3));
+    initTabBlock(new BlockParkProp("flower_marigolds", BlockParkProp.Kind.PLANT, 7, 1));
+    initTabBlock(new BlockParkProp("flower_zinnias", BlockParkProp.Kind.PLANT, 12, 2));
+    initTabBlock(new BlockParkProp("shrub_hibiscus", BlockParkProp.Kind.SHRUB, 16, 1));
+    initTabBlock(new BlockParkProp("shrub_bougainvillea", BlockParkProp.Kind.SHRUB, 14, 0));
+    initTabBlock(new BlockParkProp("potted_flower_tulips", BlockParkProp.Kind.SHRUB, 12, 3));
+    initTabBlock(new BlockParkProp("potted_flower_daffodils", BlockParkProp.Kind.SHRUB, 11, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_rose", BlockParkProp.Kind.SHRUB, 15, 3));
+    initTabBlock(new BlockParkProp("potted_flower_sunflower", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_flower_marigolds", BlockParkProp.Kind.SHRUB, 11, 3));
+    initTabBlock(new BlockParkProp("potted_flower_zinnias", BlockParkProp.Kind.SHRUB, 14, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_hibiscus", BlockParkProp.Kind.SHRUB, 16, 3));
+    initTabBlock(new BlockParkProp("potted_shrub_bougainvillea", BlockParkProp.Kind.SHRUB, 15, 3));
 
     // The nursery, garden centre and farm: more planters, nursery benches and stock, crop rows.
     initTabBlock(new BlockParkProp("planter_terracotta_small", BlockParkProp.Kind.PLANTER, 8, 4));
@@ -395,5 +445,9 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockParkCrop("crop_row_lettuce", new int[]{0, 0, 2, 16, 5, 14}));
     initTabBlock(new BlockParkCrop("crop_row_tomato", new int[]{0, 0, 2, 16, 16, 14}));
     initTabBlock(new BlockParkFacing("trellis_clematis", new int[]{0, 0, 7, 16, 16, 9}, false));
+    initTabBlock(new BlockParkCrop("crop_row_lima_bean", new int[]{0, 0, 2, 16, 16, 14}));
+    initTabBlock(new BlockParkCrop("crop_row_pumpkin", new int[]{0, 0, 2, 16, 10, 14}));
+    initTabBlock(new BlockParkCrop("crop_row_watermelon", new int[]{0, 0, 2, 16, 8, 14}));
+    initTabBlock(new BlockParkCrop("crop_row_boysenberry", new int[]{0, 0, 2, 16, 15, 14}));
   }
 }

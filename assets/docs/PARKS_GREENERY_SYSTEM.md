@@ -362,7 +362,8 @@ sticks; the pole trimmer from the tree shears and two sticks.
 
 All written by `gen_park_plantings.py`, and built from three classes:
 
-- `BlockParkProp`: a sized prop. Its `Kind` is GROUND, COVER, PLANTER, POST, SHRUB or PLANT.
+- `BlockParkProp`: a sized prop. Its `Kind` is GROUND, COVER, PLANTER, POST, SHRUB, PLANT or
+  CACTUS.
 - `BlockParkJoining`: joins its neighbours in four directions, from actual state and a multipart
   blockstate. Its `Kind` is HEDGE, FENCE, BED or PERGOLA.
 - `BlockParkFacing`: faces what it attaches to, which sits behind it at +Z. Its `PoleFitted`
@@ -423,6 +424,43 @@ by region. Each is one `BlockParkProp`, like the plantings above, grouped in the
   and a plant planted out beside its pot. The pot is added by the generator (`potted()`), not
   drawn per plant. A potted plant is a `SHRUB`: it has a box to stand on and to bump into.
 
+### Herbs, cacti and succulents, garden flowers
+
+Three more groups after the regions (GitHub #250), each also potted, drawn from the real plant's
+habit, colour and size at 1 px = 6.25 cm:
+
+| Group | Plants |
+|---|---|
+| Herbs and garden | English lavender, rosemary, Mexican bush sage, Russian sage, star jasmine, bird of paradise, foxtail fern, wild mustard |
+| Cacti and succulents | saguaro, golden barrel cactus, prickly pear, century plant (agave), aloe vera, echeveria, jade plant |
+| Garden flowers | tulips, daffodils, shrub rose, sunflower, marigolds, zinnias, hibiscus, bougainvillea |
+
+- **No solid body where the real plant has none.** Lavender, rosemary and Mexican bush sage are
+  crossed cards only (`SHRUB`, so still solid to bump into): an opaque leafy box read in game as
+  a stone block with flowers on top. The rose, hibiscus, bougainvillea and star jasmine keep a
+  small leafy core box, wrapped in four crossed cards (`fringe_tex`) that carry a rounded,
+  ragged-edged mound, bare stems under it where the plant has them, fewer and larger flowers,
+  and the bougainvillea's sprays of bracts cascading off its sides, so none reads as a cube.
+- **Cacti are `CACTUS`** (`cactus_` names, priced at a vanilla cactus): solid to their box, and
+  they prick a living thing that presses against them, as a vanilla cactus does. The box stands
+  in from the cell, so touching the cactus is entering the cell. Succulents are not cacti and do
+  not prick. Potted cacti are `SHRUB`s like every potted plant, and do not prick either.
+- **The saguaro is stacked** (`BlockParkSaguaro`): the trunk in every block, a rounded crown on
+  the top one, and a pair of arms, at different heights, on the second block of a saguaro three
+  or more blocks tall, rising past the block into the one above (drawn only, not solid). A one-
+  or two-block saguaro is a young one with no arms, as a real saguaro branches only once it is
+  several metres tall; the potted saguaro is that young column.
+- **Cacti are solid bodies**, not planes: the saguaro and golden barrel are ribbed boxes, the
+  prickly pear is pads drawn as cards turned to different angles, fruit on the top ones. The
+  echeveria is rosettes of square layers, each turned 45 degrees from the one under it.
+- **The sunflower is two blocks tall**: its crossed planes stand on two 16 px textures, the stem
+  and leaves to y = 16 and the head above it (a block texture must be square). Its box is the
+  whole plant; its potted copy is a dwarf one.
+- **The new crop rows** are `BlockParkCrop` rows like the lettuce and tomato: pole lima beans on
+  stakes, pumpkin and watermelon patches (vine cards with the fruit lying on the ridge; the
+  watermelon's cards are only diagonal, since cards along the row would hide a low melon), and
+  boysenberries trained on two wires between posts.
+
 ### Nursery, garden centre and farm
 
 Fifteen pieces for laying out a plant nursery, a garden centre or a small farm, at the end of
@@ -434,7 +472,7 @@ pumpkins or scarecrow.
 |---|---|
 | Planters (`BlockParkProp`, `PLANTER`) | small and large terracotta pots, a glazed ceramic urn, a concrete bowl of bedding flowers, a half barrel |
 | Nursery | a window box of trailing flowers (`BlockParkFacing`, hung against the wall behind it), the nursery growing bench (`BlockParkJoining.Kind.TABLE`), a potting bench, stacked empty nursery pots, seedling flats |
-| Farm | a slatted compost bin, a wheelbarrow of soil, lettuce and staked tomato rows (`BlockParkCrop`), a trellis with a clematis |
+| Farm | a slatted compost bin, a wheelbarrow of soil, lettuce and staked tomato rows (`BlockParkCrop`), a trellis with a clematis, then pole lima bean, pumpkin, watermelon and boysenberry rows |
 
 - **A pot's rim is a ring drawn into its top texture** at the pixels the rim box's up face samples
   (`rim_top`), so a small pot's soil sits inside a rim rather than across the whole top.
@@ -514,12 +552,13 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
   - leaves cost vanilla leaves (2 for a palm crown); moss costs a vine;
   - plantings cost what they are planted with or made of (saplings, tall grass, flowers, gravel,
     sand, planks, stone), by name: `shrub_` and `plant_` a sapling, `grass_` tall grass,
-    `flower_` a flower; a `potted_` plant costs its plant and a flower pot;
+    `flower_` a flower, `cactus_` a cactus; a `potted_` plant costs its plant and a flower pot;
   - grates and the pit fence take the generic steel cost;
   - the nursery and farm pieces cost what they are made of: clay for the terracotta pots and
     the urn, planks for the barrel, window box, potting bench and compost bin, stone for the
-    bowl, flower pots for the stacked pots, seeds for the flats and crop rows, sticks and a vine
-    for the trellis. The nursery bench and the wheelbarrow take the generic steel cost.
+    bowl, flower pots for the stacked pots, seeds for the flats and crop rows (pumpkin and melon
+    seeds for those patches, a sapling and sticks for the boysenberries), sticks and a vine for
+    the trellis. The nursery bench and the wheelbarrow take the generic steel cost.
 - **Parks:**
   - flower pots cost clay; the bird bath and fountains cost stone;
   - wooden benches, tables and the pergola cost planks;

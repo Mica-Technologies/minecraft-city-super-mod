@@ -2,7 +2,7 @@
 
 Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings.
 
-!!! info "279 blocks in this tab"
+!!! info "329 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Aloe Vera | `csm:plant_aloe_vera` |  |  |  |  |
 | American Beautyberry | `csm:shrub_beautyberry` |  |  |  |  |
 | Arborvitae Foliage | `csm:tree_leaves_arborvitae` | 0.2 | 1.0 |  | 0 |
 | Artificial Turf | `csm:ground_turf` |  |  |  |  |
@@ -26,11 +27,13 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Autumn Sweetgum Leaves | `csm:tree_leaves_sweetgum_autumn` | 0.2 | 1.0 |  | 0 |
 | Bamboo | `csm:plant_bamboo` |  |  |  |  |
 | Big Sagebrush | `csm:shrub_sagebrush` |  |  |  |  |
+| Bird of Paradise | `csm:plant_bird_of_paradise` |  |  |  |  |
 | Blue Fescue | `csm:grass_blue_fescue` |  |  |  |  |
 | Blue Grama | `csm:grass_blue_grama` |  |  |  |  |
 | Blue Spruce Foliage | `csm:tree_leaves_spruce_blue` | 0.2 | 1.0 |  | 0 |
 | Blue Spruce Log | `csm:tree_log_spruce_medium` | 2.0 | 5.0 | axe | 0 |
 | Blue Spruce Twig | `csm:tree_log_spruce_twig` | 2.0 | 5.0 | axe | 0 |
+| Bougainvillea | `csm:shrub_bougainvillea` |  |  |  |  |
 | Boxwood Ball | `csm:shrub_boxwood` |  |  |  |  |
 | Brush Pile | `csm:brush_pile` | 0.0 | 0.0 |  | 0 |
 | Cabbage Palm Crown | `csm:tree_crown_palm_cabbage` | 0.2 | 1.0 |  | 0 |
@@ -44,6 +47,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Camphor Tree Log | `csm:tree_log_camphor_medium` | 2.0 | 5.0 | axe | 0 |
 | Camphor Tree Twig | `csm:tree_log_camphor_twig` | 2.0 | 5.0 | axe | 0 |
 | Cedar Planter | `csm:planter_wood` |  |  |  |  |
+| Century Plant | `csm:plant_agave` |  |  |  |  |
 | Clipped Linden Leaves | `csm:tree_leaves_linden_clipped` | 0.2 | 1.0 |  | 0 |
 | Coast Redwood Foliage | `csm:tree_leaves_redwood` | 0.2 | 1.0 |  | 0 |
 | Coast Redwood Log | `csm:tree_log_redwood_medium` | 2.0 | 5.0 | axe | 0 |
@@ -54,14 +58,17 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Coontie | `csm:plant_coontie` |  |  |  |  |
 | Coreopsis | `csm:flower_coreopsis` |  |  |  |  |
 | Corten Steel Planter | `csm:planter_corten` |  |  |  |  |
+| Daffodils | `csm:flower_daffodils` |  |  |  |  |
 | Decomposed Granite | `csm:ground_decomposed_granite` |  |  |  |  |
 | Deergrass | `csm:grass_deergrass` |  |  |  |  |
 | Eastern White Pine Foliage | `csm:tree_leaves_pine_white` | 0.2 | 1.0 |  | 0 |
 | Eastern White Pine Log | `csm:tree_log_whitepine_medium` | 2.0 | 5.0 | axe | 0 |
 | Eastern White Pine Twig | `csm:tree_log_whitepine_twig` | 2.0 | 5.0 | axe | 0 |
+| Echeveria | `csm:plant_echeveria` |  |  |  |  |
 | Elm Leaves | `csm:tree_leaves_elm` | 0.2 | 1.0 |  | 0 |
 | Elm Log | `csm:tree_log_elm_medium` | 2.0 | 5.0 | axe | 0 |
 | Elm Twig | `csm:tree_log_elm_twig` | 2.0 | 5.0 | axe | 0 |
+| English Lavender | `csm:shrub_lavender` |  |  |  |  |
 | English Oak Leaves | `csm:tree_leaves_oak` | 0.2 | 1.0 |  | 0 |
 | English Oak Log | `csm:tree_log_oak_medium` | 2.0 | 5.0 | axe | 0 |
 | English Oak Twig | `csm:tree_log_oak_twig` | 2.0 | 5.0 | axe | 0 |
@@ -74,6 +81,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Feather Reed Grass | `csm:grass_feather_reed` |  |  |  |  |
 | Firebush | `csm:shrub_firebush` |  |  |  |  |
 | Fountain Grass | `csm:grass_fountain` |  |  |  |  |
+| Foxtail Fern | `csm:plant_foxtail_fern` |  |  |  |  |
 | Full Blue Spruce Log | `csm:tree_log_spruce_full` | 2.0 | 5.0 | axe | 0 |
 | Full Cabbage Palm Log | `csm:tree_log_sabal_full` | 2.0 | 5.0 | axe | 0 |
 | Full Camphor Tree Log | `csm:tree_log_camphor_full` | 2.0 | 5.0 | axe | 0 |
@@ -104,9 +112,11 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Ginkgo Log | `csm:tree_log_ginkgo_medium` | 2.0 | 5.0 | axe | 0 |
 | Ginkgo Twig | `csm:tree_log_ginkgo_twig` | 2.0 | 5.0 | axe | 0 |
 | Glazed Ceramic Urn | `csm:planter_glazed_urn` |  |  |  |  |
+| Golden Barrel Cactus | `csm:cactus_golden_barrel` |  |  |  |  |
 | Half Barrel Planter | `csm:planter_half_barrel` |  |  |  |  |
 | Harebell | `csm:flower_harebell` |  |  |  |  |
 | Heather | `csm:shrub_heather` |  |  |  |  |
+| Hibiscus | `csm:shrub_hibiscus` |  |  |  |  |
 | Highbush Blueberry | `csm:shrub_highbush_blueberry` |  |  |  |  |
 | Honey Locust Leaves | `csm:tree_leaves_honeylocust` | 0.2 | 1.0 |  | 0 |
 | Honey Locust Log | `csm:tree_log_honeylocust_medium` | 2.0 | 5.0 | axe | 0 |
@@ -122,6 +132,7 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Jacaranda Leaves | `csm:tree_leaves_jacaranda` | 0.2 | 1.0 |  | 0 |
 | Jacaranda Log | `csm:tree_log_jacaranda_medium` | 2.0 | 5.0 | axe | 0 |
 | Jacaranda Twig | `csm:tree_log_jacaranda_twig` | 2.0 | 5.0 | axe | 0 |
+| Jade Plant | `csm:plant_jade` |  |  |  |  |
 | Japanese Forest Grass | `csm:grass_hakone` |  |  |  |  |
 | Japanese Iris | `csm:flower_japanese_iris` |  |  |  |  |
 | Japanese Maple Leaves | `csm:tree_leaves_maple_japanese` | 0.2 | 1.0 |  | 0 |
@@ -148,6 +159,8 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Low Boxwood Hedge | `csm:hedge_boxwood_low` |  |  |  |  |
 | Low Privet Hedge | `csm:hedge_privet_low` |  |  |  |  |
 | Manzanita | `csm:shrub_manzanita` |  |  |  |  |
+| Marigolds | `csm:flower_marigolds` |  |  |  |  |
+| Mexican Bush Sage | `csm:shrub_mexican_bush_sage` |  |  |  |  |
 | Mixed Flower Bed | `csm:flower_bed_mixed` |  |  |  |  |
 | Mixed Hanging Basket | `csm:hanging_basket_mixed` | 1.0 | 2.0 | axe | 0 |
 | Mountain Laurel | `csm:shrub_mountain_laurel` |  |  |  |  |
@@ -167,59 +180,91 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Petunia Hanging Basket | `csm:hanging_basket_petunia` | 1.0 | 2.0 | axe | 0 |
 | Pink Lady's Slipper | `csm:flower_ladys_slipper` |  |  |  |  |
 | Pink Muhly Grass | `csm:grass_pink_muhly` |  |  |  |  |
+| Pole Lima Bean Row | `csm:crop_row_lima_bean` | 0.2 | 0.4 |  | 0 |
+| Potted Aloe Vera | `csm:potted_plant_aloe_vera` |  |  |  |  |
 | Potted American Beautyberry | `csm:potted_shrub_beautyberry` |  |  |  |  |
 | Potted Bamboo | `csm:potted_plant_bamboo` |  |  |  |  |
 | Potted Big Sagebrush | `csm:potted_shrub_sagebrush` |  |  |  |  |
+| Potted Bird of Paradise | `csm:potted_plant_bird_of_paradise` |  |  |  |  |
 | Potted Blue Grama | `csm:potted_grass_blue_grama` |  |  |  |  |
+| Potted Bougainvillea | `csm:potted_shrub_bougainvillea` |  |  |  |  |
 | Potted California Lilac | `csm:potted_shrub_ceanothus` |  |  |  |  |
 | Potted California Poppy | `csm:potted_flower_california_poppy` |  |  |  |  |
 | Potted Camellia | `csm:potted_shrub_camellia` |  |  |  |  |
+| Potted Century Plant | `csm:potted_plant_agave` |  |  |  |  |
 | Potted Colorado Blue Columbine | `csm:potted_flower_columbine` |  |  |  |  |
 | Potted Coontie | `csm:potted_plant_coontie` |  |  |  |  |
 | Potted Coreopsis | `csm:potted_flower_coreopsis` |  |  |  |  |
+| Potted Daffodils | `csm:potted_flower_daffodils` |  |  |  |  |
 | Potted Deergrass | `csm:potted_grass_deergrass` |  |  |  |  |
+| Potted Echeveria | `csm:potted_plant_echeveria` |  |  |  |  |
+| Potted English Lavender | `csm:potted_shrub_lavender` |  |  |  |  |
 | Potted Firebush | `csm:potted_shrub_firebush` |  |  |  |  |
+| Potted Foxtail Fern | `csm:potted_plant_foxtail_fern` |  |  |  |  |
+| Potted Golden Barrel Cactus | `csm:potted_cactus_golden_barrel` |  |  |  |  |
 | Potted Harebell | `csm:potted_flower_harebell` |  |  |  |  |
 | Potted Heather | `csm:potted_shrub_heather` |  |  |  |  |
+| Potted Hibiscus | `csm:potted_shrub_hibiscus` |  |  |  |  |
 | Potted Highbush Blueberry | `csm:potted_shrub_highbush_blueberry` |  |  |  |  |
+| Potted Jade Plant | `csm:potted_plant_jade` |  |  |  |  |
 | Potted Japanese Forest Grass | `csm:potted_grass_hakone` |  |  |  |  |
 | Potted Japanese Iris | `csm:potted_flower_japanese_iris` |  |  |  |  |
 | Potted Lingonberry | `csm:potted_shrub_lingonberry` |  |  |  |  |
 | Potted Manzanita | `csm:potted_shrub_manzanita` |  |  |  |  |
+| Potted Marigolds | `csm:potted_flower_marigolds` |  |  |  |  |
+| Potted Mexican Bush Sage | `csm:potted_shrub_mexican_bush_sage` |  |  |  |  |
 | Potted Mountain Laurel | `csm:potted_shrub_mountain_laurel` |  |  |  |  |
 | Potted Oxeye Daisy | `csm:potted_flower_marguerite` |  |  |  |  |
 | Potted Pink Lady's Slipper | `csm:potted_flower_ladys_slipper` |  |  |  |  |
 | Potted Pink Muhly Grass | `csm:potted_grass_pink_muhly` |  |  |  |  |
+| Potted Prickly Pear | `csm:potted_cactus_prickly_pear` |  |  |  |  |
 | Potted Rocky Mountain Penstemon | `csm:potted_flower_penstemon` |  |  |  |  |
+| Potted Rosemary | `csm:potted_shrub_rosemary` |  |  |  |  |
 | Potted Rubber Rabbitbrush | `csm:potted_shrub_rabbitbrush` |  |  |  |  |
+| Potted Russian Sage | `csm:potted_shrub_russian_sage` |  |  |  |  |
+| Potted Saguaro | `csm:potted_cactus_saguaro` |  |  |  |  |
 | Potted Satsuki Azalea | `csm:potted_shrub_satsuki_azalea` |  |  |  |  |
 | Potted Saw Palmetto | `csm:potted_plant_saw_palmetto` |  |  |  |  |
+| Potted Shrub Rose | `csm:potted_shrub_rose` |  |  |  |  |
 | Potted Soapweed Yucca | `csm:potted_plant_yucca` |  |  |  |  |
+| Potted Star Jasmine | `csm:potted_shrub_star_jasmine` |  |  |  |  |
+| Potted Sunflower | `csm:potted_flower_sunflower` |  |  |  |  |
+| Potted Tulips | `csm:potted_flower_tulips` |  |  |  |  |
 | Potted White Sage | `csm:potted_shrub_white_sage` |  |  |  |  |
 | Potted Wild Lupine | `csm:potted_flower_lupine` |  |  |  |  |
+| Potted Wild Mustard | `csm:potted_flower_wild_mustard` |  |  |  |  |
 | Potted Winterberry | `csm:potted_shrub_winterberry` |  |  |  |  |
 | Potted Wood Anemone | `csm:potted_flower_wood_anemone` |  |  |  |  |
+| Potted Zinnias | `csm:potted_flower_zinnias` |  |  |  |  |
 | Potting Bench | `csm:potting_bench` | 1.0 | 2.0 | axe | 0 |
+| Prickly Pear | `csm:cactus_prickly_pear` |  |  |  |  |
+| Pumpkin Patch Row | `csm:crop_row_pumpkin` | 0.2 | 0.4 |  | 0 |
 | Purple Flower Bed | `csm:flower_bed_purple` |  |  |  |  |
 | Raised Cedar Planting Bed | `csm:raised_bed_wood` |  |  |  |  |
 | Raised Concrete Planting Bed | `csm:raised_bed_concrete` |  |  |  |  |
 | Raised Corten Steel Planting Bed | `csm:raised_bed_corten` |  |  |  |  |
 | Red Flower Bed | `csm:flower_bed_red` |  |  |  |  |
 | Rocky Mountain Penstemon | `csm:flower_penstemon` |  |  |  |  |
+| Rosemary | `csm:shrub_rosemary` |  |  |  |  |
 | Round Tree Grate | `csm:tree_grate_round` |  |  |  |  |
 | Rubber Rabbitbrush | `csm:shrub_rabbitbrush` |  |  |  |  |
+| Russian Sage | `csm:shrub_russian_sage` |  |  |  |  |
+| Saguaro | `csm:cactus_saguaro` |  |  |  |  |
 | Satsuki Azalea | `csm:shrub_satsuki_azalea` |  |  |  |  |
 | Saw Palmetto | `csm:plant_saw_palmetto` |  |  |  |  |
 | Scots Pine Foliage | `csm:tree_leaves_pine` | 0.2 | 1.0 |  | 0 |
 | Scots Pine Log | `csm:tree_log_pine_medium` | 2.0 | 5.0 | axe | 0 |
 | Scots Pine Twig | `csm:tree_log_pine_twig` | 2.0 | 5.0 | axe | 0 |
 | Seedling Flats | `csm:seedling_flats` |  |  |  |  |
+| Shrub Rose | `csm:shrub_rose` |  |  |  |  |
 | Small Terracotta Pot | `csm:planter_terracotta_small` |  |  |  |  |
 | Soapweed Yucca | `csm:plant_yucca` |  |  |  |  |
 | Spanish Moss | `csm:spanish_moss` | 0.1 | 0.1 |  | 0 |
 | Square Tree Grate | `csm:tree_grate_square` |  |  |  |  |
 | Stacked Nursery Pots | `csm:nursery_pot_stack` |  |  |  |  |
 | Staked Tomato Row | `csm:crop_row_tomato` | 0.2 | 0.4 |  | 0 |
+| Star Jasmine | `csm:shrub_star_jasmine` |  |  |  |  |
+| Sunflower | `csm:flower_sunflower` |  |  |  |  |
 | Sweetgum Leaves | `csm:tree_leaves_sweetgum` | 0.2 | 1.0 |  | 0 |
 | Sweetgum Log | `csm:tree_log_sweetgum_medium` | 2.0 | 5.0 | axe | 0 |
 | Sweetgum Twig | `csm:tree_log_sweetgum_twig` | 2.0 | 5.0 | axe | 0 |
@@ -275,20 +320,25 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Thin Scots Pine Log | `csm:tree_log_pine_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Sweetgum Log | `csm:tree_log_sweetgum_thin` | 2.0 | 5.0 | axe | 0 |
 | Thin Weeping Willow Log | `csm:tree_log_willow_thin` | 2.0 | 5.0 | axe | 0 |
+| Trained Boysenberry Row | `csm:crop_row_boysenberry` | 0.2 | 0.4 |  | 0 |
 | Tree Pit Hoop Fence | `csm:tree_pit_fence` |  |  |  |  |
 | Tree Stake | `csm:tree_stake` | 1.0 | 2.0 | axe | 0 |
+| Tulips | `csm:flower_tulips` |  |  |  |  |
 | Upright Juniper | `csm:shrub_juniper` |  |  |  |  |
+| Watermelon Patch Row | `csm:crop_row_watermelon` | 0.2 | 0.4 |  | 0 |
 | Weeping Willow Leaves | `csm:tree_leaves_willow` | 0.2 | 1.0 |  | 0 |
 | Weeping Willow Log | `csm:tree_log_willow_medium` | 2.0 | 5.0 | axe | 0 |
 | Weeping Willow Twig | `csm:tree_log_willow_twig` | 2.0 | 5.0 | axe | 0 |
 | Wheelbarrow | `csm:wheelbarrow` | 1.0 | 2.0 | axe | 0 |
 | White Sage | `csm:shrub_white_sage` |  |  |  |  |
 | Wild Lupine | `csm:flower_lupine` |  |  |  |  |
+| Wild Mustard | `csm:flower_wild_mustard` |  |  |  |  |
 | Willow Strands | `csm:willow_strands` | 0.1 | 0.1 |  | 0 |
 | Window Box with Flowers | `csm:window_box_flowers` | 1.0 | 2.0 | axe | 0 |
 | Winterberry | `csm:shrub_winterberry` |  |  |  |  |
 | Wood Anemone | `csm:flower_wood_anemone` |  |  |  |  |
 | Wooden Compost Bin | `csm:compost_bin` |  |  |  |  |
 | Yellow Flower Bed | `csm:flower_bed_yellow` |  |  |  |  |
+| Zinnias | `csm:flower_zinnias` |  |  |  |  |
 
 </div>

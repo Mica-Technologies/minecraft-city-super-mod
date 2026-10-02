@@ -1,0 +1,309 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leaves": "csm:blocks/parks/landscape/bougainvillea",
+    "particle": "csm:blocks/parks/landscape/bougainvillea",
+    "spikes": "csm:blocks/parks/landscape/bougainvillea_fringe"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        3,
+        4
+      ],
+      "to": [
+        12,
+        10,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            6,
+            12,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            6,
+            12,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            6,
+            12,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            6,
+            12,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#leaves",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        9.5,
+        5.5
+      ],
+      "to": [
+        10.5,
+        12,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            4,
+            10.5,
+            6.5
+          ]
+        },
+        "south": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            4,
+            10.5,
+            6.5
+          ]
+        },
+        "east": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            4,
+            10.5,
+            6.5
+          ]
+        },
+        "west": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            4,
+            10.5,
+            6.5
+          ]
+        },
+        "up": {
+          "texture": "#leaves",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.8,
+        0,
+        8
+      ],
+      "to": [
+        15.2,
+        16,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": 22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.8,
+        0,
+        8
+      ],
+      "to": [
+        15.2,
+        16,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": -22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        0,
+        0.8
+      ],
+      "to": [
+        8,
+        16,
+        15.2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": 22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "east": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        0,
+        0.8
+      ],
+      "to": [
+        8,
+        16,
+        15.2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": -22.5,
+        "rescale": false
+      },
+      "shade": false,
+      "faces": {
+        "east": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#spikes",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}
