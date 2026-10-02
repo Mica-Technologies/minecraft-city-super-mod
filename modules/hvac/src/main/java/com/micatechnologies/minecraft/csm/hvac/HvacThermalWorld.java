@@ -84,6 +84,15 @@ public final class HvacThermalWorld implements IWorldEventListener {
    */
   private static final int RESCANS_PER_STEP = 4;
 
+  /**
+   * How long one tick may spend flooding rooms for anchors that have none yet. When a building's
+   * chunks load, every room in it is found at once: four 24-floor towers, 288 rooms, were one
+   * 235 ms tick. Past this, the rest wait for the next tick, so the same work is spread over a
+   * second or two instead. A device whose room waits its turn shows the temperature it saved, as
+   * one in a room that is still loading does.
+   */
+  private static final long ATTACH_BUDGET_NANOS = 4_000_000L;
+
   /** Distance to an HVAC device within which a player sees the HUD. */
   static final int HUD_RANGE = 24;
 
@@ -109,6 +118,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
    * a block change inside one ends the wait of the anchors that made it.
    */
   private final List<UnloadedFlood> unloadedFloods = new ArrayList<>();
+
+  /** Set when the flood budget left due anchors unattached; they are tried again next tick. */
+  private boolean attachBacklog;
 
   /** Spaces taken apart this step for a rescan, kept until their cells are re-homed. */
   private final List<ThermalSpace> detached = new ArrayList<>();
@@ -253,13 +265,17 @@ public final class HvacThermalWorld implements IWorldEventListener {
   // region Space lifecycle
 
   /**
-   * Tries to attach every unattached anchor that is due. An anchor waiting for a chunk is passed
-   * over without a flood until that chunk loads.
+   * Tries to attach every unattached anchor that is due, flooding new rooms only until the
+   * budget is spent; the rest wait for the next tick ({@link #attachBacklog}). An anchor waiting
+   * for a chunk is passed over without a flood until that chunk loads.
    */
-  private void attachPending(long now) {
+  private void attachPending(long now, long budgetNanos) {
+    long start = System.nanoTime();
     // Keep only the unloaded floods some anchor still waits on, so the list cannot grow.
     java.util.Set<UnloadedFlood> live = java.util.Collections.newSetFromMap(
         new IdentityHashMap<>());
+    attachBacklog = false;
+    boolean floodAllowed = true;
     for (ThermalAnchor a : new ArrayList<>(anchors.values())) {
       if (a.space != null || now < a.retryTick) {
         if (a.space == null && a.waitFlood != null && !a.waitFlood.stale) {
@@ -274,10 +290,14 @@ public final class HvacThermalWorld implements IWorldEventListener {
         }
         continue;
       }
-      attach(a, now);
+      if (!attach(a, now, floodAllowed)) {
+        attachBacklog = true;
+        continue;
+      }
       if (a.waitFlood != null) {
         live.add(a.waitFlood);
       }
+      floodAllowed = System.nanoTime() - start < budgetNanos;
     }
     unloadedFloods.retainAll(live);
   }
@@ -336,8 +356,12 @@ public final class HvacThermalWorld implements IWorldEventListener {
    * Finds or builds the space for an anchor. The anchor's own cell is tried first -- thermostats,
    * vents and most units are not full blocks, so they sit in the room's air -- then its six
    * neighbours, for a unit that fills its cell.
+   *
+   * @param floodAllowed false once this tick's flood budget is spent: an anchor that would need a
+   *                     flood is left due, for the next tick
+   * @return false if the anchor was left for later because it needed a flood
    */
-  private void attach(ThermalAnchor a, long now) {
+  private boolean attach(ThermalAnchor a, long now, boolean floodAllowed) {
     ThermalCellSource cellSource = HvacAirflow.worldSource(world);
     ThermalScanner.Status last = ThermalScanner.Status.NOT_ENCLOSED;
     it.unimi.dsi.fastutil.longs.LongArrayList waitOn = null;
@@ -377,6 +401,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
           waitOn = addChunk(waitOn, shared.chunk);
           break;
         }
+        if (!floodAllowed) {
+          return false;
+        }
         ThermalScanner.Result r = scan(cellSource, x, y, z);
         if (r.status == ThermalScanner.Status.OK) {
           s = createSpace(r, key, now);
@@ -395,7 +422,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
         }
       }
       join(a, s, key);
-      return;
+      return true;
     }
     a.status = last;
     if (last == ThermalScanner.Status.UNLOADED) {
@@ -411,6 +438,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
     a.retryTick = now + (last == ThermalScanner.Status.UNLOADED ? RETRY_UNLOADED_TICKS
         : last == ThermalScanner.Status.TOO_LARGE ? RETRY_TOO_LARGE_TICKS
             : RETRY_NOT_ENCLOSED_TICKS);
+    return true;
   }
 
   private static it.unimi.dsi.fastutil.longs.LongArrayList addChunk(
@@ -668,7 +696,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
       for (ThermalAnchor a : list) {
         boolean live = a.kind == ThermalAnchor.PLAYER || anchors.get(a.pos) == a;
         if (live && a.space == null) {
-          attach(a, now);
+          attach(a, now, true);
         }
       }
     }
@@ -800,13 +828,21 @@ public final class HvacThermalWorld implements IWorldEventListener {
   void tick() {
     long now = world.getTotalWorldTime();
     if (now % STEP_TICKS != 0) {
+      if (attachBacklog) {
+        // Rooms still to be built (a building's chunks have just loaded): a slice every tick.
+        long t0 = System.nanoTime();
+        attachPending(now, ATTACH_BUDGET_NANOS);
+        long dt = System.nanoTime() - t0;
+        perf.attachNanos += dt;
+        perf.maxTickNanos = Math.max(perf.maxTickNanos, dt);
+      }
       return;
     }
     if (perf.sinceTick == Long.MIN_VALUE) {
       perf.reset(now);
     }
     long t0 = System.nanoTime();
-    maintain(now);
+    maintain(now, ATTACH_BUDGET_NANOS);
     long t1 = System.nanoTime();
     step();
     long t2 = System.nanoTime();
@@ -818,12 +854,16 @@ public final class HvacThermalWorld implements IWorldEventListener {
     perf.maxTickNanos = Math.max(perf.maxTickNanos, t3 - t0);
   }
 
-  /** Rescans, attaches and couplings: everything that follows the blocks. */
-  void maintain(long now) {
+  /**
+   * Rescans, attaches and couplings: everything that follows the blocks.
+   *
+   * @param attachBudgetNanos how long new rooms may be flooded for; the rest wait a tick
+   */
+  void maintain(long now, long attachBudgetNanos) {
     long t0 = System.nanoTime();
     rescanDue(now);
     long t1 = System.nanoTime();
-    attachPending(now);
+    attachPending(now, attachBudgetNanos);
     long t2 = System.nanoTime();
     if (topologyChanged || now - lastCouplingTick >= COUPLING_REFRESH_TICKS) {
       resolveCouplings(now);
@@ -868,7 +908,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
    */
   void fastForward(int seconds) {
     long now = world.getTotalWorldTime();
-    maintain(now);
+    maintain(now, Long.MAX_VALUE);
     for (int i = 0; i < seconds; i++) {
       step();
     }
