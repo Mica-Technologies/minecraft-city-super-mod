@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -95,6 +96,15 @@ public final class HvacThermal {
     }
     if (w != null) {
       w.tick();
+    }
+  }
+
+  @SubscribeEvent
+  public void onChunkUnload(ChunkEvent.Unload event) {
+    World world = event.getWorld();
+    HvacThermalWorld w = peek(world);
+    if (w != null) {
+      w.onChunkUnload(event.getChunk().x, event.getChunk().z);
     }
   }
 

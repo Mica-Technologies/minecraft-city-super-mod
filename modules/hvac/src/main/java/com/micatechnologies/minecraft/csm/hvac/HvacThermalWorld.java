@@ -70,8 +70,12 @@ public final class HvacThermalWorld implements IWorldEventListener {
   private static final long RETRY_NOT_ENCLOSED_TICKS = 100L;
   private static final long RETRY_TOO_LARGE_TICKS = 600L;
 
-  /** How long a too-large flood's cells are remembered, so neighbours do not repeat it. */
-  private static final long TOO_LARGE_MEMORY_TICKS = 600L;
+  /**
+   * Most too-large floods remembered at once, and most cells across them (each is some 40,000
+   * cells, about half a megabyte); past either the least recently used is forgotten.
+   */
+  private static final int TOO_LARGE_MAX_REMEMBERED = 16;
+  private static final int TOO_LARGE_MAX_CELLS = 16 * (ThermalScanner.MAX_CELLS + 1);
 
   /**
    * Every space's couplings and outdoor temperature are refreshed within this many ticks, a
@@ -192,13 +196,46 @@ public final class HvacThermalWorld implements IWorldEventListener {
     }
   }
 
+  /**
+   * A flood that passed {@link ThermalScanner#MAX_CELLS}, remembered so no anchor in it floods it
+   * again while nothing that could shrink it has changed. It used to be forgotten after 30 s, just
+   * as its anchors came round to retry, so a hall too large to condition was flooded to 40,000
+   * cells every 30 s for ever. Only a change in a column of its cells (a block placed in it, or a
+   * roof over it taken away so part of it sees the sky) or beside one can make the space smaller;
+   * anything else can only add to it. It is forgotten on such a change, when a chunk it lies in
+   * unloads, or to keep within {@link #TOO_LARGE_MAX_REMEMBERED} and {@link #TOO_LARGE_MAX_CELLS}.
+   */
   private static final class TooLarge {
     final LongOpenHashSet cells;
-    final long expires;
 
-    TooLarge(LongOpenHashSet cells, long expires) {
+    /** The (x, z) columns of the cells, packed with y 0. */
+    final LongOpenHashSet columns = new LongOpenHashSet();
+
+    /** The chunks the cells lie in ({@link #chunkKey}). */
+    final LongOpenHashSet chunks = new LongOpenHashSet();
+
+    long lastUsed;
+
+    TooLarge(LongOpenHashSet cells, long now) {
       this.cells = cells;
-      this.expires = expires;
+      this.lastUsed = now;
+      LongIterator it = cells.iterator();
+      while (it.hasNext()) {
+        long c = it.nextLong();
+        int x = ThermalScanner.unpackX(c);
+        int z = ThermalScanner.unpackZ(c);
+        columns.add(ThermalScanner.pack(x, 0, z));
+        chunks.add(chunkKey(x >> 4, z >> 4));
+      }
+    }
+
+    /** Whether a change at this column, or the one beside it, could make the space smaller. */
+    boolean touchesColumn(int x, int z) {
+      return columns.contains(ThermalScanner.pack(x, 0, z))
+          || columns.contains(ThermalScanner.pack(x + 1, 0, z))
+          || columns.contains(ThermalScanner.pack(x - 1, 0, z))
+          || columns.contains(ThermalScanner.pack(x, 0, z + 1))
+          || columns.contains(ThermalScanner.pack(x, 0, z - 1));
     }
   }
 
@@ -426,7 +463,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
           s = createSpace(r, key, now);
         } else {
           if (r.status == ThermalScanner.Status.TOO_LARGE) {
-            tooLarge.add(new TooLarge(r.cells, now + TOO_LARGE_MEMORY_TICKS));
+            rememberTooLarge(new TooLarge(r.cells, now));
           }
           last = r.status;
           if (r.status == ThermalScanner.Status.UNLOADED) {
@@ -489,13 +526,41 @@ public final class HvacThermalWorld implements IWorldEventListener {
   }
 
   private boolean inTooLarge(long key, long now) {
-    tooLarge.removeIf(t -> t.expires <= now);
     for (TooLarge t : tooLarge) {
       if (t.cells.contains(key)) {
+        t.lastUsed = now;
         return true;
       }
     }
     return false;
+  }
+
+  private void rememberTooLarge(TooLarge t) {
+    tooLarge.add(t);
+    long cells = 0;
+    for (TooLarge k : tooLarge) {
+      cells += k.cells.size();
+    }
+    while (tooLarge.size() > 1
+        && (tooLarge.size() > TOO_LARGE_MAX_REMEMBERED || cells > TOO_LARGE_MAX_CELLS)) {
+      TooLarge oldest = tooLarge.get(0);
+      for (TooLarge k : tooLarge) {
+        if (k.lastUsed < oldest.lastUsed) {
+          oldest = k;
+        }
+      }
+      tooLarge.remove(oldest);
+      cells -= oldest.cells.size();
+    }
+  }
+
+  /**
+   * A chunk has unloaded: forget the too-large floods that lie in it. Its cells can no longer be
+   * known, and the next flood will wait for the chunk instead.
+   */
+  void onChunkUnload(int cx, int cz) {
+    long key = chunkKey(cx, cz);
+    tooLarge.removeIf(t -> t.chunks.contains(key));
   }
 
   /**
@@ -1078,7 +1143,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
             resolveCouplings(false);
             here = s;
           } else if (r.status == ThermalScanner.Status.TOO_LARGE) {
-            tooLarge.add(new TooLarge(r.cells, now + TOO_LARGE_MEMORY_TICKS));
+            rememberTooLarge(new TooLarge(r.cells, now));
           }
         }
       }
@@ -1124,7 +1189,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
       }
     }
     // Cheapest first: most changes in a world are nowhere near a room.
-    if (!waiting && !nearSpace(pos.getX(), pos.getY(), pos.getZ()) && !inAnyTooLarge(key)
+    if (!waiting && !nearSpace(pos.getX(), pos.getY(), pos.getZ())
+        && !inAnyTooLarge(pos.getX(), pos.getZ())
         && !inAnyUnloadedFlood(key)) {
       return;
     }
@@ -1137,7 +1203,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
     perf.relevantBlockUpdates++;
     long now = world.getTotalWorldTime();
     markDirtyAround(pos.getX(), pos.getY(), pos.getZ());
-    tooLarge.removeIf(t -> t.cells.contains(key));
+    tooLarge.removeIf(t -> t.touchesColumn(pos.getX(), pos.getZ()));
     for (UnloadedFlood f : unloadedFloods) {
       if (f.cells.contains(key)) {
         f.stale = true; // the room changed: the anchors that flooded it try again
@@ -1192,9 +1258,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
     return false;
   }
 
-  private boolean inAnyTooLarge(long key) {
+  private boolean inAnyTooLarge(int x, int z) {
     for (TooLarge t : tooLarge) {
-      if (t.cells.contains(key)) {
+      if (t.touchesColumn(x, z)) {
         return true;
       }
     }
