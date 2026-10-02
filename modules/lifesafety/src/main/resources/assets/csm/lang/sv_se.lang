@@ -31,6 +31,7 @@ csm.exitsign.mount.wall=Vägg
 csm.firealarmcontrolpanel.note=Högerklicka för att öppna panelen
 item.firealarmconfigtool.name=Brandlarmskonfigurationsverktyg
 item.firealarmlinker.name=Brandlarmsapparatlänkare
+item.firealarmarealinker.name=Brandlarmsområdeslänkare
 itemGroup.tablifesafety=CSM: Brandlarm & Detektering
 itemGroup.tabexitsemergency=CSM: Nödutgångar & Nödbelysning
 itemGroup.tabfireprotection=CSM: Brandskydd

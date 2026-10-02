@@ -31,6 +31,7 @@ csm.exitsign.mount.wall=Wall
 csm.firealarmcontrolpanel.note=Right Click to Open the Panel
 item.firealarmconfigtool.name=Fire Alarm Config Tool
 item.firealarmlinker.name=Fire Alarm Appliance Linker
+item.firealarmarealinker.name=Fire Alarm Area Linker
 itemGroup.tablifesafety=CSM: Fire Alarm & Detection
 itemGroup.tabexitsemergency=CSM: Exits & Emergency Lighting
 itemGroup.tabfireprotection=CSM: Fire Protection

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -62,6 +63,14 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private static final String alarmOriginNameKey = "aoN";
   /** Initiating devices that report to this panel, as a flat IntArray of x, y, z triples. */
   private static final String initiatingDevicesKey = "init";
+
+  /**
+   * Appliances to add, as a flat int array of x, y, z triples. Never written: it is read once,
+   * merged into {@link #connectedAppliancesKey} and dropped. It exists because {@code apps} is a
+   * newline-separated string and chat cannot carry a newline, so {@code /blockdata} could add only
+   * one appliance at a time; {@code /blockdata x y z {appsList:[I;x,y,z,x,y,z]}} adds many.
+   */
+  private static final String appliancesListKey = "appsList";
   private static final String[] SOUND_RESOURCE_NAMES = {"csm:svenew",
       "csm:sveold",
       "csm:simplex_voice_evac_old_alt",
@@ -190,6 +199,15 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         }
       }
     }
+
+    int[] added = compound.getIntArray(appliancesListKey);
+    for (int i = 0; i + 2 < added.length; i += 3) {
+      BlockPos bp = new BlockPos(added[i], added[i + 1], added[i + 2]);
+      if (!connectedAppliances.contains(bp)) {
+        connectedAppliances.add(bp);
+      }
+    }
+    compound.removeTag(appliancesListKey);
 
     cachedVoiceEvacPositions = null;
 
@@ -1159,6 +1177,41 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       afterUnlink();
     }
     return removed;
+  }
+
+  /**
+   * Unlinks every appliance and indexed initiating device whose position matches, with one sync at
+   * the end. The caller clears the initiating devices' own links.
+   *
+   * @param which the positions to unlink
+   *
+   * @return how many were unlinked
+   *
+   * @since 2026.10
+   */
+  public synchronized int removeLinkedDevices(Predicate<BlockPos> which) {
+    int before = connectedAppliances.size() + initiatingDevices.size();
+    connectedAppliances.removeIf(which);
+    initiatingDevices.removeIf(which);
+    int removed = before - connectedAppliances.size() - initiatingDevices.size();
+    if (removed > 0) {
+      afterUnlink();
+    }
+    return removed;
+  }
+
+  /**
+   * Saves and syncs once after many devices were linked through {@link #addLinkedAlarm} and
+   * {@link #addLinkedInitiatingDevice}, which do neither on their own.
+   *
+   * @since 2026.10
+   */
+  public void afterBulkLink() {
+    cachedVoiceEvacPositions = null;
+    markDirty();
+    if (world != null && !world.isRemote) {
+      syncServerToClient(world);
+    }
   }
 
   private void afterUnlink() {

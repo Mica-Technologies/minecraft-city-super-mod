@@ -47,6 +47,7 @@ import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHor
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHornStrobeWhiteBlue;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHornWhite;
 import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmConfigTool;
+import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmAreaLinker;
 import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmLinker;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockRemoteAnnunciator;
 import net.minecraft.block.Block;
@@ -271,6 +272,7 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockRotatableNSEWUDFactory("gamewellfirebox", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("sslstrobe", null, new AxisAlignedBB(0.187500, 0.187500, 0.812500, 0.812500, 1.000000, 1.000000), new float[]{5.5f, 4.86f, 13f}, new float[]{10.25f, 9.63f, 14f}));
     initTabItem(ItemFireAlarmLinker.class, fmlPreInitializationEvent);
+    initTabItem(ItemFireAlarmAreaLinker.class, fmlPreInitializationEvent);
     initTabItem(ItemFireAlarmConfigTool.class, fmlPreInitializationEvent);
   }
 }

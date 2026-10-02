@@ -31,6 +31,7 @@ csm.exitsign.mount.wall=Wand
 csm.firealarmcontrolpanel.note=Rechtsklick zum Öffnen der Zentrale
 item.firealarmconfigtool.name=Feueralarm-Konfigurationswerkzeug
 item.firealarmlinker.name=Feueralarm-Geräteverknüpfer
+item.firealarmarealinker.name=Feueralarm-Bereichsverknüpfer
 itemGroup.tablifesafety=CSM: Brandmeldetechnik
 itemGroup.tabexitsemergency=CSM: Notausgänge & Notbeleuchtung
 itemGroup.tabfireprotection=CSM: Brandschutz
