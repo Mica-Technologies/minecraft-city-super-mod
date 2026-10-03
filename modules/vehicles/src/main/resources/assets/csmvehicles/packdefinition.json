@@ -2,5 +2,11 @@
   "packID": "csmvehicles",
   "packName": "CSM: Vehicles",
   "packItem": "csm_lightbar_led_redblue",
-  "fileStructure": 0
+  "fileStructure": 0,
+  "activators": {
+    "": [],
+    "treecrew": [
+      "csm_parks"
+    ]
+  }
 }

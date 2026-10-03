@@ -9,16 +9,20 @@ is scaled to complete a whole number of cycles over it.
   yelp   the same range, fast: 0.32 s a sweep
   hi-lo  two tones, 960 and 770 Hz, 0.55 s each
 
+and the tree crew chip bed's chipper: chipper_run (a diesel and the drum idling, looped) and
+chipper_chip (one log through the knives).
+
 Immersive Vehicles plays a pack sound named "<packID>:<name>" from assets/<packID>/sounds/
 <name>.ogg, with no sounds.json, so the module's CSM sound enum and sounds.json have no part in
 it. Writes modules/vehicles/src/main/resources/assets/csmvehicles/sounds/. Vorbis output is not
 byte-stable, so there is no --check: listen, then commit. Run from the repo root:
 
-    python dev-env-utils/scripts/gen_vehicle_sounds.py
+    python dev-env-utils/scripts/gen_vehicle_sounds.py [name ...]
 """
 
 import os
 import subprocess
+import sys
 import tempfile
 import wave
 
@@ -84,11 +88,54 @@ def write(name, signal):
     print('wrote %s  (%.2f s)' % (out, len(pcm) / RATE))
 
 
-def main():
-    write('siren_wail', render(wail_profile(int(RATE * 4.8))))
+def chipper_run(seconds=3.0):
+    """The chip bed's chipper idling: a diesel's firing pulses under the drum's whine and the
+    blower's rush. Every component completes whole cycles over the loop, so it loops clean."""
+    n = int(RATE * seconds)
+    t = np.arange(n) / RATE
+    firing = 28.0 * 3  # a three-cylinder at 1,700 rpm fires about 85 times a second
+    pulses = np.zeros(n)
+    for k, level in ((1, 1.0), (2, 0.55), (3, 0.35), (5, 0.15)):
+        f = round(firing * k * seconds) / seconds  # whole cycles over the loop
+        pulses += level * np.sin(2 * np.pi * f * t)
+    drum = 0.35 * np.sin(2 * np.pi * (round(190 * seconds) / seconds) * t)
+    rng = np.random.RandomState(11)
+    rush = rng.normal(0, 1, n)
+    # a gentle low-pass on the rush (a running mean) so it hisses rather than crackles
+    kernel = np.ones(12) / 12
+    rush = np.convolve(np.concatenate([rush[-12:], rush]), kernel, mode='valid')[1:n + 1] * 0.25
+    return pulses + drum + rush
+
+
+def chipper_chip(seconds=0.55):
+    """One log through the drum: a thump as the knives bite, then a fading crunch."""
+    n = int(RATE * seconds)
+    t = np.arange(n) / RATE
+    rng = np.random.RandomState(5)
+    crunch = rng.normal(0, 1, n) * np.exp(-t / 0.18)
+    # grain: the knives hit about 40 times a second as the log feeds
+    crunch *= 0.6 + 0.4 * (np.sin(2 * np.pi * 40 * t) > 0)
+    thump = np.sin(2 * np.pi * 70 * t) * np.exp(-t / 0.06) * 1.5
+    out = crunch + thump
+    out[-200:] *= np.linspace(1, 0, 200)
+    return out
+
+
+SOUNDS = {
+    'siren_wail': lambda: render(wail_profile(int(RATE * 4.8))),
     # several sweeps to a file, so the loop restarts less often than it sweeps
-    write('siren_yelp', render(np.tile(yelp_profile(int(RATE * 0.32)), 8)))
-    write('siren_hilo', render(np.tile(hilo_profile(int(RATE * 1.1)), 2)))
+    'siren_yelp': lambda: render(np.tile(yelp_profile(int(RATE * 0.32)), 8)),
+    'siren_hilo': lambda: render(np.tile(hilo_profile(int(RATE * 1.1)), 2)),
+    'chipper_run': chipper_run,
+    'chipper_chip': chipper_chip,
+}
+
+
+def main():
+    # Name the sounds to write, or none for all. Vorbis output differs run to run, so writing
+    # only the ones that changed keeps the others out of the diff.
+    for name in sys.argv[1:] or SOUNDS:
+        write(name, SOUNDS[name]())
 
 
 if __name__ == '__main__':

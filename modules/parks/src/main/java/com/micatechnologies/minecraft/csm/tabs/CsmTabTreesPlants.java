@@ -11,6 +11,7 @@ import com.micatechnologies.minecraft.csm.parks.planting.ItemTreePlantingTool;
 import com.micatechnologies.minecraft.csm.parks.tools.BlockBrushPile;
 import com.micatechnologies.minecraft.csm.parks.tools.ItemChainsaw;
 import com.micatechnologies.minecraft.csm.parks.tools.ItemPoleTrimmer;
+import com.micatechnologies.minecraft.csm.parks.tools.ItemStumpGrinder;
 import com.micatechnologies.minecraft.csm.parks.tools.ItemTreeShears;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockHangingMoss;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
@@ -23,8 +24,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The Trees &amp; Plants tab of the Parks &amp; Greenery module: tree logs and leaves by species,
- * the Tree Planting Tool and the tree tools (chainsaw, pole trimmer, shears and the brush pile a
- * felling leaves), street tree accessories and plantings.
+ * the Tree Planting Tool and the tree tools (chainsaw, pole trimmer, shears, stump grinder and the
+ * brush pile a felling leaves), street tree accessories and plantings.
  *
  * @since 2026.9
  */
@@ -57,6 +58,7 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabItem(ItemChainsaw.class, fmlPreInitializationEvent);
     initTabItem(ItemPoleTrimmer.class, fmlPreInitializationEvent);
     initTabItem(ItemTreeShears.class, fmlPreInitializationEvent);
+    initTabItem(ItemStumpGrinder.class, fmlPreInitializationEvent);
     initTabBlock(BlockBrushPile.class, fmlPreInitializationEvent);
 
     // Logs: every wood in every width, a wood's widths together. Written by gen_trees.py

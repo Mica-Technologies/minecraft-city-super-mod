@@ -450,11 +450,19 @@ The searches are pure functions over a `Cells` view (`TreeFellingTest`).
 
 ## Tree tools
 
-Next to the Tree Planting Tool in the Trees & Plants tab, three tools take trees down and back
-(`parks/tools/`): the **chainsaw** (`ItemChainsaw`), the **pole trimmer** (`ItemPoleTrimmer`) and
-the **tree shears** (`ItemTreeShears`). None is enchantable and none is repairable by combining:
-the chainsaw is not an axe to be given Efficiency or Unbreaking, and fuel and wear are its cost.
-The chipper, stump grinder and any vehicle were left out on purpose.
+Next to the Tree Planting Tool in the Trees & Plants tab, four tools take trees down and back
+(`parks/tools/`): the **chainsaw** (`ItemChainsaw`), the **pole trimmer** (`ItemPoleTrimmer`),
+the **tree shears** (`ItemTreeShears`) and the **stump grinder** (`ItemStumpGrinder`), which
+clears what the chainsaw leaves. None is enchantable and none is repairable by combining: the
+chainsaw is not an axe to be given Efficiency or Unbreaking, and fuel and wear are its cost. The
+chipper and any vehicle were left out on purpose.
+
+The chainsaw and the stump grinder share one engine, `ItemFuelledTool`: the fuel store, the
+refuel, the pull start, idling, stalling, the running state on the stack and the tooltip's fuel
+lines. Its NBT keys (`csm_fuel`, `csm_running`, `csm_pulls`, `csm_pulls_needed`,
+`csm_held_at`) are the ones the chainsaw always wrote, so a saved chainsaw keeps its fuel; its
+generic messages and tooltip lines are still the `csm.parks.chainsaw.*` keys, and each tool has
+its own `cold`, `started`, `stopped` and `ranout` messages under its own prefix.
 
 ### The chainsaw
 
@@ -498,6 +506,63 @@ The chipper, stump grinder and any vehicle were left out on purpose.
 - **Sounds** (`ParksSounds`, `gen_parks_tool_sounds.py`): the pull, the start, a one-second idle
   played back to back from the server while it runs, and the cut. All synthesised.
 
+### The stump grinder
+
+A hand-guided stump grinder, fuelled and started exactly as the chainsaw is (the same actions in
+the table above, the same tank and burn rate, the chainsaw's cord pull sound).
+
+| Action | What it does |
+|---|---|
+| Hold left-click on a stump (running) | About two seconds of holding, then the stump and its roots are ground away, leaving mulch |
+| Left-click a log with a tree still on it | Refused, with "That tree is still standing -- fell it with the chainsaw first" |
+| Left-click a log (off) | The hint to pull the cord |
+
+- **Holding, as the chainsaw is held.** The chainsaw cuts by mining, so the grinder grinds by
+  mining: running, its dig speed on wood is 1.5, which is 40 ticks (2 seconds) on a log of
+  hardness 2 (vanilla's and this module's); a harder modded log takes longer. When the dig
+  completes, `onBlockStartBreak` (after the break event has passed, so protection mods can refuse
+  it) takes over the break. In creative, as with the chainsaw, a dig completes at once.
+- **A stump** (`StumpGrinding.isStump`) is a log with no log over it: not straight above, and
+  not on the eight diagonals above, since logs join through edges and corners (as the chainsaw's
+  felling and the tree kit join them) and a leaning trunk steps that way. A log with any of those
+  is a standing tree: `TreeToolEvents` cancels the left-click on both sides, so the block never
+  starts to crack, and the server sends the hint. A side effect: a stump directly beside a
+  standing trunk (sharing a corner with a log above) is refused too.
+- **In the ground** (`StumpGrinding.groundLevel`): going down the stump's column, within three
+  logs, there must be natural soil (by material: ground, grass, sand, clay), or a log with soil
+  beside it, and that is ground level. A log on a floor, a foundation or nothing is no stump, and
+  the grinder says so (`csm.parks.grinder.notstump`). **Above ground only the stump's own column
+  goes**; roots spread sideways only at and below ground level. That is what keeps a log wall
+  safe: its top logs have nothing over them either, but the wall beside the clicked log stands
+  over the logs below it (diagonally), so at most the clicked log goes, and only if the wall
+  stands on soil.
+- **The roots** (`StumpGrinding.grind`): the logs joined to the stump through faces, edges and
+  corners, **at or below ground level**, within 3 blocks of it sideways and 4 below. Then
+  any of them with a log over it that is not itself taken stays, repeated until nothing changes,
+  and only what is still joined to the stump through what is left goes. So the trunk of a
+  neighbouring tree, or a root running under it, is never undercut. Logs are what
+  `AnyTrees.isLog` says: vanilla `BlockLog` / `BlockLog2` and anything extending them, a block
+  whose `isWood` is true, an ore dictionary `log*` name (`logWood` and the like), and this
+  module's `BlockTreeLog`. Nothing else is ever touched, and a cell the player may not change
+  (`isBlockModifiable`) is skipped.
+- **Nothing drops.** The logs are set to air directly, so this module's logs do not run
+  `TreeFelling` (which a player break would), and the first 12 play their break effect. Where the
+  stump stood at ground level, if that cell is air and the block under it has a solid top, a layer of the
+  module's `ground_mulch` (a `BlockParkProp` COVER) is placed; otherwise nothing.
+- **Ore names.** The tree kit's logs and leaves are registered as `logWood` and `treeLeaves`
+  (`CsmParks.registerOres`, at initialisation), so anything that takes wood by ore name takes
+  ours: CSM: Vehicles' chip bed chips them into Mulch. The chainsaw still tells its own logs
+  from anyone else's by class, so this changes no felling.
+- **Cost.** Fuel and wear are paid per log ground, as the chainsaw pays per log felled (40 burn
+  ticks and one durability a log; 1,000 durability in all).
+- **Sounds** (`ParksSounds`, `gen_parks_tool_sounds.py`): its start, a one-second idle with the
+  cutter wheel turning, and a 2.2 second grind, started on the server as the button goes down on
+  a stump (`PlayerInteractEvent.LeftClickBlock`) so it runs while the button is held, and not
+  restarted for the same player within 30 ticks.
+- **Sprites:** a side view with handlebars, the red engine, the rear wheel and the toothed cutter
+  wheel; running, the teeth turn, chips fly and exhaust trails (`gen_parks_tools.py`, swapped by
+  `csm:running` like the chainsaw's).
+
 ### The pole trimmer and the tree shears
 
 Manual, no fuel, durability (350 and 476). Both cut small growth only (`BranchCutting`): leaves
@@ -523,12 +588,14 @@ break event, so protection mods can refuse it.
 | Leaves taken with it | 2,048, within 8 steps of a felled log |
 | Logs taken by one branch tool cut | 48, all twig or thin |
 | Brush piles | 0, 1-3 or 3-8; within 4 blocks of the stump |
+| Logs taken by one stump grind | Within 3 blocks sideways and 4 below the stump, none above it |
 | This module's trees | `TreeFelling`'s own bounds (2,048 logs, 16,384 leaves) |
 
 The searches are pure over cell views and tested without a world (`AnyTreeFellingTest`,
-`ChainsawFuelTest`, `BranchCutTest`). Recipes (Core's `recipes/`, on `forge:mod_loaded`
-`csm_parks`): the chainsaw from iron, sheet metal and a piston; the tree shears from shears and two
-sticks; the pole trimmer from the tree shears and two sticks.
+`ChainsawFuelTest`, `BranchCutTest`, `StumpGrindingTest`). Recipes (Core's `recipes/`, on
+`forge:mod_loaded` `csm_parks`): the chainsaw from iron, sheet metal and a piston; the tree shears
+from shears and two sticks; the pole trimmer from the tree shears and two sticks; the stump
+grinder from a chainsaw (any wear, `"data": 32767`), four iron ingots and two flint.
 
 ---
 
@@ -749,8 +816,8 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
 | `gen_park_plantings.py` | Every block in the accessories and plantings catalogue, the regional plantings and their potted copies, and the nursery, garden centre and farm pieces: textures, element models, blockstates, item models and lang. `--fragments` |
 | `gen_park_amenities.py` | The same for the amenities. It borrows `gen_park_plantings.py`'s helpers |
 | `gen_park_legacy_amenities.py` | The models, textures and blockstates of the five amenities that kept their old ids (both swing sets, the teeter totter, the trash can, the bird bath). It writes no lang and no tab lines, since those blocks already have them |
-| `gen_parks_tools.py` | The tree tools' item sprites and models (the chainsaw's running sprite by its `csm:running` override) and the brush pile's textures, model and blockstate. `--check`. The tools' lang and tab lines are hand-written |
-| `gen_parks_tool_sounds.py` | The chainsaw's four sounds, synthesised (numpy to ffmpeg to OGG), and their `sounds.json` entries. No `--check`: Vorbis is not byte-stable |
+| `gen_parks_tools.py` | The tree tools' item sprites and models (the chainsaw's and the stump grinder's running sprites by their `csm:running` override) and the brush pile's textures, model and blockstate. `--check` (text compared with line endings ignored). The tools' lang and tab lines are hand-written |
+| `gen_parks_tool_sounds.py` | The chainsaw's four sounds and the stump grinder's three, synthesised (numpy to ffmpeg to OGG), and their `sounds.json` entries. No `--check`: Vorbis is not byte-stable |
 
 All three take `--check`. Each writes lang lines by key in all four languages, leaving every other
 line in place, so the three can share the module's lang files.

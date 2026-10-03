@@ -4,7 +4,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmSoundRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 
 /**
- * The Parks &amp; Greenery module's sounds: the chainsaw's. Synthesised by
+ * The Parks &amp; Greenery module's sounds: the chainsaw's and the stump grinder's (whose cord
+ * pull is the chainsaw's). Synthesised by
  * {@code dev-env-utils/scripts/gen_parks_tool_sounds.py}.
  *
  * @since 2026.10
@@ -18,7 +19,13 @@ public enum ParksSounds implements ICsmSound {
   /** One second of idle, played back to back while the saw runs. */
   CHAINSAW_IDLE("chainsaw_idle"),
   /** The engine at full throttle through wood. */
-  CHAINSAW_CUT("chainsaw_cut");
+  CHAINSAW_CUT("chainsaw_cut"),
+  /** The stump grinder's bigger engine catching on the last pull and settling to idle. */
+  STUMP_GRINDER_START("stump_grinder_start"),
+  /** One second of the stump grinder idling, its cutter wheel spinning, played back to back. */
+  STUMP_GRINDER_IDLE("stump_grinder_idle"),
+  /** The cutter wheel chewing through a stump at full throttle, about two seconds. */
+  STUMP_GRINDER_GRIND("stump_grinder_grind");
 
   private final String soundName;
 

@@ -1,0 +1,31 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_parks"
+    }
+  ],
+  "pattern": [
+    "I  ",
+    " CI",
+    "FIF"
+  ],
+  "key": {
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "C": {
+      "item": "csm:chainsaw",
+      "data": 32767
+    },
+    "F": {
+      "item": "minecraft:flint"
+    }
+  },
+  "result": {
+    "item": "csm:stump_grinder",
+    "count": 1
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Chipper (Brush)",
+      "subName": "",
+      "extraMaterialLists": [
+        [],
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "Part of the chip bed's chipper. Comes with the chip bed.",
+    "stackSize": 1,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:1"
+      ],
+      [
+        "minecraft:iron_ingot:1"
+      ]
+    ]
+  },
+  "generic": {
+    "type": "effector_csm_chipper_brush",
+    "width": 0.25,
+    "height": 0.25,
+    "activeAnimations": [
+      {
+        "animationType": "visibility",
+        "variable": "CHIPPER",
+        "clampMin": 1,
+        "clampMax": 1
+      }
+    ]
+  },
+  "effector": {
+    "type": "crafter",
+    "operationDelay": 10,
+    "crafterInputs": [
+      "minecraft:stick:0:8"
+    ],
+    "crafterOutputs": [
+      "csm:ground_mulch:0:1"
+    ]
+  },
+  "collisionGroups": [
+    {
+      "collisionTypes": [
+        "effector"
+      ],
+      "isInterior": true,
+      "collisions": [
+        {
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "width": 0.5,
+          "height": 0.5
+        }
+      ]
+    }
+  ],
+  "rendering": {
+    "modelType": "none",
+    "sounds": [
+      {
+        "name": "csmvehicles:chipper_chip",
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "effector_operated",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ]
+  }
+}
