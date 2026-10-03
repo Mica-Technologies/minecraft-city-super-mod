@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlController;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlSignal;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlController;
 import com.micatechnologies.minecraft.csm.trafficaccessories.AbstractBlockSignalBackplate;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
@@ -142,7 +143,8 @@ public class ItemSignalLinkTool extends AbstractItem {
           (state.getBlock() instanceof AbstractBlockControllableSignal ||
               state.getBlock() instanceof ITrafficSignalSensor ||
               state.getBlock() instanceof BlockOverheightDetectionSensor ||
-              state.getBlock() instanceof BlockPreemptDetector)) {
+              state.getBlock() instanceof BlockPreemptDetector ||
+              state.getBlock() instanceof BlockPreemptBeacon)) {
 
         player.sendMessage(new TextComponentString("No signal controller has been selected."));
 
@@ -150,21 +152,26 @@ public class ItemSignalLinkTool extends AbstractItem {
       } else if (signalControllerPos != null &&
           (state.getBlock() instanceof ITrafficSignalSensor ||
               state.getBlock() instanceof BlockOverheightDetectionSensor ||
-              state.getBlock() instanceof BlockPreemptDetector) &&
+              state.getBlock() instanceof BlockPreemptDetector ||
+              state.getBlock() instanceof BlockPreemptBeacon) &&
           !player.isSneaking()) {
 
         TileEntity tileEntity = worldIn.getTileEntity(signalControllerPos);
         if (tileEntity instanceof TileEntityTrafficSignalController) {
           TileEntityTrafficSignalController tileEntityTrafficSignalController
               = (TileEntityTrafficSignalController) tileEntity;
+          // A preemption beacon is a light the controller drives; everything else here is a
+          // sensor it reads.
+          boolean beacon = state.getBlock() instanceof BlockPreemptBeacon;
           boolean linked = tileEntityTrafficSignalController.linkDevice(pos,
-              AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR,
+              beacon ? AbstractBlockControllableSignal.SIGNAL_SIDE.PREEMPT_INDICATOR
+                  : AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR,
               circuitLinkIndex);
 
           if (linked) {
             player.sendMessage(new TextComponentString(
                 (state.getBlock() instanceof BlockPreemptDetector ? "Preempt detector"
-                    : "Sensor") + " connected to circuit " +
+                    : beacon ? "Preemption beacon" : "Sensor") + " connected to circuit " +
                 circuitLinkIndex +
                 " of signal controller at " +
                 "(" +
@@ -185,7 +192,8 @@ public class ItemSignalLinkTool extends AbstractItem {
       } else if (signalControllerPos != null &&
           (state.getBlock() instanceof ITrafficSignalSensor ||
               state.getBlock() instanceof BlockOverheightDetectionSensor ||
-              state.getBlock() instanceof BlockPreemptDetector) &&
+              state.getBlock() instanceof BlockPreemptDetector ||
+              state.getBlock() instanceof BlockPreemptBeacon) &&
           player.isSneaking()) {
 
         TileEntity tileEntity = worldIn.getTileEntity(signalControllerPos);

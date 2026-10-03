@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeacon;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.PreviousFormatTrafficSignalCircuit;
@@ -32,6 +33,7 @@ import java.util.Map;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.tileentity.TileEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -138,6 +140,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * @since 2026.6
    */
   private transient RingBarrierState advancedRuntime = null;
+
+  /**
+   * The circuit whose preemption beacons were last lit (-1: none), so they are written only on a
+   * change. MIN_VALUE forces the next write, after a link or unlink.
+   */
+  private transient int litPreemptCircuit = Integer.MIN_VALUE;
 
   /**
    * The list of cached phases for the traffic signal controller.
@@ -786,6 +794,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           }
         }
         newPhase = advancedRuntime.tick(getWorld(), plan, circuits, overlaps, tickTime);
+        showPreemptIndicators(advancedRuntime.getActivePreemptTriggerCircuit(plan));
       } else if (resumeOnPrimaryGreen && currentPhase == null
           && operatingMode == TrafficSignalControllerMode.NORMAL) {
         // Out of yellow-red flash: the main street's flashing yellow goes to green and the side
@@ -811,6 +820,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             allRedFlash));
       }
       resumeOnPrimaryGreen = false;
+      if (operatingMode != TrafficSignalControllerMode.ADVANCED) {
+        showPreemptIndicators(-1);   // preemption runs in ADVANCED mode only
+      }
 
       // If the phase index has changed, update the phase
       if (newPhase != null) {
@@ -2802,6 +2814,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         circuits.getCircuit(circuitNumber - 1).linkDevice(pos, signalSide);
 
     if (linked) {
+      litPreemptCircuit = Integer.MIN_VALUE;   // show a new beacon its state on the next tick
       resetController(true, true);
     }
     return linked;
@@ -2867,6 +2880,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       allPositions.addAll(circuit.getBeaconSignals());
       allPositions.addAll(circuit.getNoTurnBlankoutSignals());
       allPositions.addAll(circuit.getQueueJumpSignals());
+      allPositions.addAll(circuit.getPreemptIndicators());
       allPositions.addAll(circuit.getSensors());
       for (net.minecraft.util.math.BlockPos devicePos : allPositions) {
         circuit.unlinkDevice(devicePos);
@@ -2887,6 +2901,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   }
 
   public boolean unlinkDevice(BlockPos pos) {
+    // A preemption beacon goes dark as it leaves the controller, or it stays lit for good.
+    for (TrafficSignalControllerCircuit circuit : circuits.getCircuits()) {
+      if (circuit.getPreemptIndicators().contains(pos) && getWorld() != null) {
+        setIndicator(pos, false);
+      }
+    }
+    litPreemptCircuit = Integer.MIN_VALUE;
     // Return true if device it was unlinked
     boolean unlinked = circuits.unlinkDevice(pos);
 
@@ -2915,4 +2936,32 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   }
 
   // endregion
+  /**
+   * Lights the preemption beacons of the circuit whose preempt is running and darkens every
+   * other circuit's. Written only when that circuit changes, or after a link or unlink.
+   *
+   * @param circuit the running preempt's trigger circuit, or -1 for none
+   */
+  private void showPreemptIndicators(int circuit) {
+    if (circuit == litPreemptCircuit || getWorld() == null || circuits == null) {
+      return;
+    }
+    litPreemptCircuit = circuit;
+    for (int i = 0; i < circuits.getCircuitCount(); i++) {
+      for (BlockPos pos : circuits.getCircuit(i).getPreemptIndicators()) {
+        setIndicator(pos, i == circuit);
+      }
+    }
+  }
+
+  /** Sets one preemption beacon's controller call, if its chunk is loaded. */
+  private void setIndicator(BlockPos pos, boolean lit) {
+    if (!getWorld().isBlockLoaded(pos)) {
+      return;
+    }
+    TileEntity te = getWorld().getTileEntity(pos);
+    if (te instanceof TileEntityTrafficBeacon) {
+      ((TileEntityTrafficBeacon) te).setControllerLit(lit);
+    }
+  }
 }

@@ -134,7 +134,7 @@ public class SignalControllerCircuitsGui extends GuiScreen {
           "Blankouts", circuit.getNoTurnBlankoutSignals().size());
       y = drawDeviceRow(y, contentLeft, contentTop, contentBottom,
           "Queue Jump", circuit.getQueueJumpSignals().size(),
-          null, 0);
+          "Preempt Lts", circuit.getPreemptIndicators().size());
 
       // Separator line
       if (y >= contentTop && y < contentBottom && i < circuitCount - 1) {
