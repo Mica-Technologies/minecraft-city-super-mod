@@ -1,0 +1,40 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Truck Wheel",
+      "subName": "",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "Comes on the CSM fleet's vehicles; fits any wheel slot it is the right size for.",
+    "stackSize": 4,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:1",
+        "minecraft:slime_ball:0:2"
+      ]
+    ]
+  },
+  "generic": {
+    "type": "ground_wheel",
+    "width": 0.34,
+    "height": 1.1
+  },
+  "ground": {
+    "isWheel": true,
+    "width": 0.34,
+    "height": 1.1,
+    "motiveFriction": 0.7,
+    "lateralFriction": 0.85,
+    "frictionModifiers": {
+      "ice": -0.25,
+      "snow": -0.2
+    }
+  },
+  "rendering": {
+    "modelType": "obj"
+  }
+}

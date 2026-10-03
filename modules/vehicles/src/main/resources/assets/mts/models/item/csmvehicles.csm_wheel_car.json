@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "csmvehicles:items/parts/csm_wheel_car"
+  }
+}

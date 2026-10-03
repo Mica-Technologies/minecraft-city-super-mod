@@ -80,10 +80,11 @@ class Obj:
     """An OBJ under construction: named objects of boxes, with indices global to the file as
     Immersive Vehicles' parser expects."""
 
-    def __init__(self):
+    def __init__(self, tex=TEX):
         self.lines = []
         self.v = 0
         self.vt = 0
+        self.tex = tex  # the texture's size in pixels, which the cells are measured on
 
     def box(self, name, lo, hi, cell, faces=('n', 's', 'e', 'w', 'u', 'd')):
         """A box from lo to hi (metres; +x left, +y up, +z forward), every face showing `cell`.
@@ -98,9 +99,9 @@ class Obj:
             'u': ((x0, y1, z1), (x1, y1, z1), (x1, y1, z0), (x0, y1, z0), (0, 1, 0)),
             'd': ((x0, y0, z0), (x1, y0, z0), (x1, y0, z1), (x0, y0, z1), (0, -1, 0)),
         }
-        u0, v0, u1, v1 = (c / float(TEX) for c in cell)
+        u0, v0, u1, v1 = (c / float(self.tex) for c in cell)
         # an inset of a quarter texel keeps the sampler off the neighbouring cell
-        e = 0.25 / TEX
+        e = 0.25 / self.tex
         uvs = ((u0 + e, v1 - e), (u1 - e, v1 - e), (u1 - e, v0 + e), (u0 + e, v0 + e))
         for key in ('n', 's', 'e', 'w', 'u', 'd'):
             if key not in faces:
