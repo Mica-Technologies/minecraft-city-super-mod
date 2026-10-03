@@ -962,7 +962,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   subfolder the pack definition activates with `csm_parks`) is written here too.
   `gen_vehicle_sounds.py [name ...]` synthesises the siren's wail, yelp and hi-lo, the
   chipper's running loop and crunch, and the fleet's engine and horn sounds.
-  `gen_vehicle_fleet.py` writes the fleet: the fire engine, ambulance and police SUV (OBJ built
+  `gen_vehicle_fleet.py` writes the fleet: the fire engine, ladder truck (its aerial three
+  objects chained by `applyAfter`, deployed by one AERIAL switch), ambulance and police SUV (OBJ built
   from boxes on named cells of a 128 px texture, one PNG per livery, lettering in the Life Safety
   pixel font, `lightObjects` written from the same spec as the lamps, item icons projected off
   the boxes) and their own wheels, seat and engines as default parts; `--check`

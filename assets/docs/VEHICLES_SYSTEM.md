@@ -13,13 +13,12 @@ Vehicles (IV, mod id `mts`, formerly Minecraft Transport Simulator). It does two
   turns the logs, brush and leaves dropped behind the truck into Parks' Mulch. The stump grinder
   that goes with it is a hand tool in Parks, beside the chainsaw (`PARKS_GREENERY_SYSTEM.md`).
 
-- **The fleet.** Our own fire engine, ambulance and police SUV, two liveries each, with their
+- **The fleet.** Our own fire engine, ladder truck, ambulance and police SUV, two liveries each, with their
   lights, siren, horn and emitter built in. Each spawns ready to drive with nothing but IV
   installed: its wheels, seats and engine are this pack's own parts, set as default parts, and it
   spawns fuelled.
 
-It requires Roads & Traffic and Immersive Vehicles. A ladder truck with an animated aerial is the
-fleet's next vehicle.
+It requires Roads & Traffic and Immersive Vehicles.
 
 ---
 
@@ -172,6 +171,7 @@ catalogue (`--check` fails on drift). The engine and horn sounds come from
 | Vehicle | Liveries | Wheels | Engine | Seats |
 |---|---|---|---|---|
 | `csm_fire_engine` (custom-cab pumper, 9.4 m) | `_red`, `_lime` | `csm_wheel_truck` (1.1 m), duals behind | `csm_engine_diesel` | 4 |
+| `csm_ladder_truck` (rear-mount aerial, 11.2 m) | `_red`, `_lime` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 4 |
 | `csm_ambulance` (Type III, 7.2 m) | `_red`, `_orange` (stripe) | `csm_wheel_van` (0.8 m), duals behind | `csm_engine_diesel` | 3 |
 | `csm_police_suv` (5.4 m) | `_blackwhite`, `_white` | `csm_wheel_car` (0.78 m) | `csm_engine_petrol` (V8) | 4 |
 
@@ -198,6 +198,22 @@ catalogue (`--check` fails on drift). The engine and horn sounds come from
 - Enum values are lowercase.
 - Right-hand wheels are `isMirrored` and turned 180 degrees.
 
+**The ladder truck's aerial.** One switch, `AERIAL`, in place of the hi-lo tone, runs the whole
+deployment:
+- **Deploying:** raise to 60 degrees, then swing 90 degrees to the truck's left, then run the fly
+  section out 8 m.
+- **Stowing:** the same in reverse.
+
+The aerial is three animated objects, each a group of boxes written as one OBJ object (`Obj.box`
+with a `None` name adds to the object before it):
+- `turntable` rotates about +y.
+- `ladder_base` rotates about −x on the turntable's pivot, with `applyAfter: turntable`.
+- `ladder_fly` translates along the ladder, with `applyAfter: ladder_base`.
+
+`applyAfter` carries each with the one it rides on, and its own animation happens first, in its
+own frame. The sequence comes from `forwardsDelay`, `duration` and `reverseDelay` on one 0-1
+variable (`AERIAL_RAISE`, `AERIAL_TURN`, `AERIAL_EXTEND`).
+
 **Fuel.** The vehicles spawn full (`defaultFuelQty`). A fresh install has no `diesel` or
 `gasoline` fluid without a mod that adds one, and lava is the fallback.
 
@@ -208,7 +224,17 @@ catalogue (`--check` fails on drift). The engine and horn sounds come from
 - Driving and the panel need IV's own key polling, which MCMCP does not drive, so both have to be
   tried by hand.
 
-Verified 2026-10-03 in the dev client:
+Verified 2026-10-03 in the dev client, at a four-way test intersection: two roads, an ADVANCED
+controller, and an emergency preempt per street, each with two detectors (one per approach):
+- the ladder truck with `EMERLTS` and `AERIAL` on, westbound on the east approach, called only the
+  east detector, and the controller went N-S yellow, all red, then E-W green. Its aerial
+  raised, swung to its left and ran out;
+- a police SUV with its lights on, heading away down the west road: no call;
+- an ambulance southbound on the north approach while E-W was held: the north detector called
+  but did not take over (the same priority). The ladder truck removed, E-W cleared through
+  yellow and all red, then N-S went green for the ambulance.
+
+Earlier, also verified:
 - All three spawn on their own wheels, level, with every livery's texture.
 - The fire engine with `EMERLTS` on, facing the detector, preempted the test intersection.
 - Driving, the panel and the sounds have not been tried.
