@@ -13,8 +13,9 @@ Vehicles (IV, mod id `mts`, formerly Minecraft Transport Simulator). It does two
   turns the logs, brush and leaves dropped behind the truck into Parks' Mulch. The stump grinder
   that goes with it is a hand tool in Parks, beside the chainsaw (`PARKS_GREENERY_SYSTEM.md`).
 
-- **The fleet.** Our own fire engine, ladder truck, ambulance and police SUV, two liveries each, with their
-  lights, siren, horn and emitter built in. Each spawns ready to drive with nothing but IV
+- **The fleet.** Our own fire engine, ladder truck, ambulance and police SUV, with their lights,
+  siren, horn and emitter built in, plus two city work trucks: a public works dump truck and a
+  power company bucket truck. There are 26 liveries across the six. Each spawns ready to drive with nothing but IV
   installed: its wheels, seats and engine are this pack's own parts, set as default parts, and it
   spawns fuelled.
 
@@ -170,10 +171,12 @@ catalogue (`--check` fails on drift). The engine and horn sounds come from
 
 | Vehicle | Liveries | Wheels | Engine | Seats |
 |---|---|---|---|---|
-| `csm_fire_engine` (custom-cab pumper, 9.4 m) | `_red`, `_lime` | `csm_wheel_truck` (1.1 m), duals behind | `csm_engine_diesel` | 4 |
-| `csm_ladder_truck` (rear-mount aerial, 11.2 m) | `_red`, `_lime` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 4 |
-| `csm_ambulance` (Type III, 7.2 m) | `_red`, `_orange` (stripe) | `csm_wheel_van` (0.8 m), duals behind | `csm_engine_diesel` | 3 |
-| `csm_police_suv` (5.4 m) | `_blackwhite`, `_white` | `csm_wheel_car` (0.78 m) | `csm_engine_petrol` (V8) | 4 |
+| `csm_fire_engine` (custom-cab pumper, 9.4 m) | `_red`, `_lime`, `_blackred`, `_white`, `_airport` | `csm_wheel_truck` (1.1 m), duals behind | `csm_engine_diesel` | 4 |
+| `csm_ladder_truck` (rear-mount aerial, 11.2 m) | `_red`, `_lime`, `_blackred`, `_white` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 4 |
+| `csm_ambulance` (Type III, 7.2 m) | `_red`, `_orange`, `_blue`, `_green` (stripes), `_yellow` (high-vis) | `csm_wheel_van` (0.8 m), duals behind | `csm_engine_diesel` | 3 |
+| `csm_police_suv` (5.4 m) | `_blackwhite`, `_white`, `_blue`, `_sheriff`, `_state`, `_unmarked` |
+| `csm_dpw_truck` (dump truck with plow, 9.7 m) | `_orange`, `_yellow`, `_white` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 |
+| `csm_bucket_truck` (aerial lift, 9.1 m) | `_white`, `_yellow`, `_green` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 | `csm_wheel_car` (0.78 m) | `csm_engine_petrol` (V8) | 4 |
 
 **How a vehicle is built.**
 - **Model:** a spec of boxes, each wearing a named cell of a 128 px texture. Liveries are only
@@ -214,6 +217,18 @@ with a `None` name adds to the object before it):
 own frame. The sequence comes from `forwardsDelay`, `duration` and `reverseDelay` on one 0-1
 variable (`AERIAL_RAISE`, `AERIAL_TURN`, `AERIAL_EXTEND`).
 
+**The work trucks.** Their amber lights run on `BEACONS`, which is deliberately *not* an
+emergency name: `IvPreemptSource` takes `EMERLTS` and names saying emergency or siren, so a
+public works or power company truck never preempts a signal. `IvPreemptSourceTest` pins this.
+They carry no emitter and no siren. Each has one deployment switch:
+- **`DUMP`** tips the dump body 45 degrees about its rear hinge.
+- **`BOOM`** deploys the bucket truck's boom: raise 55 degrees, swing to the left, run the upper
+  boom out 4 m. The bucket counter-rotates by the raise as it rides the boom, so it stays level.
+
+The lettering differs by livery (FIRE RESCUE, AIRPORT FIRE, AMBULANCE, EMS, POLICE, SHERIFF,
+STATE POLICE, PUBLIC WORKS, CITY POWER; the unmarked SUV has none). `DECAL_ON` says whether it
+sits on the main paint or the second colour.
+
 **Fuel.** The vehicles spawn full (`defaultFuelQty`). A fresh install has no `diesel` or
 `gasoline` fluid without a mod that adds one, and lava is the fallback.
 
@@ -233,6 +248,10 @@ controller, and an emergency preempt per street, each with two detectors (one pe
 - an ambulance southbound on the north approach while E-W was held: the north detector called
   but did not take over (the same priority). The ladder truck removed, E-W cleared through
   yellow and all red, then N-S went green for the ambulance.
+
+- the DPW truck (amber beacons on, `DUMP` on) westbound on the east approach and the bucket truck
+  (beacons on, `BOOM` on) southbound on the north approach: no detector called, the body tipped
+  and the boom deployed with the bucket level.
 
 Earlier, also verified:
 - All three spawn on their own wheels, level, with every livery's texture.
