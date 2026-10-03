@@ -800,7 +800,12 @@ public class RingBarrierState {
           ring.intervalStart = now;
           ring.lastActuation = now;
         }
-        if (vehicleCount(phase) > 0 || transitCall(plan, phase)) {
+        // MAX recall is a constant call that also extends: it holds the green as a vehicle in the
+        // zone would, so the phase runs to its max green whenever a conflicting call is waiting
+        // (and rests otherwise). Treated only as a call, it gapped out at its min green exactly
+        // like MIN recall.
+        if (vehicleCount(phase) > 0 || transitCall(plan, phase)
+            || phase.getRecallMode() == TrafficSignalRecallMode.MAXIMUM) {
           ring.lastActuation = now;
         }
         // A dual-entry companion that picks up demand of its own (a vehicle in its zone, a button
