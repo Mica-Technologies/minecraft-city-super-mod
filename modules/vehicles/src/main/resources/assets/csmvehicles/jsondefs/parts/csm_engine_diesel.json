@@ -1,0 +1,101 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Diesel Engine",
+      "subName": "",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "Comes in the CSM fleet's vehicles.",
+    "stackSize": 1,
+    "materialLists": [
+      [
+        "minecraft:iron_block:0:2",
+        "minecraft:piston:0:4",
+        "minecraft:redstone:0:8"
+      ]
+    ]
+  },
+  "generic": {
+    "type": "engine_car",
+    "width": 0.8,
+    "height": 0.8,
+    "forwardsDamageMultiplier": 1.0
+  },
+  "engine": {
+    "type": "normal",
+    "isAutomatic": true,
+    "starterPower": 40,
+    "maxRPM": 3500,
+    "maxSafeRPM": 3000,
+    "idleRPM": 500,
+    "startRPM": 600,
+    "stallRPM": 325,
+    "fuelConsumption": 0.9,
+    "gearRatios": [
+      -2.8,
+      0.0,
+      4.69,
+      2.6,
+      1.5,
+      1.0,
+      0.75
+    ],
+    "fuelType": "diesel"
+  },
+  "rendering": {
+    "modelType": "none",
+    "sounds": [
+      {
+        "name": "csmvehicles:diesel_idle",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engine_powered",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ],
+        "pitchAnimations": [
+          {
+            "animationType": "translation",
+            "variable": "engine_rpm_percent_safe",
+            "axis": [
+              0,
+              1.2,
+              0
+            ],
+            "offset": 0.6
+          }
+        ]
+      },
+      {
+        "name": "csmvehicles:diesel_start",
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engine_running",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      },
+      {
+        "name": "csmvehicles:diesel_crank",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engine_starter",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ]
+  }
+}

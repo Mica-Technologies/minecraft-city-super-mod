@@ -10,7 +10,9 @@ is scaled to complete a whole number of cycles over it.
   hi-lo  two tones, 960 and 770 Hz, 0.55 s each
 
 and the tree crew chip bed's chipper: chipper_run (a diesel and the drum idling, looped) and
-chipper_chip (one log through the knives).
+chipper_chip (one log through the knives); and the fleet's engines and horns: a diesel's and a
+V8's idle (looped; Immersive Vehicles raises the pitch with the revs), cranking (looped) and
+start, an air horn and a car horn (looped while the horn is held).
 
 Immersive Vehicles plays a pack sound named "<packID>:<name>" from assets/<packID>/sounds/
 <name>.ogg, with no sounds.json, so the module's CSM sound enum and sounds.json have no part in
@@ -121,6 +123,65 @@ def chipper_chip(seconds=0.55):
     return out
 
 
+def engine_idle(firing_hz, seconds, harmonics, rough, seed):
+    """An engine idling: its firing pulses and their harmonics, a little roughness. IV raises the
+    pitch with the revs, so one loop serves the whole range. Whole cycles over the loop."""
+    n = int(RATE * seconds)
+    t = np.arange(n) / RATE
+    out = np.zeros(n)
+    for k, level in harmonics:
+        f = round(firing_hz * k * seconds) / seconds
+        out += level * np.sin(2 * np.pi * f * t)
+    rng = np.random.RandomState(seed)
+    noise = np.convolve(rng.normal(0, 1, n + 16), np.ones(16) / 16, mode='same')[:n]
+    # roughness that loops: modulate the noise by a whole number of firing cycles
+    beat = 0.5 + 0.5 * np.sin(2 * np.pi * round(firing_hz * seconds) / seconds * t)
+    return out + rough * noise * beat
+
+
+def cranking(rate_hz, seconds, pitch, seed):
+    """A starter motor turning an engine over: a whine, chugging at the compression strokes."""
+    n = int(RATE * seconds)
+    t = np.arange(n) / RATE
+    whine = 0.4 * np.sin(2 * np.pi * (round(pitch * seconds) / seconds) * t)
+    chug = 0.6 + 0.4 * np.sin(2 * np.pi * (round(rate_hz * seconds) / seconds) * t)
+    rng = np.random.RandomState(seed)
+    noise = np.convolve(rng.normal(0, 1, n + 8), np.ones(8) / 8, mode='same')[:n] * 0.5
+    return (whine + noise) * chug
+
+
+def starting(crank, idle, crank_seconds):
+    """Cranking that catches and settles into the idle."""
+    c = crank[:int(RATE * crank_seconds)]
+    fade = np.linspace(0, 1, int(RATE * 0.35))
+    i = idle[:int(RATE * 0.9)].copy()
+    i[:len(fade)] *= fade
+    c[-len(fade):] *= fade[::-1]
+    roar = np.concatenate([c, i])
+    roar[-2000:] *= np.linspace(1, 0, 2000)
+    return roar
+
+
+def horn(freqs, seconds):
+    """A horn: a chord of buzzy tones (odd and even harmonics), looped."""
+    n = int(RATE * seconds)
+    t = np.arange(n) / RATE
+    out = np.zeros(n)
+    for f in freqs:
+        f = round(f * seconds) / seconds
+        for k in range(1, 7):
+            out += np.sin(2 * np.pi * f * k * t) / k ** 0.9
+    return out
+
+
+def diesel_idle():
+    return engine_idle(26.0, 2.0, ((1, 1.0), (2, 0.6), (3, 0.45), (4, 0.2), (6, 0.12)), 0.35, 21)
+
+
+def petrol_idle():
+    return engine_idle(42.0, 2.0, ((1, 1.0), (2, 0.5), (4, 0.3), (8, 0.1)), 0.2, 22)
+
+
 SOUNDS = {
     'siren_wail': lambda: render(wail_profile(int(RATE * 4.8))),
     # several sweeps to a file, so the loop restarts less often than it sweeps
@@ -128,6 +189,14 @@ SOUNDS = {
     'siren_hilo': lambda: render(np.tile(hilo_profile(int(RATE * 1.1)), 2)),
     'chipper_run': chipper_run,
     'chipper_chip': chipper_chip,
+    'diesel_idle': diesel_idle,
+    'diesel_crank': lambda: cranking(4.0, 1.0, 180.0, 31),
+    'diesel_start': lambda: starting(cranking(4.0, 1.5, 180.0, 31), diesel_idle(), 1.2),
+    'petrol_idle': petrol_idle,
+    'petrol_crank': lambda: cranking(6.0, 1.0, 240.0, 32),
+    'petrol_start': lambda: starting(cranking(6.0, 1.0, 240.0, 32), petrol_idle(), 0.8),
+    'horn_air': lambda: horn((233.0, 294.0, 349.0), 1.0),
+    'horn_car': lambda: horn((415.0, 494.0), 1.0),
 }
 
 

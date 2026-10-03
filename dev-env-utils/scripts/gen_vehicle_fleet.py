@@ -1,0 +1,719 @@
+"""The CSM: Vehicles fleet: our own fire engine, ambulance and police SUV for Immersive Vehicles,
+and the engines, wheels and seat they come with.
+
+Written into the same Immersive Vehicles pack as gen_vehicle_parts.py (pack id csmvehicles), from
+one catalogue, so every vehicle spawns ready to drive with nothing but Immersive Vehicles
+installed: its wheels, seats and engine are this pack's parts, set as default parts, and it spawns
+fuelled.
+
+Each vehicle is a spec of boxes, each wearing a named cell of the vehicle's 128 x 128 texture.
+Liveries are only textures: the same cells painted differently, one PNG per livery (Immersive
+Vehicles' `<model><subName>.png`), so one OBJ serves every livery. Lamps are OBJ objects named
+with a leading '&' and listed in `rendering.lightObjects` from the same spec, so the model and
+its lights cannot disagree:
+
+  - the emergency lights flash on EMERLTS, the variable IV's own pack and UNU use, which is also
+    what CSM: Vehicles' IvPreemptSource looks for: a fleet vehicle running its lights towards an
+    intersection with a CSM preempt detector calls the emergency preempt;
+  - the siren's three tones are the siren speaker's (`siren`, `siren_yelp`, `siren_hilo`), so the
+    default panel's four custom switches are the lights and the three tones;
+  - headlights, brake, turn and reverse lights run on IV's own variables.
+
+Immersive Vehicles' coordinates: +z forward, +y up, +x the vehicle's LEFT. A wheel slot's pos is
+its axle; the vehicle settles on its wheels, so here the rear axle is the origin and the ground is
+at y = -(wheel radius). Wheel and engine slots carry minValue/maxValue around the part's height
+or fuel consumption, without which IV rejects the part (default parts included); the engine's
+linkedParts are the driven wheels' 1-based slot numbers.
+
+Writes under modules/vehicles/src/main/resources/assets/: csmvehicles/jsondefs/{vehicles,parts}/,
+csmvehicles/objmodels/{vehicles,parts}/, csmvehicles/textures/{vehicles,parts}/,
+csmvehicles/textures/items/{vehicles,parts}/ and mts/models/item/. The engine and horn sounds are
+gen_vehicle_sounds.py's. Run from the repo root:
+
+    python dev-env-utils/scripts/gen_vehicle_fleet.py           # write
+    python dev-env-utils/scripts/gen_vehicle_fleet.py --check   # exit 1 if the tree has drifted
+"""
+
+import math
+import os
+import sys
+
+from PIL import Image, ImageDraw
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gen_vehicle_parts as vp  # noqa: E402
+import life_safety_gen_common as lc  # noqa: E402
+
+PACK = vp.PACK
+ROOT = vp.ROOT
+PACK_DIR = vp.PACK_DIR
+T = 128  # vehicle textures are 128 x 128, cells 16 px
+
+
+def cell(cx, cy, w=1, h=1):
+    return (cx * 16, cy * 16, (cx + w) * 16, (cy + h) * 16)
+
+
+# Named cells of every vehicle texture.
+CELLS = {
+    'paint': cell(0, 0), 'paint2': cell(1, 0), 'stripe': cell(2, 0), 'chrome': cell(3, 0),
+    'black': cell(4, 0), 'glass': cell(5, 0), 'interior': cell(6, 0), 'door': cell(7, 0),
+    'grille': cell(0, 1), 'headlight': cell(1, 1), 'tail': cell(2, 1), 'amber': cell(3, 1),
+    'white': cell(4, 1), 'lamp_red': cell(5, 1), 'lamp_blue': cell(6, 1),
+    'lamp_white': cell(7, 1), 'decal': cell(0, 2, 4, 1), 'emitter': cell(4, 2),
+    'hosebed': cell(5, 2), 'plate': cell(6, 2), 'rubber': cell(7, 2),
+}
+
+LAMP_LIT = {'lamp_red': '#FF1E10', 'lamp_blue': '#1E46FF', 'lamp_white': '#EEF4FF',
+            'emitter': '#DCEBFF'}
+
+
+# ------------------------------------------------------------------------------------------
+# Building a vehicle
+# ------------------------------------------------------------------------------------------
+
+class Vehicle:
+    """A vehicle's mesh, lights and icon outline, built box by box."""
+
+    def __init__(self):
+        self.obj = vp.Obj(tex=T)
+        self.lights = []      # (object name, light definition)
+        self.outline = []     # (lo, hi, cell name) for the item icon
+        self.count = 0
+
+    def box(self, lo, hi, name, faces=('n', 's', 'e', 'w', 'u', 'd'), obj=None):
+        self.count += 1
+        self.obj.box(obj or 'p%d_%s' % (self.count, name), lo, hi, CELLS[name], faces)
+        self.outline.append((lo, hi, name))
+
+    def both(self, lo, hi, name, faces=('n', 's', 'e', 'w', 'u', 'd')):
+        """The box and its mirror image across x = 0 (left and right)."""
+        self.box(lo, hi, name, faces)
+        self.box((-hi[0], lo[1], lo[2]), (-lo[0], hi[1], hi[2]), name, faces)
+
+    def lamp(self, name, lo, hi, cell_name, colour, animations, axis, size=0.35,
+             faces=('n', 's', 'e', 'w', 'u', 'd')):
+        self.box(lo, hi, cell_name, faces, obj='&' + name)
+        centre = [round((lo[k] + hi[k]) / 2, 4) for k in range(3)]
+        light = {'objectName': '&' + name, 'emissive': True, 'isElectric': True,
+                 'color': colour, 'brightnessAnimations': animations}
+        if axis:
+            light['blendableComponents'] = [vp.flare(centre, axis, size)]
+        self.lights.append(light)
+
+    def lightbar(self, x_half, y, z, colours, rear_beacons=None):
+        """A roof lightbar: eight modules flashing in pairs, left then right, the emitter in the
+        middle. `colours` are eight lamp cells, left (+x) to right."""
+        depth = 0.16
+        self.box((-x_half, y, z - depth), (x_half, y + 0.05, z + depth), 'black')
+        width = (2 * x_half - 0.14) / 8
+        for i, colour in enumerate(colours):
+            left = x_half - 0.02 - i * width - (0.10 if i >= 4 else 0)
+            flashes = vp.LEFT_FLASHES if i < 4 else vp.RIGHT_FLASHES
+            self.lamp('Lamp_%d' % (i + 1), (left - width + 0.01, y + 0.05, z - depth + 0.01),
+                      (left - 0.01, y + 0.15, z + depth - 0.01), colour, LAMP_LIT[colour],
+                      [vp.visible_on('EMERLTS')] + [vp.lit_by(f) for f in flashes],
+                      [0, 0, 1], 0.45)
+        self.lamp('Emitter', (-0.03, y + 0.07, z + depth - 0.01), (0.03, y + 0.13, z + depth + 0.01),
+                  'emitter', LAMP_LIT['emitter'],
+                  [vp.visible_on('EMERLTS'), vp.lit_by(vp.EMITTER_FLASH)], [0, 0, 1], 0.3,
+                  faces=('s', 'e', 'w', 'u', 'd'))
+
+    def warning(self, name, lo, hi, colour, phase, axis):
+        """A body-mounted warning lamp, flashing on its own phase of the lightbar's 16 ticks."""
+        cycle = ['0_5_11_cycle', '8_5_3_cycle'][phase]
+        self.lamp(name, lo, hi, colour, LAMP_LIT[colour],
+                  [vp.visible_on('EMERLTS'), vp.lit_by(cycle)], axis)
+
+    def road_lights(self, front_z, rear_z, x_out, head_y, tail_y):
+        """Headlights, tail and brake lights, turn signals and reversing lights."""
+        f, r = front_z, rear_z
+        self.lamp('HeadlightL', (x_out - 0.35, head_y, f), (x_out - 0.05, head_y + 0.2, f + 0.03),
+                  'headlight', '#FFF6E0', [vp.visible_on('headlight')], [0, 0, 1], 0.6,
+                  faces=('s', 'e', 'w', 'u', 'd'))
+        self.lamp('HeadlightR', (-x_out + 0.05, head_y, f), (-x_out + 0.35, head_y + 0.2, f + 0.03),
+                  'headlight', '#FFF6E0', [vp.visible_on('headlight')], [0, 0, 1], 0.6,
+                  faces=('s', 'e', 'w', 'u', 'd'))
+        brake = [{'animationType': 'translation', 'axis': [0, 0.5, 0],
+                  'variable': 'running_light'},
+                 {'animationType': 'translation', 'axis': [0, 1, 0], 'variable': 'brake'}]
+        back = ('n', 'e', 'w', 'u', 'd')
+        for side, sx in (('L', 1), ('R', -1)):
+            xs = sorted((sx * (x_out - 0.05), sx * (x_out - 0.30)))
+            self.lamp('Brake' + side, (xs[0], tail_y, r - 0.03), (xs[1], tail_y + 0.2, r),
+                      'tail', '#FF0000', brake, [0, 0, -1], faces=back)
+            self.lamp('Turn' + side, (xs[0], tail_y + 0.22, r - 0.03),
+                      (xs[1], tail_y + 0.34, r), 'amber', '#FFA000',
+                      [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
+                       vp.lit_by('10_10_0_cycle')], [0, 0, -1], faces=back)
+            fxs = sorted((sx * (x_out - 0.05), sx * (x_out - 0.25)))
+            self.lamp('TurnFront' + side, (fxs[0], head_y - 0.16, f), (fxs[1], head_y - 0.04, f + 0.03),
+                      'amber', '#FFA000',
+                      [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
+                       vp.lit_by('10_10_0_cycle')], [0, 0, 1], faces=('s', 'e', 'w', 'u', 'd'))
+        self.lamp('Reverse', (-0.15, tail_y, r - 0.03), (0.15, tail_y + 0.1, r), 'white', '#FFFFFF',
+                  [vp.lit_by('engine_reversed_1')], [0, 0, -1], faces=back)
+
+
+def fire_engine():
+    """A custom-cab pumper: tilt cab, compartments with roll-up doors, a hose bed, a pump panel."""
+    v = Vehicle()
+    g = -0.55                                  # the ground, below the axle
+    w = 1.25
+    v.box((-0.5, -0.15, -2.3), (0.5, 0.25, 6.9), 'black')                      # frame
+    v.box((-w, 0.25, 3.65), (w, 2.55, 6.75), 'paint')                          # cab
+    v.box((-w + 0.05, 2.55, 3.7), (w - 0.05, 2.62, 6.7), 'paint2')             # white roof
+    v.box((-1.15, 1.55, 6.75), (1.15, 2.45, 6.77), 'glass', faces=('s',))     # windshield
+    for z0, z1 in ((4.65, 6.55), (3.75, 4.55)):
+        v.both((w, 1.55, z0), (w + 0.02, 2.4, z1), 'glass', faces=('e', 'w', 'u', 'd', 'n', 's'))
+    v.both((w, 0.6, 4.75), (w + 0.025, 1.0, 6.4), 'decal', faces=('e', 'w'))  # door lettering
+    v.box((-0.7, 0.45, 6.75), (0.7, 1.35, 6.79), 'grille', faces=('s',))
+    v.box((-1.3, -0.05, 6.75), (1.3, 0.35, 7.05), 'chrome')                    # front bumper
+    v.both((w, 1.9, 6.4), (w + 0.25, 2.3, 6.5), 'chrome')                      # mirrors
+    # the body: compartments with roll-up doors, the pump panel, the hose bed
+    v.box((-w, 0.25, -2.3), (w, 2.35, 3.6), 'paint')
+    for z0, z1 in ((-2.2, -0.9), (-0.8, 0.9), (1.0, 2.4)):
+        v.both((w, 0.4, z0), (w + 0.01, 2.2, z1), 'door', faces=('e', 'w'))
+    v.both((w, 0.5, 2.5), (w + 0.02, 2.2, 3.5), 'chrome', faces=('e', 'w'))   # pump panel
+    v.both((w + 0.025, 1.05, -2.3), (w + 0.035, 1.25, 3.6), 'stripe', faces=('e', 'w'))
+    v.both((w + 0.025, 1.05, 3.65), (w + 0.03, 1.25, 4.6), 'stripe', faces=('e', 'w'))
+    v.box((-w + 0.1, 2.35, -2.2), (w - 0.1, 2.5, 2.4), 'hosebed', faces=('u',))
+    v.box((-w, 2.35, -2.3), (w, 2.6, -2.2), 'chrome')                          # rear rail
+    v.both((w - 0.1, 2.35, -2.3), (w, 2.6, 2.4), 'chrome')                     # side rails
+    v.box((-1.3, -0.1, -2.6), (1.3, 0.2, -2.3), 'chrome')                      # rear step
+    v.both((w - 0.2, 0.0, 3.0), (w, 0.25, 3.6), 'black')                       # cab step
+    v.box((-0.5, 0.05, -2.31), (0.5, 0.35, -2.3), 'plate', faces=('n',))
+    # lights
+    v.lightbar(1.05, 2.62, 6.35, ['lamp_red', 'lamp_white', 'lamp_red', 'lamp_red',
+                                  'lamp_red', 'lamp_red', 'lamp_white', 'lamp_red'])
+    for side, sx in (('L', 1), ('R', -1)):
+        xs = sorted((sx * w, sx * (w - 0.2)))
+        v.warning('Beacon' + side, (xs[0], 2.6, -2.25), (xs[1], 2.8, -2.05), 'lamp_red',
+                  0 if sx > 0 else 1, [0, 0, -1])
+        sxs = sorted((sx * w, sx * (w + 0.03)))
+        v.warning('Side' + side, (sxs[0], 1.5, 3.62), (sxs[1], 1.7, 3.64), 'lamp_red',
+                  1 if sx > 0 else 0, [sx, 0, 0])
+        fx = sorted((sx * 0.75, sx * 0.95))
+        v.warning('Grille' + side, (fx[0], 1.0, 6.75), (fx[1], 1.15, 6.78), 'lamp_red',
+                  0 if sx > 0 else 1, [0, 0, 1])
+    v.road_lights(6.75, -2.3, w, 0.7, 0.45)
+    return v, g
+
+
+def ambulance():
+    """A Type III ambulance: a van cab and a modular box behind it."""
+    v = Vehicle()
+    g = -0.4
+    v.box((-0.45, -0.1, -1.95), (0.45, 0.2, 5.1), 'black')
+    # the van cab and its hood
+    v.box((-1.0, 0.2, 2.95), (1.0, 2.05, 4.0), 'paint2')
+    v.box((-0.95, 0.2, 4.0), (0.95, 1.0, 5.0), 'paint2')
+    v.box((-0.9, 1.05, 4.0), (0.9, 1.95, 4.02), 'glass', faces=('s',))
+    v.both((1.0, 1.1, 3.05), (1.02, 1.9, 3.9), 'glass')
+    v.box((-0.6, 0.35, 5.0), (0.6, 0.85, 5.02), 'grille', faces=('s',))
+    v.box((-1.0, 0.05, 5.0), (1.0, 0.3, 5.2), 'black')
+    v.both((1.0, 1.4, 3.85), (1.2, 1.75, 3.95), 'black')
+    # the patient module
+    w = 1.15
+    v.box((-w, 0.25, -1.95), (w, 2.6, 2.9), 'paint2')
+    v.both((w + 0.01, 0.9, -1.95), (w + 0.02, 1.2, 2.9), 'stripe', faces=('e', 'w'))
+    v.both((1.0, 0.9, 2.95), (1.01, 1.2, 4.0), 'stripe', faces=('e', 'w'))
+    v.both((w + 0.01, 1.35, -0.4), (w + 0.02, 1.85, 1.1), 'decal', faces=('e', 'w'))
+    v.both((w, 0.35, 1.2), (w + 0.01, 2.3, 2.6), 'door', faces=('e', 'w'))   # side entry
+    v.box((-1.0, 1.4, -1.97), (1.0, 2.2, -1.95), 'glass', faces=('n',))    # rear windows
+    v.box((-0.02, 0.3, -1.97), (0.02, 2.3, -1.95), 'black', faces=('n',))
+    v.box((-1.2, -0.05, -2.2), (1.2, 0.2, -1.95), 'chrome')
+    v.box((-0.4, 0.3, -1.96), (0.4, 0.5, -1.95), 'plate', faces=('n',))
+    # lights: the cab's bar, and the module's corner lamps
+    v.lightbar(0.85, 2.05, 3.6, ['lamp_red', 'lamp_white', 'lamp_red', 'lamp_red',
+                                 'lamp_red', 'lamp_red', 'lamp_white', 'lamp_red'])
+    for side, sx in (('L', 1), ('R', -1)):
+        xs = sorted((sx * w, sx * (w - 0.3)))
+        v.warning('FrontCorner' + side, (xs[0], 2.35, 2.9), (xs[1], 2.55, 2.93), 'lamp_red',
+                  0 if sx > 0 else 1, [0, 0, 1])
+        v.warning('RearCorner' + side, (xs[0], 2.35, -1.98), (xs[1], 2.55, -1.95), 'lamp_red',
+                  1 if sx > 0 else 0, [0, 0, -1])
+        sx0 = sorted((sx * w, sx * (w + 0.03)))
+        v.warning('Side' + side, (sx0[0], 2.3, 1.0), (sx0[1], 2.5, 1.4), 'lamp_red',
+                  0 if sx > 0 else 1, [sx, 0, 0])
+    v.road_lights(5.0, -1.95, 0.95, 0.55, 0.5)
+    return v, g
+
+
+def police_suv():
+    """A police utility vehicle: two-tone body, push bumper, a low lightbar."""
+    v = Vehicle()
+    g = -0.39
+    w = 1.0
+    v.box((-w, -0.05, -1.05), (w, 0.75, 4.1), 'paint2')                       # lower body
+    v.box((-w + 0.02, 0.75, 2.9), (w - 0.02, 0.95, 4.1), 'paint')             # hood
+    v.box((-w + 0.02, 0.75, -1.0), (w - 0.02, 0.95, -0.5), 'paint')           # tailgate top
+    # the greenhouse: pillars, glass and roof
+    v.box((-0.95, 0.95, -0.95), (0.95, 1.55, 2.85), 'interior', faces=('u', 'd'))
+    v.box((-0.9, 0.97, 2.85), (0.9, 1.5, 2.87), 'glass', faces=('s',))
+    v.box((-0.9, 1.0, -0.97), (0.9, 1.5, -0.95), 'glass', faces=('n',))
+    v.both((0.95, 1.0, -0.9), (0.96, 1.5, 2.8), 'glass', faces=('e', 'w'))
+    for z0, z1 in ((2.75, 2.9), (1.2, 1.3), (-0.95, -0.8)):
+        v.both((0.9, 0.95, z0), (0.97, 1.55, z1), 'paint')
+    v.box((-0.97, 1.55, -0.97), (0.97, 1.62, 2.9), 'paint')                   # roof
+    v.both((w, 0.2, 0.3), (w + 0.015, 0.6, 2.4), 'decal', faces=('e', 'w'))
+    v.both((w, 0.62, -1.0), (w + 0.01, 0.68, 4.05), 'stripe', faces=('e', 'w'))
+    v.box((-0.7, 0.4, 4.1), (0.7, 0.7, 4.12), 'grille', faces=('s',))
+    v.box((-0.85, -0.05, 4.1), (0.85, 0.45, 4.35), 'black')                   # push bumper
+    v.box((-0.85, 0.45, 4.25), (-0.7, 0.85, 4.35), 'black')
+    v.box((0.7, 0.45, 4.25), (0.85, 0.85, 4.35), 'black')
+    v.both((w, 1.0, 2.6), (w + 0.18, 1.2, 2.7), 'black')                      # mirrors
+    v.box((-0.35, 0.2, -1.06), (0.35, 0.4, -1.05), 'plate', faces=('n',))
+    v.lightbar(0.8, 1.62, 1.6, ['lamp_red', 'lamp_red', 'lamp_white', 'lamp_red',
+                                'lamp_blue', 'lamp_white', 'lamp_blue', 'lamp_blue'])
+    for side, sx, col in (('L', 1, 'lamp_red'), ('R', -1, 'lamp_blue')):
+        xs = sorted((sx * 0.3, sx * 0.5))
+        v.warning('Grille' + side, (xs[0], 0.5, 4.12), (xs[1], 0.62, 4.14), col,
+                  0 if sx > 0 else 1, [0, 0, 1])
+        v.warning('Rear' + side, (xs[0], 1.4, -0.98), (xs[1], 1.48, -0.96), col,
+                  1 if sx > 0 else 0, [0, 0, -1])
+    v.road_lights(4.1, -1.05, w, 0.5, 0.45)
+    return v, g
+
+
+# ------------------------------------------------------------------------------------------
+# Liveries and textures
+# ------------------------------------------------------------------------------------------
+
+def rgb(h):
+    return tuple(int(h[k:k + 2], 16) for k in (1, 3, 5))
+
+
+# Each livery: paint, second colour (roof, module), stripe, decal text, decal colour.
+LIVERIES = {
+    'csm_fire_engine': [
+        ('_red', 'Fire Engine', '#B01818', '#F2F2EE', '#F2F2EE', 'FIRE RESCUE', '#F2D24A'),
+        ('_lime', 'Fire Engine (Lime)', '#C9D82A', '#F2F2EE', '#1C1C1C', 'FIRE RESCUE',
+         '#1C1C1C'),
+    ],
+    'csm_ambulance': [
+        ('_red', 'Ambulance', '#F2F2EE', '#F2F2EE', '#C01A1A', 'AMBULANCE', '#C01A1A'),
+        ('_orange', 'Ambulance (Orange Stripe)', '#F2F2EE', '#F2F2EE', '#E07818', 'AMBULANCE',
+         '#1E4AA0'),
+    ],
+    'csm_police_suv': [
+        ('_blackwhite', 'Police SUV', '#151517', '#F2F2EE', '#151517', 'POLICE', '#151517'),
+        ('_white', 'Police SUV (White)', '#F2F2EE', '#F2F2EE', '#1E4AA0', 'POLICE', '#1E4AA0'),
+    ],
+}
+
+
+def shade(c, k):
+    return tuple(max(0, min(255, int(v * k))) for v in c)
+
+
+def vehicle_texture(livery):
+    _, _, paint, paint2, stripe, text, text_colour = livery
+    img = Image.new('RGBA', (T, T), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+
+    def fill(name, colour):
+        x0, y0, x1, y1 = CELLS[name]
+        d.rectangle((x0, y0, x1 - 1, y1 - 1), fill=colour + (255,))
+
+    p, p2, st = rgb(paint), rgb(paint2), rgb(stripe)
+    fill('paint', p)
+    fill('paint2', p2)
+    fill('stripe', st)
+    fill('chrome', (196, 200, 206))
+    d.line((48, 0, 63, 0), fill=(236, 238, 242, 255))
+    fill('black', (24, 24, 26))
+    fill('glass', (40, 54, 66))
+    d.line((80, 2, 88, 10), fill=(70, 88, 104, 255))
+    fill('interior', (52, 50, 48))
+    fill('door', p)
+    for y in range(1, 16, 3):                      # roll-up door slats
+        d.line((112, y, 127, y), fill=shade(p, 0.8) + (255,))
+    d.line((112, 15, 127, 15), fill=(40, 40, 40, 255))
+    fill('grille', (30, 30, 32))
+    for y in range(17, 32, 2):
+        d.line((1, y, 14, y), fill=(150, 154, 160, 255))
+    fill('headlight', (210, 214, 218))
+    fill('tail', (130, 18, 16))
+    fill('amber', (150, 92, 12))
+    fill('white', (180, 182, 186))
+    fill('lamp_red', (120, 18, 14))
+    fill('lamp_blue', (18, 34, 120))
+    fill('lamp_white', (150, 152, 158))
+    fill('emitter', (70, 76, 88))
+    fill('hosebed', (32, 30, 28))
+    for x in range(81, 96, 3):                     # hose folds
+        d.line((x, 33, x, 46), fill=(170, 150, 60, 255))
+    fill('plate', (236, 236, 228))
+    d.rectangle((97, 37, 110, 42), fill=(40, 60, 120, 255))
+    fill('rubber', (20, 20, 20))
+    # the decal: the livery's word in the pixel font, on the body colour of where it goes
+    x0, y0, x1, y1 = CELLS['decal']
+    # the fire engine's lettering is on its painted cab doors; the others' on white panels
+    under = p if text == 'FIRE RESCUE' else p2
+    d.rectangle((x0, y0, x1 - 1, y1 - 1), fill=under + (255,))
+    scale = 2 if lc.text_width(text, 2) <= 62 else 1
+    lc.draw_text_centred(img, text, 32, y0 + (16 - 5 * scale) // 2, rgb(text_colour), scale)
+    return img
+
+
+def vehicle_icon(v, ground, texture):
+    """A side view of the vehicle from its left, projected off its own boxes."""
+    zs = [b[0][2] for b in v.outline] + [b[1][2] for b in v.outline]
+    ys = [b[1][1] for b in v.outline] + [ground]
+    z0, z1, top = min(zs), max(zs), max(ys)
+    span = max(z1 - z0, top - ground)
+    k = 15.0 / span
+    img = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    px = texture.load()
+    for lo, hi, name in sorted(v.outline, key=lambda b: b[1][0]):
+        if hi[0] < 0.05:
+            continue  # the far side cannot be seen
+        cx0, cy0, cx1, cy1 = CELLS[name]
+        colour = px[(cx0 + cx1) // 2, (cy0 + cy1) // 2]
+        a = int((z1 - hi[2]) * k)
+        b = int((z1 - lo[2]) * k)
+        c = int(15 - (hi[1] - ground) * k)
+        e = int(15 - (lo[1] - ground) * k)
+        d.rectangle((min(a, b), min(c, e), max(a, b), max(c, e)), fill=colour)
+    return img
+
+
+# ------------------------------------------------------------------------------------------
+# The vehicles' parts: wheels, seat and engines
+# ------------------------------------------------------------------------------------------
+
+WHEELS = {
+    # name: (label, diameter, tyre width, rim colour)
+    'csm_wheel_truck': ('CSM Truck Wheel', 1.1, 0.34, (196, 200, 206)),
+    'csm_wheel_van': ('CSM Van Wheel', 0.8, 0.26, (196, 200, 206)),
+    'csm_wheel_car': ('CSM Car Wheel', 0.78, 0.26, (40, 40, 44)),
+}
+WT = 32  # wheel textures
+
+
+def wheel_obj(diameter, width, sides=16):
+    """A tyre and rim centred on the axle (the part's origin), turning about +x."""
+    r = diameter / 2
+    lines = ['# generated by dev-env-utils/scripts/gen_vehicle_fleet.py']
+    v = vt = vn = 0
+
+    def quad(name, pts, uvs, normal):
+        nonlocal v, vt, vn
+        lines.append('o %s' % name)
+        for p in pts:
+            lines.append('v %.5f %.5f %.5f' % p)
+        for u, w in uvs:
+            lines.append('vt %.6f %.6f' % (u, 1.0 - w))
+        lines.append('vn %.4f %.4f %.4f' % normal)
+        vn += 1
+        lines.append('f ' + ' '.join('%d/%d/%d' % (v + i + 1, vt + i + 1, vn)
+                                     for i in range(len(pts))))
+        v += len(pts)
+        vt += len(uvs)
+
+    hw = width / 2
+    for i in range(sides):
+        a0 = 2 * math.pi * i / sides
+        a1 = 2 * math.pi * (i + 1) / sides
+        y0, z0, y1, z1 = r * math.cos(a0), r * math.sin(a0), r * math.cos(a1), r * math.sin(a1)
+        am = (a0 + a1) / 2
+        # the tread, facing out from the axle
+        quad('tread%d' % i, [(hw, y0, z0), (-hw, y0, z0), (-hw, y1, z1), (hw, y1, z1)],
+             [(0.02, 0.02), (0.48, 0.02), (0.48, 0.48), (0.02, 0.48)],
+             (0, math.cos(am), math.sin(am)))
+        # the sidewalls and rim faces: a fan from the hub, the inner disc in rim colour
+        for sx, name in ((1, 'out'), (-1, 'in')):
+            pts = [(sx * hw, 0, 0), (sx * hw, y0, z0), (sx * hw, y1, z1)]
+            if sx < 0:
+                pts = [pts[0], pts[2], pts[1]]
+            uv = [(0.75, 0.75), (0.75 + 0.24 * math.cos(a0), 0.75 + 0.24 * math.sin(a0)),
+                  (0.75 + 0.24 * math.cos(a1), 0.75 + 0.24 * math.sin(a1))]
+            if sx < 0:
+                uv = [uv[0], uv[2], uv[1]]
+            quad('side_%s%d' % (name, i), pts, uv, (sx, 0, 0))
+    return '\n'.join(lines) + '\n'
+
+
+def wheel_texture(rim):
+    img = Image.new('RGBA', (WT, WT), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.rectangle((0, 0, 15, 15), fill=(26, 26, 28, 255))           # tread
+    for y in range(1, 16, 3):
+        d.line((0, y, 15, y), fill=(14, 14, 16, 255))
+    d.ellipse((16, 16, 31, 31), fill=(30, 30, 32, 255))           # sidewall
+    d.ellipse((19, 19, 28, 28), fill=rim + (255,))                # rim
+    d.ellipse((22, 22, 25, 25), fill=shade(rim, 0.6) + (255,))    # hub
+    return img
+
+
+def wheel_json(name):
+    label, diameter, width, _ = WHEELS[name]
+    return {
+        'definitions': [{'name': label, 'subName': '', 'extraMaterialLists': [[]]}],
+        'general': {'description': 'Comes on the CSM fleet\'s vehicles; fits any wheel slot it '
+                                   'is the right size for.',
+                    'stackSize': 4, 'materialLists': [['minecraft:iron_ingot:0:1',
+                                                       'minecraft:slime_ball:0:2']]},
+        'generic': {'type': 'ground_wheel', 'width': width, 'height': diameter},
+        'ground': {'isWheel': True, 'width': width, 'height': diameter,
+                   'motiveFriction': 0.7, 'lateralFriction': 0.85,
+                   'frictionModifiers': {'ice': -0.25, 'snow': -0.2}},
+        'rendering': {'modelType': 'obj'},
+    }
+
+
+def seat_obj():
+    o = vp.Obj(tex=32)
+    o.box('cushion', (-0.25, 0.0, -0.25), (0.25, 0.12, 0.25), (0, 0, 16, 16))
+    o.box('back', (-0.25, 0.12, -0.32), (0.25, 0.75, -0.2), (0, 0, 16, 16))
+    o.box('frame', (-0.2, -0.15, -0.2), (0.2, 0.0, 0.2), (16, 0, 32, 16))
+    return o.text().replace('gen_vehicle_parts.py', 'gen_vehicle_fleet.py')
+
+
+def seat_texture():
+    img = Image.new('RGBA', (32, 32), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.rectangle((0, 0, 15, 15), fill=(36, 36, 40, 255))
+    for x in range(2, 16, 4):
+        d.line((x, 0, x, 15), fill=(28, 28, 32, 255))
+    d.rectangle((16, 0, 31, 15), fill=(80, 82, 86, 255))
+    return img
+
+
+def seat_json():
+    return {
+        'definitions': [{'name': 'CSM Vehicle Seat', 'subName': '', 'extraMaterialLists': [[]]}],
+        'general': {'description': 'Comes in the CSM fleet\'s vehicles.', 'stackSize': 4,
+                    'materialLists': [['minecraft:wool:0:2', 'minecraft:iron_ingot:0:1']]},
+        'generic': {'type': 'seat'},
+        'seat': {},
+        'rendering': {'modelType': 'obj'},
+    }
+
+
+ENGINES = {
+    # name: (label, fuel type, fuel consumption (the power), max, safe, idle, start, stall rpm,
+    #        gear ratios, sound prefix)
+    'csm_engine_diesel': ('CSM Diesel Engine', 'diesel', 0.9, 3500, 3000, 500, 600, 325,
+                          [-2.8, 0.0, 4.69, 2.6, 1.5, 1.0, 0.75], 'diesel'),
+    'csm_engine_petrol': ('CSM V8 Engine', 'gasoline', 0.6, 6500, 5200, 650, 750, 420,
+                          [-2.4, 0.0, 3.0, 1.8, 1.25, 1.0, 0.7], 'petrol'),
+}
+
+
+def engine_json(name):
+    label, fuel, consumption, mx, safe, idle, start, stall, gears, sound = ENGINES[name]
+    snd = lambda s: '%s:%s_%s' % (PACK, sound, s)  # noqa: E731
+    return {
+        'definitions': [{'name': label, 'subName': '', 'extraMaterialLists': [[]]}],
+        'general': {'description': 'Comes in the CSM fleet\'s vehicles.', 'stackSize': 1,
+                    'materialLists': [['minecraft:iron_block:0:2', 'minecraft:piston:0:4',
+                                       'minecraft:redstone:0:8']]},
+        'generic': {'type': 'engine_car', 'width': 0.8, 'height': 0.8,
+                    'forwardsDamageMultiplier': 1.0},
+        'engine': {'type': 'normal', 'isAutomatic': True, 'starterPower': 40, 'maxRPM': mx,
+                   'maxSafeRPM': safe, 'idleRPM': idle, 'startRPM': start, 'stallRPM': stall,
+                   'fuelConsumption': consumption, 'gearRatios': gears, 'fuelType': fuel},
+        'rendering': {'modelType': 'none', 'sounds': [
+            {'name': snd('idle'), 'looping': True,
+             'activeAnimations': [vp.visible_on('engine_powered')],
+             'pitchAnimations': [{'animationType': 'translation',
+                                  'variable': 'engine_rpm_percent_safe',
+                                  'axis': [0, 1.2, 0], 'offset': 0.6}]},
+            {'name': snd('start'), 'activeAnimations': [vp.visible_on('engine_running')]},
+            {'name': snd('crank'), 'looping': True,
+             'activeAnimations': [vp.visible_on('engine_starter')]},
+        ]},
+    }
+
+
+# ------------------------------------------------------------------------------------------
+# The vehicles' definitions
+# ------------------------------------------------------------------------------------------
+
+FLEET = {
+    # name: (builder, description, mass kg, wheel, engine, horn, wheel slots, seats, engine pos,
+    #        collision boxes (z centres), box width, box height, box centre y)
+    'csm_fire_engine': dict(
+        build=fire_engine,
+        description='A custom-cab pumper. Switch EMERLTS on and it runs its lights, and '
+                    'intersections with a CSM preempt detector give it the green; siren, yelp '
+                    'and hi-lo each have a switch.',
+        mass=7500, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        wheels=[(1.0, 5.0, True), (0.95, 0.0, False), (0.62, 0.0, False)],
+        seats=[(0.6, 0.85, 5.7, True), (-0.6, 0.85, 5.7, False),
+               (0.6, 0.85, 4.15, False), (-0.6, 0.85, 4.15, False)],
+        engine_pos=(0.0, 0.6, 5.2), boxes=[-1.4, 1.1, 3.6, 5.9], box_width=2.5,
+        box_height=2.7, box_y=1.15),
+    'csm_ambulance': dict(
+        build=ambulance,
+        description='A Type III ambulance. Switch EMERLTS on and it runs its lights, and '
+                    'intersections with a CSM preempt detector give it the green.',
+        mass=4200, wheel='csm_wheel_van', engine='csm_engine_diesel', horn='horn_air',
+        wheels=[(0.82, 3.6, True), (0.78, 0.0, False), (0.52, 0.0, False)],
+        seats=[(0.45, 0.65, 3.4, True), (-0.45, 0.65, 3.4, False), (0.0, 0.7, 0.6, False)],
+        engine_pos=(0.0, 0.45, 4.4), boxes=[-1.0, 1.3, 3.5], box_width=2.3, box_height=2.8,
+        box_y=1.1),
+    'csm_police_suv': dict(
+        build=police_suv,
+        description='A police utility vehicle. Switch EMERLTS on and it runs its lights, and '
+                    'intersections with a CSM preempt detector give it the green.',
+        mass=2300, wheel='csm_wheel_car', engine='csm_engine_petrol', horn='horn_car',
+        wheels=[(0.85, 3.0, True), (0.85, 0.0, False)],
+        seats=[(0.42, 0.3, 1.7, True), (-0.42, 0.3, 1.7, False),
+               (0.42, 0.3, 0.45, False), (-0.42, 0.3, 0.45, False)],
+        engine_pos=(0.0, 0.4, 3.4), boxes=[-0.2, 1.6, 3.3], box_width=2.0, box_height=1.8,
+        box_y=0.6),
+}
+
+
+def vehicle_json(name, v):
+    spec = FLEET[name]
+    diameter = WHEELS[spec['wheel']][1]
+    wheel = '%s:%s' % (PACK, spec['wheel'])
+    parts = []
+    driven = []
+    for x, z, steer in spec['wheels']:
+        for sx in (1, -1):
+            slot = {'pos': [sx * x, 0.0, z], 'minValue': round(diameter * 0.6, 3),
+                    'maxValue': round(diameter * 1.2, 3), 'types': ['ground_wheel'],
+                    'defaultPart': wheel}
+            if sx < 0:
+                slot['rot'] = [0, 180, 0]
+                slot['isMirrored'] = True
+            if steer:
+                slot['turnsWithSteer'] = True
+            parts.append(slot)
+            if not steer:
+                driven.append(len(parts))
+    for x, y, z, controller in spec['seats']:
+        slot = {'pos': [x, y, z], 'types': ['seat'], 'defaultPart': '%s:csm_vehicle_seat' % PACK,
+                'dismountPos': [x + (1.6 if x >= 0 else -1.6), 0.0, z]}
+        if controller:
+            slot['isController'] = True
+        parts.append(slot)
+    parts.append({'pos': list(spec['engine_pos']), 'minValue': 0.25, 'maxValue': 1.0,
+                  'types': ['engine_car'], 'defaultPart': '%s:%s' % (PACK, spec['engine']),
+                  'linkedParts': driven})
+    tones = [('siren', 'siren_wail'), ('siren_yelp', 'siren_yelp'), ('siren_hilo', 'siren_hilo')]
+    definitions = [{'name': livery[1], 'subName': livery[0], 'extraMaterialLists': [[]]}
+                   for livery in LIVERIES[name]]
+    return {
+        'definitions': definitions,
+        'general': {'description': spec['description'],
+                    'materialLists': [['minecraft:iron_block:0:6', 'minecraft:glass_pane:0:6',
+                                       'minecraft:redstone_block:0:1']]},
+        'motorized': {'emptyMass': spec['mass'], 'fuelCapacity': 15000,
+                      'defaultFuelQty': 15000, 'axleRatio': 3.55, 'brakingFactor': 1.0,
+                      'dragCoefficient': 0.5, 'hasHeadlights': True, 'hasRunningLights': True,
+                      'hasTurnSignals': True, 'litVariable': 'headlight',
+                      'panel': 'mts:default_car'},
+        'parts': parts,
+        'collisionGroups': [{
+            'collisionTypes': ['block', 'entity', 'attack', 'click'],
+            'collisions': [{'pos': [0, spec['box_y'], z], 'width': spec['box_width'],
+                            'height': spec['box_height']} for z in spec['boxes']],
+        }],
+        'rendering': {
+            'modelType': 'obj',
+            'customVariables': ['EMERLTS', 'siren', 'siren_yelp', 'siren_hilo'],
+            'sounds': [{'name': '%s:%s' % (PACK, spec['horn']), 'looping': True,
+                        'activeAnimations': [vp.visible_on('horn')]}] +
+                      [{'name': '%s:%s' % (PACK, sound), 'looping': True,
+                        'activeAnimations': [vp.visible_on(variable)]}
+                       for variable, sound in tones],
+            'lightObjects': v.lights,
+        },
+    }
+
+
+# ------------------------------------------------------------------------------------------
+# Catalogue and writing
+# ------------------------------------------------------------------------------------------
+
+def catalogue():
+    files = {}
+
+    def put(path, data):
+        files[path] = data
+
+    def item(kind, name, icon):
+        put(os.path.join(PACK_DIR, 'textures', 'items', kind, name + '.png'), vp.png_bytes(icon))
+        put(os.path.join(ROOT, 'mts', 'models', 'item', '%s.%s.json' % (PACK, name)),
+            vp.json_bytes({'parent': 'minecraft:item/generated',
+                           'textures': {'layer0': '%s:items/%s/%s' % (PACK, kind, name)}}))
+
+    for name in FLEET:
+        v, ground = FLEET[name]['build']()
+        put(os.path.join(PACK_DIR, 'objmodels', 'vehicles', name + '.obj'),
+            v.obj.text().replace('gen_vehicle_parts.py', 'gen_vehicle_fleet.py').encode('utf-8'))
+        put(os.path.join(PACK_DIR, 'jsondefs', 'vehicles', name + '.json'),
+            vp.json_bytes(vehicle_json(name, v)))
+        for livery in LIVERIES[name]:
+            texture = vehicle_texture(livery)
+            put(os.path.join(PACK_DIR, 'textures', 'vehicles', name + livery[0] + '.png'),
+                vp.png_bytes(texture))
+            item('vehicles', name + livery[0], vehicle_icon(v, ground, texture))
+
+    for name, (label, diameter, width, rim) in WHEELS.items():
+        put(os.path.join(PACK_DIR, 'objmodels', 'parts', name + '.obj'),
+            wheel_obj(diameter, width).encode('utf-8'))
+        put(os.path.join(PACK_DIR, 'textures', 'parts', name + '.png'),
+            vp.png_bytes(wheel_texture(rim)))
+        put(os.path.join(PACK_DIR, 'jsondefs', 'parts', name + '.json'),
+            vp.json_bytes(wheel_json(name)))
+        icon = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+        dd = ImageDraw.Draw(icon)
+        dd.ellipse((1, 1, 14, 14), fill=(26, 26, 28, 255))
+        dd.ellipse((5, 5, 10, 10), fill=rim + (255,))
+        item('parts', name, icon)
+
+    put(os.path.join(PACK_DIR, 'objmodels', 'parts', 'csm_vehicle_seat.obj'),
+        seat_obj().encode('utf-8'))
+    put(os.path.join(PACK_DIR, 'textures', 'parts', 'csm_vehicle_seat.png'),
+        vp.png_bytes(seat_texture()))
+    put(os.path.join(PACK_DIR, 'jsondefs', 'parts', 'csm_vehicle_seat.json'),
+        vp.json_bytes(seat_json()))
+    seat_icon = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    ImageDraw.Draw(seat_icon).rectangle((4, 2, 7, 12), fill=(36, 36, 40, 255))
+    ImageDraw.Draw(seat_icon).rectangle((4, 10, 12, 12), fill=(36, 36, 40, 255))
+    item('parts', 'csm_vehicle_seat', seat_icon)
+
+    for name in ENGINES:
+        put(os.path.join(PACK_DIR, 'jsondefs', 'parts', name + '.json'),
+            vp.json_bytes(engine_json(name)))
+        icon = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+        dd = ImageDraw.Draw(icon)
+        dd.rectangle((2, 5, 13, 12), fill=(70, 72, 76, 255))
+        dd.rectangle((4, 2, 11, 5), fill=(120, 124, 130, 255))
+        item('parts', name, icon)
+    return files
+
+
+def main():
+    check = '--check' in sys.argv
+    files = catalogue()
+    drift = []
+    for path, data in sorted(files.items()):
+        if vp.same(path, data):
+            continue
+        if check:
+            drift.append(path)
+            continue
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'wb') as fh:
+            fh.write(data)
+        print('wrote', path)
+    if check:
+        if drift:
+            print('out of date (re-run without --check):')
+            for p in drift:
+                print('  ' + p)
+            sys.exit(1)
+        print('vehicle fleet is up to date (%d files)' % len(files))
+
+
+if __name__ == '__main__':
+    main()

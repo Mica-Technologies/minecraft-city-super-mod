@@ -13,8 +13,13 @@ Vehicles (IV, mod id `mts`, formerly Minecraft Transport Simulator). It does two
   turns the logs, brush and leaves dropped behind the truck into Parks' Mulch. The stump grinder
   that goes with it is a hand tool in Parks, beside the chainsaw (`PARKS_GREENERY_SYSTEM.md`).
 
-It requires Roads & Traffic and Immersive Vehicles. Our own vehicles (fire engine, ambulance, police
-SUV, ladder truck) are later work.
+- **The fleet.** Our own fire engine, ambulance and police SUV, two liveries each, with their
+  lights, siren, horn and emitter built in. Each spawns ready to drive with nothing but IV
+  installed: its wheels, seats and engine are this pack's own parts, set as default parts, and it
+  spawns fuelled.
+
+It requires Roads & Traffic and Immersive Vehicles. A ladder truck with an animated aerial is the
+fleet's next vehicle.
 
 ---
 
@@ -158,6 +163,56 @@ pack's `treecrew/` subfolder, and `packdefinition.json` activates it only when `
 loaded. Models and textures stay at the pack's top level, since IV resolves them from the pack id,
 not from the folder the JSON was in.
 
+### The fleet
+
+`dev-env-utils/scripts/gen_vehicle_fleet.py` writes the vehicles and their parts from one
+catalogue (`--check` fails on drift). The engine and horn sounds come from
+`gen_vehicle_sounds.py`.
+
+| Vehicle | Liveries | Wheels | Engine | Seats |
+|---|---|---|---|---|
+| `csm_fire_engine` (custom-cab pumper, 9.4 m) | `_red`, `_lime` | `csm_wheel_truck` (1.1 m), duals behind | `csm_engine_diesel` | 4 |
+| `csm_ambulance` (Type III, 7.2 m) | `_red`, `_orange` (stripe) | `csm_wheel_van` (0.8 m), duals behind | `csm_engine_diesel` | 3 |
+| `csm_police_suv` (5.4 m) | `_blackwhite`, `_white` | `csm_wheel_car` (0.78 m) | `csm_engine_petrol` (V8) | 4 |
+
+**How a vehicle is built.**
+- **Model:** a spec of boxes, each wearing a named cell of a 128 px texture. Liveries are only
+  textures: the same cells painted differently, one PNG per definition's `subName`.
+- **Lettering:** FIRE RESCUE, AMBULANCE and POLICE are set in Life Safety's 3 x 5 pixel font, so
+  every machine draws them the same.
+- **Lamps:** the spec records each `&` lamp as it places it, so `lightObjects` is written from the
+  same spec as the model and the two cannot disagree.
+- **Item icon:** each vehicle's icon is its own side view, projected off its boxes.
+
+**What the panel shows.**
+- The default car panel has four custom switches: `EMERLTS` (the lights, and so preemption),
+  `siren`, `siren_yelp` and `siren_hilo` (the siren speaker's tones).
+- The horn plays on IV's `horn`.
+- Headlights, brake, turn and reverse lights use IV's own variables.
+
+**The IV rules this follows** (each silently breaks a vehicle when missed):
+- Wheel and engine slots carry `minValue`/`maxValue` around the part's height or fuel
+  consumption, or IV rejects the part, default parts included.
+- The engine's `linkedParts` are the driven (rear) wheel slots, 1-based.
+- One seat is the controller, and the front wheels `turnsWithSteer`.
+- Enum values are lowercase.
+- Right-hand wheels are `isMirrored` and turned 180 degrees.
+
+**Fuel.** The vehicles spawn full (`defaultFuelQty`). A fresh install has no `diesel` or
+`gasoline` fluid without a mod that adds one, and lava is the fallback.
+
+**Testing traps.**
+- A vehicle item carrying NBT is placed as a saved vehicle: its parts come from the data, so a
+  `/give` with only `EMERLTS` spawns a vehicle with no wheels, seats or engine. That is still
+  enough to test lights and preemption.
+- Driving and the panel need IV's own key polling, which MCMCP does not drive, so both have to be
+  tried by hand.
+
+Verified 2026-10-03 in the dev client:
+- All three spawn on their own wheels, level, with every livery's texture.
+- The fire engine with `EMERLTS` on, facing the detector, preempted the test intersection.
+- Driving, the panel and the sounds have not been tried.
+
 ---
 
 ## Build
@@ -213,6 +268,6 @@ Verified 2026-10-03 against IV's fire truck in the dev client:
 ## What is next
 
 - A towed trailer chipper, alongside the chip bed, once there is a fleet to tow it.
-- Our own fleet.
+- The ladder truck, with an animated aerial; more liveries; driving and sound tuning from play.
 - Transit signal priority from buses, through the `TRANSIT` emitter kind and
   `TrafficSignalPriorityPlan`.

@@ -1,0 +1,28 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Vehicle Seat",
+      "subName": "",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "Comes in the CSM fleet's vehicles.",
+    "stackSize": 4,
+    "materialLists": [
+      [
+        "minecraft:wool:0:2",
+        "minecraft:iron_ingot:0:1"
+      ]
+    ]
+  },
+  "generic": {
+    "type": "seat"
+  },
+  "seat": {},
+  "rendering": {
+    "modelType": "obj"
+  }
+}

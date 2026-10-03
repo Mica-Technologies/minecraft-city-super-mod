@@ -960,8 +960,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   `a_b_c_cycle` variables, lit b - 1 ticks of a + b + c; `--check` fails on drift.
   The tree crew's chip bed (its crate and collector/crafter effectors, under the `treecrew/`
   subfolder the pack definition activates with `csm_parks`) is written here too.
-  `gen_vehicle_sounds.py [name ...]` synthesises the siren's wail, yelp and hi-lo and the
-  chipper's running loop and crunch
+  `gen_vehicle_sounds.py [name ...]` synthesises the siren's wail, yelp and hi-lo, the
+  chipper's running loop and crunch, and the fleet's engine and horn sounds.
+  `gen_vehicle_fleet.py` writes the fleet: the fire engine, ambulance and police SUV (OBJ built
+  from boxes on named cells of a 128 px texture, one PNG per livery, lettering in the Life Safety
+  pixel font, `lightObjects` written from the same spec as the lamps, item icons projected off
+  the boxes) and their own wheels, seat and engines as default parts; `--check`
 - `gen_utilities_meters.py` -- the Utilities tab's building service meters (Utilities module):
   electric meters (digital and analog, on a ringless socket), the blank meter socket, the meter
   bank that joins side by side (`BlockUtilityRun`, end flanges only at its ends), the service

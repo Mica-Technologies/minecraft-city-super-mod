@@ -1,0 +1,101 @@
+{
+  "definitions": [
+    {
+      "name": "CSM V8 Engine",
+      "subName": "",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "Comes in the CSM fleet's vehicles.",
+    "stackSize": 1,
+    "materialLists": [
+      [
+        "minecraft:iron_block:0:2",
+        "minecraft:piston:0:4",
+        "minecraft:redstone:0:8"
+      ]
+    ]
+  },
+  "generic": {
+    "type": "engine_car",
+    "width": 0.8,
+    "height": 0.8,
+    "forwardsDamageMultiplier": 1.0
+  },
+  "engine": {
+    "type": "normal",
+    "isAutomatic": true,
+    "starterPower": 40,
+    "maxRPM": 6500,
+    "maxSafeRPM": 5200,
+    "idleRPM": 650,
+    "startRPM": 750,
+    "stallRPM": 420,
+    "fuelConsumption": 0.6,
+    "gearRatios": [
+      -2.4,
+      0.0,
+      3.0,
+      1.8,
+      1.25,
+      1.0,
+      0.7
+    ],
+    "fuelType": "gasoline"
+  },
+  "rendering": {
+    "modelType": "none",
+    "sounds": [
+      {
+        "name": "csmvehicles:petrol_idle",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engine_powered",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ],
+        "pitchAnimations": [
+          {
+            "animationType": "translation",
+            "variable": "engine_rpm_percent_safe",
+            "axis": [
+              0,
+              1.2,
+              0
+            ],
+            "offset": 0.6
+          }
+        ]
+      },
+      {
+        "name": "csmvehicles:petrol_start",
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engine_running",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      },
+      {
+        "name": "csmvehicles:petrol_crank",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engine_starter",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ]
+  }
+}
