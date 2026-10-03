@@ -14,8 +14,9 @@ Vehicles (IV, mod id `mts`, formerly Minecraft Transport Simulator). It does two
   that goes with it is a hand tool in Parks, beside the chainsaw (`PARKS_GREENERY_SYSTEM.md`).
 
 - **The fleet.** Our own fire engine, ladder truck, ambulance and police SUV, with their lights,
-  siren, horn and emitter built in, plus two city work trucks: a public works dump truck and a
-  power company bucket truck. There are 26 liveries across the six. Each spawns ready to drive with nothing but IV
+  siren, horn and emitter built in; three city work trucks (a public works dump truck, a power
+  company bucket truck, a rollback tow truck); and a Metro transit bus. There are 35 liveries
+  across the eight. Each spawns ready to drive with nothing but IV
   installed: its wheels, seats and engine are this pack's own parts, set as default parts, and it
   spawns fuelled.
 
@@ -176,6 +177,8 @@ catalogue (`--check` fails on drift). The engine and horn sounds come from
 | `csm_ambulance` (Type III, 7.2 m) | `_red`, `_orange`, `_blue`, `_green` (stripes), `_yellow` (high-vis) | `csm_wheel_van` (0.8 m), duals behind | `csm_engine_diesel` | 3 |
 | `csm_police_suv` (5.4 m) | `_blackwhite`, `_white`, `_blue`, `_sheriff`, `_state`, `_unmarked` |
 | `csm_dpw_truck` (dump truck with plow, 9.7 m) | `_orange`, `_yellow`, `_white` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 |
+| `csm_tow_truck` (rollback carrier, 10.0 m) | `_white`, `_red`, `_yellow`, `_black` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 |
+| `csm_transit_bus` (40 ft low floor, 13.2 m) | `_metro`, `_cityline`, `_riverway`, `_verdant`, `_emberline` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` (rear) | 13 |
 | `csm_bucket_truck` (aerial lift, 9.1 m) | `_white`, `_yellow`, `_green` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 | `csm_wheel_car` (0.78 m) | `csm_engine_petrol` (V8) | 4 |
 
 **How a vehicle is built.**
@@ -225,6 +228,31 @@ They carry no emitter and no siren. Each has one deployment switch:
 - **`BOOM`** deploys the bucket truck's boom: raise 55 degrees, swing to the left, run the upper
   boom out 4 m. The bucket counter-rotates by the raise as it rides the boom, so it stays level.
 
+**Towing.** Every vehicle in the fleet has a `Towing` hookup group with the three hookups the
+community packs' tow trucks look for, placed from its own geometry:
+- `tow_bumper` at the front bumper;
+- `tow_wheel` under the front axle;
+- `tow_flatbed` at the front, at ground level.
+
+The tow truck has two hitches, each with a panel button (`canInitiateConnections`):
+- **Flatbed:** a `mounted` `tow_flatbed` connection near the front of the deck, which carries the
+  towed vehicle.
+- **Wheel Lift:** a `tow_wheel` connection behind the tail, which drags it.
+
+UNU's and the official pack's cars offer the same hookups, so the tow truck takes those too. Its
+`BED` switch slides the deck back 2.6 m and tilts it 14 degrees, its tail down to the road. This
+is two objects: `flatbed` rides `bed_slide`, so the tilt pivots about the truck's tail wherever
+the deck has slid to. The connection point does not move with the animation; the bed is for show
+and loading.
+
+**The Metro bus.** It is lettered METRO and its destination signs read METRO BUS. That is the
+Metro, the city's own name for its bus and train system. The other four liveries are the Transit
+module's invented agencies (CITYLINE, RIVERWAY, VERDANT, EMBERLINE) in their flag colours, so a
+bus matches its stops and shelters. The destination sign is a cell of amber LED text in the
+pixel font, the livery's eighth field. `DOORS` slides the front and rear doors out and back. The
+bus seats a driver and twelve passengers. It is not yet a transit signal priority source (see
+below).
+
 The lettering differs by livery (FIRE RESCUE, AIRPORT FIRE, AMBULANCE, EMS, POLICE, SHERIFF,
 STATE POLICE, PUBLIC WORKS, CITY POWER; the unmarked SUV has none). `DECAL_ON` says whether it
 sits on the main paint or the second colour.
@@ -252,6 +280,11 @@ controller, and an emergency preempt per street, each with two detectors (one pe
 - the DPW truck (amber beacons on, `DUMP` on) westbound on the east approach and the bucket truck
   (beacons on, `BOOM` on) southbound on the north approach: no detector called, the body tipped
   and the boom deployed with the bucket level.
+
+- the tow truck (beacons and `BED` on): the deck slid back and tilted down to the road; the
+  Metro bus (`DOORS` on) opened its doors, which then slid forward past the nose and now slide
+  back (that fix is not yet seen in game); the CITYLINE bus spawned on its own wheels. Towing
+  through the panel has not been tried.
 
 Earlier, also verified:
 - All three spawn on their own wheels, level, with every livery's texture.
@@ -314,5 +347,5 @@ Verified 2026-10-03 against IV's fire truck in the dev client:
 
 - A towed trailer chipper, alongside the chip bed, once there is a fleet to tow it.
 - The ladder truck, with an animated aerial; more liveries; driving and sound tuning from play.
-- Transit signal priority from buses, through the `TRANSIT` emitter kind and
-  `TrafficSignalPriorityPlan`.
+- Transit signal priority from buses: the Metro bus as a `TRANSIT` emitter, and a detector
+  that feeds `TrafficSignalPriorityPlan` rather than a preempt.

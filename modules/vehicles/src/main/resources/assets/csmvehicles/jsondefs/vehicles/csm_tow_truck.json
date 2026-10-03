@@ -1,0 +1,1183 @@
+{
+  "definitions": [
+    {
+      "name": "Tow Truck",
+      "subName": "_white",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Tow Truck (Red)",
+      "subName": "_red",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Tow Truck (Yellow)",
+      "subName": "_yellow",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Tow Truck (Black)",
+      "subName": "_black",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A rollback tow truck. BED slides the flatbed back and tilts it; the panel connects a vehicle onto the flatbed or onto the wheel lift. BEACONS runs its amber lights, which do not preempt signals.",
+    "materialLists": [
+      [
+        "minecraft:iron_block:0:6",
+        "minecraft:glass_pane:0:6",
+        "minecraft:redstone_block:0:1"
+      ]
+    ]
+  },
+  "motorized": {
+    "emptyMass": 7500,
+    "fuelCapacity": 15000,
+    "defaultFuelQty": 15000,
+    "axleRatio": 3.55,
+    "brakingFactor": 1.0,
+    "dragCoefficient": 0.5,
+    "hasHeadlights": true,
+    "hasRunningLights": true,
+    "hasTurnSignals": true,
+    "litVariable": "headlight",
+    "panel": "mts:default_car"
+  },
+  "parts": [
+    {
+      "pos": [
+        0.95,
+        0.0,
+        4.7
+      ],
+      "minValue": 0.66,
+      "maxValue": 1.32,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_truck",
+      "turnsWithSteer": true
+    },
+    {
+      "pos": [
+        -0.95,
+        0.0,
+        4.7
+      ],
+      "minValue": 0.66,
+      "maxValue": 1.32,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_truck",
+      "rot": [
+        0,
+        180,
+        0
+      ],
+      "isMirrored": true,
+      "turnsWithSteer": true
+    },
+    {
+      "pos": [
+        0.95,
+        0.0,
+        0.0
+      ],
+      "minValue": 0.66,
+      "maxValue": 1.32,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_truck"
+    },
+    {
+      "pos": [
+        -0.95,
+        0.0,
+        0.0
+      ],
+      "minValue": 0.66,
+      "maxValue": 1.32,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_truck",
+      "rot": [
+        0,
+        180,
+        0
+      ],
+      "isMirrored": true
+    },
+    {
+      "pos": [
+        0.62,
+        0.0,
+        0.0
+      ],
+      "minValue": 0.66,
+      "maxValue": 1.32,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_truck"
+    },
+    {
+      "pos": [
+        -0.62,
+        0.0,
+        0.0
+      ],
+      "minValue": 0.66,
+      "maxValue": 1.32,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_truck",
+      "rot": [
+        0,
+        180,
+        0
+      ],
+      "isMirrored": true
+    },
+    {
+      "pos": [
+        0.45,
+        0.85,
+        3.8
+      ],
+      "types": [
+        "seat"
+      ],
+      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "dismountPos": [
+        2.0500000000000003,
+        0.0,
+        3.8
+      ],
+      "isController": true
+    },
+    {
+      "pos": [
+        -0.45,
+        0.85,
+        3.8
+      ],
+      "types": [
+        "seat"
+      ],
+      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "dismountPos": [
+        -2.0500000000000003,
+        0.0,
+        3.8
+      ]
+    },
+    {
+      "pos": [
+        0.0,
+        0.6,
+        5.5
+      ],
+      "minValue": 0.25,
+      "maxValue": 1.0,
+      "types": [
+        "engine_car"
+      ],
+      "defaultPart": "csmvehicles:csm_engine_diesel",
+      "linkedParts": [
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  ],
+  "collisionGroups": [
+    {
+      "collisionTypes": [
+        "block",
+        "entity",
+        "attack",
+        "click"
+      ],
+      "collisions": [
+        {
+          "pos": [
+            0,
+            1.0,
+            -2.0
+          ],
+          "width": 2.5,
+          "height": 2.4
+        },
+        {
+          "pos": [
+            0,
+            1.0,
+            0.5
+          ],
+          "width": 2.5,
+          "height": 2.4
+        },
+        {
+          "pos": [
+            0,
+            1.0,
+            3.0
+          ],
+          "width": 2.5,
+          "height": 2.4
+        },
+        {
+          "pos": [
+            0,
+            1.0,
+            5.5
+          ],
+          "width": 2.5,
+          "height": 2.4
+        }
+      ]
+    }
+  ],
+  "rendering": {
+    "modelType": "obj",
+    "customVariables": [
+      "BEACONS",
+      "BED"
+    ],
+    "sounds": [
+      {
+        "name": "csmvehicles:horn_air",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "horn",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ],
+    "lightObjects": [
+      {
+        "objectName": "&Lamp_1",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_3_13_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "3_3_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.7325,
+              2.6,
+              3.7
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_2",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_3_13_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "3_3_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.5375,
+              2.6,
+              3.7
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_3",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_3_13_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "3_3_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.3425,
+              2.6,
+              3.7
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_4",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_3_13_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "3_3_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.1475,
+              2.6,
+              3.7
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_5",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "8_3_5_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "11_3_2_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.1475,
+              2.6,
+              3.7
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_6",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "8_3_5_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "11_3_2_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.3425,
+              2.6,
+              3.7
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_7",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "8_3_5_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "11_3_2_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.5375,
+              2.6,
+              3.7
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_8",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "8_3_5_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "11_3_2_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.7325,
+              2.6,
+              3.7
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&HeadboardBeaconL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_5_11_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              1.1,
+              2.75,
+              3.5
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&HeadboardBeaconR",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "BEACONS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "8_5_3_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -1.1,
+              2.75,
+              3.5
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&HeadlightL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFF6E0",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "headlight",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.75,
+              0.85,
+              6.445
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.6,
+            "flareWidth": 0.6
+          }
+        ]
+      },
+      {
+        "objectName": "&HeadlightR",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFF6E0",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "headlight",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.75,
+              0.85,
+              6.445
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.6,
+            "flareWidth": 0.6
+          }
+        ]
+      },
+      {
+        "objectName": "&BrakeL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF0000",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.5,
+              0
+            ],
+            "variable": "running_light"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "brake"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.775,
+              0.5,
+              -3.315
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "left_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.775,
+              0.68,
+              -3.315
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnFrontL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "left_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.8,
+              0.65,
+              6.445
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&BrakeR",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF0000",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.5,
+              0
+            ],
+            "variable": "running_light"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "brake"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.775,
+              0.5,
+              -3.315
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnR",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "right_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.775,
+              0.68,
+              -3.315
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnFrontR",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "right_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.8,
+              0.65,
+              6.445
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&Reverse",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFFFFF",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "engine_reversed_1"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.0,
+              0.45,
+              -3.315
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      }
+    ],
+    "animatedObjects": [
+      {
+        "objectName": "bed_slide",
+        "animations": [
+          {
+            "animationType": "translation",
+            "variable": "BED",
+            "axis": [
+              0,
+              0,
+              -2.6
+            ],
+            "duration": 80,
+            "forwardsDelay": 0,
+            "reverseDelay": 60
+          }
+        ]
+      },
+      {
+        "objectName": "flatbed",
+        "applyAfter": "bed_slide",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "variable": "BED",
+            "axis": [
+              -14,
+              0,
+              0
+            ],
+            "duration": 60,
+            "forwardsDelay": 80,
+            "reverseDelay": 0,
+            "centerPoint": [
+              0.0,
+              1.0,
+              -0.6999999999999997
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "connectionGroups": [
+    {
+      "groupName": "Flatbed",
+      "isHitch": true,
+      "canInitiateConnections": true,
+      "connections": [
+        {
+          "type": "tow_flatbed",
+          "mounted": true,
+          "distance": 3,
+          "pos": [
+            0,
+            1.12,
+            2.9
+          ]
+        }
+      ]
+    },
+    {
+      "groupName": "Wheel Lift",
+      "isHitch": true,
+      "canInitiateConnections": true,
+      "connections": [
+        {
+          "type": "tow_wheel",
+          "distance": 2,
+          "pos": [
+            0,
+            -0.2,
+            -4.1
+          ]
+        }
+      ]
+    },
+    {
+      "groupName": "Towing",
+      "isHookup": true,
+      "connections": [
+        {
+          "type": "tow_bumper",
+          "pos": [
+            0,
+            -0.05,
+            6.65
+          ],
+          "distance": 2
+        },
+        {
+          "type": "tow_wheel",
+          "pos": [
+            0,
+            -0.4,
+            4.7
+          ],
+          "distance": 2
+        },
+        {
+          "type": "tow_flatbed",
+          "pos": [
+            0,
+            -0.45,
+            6.65
+          ],
+          "distance": 2
+        }
+      ]
+    }
+  ]
+}

@@ -63,6 +63,7 @@ CELLS = {
     'lamp_white': cell(7, 1), 'decal': cell(0, 2, 4, 1), 'emitter': cell(4, 2),
     'hosebed': cell(5, 2), 'plate': cell(6, 2), 'rubber': cell(7, 2),
     'lamp_amber': cell(0, 3), 'bed': cell(1, 3), 'bucket': cell(2, 3), 'blade': cell(3, 3),
+    'sign': cell(4, 3, 4, 1),
 }
 
 LAMP_LIT = {'lamp_red': '#FF1E10', 'lamp_blue': '#1E46FF', 'lamp_white': '#EEF4FF',
@@ -500,6 +501,104 @@ def boom_animations():
     ]
 
 
+# The tow truck's bed: it slides back, then tilts its back end down onto the road.
+BED_SLIDE = 2.6
+BED_PIVOT = (0.0, 1.0, -3.3 + BED_SLIDE)   # the truck's tail, in the bed's resting frame
+BED_DECK_Y = 1.12
+BED_FRONT_Z = 3.3
+
+
+def tow_truck():
+    """A rollback carrier: a conventional cab, a flatbed the BED switch slides back and tilts,
+    and a wheel lift under the tail. The flatbed carries a vehicle (a mounted tow_flatbed hitch)
+    and the wheel lift drags one (tow_wheel), both hookups other packs' cars already offer."""
+    v = Vehicle()
+    g = -0.55
+    w = 1.15
+    v.box((-0.5, -0.15, -3.4), (0.5, 0.25, 6.6), 'black')
+    back = conventional_cab(v, w, 6.4)
+    v.box((-1.0, 0.25, -3.3), (1.0, 1.0, back - 0.1), 'paint')                # subframe body
+    v.box((-1.25, 1.0, 3.45), (1.25, 2.55, 3.55), 'paint')                     # headboard
+    v.box((-1.25, 2.55, 3.4), (1.25, 2.65, 3.6), 'chrome')
+    v.group('bed_slide', [((0.6, 0.95, -3.3), (0.8, 1.0, 3.3), 'black'),
+                          ((-0.8, 0.95, -3.3), (-0.6, 1.0, 3.3), 'black')])
+    v.group('flatbed', [((-1.25, 1.0, -3.3), (1.25, BED_DECK_Y, BED_FRONT_Z), 'bed'),
+                        ((1.17, BED_DECK_Y, -3.3), (1.25, 1.25, BED_FRONT_Z), 'chrome'),
+                        ((-1.25, BED_DECK_Y, -3.3), (-1.17, 1.25, BED_FRONT_Z), 'chrome'),
+                        ((-1.25, 1.0, -3.4), (1.25, 1.1, -3.3), 'blade')])
+    v.box((-0.2, -0.25, -4.0), (0.2, 0.05, -3.3), 'black')                     # wheel lift
+    v.box((-0.9, -0.3, -4.2), (0.9, -0.1, -4.0), 'blade')
+    v.both((1.0, 0.3, -2.0), (1.01, 0.9, 2.0), 'door', faces=('e', 'w'))      # tool boxes
+    v.lightbar(0.85, 2.5, back + 0.6, ['lamp_amber'] * 8, variable='BEACONS', emitter=False)
+    for side, sx in (('L', 1), ('R', -1)):
+        xs = sorted((sx * 1.0, sx * 1.2))
+        v.warning('HeadboardBeacon' + side, (xs[0], 2.65, 3.4), (xs[1], 2.85, 3.6), 'lamp_amber',
+                  0 if sx > 0 else 1, [0, 0, -1], variable='BEACONS')
+    v.road_lights(6.43, -3.3, 0.95, 0.75, 0.4)
+    return v, g
+
+
+def bed_animations():
+    return [
+        {'objectName': 'bed_slide', 'animations': [
+            aerial_animation('translation', [0, 0, -BED_SLIDE], (0, 80, 60), None, 'BED')]},
+        {'objectName': 'flatbed', 'applyAfter': 'bed_slide', 'animations': [
+            aerial_animation('rotation', [-14, 0, 0], (80, 60, 0), BED_PIVOT, 'BED')]},
+    ]
+
+
+def tow_hitches(v):
+    return [
+        {'groupName': 'Flatbed', 'isHitch': True, 'canInitiateConnections': True,
+         'connections': [{'type': 'tow_flatbed', 'mounted': True, 'distance': 3,
+                          'pos': [0, BED_DECK_Y, BED_FRONT_Z - 0.4]}]},
+        {'groupName': 'Wheel Lift', 'isHitch': True, 'canInitiateConnections': True,
+         'connections': [{'type': 'tow_wheel', 'distance': 2, 'pos': [0, -0.2, -4.1]}]},
+    ]
+
+
+def transit_bus():
+    """A 40 ft low-floor city bus: a window band with pillars, a destination sign, front and
+    rear doors the DOORS switch opens, a roof air conditioner and a bike rack."""
+    v = Vehicle()
+    g = -0.55
+    w = 1.27
+    front, rear = 9.8, -3.4
+    v.box((-w, -0.25, rear), (w, 0.6, front), 'paint')                         # skirt
+    v.box((-w, 0.6, rear), (w, 2.75, front), 'paint2')                         # body
+    v.box((-w + 0.05, 2.75, rear + 0.1), (w - 0.05, 2.85, front - 0.1), 'paint')
+    v.box((-0.8, 2.85, 0.5), (0.8, 3.15, 4.0), 'chrome')                       # air conditioner
+    v.both((w, 0.62, rear), (w + 0.01, 0.82, front), 'stripe', faces=('e', 'w'))
+    v.both((w, 1.25, -2.8), (w + 0.015, 2.4, 8.1), 'glass', faces=('e', 'w'))
+    for k in range(9):
+        z = -2.75 + k * 1.35
+        v.both((w + 0.015, 1.25, z), (w + 0.025, 2.4, z + 0.1), 'paint2', faces=('e', 'w'))
+    v.both((w + 0.01, 0.9, 0.6), (w + 0.02, 1.2, 3.0), 'decal', faces=('e', 'w'))
+    v.box((-1.2, 0.9, front), (1.2, 2.4, front + 0.02), 'glass', faces=('s',))  # windshield
+    v.box((-0.95, 2.45, front), (0.95, 2.7, front + 0.03), 'sign', faces=('s',))
+    v.box((-0.9, 2.45, rear - 0.02), (0.9, 2.65, rear), 'sign', faces=('n',))
+    v.box((-0.7, -0.15, front), (0.7, 0.2, front + 0.35), 'black')             # bike rack
+    v.box((-0.8, 0.9, rear - 0.02), (0.8, 2.3, rear), 'grille', faces=('n',))  # engine grille
+    v.box((-0.5, 0.15, rear - 0.01), (0.5, 0.4, rear), 'plate', faces=('n',))
+    # the doors, on the right (-x), each one leaf that the DOORS switch slides out and back
+    # along the outside of the body (forward, the front leaf would stand past the nose)
+    v.group('door_front', [((-w - 0.03, 0.0, 8.35), (-w - 0.01, 2.35, 9.4), 'glass'),
+                           ((-w - 0.04, 0.0, 8.35), (-w - 0.03, 2.35, 8.42), 'black')])
+    v.group('door_rear', [((-w - 0.03, 0.0, 3.2), (-w - 0.01, 2.35, 4.3), 'glass'),
+                          ((-w - 0.04, 0.0, 4.23), (-w - 0.03, 2.35, 4.3), 'black')])
+    v.road_lights(front + 0.02, rear, 1.15, 0.45, 0.6)
+    return v, g
+
+
+def door_animations():
+    return [
+        {'objectName': 'door_front', 'animations': [
+            aerial_animation('translation', [-0.15, 0, -0.9], (0, 20, 0), None, 'DOORS')]},
+        {'objectName': 'door_rear', 'animations': [
+            aerial_animation('translation', [-0.15, 0, -0.9], (0, 20, 0), None, 'DOORS')]},
+    ]
+
+
 # ------------------------------------------------------------------------------------------
 # Liveries and textures
 # ------------------------------------------------------------------------------------------
@@ -558,6 +657,24 @@ LIVERIES = {
         ('_white', 'Public Works Dump Truck (White)', '#F2F2EE', '#F2F2EE', '#E8761C',
          'PUBLIC WORKS', '#E8761C'),
     ],
+    'csm_tow_truck': [
+        ('_white', 'Tow Truck', '#F2F2EE', '#F2F2EE', '#C01A1A', 'TOWING', '#C01A1A'),
+        ('_red', 'Tow Truck (Red)', '#B01818', '#F2F2EE', '#F2F2EE', 'TOWING', '#F2F2EE'),
+        ('_yellow', 'Tow Truck (Yellow)', '#E8C21A', '#E8C21A', '#1C1C1C', 'TOWING', '#1C1C1C'),
+        ('_black', 'Tow Truck (Black)', '#1C1C1E', '#F2F2EE', '#E8C21A', 'TOWING', '#E8C21A'),
+    ],
+    'csm_transit_bus': [
+        ('_metro', 'Metro Bus', '#1E4AA0', '#F2F2EE', '#D8202A', 'METRO', '#1E4AA0',
+         'METRO BUS'),
+        ('_cityline', 'Transit Bus (CITYLINE)', '#0E5E6F', '#F2F2EE', '#F4C428', 'CITYLINE',
+         '#0E5E6F', '1 CITY CENTER'),
+        ('_riverway', 'Transit Bus (RIVERWAY)', '#1F3A73', '#F2F2EE', '#F08A24', 'RIVERWAY',
+         '#1F3A73', '7 RIVERSIDE'),
+        ('_verdant', 'Transit Bus (VERDANT)', '#24743C', '#ECF0E8', '#24743C', 'VERDANT',
+         '#24743C', '12 PARK LOOP'),
+        ('_emberline', 'Transit Bus (EMBERLINE)', '#B02420', '#F2F2EE', '#383A3E', 'EMBERLINE',
+         '#B02420', '20 EXPRESS'),
+    ],
     'csm_bucket_truck': [
         ('_white', 'Power Company Bucket Truck', '#F2F2EE', '#F2F2EE', '#1E4AA0', 'CITY POWER',
          '#1E4AA0'),
@@ -570,7 +687,8 @@ LIVERIES = {
 
 # Where each vehicle's door lettering sits: on the main paint, or on the second colour.
 DECAL_ON = {'csm_fire_engine': 'paint', 'csm_ladder_truck': 'paint', 'csm_ambulance': 'paint2',
-            'csm_police_suv': 'paint2', 'csm_dpw_truck': 'paint', 'csm_bucket_truck': 'paint'}
+            'csm_police_suv': 'paint2', 'csm_dpw_truck': 'paint', 'csm_bucket_truck': 'paint',
+            'csm_tow_truck': 'paint', 'csm_transit_bus': 'paint2'}
 
 
 def shade(c, k):
@@ -578,7 +696,8 @@ def shade(c, k):
 
 
 def vehicle_texture(livery, decal_on='paint'):
-    _, _, paint, paint2, stripe, text, text_colour = livery
+    _, _, paint, paint2, stripe, text, text_colour = livery[:7]
+    sign = livery[7] if len(livery) > 7 else ''
     img = Image.new('RGBA', (T, T), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
 
@@ -632,6 +751,11 @@ def vehicle_texture(livery, decal_on='paint'):
     fill('bucket', (226, 206, 60))
     fill('blade', (232, 118, 28))
     d.rectangle((48, 48, 63, 51), fill=(30, 30, 30, 255))
+    # the destination sign: amber LEDs on black
+    sx0, sy0, sx1, sy1 = CELLS['sign']
+    d.rectangle((sx0, sy0, sx1 - 1, sy1 - 1), fill=(16, 16, 16, 255))
+    if sign:
+        lc.draw_text_centred(img, sign, (sx0 + sx1) // 2, sy0 + 5, (255, 170, 20), 1)
     return img
 
 
@@ -858,6 +982,27 @@ FLEET = {
         seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False)],
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
         box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=boom_animations),
+    'csm_tow_truck': dict(
+        build=tow_truck,
+        description='A rollback tow truck. BED slides the flatbed back and tilts it; the panel '
+                    'connects a vehicle onto the flatbed or onto the wheel lift. BEACONS runs '
+                    'its amber lights, which do not preempt signals.',
+        mass=7500, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        wheels=[(0.95, 4.7, True), (0.95, 0.0, False), (0.62, 0.0, False)],
+        seats=[(0.45, 0.85, 3.8, True), (-0.45, 0.85, 3.8, False)],
+        engine_pos=(0.0, 0.6, 5.5), boxes=[-2.0, 0.5, 3.0, 5.5], box_width=2.5,
+        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BED'], animated=bed_animations,
+        hitches=tow_hitches),
+    'csm_transit_bus': dict(
+        build=transit_bus,
+        description='A 40 ft low-floor city bus. DOORS opens the front and rear doors.',
+        mass=12000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        wheels=[(1.0, 7.2, True), (0.95, 0.0, False), (0.62, 0.0, False)],
+        seats=[(0.75, 0.45, 8.7, True)] +
+              [(sx * 0.75, 0.55, z, False) for z in (6.4, 5.2, 2.0, 0.8, -0.4, -1.6)
+               for sx in (1, -1)],
+        engine_pos=(0.0, 0.5, -2.8), boxes=[-2.2, 0.3, 2.8, 5.3, 7.8, 9.3], box_width=2.55,
+        box_height=3.1, box_y=1.0, switches=['DOORS'], animated=door_animations),
     'csm_ambulance': dict(
         build=ambulance,
         description='A Type III ambulance. Switch EMERLTS on and it runs its lights, and '
@@ -942,6 +1087,21 @@ def vehicle_json(name, v):
     }
     if 'animated' in spec:
         definition['rendering']['animatedObjects'] = spec['animated']()
+    # Every vehicle can be towed, by the hookups other packs' tow trucks look for (and ours):
+    # the bumper, the front axle for a wheel lift, and the front for a flatbed's winch.
+    front_z = max(b[1][2] for b in v.outline)
+    axle_z = max(z for _, z, steer in spec['wheels'] if steer)
+    ground = -WHEELS[spec['wheel']][1] / 2
+    groups = [{'groupName': 'Towing', 'isHookup': True, 'connections': [
+        {'type': 'tow_bumper', 'pos': [0, round(ground + 0.5, 3), round(front_z, 3)],
+         'distance': 2},
+        {'type': 'tow_wheel', 'pos': [0, round(ground + 0.15, 3), axle_z], 'distance': 2},
+        {'type': 'tow_flatbed', 'pos': [0, round(ground + 0.1, 3), round(front_z, 3)],
+         'distance': 2},
+    ]}]
+    if 'hitches' in spec:
+        groups = spec['hitches'](v) + groups
+    definition['connectionGroups'] = groups
     return definition
 
 
