@@ -1042,6 +1042,14 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   placed with their items (their placement writes the parts), everything else directly. It
   checks the Utilities tab's registration list against what it placed and puts the rest on
   signed plinths. The ground is raised to y 12 for the wet well, vault, pond and trench
+- `build_vehicles_demo.py` -- builds the Vehicles demo world in a flat creative world loaded in
+  a dev client with every module, over MCMCP: a junction of Main St and four-lane Transit Ave on
+  far-side mast arms, an ADVANCED controller with a detector-called preempt on each approach and
+  detector-called transit priority with queue jump add-ons on Transit Ave, a CITYLINE stop, and a
+  parking lot holding every livery of every vehicle plus a chest of the pack's parts. Vehicles
+  are placed with their items (an item given NBT spawns without default parts), each from beside
+  its bay so the 90-degree placement points it into the bay, filling from the far end;
+  `--only roads|lot|vehicles`
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on
