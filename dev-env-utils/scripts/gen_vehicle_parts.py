@@ -419,16 +419,26 @@ def catalogue():
     return files
 
 
+def same(path, data):
+    """Whether the file in the tree already holds `data`. Text is compared with line endings
+    ignored: Git's core.autocrlf checks every text file out as CRLF on Windows, and a byte compare
+    would call the whole pack drifted on a tree nobody touched (see csm_layout's
+    same_generated_text)."""
+    if not os.path.exists(path):
+        return False
+    with open(path, 'rb') as fh:
+        old = fh.read()
+    if path.endswith('.png'):
+        return old == data
+    return old.replace(b'\r\n', b'\n') == data.replace(b'\r\n', b'\n')
+
+
 def main():
     check = '--check' in sys.argv
     files = catalogue()
     drift = []
     for path, data in sorted(files.items()):
-        old = None
-        if os.path.exists(path):
-            with open(path, 'rb') as fh:
-                old = fh.read()
-        if old == data:
+        if same(path, data):
             continue
         if check:
             drift.append(path)
