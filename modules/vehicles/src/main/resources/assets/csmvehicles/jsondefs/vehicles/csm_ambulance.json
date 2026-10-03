@@ -13,6 +13,27 @@
       "extraMaterialLists": [
         []
       ]
+    },
+    {
+      "name": "Ambulance (Blue Stripe)",
+      "subName": "_blue",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Ambulance (Green Stripe)",
+      "subName": "_green",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Ambulance (High-Vis)",
+      "subName": "_yellow",
+      "extraMaterialLists": [
+        []
+      ]
     }
   ],
   "general": {

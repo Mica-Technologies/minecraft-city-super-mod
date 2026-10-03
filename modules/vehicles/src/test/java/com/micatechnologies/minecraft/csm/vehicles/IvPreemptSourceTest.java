@@ -26,8 +26,10 @@ class IvPreemptSourceTest {
   @Test
   @DisplayName("other switches do not")
   void otherNamesDoNot() {
+    // ... including the CSM fleet's own work switches: a public works or power company truck's
+    // amber BEACONS must never preempt a signal
     for (String name : new String[] {"AUXLTS", "Underglow", "Tow_Lights", "Fog Lights", "LOCK",
-        "Funky_Mode", "Christmas Lights", ""}) {
+        "Funky_Mode", "Christmas Lights", "", "BEACONS", "DUMP", "BOOM", "AERIAL"}) {
       assertFalse(IvPreemptSource.isEmergencyVariable(name), name);
     }
     assertFalse(IvPreemptSource.isEmergencyVariable(null));

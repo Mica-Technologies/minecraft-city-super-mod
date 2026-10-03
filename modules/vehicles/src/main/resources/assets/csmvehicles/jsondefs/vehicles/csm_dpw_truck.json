@@ -1,43 +1,29 @@
 {
   "definitions": [
     {
-      "name": "Fire Engine",
-      "subName": "_red",
+      "name": "Public Works Dump Truck",
+      "subName": "_orange",
       "extraMaterialLists": [
         []
       ]
     },
     {
-      "name": "Fire Engine (Lime)",
-      "subName": "_lime",
+      "name": "Public Works Dump Truck (Yellow)",
+      "subName": "_yellow",
       "extraMaterialLists": [
         []
       ]
     },
     {
-      "name": "Fire Engine (Black over Red)",
-      "subName": "_blackred",
-      "extraMaterialLists": [
-        []
-      ]
-    },
-    {
-      "name": "Fire Engine (White)",
+      "name": "Public Works Dump Truck (White)",
       "subName": "_white",
-      "extraMaterialLists": [
-        []
-      ]
-    },
-    {
-      "name": "Fire Engine (Airport)",
-      "subName": "_airport",
       "extraMaterialLists": [
         []
       ]
     }
   ],
   "general": {
-    "description": "A custom-cab pumper. Switch EMERLTS on and it runs its lights, and intersections with a CSM preempt detector give it the green; siren, yelp and hi-lo each have a switch.",
+    "description": "A public works dump truck with a plow. BEACONS runs its amber lights (they are not emergency lights, so it does not preempt signals); DUMP tips the body.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -47,7 +33,7 @@
     ]
   },
   "motorized": {
-    "emptyMass": 7500,
+    "emptyMass": 8000,
     "fuelCapacity": 15000,
     "defaultFuelQty": 15000,
     "axleRatio": 3.55,
@@ -62,9 +48,9 @@
   "parts": [
     {
       "pos": [
-        1.0,
+        0.95,
         0.0,
-        5.0
+        4.6
       ],
       "minValue": 0.66,
       "maxValue": 1.32,
@@ -76,9 +62,9 @@
     },
     {
       "pos": [
-        -1.0,
+        -0.95,
         0.0,
-        5.0
+        4.6
       ],
       "minValue": 0.66,
       "maxValue": 1.32,
@@ -160,74 +146,42 @@
     },
     {
       "pos": [
-        0.6,
+        0.45,
         0.85,
-        5.7
+        3.7
       ],
       "types": [
         "seat"
       ],
       "defaultPart": "csmvehicles:csm_vehicle_seat",
       "dismountPos": [
-        2.2,
+        2.0500000000000003,
         0.0,
-        5.7
+        3.7
       ],
       "isController": true
     },
     {
       "pos": [
-        -0.6,
+        -0.45,
         0.85,
-        5.7
+        3.7
       ],
       "types": [
         "seat"
       ],
       "defaultPart": "csmvehicles:csm_vehicle_seat",
       "dismountPos": [
-        -2.2,
+        -2.0500000000000003,
         0.0,
-        5.7
-      ]
-    },
-    {
-      "pos": [
-        0.6,
-        0.85,
-        4.15
-      ],
-      "types": [
-        "seat"
-      ],
-      "defaultPart": "csmvehicles:csm_vehicle_seat",
-      "dismountPos": [
-        2.2,
-        0.0,
-        4.15
-      ]
-    },
-    {
-      "pos": [
-        -0.6,
-        0.85,
-        4.15
-      ],
-      "types": [
-        "seat"
-      ],
-      "defaultPart": "csmvehicles:csm_vehicle_seat",
-      "dismountPos": [
-        -2.2,
-        0.0,
-        4.15
+        3.7
       ]
     },
     {
       "pos": [
         0.0,
         0.6,
-        5.2
+        5.4
       ],
       "minValue": 0.25,
       "maxValue": 1.0,
@@ -255,38 +209,38 @@
         {
           "pos": [
             0,
-            1.15,
-            -1.4
+            1.1,
+            -1.5
           ],
           "width": 2.5,
-          "height": 2.7
+          "height": 2.6
         },
         {
           "pos": [
             0,
-            1.15,
-            1.1
+            1.1,
+            1.0
           ],
           "width": 2.5,
-          "height": 2.7
+          "height": 2.6
         },
         {
           "pos": [
             0,
-            1.15,
-            3.6
+            1.1,
+            3.5
           ],
           "width": 2.5,
-          "height": 2.7
+          "height": 2.6
         },
         {
           "pos": [
             0,
-            1.15,
-            5.9
+            1.1,
+            5.6
           ],
           "width": 2.5,
-          "height": 2.7
+          "height": 2.6
         }
       ]
     }
@@ -294,10 +248,8 @@
   "rendering": {
     "modelType": "obj",
     "customVariables": [
-      "EMERLTS",
-      "siren",
-      "siren_yelp",
-      "siren_hilo"
+      "BEACONS",
+      "DUMP"
     ],
     "sounds": [
       {
@@ -311,42 +263,6 @@
             "clampMax": 1
           }
         ]
-      },
-      {
-        "name": "csmvehicles:siren_wail",
-        "looping": true,
-        "activeAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "siren",
-            "clampMin": 1,
-            "clampMax": 1
-          }
-        ]
-      },
-      {
-        "name": "csmvehicles:siren_yelp",
-        "looping": true,
-        "activeAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "siren_yelp",
-            "clampMin": 1,
-            "clampMax": 1
-          }
-        ]
-      },
-      {
-        "name": "csmvehicles:siren_hilo",
-        "looping": true,
-        "activeAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "siren_hilo",
-            "clampMin": 1,
-            "clampMax": 1
-          }
-        ]
       }
     ],
     "lightObjects": [
@@ -354,11 +270,11 @@
         "objectName": "&Lamp_1",
         "emissive": true,
         "isElectric": true,
-        "color": "#FF1E10",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -384,9 +300,9 @@
         "blendableComponents": [
           {
             "pos": [
-              0.9075,
-              2.72,
-              6.35
+              0.7325,
+              2.6,
+              3.6
             ],
             "axis": [
               0,
@@ -402,11 +318,11 @@
         "objectName": "&Lamp_2",
         "emissive": true,
         "isElectric": true,
-        "color": "#EEF4FF",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -432,9 +348,9 @@
         "blendableComponents": [
           {
             "pos": [
-              0.6625,
-              2.72,
-              6.35
+              0.5375,
+              2.6,
+              3.6
             ],
             "axis": [
               0,
@@ -450,11 +366,11 @@
         "objectName": "&Lamp_3",
         "emissive": true,
         "isElectric": true,
-        "color": "#FF1E10",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -480,9 +396,9 @@
         "blendableComponents": [
           {
             "pos": [
-              0.4175,
-              2.72,
-              6.35
+              0.3425,
+              2.6,
+              3.6
             ],
             "axis": [
               0,
@@ -498,11 +414,11 @@
         "objectName": "&Lamp_4",
         "emissive": true,
         "isElectric": true,
-        "color": "#FF1E10",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -528,9 +444,9 @@
         "blendableComponents": [
           {
             "pos": [
-              0.1725,
-              2.72,
-              6.35
+              0.1475,
+              2.6,
+              3.6
             ],
             "axis": [
               0,
@@ -546,11 +462,11 @@
         "objectName": "&Lamp_5",
         "emissive": true,
         "isElectric": true,
-        "color": "#FF1E10",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -576,9 +492,9 @@
         "blendableComponents": [
           {
             "pos": [
-              -0.1725,
-              2.72,
-              6.35
+              -0.1475,
+              2.6,
+              3.6
             ],
             "axis": [
               0,
@@ -594,11 +510,11 @@
         "objectName": "&Lamp_6",
         "emissive": true,
         "isElectric": true,
-        "color": "#FF1E10",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -624,9 +540,9 @@
         "blendableComponents": [
           {
             "pos": [
-              -0.4175,
-              2.72,
-              6.35
+              -0.3425,
+              2.6,
+              3.6
             ],
             "axis": [
               0,
@@ -642,11 +558,11 @@
         "objectName": "&Lamp_7",
         "emissive": true,
         "isElectric": true,
-        "color": "#EEF4FF",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -672,9 +588,9 @@
         "blendableComponents": [
           {
             "pos": [
-              -0.6625,
-              2.72,
-              6.35
+              -0.5375,
+              2.6,
+              3.6
             ],
             "axis": [
               0,
@@ -690,11 +606,11 @@
         "objectName": "&Lamp_8",
         "emissive": true,
         "isElectric": true,
-        "color": "#FF1E10",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -720,9 +636,9 @@
         "blendableComponents": [
           {
             "pos": [
-              -0.9075,
-              2.72,
-              6.35
+              -0.7325,
+              2.6,
+              3.6
             ],
             "axis": [
               0,
@@ -735,53 +651,14 @@
         ]
       },
       {
-        "objectName": "&Emitter",
+        "objectName": "&RearBeaconL",
         "emissive": true,
         "isElectric": true,
-        "color": "#DCEBFF",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              1,
-              0
-            ],
-            "variable": "0_2_1_cycle"
-          }
-        ],
-        "blendableComponents": [
-          {
-            "pos": [
-              0.0,
-              2.72,
-              6.51
-            ],
-            "axis": [
-              0,
-              0,
-              1
-            ],
-            "flareHeight": 0.3,
-            "flareWidth": 0.3
-          }
-        ]
-      },
-      {
-        "objectName": "&BeaconL",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FF1E10",
-        "brightnessAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -798,9 +675,9 @@
         "blendableComponents": [
           {
             "pos": [
-              1.15,
-              2.7,
-              -2.15
+              0.875,
+              0.65,
+              -2.725
             ],
             "axis": [
               0,
@@ -813,14 +690,14 @@
         ]
       },
       {
-        "objectName": "&SideL",
+        "objectName": "&RearBeaconR",
         "emissive": true,
         "isElectric": true,
-        "color": "#FF1E10",
+        "color": "#FFA000",
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "EMERLTS",
+            "variable": "BEACONS",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -837,170 +714,14 @@
         "blendableComponents": [
           {
             "pos": [
-              1.265,
-              1.6,
-              3.63
-            ],
-            "axis": [
-              1,
-              0,
-              0
-            ],
-            "flareHeight": 0.35,
-            "flareWidth": 0.35
-          }
-        ]
-      },
-      {
-        "objectName": "&GrilleL",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FF1E10",
-        "brightnessAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "EMERLTS",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              1,
-              0
-            ],
-            "variable": "0_5_11_cycle"
-          }
-        ],
-        "blendableComponents": [
-          {
-            "pos": [
-              0.85,
-              1.075,
-              6.765
-            ],
-            "axis": [
-              0,
-              0,
-              1
-            ],
-            "flareHeight": 0.35,
-            "flareWidth": 0.35
-          }
-        ]
-      },
-      {
-        "objectName": "&BeaconR",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FF1E10",
-        "brightnessAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "EMERLTS",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              1,
-              0
-            ],
-            "variable": "8_5_3_cycle"
-          }
-        ],
-        "blendableComponents": [
-          {
-            "pos": [
-              -1.15,
-              2.7,
-              -2.15
+              -0.875,
+              0.65,
+              -2.725
             ],
             "axis": [
               0,
               0,
               -1
-            ],
-            "flareHeight": 0.35,
-            "flareWidth": 0.35
-          }
-        ]
-      },
-      {
-        "objectName": "&SideR",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FF1E10",
-        "brightnessAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "EMERLTS",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              1,
-              0
-            ],
-            "variable": "0_5_11_cycle"
-          }
-        ],
-        "blendableComponents": [
-          {
-            "pos": [
-              -1.265,
-              1.6,
-              3.63
-            ],
-            "axis": [
-              -1,
-              0,
-              0
-            ],
-            "flareHeight": 0.35,
-            "flareWidth": 0.35
-          }
-        ]
-      },
-      {
-        "objectName": "&GrilleR",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FF1E10",
-        "brightnessAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "EMERLTS",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              1,
-              0
-            ],
-            "variable": "8_5_3_cycle"
-          }
-        ],
-        "blendableComponents": [
-          {
-            "pos": [
-              -0.85,
-              1.075,
-              6.765
-            ],
-            "axis": [
-              0,
-              0,
-              1
             ],
             "flareHeight": 0.35,
             "flareWidth": 0.35
@@ -1023,9 +744,9 @@
         "blendableComponents": [
           {
             "pos": [
-              1.05,
-              0.8,
-              6.765
+              0.75,
+              0.85,
+              6.345
             ],
             "axis": [
               0,
@@ -1053,9 +774,9 @@
         "blendableComponents": [
           {
             "pos": [
-              -1.05,
-              0.8,
-              6.765
+              -0.75,
+              0.85,
+              6.345
             ],
             "axis": [
               0,
@@ -1095,9 +816,9 @@
         "blendableComponents": [
           {
             "pos": [
-              1.075,
-              0.55,
-              -2.315
+              0.775,
+              0.4,
+              -2.715
             ],
             "axis": [
               0,
@@ -1134,9 +855,9 @@
         "blendableComponents": [
           {
             "pos": [
-              1.075,
-              0.73,
-              -2.315
+              0.775,
+              0.58,
+              -2.715
             ],
             "axis": [
               0,
@@ -1173,9 +894,9 @@
         "blendableComponents": [
           {
             "pos": [
-              1.1,
-              0.6,
-              6.765
+              0.8,
+              0.65,
+              6.345
             ],
             "axis": [
               0,
@@ -1215,9 +936,9 @@
         "blendableComponents": [
           {
             "pos": [
-              -1.075,
-              0.55,
-              -2.315
+              -0.775,
+              0.4,
+              -2.715
             ],
             "axis": [
               0,
@@ -1254,9 +975,9 @@
         "blendableComponents": [
           {
             "pos": [
-              -1.075,
-              0.73,
-              -2.315
+              -0.775,
+              0.58,
+              -2.715
             ],
             "axis": [
               0,
@@ -1293,9 +1014,9 @@
         "blendableComponents": [
           {
             "pos": [
-              -1.1,
-              0.6,
-              6.765
+              -0.8,
+              0.65,
+              6.345
             ],
             "axis": [
               0,
@@ -1327,8 +1048,8 @@
           {
             "pos": [
               0.0,
-              0.5,
-              -2.315
+              0.35,
+              -2.715
             ],
             "axis": [
               0,
@@ -1337,6 +1058,30 @@
             ],
             "flareHeight": 0.35,
             "flareWidth": 0.35
+          }
+        ]
+      }
+    ],
+    "animatedObjects": [
+      {
+        "objectName": "dump_body",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "variable": "DUMP",
+            "axis": [
+              -45,
+              0,
+              0
+            ],
+            "duration": 80,
+            "forwardsDelay": 0,
+            "reverseDelay": 0,
+            "centerPoint": [
+              0.0,
+              0.95,
+              -2.5
+            ]
           }
         ]
       }

@@ -13,6 +13,20 @@
       "extraMaterialLists": [
         []
       ]
+    },
+    {
+      "name": "Ladder Truck (Black over Red)",
+      "subName": "_blackred",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Ladder Truck (White)",
+      "subName": "_white",
+      "extraMaterialLists": [
+        []
+      ]
     }
   ],
   "general": {
