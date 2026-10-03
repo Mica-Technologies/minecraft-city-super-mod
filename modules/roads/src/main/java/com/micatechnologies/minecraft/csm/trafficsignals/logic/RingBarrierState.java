@@ -2460,6 +2460,22 @@ public class RingBarrierState {
     return out;
   }
 
+  /**
+   * The circuit whose call started the preempt running now, or -1 when none runs: what its
+   * confirmation beacons show.
+   *
+   * @param plan the plan the preempt is in
+   *
+   * @return the trigger circuit's index, or -1
+   */
+  public int getActivePreemptTriggerCircuit(TrafficSignalProgrammedPhasePlan plan) {
+    if (preemptStage == PreemptStage.NONE || activePreemptIndex < 0
+        || activePreemptIndex >= plan.getPreempts().size()) {
+      return -1;
+    }
+    return plan.getPreempts().get(activePreemptIndex).getTriggerCircuitIndex();
+  }
+
   private boolean isPreemptCalled(TrafficSignalPreempt preempt) {
     if (preempt.isTriggerOnDetectors()) {
       TrafficSignalSensorSummary summary = summaryForCircuit(preempt.getTriggerCircuitIndex());

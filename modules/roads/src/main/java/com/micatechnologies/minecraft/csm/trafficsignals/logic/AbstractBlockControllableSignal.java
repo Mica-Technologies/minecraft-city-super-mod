@@ -329,6 +329,12 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
      * signal priority runs a queue jump (ADVANCED mode). Dark otherwise. Appended last, so the
      * sides before it keep their ordinals.
      */
-    QUEUE_JUMP
+    QUEUE_JUMP,
+    /**
+     * Preemption confirmation beacon: lit while a preempt triggered from its circuit runs
+     * (ADVANCED mode), as well as by redstone. Appended last, so the sides before it keep their
+     * ordinals.
+     */
+    PREEMPT_INDICATOR
   }
 }

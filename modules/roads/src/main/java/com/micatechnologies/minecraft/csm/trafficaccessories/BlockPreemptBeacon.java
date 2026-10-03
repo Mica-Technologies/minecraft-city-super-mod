@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -17,6 +18,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * The red preemption confirmation beacon. It lights for redstone, as it always has, and for a
+ * signal controller: linked to a circuit with the Signal Link Tool, it is lit while a preempt
+ * triggered from that circuit runs (ADVANCED mode), so a driver sees the intersection has
+ * answered the emitter.
+ */
 public class BlockPreemptBeacon extends AbstractPoweredBlockRotatableNSEWUD
     implements ICsmTileEntityProvider, ITrafficBeaconBlock, ICsmNoSnowAccumulation,
     ICsmTrafficPoleIgnored {
@@ -31,6 +38,32 @@ public class BlockPreemptBeacon extends AbstractPoweredBlockRotatableNSEWUD
   @Override
   public String getBlockRegistryName() {
     return "tlpreemptbeacon";
+  }
+
+  /** Redstone or the controller: lit while either says so. */
+  @Override
+  public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn,
+      BlockPos fromPos) {
+    showPower(world, pos);
+  }
+
+  /**
+   * Sets the beacon's POWERED state from redstone and its controller together.
+   *
+   * @param world the world
+   * @param pos   the beacon
+   */
+  public static void showPower(World world, BlockPos pos) {
+    IBlockState state = world.getBlockState(pos);
+    if (!(state.getBlock() instanceof BlockPreemptBeacon)) {
+      return;
+    }
+    TileEntity te = world.getTileEntity(pos);
+    boolean lit = world.getRedstonePowerFromNeighbors(pos) > 0
+        || (te instanceof TileEntityTrafficBeacon && ((TileEntityTrafficBeacon) te).isControllerLit());
+    if (state.getValue(POWERED) != lit) {
+      world.setBlockState(pos, state.withProperty(POWERED, lit), 3);
+    }
   }
 
   @Override
