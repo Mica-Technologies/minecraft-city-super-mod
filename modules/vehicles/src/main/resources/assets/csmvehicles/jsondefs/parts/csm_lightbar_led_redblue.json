@@ -1,0 +1,576 @@
+{
+  "definitions": [
+    {
+      "name": "CSM LED Lightbar (Red/Blue)",
+      "subName": "",
+      "modelName": "csm_lightbar_led",
+      "extraMaterialLists": [
+        [],
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A low LED lightbar with a preemption emitter in the middle. Flashes with the vehicle's emergency lights switch (EMERLTS), and while it does, intersections with a CSM preempt detector give it the green.",
+    "type": "generic_lightbar",
+    "stackSize": 4,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:2",
+        "minecraft:redstone:0:2",
+        "minecraft:glass_pane:0:2"
+      ],
+      [
+        "minecraft:iron_ingot:2",
+        "minecraft:redstone:2",
+        "minecraft:glass_pane:2"
+      ]
+    ]
+  },
+  "generic": {
+    "width": 1.2,
+    "height": 0.15
+  },
+  "rendering": {
+    "customVariables": [
+      "EMERLTS"
+    ],
+    "lightObjects": [
+      {
+        "objectName": "&Lamp_1",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF1E10",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_3_13_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "3_3_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.51,
+              0.1,
+              0.15
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          },
+          {
+            "pos": [
+              0.51,
+              0.1,
+              -0.15
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_2",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF1E10",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_3_13_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "3_3_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.36,
+              0.1,
+              0.15
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          },
+          {
+            "pos": [
+              0.36,
+              0.1,
+              -0.15
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_3",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF1E10",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_3_13_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "3_3_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.21,
+              0.1,
+              0.15
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          },
+          {
+            "pos": [
+              0.21,
+              0.1,
+              -0.15
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_4",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF1E10",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_3_13_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "3_3_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.06,
+              0.1,
+              0.15
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          },
+          {
+            "pos": [
+              0.06,
+              0.1,
+              -0.15
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_5",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#1E46FF",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "8_3_5_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "11_3_2_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.15,
+              0.1,
+              0.15
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          },
+          {
+            "pos": [
+              -0.15,
+              0.1,
+              -0.15
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_6",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#1E46FF",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "8_3_5_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "11_3_2_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.3,
+              0.1,
+              0.15
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          },
+          {
+            "pos": [
+              -0.3,
+              0.1,
+              -0.15
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_7",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#1E46FF",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "8_3_5_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "11_3_2_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.45,
+              0.1,
+              0.15
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          },
+          {
+            "pos": [
+              -0.45,
+              0.1,
+              -0.15
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Lamp_8",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#1E46FF",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "8_3_5_cycle"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "11_3_2_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.6,
+              0.1,
+              0.15
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          },
+          {
+            "pos": [
+              -0.6,
+              0.1,
+              -0.15
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.45,
+            "flareWidth": 0.45
+          }
+        ]
+      },
+      {
+        "objectName": "&Emitter",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#DCEBFF",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_2_1_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0,
+              0.1,
+              0.16
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      }
+    ]
+  }
+}

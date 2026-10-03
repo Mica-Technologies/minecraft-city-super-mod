@@ -1,0 +1,20 @@
+[
+  {
+    "modid": "${modid}",
+    "name": "${modname}",
+    "description": "Immersive Vehicles for the City Super Mod: lightbars, siren speakers and a preemption emitter for the emergency vehicles other packs provide, and traffic signal preemption for any vehicle running its emergency lights. Requires CSM: Core, CSM: Roads & Traffic and Immersive Vehicles.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "credits": "Alex H, Brandon H (Mica Technologies)",
+    "logoFile": "assets/csm/textures/csm_icon.png",
+    "url": "https://minecraft.micatechnologies.com",
+    "updateUrl": "",
+    "authorList": [
+      "Mica Technologies"
+    ],
+    "dependencies": ["csm", "csm_roads", "mts"],
+    "dependants": [],
+    "requiredMods": ["csm", "csm_roads", "mts"],
+    "useDependencyInformation": "true"
+  }
+]

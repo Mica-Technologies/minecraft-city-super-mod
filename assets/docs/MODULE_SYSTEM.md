@@ -1,13 +1,13 @@
 # The Module System
 
-City Super Mod ships as **one mandatory jar and twelve optional ones**, built from this single
+City Super Mod ships as **one mandatory jar and thirteen optional ones**, built from this single
 repository and released together. A player installs CSM: Core plus whichever subsystems they want;
-with all thirteen jars installed the mod behaves exactly as the old single jar did — same registry
+with all fourteen jars installed the mod behaves exactly as the old single jar did — same registry
 names, same creative tabs in the same order, same config file, same saves, same sounds, same
 Fabricator costs.
 
 This document is the durable design record: what is in which jar, how registration still works when
-the classes are spread across thirteen of them, which Core service a module registers with and when, how
+the classes are spread across fourteen of them, which Core service a module registers with and when, how
 to add a module or move a block between two, and the traps that have already cost time once.
 
 ---
@@ -33,6 +33,7 @@ world ever sees is namespaced with them.
 | Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage` | Signage & Advertising (18), hidden (−8) | 15 |
 | Parks & Greenery | `csm_parks` | CSM: Parks & Greenery | `…-parks-<version>.jar` | `parks` | Trees & Plants (19), Parks (20) | 166 + 1 item |
 | Transit | `csm_transit` | CSM: Transit | `…-transit-<version>.jar` | `transit` | Transit (27) | 119 + 2 items |
+| Vehicles | `csm_vehicles` | CSM: Vehicles | `…-vehicles-<version>.jar` | `vehicles` | none — its content is an Immersive Vehicles pack | 0 (6 IV parts) |
 
 Block counts are blockstates shipped in that tree, so they include hidden (retiring) blocks and the
 itemless `*_slab_double` states.
@@ -41,7 +42,7 @@ itemless `*_slab_double` states.
 come from the same release. That is deliberate: they are built from one tree, and a mixed install
 should fail loudly at startup rather than subtly later.
 
-Three modules also require another module, and the rule is the same for all of them: **a module may
+Four modules also require another module, and the rule is the same for all of them: **a module may
 reference Core, and a module that declares a required module may reference that module too** —
 never the other way round, and never a module it does not declare.
 
@@ -59,6 +60,18 @@ never the other way round, and never a module it does not declare.
   settles onto the road surface the way Roads' street fixtures do. Utilities was CSM: Power
   Grid and kept that mod id (`csm_powergrid`) and tree (`modules/powergrid`) when it was renamed,
   so worlds saved with Power Grid load unchanged; see `UTILITIES_SYSTEM.md`.
+- **Vehicles → Roads & Traffic** (`required-after:csm_roads@[<version>]`): it exists to feed
+  Roads' preempt detectors. It talks to them through Core's `CsmPreemptSources` rather than any
+  Roads class, but the detectors it feeds are Roads', so without Roads it has nothing to do.
+
+**Another mod as a dependency.** CSM: Vehicles also requires Immersive Vehicles
+(`required-after:mts`), the only module that needs another mod at all. Its `modules.gradle` entry
+carries `external: true`, which puts the configuration named after it (`vehiclesExternal`, in
+`dependencies.gradle`: Immersive Vehicles 24.0.0 from Modrinth's Maven, deobfuscated) on the
+module's compile, test and reobfuscation classpaths, and on the dev run classpath only when the
+module itself runs. Nothing of that mod is shipped in the module jar. A module like this is for a
+mod the module cannot work without; an optional integration (the SUM economy in Roads) stays a
+reflective call, never a build dependency. See `VEHICLES_SYSTEM.md`.
 
 Each is declared in three places that must agree: the `@Mod` `dependencies` string, the
 `mcmod.info` `dependencies` / `requiredMods` lists, and the `deps:` of the module's entry in
@@ -126,7 +139,7 @@ Core that the module's class implements:
 
 ---
 
-## How registration works across thirteen jars
+## How registration works across fourteen jars
 
 Forge runs the lifecycle **per phase, across all mods**, not per mod. The order that matters here:
 
@@ -199,7 +212,7 @@ For each entry in `modules.gradle`'s `csmModules` list it creates:
 - test sources under `modules/<name>/src/test/java` folded into the one JUnit suite.
 
 ```bash
-./gradlew build                       # Core + all twelve module jars, dev and release
+./gradlew build                       # Core + all thirteen module jars, dev and release
 ./gradlew runClient                   # dev client with every module jar on the classpath
 ./gradlew runClient -PcsmRunModules=core          # Core alone
 ./gradlew runClient -PcsmRunModules=lighting      # Core + Lighting
@@ -378,7 +391,7 @@ simply skipped when Roads & Traffic is absent.
 `CsmSoundsTest` fails the build on it, and on any drift between the enums and the shipped
 `sounds.json` files in either direction.
 
-**Versions are pinned.** All thirteen jars come from one release and pin each other exactly. A player
+**Versions are pinned.** All fourteen jars come from one release and pin each other exactly. A player
 mixing versions gets a startup failure, which is the intended outcome.
 
 **A module's reobfuscation needs Core's classes.** A release jar must name every Minecraft field and
