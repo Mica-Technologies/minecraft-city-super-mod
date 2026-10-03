@@ -964,8 +964,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   chipper's running loop and crunch, and the fleet's engine and horn sounds.
   `gen_vehicle_fleet.py` writes the fleet: the fire engine, ladder truck (its aerial three
   objects chained by `applyAfter`, deployed by one AERIAL switch), ambulance, police SUV, and the
-  public works dump truck and power company bucket truck (amber BEACONS, never an emergency
-  switch, so they never preempt; DUMP and BOOM deploy them), 26 liveries (OBJ built
+  public works dump truck, power company bucket truck and rollback tow truck (amber BEACONS,
+  never an emergency switch, so they never preempt; DUMP, BOOM and BED deploy them; the tow
+  truck's flatbed and wheel lift are real IV hitches), the Metro transit bus (plus the four
+  Transit agencies' liveries; DOORS), towing hookups on every vehicle, 35 liveries (OBJ built
   from boxes on named cells of a 128 px texture, one PNG per livery, lettering in the Life Safety
   pixel font, `lightObjects` written from the same spec as the lamps, item icons projected off
   the boxes) and their own wheels, seat and engines as default parts; `--check`

@@ -1227,5 +1227,40 @@
         ]
       }
     ]
-  }
+  },
+  "connectionGroups": [
+    {
+      "groupName": "Towing",
+      "isHookup": true,
+      "connections": [
+        {
+          "type": "tow_bumper",
+          "pos": [
+            0,
+            0.11,
+            4.35
+          ],
+          "distance": 2
+        },
+        {
+          "type": "tow_wheel",
+          "pos": [
+            0,
+            -0.24,
+            3.0
+          ],
+          "distance": 2
+        },
+        {
+          "type": "tow_flatbed",
+          "pos": [
+            0,
+            -0.29,
+            4.35
+          ],
+          "distance": 2
+        }
+      ]
+    }
+  ]
 }
