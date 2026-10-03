@@ -967,7 +967,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   public works dump truck, power company bucket truck and rollback tow truck (amber BEACONS,
   never an emergency switch, so they never preempt; DUMP, BOOM and BED deploy them; the tow
   truck's flatbed and wheel lift are real IV hitches), the Metro transit bus (plus the four
-  Transit agencies' liveries; DOORS), towing hookups on every vehicle, 35 liveries (OBJ built
+  Transit agencies' liveries; DOORS; a TSP emitter switch that starts on, through
+  `rendering.initialVariables`, which ADVANCED mode's transit signal priority answers), towing hookups on every vehicle, 35 liveries (OBJ built
   from boxes on named cells of a 128 px texture, one PNG per livery, lettering in the Life Safety
   pixel font, `lightObjects` written from the same spec as the lamps, item icons projected off
   the boxes) and their own wheels, seat and engines as default parts; `--check`

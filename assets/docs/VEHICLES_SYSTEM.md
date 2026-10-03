@@ -48,7 +48,7 @@ declares. So Core holds the meeting point:
 
 - `ICsmPreemptSource`: something that can list the emitters that are on in a world.
 - `CsmPreemptEmitter`: one emitter's position, horizontal heading, and kind (`EMERGENCY`, or
-  `TRANSIT`, which nothing acts on yet).
+  `TRANSIT`, which calls transit signal priority rather than a preempt).
 - `CsmPreemptSources`: the registry, plus the geometry (`sees`). Emitters are collected once a world
   tick, the first time any detector asks, and shared by every detector that tick. A source that
   throws is logged once and skipped. With no source registered a detector does not tick at all.
@@ -250,8 +250,16 @@ Metro, the city's own name for its bus and train system. The other four liveries
 module's invented agencies (CITYLINE, RIVERWAY, VERDANT, EMBERLINE) in their flag colours, so a
 bus matches its stops and shelters. The destination sign is a cell of amber LED text in the
 pixel font, the livery's eighth field. `DOORS` slides the front and rear doors out and back. The
-bus seats a driver and twelve passengers. It is not yet a transit signal priority source (see
-below).
+bus seats a driver and twelve passengers.
+
+**Transit signal priority.** The bus's `TSP` switch is its priority emitter (the small box on the
+roof's front edge), and it starts on: the definition lists it in `rendering.initialVariables`.
+`IvPreemptSource` reports a vehicle with a `TSP` switch, or one named for transit priority, on as
+a `TRANSIT` emitter; one that also has an emergency switch on is an emergency emitter, the call
+that outranks it. A detector that sees the bus calls priority on an ADVANCED controller whose
+priority trigger is DET: the transit phase is called and held for it, its green extended or
+brought back sooner, and with queue jump heads on its circuit it leaves first. See
+`ADVANCED_MODE_ASC3.md` §5d. Standard mode has no transit priority.
 
 The lettering differs by livery (FIRE RESCUE, AIRPORT FIRE, AMBULANCE, EMS, POLICE, SHERIFF,
 STATE POLICE, PUBLIC WORKS, CITY POWER; the unmarked SUV has none). `DECAL_ON` says whether it
@@ -285,6 +293,11 @@ controller, and an emergency preempt per street, each with two detectors (one pe
   Metro bus (`DOORS` on) opened its doors, which then slid forward past the nose and now slide
   back (that fix is not yet seen in game); the CITYLINE bus spawned on its own wheels. Towing
   through the panel has not been tried.
+
+- transit signal priority, at the test intersection with the E-W phase as the transit phase,
+  DET trigger, queue jump add-ons under both E-W heads: a Metro bus placed 35 blocks out, facing
+  the east detector, cleared N-S, lit the bar for 4.0 s (and 10 s when set to 10) with E-W held
+  red, then E-W green with the bar dark; no confirmation lamp lit.
 
 Earlier, also verified:
 - All three spawn on their own wheels, level, with every livery's texture.
@@ -347,5 +360,5 @@ Verified 2026-10-03 against IV's fire truck in the dev client:
 
 - A towed trailer chipper, alongside the chip bed, once there is a fleet to tow it.
 - The ladder truck, with an animated aerial; more liveries; driving and sound tuning from play.
-- Transit signal priority from buses: the Metro bus as a `TRANSIT` emitter, and a detector
-  that feeds `TrafficSignalPriorityPlan` rather than a preempt.
+- Transit signal priority for other packs' buses: they have no `TSP` switch, so they would
+  need one fitted as a part, or a name list like the emergency one.
