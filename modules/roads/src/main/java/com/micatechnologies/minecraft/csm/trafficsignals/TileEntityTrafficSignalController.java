@@ -2186,7 +2186,15 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           if (trigMovement == TrafficSignalPhaseMovement.PED) {
             trigMovement = TrafficSignalPhaseMovement.THROUGH;
           }
-          plan.getPreempts().get(index).setTriggerMovement(trigMovement);
+          TrafficSignalPreempt pe = plan.getPreempts().get(index);
+          pe.setTriggerMovement(trigMovement);
+          pe.setTriggerOnDetectors(false);
+        }
+        break;
+      case "pe.trigDetectors":
+        // The trigger circuit's preempt detectors call the preempt instead of its sensor zone.
+        if (validPreempt(plan, index)) {
+          plan.getPreempts().get(index).setTriggerOnDetectors(value != 0);
         }
         break;
       case "pe.minDwell":

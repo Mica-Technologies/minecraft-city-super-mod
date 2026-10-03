@@ -16,8 +16,10 @@ import net.minecraft.nbt.NBTTagCompound;
  *   <li><b>Exit</b> — return through {@link #exitPhases} to normal/coordinated operation.</li>
  * </ol>
  *
- * <p>The trigger is expressed as a circuit index + movement, reusing the existing sensor zones, so
- * preemption needs no new detector blocks. All times are in game ticks (20 ticks = 1 second).
+ * <p>The trigger is a circuit index plus either a movement, which watches that circuit's sensor
+ * zone, or the circuit's preempt detectors ({@link #isTriggerOnDetectors()}), which see an
+ * emergency vehicle's emitter far up the approach or take redstone. All times are in game ticks
+ * (20 ticks = 1 second).
  *
  * @author Mica Technologies
  * @since 2026.6
@@ -39,12 +41,18 @@ public class TrafficSignalPreempt {
   private static final String K_MIN_DWELL = "md";
   private static final String K_MIN_GREEN_BEFORE = "mb";
   private static final String K_SIGN_CIRCUITS = "sc";
+  private static final String K_TRIGGER_DETECTORS = "td";
 
   private boolean enabled = false;
   private TrafficSignalPreemptType type = TrafficSignalPreemptType.EMERGENCY;
   /** Circuit index whose sensor zone calls this preempt, or -1 if unassigned. */
   private int triggerCircuitIndex = -1;
   private TrafficSignalPhaseMovement triggerMovement = TrafficSignalPhaseMovement.THROUGH;
+  /**
+   * Whether the trigger circuit's preempt detectors call this preempt, rather than a vehicle count
+   * in its sensor zone for {@link #triggerMovement}. False in every plan saved before detectors.
+   */
+  private boolean triggerOnDetectors = false;
   private int[] trackClearPhases = new int[0];
   private int[] dwellPhases = new int[0];
   private int[] exitPhases = new int[0];
@@ -91,6 +99,14 @@ public class TrafficSignalPreempt {
 
   public void setTriggerMovement(TrafficSignalPhaseMovement triggerMovement) {
     this.triggerMovement = triggerMovement;
+  }
+
+  public boolean isTriggerOnDetectors() {
+    return triggerOnDetectors;
+  }
+
+  public void setTriggerOnDetectors(boolean triggerOnDetectors) {
+    this.triggerOnDetectors = triggerOnDetectors;
   }
 
   public int[] getTrackClearPhases() {
@@ -165,6 +181,9 @@ public class TrafficSignalPreempt {
     c.setLong(K_MIN_DWELL, minDwell);
     c.setLong(K_MIN_GREEN_BEFORE, minGreenBeforePreempt);
     c.setIntArray(K_SIGN_CIRCUITS, signCircuits);
+    if (triggerOnDetectors) {
+      c.setBoolean(K_TRIGGER_DETECTORS, true);
+    }
     return c;
   }
 
@@ -181,6 +200,7 @@ public class TrafficSignalPreempt {
     p.minGreenBeforePreempt =
         c.hasKey(K_MIN_GREEN_BEFORE) ? c.getLong(K_MIN_GREEN_BEFORE) : DEFAULT_MIN_GREEN_BEFORE;
     p.signCircuits = c.getIntArray(K_SIGN_CIRCUITS);
+    p.triggerOnDetectors = c.getBoolean(K_TRIGGER_DETECTORS);
     return p;
   }
 

@@ -223,6 +223,7 @@ tile.noparkinglogo830530.name=Señal de Prohibido Aparcar (Logotipo) 8:30a-5:30p
 tile.noparkingsundayholiday.name=Señal de Prohibido Aparcar excepto Domingo/Festivo
 tile.nostandingsign.name=Señal de Prohibido Detenerse
 tile.overheight_detection_sensor.name=Sensor de Detección de Sobrealtura
+tile.preempt_detector.name=Detector de Prioridad
 tile.plumbizer_signal_mount.name=Soporte de Semáforo Plumbizer
 tile.radar_speed_sign.name=Señal de Radar de Velocidad
 tile.roadend.name=Señal de Fin de Carretera

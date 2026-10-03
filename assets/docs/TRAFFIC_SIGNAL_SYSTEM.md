@@ -1025,9 +1025,34 @@ its window start** — not that the coordinated green begins at the offset.
 ### Preemption
 
 `TrafficSignalPreempt` table (railroad > emergency-vehicle > transit priority). A preempt is called
-by a circuit sensor zone and overrides normal/coordinated operation: **enter** (clear conflicting
-greens, yellow then all-red) → **track clear** (serve the track-clearance phases) → **dwell** (hold
-the dwell phases until the call drops and min-dwell elapses) → **exit** → resume.
+by a circuit's sensor zone, or by the circuit's **preempt detectors** (below), and overrides
+normal/coordinated operation: **enter** (clear conflicting greens, yellow then all-red) → **track
+clear** (serve the track-clearance phases) → **dwell** (hold the dwell phases until the call drops
+and min-dwell elapses) → **exit** → resume.
+
+#### The preempt detector
+
+`BlockPreemptDetector` (`csm:preempt_detector`) is the small optical head real intersections carry
+on the mast arm: it sees an approaching emergency vehicle's emitter long before the vehicle reaches
+the stop bar, where a sensor zone would first see it. It is linked to a circuit with the Signal
+Link Tool like a sensor, and a preempt whose **Trig MOV** is set to **DET** fires while any of that
+circuit's detectors is called (`TrafficSignalPreempt.triggerOnDetectors`, NBT `td`; the sensor
+summary carries the count as `getPreemptDetectorCalls()`). A DET preempt ignores ordinary vehicles
+in the zone, and a zone preempt ignores detectors.
+
+A detector is called by:
+
+- **an emitter it can see**, from Core's `CsmPreemptSources`. Roads names no vehicle mod: a module
+  that knows about vehicles registers an `ICsmPreemptSource` (CSM: Vehicles does, for Immersive
+  Vehicles). The emitters are collected once a world tick for every detector, and a detector sees
+  one when it is within its range (60/120/200/300 blocks, right-click to step), inside its cone
+  (10/20/35 degrees either side, sneak-right-click), and pointed at the detector within 45 degrees,
+  so a vehicle that has passed through and drives away calls nothing. With no source registered the
+  detector does not tick.
+- **redstone**, which is how a fire station's alert relay holds the road for its trucks.
+
+It looks the way it faces: place it standing on the approach it serves, facing the junction. The
+white confirmation lamp underneath (`called`, written only on a change) lights while it has a call.
 
 ### Programming GUI ("CSM ASC-3")
 

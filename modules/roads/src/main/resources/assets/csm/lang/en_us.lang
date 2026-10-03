@@ -223,6 +223,7 @@ tile.noparkinglogo830530.name=No Parking (Logo) 8:30a-5:30p Sign
 tile.noparkingsundayholiday.name=No Parking except Sunday/Holiday Sign
 tile.nostandingsign.name=No Standing Sign
 tile.overheight_detection_sensor.name=Overheight Detection Sensor
+tile.preempt_detector.name=Preemption Detector
 tile.plumbizer_signal_mount.name=Plumbizer Signal Mount
 tile.radar_speed_sign.name=Radar Speed Feedback Sign
 tile.roadend.name=End Road Sign

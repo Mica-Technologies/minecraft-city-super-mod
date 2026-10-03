@@ -35,8 +35,10 @@ everything outside this module (Decision 5 of the plan: a module may only refere
 - **Doors**: any door is held open by power.
 - **The firehouse gong**: a `BlockStationBell` strikes its three-three-three on the rising edge of
   a signal.
-- **Traffic preemption**: Roads' preempt beacon is a redstone-powered block, so a relay beside it
-  turns it on while the engines leave. Nothing here knows about traffic signals.
+- **Traffic preemption**: Roads' preempt detector takes redstone, so a relay beside it calls the
+  intersection's emergency preempt (one set to trigger on that circuit's detectors, DET) while the
+  engines leave. The preempt beacon is only a lamp: powering it shows the strobe and changes no
+  signal. Nothing here knows about traffic signals.
 
 A relay placed next to the controller powers the controller too, and a signal coming on dispatches
 again. It restarts the alert once and stops, but keep them apart.

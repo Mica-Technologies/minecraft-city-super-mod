@@ -772,12 +772,21 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         }), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 60,
-        () -> preemptText(pi, p -> MOVEMENT_ABBR[p.getTriggerMovement().ordinal()]),
+        () -> preemptText(pi, p -> p.isTriggerOnDetectors() ? "DET"
+            : MOVEMENT_ABBR[p.getTriggerMovement().ordinal()]),
         // PED (the last movement) is excluded: a preempt cannot trigger on the pedestrian
         // movement (a latched button request would never drop, so the dwell could never exit).
-        dir -> preemptEdit(pi, p -> send("pe.trigMovement", pi,
-            cyc(p.getTriggerMovement().ordinal(), dir,
-                TrafficSignalPhaseMovement.values().length - 1))), null));
+        // Its place in the cycle is taken by DET, the trigger circuit's preempt detectors.
+        dir -> preemptEdit(pi, p -> {
+          int detectors = TrafficSignalPhaseMovement.values().length - 1;
+          int current = p.isTriggerOnDetectors() ? detectors : p.getTriggerMovement().ordinal();
+          int next = cyc(current, dir, detectors + 1);
+          if (next == detectors) {
+            send("pe.trigDetectors", pi, 1);
+          } else {
+            send("pe.trigMovement", pi, next);
+          }
+        }), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 50,
         () -> preemptText(pi, p -> secs(p.getMinDwell())),
@@ -1624,7 +1633,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("Trig MOV:", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 70, 9, "Trigger Movement",
         "Which movement on the trigger circuit (e.g. THRU, LEFT)",
-        "is watched as the preempt input.");
+        "is watched as the preempt input. DET: the circuit's",
+        "preempt detectors instead, which see an emergency vehicle",
+        "far up the approach, or take redstone from a station.");
     y += 12;
     fontRenderer.drawString("Min Dwell:", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 70, 9, "Minimum Dwell",

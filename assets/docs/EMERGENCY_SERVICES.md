@@ -100,8 +100,9 @@ shows only a number.
 
 A module may only reference Core. The door holder holds a door open by powering it, because every
 door in the game (CSM's, vanilla's) is held open by power. The station alerting relay's redstone is
-how a call opens a garage door (the opener takes a signal), strikes the gong, or turns on Roads'
-preemption beacon (a redstone-powered block). Nothing in Life Safety names another module's class.
+how a call opens a garage door (the opener takes a signal), strikes the gong, or calls a traffic
+signal preempt through Roads' preempt detector, which takes redstone. Nothing in Life Safety names
+another module's class.
 
 ### The fire pole
 
