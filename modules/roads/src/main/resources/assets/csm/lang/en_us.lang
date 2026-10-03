@@ -169,6 +169,7 @@ tile.controllableverticalrightaddonsignalgray.name=Vertical Right Add-On Signal 
 tile.controllableverticalrightdoubleaddonsignal.name=Vertical Signal Right Arrow Double Add-On
 tile.controllableverticalrightdoubleaddonsignalgray.name=Vertical Right Double Add-On Signal (Gray)
 tile.controllableverticalrightflashyellowaddonsignal.name=Vertical Traffic Signal Add-On (Right Arrow, Flashing Yellow)
+tile.controllableverticalqueuejumpaddonsignal.name=Vertical Traffic Signal Add-On (Transit Queue Jump)
 tile.controllableverticalrightflashyellowsignal.name=Vertical Traffic Signal (Right Arrow, Flashing Yellow)
 tile.controllableverticalrightflashyellowsrsignal.name=Vertical Traffic Signal (Right Arrow, Flashing Yellow, Solid Red)
 tile.controllableverticalrightsignal.name=Vertical Traffic Signal (Right Arrow)

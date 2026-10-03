@@ -232,6 +232,14 @@ public class TrafficSignalSensorSummary {
    */
   private int preemptDetectorCalls = 0;
 
+  /**
+   * How many of the circuit's preempt detectors see a transit emitter. Calls transit signal
+   * priority only, never a preempt or a phase.
+   *
+   * @since 2026.10
+   */
+  private int transitDetectorCalls = 0;
+
   // endregion
 
   // region: Constructors
@@ -342,6 +350,31 @@ public class TrafficSignalSensorSummary {
    */
   public TrafficSignalSensorSummary withPreemptDetectorCalls(int calls) {
     this.preemptDetectorCalls = calls;
+    return this;
+  }
+
+  /**
+   * Gets how many of the circuit's preempt detectors see a transit emitter.
+   *
+   * @return the number of detectors with a transit call
+   *
+   * @since 2026.10
+   */
+  public int getTransitDetectorCalls() {
+    return transitDetectorCalls;
+  }
+
+  /**
+   * Sets how many of the circuit's preempt detectors see a transit emitter.
+   *
+   * @param calls the number of detectors with a transit call
+   *
+   * @return this summary
+   *
+   * @since 2026.10
+   */
+  public TrafficSignalSensorSummary withTransitDetectorCalls(int calls) {
+    this.transitDetectorCalls = calls;
     return this;
   }
 

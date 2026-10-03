@@ -1553,7 +1553,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("Circuit / move:", lcdX, y + 24, COLOR_AMBER_DIM);
     fontRenderer.drawString("Transit phase:", lcdX, y + 36, COLOR_AMBER_DIM);
     fontRenderer.drawString("Extend / return:", lcdX, y + 48, COLOR_AMBER_DIM);
-    fontRenderer.drawString("Min cycles:", lcdX, y + 60, COLOR_AMBER_DIM);
+    fontRenderer.drawString("Min cyc / jump:", lcdX, y + 60, COLOR_AMBER_DIM);
     addHelp(lcdX, y, lcdW - 6, 9, "Transit signal priority",
         "Not a preempt. Priority nudges the cycle it is already running:",
         "a call while the transit phase is GREEN holds that green longer,",
@@ -1563,7 +1563,10 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "Nothing here can cut a phase below its minimum green or truncate",
         "a pedestrian clearance -- priority only ever moves the maximum.",
         "Min cycles rate limits it, so a frequent route cannot hold a",
-        "corridor open permanently.");
+        "corridor open permanently. DET: the circuit's preempt detectors",
+        "call it when they see a bus's transit emitter. Jump: with queue",
+        "jump heads on the transit phase's circuit, a granted call starts",
+        "its green with the bus bar lit and the other heads held red.");
     if (pri.isEnabled() && !pri.isRunnable()) {
       fontRenderer.drawString("(needs a circuit and a transit phase)", lcdX + 150, y,
           COLOR_AMBER_DIM);
@@ -1581,11 +1584,21 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         },
         dir -> send("pri.circuit", 0, plan().getPriority().getTriggerCircuitIndex() + dir),
         null));
+    // The movements, then DET: the trigger circuit's preempt detectors seeing a transit emitter.
     cells.add(new Cell(lcdX + 145, y + 24, 70,
-        () -> plan().getPriority().getTriggerMovement().name(),
-        dir -> send("pri.movement", 0,
-            cyc(plan().getPriority().getTriggerMovement().ordinal(), dir,
-                TrafficSignalPhaseMovement.values().length)), null));
+        () -> plan().getPriority().isTriggerOnDetectors() ? "DET"
+            : plan().getPriority().getTriggerMovement().name(),
+        dir -> {
+          int detectors = TrafficSignalPhaseMovement.values().length;
+          int current = plan().getPriority().isTriggerOnDetectors() ? detectors
+              : plan().getPriority().getTriggerMovement().ordinal();
+          int next = cyc(current, dir, detectors + 1);
+          if (next == detectors) {
+            send("pri.detectors", 0, 1L);
+          } else {
+            send("pri.movement", 0, next);
+          }
+        }, null));
     cells.add(new Cell(lcdX + 100, y + 36, 40,
         () -> {
           int n = plan().getPriority().getTransitPhase();
@@ -1605,6 +1618,10 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         () -> String.valueOf(plan().getPriority().getMinCyclesBetweenGrants()),
         dir -> send("pri.minCycles", 0,
             Math.max(0, plan().getPriority().getMinCyclesBetweenGrants() + dir)), null));
+    cells.add(new Cell(lcdX + 150, y + 60, 45,
+        () -> secs(plan().getPriority().getQueueJump()),
+        dir -> send("pri.queueJump", 0, plan().getPriority().getQueueJump() + dir * 20L),
+        sec -> send("pri.queueJump", 0, Math.round(sec * 20))));
   }
 
   private void drawPreempt() {

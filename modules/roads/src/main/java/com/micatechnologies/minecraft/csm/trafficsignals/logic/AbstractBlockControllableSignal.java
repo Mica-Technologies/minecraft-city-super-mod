@@ -323,6 +323,12 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
     PROTECTED,
     NA_SENSOR,
     BEACON,
-    NO_TURN_BLANKOUT
+    NO_TURN_BLANKOUT,
+    /**
+     * Queue jump head: the white transit bar a bus gets ahead of the general heads while transit
+     * signal priority runs a queue jump (ADVANCED mode). Dark otherwise. Appended last, so the
+     * sides before it keep their ordinals.
+     */
+    QUEUE_JUMP
   }
 }

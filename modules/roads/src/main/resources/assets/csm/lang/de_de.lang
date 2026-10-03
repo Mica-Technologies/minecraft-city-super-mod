@@ -169,6 +169,7 @@ tile.controllableverticalrightaddonsignalgray.name=Vertikal-Rechts-Zusatzsignal 
 tile.controllableverticalrightdoubleaddonsignal.name=Vertikalsignal Rechtspfeil-Doppelzusatz
 tile.controllableverticalrightdoubleaddonsignalgray.name=Vertikal-Rechts-Doppelzusatzsignal (Grau)
 tile.controllableverticalrightflashyellowaddonsignal.name=Vertikal-Verkehrssignal-Zusatz (Rechtspfeil, Blinkgelb)
+tile.controllableverticalqueuejumpaddonsignal.name=Vertikal-Verkehrssignal-Zusatz (ÖPNV-Vorrangsignal)
 tile.controllableverticalrightflashyellowsignal.name=Vertikal-Verkehrssignal (Rechtspfeil, Blinkgelb)
 tile.controllableverticalrightflashyellowsrsignal.name=Vertikal-Verkehrssignal (Rechtspfeil, Blinkgelb, Rundrot)
 tile.controllableverticalrightsignal.name=Vertikal-Verkehrssignal (Rechtspfeil)

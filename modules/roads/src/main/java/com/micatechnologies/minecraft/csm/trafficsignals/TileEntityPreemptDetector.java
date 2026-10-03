@@ -16,6 +16,11 @@ import net.minecraft.util.EnumFacing;
  * {@link #isCalled()} through the circuit the detector is linked to, as it reads a sensor; a
  * preempt whose trigger is that circuit's detectors fires while any of them is called.
  * <p>
+ * A transit emitter (a bus) is a separate call, {@link #isTransitCalled()}, read by transit
+ * signal priority and never by a preempt, as a real detector tells the two apart by the
+ * strobe's rate. It does not light the confirmation lamp, which is for the emergency
+ * vehicle's driver.
+ * <p>
  * Looking for emitters is a few multiplications per emitter against a list collected once a
  * world tick for every detector, done four times a second. With no source registered the
  * detector does not tick at all, and only redstone can call it.
@@ -71,6 +76,9 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
   /** Whether an emitter was in view at the last look. Transient: re-read within a tick. */
   private transient boolean emitterInView = false;
 
+  /** Whether a transit emitter was in view at the last look. Transient, like the above. */
+  private transient boolean transitInView = false;
+
   @Override
   public void readNBT(NBTTagCompound compound) {
     range = compound.hasKey(K_RANGE) ? clampTo(RANGES, compound.getInteger(K_RANGE))
@@ -108,6 +116,17 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
    */
   public boolean isCalled() {
     return powered || emitterInView;
+  }
+
+  /**
+   * Whether a transit emitter is in view: a call for transit signal priority, not a preempt.
+   *
+   * @return whether the detector has a transit call
+   *
+   * @since 1.0
+   */
+  public boolean isTransitCalled() {
+    return transitInView;
   }
 
   /** @return how far the detector sees, in blocks */
@@ -188,29 +207,35 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
 
   @Override
   public void onTick() {
-    boolean inView = lookForEmitters();
-    if (inView != emitterInView) {
-      emitterInView = inView;
+    lookForEmitters();
+  }
+
+  /** Records which kinds of emitter are in view now, lighting the lamp on an emergency change. */
+  private void lookForEmitters() {
+    boolean emergency = false;
+    boolean transit = false;
+    List<CsmPreemptEmitter> emitters = CsmPreemptSources.emitters(getWorld());
+    IBlockState state = getWorld().getBlockState(getPos());
+    if (!emitters.isEmpty() && state.getBlock() instanceof BlockPreemptDetector) {
+      emergency = sees(emitters, state, CsmPreemptEmitter.Kind.EMERGENCY);
+      transit = sees(emitters, state, CsmPreemptEmitter.Kind.TRANSIT);
+    }
+    transitInView = transit;
+    if (emergency != emitterInView) {
+      emitterInView = emergency;
       showCall();
     }
   }
 
-  /** Whether an emergency emitter is in view now. */
-  private boolean lookForEmitters() {
-    List<CsmPreemptEmitter> emitters = CsmPreemptSources.emitters(getWorld());
-    if (emitters.isEmpty()) {
-      return false;
-    }
-    IBlockState state = getWorld().getBlockState(getPos());
-    if (!(state.getBlock() instanceof BlockPreemptDetector)) {
-      return false;
-    }
+  /** Whether an emitter of {@code kind} is in view. */
+  private boolean sees(List<CsmPreemptEmitter> emitters, IBlockState state,
+      CsmPreemptEmitter.Kind kind) {
     EnumFacing facing = state.getValue(BlockPreemptDetector.FACING);
     double lensX = getPos().getX() + 0.5;
     double lensY = getPos().getY() + 0.5;
     double lensZ = getPos().getZ() + 0.5;
     for (CsmPreemptEmitter emitter : emitters) {
-      if (emitter.kind == CsmPreemptEmitter.Kind.EMERGENCY
+      if (emitter.kind == kind
           && CsmPreemptSources.sees(emitter, lensX, lensY, lensZ, facing.getXOffset(),
           facing.getZOffset(), range, halfAngle)) {
         return true;

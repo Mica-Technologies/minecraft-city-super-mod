@@ -62,10 +62,19 @@ public class RingBarrierState {
     public final VehInterval vehicle;
     public final PedInterval pedestrian;
 
+    /** Whether the phase's queue jump heads are lit: its green held back for a bus. */
+    public final boolean queueJump;
+
     public ServedMovement(int phaseNumber, VehInterval vehicle, PedInterval pedestrian) {
+      this(phaseNumber, vehicle, pedestrian, false);
+    }
+
+    public ServedMovement(int phaseNumber, VehInterval vehicle, PedInterval pedestrian,
+        boolean queueJump) {
       this.phaseNumber = phaseNumber;
       this.vehicle = vehicle;
       this.pedestrian = pedestrian;
+      this.queueJump = queueJump;
     }
   }
 
@@ -87,6 +96,10 @@ public class RingBarrierState {
     boolean delayActive = false;
     long delayStart = 0L;
     long walkHold = 0L;
+    // How long this green's delay runs: the delayed green, or a transit queue jump if longer.
+    long delayLength = 0L;
+    // Whether this green's delay is a queue jump, which lights the circuit's queue jump heads.
+    boolean queueJump = false;
     // Volume-density snapshots captured at green start: the queue length (for added initial) and
     // whether a bike call was present (for bike minimum green).
     long queueAtStart = 0L;
@@ -128,6 +141,12 @@ public class RingBarrierState {
   /** Whether the first tick serves the rest phases; see {@link #beginOnRestPhases()}. */
   private boolean startOnRestPhases = false;
   private TrafficSignalPhase lastApplied = null;
+
+  /** The phase a granted transit call would queue jump this tick, or 0 for none. */
+  private int queueJumpPhase = 0;
+
+  /** How long that queue jump runs, in ticks. */
+  private long queueJumpTicks = 0L;
 
   /**
    * Output-stage clearance holds: heads the enforcer is currently holding in solid yellow, keyed
@@ -741,6 +760,7 @@ public class RingBarrierState {
     ring.resting = false;
     ring.pedServing = false;
     ring.delayActive = false;
+    ring.queueJump = false;
     ring.maxStart = -1L;
     ring.dualEntry = false;
     ring.condServiceUsed = false;
@@ -770,16 +790,17 @@ public class RingBarrierState {
         // green/max/passage clocks do not start until the delay ends, so the phase still gets its
         // full minimum green afterward.
         if (ring.delayActive) {
-          if (now - ring.delayStart < phase.getDelayedGreen()) {
+          if (now - ring.delayStart < ring.delayLength) {
             ring.lastActuation = now; // keep the (not-yet-started) green from instantly gapping out
             break;
           }
           ring.delayActive = false;
+          ring.queueJump = false;
           ring.greenStart = now;
           ring.intervalStart = now;
           ring.lastActuation = now;
         }
-        if (vehicleCount(phase) > 0) {
+        if (vehicleCount(phase) > 0 || transitCall(plan, phase)) {
           ring.lastActuation = now;
         }
         // A dual-entry companion that picks up demand of its own (a vehicle in its zone, a button
@@ -1142,9 +1163,17 @@ public class RingBarrierState {
     ring.pedStart = now;
     // ASC/3 DLY GRN: the delay applies only when this phase starts with a ped service. The walk
     // is extended to the end of the delay when the delay exceeds the configured walk.
-    ring.delayActive = ped && phase.getDelayedGreen() > 0L;
+    // A transit queue jump is the same hold with the bus bar lit, so it runs as a delay too: the
+    // longer of the two, and the walk (if any) runs through it.
+    long delay = ped ? phase.getDelayedGreen() : 0L;
+    ring.queueJump = queueJumpTicks > 0L && phase.getPhaseNumber() == queueJumpPhase;
+    if (ring.queueJump) {
+      delay = Math.max(delay, queueJumpTicks);
+    }
+    ring.delayActive = delay > 0L;
+    ring.delayLength = delay;
     ring.delayStart = now;
-    ring.walkHold = ped ? Math.max(phase.getWalk(), phase.getDelayedGreen()) : phase.getWalk();
+    ring.walkHold = ped ? Math.max(phase.getWalk(), delay) : phase.getWalk();
     // Volume-density / bike snapshots at green start.
     ring.queueAtStart = vehicleCount(phase);
     TrafficSignalSensorSummary startSummary = summaryForCircuit(phase.getCircuitIndex());
@@ -1270,6 +1299,7 @@ public class RingBarrierState {
     // phase — overwriting it here silently dropped the recall) and don't-walk follows it.
     ring.pedServing = phase.isRestInWalk() || ring.pedServing;
     ring.delayActive = false; // a coordinated rest phase does not run a leading ped interval
+    ring.queueJump = false;
     // Align the sequence position with the rest phase so the cycle resumes cleanly on demand.
     int[] seq = plan.getRingSequence(ringNum);
     for (int idx = 0; idx < seq.length; idx++) {
@@ -1482,13 +1512,20 @@ public class RingBarrierState {
    */
   private void computePriority(TrafficSignalProgrammedPhasePlan plan, long now) {
     TrafficSignalPriorityPlan priority = plan.getPriority();
+    queueJumpPhase = 0;
+    queueJumpTicks = 0L;
     if (!priority.isRunnable()) {
       priorityGranted = false;
       priorityCallWasActive = false;
       return;
     }
-    boolean call = zoneCount(priority.getTriggerCircuitIndex(),
-        priority.getTriggerMovement()) > 0;
+    boolean call;
+    if (priority.isTriggerOnDetectors()) {
+      TrafficSignalSensorSummary summary = summaryForCircuit(priority.getTriggerCircuitIndex());
+      call = summary != null && summary.getTransitDetectorCalls() > 0;
+    } else {
+      call = zoneCount(priority.getTriggerCircuitIndex(), priority.getTriggerMovement()) > 0;
+    }
     long cycle = coordinated && cycleTicks > 1L ? now / cycleTicks : -1L;
 
     if (!call) {
@@ -1512,6 +1549,37 @@ public class RingBarrierState {
     if (priorityGranted && priorityExtensionLeft > 0L) {
       priorityExtensionLeft--;
     }
+    if (priorityGranted && priority.getQueueJump() > 0L
+        && hasQueueJumpHeads(plan.getPhase(priority.getTransitPhase()))) {
+      // Only a phase that starts its green while this holds runs the jump (startGreen): a bus
+      // arriving on a green already running has nothing to jump.
+      queueJumpPhase = priority.getTransitPhase();
+      queueJumpTicks = priority.getQueueJump();
+    }
+  }
+
+  /**
+   * Whether a transit priority call is on {@code phase}: a bus is calling it, granted or not.
+   *
+   * <p>The call is a vehicle call on the transit phase as well as a request for priority, as a
+   * real detector's is: the bus is a vehicle waiting there whether or not a sensor counts it, and
+   * while it is in view it holds the green as an actuation would. A rate-limited call still gets
+   * this; only the extension, early return and queue jump wait for a grant.</p>
+   */
+  private boolean transitCall(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalProgrammedPhase phase) {
+    return priorityCallWasActive && phase.getPhaseNumber() == plan.getPriority().getTransitPhase();
+  }
+
+  /** Whether the circuit {@code phase} drives has queue jump heads to light. Without them a
+   * jump would only hold the general heads red with nothing shown to the bus. */
+  private boolean hasQueueJumpHeads(TrafficSignalProgrammedPhase phase) {
+    if (phase == null || tickCircuits == null) {
+      return false;
+    }
+    int ci = phase.getCircuitIndex();
+    return ci >= 0 && ci < tickCircuits.getCircuitCount()
+        && !tickCircuits.getCircuit(ci).getQueueJumpSignals().isEmpty();
   }
 
   /**
@@ -2091,7 +2159,7 @@ public class RingBarrierState {
     if (phase.isLockCall() && lockedCalls[phase.getPhaseNumber()]) {
       return true;
     }
-    if (vehicleCount(phase) > 0) {
+    if (vehicleCount(phase) > 0 || transitCall(plan, phase)) {
       return true;
     }
     if (pedRequestPresent(phase)) {
@@ -2481,7 +2549,7 @@ public class RingBarrierState {
     // During delayed green the vehicle is held red even though the ring interval is internally
     // GREEN; the leading ped walk (computed above as WALK, since walkHold >= the delay) shows.
     VehInterval veh = ring.delayActive ? VehInterval.RED : ring.interval;
-    return new ServedMovement(ring.activePhase, veh, ped);
+    return new ServedMovement(ring.activePhase, veh, ped, ring.delayActive && ring.queueJump);
   }
 
   // endregion
