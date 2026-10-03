@@ -88,8 +88,10 @@ class Obj:
 
     def box(self, name, lo, hi, cell, faces=('n', 's', 'e', 'w', 'u', 'd')):
         """A box from lo to hi (metres; +x left, +y up, +z forward), every face showing `cell`.
-        Faces wind counter-clockwise seen from outside."""
-        self.lines.append('o %s' % name)
+        Faces wind counter-clockwise seen from outside. A `name` of None adds the box to the
+        object before it, which is how a part that animates as one is built of many boxes."""
+        if name is not None:
+            self.lines.append('o %s' % name)
         (x0, y0, z0), (x1, y1, z1) = lo, hi
         quads = {
             's': ((x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1), (0, 0, 1)),

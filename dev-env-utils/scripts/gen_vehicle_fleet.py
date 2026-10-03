@@ -86,6 +86,12 @@ class Vehicle:
         self.obj.box(obj or 'p%d_%s' % (self.count, name), lo, hi, CELLS[name], faces)
         self.outline.append((lo, hi, name))
 
+    def group(self, obj, boxes):
+        """Boxes `(lo, hi, cell name)` as one OBJ object named `obj`, which IV animates as one."""
+        for i, (lo, hi, name) in enumerate(boxes):
+            self.obj.box(obj if i == 0 else None, lo, hi, CELLS[name])
+            self.outline.append((lo, hi, name))
+
     def both(self, lo, hi, name, faces=('n', 's', 'e', 'w', 'u', 'd')):
         """The box and its mirror image across x = 0 (left and right)."""
         self.box(lo, hi, name, faces)
@@ -276,6 +282,104 @@ def police_suv():
     return v, g
 
 
+# The aerial's deployment, on the one AERIAL switch: raise, then swing to the left, then extend;
+# stowing runs it backwards (retract, swing back, lower). Ticks.
+AERIAL_RAISE = (0, 100, 200)     # forwards delay, duration, reverse delay
+AERIAL_TURN = (100, 80, 120)
+AERIAL_EXTEND = (180, 120, 0)
+AERIAL_PIVOT = (0.0, 2.95, -2.2)  # where the ladder's heel pins to the turntable
+AERIAL_REACH = 8.0               # how far the fly section runs out
+
+
+def aerial_animation(kind, axis, timing, centre=None):
+    forwards, duration, reverse = timing
+    anim = {'animationType': kind, 'variable': 'AERIAL', 'axis': axis, 'duration': duration,
+            'forwardsDelay': forwards, 'reverseDelay': reverse}
+    if centre is not None:
+        anim['centerPoint'] = list(centre)
+    return anim
+
+
+def ladder_truck():
+    """A rear-mount aerial ladder: the pumper's cab, a lower body, a turntable at the back and a
+    two-section ladder bedded forward over the cab, which the AERIAL switch raises to 60
+    degrees, swings to the left and runs out 8 m."""
+    v = Vehicle()
+    g = -0.55
+    w = 1.25
+    v.box((-0.5, -0.15, -3.2), (0.5, 0.25, 8.0), 'black')                      # frame
+    v.box((-w, 0.25, 4.65), (w, 2.55, 7.75), 'paint')                          # cab
+    v.box((-w + 0.05, 2.55, 4.7), (w - 0.05, 2.62, 7.7), 'paint2')
+    v.box((-1.15, 1.55, 7.75), (1.15, 2.45, 7.77), 'glass', faces=('s',))
+    for z0, z1 in ((5.65, 7.55), (4.75, 5.55)):
+        v.both((w, 1.55, z0), (w + 0.02, 2.4, z1), 'glass')
+    v.both((w, 0.6, 5.75), (w + 0.025, 1.0, 7.4), 'decal', faces=('e', 'w'))
+    v.box((-0.7, 0.45, 7.75), (0.7, 1.35, 7.79), 'grille', faces=('s',))
+    v.box((-1.3, -0.05, 7.75), (1.3, 0.35, 8.05), 'chrome')
+    v.both((w, 1.9, 7.4), (w + 0.25, 2.3, 7.5), 'chrome')
+    # the body, lower than the pumper's so the ladder clears the cab
+    v.box((-w, 0.25, -3.2), (w, 2.0, 4.6), 'paint')
+    for z0, z1 in ((-3.1, -1.6), (-1.5, 0.6), (0.7, 2.6), (2.7, 4.5)):
+        v.both((w, 0.4, z0), (w + 0.01, 1.85, z1), 'door', faces=('e', 'w'))
+    v.both((w + 0.025, 1.0, -3.2), (w + 0.035, 1.18, 4.6), 'stripe', faces=('e', 'w'))
+    v.box((-w + 0.05, 2.0, -3.15), (w - 0.05, 2.05, 4.55), 'black', faces=('u',))
+    v.both((w + 0.05, 0.0, -3.0), (w + 0.6, 0.15, -2.6), 'chrome')            # outriggers
+    v.box((-0.25, 2.62, 7.0), (0.25, 2.95, 7.2), 'chrome')                     # ladder rest
+    v.box((-1.3, -0.1, -3.5), (1.3, 0.2, -3.2), 'chrome')
+    v.box((-0.5, 0.05, -3.21), (0.5, 0.35, -3.2), 'plate', faces=('n',))
+    # the aerial: turntable, ladder (base section) and fly, each one animated object
+    px, py, pz = AERIAL_PIVOT
+    v.group('turntable', [((-0.85, 2.0, pz - 0.85), (0.85, 2.3, pz + 0.85), 'chrome'),
+                          ((-0.35, 2.3, pz - 0.35), (0.35, 2.85, pz + 0.35), 'paint'),
+                          ((0.45, 2.3, pz - 0.3), (0.8, 3.0, pz + 0.3), 'paint2')])
+    length = 9.8
+    base = [((0.42, py, pz), (0.5, py + 0.3, pz + length), 'chrome'),
+            ((-0.5, py, pz), (-0.42, py + 0.3, pz + length), 'chrome'),
+            ((0.42, py + 0.3, pz), (0.5, py + 0.34, pz + length), 'paint'),
+            ((-0.5, py + 0.3, pz), (-0.42, py + 0.34, pz + length), 'paint')]
+    for k in range(int(length / 0.5)):
+        z = pz + 0.25 + k * 0.5
+        base.append(((-0.42, py + 0.02, z), (0.42, py + 0.05, z + 0.05), 'chrome'))
+    v.group('ladder_base', base)
+    fly = [((0.33, py + 0.04, pz + 0.4), (0.4, py + 0.28, pz + length - 0.1), 'chrome'),
+           ((-0.4, py + 0.04, pz + 0.4), (-0.33, py + 0.28, pz + length - 0.1), 'chrome')]
+    for k in range(int((length - 0.6) / 0.5)):
+        z = pz + 0.65 + k * 0.5
+        fly.append(((-0.33, py + 0.08, z), (0.33, py + 0.11, z + 0.05), 'chrome'))
+    fly.append(((-0.42, py + 0.04, pz + length - 0.15), (0.42, py + 0.32, pz + length),
+                'paint2'))                                                     # the tip
+    v.group('ladder_fly', fly)
+    # lights
+    v.lightbar(1.05, 2.62, 7.35, ['lamp_red', 'lamp_white', 'lamp_red', 'lamp_red',
+                                  'lamp_red', 'lamp_red', 'lamp_white', 'lamp_red'])
+    for side, sx in (('L', 1), ('R', -1)):
+        xs = sorted((sx * w, sx * (w - 0.2)))
+        v.warning('Beacon' + side, (xs[0], 2.0, -3.15), (xs[1], 2.2, -2.95), 'lamp_red',
+                  0 if sx > 0 else 1, [0, 0, -1])
+        sxs = sorted((sx * w, sx * (w + 0.03)))
+        v.warning('Side' + side, (sxs[0], 1.4, 4.62), (sxs[1], 1.6, 4.64), 'lamp_red',
+                  1 if sx > 0 else 0, [sx, 0, 0])
+        fx = sorted((sx * 0.75, sx * 0.95))
+        v.warning('Grille' + side, (fx[0], 1.0, 7.75), (fx[1], 1.15, 7.78), 'lamp_red',
+                  0 if sx > 0 else 1, [0, 0, 1])
+    v.road_lights(7.75, -3.2, w, 0.7, 0.45)
+    return v, g
+
+
+def ladder_animations():
+    """The aerial's animated objects: the turntable swings, the ladder raises on it, the fly runs
+    out along the ladder. applyAfter carries each with the one it rides on."""
+    pivot = AERIAL_PIVOT
+    return [
+        {'objectName': 'turntable',
+         'animations': [aerial_animation('rotation', [0, 90, 0], AERIAL_TURN, pivot)]},
+        {'objectName': 'ladder_base', 'applyAfter': 'turntable',
+         'animations': [aerial_animation('rotation', [-60, 0, 0], AERIAL_RAISE, pivot)]},
+        {'objectName': 'ladder_fly', 'applyAfter': 'ladder_base',
+         'animations': [aerial_animation('translation', [0, 0, AERIAL_REACH], AERIAL_EXTEND)]},
+    ]
+
+
 # ------------------------------------------------------------------------------------------
 # Liveries and textures
 # ------------------------------------------------------------------------------------------
@@ -289,6 +393,11 @@ LIVERIES = {
     'csm_fire_engine': [
         ('_red', 'Fire Engine', '#B01818', '#F2F2EE', '#F2F2EE', 'FIRE RESCUE', '#F2D24A'),
         ('_lime', 'Fire Engine (Lime)', '#C9D82A', '#F2F2EE', '#1C1C1C', 'FIRE RESCUE',
+         '#1C1C1C'),
+    ],
+    'csm_ladder_truck': [
+        ('_red', 'Ladder Truck', '#B01818', '#F2F2EE', '#F2F2EE', 'FIRE RESCUE', '#F2D24A'),
+        ('_lime', 'Ladder Truck (Lime)', '#C9D82A', '#F2F2EE', '#1C1C1C', 'FIRE RESCUE',
          '#1C1C1C'),
     ],
     'csm_ambulance': [
@@ -547,6 +656,19 @@ FLEET = {
                (0.6, 0.85, 4.15, False), (-0.6, 0.85, 4.15, False)],
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.4, 1.1, 3.6, 5.9], box_width=2.5,
         box_height=2.7, box_y=1.15),
+    'csm_ladder_truck': dict(
+        build=ladder_truck,
+        description='A rear-mount aerial ladder truck. The AERIAL switch raises the ladder, '
+                    'swings it to the left and runs it out; switch it off to stow it. EMERLTS '
+                    'runs the lights, and intersections with a CSM preempt detector give it '
+                    'the green.',
+        mass=9500, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        wheels=[(1.0, 6.0, True), (0.95, 0.0, False), (0.62, 0.0, False)],
+        seats=[(0.6, 0.85, 6.7, True), (-0.6, 0.85, 6.7, False),
+               (0.6, 0.85, 5.15, False), (-0.6, 0.85, 5.15, False)],
+        engine_pos=(0.0, 0.6, 6.2), boxes=[-2.1, 0.4, 2.9, 5.4, 7.1], box_width=2.5,
+        box_height=2.3, box_y=1.0,
+        switches=['EMERLTS', 'siren', 'siren_yelp', 'AERIAL'], animated=ladder_animations),
     'csm_ambulance': dict(
         build=ambulance,
         description='A Type III ambulance. Switch EMERLTS on and it runs its lights, and '
@@ -597,10 +719,12 @@ def vehicle_json(name, v):
     parts.append({'pos': list(spec['engine_pos']), 'minValue': 0.25, 'maxValue': 1.0,
                   'types': ['engine_car'], 'defaultPart': '%s:%s' % (PACK, spec['engine']),
                   'linkedParts': driven})
-    tones = [('siren', 'siren_wail'), ('siren_yelp', 'siren_yelp'), ('siren_hilo', 'siren_hilo')]
+    switches = spec.get('switches', ['EMERLTS', 'siren', 'siren_yelp', 'siren_hilo'])
+    tones = [t for t in (('siren', 'siren_wail'), ('siren_yelp', 'siren_yelp'),
+                         ('siren_hilo', 'siren_hilo')) if t[0] in switches]
     definitions = [{'name': livery[1], 'subName': livery[0], 'extraMaterialLists': [[]]}
                    for livery in LIVERIES[name]]
-    return {
+    definition = {
         'definitions': definitions,
         'general': {'description': spec['description'],
                     'materialLists': [['minecraft:iron_block:0:6', 'minecraft:glass_pane:0:6',
@@ -618,7 +742,7 @@ def vehicle_json(name, v):
         }],
         'rendering': {
             'modelType': 'obj',
-            'customVariables': ['EMERLTS', 'siren', 'siren_yelp', 'siren_hilo'],
+            'customVariables': switches,
             'sounds': [{'name': '%s:%s' % (PACK, spec['horn']), 'looping': True,
                         'activeAnimations': [vp.visible_on('horn')]}] +
                       [{'name': '%s:%s' % (PACK, sound), 'looping': True,
@@ -627,6 +751,9 @@ def vehicle_json(name, v):
             'lightObjects': v.lights,
         },
     }
+    if 'animated' in spec:
+        definition['rendering']['animatedObjects'] = spec['animated']()
+    return definition
 
 
 # ------------------------------------------------------------------------------------------
