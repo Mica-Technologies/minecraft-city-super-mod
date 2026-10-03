@@ -96,6 +96,49 @@ class RingBarrierStateTest {
     assertEquals(VehInterval.GREEN, m2.vehicle);
   }
 
+  /** How long phase 2 stays green, from a cold start, with 2 and 4 both on {@code recall}. */
+  private static long greenLength(TrafficSignalRecallMode recall) {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    enable(plan, 2, 0);
+    enable(plan, 4, 1);
+    for (int n : new int[] {2, 4}) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      p.setRecallMode(recall);
+      p.setMinGreen(100L);
+      p.setPassage(40L);
+      p.setMaxGreen(400L);
+    }
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand none = new Demand().veh(0, 0, 0, 0).veh(1, 0, 0, 0);
+    long start = -1L;
+    for (long t = 0; t < 2000L; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, none);
+      ServedMovement m = rb.getLastServed(1);
+      boolean green = m != null && m.phaseNumber == 2 && m.vehicle == VehInterval.GREEN;
+      if (green && start < 0L) {
+        start = t;
+      } else if (!green && start >= 0L) {
+        return t - start;
+      }
+    }
+    throw new AssertionError("phase 2 never ended its green");
+  }
+
+  @Test
+  @DisplayName("MAX recall with nobody there runs to max green against a waiting phase")
+  void maxRecallRunsToMax() {
+    // max-out runs from the first tick the waiting call is seen, a tick after green starts
+    long length = greenLength(TrafficSignalRecallMode.MAXIMUM);
+    assertTrue(length == 400L || length == 401L, "green ran " + length);
+  }
+
+  @Test
+  @DisplayName("MIN recall with nobody there ends at min green")
+  void minRecallEndsAtMin() {
+    assertEquals(100L, greenLength(TrafficSignalRecallMode.MINIMUM));
+  }
+
   @Test
   @DisplayName("bike min green holds the phase green past its (short) minimum green")
   void bikeMinGreenHolds() {
