@@ -141,14 +141,16 @@ public class ItemSignalLinkTool extends AbstractItem {
       } else if (signalControllerPos == null &&
           (state.getBlock() instanceof AbstractBlockControllableSignal ||
               state.getBlock() instanceof ITrafficSignalSensor ||
-              state.getBlock() instanceof BlockOverheightDetectionSensor)) {
+              state.getBlock() instanceof BlockOverheightDetectionSensor ||
+              state.getBlock() instanceof BlockPreemptDetector)) {
 
         player.sendMessage(new TextComponentString("No signal controller has been selected."));
 
         return EnumActionResult.SUCCESS;
       } else if (signalControllerPos != null &&
           (state.getBlock() instanceof ITrafficSignalSensor ||
-              state.getBlock() instanceof BlockOverheightDetectionSensor) &&
+              state.getBlock() instanceof BlockOverheightDetectionSensor ||
+              state.getBlock() instanceof BlockPreemptDetector) &&
           !player.isSneaking()) {
 
         TileEntity tileEntity = worldIn.getTileEntity(signalControllerPos);
@@ -160,7 +162,9 @@ public class ItemSignalLinkTool extends AbstractItem {
               circuitLinkIndex);
 
           if (linked) {
-            player.sendMessage(new TextComponentString("Sensor connected to circuit " +
+            player.sendMessage(new TextComponentString(
+                (state.getBlock() instanceof BlockPreemptDetector ? "Preempt detector"
+                    : "Sensor") + " connected to circuit " +
                 circuitLinkIndex +
                 " of signal controller at " +
                 "(" +
@@ -180,7 +184,8 @@ public class ItemSignalLinkTool extends AbstractItem {
         return EnumActionResult.SUCCESS;
       } else if (signalControllerPos != null &&
           (state.getBlock() instanceof ITrafficSignalSensor ||
-              state.getBlock() instanceof BlockOverheightDetectionSensor) &&
+              state.getBlock() instanceof BlockOverheightDetectionSensor ||
+              state.getBlock() instanceof BlockPreemptDetector) &&
           player.isSneaking()) {
 
         TileEntity tileEntity = worldIn.getTileEntity(signalControllerPos);

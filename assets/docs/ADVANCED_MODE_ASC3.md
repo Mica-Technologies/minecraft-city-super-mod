@@ -388,6 +388,11 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
 
 ### Preemption clearances
 
+A preempt's trigger is a circuit plus either a movement (that circuit's sensor zone) or **DET**,
+the circuit's preempt detectors, which a real ASC/3 takes from its optical preemption inputs; see
+"The preempt detector" in TRAFFIC_SIGNAL_SYSTEM.md. The clearances below are the same whichever
+input called it.
+
 Every preempt stage change that takes a movement from green to red runs the same fixed yellow
 (70 ticks) then red (40 ticks) clearance, `PREEMPT_CLEARANCE_TICKS`:
 

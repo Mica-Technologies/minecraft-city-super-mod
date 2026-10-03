@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.codeutils.SerializationUtils;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityPreemptDetector;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
@@ -514,6 +515,7 @@ public class TrafficSignalControllerCircuit {
     int standardWest = 0, leftWest = 0, protectedWest = 0, rightWest = 0;
     int standardNorth = 0, leftNorth = 0, protectedNorth = 0, rightNorth = 0;
     int standardSouth = 0, leftSouth = 0, protectedSouth = 0, rightSouth = 0;
+    int preemptDetectorCalls = 0;
 
     // Loop through each sensor and count appropriately
     for (BlockPos sensorPos : sensors) {
@@ -523,7 +525,13 @@ public class TrafficSignalControllerCircuit {
         continue;
       }
       TileEntity tileEntity = world.getTileEntity(sensorPos);
-      if (tileEntity instanceof TileEntityTrafficSignalSensor) {
+      if (tileEntity instanceof TileEntityPreemptDetector) {
+        // A preempt detector is linked like a sensor but counts no vehicles: it only calls the
+        // preempts that trigger on this circuit's detectors.
+        if (((TileEntityPreemptDetector) tileEntity).isCalled()) {
+          preemptDetectorCalls++;
+        }
+      } else if (tileEntity instanceof TileEntityTrafficSignalSensor) {
         TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
             = (TileEntityTrafficSignalSensor) tileEntity;
         int standardCount = tileEntityTrafficSignalSensor.scanEntities();
@@ -567,7 +575,8 @@ public class TrafficSignalControllerCircuit {
         standardNorth, standardSouth,
         leftAll, leftEast, leftWest, leftNorth, leftSouth, protectedAll,
         protectedEast, protectedWest, protectedNorth, protectedSouth,
-        rightAll, rightEast, rightWest, rightNorth, rightSouth);
+        rightAll, rightEast, rightWest, rightNorth, rightSouth)
+        .withPreemptDetectorCalls(preemptDetectorCalls);
     cachedSensorSummaryTick = currentTick;
     return cachedSensorSummary;
   }

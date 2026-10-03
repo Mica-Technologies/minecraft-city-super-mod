@@ -2388,6 +2388,10 @@ public class RingBarrierState {
   }
 
   private boolean isPreemptCalled(TrafficSignalPreempt preempt) {
+    if (preempt.isTriggerOnDetectors()) {
+      TrafficSignalSensorSummary summary = summaryForCircuit(preempt.getTriggerCircuitIndex());
+      return summary != null && summary.getPreemptDetectorCalls() > 0;
+    }
     return zoneCount(preempt.getTriggerCircuitIndex(), preempt.getTriggerMovement()) > 0;
   }
 

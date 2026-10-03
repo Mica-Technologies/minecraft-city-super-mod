@@ -223,6 +223,15 @@ public class TrafficSignalSensorSummary {
    */
   private final int nonProtectedTotalSouth;
 
+  /**
+   * How many of the circuit's preempt detectors have a call ({@link
+   * com.micatechnologies.minecraft.csm.trafficsignals.TileEntityPreemptDetector}). Not a vehicle
+   * count: detectors call preempts only, never a phase.
+   *
+   * @since 2026.10
+   */
+  private int preemptDetectorCalls = 0;
+
   // endregion
 
   // region: Constructors
@@ -310,6 +319,31 @@ public class TrafficSignalSensorSummary {
   // endregion
 
   // region: Properties
+
+  /**
+   * Gets how many of the circuit's preempt detectors have a call.
+   *
+   * @return the number of called preempt detectors
+   *
+   * @since 2026.10
+   */
+  public int getPreemptDetectorCalls() {
+    return preemptDetectorCalls;
+  }
+
+  /**
+   * Sets how many of the circuit's preempt detectors have a call.
+   *
+   * @param calls the number of called preempt detectors
+   *
+   * @return this summary
+   *
+   * @since 2026.10
+   */
+  public TrafficSignalSensorSummary withPreemptDetectorCalls(int calls) {
+    this.preemptDetectorCalls = calls;
+    return this;
+  }
 
   /**
    * Gets the total count of waiting entities at all standard sensors.
