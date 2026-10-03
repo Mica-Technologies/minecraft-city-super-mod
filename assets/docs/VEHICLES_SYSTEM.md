@@ -330,6 +330,43 @@ render work fell from 21.3 ms to 2.47 ms (43 to 354 FPS); from the lot's aisle w
 the vehicles cost under half a millisecond. Keep it that way: a new box is `body` unless it moves
 or lights, and a lamp joins an existing lamp object whenever it lights the same.
 
+### Inside: hollow cabins
+
+The rider's eye is in the vehicle, and a face is drawn only from the side it faces. The first
+fleet's cabs were solid boxes with glass painted on the outside, so from the driver's seat every
+wall vanished, the trim floated in the air, and the third-person camera ended up inside the truck.
+Every space a seat is in is now built by `cabin()`: a floor (a hundredth proud of the sill under
+it, or the two fight), a roof, walls up to the belt line, pillars between the windows, a header,
+the front and rear walls, a dash and a steering wheel drawn as a ring. The fire engine's and
+ladder truck's crew cabs, the conventional cab (DPW, bucket, tow), the ambulance's cab and patient
+module (with a pass-through window), the police SUV's greenhouse and the whole bus behind its
+engine bay (with its two door openings) are cabins.
+
+Windows are objects named `window`: IV draws them in its own glass, from inside too when the
+player's config turns on inner windows. An object named `translucent` would take the texture's
+alpha instead.
+
+### The HUD, the panel and the instruments
+
+**The panel is U.** Every switch a vehicle declares (the lightbar, the siren tones, a deployment)
+is on IV's panel, which a driver opens with U; IV's default car panel shows four. There is no
+direct key per switch: IV's ten custom keys (numpad 0 to 9) are momentary inputs a pack would have
+to wire up.
+
+**Our own HUD.** Each vehicle has a HUD texture (`motorized.hudTexture`,
+`textures/guis/<vehicle>_hud.png` and the `_lit` copy IV takes at night) of our own drawing: the
+panel key and that vehicle's own switches on the left, the controls (W S, G lights, C horn, N
+park, X view, Shift to get out) on the right. IV draws the HUD's top half by default, so
+everything lies in y 0 to 70 of the 400 by 140 panel.
+
+**Instruments.** A vehicle without instruments has a blank HUD; packs ship their own. Ours are a
+speedometer (`speed`, metres a second, 5.966 degrees each: 0 to 90 mph over 240 degrees), a
+tachometer (`engine_rpm`, 0 to 6,000 over 270) and a fuel gauge (`fuel`, a fraction, over 90),
+drawn on one 1024 sheet (`textures/instruments.png`, IV's sheet size), with their own items. They
+are default instruments, which IV fits only when a vehicle is created: one placed before they
+existed keeps a blank HUD until it is placed again. They are HUD only: placed on the dash they
+never showed, faced either way, so they stay off it until that is understood.
+
 ### Getting in: the body takes no clicks
 
 A seat is entered by right-clicking it. The body's collision group lists `block`, `entity` and

@@ -1,0 +1,48 @@
+{
+  "components": [
+    {
+      "scale": 1.0,
+      "textureXCenter": 320,
+      "textureYCenter": 64,
+      "textureWidth": 128,
+      "textureHeight": 128
+    },
+    {
+      "scale": 1.0,
+      "textureXCenter": 1012,
+      "textureYCenter": 64,
+      "textureWidth": 8,
+      "textureHeight": 128,
+      "animations": [
+        {
+          "animationType": "rotation",
+          "variable": "fuel",
+          "centerPoint": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            90.0
+          ],
+          "offset": -45.0
+        }
+      ]
+    }
+  ],
+  "textureName": "instruments.png",
+  "general": {
+    "name": "CSM Fuel Gauge",
+    "description": "Fuel left, empty to full.",
+    "stackSize": 64,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:1",
+        "minecraft:glass_pane:0:1",
+        "minecraft:redstone:0:1"
+      ]
+    ]
+  }
+}

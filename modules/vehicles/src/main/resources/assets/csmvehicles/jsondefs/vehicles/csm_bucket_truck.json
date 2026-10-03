@@ -43,7 +43,8 @@
     "hasRunningLights": true,
     "hasTurnSignals": true,
     "litVariable": "headlight",
-    "panel": "mts:default_car"
+    "panel": "mts:default_car",
+    "hudTexture": "csmvehicles:textures/guis/csm_bucket_truck_hud.png"
   },
   "parts": [
     {
@@ -852,6 +853,44 @@
       }
     ]
   },
+  "instruments": [
+    {
+      "hudX": 140,
+      "hudY": 38,
+      "hudScale": 0.4,
+      "defaultInstrument": "csmvehicles:csm_instrument_speedometer",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "scale": 0.0
+    },
+    {
+      "hudX": 200,
+      "hudY": 38,
+      "hudScale": 0.4,
+      "defaultInstrument": "csmvehicles:csm_instrument_tachometer",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "scale": 0.0
+    },
+    {
+      "hudX": 260,
+      "hudY": 38,
+      "hudScale": 0.4,
+      "defaultInstrument": "csmvehicles:csm_instrument_fuel",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "scale": 0.0
+    }
+  ],
   "connectionGroups": [
     {
       "groupName": "Towing",

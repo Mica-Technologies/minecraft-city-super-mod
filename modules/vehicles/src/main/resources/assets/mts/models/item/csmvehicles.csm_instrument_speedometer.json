@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "csmvehicles:items/instruments/csm_instrument_speedometer"
+  }
+}
