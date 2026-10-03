@@ -304,6 +304,39 @@ Earlier, also verified:
 - The fire engine with `EMERLTS` on, facing the detector, preempted the test intersection.
 - Driving, the panel and the sounds have not been tried.
 
+### Performance: one object for what does not move
+
+Immersive Vehicles makes **every OBJ object its own renderable**, positioned, checked for
+animations and lights, and drawn on its own every frame. What a model costs is therefore close to
+how many objects it has, not how many faces. The fleet was first written with every box its own
+object and every wheel as 48 one-face objects: about 345 objects a vehicle (a body of 39 to 60,
+six wheels of 48), each a few faces. Thirty-five of them parked in the demo world's lot took the
+dev client from about 500 to 43 FPS looking along the lot (21.3 ms of render work a frame).
+
+The generators now write:
+
+- **`body`**: every box that neither moves nor lights, in one object. `Obj` collects faces by
+  object name and writes each object once, so boxes given the same name merge wherever they are
+  added.
+- **one object per animated group** (`turntable`, `boom`, `door_front`, ...), which IV must move on
+  its own.
+- **one object per kind of lamp**: lamps of the same cell, colour and brightness animations share
+  an object named for the first of them, its light carrying every lamp's flare in
+  `blendableComponents`.
+- **a wheel as one object.**
+
+That is 8 to 16 objects a body, one a wheel and one a seat. From the same seat in the same lot,
+render work fell from 21.3 ms to 2.47 ms (43 to 354 FPS); from the lot's aisle with all 35 in view
+the vehicles cost under half a millisecond. Keep it that way: a new box is `body` unless it moves
+or lights, and a lamp joins an existing lamp object whenever it lights the same.
+
+### Getting in: the body takes no clicks
+
+A seat is entered by right-clicking it. The body's collision group lists `block`, `entity` and
+`attack` but **not `click`**: its boxes enclose the cab, and with `click` they took every
+right-click before it reached a seat, so there was no way into a vehicle. The official pack uses
+`click` only on small door and hatch boxes.
+
 ---
 
 ## Build

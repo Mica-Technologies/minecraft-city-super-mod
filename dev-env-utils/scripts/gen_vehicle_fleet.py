@@ -34,6 +34,7 @@ gen_vehicle_sounds.py's. Run from the repo root:
     python dev-env-utils/scripts/gen_vehicle_fleet.py --check   # exit 1 if the tree has drifted
 """
 
+import json
 import math
 import os
 import sys
@@ -80,13 +81,14 @@ class Vehicle:
 
     def __init__(self):
         self.obj = vp.Obj(tex=T)
-        self.lights = []      # (object name, light definition)
+        self.lights = []      # light definitions, one per lamp object
+        self.lamp_groups = {}  # (cell, colour, animations) -> that lamp object's light
         self.outline = []     # (lo, hi, cell name) for the item icon
         self.count = 0
 
     def box(self, lo, hi, name, faces=('n', 's', 'e', 'w', 'u', 'd'), obj=None):
         self.count += 1
-        self.obj.box(obj or 'p%d_%s' % (self.count, name), lo, hi, CELLS[name], faces)
+        self.obj.box(obj or 'body', lo, hi, CELLS[name], faces)
         self.outline.append((lo, hi, name))
 
     def group(self, obj, boxes):
@@ -102,13 +104,20 @@ class Vehicle:
 
     def lamp(self, name, lo, hi, cell_name, colour, animations, axis, size=0.35,
              faces=('n', 's', 'e', 'w', 'u', 'd')):
-        self.box(lo, hi, cell_name, faces, obj='&' + name)
-        centre = [round((lo[k] + hi[k]) / 2, 4) for k in range(3)]
-        light = {'objectName': '&' + name, 'emissive': True, 'isElectric': True,
-                 'color': colour, 'brightnessAnimations': animations}
+        """A lamp. Lamps of one cell and colour that light on the same animations are one object
+        (named for the first of them) carrying every one's flare: they could not be told apart
+        anyway, and each object is a draw of its own every frame."""
+        key = (cell_name, colour, json.dumps(animations, sort_keys=True))
+        light = self.lamp_groups.get(key)
+        if light is None:
+            light = {'objectName': '&' + name, 'emissive': True, 'isElectric': True,
+                     'color': colour, 'brightnessAnimations': animations}
+            self.lamp_groups[key] = light
+            self.lights.append(light)
+        self.box(lo, hi, cell_name, faces, obj=light['objectName'])
         if axis:
-            light['blendableComponents'] = [vp.flare(centre, axis, size)]
-        self.lights.append(light)
+            centre = [round((lo[k] + hi[k]) / 2, 4) for k in range(3)]
+            light.setdefault('blendableComponents', []).append(vp.flare(centre, axis, size))
 
     def lightbar(self, x_half, y, z, colours, variable='EMERLTS', emitter=True):
         """A roof lightbar: eight modules flashing in pairs, left then right, the emitter in the
@@ -804,7 +813,8 @@ def wheel_obj(diameter, width, sides=16):
 
     def quad(name, pts, uvs, normal):
         nonlocal v, vt, vn
-        lines.append('o %s' % name)
+        if v == 0:
+            lines.append('o wheel')  # one object: IV draws each object on its own
         for p in pts:
             lines.append('v %.5f %.5f %.5f' % p)
         for u, w in uvs:
@@ -869,9 +879,9 @@ def wheel_json(name):
 
 def seat_obj():
     o = vp.Obj(tex=32)
-    o.box('cushion', (-0.25, 0.0, -0.25), (0.25, 0.12, 0.25), (0, 0, 16, 16))
-    o.box('back', (-0.25, 0.12, -0.32), (0.25, 0.75, -0.2), (0, 0, 16, 16))
-    o.box('frame', (-0.2, -0.15, -0.2), (0.2, 0.0, 0.2), (16, 0, 32, 16))
+    o.box('body', (-0.25, 0.0, -0.25), (0.25, 0.12, 0.25), (0, 0, 16, 16))
+    o.box('body', (-0.25, 0.12, -0.32), (0.25, 0.75, -0.2), (0, 0, 16, 16))
+    o.box('body', (-0.2, -0.15, -0.2), (0.2, 0.0, 0.2), (16, 0, 32, 16))
     return o.text().replace('gen_vehicle_parts.py', 'gen_vehicle_fleet.py')
 
 
@@ -1074,7 +1084,9 @@ def vehicle_json(name, v):
                       'panel': 'mts:default_car'},
         'parts': parts,
         'collisionGroups': [{
-            'collisionTypes': ['block', 'entity', 'attack', 'click'],
+            # No 'click': the body's boxes enclose the seats, and a body that took clicks
+            # swallowed every right-click before it reached a seat, so nobody could get in.
+            'collisionTypes': ['block', 'entity', 'attack'],
             'collisions': [{'pos': [0, spec['box_y'], z], 'width': spec['box_width'],
                             'height': spec['box_height']} for z in spec['boxes']],
         }],

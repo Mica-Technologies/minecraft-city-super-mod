@@ -392,8 +392,7 @@
       "collisionTypes": [
         "block",
         "entity",
-        "attack",
-        "click"
+        "attack"
       ],
       "collisions": [
         {
@@ -501,23 +500,7 @@
             ],
             "flareHeight": 0.6,
             "flareWidth": 0.6
-          }
-        ]
-      },
-      {
-        "objectName": "&HeadlightR",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FFF6E0",
-        "brightnessAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "headlight",
-            "clampMin": 1,
-            "clampMax": 1
-          }
-        ],
-        "blendableComponents": [
+          },
           {
             "pos": [
               -0.95,
@@ -573,6 +556,20 @@
             ],
             "flareHeight": 0.35,
             "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.975,
+              0.7,
+              -3.415
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
           }
         ]
       },
@@ -612,32 +609,7 @@
             ],
             "flareHeight": 0.35,
             "flareWidth": 0.35
-          }
-        ]
-      },
-      {
-        "objectName": "&TurnFrontL",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FFA000",
-        "brightnessAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "left_turn_signal",
-            "clampMin": 1,
-            "clampMax": 1
           },
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              1,
-              0
-            ],
-            "variable": "10_10_0_cycle"
-          }
-        ],
-        "blendableComponents": [
           {
             "pos": [
               1.0,
@@ -648,48 +620,6 @@
               0,
               0,
               1
-            ],
-            "flareHeight": 0.35,
-            "flareWidth": 0.35
-          }
-        ]
-      },
-      {
-        "objectName": "&BrakeR",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FF0000",
-        "brightnessAnimations": [
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              0.5,
-              0
-            ],
-            "variable": "running_light"
-          },
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              1,
-              0
-            ],
-            "variable": "brake"
-          }
-        ],
-        "blendableComponents": [
-          {
-            "pos": [
-              -0.975,
-              0.7,
-              -3.415
-            ],
-            "axis": [
-              0,
-              0,
-              -1
             ],
             "flareHeight": 0.35,
             "flareWidth": 0.35
@@ -732,32 +662,7 @@
             ],
             "flareHeight": 0.35,
             "flareWidth": 0.35
-          }
-        ]
-      },
-      {
-        "objectName": "&TurnFrontR",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FFA000",
-        "brightnessAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "right_turn_signal",
-            "clampMin": 1,
-            "clampMax": 1
           },
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              1,
-              0
-            ],
-            "variable": "10_10_0_cycle"
-          }
-        ],
-        "blendableComponents": [
           {
             "pos": [
               -1.0,
