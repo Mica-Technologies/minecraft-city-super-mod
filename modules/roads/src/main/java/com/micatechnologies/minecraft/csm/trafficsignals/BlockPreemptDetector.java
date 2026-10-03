@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
-import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
@@ -10,10 +9,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -27,16 +23,17 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
- * A preemption detector: the small head on a mast arm that sees an approaching emergency
- * vehicle's emitter and calls the controller's emergency preempt, after the optical detectors
- * real intersections carry.
+ * A preemption detector: the small black head clamped on top of a mast arm that sees an
+ * approaching emergency vehicle's emitter and calls the controller's emergency preempt, after the
+ * optical detectors real intersections carry. Place it on top of the arm; its clamp reaches down
+ * round a thin traffic pole in the cell below.
  * <p>
  * It looks the way it faces, towards the approach it serves: place it standing on that approach,
  * facing the junction. It is linked to a circuit with the Signal Link Tool, like a sensor, and a
  * preempt set to trigger on that circuit's detectors (DET on the controller's PREEMPT screen)
  * fires while any of them is called. Redstone calls it too, which is how a fire station's alert
- * relay holds the road for its trucks. The white confirmation lamp underneath lights while it has
- * a call.
+ * relay holds the road for its trucks. It has no lamp of its own: a preemption beacon linked to
+ * the same circuit is the confirmation light.
  * <p>
  * Right-click steps its range (60 to 300 blocks); sneak and right-click steps how wide it looks.
  *
@@ -48,24 +45,16 @@ public class BlockPreemptDetector extends AbstractBlockRotatableNSEW
     implements ICsmTileEntityProvider, ICsmNoSnowAccumulation, ICsmTrafficPoleIgnored {
 
   /**
-   * Whether the detector has a call, shown on its confirmation lamp. Written by the tile entity
-   * on a change only.
-   *
-   * @since 1.0
-   */
-  public static final PropertyBool CALLED = PropertyBool.create("called");
-
-  /**
-   * The detector's box facing north: the housing and hood, and the stem up to the arm.
+   * The detector's box: the head and its stem, standing on the floor of its cell (the clamp below
+   * it hugs the arm in the cell underneath).
    *
    * @since 1.0
    */
   private static final AxisAlignedBB BOUNDING_BOX =
-      new AxisAlignedBB(5 / 16.0, 4 / 16.0, 1 / 16.0, 11 / 16.0, 1.0, 12 / 16.0);
+      new AxisAlignedBB(5 / 16.0, 0.0, 5 / 16.0, 11 / 16.0, 14.6 / 16.0, 11 / 16.0);
 
   public BlockPreemptDetector() {
     super(Material.IRON, SoundType.METAL, "pickaxe", 1, 2F, 10F, 0F, 0);
-    setDefaultState(getDefaultState().withProperty(CALLED, false));
   }
 
   @Override
@@ -75,27 +64,8 @@ public class BlockPreemptDetector extends AbstractBlockRotatableNSEW
 
   @Override
   @Nonnull
-  protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, FACING, CALLED);
-  }
-
-  @Override
-  @Nonnull
   public IBlockState getStateFromMeta(int meta) {
-    return super.getStateFromMeta(meta & 3).withProperty(CALLED, (meta & 4) != 0);
-  }
-
-  @Override
-  public int getMetaFromState(IBlockState state) {
-    return super.getMetaFromState(state) | (state.getValue(CALLED) ? 4 : 0);
-  }
-
-  @Override
-  @Nonnull
-  public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
-      float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-    return super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer)
-        .withProperty(CALLED, false);
+    return super.getStateFromMeta(meta & 3);   // a detector placed with its old lamp bit loads
   }
 
   @Override

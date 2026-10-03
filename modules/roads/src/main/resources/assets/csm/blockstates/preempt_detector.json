@@ -16,14 +16,6 @@
         "y": 270
       }
     },
-    "called": {
-      "false": {},
-      "true": {
-        "textures": {
-          "lamp": "csm:blocks/trafficsignals/shared_textures/aps_pilot_light_on"
-        }
-      }
-    },
     "inventory": [
       {
         "transform": "forge:default-block"

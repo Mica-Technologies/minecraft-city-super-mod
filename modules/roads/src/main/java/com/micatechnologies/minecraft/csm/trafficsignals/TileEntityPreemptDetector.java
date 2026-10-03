@@ -18,8 +18,7 @@ import net.minecraft.util.EnumFacing;
  * <p>
  * A transit emitter (a bus) is a separate call, {@link #isTransitCalled()}, read by transit
  * signal priority and never by a preempt, as a real detector tells the two apart by the
- * strobe's rate. It does not light the confirmation lamp, which is for the emergency
- * vehicle's driver.
+ * strobe's rate.
  * <p>
  * Looking for emitters is a few multiplications per emitter against a list collected once a
  * world tick for every detector, done four times a second. With no source registered the
@@ -175,7 +174,7 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
   }
 
   /**
-   * Records whether redstone is calling the detector, and shows it on the confirmation lamp.
+   * Records whether redstone is calling the detector.
    *
    * @param powered whether the detector is powered
    *
@@ -185,7 +184,6 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
     if (this.powered != powered) {
       this.powered = powered;
       markDirty();
-      showCall();
     }
   }
 
@@ -210,7 +208,7 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
     lookForEmitters();
   }
 
-  /** Records which kinds of emitter are in view now, lighting the lamp on an emergency change. */
+  /** Records which kinds of emitter are in view now. */
   private void lookForEmitters() {
     boolean emergency = false;
     boolean transit = false;
@@ -221,10 +219,7 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
       transit = sees(emitters, state, CsmPreemptEmitter.Kind.TRANSIT);
     }
     transitInView = transit;
-    if (emergency != emitterInView) {
-      emitterInView = emergency;
-      showCall();
-    }
+    emitterInView = emergency;
   }
 
   /** Whether an emitter of {@code kind} is in view. */
@@ -242,18 +237,5 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
       }
     }
     return false;
-  }
-
-  /** Lights or darkens the confirmation lamp to match the call. Only writes on a change. */
-  private void showCall() {
-    if (getWorld() == null || getWorld().isRemote) {
-      return;
-    }
-    IBlockState state = getWorld().getBlockState(getPos());
-    if (state.getBlock() instanceof BlockPreemptDetector
-        && state.getValue(BlockPreemptDetector.CALLED) != isCalled()) {
-      getWorld().setBlockState(getPos(), state.withProperty(BlockPreemptDetector.CALLED,
-          isCalled()), 2);
-    }
   }
 }

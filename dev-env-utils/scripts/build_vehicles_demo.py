@@ -9,9 +9,10 @@ lays out:
 
   intersection  Main St (north-south, one lane each way) crossing Transit Ave (east-west, two
                 lanes each way), signals on far-side mast arms, an ADVANCED controller, a preempt
-                detector on every arm looking up its approach, and a Transit Queue Jump add-on
+                detector clamped on top of every arm looking up its approach, and a Transit Queue Jump add-on
                 under the curb lane head of each Transit Ave approach. The controller runs N-S and
-                E-W on max recall; a detector seeing emergency lights preempts its approach, and
+                E-W on max recall; a detector seeing emergency lights preempts its approach (and
+                lights the red confirmation beacons on that circuit's mast poles), and
                 one seeing a bus's TSP emitter calls transit priority for E-W, with a 5 s queue
                 jump
   bus stop      on Transit Ave's westbound curb east of the junction: a CITYLINE stop and shelter
@@ -184,6 +185,7 @@ def roads():
 HEAD = 'controllableverticalsolidsignal'
 QUEUE_JUMP = 'controllableverticalqueuejumpaddonsignal'
 DETECTOR = 'preempt_detector'
+BEACON = 'tlpreemptbeacon'
 POLE_V, POLE_H = 'trafficpolevertical', 'trafficpolehorizontal'
 
 PX, PZ = MAIN_HALF + 2, AVE_HALF + 2      # the corner poles' offsets from the centre
@@ -200,7 +202,7 @@ def mast(pole, cells, arm_facing):
 
 
 def signals():
-    heads, dets, jumps = {}, {}, {}
+    heads, dets, jumps, beacons = {}, {}, {}, {}
     # westbound (from the east): NW pole, arm running south over the westbound lanes
     mast((-PX, -PZ), [(-PX, z) for z in range(-PZ + 1, 0)], F_SOUTH)
     heads['wb'] = [(-PX, -4), (-PX, -1)]
@@ -208,8 +210,11 @@ def signals():
     put(-PX, ARM - 1, -1, HEAD, E * 4)
     put(-PX, ARM - 2, -4, QUEUE_JUMP, E * 4)
     jumps['wb'] = (-PX, ARM - 2, -4)
-    put(-PX, ARM - 1, -2, DETECTOR, E)
-    dets['wb'] = (-PX, ARM - 1, -2)
+    put(-PX, ARM + 1, -2, DETECTOR, E)              # on top of the arm, looking up the approach
+    dets['wb'] = (-PX, ARM + 1, -2)
+    # its confirmation beacon on the mast pole under the arm, its bracket clipped to the pole
+    put(-PX, ARM - 1, -PZ + 1, BEACON, F_EAST)
+    beacons['wb'] = (-PX, ARM - 1, -PZ + 1)
     # eastbound (from the west): SE pole, arm running north over the eastbound lanes
     mast((PX, PZ), [(PX, z) for z in range(PZ - 1, 0, -1)], F_NORTH)
     heads['eb'] = [(PX, 4), (PX, 1)]
@@ -217,20 +222,26 @@ def signals():
     put(PX, ARM - 1, 1, HEAD, W * 4)
     put(PX, ARM - 2, 4, QUEUE_JUMP, W * 4)
     jumps['eb'] = (PX, ARM - 2, 4)
-    put(PX, ARM - 1, 2, DETECTOR, W)
-    dets['eb'] = (PX, ARM - 1, 2)
+    put(PX, ARM + 1, 2, DETECTOR, W)
+    dets['eb'] = (PX, ARM + 1, 2)
+    put(PX, ARM - 1, PZ - 1, BEACON, F_WEST)
+    beacons['eb'] = (PX, ARM - 1, PZ - 1)
     # southbound (from the north): SW pole, arm running east over the southbound lane
     mast((-PX, PZ), [(x, PZ) for x in range(-PX + 1, 0)], F_EAST)
     heads['sb'] = [(-2, PZ)]
     put(-2, ARM - 1, PZ, HEAD, N * 4)
-    put(-1, ARM - 1, PZ, DETECTOR, N)
-    dets['sb'] = (-1, ARM - 1, PZ)
+    put(-1, ARM + 1, PZ, DETECTOR, N)
+    dets['sb'] = (-1, ARM + 1, PZ)
+    put(-PX + 1, ARM - 1, PZ, BEACON, F_NORTH)
+    beacons['sb'] = (-PX + 1, ARM - 1, PZ)
     # northbound (from the south): NE pole, arm running west over the northbound lane
     mast((PX, -PZ), [(x, -PZ) for x in range(PX - 1, 0, -1)], F_WEST)
     heads['nb'] = [(2, -PZ)]
     put(2, ARM - 1, -PZ, HEAD, S * 4)
-    put(1, ARM - 1, -PZ, DETECTOR, S)
-    dets['nb'] = (1, ARM - 1, -PZ)
+    put(1, ARM + 1, -PZ, DETECTOR, S)
+    dets['nb'] = (1, ARM + 1, -PZ)
+    put(PX - 1, ARM - 1, -PZ, BEACON, F_SOUTH)
+    beacons['nb'] = (PX - 1, ARM - 1, -PZ)
 
     def longs(cells, y=ARM - 1):
         return ','.join('%dL' % L(x, y, z) for x, z in cells)
@@ -251,10 +262,12 @@ def signals():
     pe = ('{en:1b,ty:1,tc:0,tm:0,td:1b,dw:[I;2],tk:[I;],ex:[I;],md:200L,sc:[I;]},'
           '{en:1b,ty:1,tc:1,tm:0,td:1b,dw:[I;4],tk:[I;],ex:[I;],md:200L,sc:[I;]}')
     pri = '{en:1b,tc:1,tm:0,ph:4,ex:200L,er:200L,mc:0,td:1b,qj:100L}'
-    crc = ('{"0":{th:[L;%s],se:[L;%s,%s]},"1":{th:[L;%s],se:[L;%s,%s],qjs:[L;%s,%s]}}'
+    crc = ('{"0":{th:[L;%s],se:[L;%s,%s],pib:[L;%s,%s]},'
+           '"1":{th:[L;%s],se:[L;%s,%s],qjs:[L;%s,%s],pib:[L;%s,%s]}}'
            % (longs(heads['sb'] + heads['nb']), at(dets['sb']), at(dets['nb']),
+              at(beacons['sb']), at(beacons['nb']),
               longs(heads['wb'] + heads['eb']), at(dets['wb']), at(dets['eb']),
-              at(jumps['wb']), at(jumps['eb'])))
+              at(jumps['wb']), at(jumps['eb']), at(beacons['wb']), at(beacons['eb'])))
     adv = ('{ph:[%s],r1:[I;1,2,3,4],r2:[I;5,6,7,8],co:{md:0},pe:[%s],pri:%s}'
            % (','.join(ph), pe, pri))
     cx, cz = PX + 3, PZ + 3

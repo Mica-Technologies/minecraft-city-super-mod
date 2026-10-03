@@ -1032,8 +1032,8 @@ and min-dwell elapses) → **exit** → resume.
 
 #### The preempt detector
 
-`BlockPreemptDetector` (`csm:preempt_detector`) is the small optical head real intersections carry
-on the mast arm: it sees an approaching emergency vehicle's emitter long before the vehicle reaches
+`BlockPreemptDetector` (`csm:preempt_detector`) is the small black optical head real intersections
+clamp on top of the mast arm: it sees an approaching emergency vehicle's emitter long before the vehicle reaches
 the stop bar, where a sensor zone would first see it. It is linked to a circuit with the Signal
 Link Tool like a sensor, and a preempt whose **Trig MOV** is set to **DET** fires while any of that
 circuit's detectors is called (`TrafficSignalPreempt.triggerOnDetectors`, NBT `td`; the sensor
@@ -1051,8 +1051,21 @@ A detector is called by:
   detector does not tick.
 - **redstone**, which is how a fire station's alert relay holds the road for its trucks.
 
-It looks the way it faces: place it standing on the approach it serves, facing the junction. The
-white confirmation lamp underneath (`called`, written only on a change) lights while it has a call.
+It looks the way it faces: place it on top of the arm over the approach it serves, facing up that
+approach. Its model (`gen_preempt_detector.py`) stands in the cell above a thin traffic pole, its
+clamp reaching 4 px down round the pole and a strap under it, with the head, lens, connector and
+sun-shield fin above. It has no lamp of its own (an early version had a small one underneath, too
+small to see): the confirmation light is the preemption beacon.
+
+**The preemption beacon** (`tlpreemptbeacon`, Traffic Accessories) is the confirmation light. It
+lights for redstone, as it always has, and for a controller: linked to a circuit with the Signal
+Link Tool (`SIGNAL_SIDE.PREEMPT_INDICATOR`, the circuit's `pib` list), it is lit while a preempt
+triggered from that circuit runs, entry to exit (`RingBarrierState.getActivePreemptTriggerCircuit`).
+The controller writes each beacon's `TileEntityTrafficBeacon.controllerLit` only when that circuit
+changes or a device is linked or unlinked, and the beacon shows POWERED while either its controller
+or redstone says so (`BlockPreemptBeacon.showPower`). Unlinking one darkens it. Preemption runs in
+ADVANCED mode only, so in any other mode a linked beacon answers redstone alone. Its bracket clips
+to the side of a pole: facing the approach, it sits in the cell beside the mast pole.
 
 A **transit** emitter (a bus) is a separate call (`isTransitCalled()`, counted as
 `getTransitDetectorCalls()`): it never calls a preempt and never lights the lamp. It calls ADVANCED
