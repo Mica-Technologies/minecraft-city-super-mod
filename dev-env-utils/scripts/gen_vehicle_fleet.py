@@ -578,6 +578,7 @@ def transit_bus():
     v.box((-0.95, 2.45, front), (0.95, 2.7, front + 0.03), 'sign', faces=('s',))
     v.box((-0.9, 2.45, rear - 0.02), (0.9, 2.65, rear), 'sign', faces=('n',))
     v.box((-0.7, -0.15, front), (0.7, 0.2, front + 0.35), 'black')             # bike rack
+    v.box((-0.12, 2.85, front - 0.35), (0.12, 2.97, front - 0.1), 'black')     # TSP emitter
     v.box((-0.8, 0.9, rear - 0.02), (0.8, 2.3, rear), 'grille', faces=('n',))  # engine grille
     v.box((-0.5, 0.15, rear - 0.01), (0.5, 0.4, rear), 'plate', faces=('n',))
     # the doors, on the right (-x), each one leaf that the DOORS switch slides out and back
@@ -995,14 +996,17 @@ FLEET = {
         hitches=tow_hitches),
     'csm_transit_bus': dict(
         build=transit_bus,
-        description='A 40 ft low-floor city bus. DOORS opens the front and rear doors.',
+        description='A 40 ft low-floor city bus. DOORS opens the front and rear doors. TSP, on '
+                    'from the start, is its transit priority emitter: signals with preempt '
+                    'detectors and transit priority give it a longer green or a queue jump.',
         mass=12000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
         wheels=[(1.0, 7.2, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.75, 0.45, 8.7, True)] +
               [(sx * 0.75, 0.55, z, False) for z in (6.4, 5.2, 2.0, 0.8, -0.4, -1.6)
                for sx in (1, -1)],
         engine_pos=(0.0, 0.5, -2.8), boxes=[-2.2, 0.3, 2.8, 5.3, 7.8, 9.3], box_width=2.55,
-        box_height=3.1, box_y=1.0, switches=['DOORS'], animated=door_animations),
+        box_height=3.1, box_y=1.0, switches=['DOORS', 'TSP'], initially_on=['TSP'],
+        animated=door_animations),
     'csm_ambulance': dict(
         build=ambulance,
         description='A Type III ambulance. Switch EMERLTS on and it runs its lights, and '
@@ -1087,6 +1091,8 @@ def vehicle_json(name, v):
     }
     if 'animated' in spec:
         definition['rendering']['animatedObjects'] = spec['animated']()
+    if 'initially_on' in spec:
+        definition['rendering']['initialVariables'] = spec['initially_on']
     # Every vehicle can be towed, by the hookups other packs' tow trucks look for (and ours):
     # the bumper, the front axle for a wheel lift, and the front for a flatbed's winch.
     front_z = max(b[1][2] for b in v.outline)

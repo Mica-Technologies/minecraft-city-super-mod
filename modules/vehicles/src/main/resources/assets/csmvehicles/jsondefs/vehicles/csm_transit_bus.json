@@ -37,7 +37,7 @@
     }
   ],
   "general": {
-    "description": "A 40 ft low-floor city bus. DOORS opens the front and rear doors.",
+    "description": "A 40 ft low-floor city bus. DOORS opens the front and rear doors. TSP, on from the start, is its transit priority emitter: signals with preempt detectors and transit priority give it a longer green or a queue jump.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -456,7 +456,8 @@
   "rendering": {
     "modelType": "obj",
     "customVariables": [
-      "DOORS"
+      "DOORS",
+      "TSP"
     ],
     "sounds": [
       {
@@ -842,6 +843,9 @@
           }
         ]
       }
+    ],
+    "initialVariables": [
+      "TSP"
     ]
   },
   "connectionGroups": [

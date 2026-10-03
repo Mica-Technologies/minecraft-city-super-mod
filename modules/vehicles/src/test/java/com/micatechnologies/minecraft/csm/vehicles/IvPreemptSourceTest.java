@@ -29,9 +29,21 @@ class IvPreemptSourceTest {
     // ... including the CSM fleet's own work switches: a public works or power company truck's
     // amber BEACONS must never preempt a signal
     for (String name : new String[] {"AUXLTS", "Underglow", "Tow_Lights", "Fog Lights", "LOCK",
-        "Funky_Mode", "Christmas Lights", "", "BEACONS", "DUMP", "BOOM", "AERIAL"}) {
+        "Funky_Mode", "Christmas Lights", "", "BEACONS", "DUMP", "BOOM", "AERIAL", "BED", "DOORS", "TSP"}) {
       assertFalse(IvPreemptSource.isEmergencyVariable(name), name);
     }
     assertFalse(IvPreemptSource.isEmergencyVariable(null));
+  }
+
+  @Test
+  @DisplayName("a bus's transit priority switch is a transit emitter, and nothing else is")
+  void transitNames() {
+    assertTrue(IvPreemptSource.isTransitVariable("TSP"));
+    assertTrue(IvPreemptSource.isTransitVariable("Transit Priority"));
+    assertTrue(IvPreemptSource.isTransitVariable("transit_priority_emitter"));
+    for (String name : new String[] {"EMERLTS", "DOORS", "BEACONS", "Transit", "tspan", ""}) {
+      assertFalse(IvPreemptSource.isTransitVariable(name), name);
+    }
+    assertFalse(IvPreemptSource.isTransitVariable(null));
   }
 }
