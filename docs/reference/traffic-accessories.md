@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "386 blocks in this tab"
+!!! info "389 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -132,6 +132,9 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Portable Signal Trailer | `csm:portable_signal_trailer` | 0.6 | 3 | pickaxe | 0 |
 | Portable Signal Trailer (Mast Arm) | `csm:portable_signal_trailer_arm` | 0.6 | 3 | pickaxe | 0 |
 | Portable Variable Speed Limit Sign | `csm:portable_speed_limit_sign` | 2 | 10 | pickaxe | 1 |
+| Preemption Confirmation Dome (Red, 360°, Arm Mount) | `csm:preempt_confirm_dome_red` | 2 | 10 | pickaxe | 1 |
+| Preemption Confirmation Light (Blue PAR, Arm Mount) | `csm:preempt_confirm_par_blue` | 2 | 10 | pickaxe | 1 |
+| Preemption Confirmation Light (White PAR, Arm Mount) | `csm:preempt_confirm_par_white` | 2 | 10 | pickaxe | 1 |
 | Radar Speed Feedback Sign | `csm:radar_speed_sign` | 2 | 10 | pickaxe | 1 |
 | Railroad Crossing Flasher | `csm:railroad_crossing_flasher` | 2 | 10 | pickaxe | 1 |
 | Railroad Crossing Gate (1 Lane) | `csm:railroad_crossing_gate_1` | 2 | 10 | pickaxe | 1 |

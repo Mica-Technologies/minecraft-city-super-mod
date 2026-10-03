@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-gen_preempt_detector.py -- the preempt detector's model and blockstate (Roads).
+gen_preempt_detector.py -- the preempt detector and the confirmation lights (Roads): models and
+blockstates.
 
 The detector is drawn after an optical preemption detector: a small black head on a clamp that
 straddles the top of a mast arm, its lens looking up the approach and a sun-shield fin off one
@@ -12,6 +13,11 @@ Model space: the lens faces north (-z), the arm runs east-west under it, which i
 on an arm across the approach it watches; the blockstate turns it with the block's facing.
 Round parts are exact octagons, four boxes each, two of them turned 45 degrees.
 
+The confirmation lights stand on the same clamp: a PAR lamp in a yoke (white and blue), its lens
+looking up the approach as the detector's does, and a 360 degree dome beacon (red). Their glow is
+the traffic beacon renderer's, which needs each lens box in BlockPreemptConfirmationLight's
+subclasses to match LIGHTS below.
+
 Usage:
     python gen_preempt_detector.py [--check]
 """
@@ -22,8 +28,8 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ASSETS = os.path.join(ROOT, 'modules', 'roads', 'src', 'main', 'resources', 'assets', 'csm')
-MODEL = os.path.join(ASSETS, 'models', 'block', 'trafficsignals', 'shared_models',
-                     'preempt_detector.json')
+MODELS = os.path.join(ASSETS, 'models', 'block', 'trafficsignals', 'shared_models')
+MODEL = os.path.join(MODELS, 'preempt_detector.json')
 BLOCKSTATE = os.path.join(ASSETS, 'blockstates', 'preempt_detector.json')
 
 TEX = 'csm:blocks/trafficsignals/shared_textures/'
@@ -72,6 +78,85 @@ def octagon(a, y0, y1, tex=BODY, cx=8.0, cz=8.0):
         out.append(box((cx - a, y0, cz - s), (cx + a, y1, cz + s), tex, rot=rot))
         out.append(box((cx - s, y0, cz - a), (cx + s, y1, cz + a), tex, rot=rot))
     return out
+
+
+def octagon_z(a, z0, z1, tex=BODY, cx=8.0, cy=8.0, lens_face=None):
+    """An octagonal prism lying along z, apothem `a`, from z0 to z1 (a lamp can)."""
+    s = a * TAN
+    out = []
+    for rot in (None, {'angle': 45, 'axis': 'z', 'origin': [cx, cy, 8]}):
+        out.append(box((cx - a, cy - s, z0), (cx + a, cy + s, z1), tex, rot=rot,
+                       lens_face=lens_face))
+        out.append(box((cx - s, cy - a, z0), (cx + s, cy + a, z1), tex, rot=rot,
+                       lens_face=lens_face))
+    return out
+
+
+def clamp():
+    """The saddle on top of the arm, its cheeks, the strap under the pole and the plate on top."""
+    return [box((6.5, -4.0, 3.5), (9.5, -3.0, 12.5), METAL),
+            box((6.5, -8.0, 3.5), (9.5, -4.0, 4.0), METAL),
+            box((6.5, -8.0, 12.0), (9.5, -4.0, 12.5), METAL),
+            box((7.5, -12.5, 3.5), (8.5, -12.0, 12.5), METAL),
+            box((7.5, -12.0, 3.5), (8.5, -8.0, 3.9), METAL, faces='nsewd'),
+            box((7.5, -12.0, 12.1), (8.5, -8.0, 12.5), METAL, faces='nsewd'),
+            box((6.0, -3.0, 6.0), (10.0, -2.2, 10.0), METAL)]
+
+
+def par_elements():
+    """A PAR lamp in a yoke on the clamp, its lens north: the confirmation light that faces the
+    approach."""
+    els = clamp()
+    els.append(box((4.6, -2.2, 7.2), (11.4, -1.4, 8.8), METAL))                # yoke base
+    els.append(box((4.6, -1.4, 7.2), (5.2, 4.6, 8.8), METAL))                  # yoke arms
+    els.append(box((10.8, -1.4, 7.2), (11.4, 4.6, 8.8), METAL))
+    els += octagon_z(2.9, 5.2, 10.8, cy=3.8)                                  # the can
+    els += octagon_z(3.2, 4.8, 5.2, cy=3.8)                                   # its front ring
+    els += octagon_z(2.5, 4.7, 4.8, tex=LENS, cy=3.8, lens_face='n')          # the lens
+    return els
+
+
+def dome_elements():
+    """A 360 degree dome beacon on the clamp."""
+    els = clamp()
+    els += octagon(3.0, -2.2, -0.6)                                          # base
+    els += [dict(e, faces={k: dict(v, texture=LENS) for k, v in e['faces'].items()})
+            for e in octagon(2.5, -0.6, 4.4, tex=LENS)]                      # the dome
+    els += [dict(e, faces={k: dict(v, texture=LENS) for k, v in e['faces'].items()})
+            for e in octagon(1.6, 4.4, 5.2, tex=LENS)]                       # its crown
+    els += octagon(1.0, 5.2, 5.6)                                            # cap
+    return els
+
+
+# registry name: (elements, lens texture)
+LIGHTS = {
+    'preempt_confirm_par_white': (par_elements,
+                                  'csm:blocks/trafficaccessories/enforcement/flash_lens'),
+    'preempt_confirm_par_blue': (par_elements, TEX + 'blue_beacon'),
+    'preempt_confirm_dome_red': (dome_elements,
+                                 'csm:blocks/trafficaccessories/shared_textures/red_beacon'),
+}
+
+
+def light_model(name):
+    build, lens = LIGHTS[name]
+    return {
+        'parent': 'block/block',
+        'textures': {'particle': TEX + 'metal_black', 'body': TEX + 'metal_black',
+                     'metal': TEX + 'metal_silver', 'lens': lens},
+        'elements': build(),
+    }
+
+
+def light_blockstate(name):
+    facing = {'north': {}, 'east': {'y': 90}, 'south': {'y': 180}, 'west': {'y': 270},
+              'up': {}, 'down': {}}
+    return {
+        'forge_marker': 1,
+        'defaults': {'model': 'csm:trafficsignals/shared_models/' + name},
+        'variants': {'facing': facing, 'powered': {'true': {}, 'false': {}},
+                     'inventory': [{'transform': 'forge:default-block'}]},
+    }
 
 
 def elements():
@@ -139,6 +224,9 @@ def same(path, data):
 def main():
     check = '--check' in sys.argv
     files = {MODEL: text(model()), BLOCKSTATE: text(blockstate())}
+    for name in LIGHTS:
+        files[os.path.join(MODELS, name + '.json')] = text(light_model(name))
+        files[os.path.join(ASSETS, 'blockstates', name + '.json')] = text(light_blockstate(name))
     drift = [p for p, d in files.items() if not same(p, d)]
     if check:
         if drift:

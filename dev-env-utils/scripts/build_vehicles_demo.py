@@ -215,6 +215,8 @@ def signals():
     # its confirmation beacon on the mast pole under the arm, its bracket clipped to the pole
     put(-PX, ARM - 1, -PZ + 1, BEACON, F_EAST)
     beacons['wb'] = (-PX, ARM - 1, -PZ + 1)
+    put(-PX, ARM + 1, -4, 'preempt_confirm_par_white', F_EAST)   # and a PAR lamp by the detector
+    beacons['wb_par'] = (-PX, ARM + 1, -4)
     # eastbound (from the west): SE pole, arm running north over the eastbound lanes
     mast((PX, PZ), [(PX, z) for z in range(PZ - 1, 0, -1)], F_NORTH)
     heads['eb'] = [(PX, 4), (PX, 1)]
@@ -226,6 +228,8 @@ def signals():
     dets['eb'] = (PX, ARM + 1, 2)
     put(PX, ARM - 1, PZ - 1, BEACON, F_WEST)
     beacons['eb'] = (PX, ARM - 1, PZ - 1)
+    put(PX, ARM + 1, 4, 'preempt_confirm_dome_red', F_WEST)      # and a 360 degree dome
+    beacons['eb_dome'] = (PX, ARM + 1, 4)
     # southbound (from the north): SW pole, arm running east over the southbound lane
     mast((-PX, PZ), [(x, PZ) for x in range(-PX + 1, 0)], F_EAST)
     heads['sb'] = [(-2, PZ)]
@@ -263,11 +267,12 @@ def signals():
           '{en:1b,ty:1,tc:1,tm:0,td:1b,dw:[I;4],tk:[I;],ex:[I;],md:200L,sc:[I;]}')
     pri = '{en:1b,tc:1,tm:0,ph:4,ex:200L,er:200L,mc:0,td:1b,qj:100L}'
     crc = ('{"0":{th:[L;%s],se:[L;%s,%s],pib:[L;%s,%s]},'
-           '"1":{th:[L;%s],se:[L;%s,%s],qjs:[L;%s,%s],pib:[L;%s,%s]}}'
+           '"1":{th:[L;%s],se:[L;%s,%s],qjs:[L;%s,%s],pib:[L;%s,%s,%s,%s]}}'
            % (longs(heads['sb'] + heads['nb']), at(dets['sb']), at(dets['nb']),
               at(beacons['sb']), at(beacons['nb']),
               longs(heads['wb'] + heads['eb']), at(dets['wb']), at(dets['eb']),
-              at(jumps['wb']), at(jumps['eb']), at(beacons['wb']), at(beacons['eb'])))
+              at(jumps['wb']), at(jumps['eb']), at(beacons['wb']), at(beacons['eb']),
+              at(beacons['wb_par']), at(beacons['eb_dome'])))
     adv = ('{ph:[%s],r1:[I;1,2,3,4],r2:[I;5,6,7,8],co:{md:0},pe:[%s],pri:%s}'
            % (','.join(ph), pe, pri))
     cx, cz = PX + 3, PZ + 3
