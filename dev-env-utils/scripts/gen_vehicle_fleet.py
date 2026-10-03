@@ -62,9 +62,11 @@ CELLS = {
     'white': cell(4, 1), 'lamp_red': cell(5, 1), 'lamp_blue': cell(6, 1),
     'lamp_white': cell(7, 1), 'decal': cell(0, 2, 4, 1), 'emitter': cell(4, 2),
     'hosebed': cell(5, 2), 'plate': cell(6, 2), 'rubber': cell(7, 2),
+    'lamp_amber': cell(0, 3), 'bed': cell(1, 3), 'bucket': cell(2, 3), 'blade': cell(3, 3),
 }
 
 LAMP_LIT = {'lamp_red': '#FF1E10', 'lamp_blue': '#1E46FF', 'lamp_white': '#EEF4FF',
+            'lamp_amber': '#FFA000',
             'emitter': '#DCEBFF'}
 
 
@@ -107,9 +109,11 @@ class Vehicle:
             light['blendableComponents'] = [vp.flare(centre, axis, size)]
         self.lights.append(light)
 
-    def lightbar(self, x_half, y, z, colours, rear_beacons=None):
+    def lightbar(self, x_half, y, z, colours, variable='EMERLTS', emitter=True):
         """A roof lightbar: eight modules flashing in pairs, left then right, the emitter in the
-        middle. `colours` are eight lamp cells, left (+x) to right."""
+        middle. `colours` are eight lamp cells, left (+x) to right. Emergency vehicles run it on
+        EMERLTS and carry the emitter; work trucks run amber on their own switch (BEACONS), which
+        is not an emergency switch, so they never preempt a signal."""
         depth = 0.16
         self.box((-x_half, y, z - depth), (x_half, y + 0.05, z + depth), 'black')
         width = (2 * x_half - 0.14) / 8
@@ -118,18 +122,20 @@ class Vehicle:
             flashes = vp.LEFT_FLASHES if i < 4 else vp.RIGHT_FLASHES
             self.lamp('Lamp_%d' % (i + 1), (left - width + 0.01, y + 0.05, z - depth + 0.01),
                       (left - 0.01, y + 0.15, z + depth - 0.01), colour, LAMP_LIT[colour],
-                      [vp.visible_on('EMERLTS')] + [vp.lit_by(f) for f in flashes],
+                      [vp.visible_on(variable)] + [vp.lit_by(f) for f in flashes],
                       [0, 0, 1], 0.45)
+        if not emitter:
+            return
         self.lamp('Emitter', (-0.03, y + 0.07, z + depth - 0.01), (0.03, y + 0.13, z + depth + 0.01),
                   'emitter', LAMP_LIT['emitter'],
                   [vp.visible_on('EMERLTS'), vp.lit_by(vp.EMITTER_FLASH)], [0, 0, 1], 0.3,
                   faces=('s', 'e', 'w', 'u', 'd'))
 
-    def warning(self, name, lo, hi, colour, phase, axis):
+    def warning(self, name, lo, hi, colour, phase, axis, variable='EMERLTS'):
         """A body-mounted warning lamp, flashing on its own phase of the lightbar's 16 ticks."""
         cycle = ['0_5_11_cycle', '8_5_3_cycle'][phase]
         self.lamp(name, lo, hi, colour, LAMP_LIT[colour],
-                  [vp.visible_on('EMERLTS'), vp.lit_by(cycle)], axis)
+                  [vp.visible_on(variable), vp.lit_by(cycle)], axis)
 
     def road_lights(self, front_z, rear_z, x_out, head_y, tail_y):
         """Headlights, tail and brake lights, turn signals and reversing lights."""
@@ -291,9 +297,11 @@ AERIAL_PIVOT = (0.0, 2.95, -2.2)  # where the ladder's heel pins to the turntabl
 AERIAL_REACH = 8.0               # how far the fly section runs out
 
 
-def aerial_animation(kind, axis, timing, centre=None):
+def aerial_animation(kind, axis, timing, centre=None, variable='AERIAL'):
+    """One step of a deployment on a 0-1 switch: `timing` is (forwards delay, duration, reverse
+    delay) in ticks, so one switch runs several steps in order and back."""
     forwards, duration, reverse = timing
-    anim = {'animationType': kind, 'variable': 'AERIAL', 'axis': axis, 'duration': duration,
+    anim = {'animationType': kind, 'variable': variable, 'axis': axis, 'duration': duration,
             'forwardsDelay': forwards, 'reverseDelay': reverse}
     if centre is not None:
         anim['centerPoint'] = list(centre)
@@ -380,6 +388,118 @@ def ladder_animations():
     ]
 
 
+def conventional_cab(v, w, front_z):
+    """A conventional cab: a long hood, the cab behind it, the windshield above the hood."""
+    hood = front_z - 1.8
+    back = hood - 1.5
+    v.box((-w, 0.25, hood), (w, 1.45, front_z), 'paint')                       # hood
+    v.box((-w, 0.25, back), (w, 2.45, hood), 'paint')                          # cab
+    v.box((-w + 0.05, 2.45, back + 0.05), (w - 0.05, 2.5, hood - 0.05), 'paint2')
+    v.box((-w + 0.1, 1.5, hood), (w - 0.1, 2.35, hood + 0.02), 'glass', faces=('s',))
+    v.both((w, 1.5, back + 0.2), (w + 0.02, 2.3, hood - 0.15), 'glass')
+    v.both((w, 0.55, back + 0.25), (w + 0.025, 0.95, hood - 0.2), 'decal', faces=('e', 'w'))
+    v.box((-0.7, 0.4, front_z), (0.7, 1.35, front_z + 0.03), 'grille', faces=('s',))
+    v.box((-w - 0.05, -0.05, front_z), (w + 0.05, 0.3, front_z + 0.25), 'chrome')
+    v.both((w, 0.3, hood + 0.2), (w + 0.12, 0.9, front_z - 0.3), 'black')     # fenders
+    v.both((w, 1.85, hood - 0.1), (w + 0.25, 2.25, hood), 'chrome')            # mirrors
+    return back
+
+
+DUMP_HINGE = (0.0, 0.95, -2.5)
+
+
+def dpw_truck():
+    """A public works dump truck: a conventional cab, a plow blade, amber beacons, and a dump
+    body the DUMP switch tips up about its back edge."""
+    v = Vehicle()
+    g = -0.55
+    w = 1.15
+    v.box((-0.5, -0.15, -2.7), (0.5, 0.25, 6.5), 'black')
+    back = conventional_cab(v, w, 6.3)
+    v.box((-0.5, 0.25, back - 0.6), (0.5, 0.95, back), 'black')               # cab-to-body gap
+    # the plow on its frame mount
+    v.box((-0.3, 0.0, 6.55), (0.3, 0.4, 6.75), 'black')
+    v.box((-1.55, -0.45, 6.75), (1.55, 0.55, 6.95), 'blade')
+    hx, hy, hz = DUMP_HINGE
+    v.group('dump_body', [
+        ((-1.25, hy, hz), (1.25, hy + 0.1, 2.55), 'bed'),                       # floor
+        ((1.17, hy + 0.1, hz), (1.25, hy + 1.15, 2.55), 'paint'),               # sides
+        ((-1.25, hy + 0.1, hz), (-1.17, hy + 1.15, 2.55), 'paint'),
+        ((-1.25, hy + 0.1, 2.5), (1.25, hy + 1.5, 2.6), 'paint'),               # headboard
+        ((-1.25, hy + 1.4, 2.6), (1.25, hy + 1.5, back - 0.05), 'paint'),       # cab shield
+        ((-1.2, hy + 0.1, hz - 0.08), (1.2, hy + 1.1, hz), 'paint'),            # tailgate
+        ((1.25, hy + 0.5, hz + 0.2), (1.27, hy + 0.7, 2.4), 'stripe'),
+        ((-1.27, hy + 0.5, hz + 0.2), (-1.25, hy + 0.7, 2.4), 'stripe'),
+    ])
+    v.lightbar(0.85, 2.5, back + 0.6, ['lamp_amber'] * 8, variable='BEACONS', emitter=False)
+    for side, sx in (('L', 1), ('R', -1)):
+        xs = sorted((sx * 0.75, sx * 1.0))
+        v.warning('RearBeacon' + side, (xs[0], 0.55, -2.75), (xs[1], 0.75, -2.7), 'lamp_amber',
+                  0 if sx > 0 else 1, [0, 0, -1], variable='BEACONS')
+    v.road_lights(6.33, -2.7, 0.95, 0.75, 0.3)
+    return v, g
+
+
+def dump_animations():
+    return [{'objectName': 'dump_body', 'animations': [
+        aerial_animation('rotation', [-45, 0, 0], (0, 80, 0), DUMP_HINGE, variable='DUMP')]}]
+
+
+BOOM_PIVOT = (0.0, 2.65, -1.6)
+BOOM_TIP = (0.0, 2.8, 5.0)
+BOOM_RAISE = (0, 100, 180)
+BOOM_TURN = (100, 80, 100)
+BOOM_EXTEND = (180, 100, 0)
+
+
+def bucket_truck():
+    """A power company bucket truck: a conventional cab, a service body with compartments, and a
+    boom with an insulated bucket. The BOOM switch raises it, swings it to the left and runs the
+    upper boom out, the bucket staying level all the way."""
+    v = Vehicle()
+    g = -0.55
+    w = 1.15
+    v.box((-0.5, -0.15, -2.5), (0.5, 0.25, 6.3), 'black')
+    back = conventional_cab(v, w, 6.1)
+    v.box((-1.22, 0.25, -2.5), (1.22, 1.5, back - 0.1), 'paint2')             # service body
+    for z0, z1 in ((-2.4, -1.2), (-1.1, 0.4), (0.5, 2.0), (2.1, back - 0.2)):
+        v.both((1.22, 0.35, z0), (1.23, 1.4, z1), 'door', faces=('e', 'w'))
+    v.both((1.23, 1.15, -2.5), (1.24, 1.3, back - 0.1), 'stripe', faces=('e', 'w'))
+    v.box((-1.22, 1.5, -2.5), (1.22, 1.55, back - 0.1), 'black', faces=('u',))
+    v.both((1.22, 0.0, -2.4), (1.75, 0.15, -2.0), 'chrome')                    # outriggers
+    v.box((-0.2, 2.5, 3.2), (0.2, 2.65, 3.4), 'chrome')                        # boom rest
+    px, py, pz = BOOM_PIVOT
+    v.group('boom_turret', [((-0.5, 1.55, pz - 0.5), (0.5, 1.8, pz + 0.5), 'chrome'),
+                            ((-0.25, 1.8, pz - 0.25), (0.25, py, pz + 0.25), 'paint2')])
+    v.group('boom', [((-0.18, py, pz - 0.2), (0.18, py + 0.32, 4.6), 'paint2')])
+    v.group('boom_upper', [((-0.13, py + 0.04, pz + 0.3), (0.13, py + 0.28, 4.95), 'bucket')])
+    tx, ty, tz = BOOM_TIP
+    v.group('bucket', [((-0.4, ty - 0.25, tz), (0.4, ty + 0.75, tz + 0.75), 'bucket'),
+                       ((-0.42, ty + 0.7, tz - 0.02), (0.42, ty + 0.78, tz + 0.77), 'black')])
+    v.lightbar(0.85, 2.5, back + 0.6, ['lamp_amber'] * 8, variable='BEACONS', emitter=False)
+    for side, sx in (('L', 1), ('R', -1)):
+        xs = sorted((sx * 1.0, sx * 1.2))
+        v.warning('RearBeacon' + side, (xs[0], 1.55, -2.5), (xs[1], 1.75, -2.3), 'lamp_amber',
+                  0 if sx > 0 else 1, [0, 0, -1], variable='BEACONS')
+    v.road_lights(6.13, -2.5, 1.1, 0.75, 0.45)
+    return v, g
+
+
+def boom_animations():
+    pivot, tip = BOOM_PIVOT, BOOM_TIP
+    return [
+        {'objectName': 'boom_turret', 'animations': [
+            aerial_animation('rotation', [0, 90, 0], BOOM_TURN, pivot, 'BOOM')]},
+        {'objectName': 'boom', 'applyAfter': 'boom_turret', 'animations': [
+            aerial_animation('rotation', [-55, 0, 0], BOOM_RAISE, pivot, 'BOOM')]},
+        {'objectName': 'boom_upper', 'applyAfter': 'boom', 'animations': [
+            aerial_animation('translation', [0, 0, 4.0], BOOM_EXTEND, None, 'BOOM')]},
+        # the bucket turns back as the boom raises, so it stays level
+        {'objectName': 'bucket', 'applyAfter': 'boom_upper', 'animations': [
+            aerial_animation('rotation', [55, 0, 0], BOOM_RAISE, tip, 'BOOM')]},
+    ]
+
+
 # ------------------------------------------------------------------------------------------
 # Liveries and textures
 # ------------------------------------------------------------------------------------------
@@ -394,29 +514,70 @@ LIVERIES = {
         ('_red', 'Fire Engine', '#B01818', '#F2F2EE', '#F2F2EE', 'FIRE RESCUE', '#F2D24A'),
         ('_lime', 'Fire Engine (Lime)', '#C9D82A', '#F2F2EE', '#1C1C1C', 'FIRE RESCUE',
          '#1C1C1C'),
+        ('_blackred', 'Fire Engine (Black over Red)', '#B01818', '#161618', '#F2D24A',
+         'FIRE RESCUE', '#F2D24A'),
+        ('_white', 'Fire Engine (White)', '#F2F2EE', '#B01818', '#B01818', 'FIRE RESCUE',
+         '#B01818'),
+        ('_airport', 'Fire Engine (Airport)', '#D9D21E', '#F2F2EE', '#1C1C1C', 'AIRPORT FIRE',
+         '#1C1C1C'),
     ],
     'csm_ladder_truck': [
         ('_red', 'Ladder Truck', '#B01818', '#F2F2EE', '#F2F2EE', 'FIRE RESCUE', '#F2D24A'),
         ('_lime', 'Ladder Truck (Lime)', '#C9D82A', '#F2F2EE', '#1C1C1C', 'FIRE RESCUE',
          '#1C1C1C'),
+        ('_blackred', 'Ladder Truck (Black over Red)', '#B01818', '#161618', '#F2D24A',
+         'FIRE RESCUE', '#F2D24A'),
+        ('_white', 'Ladder Truck (White)', '#F2F2EE', '#B01818', '#B01818', 'FIRE RESCUE',
+         '#B01818'),
     ],
     'csm_ambulance': [
         ('_red', 'Ambulance', '#F2F2EE', '#F2F2EE', '#C01A1A', 'AMBULANCE', '#C01A1A'),
         ('_orange', 'Ambulance (Orange Stripe)', '#F2F2EE', '#F2F2EE', '#E07818', 'AMBULANCE',
          '#1E4AA0'),
+        ('_blue', 'Ambulance (Blue Stripe)', '#F2F2EE', '#F2F2EE', '#1E4AA0', 'AMBULANCE',
+         '#1E4AA0'),
+        ('_green', 'Ambulance (Green Stripe)', '#F2F2EE', '#F2F2EE', '#1E7A3A', 'EMS',
+         '#1E7A3A'),
+        ('_yellow', 'Ambulance (High-Vis)', '#E2E22A', '#E2E22A', '#1E7A3A', 'AMBULANCE',
+         '#1E7A3A'),
     ],
     'csm_police_suv': [
         ('_blackwhite', 'Police SUV', '#151517', '#F2F2EE', '#151517', 'POLICE', '#151517'),
         ('_white', 'Police SUV (White)', '#F2F2EE', '#F2F2EE', '#1E4AA0', 'POLICE', '#1E4AA0'),
+        ('_blue', 'Police SUV (Blue)', '#1B2A4A', '#F2F2EE', '#1B2A4A', 'POLICE', '#1B2A4A'),
+        ('_sheriff', 'Sheriff SUV', '#2F4A2A', '#D9C9A0', '#2F4A2A', 'SHERIFF', '#2F4A2A'),
+        ('_state', 'State Police SUV', '#4A4E54', '#8A8E94', '#1E4AA0', 'STATE POLICE',
+         '#F2F2EE'),
+        ('_unmarked', 'Unmarked SUV', '#26282C', '#26282C', '#26282C', '', '#26282C'),
+    ],
+    'csm_dpw_truck': [
+        ('_orange', 'Public Works Dump Truck', '#E8761C', '#F2F2EE', '#1C1C1C', 'PUBLIC WORKS',
+         '#1C1C1C'),
+        ('_yellow', 'Public Works Dump Truck (Yellow)', '#E8C21A', '#F2F2EE', '#1C1C1C',
+         'PUBLIC WORKS', '#1C1C1C'),
+        ('_white', 'Public Works Dump Truck (White)', '#F2F2EE', '#F2F2EE', '#E8761C',
+         'PUBLIC WORKS', '#E8761C'),
+    ],
+    'csm_bucket_truck': [
+        ('_white', 'Power Company Bucket Truck', '#F2F2EE', '#F2F2EE', '#1E4AA0', 'CITY POWER',
+         '#1E4AA0'),
+        ('_yellow', 'Power Company Bucket Truck (Yellow)', '#E8C21A', '#E8C21A', '#1C1C1C',
+         'CITY POWER', '#1C1C1C'),
+        ('_green', 'Power Company Bucket Truck (Green)', '#2E6B3A', '#F2F2EE', '#2E6B3A',
+         'CITY POWER', '#F2F2EE'),
     ],
 }
+
+# Where each vehicle's door lettering sits: on the main paint, or on the second colour.
+DECAL_ON = {'csm_fire_engine': 'paint', 'csm_ladder_truck': 'paint', 'csm_ambulance': 'paint2',
+            'csm_police_suv': 'paint2', 'csm_dpw_truck': 'paint', 'csm_bucket_truck': 'paint'}
 
 
 def shade(c, k):
     return tuple(max(0, min(255, int(v * k))) for v in c)
 
 
-def vehicle_texture(livery):
+def vehicle_texture(livery, decal_on='paint'):
     _, _, paint, paint2, stripe, text, text_colour = livery
     img = Image.new('RGBA', (T, T), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
@@ -458,11 +619,19 @@ def vehicle_texture(livery):
     fill('rubber', (20, 20, 20))
     # the decal: the livery's word in the pixel font, on the body colour of where it goes
     x0, y0, x1, y1 = CELLS['decal']
-    # the fire engine's lettering is on its painted cab doors; the others' on white panels
-    under = p if text == 'FIRE RESCUE' else p2
+    under = p if decal_on == 'paint' else p2
     d.rectangle((x0, y0, x1 - 1, y1 - 1), fill=under + (255,))
     scale = 2 if lc.text_width(text, 2) <= 62 else 1
-    lc.draw_text_centred(img, text, 32, y0 + (16 - 5 * scale) // 2, rgb(text_colour), scale)
+    if text:
+        lc.draw_text_centred(img, text, 32, y0 + (16 - 5 * scale) // 2, rgb(text_colour), scale)
+    # the work trucks' cells
+    fill('lamp_amber', (130, 82, 10))
+    fill('bed', (70, 72, 76))
+    for x in range(17, 32, 4):
+        d.line((x, 48, x, 63), fill=(58, 60, 64, 255))
+    fill('bucket', (226, 206, 60))
+    fill('blade', (232, 118, 28))
+    d.rectangle((48, 48, 63, 51), fill=(30, 30, 30, 255))
     return img
 
 
@@ -669,6 +838,26 @@ FLEET = {
         engine_pos=(0.0, 0.6, 6.2), boxes=[-2.1, 0.4, 2.9, 5.4, 7.1], box_width=2.5,
         box_height=2.3, box_y=1.0,
         switches=['EMERLTS', 'siren', 'siren_yelp', 'AERIAL'], animated=ladder_animations),
+    'csm_dpw_truck': dict(
+        build=dpw_truck,
+        description='A public works dump truck with a plow. BEACONS runs its amber lights (they '
+                    'are not emergency lights, so it does not preempt signals); DUMP tips the '
+                    'body.',
+        mass=8000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        wheels=[(0.95, 4.6, True), (0.95, 0.0, False), (0.62, 0.0, False)],
+        seats=[(0.45, 0.85, 3.7, True), (-0.45, 0.85, 3.7, False)],
+        engine_pos=(0.0, 0.6, 5.4), boxes=[-1.5, 1.0, 3.5, 5.6], box_width=2.5,
+        box_height=2.6, box_y=1.1, switches=['BEACONS', 'DUMP'], animated=dump_animations),
+    'csm_bucket_truck': dict(
+        build=bucket_truck,
+        description='A power company bucket truck. BEACONS runs its amber lights (not emergency '
+                    'lights, so it does not preempt signals); BOOM raises the boom, swings it to '
+                    'the left and runs it out, the bucket staying level.',
+        mass=7000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        wheels=[(0.95, 4.4, True), (0.95, 0.0, False), (0.62, 0.0, False)],
+        seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False)],
+        engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
+        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=boom_animations),
     'csm_ambulance': dict(
         build=ambulance,
         description='A Type III ambulance. Switch EMERLTS on and it runs its lights, and '
@@ -779,7 +968,7 @@ def catalogue():
         put(os.path.join(PACK_DIR, 'jsondefs', 'vehicles', name + '.json'),
             vp.json_bytes(vehicle_json(name, v)))
         for livery in LIVERIES[name]:
-            texture = vehicle_texture(livery)
+            texture = vehicle_texture(livery, DECAL_ON[name])
             put(os.path.join(PACK_DIR, 'textures', 'vehicles', name + livery[0] + '.png'),
                 vp.png_bytes(texture))
             item('vehicles', name + livery[0], vehicle_icon(v, ground, texture))

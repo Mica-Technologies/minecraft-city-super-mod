@@ -13,6 +13,34 @@
       "extraMaterialLists": [
         []
       ]
+    },
+    {
+      "name": "Police SUV (Blue)",
+      "subName": "_blue",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Sheriff SUV",
+      "subName": "_sheriff",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "State Police SUV",
+      "subName": "_state",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Unmarked SUV",
+      "subName": "_unmarked",
+      "extraMaterialLists": [
+        []
+      ]
     }
   ],
   "general": {

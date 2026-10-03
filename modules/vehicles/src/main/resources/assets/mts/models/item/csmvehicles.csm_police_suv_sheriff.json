@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "csmvehicles:items/vehicles/csm_police_suv_sheriff"
+  }
+}
