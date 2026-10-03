@@ -1067,6 +1067,13 @@ or redstone says so (`BlockPreemptBeacon.showPower`). Unlinking one darkens it. 
 ADVANCED mode only, so in any other mode a linked beacon answers redstone alone. Its bracket clips
 to the side of a pole: facing the approach, it sits in the cell beside the mast pole.
 
+**Arm-mounted confirmation lights** (`BlockPreemptConfirmationLight`, a preemption beacon in all
+but its model, lens and flash): a white and a blue PAR lamp in a yoke, facing the approach and
+flashing once a second, and a red 360 degree dome with the beacon's double flash. They stand on the
+detector's clamp on top of a thin pole (`gen_preempt_detector.py` writes their models, whose lens
+boxes the class's must match) and face the player placing them, never up, though they are placed
+onto the top of an arm.
+
 A **transit** emitter (a bus) is a separate call (`isTransitCalled()`, counted as
 `getTransitDetectorCalls()`): it never calls a preempt and never lights the lamp. It calls ADVANCED
 mode's transit signal priority when its trigger is DET, and with the **Transit Queue Jump add-on**
