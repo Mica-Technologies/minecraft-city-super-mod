@@ -2,14 +2,16 @@
 """
 gen_parks_tools.py -- the Parks & Greenery tree tools' assets.
 
-The chainsaw (with a running sprite its item model swaps in by the "csm:running" property), the
-pole trimmer and the tree shears, each a 16 px item sprite drawn here as distance fields round a
+The chainsaw and the stump grinder (each with a running sprite its item model swaps in by the
+"csm:running" property), the pole trimmer and the tree shears, each a 16 px item sprite drawn here as distance fields round a
 few line segments, so a sprite is the same on every machine; and the brush pile a chainsaw
 felling leaves on the ground: two cutout textures, a low model of two crossed planes and two flat
 ones, and its blockstate. Writes under modules/parks/src/main/resources/assets/csm:
 
-  * textures/items/parks/{chainsaw,chainsaw_running,pole_trimmer,tree_shears}.png
-  * models/item/{chainsaw,chainsaw_running,pole_trimmer,tree_shears}.json
+  * textures/items/parks/{chainsaw,chainsaw_running,pole_trimmer,tree_shears,
+    stump_grinder,stump_grinder_running}.png
+  * models/item/{chainsaw,chainsaw_running,pole_trimmer,tree_shears,stump_grinder,
+    stump_grinder_running}.json
   * textures/blocks/parks/brush_pile_{top,side}.png
   * models/block/parks/brush_pile.json, blockstates/brush_pile.json
 
@@ -168,6 +170,58 @@ def tree_shears():
     return img
 
 
+GRINDER_RED = (186, 42, 34, 255)
+GRINDER_RED_DARK = (128, 26, 22, 255)
+TYRE = (40, 40, 44, 255)
+CHIP = [(176, 132, 82, 255), (150, 108, 64, 255), (196, 158, 104, 255)]
+
+
+def disc(img, cx, cy, r, colour):
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            if math.hypot(x + 0.5 - cx, y + 0.5 - cy) <= r:
+                px[x, y] = colour
+
+
+def stump_grinder(running):
+    """A hand-guided stump grinder seen from the side: handlebars from the top left down to the
+    red engine housing, a wheel under it, and the toothed cutter wheel at the front, low right.
+    Running, the teeth blur bright, chips fly off the wheel and exhaust trails the engine."""
+    img = blank()
+    # Handlebars and grips.
+    stroke(img, (1.5, 2.5), (6.5, 7.5), 1.3, STEEL_DARK)
+    stroke(img, (0.8, 1.5), (2.6, 3.3), 1.6, BLACK)
+    # Cutter wheel, its teeth round the rim.
+    disc(img, 12.0, 11.5, 3.3, STEEL)
+    px = img.load()
+    for k in range(8):
+        a = k * math.pi / 4 + (math.pi / 8 if running else 0)
+        x = int(math.floor(12.0 + 3.2 * math.cos(a)))
+        y = int(math.floor(11.5 + 3.2 * math.sin(a)))
+        if 0 <= x < 16 and 0 <= y < 16:
+            px[x, y] = CHAIN_LIT if running else STEEL_DARK
+    rect(img, 11, 11, 12, 11, STEEL_DARK)                     # hub
+    # The rear wheel under the engine, its hub showing.
+    disc(img, 7.0, 13.0, 2.4, TYRE)
+    rect(img, 6, 12, 7, 13, STEEL_DARK)
+    # Engine housing on the frame, and the frame out to the cutter wheel.
+    rect(img, 5, 5, 10, 9, GRINDER_RED)
+    rect(img, 5, 9, 10, 9, GRINDER_RED_DARK)
+    rect(img, 6, 6, 7, 7, BLACK)                              # air filter cover
+    stroke(img, (9.5, 9.5), (11.5, 11.0), 1.0, STEEL_DARK)
+    outline_all(img, INK)
+    if running:
+        px = img.load()
+        for (x, y, a) in ((9, 3, 150), (10, 2, 110), (9, 1, 80), (10, 0, 60)):
+            if px[x, y][3] == 0:
+                px[x, y] = (200, 200, 205, a)
+        for i, (x, y) in enumerate(((15, 8), (14, 6), (15, 5), (13, 7))):
+            if px[x, y][3] == 0:
+                px[x, y] = CHIP[i % len(CHIP)]
+    return img
+
+
 # ------------------------------------------------------------------------------------------
 # The brush pile
 # ------------------------------------------------------------------------------------------
@@ -278,17 +332,36 @@ def outputs():
     out[tex_items + 'chainsaw_running.png'] = png(chainsaw(True))
     out[tex_items + 'pole_trimmer.png'] = png(pole_trimmer())
     out[tex_items + 'tree_shears.png'] = png(tree_shears())
+    out[tex_items + 'stump_grinder.png'] = png(stump_grinder(False))
+    out[tex_items + 'stump_grinder_running.png'] = png(stump_grinder(True))
     out['models/item/chainsaw.json'] = js(item_model(
         'csm:items/parks/chainsaw',
         [{"predicate": {"csm:running": 1}, "model": "csm:item/chainsaw_running"}]))
     out['models/item/chainsaw_running.json'] = js(item_model('csm:items/parks/chainsaw_running'))
     out['models/item/pole_trimmer.json'] = js(item_model('csm:items/parks/pole_trimmer'))
     out['models/item/tree_shears.json'] = js(item_model('csm:items/parks/tree_shears'))
+    out['models/item/stump_grinder.json'] = js(item_model(
+        'csm:items/parks/stump_grinder',
+        [{"predicate": {"csm:running": 1}, "model": "csm:item/stump_grinder_running"}]))
+    out['models/item/stump_grinder_running.json'] = js(item_model(
+        'csm:items/parks/stump_grinder_running'))
     out['textures/blocks/parks/brush_pile_top.png'] = png(brush_top())
     out['textures/blocks/parks/brush_pile_side.png'] = png(brush_side())
     out['models/block/parks/brush_pile.json'] = js(brush_model())
     out['blockstates/brush_pile.json'] = js(BLOCKSTATE)
     return out
+
+
+def same(old, rel, data):
+    """Whether the file in the tree already holds `data`. Text is compared with line endings
+    ignored: Git's core.autocrlf checks every text file out as CRLF on Windows, and a byte compare
+    would call a tree nobody touched drifted (see csm_layout's same_generated_text). Textures are
+    compared byte for byte."""
+    if old is None:
+        return False
+    if rel.endswith('.png'):
+        return old == data
+    return old.replace(b'\r\n', b'\n') == data.replace(b'\r\n', b'\n')
 
 
 def main():
@@ -299,7 +372,7 @@ def main():
     for rel, data in sorted(outputs().items()):
         path = os.path.join(ASSETS, rel)
         old = open(path, 'rb').read() if os.path.exists(path) else None
-        if old == data:
+        if same(old, rel, data):
             continue
         stale.append(rel)
         if not args.check:

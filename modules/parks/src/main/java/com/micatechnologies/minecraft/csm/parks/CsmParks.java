@@ -4,11 +4,17 @@ import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import com.micatechnologies.minecraft.csm.parks.tools.TreeToolEvents;
+import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
+import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -72,5 +78,24 @@ public class CsmParks {
   @Mod.EventHandler
   public void init(FMLInitializationEvent event) {
     proxy.init(event);
+    registerOres();
+  }
+
+  /**
+   * Puts the tree kit's logs and leaves in the ore dictionary as {@code logWood} and
+   * {@code treeLeaves}, as every vanilla and most modded wood is, so anything that asks for wood
+   * by its ore name takes ours too: CSM: Vehicles' chipper chips logs by {@code logWood}, and
+   * the logs a felled street tree drops are this module's own items.
+   */
+  private static void registerOres() {
+    for (Block block : ForgeRegistries.BLOCKS) {
+      if (block instanceof BlockTreeLog) {
+        OreDictionary.registerOre("logWood", new ItemStack(block, 1,
+            OreDictionary.WILDCARD_VALUE));
+      } else if (block instanceof BlockTreeLeaves) {
+        OreDictionary.registerOre("treeLeaves", new ItemStack(block, 1,
+            OreDictionary.WILDCARD_VALUE));
+      }
+    }
   }
 }

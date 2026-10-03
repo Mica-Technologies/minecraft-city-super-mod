@@ -1,0 +1,14 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "csm:items/parks/stump_grinder"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "csm:running": 1
+      },
+      "model": "csm:item/stump_grinder_running"
+    }
+  ]
+}

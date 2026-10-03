@@ -93,9 +93,9 @@ container per jar.
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
-| `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears), plantings and park amenities; two tabs, Trees & Plants and Parks |
+| `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears, stump grinder), plantings and park amenities; two tabs, Trees & Plants and Parks |
 | `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, bus station departure boards and bay displays (`transit.board`: listing the stops around them, paging across a bank, spoken call-outs only through Core's TTS service), and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), stations (`transit.station`: the subway entrance kiosk built from glass and roof pieces with agency fascias and name boards, the open stair entrance's railing and lit globe lamps, the fare line railing that joins the fare gates, its service gate, line bullets and the agent's booth counter), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass) and airside pieces (the same package: airfield lights and signs switched a circuit at a time by redstone, the wind sock, beacon and masts, the stand sign, ground equipment on Roads' utility box, and a walk-through jet bridge; no aircraft); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
-| `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
+| `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -739,10 +739,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_park_legacy_amenities.py` -- the five Parks amenities that kept their old ids: both swing
   sets (OBJ, 2.78 m to the beam), the teeter totter, the slatted trash can and the low-poly bird
   bath; writes no lang or tab lines; `--check`
-- `gen_parks_tools.py` -- the tree tools' item sprites and models (the chainsaw with a running
-  sprite) and the brush pile a felled tree leaves; `--check`. `gen_parks_tool_sounds.py`
-  synthesises the chainsaw's pull, start, idle and cut sounds (numpy to ffmpeg to OGG) and writes
-  the Parks module's `sounds.json`
+- `gen_parks_tools.py` -- the tree tools' item sprites and models (the chainsaw and the stump
+  grinder each with a running sprite) and the brush pile a felled tree leaves; `--check`.
+  `gen_parks_tool_sounds.py` synthesises the chainsaw's pull, start, idle and cut sounds and the
+  stump grinder's start, idle and grind (numpy to ffmpeg to OGG) and writes the Parks module's
+  `sounds.json`
 - `gen_produce_crates.py`, `gen_furnishings_gameroom.py`, `gen_novelties.py`,
   `gen_novelties_seasonal.py`, `gen_furnishings_showpieces.py` -- the Furniture & Novelties
   models rebuilt in 2026-09: produce crates; bar and game room pieces and the wooden barrel;
@@ -957,7 +958,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   preemption emitter and the siren speaker, their item icons and item models (under
   `assets/mts/models/item/`). Lamps are `&` OBJ objects lit on `EMERLTS`; flash timing is
   `a_b_c_cycle` variables, lit b - 1 ticks of a + b + c; `--check` fails on drift.
-  `gen_vehicle_sounds.py` synthesises the siren's wail, yelp and hi-lo as seamless loops
+  The tree crew's chip bed (its crate and collector/crafter effectors, under the `treecrew/`
+  subfolder the pack definition activates with `csm_parks`) is written here too.
+  `gen_vehicle_sounds.py [name ...]` synthesises the siren's wail, yelp and hi-lo and the
+  chipper's running loop and crunch
 - `gen_utilities_meters.py` -- the Utilities tab's building service meters (Utilities module):
   electric meters (digital and analog, on a ringless socket), the blank meter socket, the meter
   bank that joins side by side (`BlockUtilityRun`, end flanges only at its ends), the service

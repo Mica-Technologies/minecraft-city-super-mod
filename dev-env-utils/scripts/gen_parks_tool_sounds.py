@@ -1,6 +1,6 @@
 """Synthesise the Parks & Greenery module's sounds and write them as OGG Vorbis: the chainsaw's
 cord pull, its start, one second of idle (played back to back while it runs) and a cut at full
-throttle.
+throttle; and the stump grinder's start, idle and grind (its cord pull is the chainsaw's).
 
 Made here from a two-stroke engine model (a sharp pressure pulse each firing, its rate following
 the throttle, under band-passed exhaust noise), never recorded or taken from a sound library, with
@@ -113,11 +113,77 @@ def chainsaw_cut():
     return out * fs.env_ad(n, 0.01, 0.05)
 
 
+def wheel(rev, teeth, seed):
+    """The grinder's cutter wheel: a steel disc with carbide teeth spinning at rev (rev/s, one
+    value per sample), a whine at the tooth-pass rate and a light whirr of air off the teeth."""
+    n = len(rev)
+    phase = np.cumsum(rev * teeth) / RATE
+    whine = np.sin(2 * np.pi * phase) + 0.4 * np.sin(2 * np.pi * 2 * phase)
+    air = fs.band(np.random.RandomState(seed).uniform(-1, 1, n), 800, 4000)
+    air /= max(1e-9, np.max(np.abs(air)))
+    return whine * 0.6 + air * 0.4
+
+
+def stump_grinder_start():
+    """The bigger engine catching: the rasp, a slower sputter, a rev, and the cutter wheel
+    spinning up behind it as the belt takes up."""
+    total = 1.9
+    n = int(RATE * 1.6)
+    t = np.arange(n) / RATE
+    f = 34 + 52 * np.exp(-((t - 0.4) / 0.22) ** 2) + 6 * np.exp(-t * 5.0)
+    f *= 1 + 0.025 * np.sin(2 * np.pi * 5 * t)
+    run = engine(f, 511, rasp=0.4)
+    rev = 14.0 * np.clip((t - 0.25) / 0.9, 0, 1)
+    run = run * 0.85 + wheel(rev, 12, 512) * 0.2 * np.clip((t - 0.25) / 0.9, 0, 1)
+    run *= np.clip(t / 0.05, 0, 1) * np.clip((1.6 - t) / 0.06, 0, 1)
+    return fs.place(total, [(0.0, cord(0.3, 513), 0.5), (0.25, run, 1.0)])
+
+
+def stump_grinder_idle():
+    """One second of the grinder idling with its wheel turning: 36 firings and 14 turns of a
+    twelve-tooth wheel, whole numbers both, so it plays back to back without a beat."""
+    n = RATE
+    t = np.arange(n) / RATE
+    f = 36 + 1.0 * np.sin(2 * np.pi * 2 * t)
+    out = engine(f, 514, rasp=0.25) * 0.85 + wheel(np.full(n, 14.0), 12, 515) * 0.2
+    return out * fs.env_ad(n, 0.008, 0.008)
+
+
+def stump_grinder_grind():
+    """The wheel swept into a stump at full throttle for about two seconds: the engine pulled
+    down under load, the teeth biting in a fast chatter, chips thrown hard, and the drop back to
+    idle as it comes out."""
+    total = 2.2
+    n = int(RATE * total)
+    t = np.arange(n) / RATE
+    up = np.clip(t / 0.25, 0, 1)
+    down = np.clip((total - t) / 0.35, 0, 1)
+    load = up * down
+    # Swept side to side across the stump: the load, and the engine's labour, rise and fall.
+    sweep = 0.75 + 0.25 * np.sin(2 * np.pi * 1.4 * t) ** 2
+    f = 36 + (120 - 36) * load - 18 * load * sweep
+    out = engine(f, 516, rasp=0.45)
+    rev = 14.0 + 16.0 * load
+    teeth = wheel(rev, 12, 517)
+    bite_phase = np.cumsum(rev * 12) / RATE
+    bite = np.exp(-(bite_phase - np.floor(bite_phase)) * 6.0)
+    chip = fs.band(fs.noise(total, 518), 1200, 8000)
+    chip /= max(1e-9, np.max(np.abs(chip)))
+    thud = fs.band(fs.noise(total, 519), 80, 400)
+    thud /= max(1e-9, np.max(np.abs(thud)))
+    out = (out * 0.6 + teeth * 0.2 * load + chip * bite * load * sweep * 0.5
+           + thud * load * sweep * 0.25)
+    return out * fs.env_ad(n, 0.01, 0.05)
+
+
 SOUNDS = {
     'chainsaw_pull': (chainsaw_pull, 2400),
     'chainsaw_start': (chainsaw_start, 3000),
     'chainsaw_idle': (chainsaw_idle, 2400),
     'chainsaw_cut': (chainsaw_cut, 3600),
+    'stump_grinder_start': (stump_grinder_start, 3000),
+    'stump_grinder_idle': (stump_grinder_idle, 2600),
+    'stump_grinder_grind': (stump_grinder_grind, 3800),
 }
 
 

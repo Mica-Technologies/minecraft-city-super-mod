@@ -34,5 +34,32 @@
         "stream": false
       }
     ]
+  },
+  "stump_grinder_start": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "csm:stump_grinder_start",
+        "stream": false
+      }
+    ]
+  },
+  "stump_grinder_idle": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "csm:stump_grinder_idle",
+        "stream": false
+      }
+    ]
+  },
+  "stump_grinder_grind": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "csm:stump_grinder_grind",
+        "stream": false
+      }
+    ]
   }
 }

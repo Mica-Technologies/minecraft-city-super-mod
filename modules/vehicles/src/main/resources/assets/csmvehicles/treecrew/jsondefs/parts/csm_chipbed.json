@@ -1,0 +1,263 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Tree Crew Chip Bed",
+      "subName": "",
+      "extraMaterialLists": [
+        [],
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A chip box with a chipper on its tail, for a UNU Contractor's bed. Switch CHIPPER on and the chipper takes the logs, brush and leaves dropped behind the truck and blows them into the box as Mulch. It takes anything else dropped there too, so switch it off after.",
+    "stackSize": 1,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:12",
+        "minecraft:iron_block:0:1",
+        "minecraft:piston:0:2"
+      ],
+      [
+        "minecraft:iron_ingot:12",
+        "minecraft:iron_block:1",
+        "minecraft:piston:2"
+      ]
+    ]
+  },
+  "generic": {
+    "type": "generic_bodypart_unu_truckbed_contractor",
+    "width": 2.7,
+    "height": 1.8
+  },
+  "subParts": [
+    {
+      "pos": [
+        0,
+        0.1,
+        0
+      ],
+      "types": [
+        "interactable_csm_chipbox"
+      ],
+      "defaultPart": "csmvehicles:csm_chipbox",
+      "allowParentRemoval": true
+    }
+  ],
+  "rendering": {
+    "customVariables": [
+      "CHIPPER"
+    ],
+    "sounds": [
+      {
+        "name": "csmvehicles:chipper_run",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "CHIPPER",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ],
+    "lightObjects": [
+      {
+        "objectName": "&LightBrakeLeft",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF0000",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.5,
+              0
+            ],
+            "variable": "running_light"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "brake"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              1.1500000000000001,
+              0.3,
+              -1.53
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&LightBrakeRight",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF0000",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.5,
+              0
+            ],
+            "variable": "running_light"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "brake"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -1.1500000000000001,
+              0.3,
+              -1.53
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&LightTurnLeftBack",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "left_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_10_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              1.1500000000000001,
+              0.48,
+              -1.53
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&LightTurnRightBack",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "right_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_10_10_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -1.1500000000000001,
+              0.48,
+              -1.53
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&LightReverse",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFFFFF",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "transmission_reversed"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              1.1500000000000001,
+              0.6,
+              -1.53
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      }
+    ]
+  }
+}

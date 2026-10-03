@@ -1,0 +1,87 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Chip Box",
+      "subName": "",
+      "extraMaterialLists": [
+        [],
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "What the chip bed holds. Comes with the chip bed.",
+    "stackSize": 1,
+    "materialLists": [
+      [
+        "minecraft:chest:0:1"
+      ],
+      [
+        "minecraft:chest:1"
+      ]
+    ]
+  },
+  "generic": {
+    "type": "interactable_csm_chipbox",
+    "width": 2.4,
+    "height": 1.4
+  },
+  "interactable": {
+    "interactionType": "crate",
+    "inventoryUnits": 6,
+    "feedsVehicles": true
+  },
+  "subParts": [
+    {
+      "pos": [
+        0,
+        -0.5,
+        -3.9
+      ],
+      "types": [
+        "effector_csm_chipper_intake"
+      ],
+      "defaultPart": "csmvehicles:csm_chipper_intake",
+      "allowParentRemoval": true
+    },
+    {
+      "pos": [
+        0,
+        0.5,
+        -1.9
+      ],
+      "types": [
+        "effector_csm_chipper_logs"
+      ],
+      "defaultPart": "csmvehicles:csm_chipper_logs",
+      "allowParentRemoval": true
+    },
+    {
+      "pos": [
+        0,
+        0.5,
+        -1.9
+      ],
+      "types": [
+        "effector_csm_chipper_brush"
+      ],
+      "defaultPart": "csmvehicles:csm_chipper_brush",
+      "allowParentRemoval": true
+    },
+    {
+      "pos": [
+        0,
+        0.5,
+        -1.9
+      ],
+      "types": [
+        "effector_csm_chipper_leaves"
+      ],
+      "defaultPart": "csmvehicles:csm_chipper_leaves",
+      "allowParentRemoval": true
+    }
+  ],
+  "rendering": {
+    "modelType": "none"
+  }
+}

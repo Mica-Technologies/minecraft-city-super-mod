@@ -9,8 +9,12 @@ Vehicles (IV, mod id `mts`, formerly Minecraft Transport Simulator). It does two
   schemes, a preemption emitter and a siren speaker, which fit the vehicles other packs already
   provide.
 
+- **The tree crew** (#251). A chip bed for UNU's Contractor trucks, with a chipper on its tail that
+  turns the logs, brush and leaves dropped behind the truck into Parks' Mulch. The stump grinder
+  that goes with it is a hand tool in Parks, beside the chainsaw (`PARKS_GREENERY_SYSTEM.md`).
+
 It requires Roads & Traffic and Immersive Vehicles. Our own vehicles (fire engine, ambulance, police
-SUV, ladder truck) and the tree crew's chipper and stump grinder (#251) are later work.
+SUV, ladder truck) are later work.
 
 ---
 
@@ -105,6 +109,8 @@ loops.
 | `csm_preempt_emitter` | `generic_roofdevice` | For vehicles that keep their own lights |
 | `csm_siren_speaker` | `generic_siren` | Wail (`siren`), yelp (`siren_yelp`) and hi-lo (`siren_hilo`), each its own switch |
 
+| `csm_chipbed` | `generic_bodypart_unu_truckbed_contractor` | The tree crew's chip bed, below. Loads only with CSM: Parks & Greenery |
+
 Those slot types are what UNU's vehicles and DKZ's parts use. A part fits another pack's vehicle by
 its type string alone, as DKZ's parts already fit UNU's vehicles.
 
@@ -118,6 +124,39 @@ its type string alone, as DKZ's parts already fit UNU's vehicles.
 
 **OBJ format.** IV's parser needs `v/vt/vn` on every face, with indices global to the file. It flips
 V itself, so V is written bottom-up, as in any OBJ.
+
+### The chip bed
+
+A chip box for a UNU Contractor's bed slot (its envelope: x ±1.40, z −1.52 to 1.50), with a chipper
+on its tail. Immersive Vehicles' effectors do the work in pack JSON alone, and the part tree is
+shaped by how IV links them:
+
+```
+csm_chipbed            the body in the bed slot: box, chipper, tail lights, the CHIPPER switch
+  csm_chipbox          a crate (no model): click inside the box to open its 54 slots
+    csm_chipper_intake      COLLECTOR: takes dropped items behind the feed tray
+    csm_chipper_logs        CRAFTER: oredict:logWood x1 -> 2 Mulch
+    csm_chipper_brush       CRAFTER: 8 sticks -> 1 Mulch
+    csm_chipper_leaves      CRAFTER: oredict:treeLeaves x4 -> 1 Mulch
+```
+
+**How the parts link.** An effector that is a sub-part of a crate pushes what it collects or makes
+into that crate. A crafter pulls its inputs from the crates it is linked to, but only those with
+`feedsVehicles` set (`PartEffector.updatePartList`). So the intake drops logs into the box, and
+the crafters chip them where they lie.
+
+**One switch.** Each effector is active only while `CHIPPER` is on (`generic.activeAnimations`).
+Only the chip bed declares it: a part asking for a variable it does not declare gets its
+parent's (`APart.createComputedVariable`), so every effector reads the bed's one switch.
+
+**What it takes.** The collector takes *any* dropped item in its box, not just wood. The part's
+description says to switch it off after use. It runs the chipper's sound while on, and a crunch
+whenever a crafter chips something.
+
+**Loading.** The chipper's output is Parks' `csm:ground_mulch`, so the tree crew's JSON sits in the
+pack's `treecrew/` subfolder, and `packdefinition.json` activates it only when `csm_parks` is
+loaded. Models and textures stay at the pack's top level, since IV resolves them from the pack id,
+not from the folder the JSON was in.
 
 ---
 
@@ -173,9 +212,7 @@ Verified 2026-10-03 against IV's fire truck in the dev client:
 
 ## What is next
 
-- The tree crew (#251): a crew bed for UNU's Contractor trucks, the chipper and the stump grinder.
-  IV's DRILL effector breaks any block up to a hardness, stone included, so the grinder needs a
-  Java filter.
+- A towed trailer chipper, alongside the chip bed, once there is a fleet to tow it.
 - Our own fleet.
 - Transit signal priority from buses, through the `TRANSIT` emitter kind and
   `TrafficSignalPriorityPlan`.

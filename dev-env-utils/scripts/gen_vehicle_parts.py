@@ -371,6 +371,265 @@ def siren_json():
 
 
 # ------------------------------------------------------------------------------------------
+# Tree crew: the chip bed (loaded only with CSM: Parks & Greenery, whose Mulch it makes)
+# ------------------------------------------------------------------------------------------
+#
+# A chip box for a UNU Contractor's bed slot, with a chipper on its tail. It is four parts
+# because that is how Immersive Vehicles links them: an effector that is a sub-part of a crate
+# pushes what it collects or makes into that crate, and a crafter pulls its inputs from it.
+#
+#   csm_chipbed          the body (the bed slot's part): box, chipper, tail lights, the CHIPPER
+#                        switch and the chipper's running sound
+#     csm_chipbox        the crate inside the box (no model; click inside the box to open it)
+#       csm_chipper_intake    COLLECTOR: picks up dropped items behind the truck
+#       csm_chipper_logs      CRAFTER: a log into two Mulch
+#       csm_chipper_brush     CRAFTER: eight sticks into one Mulch
+#       csm_chipper_leaves    CRAFTER: four leaves into one Mulch
+#
+# Every effector is active only while CHIPPER is on. Only the chip bed declares it; an effector
+# asking for a variable it does not declare gets its parent's (APart.createComputedVariable). The chipper
+# takes whatever falls behind the truck, so switch it off when it is not chipping.
+
+TREECREW = 'treecrew'  # the pack subfolder, activated by csm_parks
+MULCH = 'csm:ground_mulch:0:%d'
+
+BED_HALF = 1.36    # half the box's width, inside UNU's bed envelope (x +/-1.40)
+BED_FRONT = 1.45
+BED_REAR = -1.50
+BED_TOP = 1.75
+
+# Texture cells on the chip bed's 64 x 64 texture.
+CB_PAINT = (0, 0, 16, 16)
+CB_STEEL = (16, 0, 32, 16)
+CB_YELLOW = (32, 0, 48, 16)
+CB_DARK = (48, 0, 64, 16)
+CB_MULCH = (0, 16, 16, 32)
+CB_RED = (16, 16, 24, 24)
+CB_AMBER = (24, 16, 32, 24)
+CB_WHITE = (32, 16, 40, 24)
+CB_HAZARD = (48, 16, 64, 32)
+
+
+def chipbed_obj():
+    o = Obj()
+    h, f, r, t = BED_HALF, BED_FRONT, BED_REAR, BED_TOP
+    o.box('floor', (-h, 0.0, r), (h, 0.10, f), CB_STEEL)
+    o.box('load', (-h + 0.08, 0.10, r + 0.08), (h - 0.08, 0.35, f - 0.08), CB_MULCH,
+          faces=('u',))
+    o.box('side_l', (h - 0.08, 0.10, r), (h, t, f), CB_PAINT)
+    o.box('side_r', (-h, 0.10, r), (-h + 0.08, t, f), CB_PAINT)
+    o.box('front', (-h + 0.08, 0.10, f - 0.08), (h - 0.08, t + 0.25, f), CB_PAINT)
+    o.box('roof', (-h, t, 0.35), (h, t + 0.08, f), CB_PAINT)
+    o.box('rail_l', (h - 0.10, t, r), (h, t + 0.06, 0.35), CB_STEEL)
+    o.box('rail_r', (-h, t, r), (-h + 0.10, t + 0.06, 0.35), CB_STEEL)
+    # the rear doors, shut, with a port at the top the chute blows through
+    o.box('door_l', (0.02, 0.10, r), (h - 0.08, t - 0.45, r + 0.06), CB_PAINT)
+    o.box('door_r', (-h + 0.08, 0.10, r), (-0.02, t - 0.45, r + 0.06), CB_PAINT)
+    o.box('header', (-h + 0.08, t - 0.20, r), (h - 0.08, t, r + 0.06), CB_PAINT)
+    # the chipper on the tail: hopper, feed tray, drum housing and the chute up into the box
+    o.box('hopper', (-0.55, 0.15, r - 0.85), (0.55, 1.05, r - 0.02), CB_YELLOW)
+    o.box('throat', (-0.40, 0.25, r - 1.20), (0.40, 0.75, r - 0.85), CB_DARK,
+          faces=('n', 'e', 'w', 'u', 'd'))
+    o.box('tray', (-0.60, 0.20, r - 1.45), (0.60, 0.28, r - 0.85), CB_HAZARD)
+    o.box('tray_l', (0.52, 0.28, r - 1.45), (0.60, 0.70, r - 0.85), CB_YELLOW)
+    o.box('tray_r', (-0.60, 0.28, r - 1.45), (-0.52, 0.70, r - 0.85), CB_YELLOW)
+    o.box('drum', (-0.62, 0.35, r - 0.70), (-0.55, 0.95, r - 0.15), CB_STEEL)
+    o.box('chute', (-0.12, 1.05, r - 0.55), (0.12, t - 0.05, r - 0.31), CB_YELLOW)
+    o.box('chute_top', (-0.12, t - 0.29, r - 0.55), (0.12, t - 0.05, r + 0.30), CB_YELLOW)
+    # tail lights in the rear corners
+    o.box('&LightBrakeLeft', (h - 0.30, 0.20, r - 0.03), (h - 0.12, 0.40, r), CB_RED,
+          faces=('n', 'e', 'w', 'u', 'd'))
+    o.box('&LightBrakeRight', (-h + 0.12, 0.20, r - 0.03), (-h + 0.30, 0.40, r), CB_RED,
+          faces=('n', 'e', 'w', 'u', 'd'))
+    o.box('&LightTurnLeftBack', (h - 0.30, 0.42, r - 0.03), (h - 0.12, 0.54, r), CB_AMBER,
+          faces=('n', 'e', 'w', 'u', 'd'))
+    o.box('&LightTurnRightBack', (-h + 0.12, 0.42, r - 0.03), (-h + 0.30, 0.54, r), CB_AMBER,
+          faces=('n', 'e', 'w', 'u', 'd'))
+    o.box('&LightReverse', (h - 0.30, 0.56, r - 0.03), (h - 0.12, 0.64, r), CB_WHITE,
+          faces=('n', 'e', 'w', 'u', 'd'))
+    return o.text()
+
+
+def chipbed_texture():
+    img = Image.new('RGBA', (TEX, TEX), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.rectangle((0, 0, 15, 15), fill=(46, 88, 58, 255))        # forestry green
+    for x in range(0, 16, 4):
+        d.line((x, 0, x, 15), fill=(40, 78, 51, 255))           # box ribs
+    d.rectangle((16, 0, 31, 15), fill=(150, 154, 160, 255))
+    d.line((16, 0, 31, 0), fill=(190, 194, 198, 255))
+    d.rectangle((32, 0, 47, 15), fill=(232, 168, 28, 255))      # chipper yellow
+    d.line((32, 15, 47, 15), fill=(190, 132, 18, 255))
+    d.rectangle((48, 0, 63, 15), fill=(26, 24, 22, 255))
+    rng = [(3, 2), (9, 5), (13, 1), (6, 10), (1, 13), (11, 12), (14, 8), (4, 6), (8, 14)]
+    d.rectangle((0, 16, 15, 31), fill=(112, 76, 44, 255))       # chips
+    for x, y in rng:
+        d.point((x, 16 + y), fill=(150, 108, 64, 255))
+        d.point(((x + 7) % 16, 16 + (y + 5) % 16), fill=(84, 56, 32, 255))
+    d.rectangle((16, 16, 23, 23), fill=(140, 20, 16, 255))
+    d.rectangle((24, 16, 31, 23), fill=(150, 92, 12, 255))
+    d.rectangle((32, 16, 39, 23), fill=(170, 172, 176, 255))
+    # hazard stripes, drawn on their own tile so the diagonals cannot spill into a neighbour
+    stripes = Image.new('RGBA', (16, 16), (232, 168, 28, 255))
+    sd = ImageDraw.Draw(stripes)
+    for k in range(-16, 16, 6):
+        sd.polygon([(k, 15), (k + 3, 15), (k + 18, 0), (k + 15, 0)], fill=(24, 24, 24, 255))
+    img.paste(stripes, (48, 16))
+    return img
+
+
+def chipbed_icon():
+    def draw(d):
+        d.rectangle((1, 4, 11, 12), fill=(46, 88, 58, 255))
+        d.rectangle((1, 4, 11, 4), fill=(150, 154, 160, 255))
+        d.rectangle((11, 7, 14, 12), fill=(232, 168, 28, 255))
+        d.rectangle((12, 3, 13, 7), fill=(232, 168, 28, 255))
+        d.rectangle((1, 13, 14, 13), fill=(60, 60, 64, 255))
+    return icon(draw)
+
+
+def tail_light(name, colour, animations, pos):
+    return {'objectName': name, 'emissive': True, 'isElectric': True, 'color': colour,
+            'brightnessAnimations': animations,
+            'blendableComponents': [flare(pos, [0, 0, -1], 0.35)]}
+
+
+def chipbed_json():
+    r = BED_REAR - 0.03
+    brake = [{'animationType': 'translation', 'axis': [0, 0.5, 0], 'variable': 'running_light'},
+             {'animationType': 'translation', 'axis': [0, 1, 0], 'variable': 'brake'}]
+    return {
+        'definitions': [{'name': 'CSM Tree Crew Chip Bed', 'subName': '',
+                         'extraMaterialLists': [[], []]}],
+        'general': {
+            'description': 'A chip box with a chipper on its tail, for a UNU Contractor\'s bed. '
+                           'Switch CHIPPER on and the chipper takes the logs, brush and leaves '
+                           'dropped behind the truck and blows them into the box as Mulch. It '
+                           'takes anything else dropped there too, so switch it off after.',
+            'stackSize': 1,
+            'materialLists': [
+                ['minecraft:iron_ingot:0:12', 'minecraft:iron_block:0:1', 'minecraft:piston:0:2'],
+                ['minecraft:iron_ingot:12', 'minecraft:iron_block:1', 'minecraft:piston:2']],
+        },
+        'generic': {'type': 'generic_bodypart_unu_truckbed_contractor', 'width': 2.7,
+                    'height': 1.8},
+        'subParts': [{
+            'pos': [0, 0.1, 0],
+            'types': ['interactable_csm_chipbox'],
+            'defaultPart': '%s:csm_chipbox' % PACK,
+            'allowParentRemoval': True,
+        }],
+        'rendering': {
+            'customVariables': ['CHIPPER'],
+            'sounds': [{'name': '%s:chipper_run' % PACK, 'looping': True,
+                        'activeAnimations': [visible_on('CHIPPER')]}],
+            'lightObjects': [
+                tail_light('&LightBrakeLeft', '#FF0000', brake, [BED_HALF - 0.21, 0.30, r]),
+                tail_light('&LightBrakeRight', '#FF0000', brake, [-BED_HALF + 0.21, 0.30, r]),
+                tail_light('&LightTurnLeftBack', '#FFA000',
+                           [visible_on('left_turn_signal'), lit_by('0_10_10_cycle')],
+                           [BED_HALF - 0.21, 0.48, r]),
+                tail_light('&LightTurnRightBack', '#FFA000',
+                           [visible_on('right_turn_signal'), lit_by('0_10_10_cycle')],
+                           [-BED_HALF + 0.21, 0.48, r]),
+                tail_light('&LightReverse', '#FFFFFF',
+                           [lit_by('transmission_reversed')], [BED_HALF - 0.21, 0.60, r]),
+            ],
+        },
+    }
+
+
+# The collector's reach, behind the feed tray: logs dropped there are taken in.
+INTAKE_POS = [0, -0.5, BED_REAR - 2.4]
+
+
+def effector_box(pos, width, height):
+    return [{'collisionTypes': ['effector'], 'isInterior': True,
+             'collisions': [{'pos': pos, 'width': width, 'height': height}]}]
+
+
+def chipbox_json():
+    mills = [('csm_chipper_logs', 'effector_csm_chipper_logs'),
+             ('csm_chipper_brush', 'effector_csm_chipper_brush'),
+             ('csm_chipper_leaves', 'effector_csm_chipper_leaves')]
+    sub = [{'pos': INTAKE_POS, 'types': ['effector_csm_chipper_intake'],
+            'defaultPart': '%s:csm_chipper_intake' % PACK, 'allowParentRemoval': True}]
+    for name, slot in mills:
+        sub.append({'pos': [0, 0.5, BED_REAR - 0.4], 'types': [slot],
+                    'defaultPart': '%s:%s' % (PACK, name), 'allowParentRemoval': True})
+    return {
+        'definitions': [{'name': 'CSM Chip Box', 'subName': '', 'extraMaterialLists': [[], []]}],
+        'general': {'description': 'What the chip bed holds. Comes with the chip bed.',
+                    'stackSize': 1, 'materialLists': [['minecraft:chest:0:1'],
+                                                      ['minecraft:chest:1']]},
+        'generic': {'type': 'interactable_csm_chipbox', 'width': 2.4, 'height': 1.4},
+        'interactable': {'interactionType': 'crate', 'inventoryUnits': 6,
+                         'feedsVehicles': True},
+        'subParts': sub,
+        'rendering': {'modelType': 'none'},
+    }
+
+
+def effector_json(name, label, effector, box, sound=None):
+    # CHIPPER is not declared here: an undeclared variable is looked up on the parents, so
+    # every effector reads the chip bed's one switch.
+    rendering = {'modelType': 'none'}
+    if sound:
+        rendering['sounds'] = [{'name': '%s:%s' % (PACK, sound),
+                                'activeAnimations': [visible_on('effector_operated')]}]
+    return {
+        'definitions': [{'name': label, 'subName': '', 'extraMaterialLists': [[], []]}],
+        'general': {'description': 'Part of the chip bed\'s chipper. Comes with the chip bed.',
+                    'stackSize': 1, 'materialLists': [['minecraft:iron_ingot:0:1'],
+                                                      ['minecraft:iron_ingot:1']]},
+        'generic': {'type': 'effector_' + name, 'width': 0.25, 'height': 0.25,
+                    'activeAnimations': [visible_on('CHIPPER')]},
+        'effector': effector,
+        'collisionGroups': box,
+        'rendering': rendering,
+    }
+
+
+def treecrew_parts():
+    """The chip bed's parts, as {name: definition}."""
+    return {
+        'csm_chipbed': chipbed_json(),
+        'csm_chipbox': chipbox_json(),
+        'csm_chipper_intake': effector_json(
+            'csm_chipper_intake', 'CSM Chipper Intake',
+            {'type': 'collector', 'operationDelay': 4},
+            effector_box([0, 0, 0], 2.2, 1.4)),
+        'csm_chipper_logs': effector_json(
+            'csm_chipper_logs', 'CSM Chipper (Logs)',
+            {'type': 'crafter', 'operationDelay': 10,
+             'crafterInputs': ['oredict:logWood:1'], 'crafterOutputs': [MULCH % 2]},
+            effector_box([0, 0, 0], 0.5, 0.5), sound='chipper_chip'),
+        'csm_chipper_brush': effector_json(
+            'csm_chipper_brush', 'CSM Chipper (Brush)',
+            {'type': 'crafter', 'operationDelay': 10,
+             'crafterInputs': ['minecraft:stick:0:8'], 'crafterOutputs': [MULCH % 1]},
+            effector_box([0, 0, 0], 0.5, 0.5), sound='chipper_chip'),
+        'csm_chipper_leaves': effector_json(
+            'csm_chipper_leaves', 'CSM Chipper (Leaves)',
+            {'type': 'crafter', 'operationDelay': 10,
+             'crafterInputs': ['oredict:treeLeaves:4'], 'crafterOutputs': [MULCH % 1]},
+            effector_box([0, 0, 0], 0.5, 0.5)),
+    }
+
+
+def pack_definition():
+    return {
+        'packID': PACK,
+        'packName': 'CSM: Vehicles',
+        'packItem': 'csm_lightbar_led_redblue',
+        'fileStructure': 0,
+        # The emergency parts load always; the tree crew only with CSM: Parks & Greenery, since
+        # the chipper's output is Parks' Mulch.
+        'activators': {'': [], TREECREW: ['csm_parks']},
+    }
+
+
+# ------------------------------------------------------------------------------------------
 # Catalogue and writing
 # ------------------------------------------------------------------------------------------
 
@@ -416,6 +675,21 @@ def catalogue():
     files[os.path.join(PACK_DIR, 'objmodels', 'parts', 'csm_siren_speaker.obj')] = \
         siren_obj().encode('utf-8')
     part('csm_siren_speaker', siren_json(), base_texture(), siren_icon())
+
+    # The tree crew, under the activated subfolder. Models and textures stay at the pack's
+    # top level: Immersive Vehicles resolves them from the pack id, not the JSON's folder.
+    files[os.path.join(PACK_DIR, 'objmodels', 'parts', 'csm_chipbed.obj')] = \
+        chipbed_obj().encode('utf-8')
+    for name, definition in treecrew_parts().items():
+        files[os.path.join(PACK_DIR, TREECREW, 'jsondefs', 'parts', name + '.json')] = \
+            json_bytes(definition)
+        files[os.path.join(ROOT, 'mts', 'models', 'item', '%s.%s.json' % (PACK, name))] = \
+            item_model(name)
+        files[os.path.join(PACK_DIR, 'textures', 'items', 'parts', name + '.png')] = \
+            png_bytes(chipbed_icon())
+    files[os.path.join(PACK_DIR, 'textures', 'parts', 'csm_chipbed.png')] = \
+        png_bytes(chipbed_texture())
+    files[os.path.join(PACK_DIR, 'packdefinition.json')] = json_bytes(pack_definition())
     return files
 
 
