@@ -1,9 +1,12 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 import net.minecraft.world.World;
 
@@ -46,6 +49,14 @@ public final class CsmPreemptSources {
    * @since 1.0
    */
   private static final Map<World, Collected> COLLECTED = new WeakHashMap<>();
+
+  /**
+   * The sources whose failure has been logged, so each is logged once.
+   *
+   * @since 1.0
+   */
+  private static final Set<ICsmPreemptSource> FAILED =
+      Collections.newSetFromMap(new IdentityHashMap<>());
 
   /**
    * A world's emitters and the world tick they were collected on.
@@ -123,6 +134,11 @@ public final class CsmPreemptSources {
         source.collectEmitters(world, out);
       } catch (RuntimeException | LinkageError e) {
         // A source that fails (another mod's internals changed under it) calls nothing this tick.
+        // Said once per source, or a broken source would fill the log four times a second.
+        if (FAILED.add(source)) {
+          Csm.getLogger().error("Preempt source {} failed; it will call no preempts until it "
+              + "works again", source.getClass().getName(), e);
+        }
       }
     }
     COLLECTED.put(world, new Collected(tick, out));

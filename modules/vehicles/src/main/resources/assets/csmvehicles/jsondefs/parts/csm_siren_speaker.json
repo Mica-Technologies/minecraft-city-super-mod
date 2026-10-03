@@ -1,0 +1,78 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Siren Speaker",
+      "subName": "",
+      "extraMaterialLists": [
+        [],
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A 100 W siren speaker with three tones, each its own switch on the panel: wail (siren), yelp and hi-lo. Fit one per vehicle.",
+    "type": "generic_siren",
+    "stackSize": 4,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:2",
+        "minecraft:redstone:0:2",
+        "minecraft:glass_pane:0:2"
+      ],
+      [
+        "minecraft:iron_ingot:2",
+        "minecraft:redstone:2",
+        "minecraft:glass_pane:2"
+      ]
+    ]
+  },
+  "generic": {
+    "width": 0.26,
+    "height": 0.15
+  },
+  "rendering": {
+    "customVariables": [
+      "siren",
+      "siren_yelp",
+      "siren_hilo"
+    ],
+    "sounds": [
+      {
+        "name": "csmvehicles:siren_wail",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "siren",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      },
+      {
+        "name": "csmvehicles:siren_yelp",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "siren_yelp",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      },
+      {
+        "name": "csmvehicles:siren_hilo",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "siren_hilo",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ]
+  }
+}

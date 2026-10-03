@@ -46,6 +46,9 @@ def excludeForgeProvided = {
 // The stock 'shadowImplementation' configuration is gone with usesShadowedDependencies = false.
 configurations {
     ttsShadow
+    // The Vehicles module's other mods: compiled against, never shipped. modules.gradle puts it
+    // on that module's compile classpath, and on the dev run classpath only when the module runs.
+    vehiclesExternal
 }
 
 dependencies {
@@ -62,4 +65,8 @@ dependencies {
     // Log4j 1.x → 2.x bridge: MaryTTS uses the old org.apache.log4j API internally.
     // Forge bundles Log4j 2 but not the 1.x compatibility shim, so we need this.
     ttsShadow('org.apache.logging.log4j:log4j-1.2-api:2.17.1') { transitive = false }
+
+    // Immersive Vehicles 24.0.0 (mod id mts), the version the Alto packs run, from Modrinth
+    // (project BCzBuhJ5, version KyR21IJF). Deobfuscated, so the dev client can run it too.
+    vehiclesExternal rfg.deobf('maven.modrinth:BCzBuhJ5:KyR21IJF')
 }

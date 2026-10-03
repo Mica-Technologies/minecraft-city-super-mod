@@ -1,0 +1,79 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Preemption Emitter",
+      "subName": "",
+      "extraMaterialLists": [
+        [],
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A forward-facing strobe for vehicles that keep their own lights. Runs with the emergency lights switch (EMERLTS); intersections with a CSM preempt detector give the vehicle the green.",
+    "type": "generic_roofdevice",
+    "stackSize": 4,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:2",
+        "minecraft:redstone:0:2",
+        "minecraft:glass_pane:0:2"
+      ],
+      [
+        "minecraft:iron_ingot:2",
+        "minecraft:redstone:2",
+        "minecraft:glass_pane:2"
+      ]
+    ]
+  },
+  "generic": {
+    "width": 0.16,
+    "height": 0.07
+  },
+  "rendering": {
+    "customVariables": [
+      "EMERLTS"
+    ],
+    "lightObjects": [
+      {
+        "objectName": "&Emitter",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#DCEBFF",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "EMERLTS",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_2_1_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0,
+              0.035,
+              0.06
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      }
+    ]
+  }
+}

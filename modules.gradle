@@ -32,6 +32,10 @@ def csmModules = [
     [name: 'signage', modId: 'csm_signage', displayName: 'CSM: Signage & Advertising'],
     [name: 'parks', modId: 'csm_parks', displayName: 'CSM: Parks & Greenery'],
     [name: 'transit', modId: 'csm_transit', displayName: 'CSM: Transit', deps: ['roads']],
+    // Vehicles builds on Immersive Vehicles (`external:` -> the vehiclesExternal configuration in
+    // dependencies.gradle) and calls Roads' preempts through Core's preempt source service.
+    [name: 'vehicles', modId: 'csm_vehicles', displayName: 'CSM: Vehicles', deps: ['roads'],
+     external: true],
 ]
 
 // Core's archive base name is minecraft-city-super-mod-core (buildscript.properties), so module
@@ -111,6 +115,17 @@ csmModules.each { m ->
         ss.compileClasspath += shadowConfig
         ss.runtimeClasspath += shadowConfig
     }
+    // A module marked `external: true` compiles against another mod (Vehicles against Immersive
+    // Vehicles) from a configuration named after it (vehicles -> vehiclesExternal). That mod is a
+    // hard dependency, never shipped: the module jar does not carry it, and the dev run tasks put
+    // it on the game classpath only when the module itself is run (below).
+    def externalConfig = m.external ? configurations.getByName("${m.name}External") : null
+    if (externalConfig != null) {
+        ss.compileClasspath += externalConfig
+        ss.runtimeClasspath += externalConfig
+        sourceSets.test.compileClasspath += externalConfig
+        sourceSets.test.runtimeClasspath += externalConfig
+    }
     // Jabel and the other annotation processors are declared on Core's configuration only;
     // without this the module compile finds the Jabel plugin on its classpath but not the
     // processor path and dies with a ClassNotFoundException deep inside ByteBuddy.
@@ -187,6 +202,9 @@ csmModules.each { m ->
     reobfTask.configure {
         referenceClasspath.from(sourceSets.main.output.classesDirs)
         (m.deps ?: []).each { depName -> referenceClasspath.from(sourceSets.getByName(depName).output.classesDirs) }
+        if (externalConfig != null) {
+            referenceClasspath.from(externalConfig)
+        }
         dependsOn(sourceSets.main.classesTaskName)
         (m.deps ?: []).each { depName -> dependsOn(sourceSets.getByName(depName).classesTaskName) }
     }
@@ -197,8 +215,32 @@ csmModules.each { m ->
             tasks.matching { it.name == runName }.configureEach {
                 dependsOn(jarTask)
                 classpath(jarTask)
+                if (externalConfig != null) {
+                    classpath(externalConfig)
+                }
             }
         }
+    }
+}
+
+// Immersive Vehicles finds a content pack only in a jar in the mods folder: it reads the pack's
+// JSON straight out of the zip, and its models and textures off the classpath. The dev client
+// loads the Vehicles module from its dev jar on the classpath, which the scan never sees, so the
+// pack would be missing. This puts a pack-only copy (assets/csmvehicles, no classes, no
+// mcmod.info, so FML loads nothing from it) in run/mods whenever the module runs. A release
+// install needs none of this: the module jar itself sits in mods.
+def vehiclesDevPack = tasks.register('vehiclesDevPack', Zip) {
+    group = 'build'
+    description = 'Copies the CSM: Vehicles Immersive Vehicles pack into run/mods for the dev client'
+    from(sourceSets.vehicles.resources.srcDirs) {
+        include 'assets/csmvehicles/**'
+    }
+    archiveFileName.set('csm-vehicles-devpack.jar')
+    destinationDirectory.set(file('run/mods'))
+}
+if (csmRunModules.contains('vehicles')) {
+    csmRunTaskNames.each { runName ->
+        tasks.matching { it.name == runName }.configureEach { dependsOn(vehiclesDevPack) }
     }
 }
 

@@ -75,7 +75,7 @@ CSM adds nothing to world generation. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
 ### Modules
 
-The mod ships as a mandatory **CSM: Core** jar (`csm`) plus twelve optional module jars, all built
+The mod ships as a mandatory **CSM: Core** jar (`csm`) plus thirteen optional module jars, all built
 from this repository and released together at the same version. Every module pins Core to that
 exact version, and **all content keeps the `csm:` namespace** — module ids only give Forge a
 container per jar.
@@ -95,6 +95,7 @@ container per jar.
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears), plantings and park amenities; two tabs, Trees & Plants and Parks |
 | `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, bus station departure boards and bay displays (`transit.board`: listing the stops around them, paging across a bank, spoken call-outs only through Core's TTS service), and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), stations (`transit.station`: the subway entrance kiosk built from glass and roof pieces with agency fascias and name boards, the open stair entrance's railing and lit globe lamps, the fare line railing that joins the fare gates, its service gate, line bullets and the agent's booth counter), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass) and airside pieces (the same package: airfield lights and signs switched a circuit at a time by redstone, the wind sock, beacon and masts, the stand sign, ground equipment on Roads' utility box, and a walk-through jet bridge; no aircraft); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
+| `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
 reobfuscated release jar per module. Release jars are
@@ -136,6 +137,7 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    station/ (entrances, fare line railing and gate, line bullets,
 │                    booth counter)
 ├── tts/              (modules/tts)
+├── vehicles/        (modules/vehicles) IvPreemptSource; the IV pack is assets/csmvehicles/
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
 ├── trafficaccessories/
 ├── trafficsignals/   # Crosswalk/pedestrian signals with redstone support
@@ -323,7 +325,7 @@ Voice evac sound volume target: ~4,500 RMS.
 ## In-Depth System Documentation
 
 See `assets/docs/` for detailed technical documentation on major subsystems:
-- `assets/docs/MODULE_SYSTEM.md` -- Core plus twelve optional module jars: what each owns, how
+- `assets/docs/MODULE_SYSTEM.md` -- Core plus thirteen optional module jars: what each owns, how
   registration still works across jars, the Core service registries, adding a module, the traps
 - `assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md` -- Every abstract class, constructors, rotation, meta encoding, registration
 - `assets/docs/FRAMING_SYSTEM.md` -- Stud walls, joists, deck and structural steel: why a wall is
@@ -462,6 +464,11 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   lights switched a circuit at a time, the beacon turning by texture, signs, masts, ground
   equipment on Roads' utility box, and a jet bridge that draws and collides past its cell); the
   demo world and its builder; and what was left out and what the module could grow into
+- `assets/docs/VEHICLES_SYSTEM.md` -- The Vehicles module and emergency vehicle preemption: the
+  preempt detector in Roads and Core's preempt source service, why emergency lights are found by
+  custom variable name, how IV finds a pack in a module jar (and the dev client's pack-only jar),
+  the parts and their flash timing, IV as the module system's one external dependency, and the
+  traps (a vehicle is placed at 90 degrees to its placer, IV polls the mouse itself)
 - `assets/docs/HVAC_SYSTEM.md` -- Rooms that hold heat: the thermal simulation (flood-filled
   spaces split into regions, walls/openings/ground/neighbours, implicit step), model-based
   modulating control, vent throw and the thermostat trim, why a partly unloaded room freezes, the
@@ -945,6 +952,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   leaf and the same leaf swung a quarter about its hinge, the sixteen line bullets and the booth
   counter; the legends, lines and globe colours are listed as the Java lists them; `--check`,
   `--fragments`
+- `gen_vehicle_parts.py` -- the CSM: Vehicles module's Immersive Vehicles pack (`csmvehicles`):
+  the LED lightbar's one OBJ and its four colour schemes' JSON and dark-lens textures, the
+  preemption emitter and the siren speaker, their item icons and item models (under
+  `assets/mts/models/item/`). Lamps are `&` OBJ objects lit on `EMERLTS`; flash timing is
+  `a_b_c_cycle` variables, lit b - 1 ticks of a + b + c; `--check` fails on drift.
+  `gen_vehicle_sounds.py` synthesises the siren's wail, yelp and hi-lo as seamless loops
 - `gen_utilities_meters.py` -- the Utilities tab's building service meters (Utilities module):
   electric meters (digital and analog, on a ringless socket), the blank meter socket, the meter
   bank that joins side by side (`BlockUtilityRun`, end flanges only at its ends), the service
