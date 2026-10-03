@@ -177,17 +177,95 @@ class Vehicle:
                   [vp.lit_by('engine_reversed_1')], [0, 0, -1], faces=back)
 
 
+def _spans(z0, z1, cut):
+    """[z0, z1] less the spans in `cut`, as a list of (a, b)."""
+    out = [(z0, z1)]
+    for c0, c1 in sorted(cut):
+        nxt = []
+        for a, b in out:
+            if c1 <= a or c0 >= b:
+                nxt.append((a, b))
+                continue
+            if c0 > a:
+                nxt.append((a, c0))
+            if c1 < b:
+                nxt.append((c1, b))
+        out = nxt
+    return [(a, b) for a, b in out if b - a > 0.005]
+
+
+def _clip(spans, z0, z1):
+    return [(max(a, z0), min(b, z1)) for a, b in spans if min(b, z1) - max(a, z0) > 0.005]
+
+
+WALL = 0.05
+
+
+def cabin(v, w, floor, belt, top, z0, z1, lower='paint', upper=None, windows=(), win_top=None,
+          front='windshield', front_belt=None, rear='wall', right_gaps=(), driver_x=None):
+    """A cabin a rider sits in: floor, roof, walls up to the belt line, pillars between the
+    windows, a header above them, the front and rear walls, a dash and a steering wheel.
+
+    It is hollow because the rider's eye is in it. A solid box with glass painted on the outside
+    is drawn only from outside (faces cull from behind), so from the seat every wall vanished and
+    the trim floated in the air. Windows are IV `window` objects: IV draws them in its own glass,
+    from both sides when the player's config asks for inner windows. `right_gaps` are door
+    openings in the right (-x) wall, from the floor to the window top."""
+    upper = upper or lower
+    win_top = win_top or top - 0.12
+    fb = front_belt or belt
+    t = WALL
+    # the floor stands a hundredth proud of the sill or skirt under it, whose top is at `floor`
+    v.box((-w + t, floor - 0.04, z0 + t), (w - t, floor + 0.01, z1 - t), 'black')  # floor
+    v.box((-w, top - 0.05, z0), (w, top, z1), upper)                            # roof
+    for sx in (1, -1):
+        xa, xb = sorted((sx * (w - t), sx * w))
+        gaps = list(right_gaps) if sx < 0 else []
+        for a, b in _spans(z0, z1, gaps):
+            v.box((xa, floor, a), (xb, belt, b), lower)
+        glass = [g for win in _clip(windows, z0, z1) for g in _spans(win[0], win[1], gaps)]
+        for a, b in glass:
+            ga, gb = sorted((sx * (w - t * 0.7), sx * (w - t * 0.3)))
+            v.box((ga, belt, a), (gb, win_top, b), 'glass', obj='window')
+        for a, b in _spans(z0, z1, list(windows) + gaps):
+            v.box((xa, belt, a), (xb, win_top, b), upper)                        # pillars
+        v.box((xa, win_top, z0), (xb, top - 0.05, z1), upper)                    # header
+    # the front: a wall to the belt, then the windshield (or a wall, or nothing)
+    if front != 'open':
+        v.box((-w + t, floor, z1 - t), (w - t, fb, z1), lower)
+        if front == 'windshield':
+            v.box((-w + t, fb, z1 - t * 0.7), (w - t, win_top, z1 - t * 0.3), 'glass',
+                  obj='window')
+            v.box((-w + t, win_top, z1 - t), (w - t, top - 0.05, z1), upper)
+        else:
+            v.box((-w + t, fb, z1 - t), (w - t, top - 0.05, z1), upper)
+    if rear == 'wall':
+        v.box((-w + t, floor, z0), (w - t, top - 0.05, z0 + t), lower)
+    elif rear == 'window':
+        v.box((-w + t, floor, z0), (w - t, belt, z0 + t), lower)
+        v.box((-w + t, belt, z0 + t * 0.3), (w - t, win_top, z0 + t * 0.7), 'glass', obj='window')
+        v.box((-w + t, win_top, z0), (w - t, top - 0.05, z0 + t), upper)
+    if driver_x is not None:
+        v.box((-w + t, fb - 0.3, z1 - 0.5), (w - t, fb - 0.02, z1 - t), 'black')  # dash
+        # the steering wheel: a ring, so the road shows through it
+        wx0, wx1, wy0, wy1, wz = driver_x - 0.16, driver_x + 0.16, fb - 0.2, fb + 0.08, z1 - 0.6
+        for lo, hi in (((wx0, wy0, wz - 0.02), (wx1, wy0 + 0.035, wz + 0.02)),
+                       ((wx0, wy1 - 0.035, wz - 0.02), (wx1, wy1, wz + 0.02)),
+                       ((wx0, wy0 + 0.035, wz - 0.02), (wx0 + 0.035, wy1 - 0.035, wz + 0.02)),
+                       ((wx1 - 0.035, wy0 + 0.035, wz - 0.02), (wx1, wy1 - 0.035, wz + 0.02))):
+            v.box(lo, hi, 'black')
+
+
 def fire_engine():
     """A custom-cab pumper: tilt cab, compartments with roll-up doors, a hose bed, a pump panel."""
     v = Vehicle()
     g = -0.55                                  # the ground, below the axle
     w = 1.25
     v.box((-0.5, -0.15, -2.3), (0.5, 0.25, 6.9), 'black')                      # frame
-    v.box((-w, 0.25, 3.65), (w, 2.55, 6.75), 'paint')                          # cab
+    v.box((-w, 0.25, 3.65), (w, 0.4, 6.75), 'paint')                           # cab sill
+    cabin(v, w, 0.4, 1.55, 2.55, 3.65, 6.75, windows=[(3.75, 4.55), (4.65, 6.55)],
+          win_top=2.4, driver_x=0.6)
     v.box((-w + 0.05, 2.55, 3.7), (w - 0.05, 2.62, 6.7), 'paint2')             # white roof
-    v.box((-1.15, 1.55, 6.75), (1.15, 2.45, 6.77), 'glass', faces=('s',))     # windshield
-    for z0, z1 in ((4.65, 6.55), (3.75, 4.55)):
-        v.both((w, 1.55, z0), (w + 0.02, 2.4, z1), 'glass', faces=('e', 'w', 'u', 'd', 'n', 's'))
     v.both((w, 0.6, 4.75), (w + 0.025, 1.0, 6.4), 'decal', faces=('e', 'w'))  # door lettering
     v.box((-0.7, 0.45, 6.75), (0.7, 1.35, 6.79), 'grille', faces=('s',))
     v.box((-1.3, -0.05, 6.75), (1.3, 0.35, 7.05), 'chrome')                    # front bumper
@@ -228,21 +306,23 @@ def ambulance():
     g = -0.4
     v.box((-0.45, -0.1, -1.95), (0.45, 0.2, 5.1), 'black')
     # the van cab and its hood
-    v.box((-1.0, 0.2, 2.95), (1.0, 2.05, 4.0), 'paint2')
-    v.box((-0.95, 0.2, 4.0), (0.95, 1.0, 5.0), 'paint2')
-    v.box((-0.9, 1.05, 4.0), (0.9, 1.95, 4.02), 'glass', faces=('s',))
-    v.both((1.0, 1.1, 3.05), (1.02, 1.9, 3.9), 'glass')
+    v.box((-1.0, 0.2, 2.95), (1.0, 0.3, 4.0), 'paint2')                        # cab sill
+    cabin(v, 1.0, 0.3, 1.05, 2.05, 2.95, 4.0, lower='paint2', windows=[(3.05, 3.9)],
+          win_top=1.95, rear='open', driver_x=0.45)
+    v.box((-0.95, 0.2, 4.0), (0.95, 1.0, 5.0), 'paint2')                       # hood
     v.box((-0.6, 0.35, 5.0), (0.6, 0.85, 5.02), 'grille', faces=('s',))
     v.box((-1.0, 0.05, 5.0), (1.0, 0.3, 5.2), 'black')
     v.both((1.0, 1.4, 3.85), (1.2, 1.75, 3.95), 'black')
     # the patient module
     w = 1.15
-    v.box((-w, 0.25, -1.95), (w, 2.6, 2.9), 'paint2')
+    v.box((-w, 0.25, -1.95), (w, 0.3, 2.9), 'paint2')                          # module sill
+    # hollow: the attendant rides in it; a pass-through window to the cab, the rear windows
+    cabin(v, w, 0.3, 1.4, 2.6, -1.95, 2.9, lower='paint2', win_top=2.2, front_belt=1.1,
+          rear='window')
     v.both((w + 0.01, 0.9, -1.95), (w + 0.02, 1.2, 2.9), 'stripe', faces=('e', 'w'))
     v.both((1.0, 0.9, 2.95), (1.01, 1.2, 4.0), 'stripe', faces=('e', 'w'))
     v.both((w + 0.01, 1.35, -0.4), (w + 0.02, 1.85, 1.1), 'decal', faces=('e', 'w'))
     v.both((w, 0.35, 1.2), (w + 0.01, 2.3, 2.6), 'door', faces=('e', 'w'))   # side entry
-    v.box((-1.0, 1.4, -1.97), (1.0, 2.2, -1.95), 'glass', faces=('n',))    # rear windows
     v.box((-0.02, 0.3, -1.97), (0.02, 2.3, -1.95), 'black', faces=('n',))
     v.box((-1.2, -0.05, -2.2), (1.2, 0.2, -1.95), 'chrome')
     v.box((-0.4, 0.3, -1.96), (0.4, 0.5, -1.95), 'plate', faces=('n',))
@@ -267,17 +347,13 @@ def police_suv():
     v = Vehicle()
     g = -0.39
     w = 1.0
-    v.box((-w, -0.05, -1.05), (w, 0.75, 4.1), 'paint2')                       # lower body
+    v.box((-w, -0.05, 2.85), (w, 0.75, 4.1), 'paint2')                        # engine bay
+    v.box((-w, -0.05, -1.05), (w, 0.75, -0.95), 'paint2')                     # rear sill
+    v.box((-w, -0.05, -0.95), (w, 0.0, 2.85), 'paint2')                       # underbody
     v.box((-w + 0.02, 0.75, 2.9), (w - 0.02, 0.95, 4.1), 'paint')             # hood
-    v.box((-w + 0.02, 0.75, -1.0), (w - 0.02, 0.95, -0.5), 'paint')           # tailgate top
-    # the greenhouse: pillars, glass and roof
-    v.box((-0.95, 0.95, -0.95), (0.95, 1.55, 2.85), 'interior', faces=('u', 'd'))
-    v.box((-0.9, 0.97, 2.85), (0.9, 1.5, 2.87), 'glass', faces=('s',))
-    v.box((-0.9, 1.0, -0.97), (0.9, 1.5, -0.95), 'glass', faces=('n',))
-    v.both((0.95, 1.0, -0.9), (0.96, 1.5, 2.8), 'glass', faces=('e', 'w'))
-    for z0, z1 in ((2.75, 2.9), (1.2, 1.3), (-0.95, -0.8)):
-        v.both((0.9, 0.95, z0), (0.97, 1.55, z1), 'paint')
-    v.box((-0.97, 1.55, -0.97), (0.97, 1.62, 2.9), 'paint')                   # roof
+    # the cabin: lower body in the second colour, the greenhouse in the first
+    cabin(v, w, 0.05, 0.95, 1.62, -0.95, 2.85, lower='paint2', upper='paint',
+          windows=[(-0.85, 1.2), (1.3, 2.75)], win_top=1.52, rear='window', driver_x=0.42)
     v.both((w, 0.2, 0.3), (w + 0.015, 0.6, 2.4), 'decal', faces=('e', 'w'))
     v.both((w, 0.62, -1.0), (w + 0.01, 0.68, 4.05), 'stripe', faces=('e', 'w'))
     v.box((-0.7, 0.4, 4.1), (0.7, 0.7, 4.12), 'grille', faces=('s',))
@@ -326,11 +402,10 @@ def ladder_truck():
     g = -0.55
     w = 1.25
     v.box((-0.5, -0.15, -3.2), (0.5, 0.25, 8.0), 'black')                      # frame
-    v.box((-w, 0.25, 4.65), (w, 2.55, 7.75), 'paint')                          # cab
+    v.box((-w, 0.25, 4.65), (w, 0.4, 7.75), 'paint')                           # cab sill
+    cabin(v, w, 0.4, 1.55, 2.55, 4.65, 7.75, windows=[(4.75, 5.55), (5.65, 7.55)],
+          win_top=2.4, driver_x=0.6)
     v.box((-w + 0.05, 2.55, 4.7), (w - 0.05, 2.62, 7.7), 'paint2')
-    v.box((-1.15, 1.55, 7.75), (1.15, 2.45, 7.77), 'glass', faces=('s',))
-    for z0, z1 in ((5.65, 7.55), (4.75, 5.55)):
-        v.both((w, 1.55, z0), (w + 0.02, 2.4, z1), 'glass')
     v.both((w, 0.6, 5.75), (w + 0.025, 1.0, 7.4), 'decal', faces=('e', 'w'))
     v.box((-0.7, 0.45, 7.75), (0.7, 1.35, 7.79), 'grille', faces=('s',))
     v.box((-1.3, -0.05, 7.75), (1.3, 0.35, 8.05), 'chrome')
@@ -403,10 +478,10 @@ def conventional_cab(v, w, front_z):
     hood = front_z - 1.8
     back = hood - 1.5
     v.box((-w, 0.25, hood), (w, 1.45, front_z), 'paint')                       # hood
-    v.box((-w, 0.25, back), (w, 2.45, hood), 'paint')                          # cab
+    v.box((-w, 0.25, back), (w, 0.4, hood), 'paint')                           # cab sill
+    cabin(v, w, 0.4, 1.5, 2.45, back, hood, windows=[(back + 0.2, hood - 0.15)], win_top=2.35,
+          rear='window', driver_x=0.45)
     v.box((-w + 0.05, 2.45, back + 0.05), (w - 0.05, 2.5, hood - 0.05), 'paint2')
-    v.box((-w + 0.1, 1.5, hood), (w - 0.1, 2.35, hood + 0.02), 'glass', faces=('s',))
-    v.both((w, 1.5, back + 0.2), (w + 0.02, 2.3, hood - 0.15), 'glass')
     v.both((w, 0.55, back + 0.25), (w + 0.025, 0.95, hood - 0.2), 'decal', faces=('e', 'w'))
     v.box((-0.7, 0.4, front_z), (0.7, 1.35, front_z + 0.03), 'grille', faces=('s',))
     v.box((-w - 0.05, -0.05, front_z), (w + 0.05, 0.3, front_z + 0.25), 'chrome')
@@ -574,16 +649,15 @@ def transit_bus():
     w = 1.27
     front, rear = 9.8, -3.4
     v.box((-w, -0.25, rear), (w, 0.6, front), 'paint')                         # skirt
-    v.box((-w, 0.6, rear), (w, 2.75, front), 'paint2')                         # body
+    v.box((-w, 0.6, rear), (w, 2.75, -2.2), 'paint2')                          # engine bay
+    pillars = [-2.75 + k * 1.35 for k in range(9)]
+    windows = [(p + 0.1, q) for p, q in zip(pillars, pillars[1:])] + [(pillars[-1] + 0.1, 9.6)]
+    cabin(v, w, 0.6, 1.25, 2.75, -2.2, front, lower='paint2', windows=windows, win_top=2.4,
+          front_belt=0.9, right_gaps=[(3.2, 4.3), (8.35, 9.4)], driver_x=0.75)
     v.box((-w + 0.05, 2.75, rear + 0.1), (w - 0.05, 2.85, front - 0.1), 'paint')
     v.box((-0.8, 2.85, 0.5), (0.8, 3.15, 4.0), 'chrome')                       # air conditioner
     v.both((w, 0.62, rear), (w + 0.01, 0.82, front), 'stripe', faces=('e', 'w'))
-    v.both((w, 1.25, -2.8), (w + 0.015, 2.4, 8.1), 'glass', faces=('e', 'w'))
-    for k in range(9):
-        z = -2.75 + k * 1.35
-        v.both((w + 0.015, 1.25, z), (w + 0.025, 2.4, z + 0.1), 'paint2', faces=('e', 'w'))
     v.both((w + 0.01, 0.9, 0.6), (w + 0.02, 1.2, 3.0), 'decal', faces=('e', 'w'))
-    v.box((-1.2, 0.9, front), (1.2, 2.4, front + 0.02), 'glass', faces=('s',))  # windshield
     v.box((-0.95, 2.45, front), (0.95, 2.7, front + 0.03), 'sign', faces=('s',))
     v.box((-0.9, 2.45, rear - 0.02), (0.9, 2.65, rear), 'sign', faces=('n',))
     v.box((-0.7, -0.15, front), (0.7, 0.2, front + 0.35), 'black')             # bike rack
@@ -1081,7 +1155,8 @@ def vehicle_json(name, v):
                       'defaultFuelQty': 15000, 'axleRatio': 3.55, 'brakingFactor': 1.0,
                       'dragCoefficient': 0.5, 'hasHeadlights': True, 'hasRunningLights': True,
                       'hasTurnSignals': True, 'litVariable': 'headlight',
-                      'panel': 'mts:default_car'},
+                      'panel': 'mts:default_car',
+                      'hudTexture': '%s:textures/guis/%s_hud.png' % (PACK, name)},
         'parts': parts,
         'collisionGroups': [{
             # No 'click': the body's boxes enclose the seats, and a body that took clicks
@@ -1101,6 +1176,7 @@ def vehicle_json(name, v):
             'lightObjects': v.lights,
         },
     }
+    definition['instruments'] = instruments(v)
     if 'animated' in spec:
         definition['rendering']['animatedObjects'] = spec['animated']()
     if 'initially_on' in spec:
@@ -1121,6 +1197,132 @@ def vehicle_json(name, v):
         groups = spec['hitches'](v) + groups
     definition['connectionGroups'] = groups
     return definition
+
+
+# ------------------------------------------------------------------------------------------
+# Instruments: our own, so the HUD is not blank without another pack's
+
+INSTRUMENT_SHEET = 1024           # IV's instrument sheets are this size
+DIAL = 128                        # each dial's cell, centred at (64 + 128 i, 64)
+NEEDLE = (8, 128)                 # the needle's cell, centred at (1012, 64)
+INSTRUMENTS = {
+    # name: (label, variable, degrees a unit, offset, ticks: (count, sweep), legend, description)
+    'csm_instrument_speedometer': ('CSM Speedometer', 'speed', 5.966, -120.0, (10, 240), 'MPH',
+                                   'Speed, 0 to 90 miles an hour.'),
+    'csm_instrument_tachometer': ('CSM Tachometer', 'engine_rpm', 0.045, -135.0, (7, 270), 'RPM',
+                                  'Engine speed, 0 to 6,000 revolutions a minute.'),
+    'csm_instrument_fuel': ('CSM Fuel Gauge', 'fuel', 90.0, -45.0, (5, 90), 'FUEL',
+                            'Fuel left, empty to full.'),
+}
+
+
+def instrument_sheet():
+    img = Image.new('RGBA', (INSTRUMENT_SHEET, INSTRUMENT_SHEET), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for i, (name, (_, _, _, offset, (count, sweep), legend, _)) in enumerate(INSTRUMENTS.items()):
+        cx, cy, r = 64 + DIAL * i, 64, 60
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(40, 42, 46, 255))
+        d.ellipse((cx - r + 4, cy - r + 4, cx + r - 4, cy + r - 4), fill=(16, 16, 18, 255))
+        for k in range(count):
+            a = math.radians(offset + sweep * k / (count - 1))
+            x0, y0 = cx + math.sin(a) * (r - 18), cy - math.cos(a) * (r - 18)
+            x1, y1 = cx + math.sin(a) * (r - 7), cy - math.cos(a) * (r - 7)
+            d.line((x0, y0, x1, y1), fill=(235, 235, 235, 255), width=3)
+            for kk in (0.5,):
+                if k < count - 1:
+                    b = math.radians(offset + sweep * (k + kk) / (count - 1))
+                    d.line((cx + math.sin(b) * (r - 12), cy - math.cos(b) * (r - 12),
+                            cx + math.sin(b) * (r - 7), cy - math.cos(b) * (r - 7)),
+                           fill=(170, 170, 170, 255), width=2)
+        if legend == 'FUEL':
+            d.line((cx + math.sin(math.radians(offset)) * (r - 18),
+                    cy - math.cos(math.radians(offset)) * (r - 18),
+                    cx + math.sin(math.radians(offset)) * (r - 7),
+                    cy - math.cos(math.radians(offset)) * (r - 7)),
+                   fill=(220, 40, 30, 255), width=4)
+        lc.draw_text_centred(img, legend, cx, cy + 24, (220, 220, 220), 2)
+    # the needle: pointing up from the centre of its cell, which IV turns about that centre
+    nx, ny = 1012, 64
+    d.rectangle((nx - 2, ny - 52, nx + 1, ny), fill=(255, 90, 40, 255))
+    d.ellipse((nx - 4, ny - 4, nx + 3, ny + 3), fill=(200, 200, 200, 255))
+    return img
+
+
+# The HUD: our own panel, with the keys that work the vehicle printed either side of the gauges.
+# IV draws its top half by default (the half-HUD), so everything sits in y 0 to 70.
+SWITCH_LABELS = {'EMERLTS': 'LIGHTBAR', 'siren': 'WAIL', 'siren_yelp': 'YELP',
+                 'siren_hilo': 'HI-LO', 'AERIAL': 'LADDER', 'BEACONS': 'BEACONS',
+                 'DUMP': 'DUMP BODY', 'BOOM': 'BOOM', 'BED': 'BED', 'DOORS': 'DOORS',
+                 'TSP': 'TSP'}
+CONTROLS = [('W S', 'GAS BRAKE'), ('G', 'LIGHTS'), ('C', 'HORN'), ('N', 'PARK'),
+            ('X', 'VIEW'), ('SHIFT', 'GET OUT')]
+
+
+def hud_texture(switches, lit=False):
+    img = Image.new('RGBA', (512, 256), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    base = (58, 62, 68) if not lit else (70, 74, 82)
+    for y in range(140):
+        k = 1.0 - 0.18 * y / 140
+        d.line((0, y, 399, y), fill=tuple(int(c * k) for c in base) + (255,))
+    d.rectangle((0, 0, 399, 139), outline=(24, 26, 30, 255), width=3)
+    d.rectangle((3, 3, 396, 136), outline=(96, 100, 108, 255), width=1)
+    for x, y in ((7, 7), (392, 7), (7, 132), (392, 132)):
+        d.ellipse((x - 2, y - 2, x + 2, y + 2), fill=(130, 134, 140, 255))
+    key = (255, 200, 40) if not lit else (255, 220, 90)
+    text = (225, 228, 232)
+    dim = (160, 166, 174)
+    # left: the panel and what it switches
+    d.rectangle((10, 8, 112, 66), fill=(30, 32, 36, 255))
+    lc.draw_text(img, 'U', 15, 12, key, 1)
+    lc.draw_text(img, 'PANEL', 27, 12, text, 1)
+    for i, sw in enumerate(switches[:5]):
+        lc.draw_text(img, SWITCH_LABELS.get(sw, sw.upper()), 27, 22 + 8 * i, dim, 1)
+    # right: the controls
+    d.rectangle((288, 8, 390, 66), fill=(30, 32, 36, 255))
+    for i, (k, what) in enumerate(CONTROLS):
+        lc.draw_text(img, k, 293, 12 + 9 * i, key, 1)
+        lc.draw_text(img, what, 293 + lc.text_width(k) + 6, 12 + 9 * i, text, 1)
+    return img
+
+
+def instrument_json(name):
+    label, variable, factor, offset, _, _, description = INSTRUMENTS[name]
+    i = list(INSTRUMENTS).index(name)
+    return {
+        'components': [
+            {'scale': 1.0, 'textureXCenter': 64 + DIAL * i, 'textureYCenter': 64,
+             'textureWidth': DIAL, 'textureHeight': DIAL},
+            {'scale': 1.0, 'textureXCenter': 1012, 'textureYCenter': 64,
+             'textureWidth': NEEDLE[0], 'textureHeight': NEEDLE[1],
+             'animations': [{'animationType': 'rotation', 'variable': variable,
+                             'centerPoint': [0.0, 0.0, 0.0], 'axis': [0.0, 0.0, factor],
+                             'offset': offset}]},
+        ],
+        'textureName': 'instruments.png',
+        'general': {'name': label, 'description': description, 'stackSize': 64,
+                    'materialLists': [['minecraft:iron_ingot:0:1', 'minecraft:glass_pane:0:1',
+                                       'minecraft:redstone:0:1']]},
+    }
+
+
+def instrument_icon(sheet, name):
+    i = list(INSTRUMENTS).index(name)
+    dial = sheet.crop((DIAL * i, 0, DIAL * (i + 1), DIAL))
+    needle = sheet.crop((1008, 0, 1016, DIAL))
+    dial.alpha_composite(needle.rotate(-30, center=(4, 64)), (60, 0))
+    return dial.resize((16, 16), Image.LANCZOS)
+
+
+def instruments(v):
+    """The speedometer, tachometer and fuel gauge on the HUD."""
+    out = []
+    for k, name in enumerate(INSTRUMENTS):
+        # HUD only: scale 0 draws nothing in the cab. Placed on the dash they never showed in
+        # game, whichever way they were turned, so they stay off it until that is understood.
+        out.append({'hudX': 140 + 60 * k, 'hudY': 38, 'hudScale': 0.4,
+                    'defaultInstrument': '%s:%s' % (PACK, name), 'pos': [0, 0, 0], 'scale': 0.0})
+    return out
 
 
 # ------------------------------------------------------------------------------------------
@@ -1174,6 +1376,20 @@ def catalogue():
     ImageDraw.Draw(seat_icon).rectangle((4, 2, 7, 12), fill=(36, 36, 40, 255))
     ImageDraw.Draw(seat_icon).rectangle((4, 10, 12, 12), fill=(36, 36, 40, 255))
     item('parts', 'csm_vehicle_seat', seat_icon)
+
+    for name in FLEET:
+        switches = FLEET[name].get('switches', ['EMERLTS', 'siren', 'siren_yelp', 'siren_hilo'])
+        put(os.path.join(PACK_DIR, 'textures', 'guis', name + '_hud.png'),
+            vp.png_bytes(hud_texture(switches)))
+        put(os.path.join(PACK_DIR, 'textures', 'guis', name + '_hud_lit.png'),
+            vp.png_bytes(hud_texture(switches, lit=True)))
+
+    sheet = instrument_sheet()
+    put(os.path.join(PACK_DIR, 'textures', 'instruments.png'), vp.png_bytes(sheet))
+    for name in INSTRUMENTS:
+        put(os.path.join(PACK_DIR, 'jsondefs', 'instruments', name + '.json'),
+            vp.json_bytes(instrument_json(name)))
+        item('instruments', name, instrument_icon(sheet, name))
 
     for name in ENGINES:
         put(os.path.join(PACK_DIR, 'jsondefs', 'parts', name + '.json'),

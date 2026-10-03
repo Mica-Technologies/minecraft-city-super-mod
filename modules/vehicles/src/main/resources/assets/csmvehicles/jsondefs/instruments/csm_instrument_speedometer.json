@@ -1,0 +1,48 @@
+{
+  "components": [
+    {
+      "scale": 1.0,
+      "textureXCenter": 64,
+      "textureYCenter": 64,
+      "textureWidth": 128,
+      "textureHeight": 128
+    },
+    {
+      "scale": 1.0,
+      "textureXCenter": 1012,
+      "textureYCenter": 64,
+      "textureWidth": 8,
+      "textureHeight": 128,
+      "animations": [
+        {
+          "animationType": "rotation",
+          "variable": "speed",
+          "centerPoint": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            5.966
+          ],
+          "offset": -120.0
+        }
+      ]
+    }
+  ],
+  "textureName": "instruments.png",
+  "general": {
+    "name": "CSM Speedometer",
+    "description": "Speed, 0 to 90 miles an hour.",
+    "stackSize": 64,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:1",
+        "minecraft:glass_pane:0:1",
+        "minecraft:redstone:0:1"
+      ]
+    ]
+  }
+}
