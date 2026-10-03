@@ -2134,6 +2134,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         int ordinal = (int) value;
         plan.getPriority().setTriggerMovement(
             ordinal >= 0 && ordinal < movements.length ? movements[ordinal] : null);
+        plan.getPriority().setTriggerOnDetectors(false);
         break;
       }
       case "pri.phase":
@@ -2147,6 +2148,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         break;
       case "pri.minCycles":
         plan.getPriority().setMinCyclesBetweenGrants((int) value);
+        break;
+      case "pri.detectors":
+        // The trigger circuit's preempt detectors, seeing a bus, call priority instead of its zone.
+        plan.getPriority().setTriggerOnDetectors(value != 0);
+        break;
+      case "pri.queueJump":
+        plan.getPriority().setQueueJump(value);
         break;
       case "co.todEnabled":
         plan.setTimeOfDayPatterns(value != 0);
@@ -2858,6 +2866,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       allPositions.addAll(circuit.getProtectedSignals());
       allPositions.addAll(circuit.getBeaconSignals());
       allPositions.addAll(circuit.getNoTurnBlankoutSignals());
+      allPositions.addAll(circuit.getQueueJumpSignals());
       allPositions.addAll(circuit.getSensors());
       for (net.minecraft.util.math.BlockPos devicePos : allPositions) {
         circuit.unlinkDevice(devicePos);

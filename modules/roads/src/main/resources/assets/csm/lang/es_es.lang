@@ -169,6 +169,7 @@ tile.controllableverticalrightaddonsignalgray.name=Complemento de Semáforo Vert
 tile.controllableverticalrightdoubleaddonsignal.name=Complemento Doble de Semáforo Vertical Flecha Derecha
 tile.controllableverticalrightdoubleaddonsignalgray.name=Complemento Doble de Semáforo Vertical Derecha (Gris)
 tile.controllableverticalrightflashyellowaddonsignal.name=Complemento de Semáforo Vertical (Flecha Derecha, Ámbar Intermitente)
+tile.controllableverticalqueuejumpaddonsignal.name=Complemento de Semáforo Vertical (Salto de Cola de Transporte Público)
 tile.controllableverticalrightflashyellowsignal.name=Semáforo Vertical (Flecha Derecha, Ámbar Intermitente)
 tile.controllableverticalrightflashyellowsrsignal.name=Semáforo Vertical (Flecha Derecha, Ámbar Intermitente, Rojo Circular)
 tile.controllableverticalrightsignal.name=Semáforo Vertical (Flecha Derecha)

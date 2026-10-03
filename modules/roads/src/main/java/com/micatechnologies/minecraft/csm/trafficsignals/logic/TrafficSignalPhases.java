@@ -248,6 +248,7 @@ public class TrafficSignalPhases {
       offPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
       offPhase.addOffSignals(circuit.getPedestrianAccessorySignals());
       offPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
+      offPhase.addOffSignals(circuit.getQueueJumpSignals());
     }
     phases[PHASE_INDEX_OFF] = offPhase;
 
@@ -301,6 +302,7 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
         flashPhase1.addOffSignals(circuit.getNoTurnBlankoutSignals());
+        flashPhase1.addOffSignals(circuit.getQueueJumpSignals());
         if (hasProtectedSignals) {
           flashPhase1.addRedSignals(flashingRightSignals.getFirst());
           flashPhase1.addOffSignals(flashingRightSignals.getSecond());
@@ -329,6 +331,7 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(circuit.getPedestrianBeaconSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
         flashPhase1.addOffSignals(circuit.getNoTurnBlankoutSignals());
+        flashPhase1.addOffSignals(circuit.getQueueJumpSignals());
       } else {
         // Get should flash filtered signal lists
         Tuple<List<BlockPos>, List<BlockPos>> flashingLeftSignals
@@ -373,6 +376,7 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
         flashPhase1.addOffSignals(circuit.getNoTurnBlankoutSignals());
+        flashPhase1.addOffSignals(circuit.getQueueJumpSignals());
       }
       circuitIndex++;
     }

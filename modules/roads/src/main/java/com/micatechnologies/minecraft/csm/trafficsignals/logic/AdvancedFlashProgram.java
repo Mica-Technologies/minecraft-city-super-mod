@@ -140,6 +140,7 @@ public class AdvancedFlashProgram {
       phase.addOffSignals(circuit.getPedestrianAccessorySignals());
       phase.addOffSignals(circuit.getPedestrianBeaconSignals());
       phase.addOffSignals(circuit.getNoTurnBlankoutSignals());
+      phase.addOffSignals(circuit.getQueueJumpSignals());
     }
     return phase;
   }

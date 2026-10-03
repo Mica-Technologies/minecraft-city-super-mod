@@ -589,14 +589,15 @@ thing.
 ### Our model
 
 `TrafficSignalPriorityPlan` (NBT key `pri` inside the phase plan) holds a trigger — **a circuit
-index plus a movement**, exactly how railroad and emergency preempts are triggered, so no new
-detector block exists — a transit phase, and three bounds:
+index plus a movement**, exactly how railroad and emergency preempts are triggered, **or DET**, the
+circuit's preempt detectors seeing a bus (below) — a transit phase, and four bounds:
 
 | Setting | Default | Effect |
 |---|---|---|
 | `maxExtension` | 200 ticks (10 s) | how far past its ceiling a transit green may be held |
 | `maxEarlyReturn` | 200 ticks (10 s) | how much may be taken off a conflicting phase's ceiling |
 | `minCyclesBetweenGrants` | 2 | rate limit, counted in whole cycles |
+| `queueJump` | 80 ticks (4 s), at most 10 s | bus-only green ahead of the general heads; 0 runs none |
 
 `RingBarrierState.computePriority` decides once per tick whether a call is being honoured, before
 any phase is timed. `applyPriorityToMaxGreen` then adjusts one phase's ceiling, immediately after
@@ -607,6 +608,42 @@ any phase is timed. `applyPriorityToMaxGreen` then adjusts one phase's ceiling, 
   minimum green;
 - a phase that conflicts with nothing is left alone — shortening it would rob a movement that was
   never in the way.
+
+### Detector calls (DET)
+
+The preempt detector (`TRAFFIC_SIGNAL_SYSTEM.md`, "The preempt detector") tells an emergency
+emitter from a transit one, as a real optical detector does by the strobe's rate. A transit
+emitter is a separate call, `TileEntityPreemptDetector.isTransitCalled()`, counted into the sensor
+summary as `getTransitDetectorCalls()`. It never calls a preempt and never lights the confirmation
+lamp, which is for the emergency driver. With **Circuit / move** set to DET
+(`triggerOnDetectors`, NBT `td`), a circuit's detectors seeing a bus call priority instead of its
+sensor zone. CSM: Vehicles' Metro bus carries such an emitter.
+
+A priority call is also a **vehicle call on the transit phase** (`transitCall`), granted or not:
+the bus is a vehicle waiting there whether or not a sensor counts it, and while it is in view it
+holds the green as an actuation would. Without that a bus with no sensor under it was never
+served at all. Only the extension, the early return and the queue jump wait for a grant.
+
+### The queue jump
+
+When the transit phase's circuit has **queue jump heads** linked (`SIGNAL_SIDE.QUEUE_JUMP`, the
+circuit's `qjs` list; the one-section *Vertical Traffic Signal Add-On (Transit Queue Jump)*
+showing the white vertical transit bar), a granted call runs a queue jump: the transit phase
+starts its green with those heads lit and its general heads still red, for `queueJump` ticks, so
+the bus leaves ahead of the queue beside it.
+
+It is the delayed green (DLY GRN) mechanism with the bar lit. `startGreen` sets the ring's delay
+to the longer of the delayed green and the jump (`RingRuntime.delayLength`, `queueJump`); the
+green clocks start when it ends, so the phase still gets its whole minimum green, and a pedestrian
+walk runs through it. `describe` reports `ServedMovement.queueJump` while it runs, and
+`AdvancedPhaseBuilder.applyQueueJump` lights that circuit's queue jump heads. They are dark in the
+baseline, so the jump ends lit to dark, never green to red: the output clearance and the MMU see
+nothing to clear.
+
+Only a green that **starts** while the grant holds jumps: a bus arriving on a green already
+running has nothing to jump. Without queue jump heads on the circuit nothing is held, since a jump
+would hold the general heads red with nothing shown to the bus. The heads are dark in every other
+mode; standard mode has no transit priority at all.
 
 ### Why this is safe to bolt onto the ring engine
 
@@ -644,15 +681,18 @@ precedence mechanism was invented for it.
 ### GUI
 
 Its own **TSP** screen, not a block on the PREEMPT page: the preempt table already fills the LCD
-and a block hanging off the bottom of it ran into the keypad. Six cells — enable, trigger circuit
-and movement, transit phase, extension and early return, minimum cycles.
+and a block hanging off the bottom of it ran into the keypad. Seven cells — enable, trigger circuit
+and movement (the movements, then DET), transit phase, extension and early return, minimum cycles
+and the queue jump.
 
 ### Tests
 
 `TrafficSignalPriorityPlanTest` covers the extension arithmetic and its cap, early return applying
 only to conflicting phases, the minimum-green floor, the cycle-counted rate limit and its free-mode
 exemption, `isRunnable` gating, and the round trip — including a plan saved before priority existed
-reading back with it off.
+reading back with it off. `TransitQueueJumpTest` drives the engine: a bus seen by the detectors
+gets its jump (bar lit, general head red, the green exactly the jump later, the bar dark after),
+a bus no sensor counts still calls its phase, and no heads, no bus or a zero jump hold nothing.
 
 ## 6. Roadmap
 
@@ -686,6 +726,7 @@ through an injectable `DemandSource` (production wraps the world; tests supply c
 - `TrafficTimeOfDayScheduleTest`, `CoordinationPatternTest` and `RingBarrierStateCoordinationTest`
   — the time-of-day schedule and the cycle-boundary pattern adoption (§5c).
 - `TrafficSignalPriorityPlanTest` — the transit priority arithmetic and its guards (§5d).
+- `TransitQueueJumpTest` — detector-called priority and the queue jump (§5d).
 - `AdvancedPhaseBuilderTest` — the pure `applyFyaLensState(...)` FYA decision (all four outcomes),
   the pure `overlapState(...)` decision plus a builder integration test that an overlap drives a
   different circuit's heads, `TrafficSignalProgrammedOverlap` NBT round-trip, and

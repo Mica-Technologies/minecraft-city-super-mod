@@ -2035,6 +2035,27 @@ public final class TrafficSignalBlocks {
           .addon(true)
           .build();
 
+  /**
+   * The transit queue jump add-on: one section showing the white vertical transit bar, hung under
+   * a general head. Lit only while transit signal priority holds the general heads red to let a
+   * bus leave first (ADVANCED mode); dark at every other time.
+   */
+  public static final BlockControllableSignal VERTICAL_QUEUE_JUMP_ADD_ON_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllableverticalqueuejumpaddonsignal",
+          SIGNAL_SIDE.QUEUE_JUMP,
+          false,
+          () -> {
+            return new TrafficSignalSectionInfo[] {
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
+            TrafficSignalBulbColor.GREEN, false)
+            };
+          })
+          .signalYOffset(-7.9f)
+          .addon(true)
+          .build();
+
   public static final BlockControllableSignal VERTICAL_RIGHT_FLASH_YELLOW_SR_SIGNAL =
       new BlockControllableSignal.Builder(
           "controllableverticalrightflashyellowsrsignal",

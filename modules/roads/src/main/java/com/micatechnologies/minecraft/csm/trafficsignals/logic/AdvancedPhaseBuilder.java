@@ -84,6 +84,8 @@ public final class AdvancedPhaseBuilder {
     TrafficSignalPhase phase = redBaseline(circuits);
     applyServed(phase, plan, circuits, ring1);
     applyServed(phase, plan, circuits, ring2);
+    applyQueueJump(phase, plan, circuits, ring1);
+    applyQueueJump(phase, plan, circuits, ring2);
     List<RingBarrierState.ServedMovement> served = new ArrayList<>(2);
     if (ring1 != null) {
       served.add(ring1);
@@ -595,6 +597,30 @@ public final class AdvancedPhaseBuilder {
     }
   }
 
+  /**
+   * Lights the queue jump heads of a phase whose green is being held for a bus: the white transit
+   * bar, while the phase's general heads are still red. They are dark the rest of the time (the
+   * baseline), so ending the jump takes them from lit to dark, never green to red.
+   */
+  private static void applyQueueJump(TrafficSignalPhase phase,
+      TrafficSignalProgrammedPhasePlan plan, TrafficSignalControllerCircuits circuits,
+      RingBarrierState.ServedMovement movement) {
+    if (movement == null || !movement.queueJump) {
+      return;
+    }
+    TrafficSignalProgrammedPhase programmed = plan.getPhase(movement.phaseNumber);
+    if (programmed == null) {
+      return;
+    }
+    int ci = programmed.getCircuitIndex();
+    if (ci < 0 || ci >= circuits.getCircuitCount()) {
+      return;
+    }
+    List<BlockPos> heads = circuits.getCircuit(ci).getQueueJumpSignals();
+    phase.removeSignals(heads);
+    phase.addGreenSignals(heads);
+  }
+
   /** Creates the all-red / don't-walk baseline across every circuit. */
   private static TrafficSignalPhase redBaseline(TrafficSignalControllerCircuits circuits) {
     TrafficSignalPhase phase = new TrafficSignalPhase(
@@ -612,6 +638,7 @@ public final class AdvancedPhaseBuilder {
       phase.addDontWalkSignals(circuit.getPedestrianBeaconSignals());
       phase.addOffSignals(circuit.getBeaconSignals());
       phase.addOffSignals(circuit.getNoTurnBlankoutSignals());
+      phase.addOffSignals(circuit.getQueueJumpSignals());
     }
     return phase;
   }

@@ -169,6 +169,7 @@ tile.controllableverticalrightaddonsignalgray.name=Vertikal Höger Tilläggssign
 tile.controllableverticalrightdoubleaddonsignal.name=Vertikal Signal Högerpil Dubbelt Tillägg
 tile.controllableverticalrightdoubleaddonsignalgray.name=Vertikal Höger Dubbel Tilläggssignal (Grå)
 tile.controllableverticalrightflashyellowaddonsignal.name=Vertikal Trafiksignal-Tillägg (Högerpil, Blinkande Gul)
+tile.controllableverticalqueuejumpaddonsignal.name=Vertikal Trafiksignal-Tillägg (Kollektivtrafikens Köhopp)
 tile.controllableverticalrightflashyellowsignal.name=Vertikal Trafiksignal (Högerpil, Blinkande Gul)
 tile.controllableverticalrightflashyellowsrsignal.name=Vertikal Trafiksignal (Högerpil, Blinkande Gul, Rund Röd)
 tile.controllableverticalrightsignal.name=Vertikal Trafiksignal (Högerpil)

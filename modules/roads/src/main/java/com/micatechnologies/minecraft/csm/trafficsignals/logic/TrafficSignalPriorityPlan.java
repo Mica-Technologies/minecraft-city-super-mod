@@ -23,6 +23,16 @@ import net.minecraft.nbt.NBTTagCompound;
  * {@code pedDone}, and priority only ever moves the <em>maximum</em>. That is what makes this
  * safe to bolt onto the ring engine rather than a change to how it clears.</p>
  *
+ * <p>A call comes from the trigger circuit's sensor zone, or from its preempt detectors seeing
+ * a transit emitter ({@link #isTriggerOnDetectors()}), which is how a bus asks without a sensor
+ * that would also count every car.</p>
+ *
+ * <p>A <b>queue jump</b> goes with a granted call when the transit phase's circuit has queue jump
+ * heads linked: the transit phase starts its green with those heads showing the white transit
+ * bar while its general heads are held red for {@link #getQueueJump()}, so the bus leaves ahead
+ * of the queue beside it. It runs as a delayed green does, so the green clocks start after it and
+ * the phase still gets its whole minimum green.</p>
+ *
  * <p>Priority is also rate limited. Without a limit a frequent route holds a corridor open
  * permanently, which is the failure every real deployment guards against.</p>
  *
@@ -37,6 +47,11 @@ public class TrafficSignalPriorityPlan {
   public static final long DEFAULT_MAX_EARLY_RETURN = 200L;
   /** Default rate limit: at most one grant every other cycle. */
   public static final int DEFAULT_MIN_CYCLES_BETWEEN_GRANTS = 2;
+  /** Default queue jump: 4 seconds of bus-only green, about what a bus needs to clear the stop
+   * line and pull ahead. */
+  public static final long DEFAULT_QUEUE_JUMP = 80L;
+  /** The longest queue jump, 10 seconds: past that the queue beside the bus is simply held. */
+  public static final long MAX_QUEUE_JUMP = 200L;
 
   private static final String K_ENABLED = "en";
   private static final String K_CIRCUIT = "tc";
@@ -45,6 +60,8 @@ public class TrafficSignalPriorityPlan {
   private static final String K_EXTENSION = "ex";
   private static final String K_EARLY_RETURN = "er";
   private static final String K_MIN_CYCLES = "mc";
+  private static final String K_DETECTORS = "td";
+  private static final String K_QUEUE_JUMP = "qj";
 
   private boolean enabled = false;
   /** Circuit index whose sensor zone calls priority, or -1 if unassigned. */
@@ -55,6 +72,9 @@ public class TrafficSignalPriorityPlan {
   private long maxExtension = DEFAULT_MAX_EXTENSION;
   private long maxEarlyReturn = DEFAULT_MAX_EARLY_RETURN;
   private int minCyclesBetweenGrants = DEFAULT_MIN_CYCLES_BETWEEN_GRANTS;
+  /** Whether the trigger circuit's preempt detectors call priority instead of its zone. */
+  private boolean triggerOnDetectors = false;
+  private long queueJump = DEFAULT_QUEUE_JUMP;
 
   public boolean isEnabled() {
     return enabled;
@@ -79,6 +99,23 @@ public class TrafficSignalPriorityPlan {
   public void setTriggerMovement(TrafficSignalPhaseMovement triggerMovement) {
     this.triggerMovement =
         triggerMovement == null ? TrafficSignalPhaseMovement.THROUGH : triggerMovement;
+  }
+
+  public boolean isTriggerOnDetectors() {
+    return triggerOnDetectors;
+  }
+
+  public void setTriggerOnDetectors(boolean triggerOnDetectors) {
+    this.triggerOnDetectors = triggerOnDetectors;
+  }
+
+  /** @return the queue jump's length in ticks; 0 runs none */
+  public long getQueueJump() {
+    return queueJump;
+  }
+
+  public void setQueueJump(long queueJump) {
+    this.queueJump = Math.max(0L, Math.min(MAX_QUEUE_JUMP, queueJump));
   }
 
   public int getTransitPhase() {
@@ -184,6 +221,8 @@ public class TrafficSignalPriorityPlan {
     c.setLong(K_EXTENSION, maxExtension);
     c.setLong(K_EARLY_RETURN, maxEarlyReturn);
     c.setInteger(K_MIN_CYCLES, minCyclesBetweenGrants);
+    c.setBoolean(K_DETECTORS, triggerOnDetectors);
+    c.setLong(K_QUEUE_JUMP, queueJump);
     return c;
   }
 
@@ -208,6 +247,8 @@ public class TrafficSignalPriorityPlan {
     plan.minCyclesBetweenGrants = c.hasKey(K_MIN_CYCLES)
         ? c.getInteger(K_MIN_CYCLES)
         : DEFAULT_MIN_CYCLES_BETWEEN_GRANTS;
+    plan.triggerOnDetectors = c.getBoolean(K_DETECTORS);
+    plan.setQueueJump(c.hasKey(K_QUEUE_JUMP) ? c.getLong(K_QUEUE_JUMP) : DEFAULT_QUEUE_JUMP);
     return plan;
   }
 }

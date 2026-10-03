@@ -95,6 +95,8 @@ public class TrafficSignalControllerCircuit {
 
   private static final String NBT_KEY_NO_TURN_BLANKOUT_SIGNAL_LIST = "ntb";
 
+  private static final String NBT_KEY_QUEUE_JUMP_SIGNAL_LIST = "qjs";
+
   private static final String NBT_KEY_SENSOR_LIST = "se";
   private static final String LEGACY_NBT_KEY_SENSOR_LIST = "sensorList";
 
@@ -172,6 +174,13 @@ public class TrafficSignalControllerCircuit {
   private final List<BlockPos> beaconSignals = new ArrayList<>();
 
   private final List<BlockPos> noTurnBlankoutSignals = new ArrayList<>();
+
+  /**
+   * Queue jump heads: the white transit bar a bus gets ahead of the general heads when transit
+   * signal priority runs a queue jump on this circuit's phase. Dark at every other time, and in
+   * every mode but ADVANCED.
+   */
+  private final List<BlockPos> queueJumpSignals = new ArrayList<>();
 
   /**
    * The list of {@link BlockPos}es of sensors in the circuit.
@@ -265,6 +274,12 @@ public class TrafficSignalControllerCircuit {
       circuit.noTurnBlankoutSignals.addAll(
           SerializationUtils.getBlockPosListFromBlockPosNBTArray(
               nbt.getTag(NBT_KEY_NO_TURN_BLANKOUT_SIGNAL_LIST)));
+    }
+
+    if (nbt.hasKey(NBT_KEY_QUEUE_JUMP_SIGNAL_LIST)) {
+      circuit.queueJumpSignals.addAll(
+          SerializationUtils.getBlockPosListFromBlockPosNBTArray(
+              nbt.getTag(NBT_KEY_QUEUE_JUMP_SIGNAL_LIST)));
     }
 
     // Deserialize sensors
@@ -483,6 +498,10 @@ public class TrafficSignalControllerCircuit {
     return noTurnBlankoutSignals;
   }
 
+  public List<BlockPos> getQueueJumpSignals() {
+    return queueJumpSignals;
+  }
+
   /**
    * Gets the list of {@link BlockPos}es of sensors in the circuit.
    *
@@ -516,6 +535,7 @@ public class TrafficSignalControllerCircuit {
     int standardNorth = 0, leftNorth = 0, protectedNorth = 0, rightNorth = 0;
     int standardSouth = 0, leftSouth = 0, protectedSouth = 0, rightSouth = 0;
     int preemptDetectorCalls = 0;
+    int transitDetectorCalls = 0;
 
     // Loop through each sensor and count appropriately
     for (BlockPos sensorPos : sensors) {
@@ -530,6 +550,9 @@ public class TrafficSignalControllerCircuit {
         // preempts that trigger on this circuit's detectors.
         if (((TileEntityPreemptDetector) tileEntity).isCalled()) {
           preemptDetectorCalls++;
+        }
+        if (((TileEntityPreemptDetector) tileEntity).isTransitCalled()) {
+          transitDetectorCalls++;
         }
       } else if (tileEntity instanceof TileEntityTrafficSignalSensor) {
         TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
@@ -576,7 +599,8 @@ public class TrafficSignalControllerCircuit {
         leftAll, leftEast, leftWest, leftNorth, leftSouth, protectedAll,
         protectedEast, protectedWest, protectedNorth, protectedSouth,
         rightAll, rightEast, rightWest, rightNorth, rightSouth)
-        .withPreemptDetectorCalls(preemptDetectorCalls);
+        .withPreemptDetectorCalls(preemptDetectorCalls)
+        .withTransitDetectorCalls(transitDetectorCalls);
     cachedSensorSummaryTick = currentTick;
     return cachedSensorSummary;
   }
@@ -670,6 +694,7 @@ public class TrafficSignalControllerCircuit {
     protectedSignals.forEach(action);
     beaconSignals.forEach(action);
     noTurnBlankoutSignals.forEach(action);
+    queueJumpSignals.forEach(action);
   }
 
   /**
@@ -695,6 +720,7 @@ public class TrafficSignalControllerCircuit {
         protectedSignals.contains(devicePos) ||
         beaconSignals.contains(devicePos) ||
         noTurnBlankoutSignals.contains(devicePos) ||
+        queueJumpSignals.contains(devicePos) ||
         sensors.contains(devicePos);
   }
 
@@ -922,6 +948,8 @@ public class TrafficSignalControllerCircuit {
       return linkBeaconSignal(devicePos);
     } else if (side == SIGNAL_SIDE.NO_TURN_BLANKOUT) {
       return linkNoTurnBlankoutSignal(devicePos);
+    } else if (side == SIGNAL_SIDE.QUEUE_JUMP) {
+      return linkQueueJumpSignal(devicePos);
     } else if (side == SIGNAL_SIDE.NA_SENSOR) {
       return linkSensor(devicePos);
     }
@@ -1013,6 +1041,10 @@ public class TrafficSignalControllerCircuit {
     return noTurnBlankoutSignals.add(signalPos);
   }
 
+  public boolean linkQueueJumpSignal(BlockPos signalPos) {
+    return queueJumpSignals.add(signalPos);
+  }
+
   /**
    * Links the specified signal {@link BlockPos} to this circuit as a flashing left signal
    *
@@ -1058,6 +1090,7 @@ public class TrafficSignalControllerCircuit {
       removed |= protectedSignals.remove(blockPos);
       removed |= beaconSignals.remove(blockPos);
       removed |= noTurnBlankoutSignals.remove(blockPos);
+      removed |= queueJumpSignals.remove(blockPos);
       removed |= sensors.remove(blockPos);
     }
     return removed;
@@ -1096,6 +1129,7 @@ public class TrafficSignalControllerCircuit {
         protectedSignals.size() +
         beaconSignals.size() +
         noTurnBlankoutSignals.size() +
+        queueJumpSignals.size() +
         sensors.size();
   }
 
@@ -1226,6 +1260,9 @@ public class TrafficSignalControllerCircuit {
     compound.setTag(NBT_KEY_NO_TURN_BLANKOUT_SIGNAL_LIST,
         SerializationUtils.getBlockPosNBTArrayFromBlockPosList(noTurnBlankoutSignals));
 
+    compound.setTag(NBT_KEY_QUEUE_JUMP_SIGNAL_LIST,
+        SerializationUtils.getBlockPosNBTArrayFromBlockPosList(queueJumpSignals));
+
     // Serialize sensors
     compound.setTag(NBT_KEY_SENSOR_LIST,
         SerializationUtils.getBlockPosNBTArrayFromBlockPosList(sensors));
@@ -1246,7 +1283,7 @@ public class TrafficSignalControllerCircuit {
     return Objects.hash(flashingLeftSignals, flashingRightSignals, leftSignals, rightSignals,
         throughSignals,
         pedestrianSignals, pedestrianBeaconSignals, pedestrianAccessorySignals, protectedSignals,
-        beaconSignals, noTurnBlankoutSignals, sensors);
+        beaconSignals, noTurnBlankoutSignals, queueJumpSignals, sensors);
   }
 
   /**
@@ -1280,6 +1317,7 @@ public class TrafficSignalControllerCircuit {
         Objects.equals(protectedSignals, that.protectedSignals) &&
         Objects.equals(beaconSignals, that.beaconSignals) &&
         Objects.equals(noTurnBlankoutSignals, that.noTurnBlankoutSignals) &&
+        Objects.equals(queueJumpSignals, that.queueJumpSignals) &&
         Objects.equals(sensors, that.sensors);
   }
 

@@ -818,6 +818,7 @@ public class TrafficSignalControllerTickerUtilities {
     // circuit (the active ALL_LEFTS / ALL_THROUGHS_* / directional branches) do call the
     // helper instead, so the sign lights only when contradicting indication exists.
     destinationPhase.addDontWalkSignals(circuit.getNoTurnBlankoutSignals());
+    destinationPhase.addOffSignals(circuit.getQueueJumpSignals());
   }
 
   /**

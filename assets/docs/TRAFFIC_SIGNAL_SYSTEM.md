@@ -1054,6 +1054,13 @@ A detector is called by:
 It looks the way it faces: place it standing on the approach it serves, facing the junction. The
 white confirmation lamp underneath (`called`, written only on a change) lights while it has a call.
 
+A **transit** emitter (a bus) is a separate call (`isTransitCalled()`, counted as
+`getTransitDetectorCalls()`): it never calls a preempt and never lights the lamp. It calls ADVANCED
+mode's transit signal priority when its trigger is DET, and with the **Transit Queue Jump add-on**
+(`SIGNAL_SIDE.QUEUE_JUMP`, one section showing the white vertical transit bar) under a head on the
+transit phase's circuit, a granted call lets the bus leave a few seconds before the general green.
+See `ADVANCED_MODE_ASC3.md` §5d.
+
 ### Programming GUI ("CSM ASC-3")
 
 A front-panel-style GUI (`AdvancedSignalControllerGui`) with an amber LCD, keypad, and status LEDs,
