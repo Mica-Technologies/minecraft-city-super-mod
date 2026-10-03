@@ -58,10 +58,20 @@ public class TreeToolEvents {
       return;
     }
     EntityPlayer player = event.getEntityPlayer();
-    if (StumpGrinding.isStanding(ItemStumpGrinder.cells(world), pos)) {
+    StumpGrinding.Cells cells = ItemStumpGrinder.cells(world);
+    if (StumpGrinding.isStanding(cells, pos)) {
       event.setCanceled(true);
       if (!world.isRemote) {
         grinder.standing(player);
+      }
+    } else if (ItemFuelledTool.isRunning(stack)
+        && StumpGrinding.grind(cells, ItemStumpGrinder.soil(world), pos).isEmpty()) {
+      // Not a stump in the ground (a log on a floor, a stump too tall). Refused here, on both
+      // sides, as a standing tree is: left to the break, a creative client took the log out on
+      // its own while the server kept it.
+      event.setCanceled(true);
+      if (!world.isRemote) {
+        grinder.notStump(player);
       }
     } else if (!world.isRemote) {
       if (ItemFuelledTool.isRunning(stack)) {

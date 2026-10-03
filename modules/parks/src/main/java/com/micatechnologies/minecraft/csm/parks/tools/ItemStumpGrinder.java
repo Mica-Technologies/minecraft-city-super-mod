@@ -106,6 +106,11 @@ public class ItemStumpGrinder extends ItemFuelledTool {
     };
   }
 
+  /** Tells the player the log is not a stump standing in the ground. */
+  public void notStump(EntityPlayer player) {
+    player.sendStatusMessage(new TextComponentTranslation("csm.parks.grinder.notstump"), true);
+  }
+
   /** Tells the player the log is a standing tree, not a stump. */
   public void standing(EntityPlayer player) {
     player.sendStatusMessage(new TextComponentTranslation("csm.parks.grinder.standing"), true);
@@ -157,13 +162,16 @@ public class ItemStumpGrinder extends ItemFuelledTool {
       return true;
     }
     if (world.isRemote) {
-      return false;
+      // The server decides what goes and its block updates carry it here. Letting the client
+      // break the log on its own left a hole where the server refused (a log on a floor), and
+      // a refused break is never sent back.
+      return true;
     }
     StumpGrinding.Cells soil = soil(world);
     Set<BlockPos> logs = StumpGrinding.grind(cells, soil, pos);
     if (logs.isEmpty()) {
       // A log standing on a floor or a foundation, or too tall to be a stump: not ground.
-      player.sendStatusMessage(new TextComponentTranslation("csm.parks.grinder.notstump"), true);
+      notStump(player);
       return true;
     }
     int groundLevel = StumpGrinding.groundLevel(cells, soil, pos);
@@ -179,22 +187,32 @@ public class ItemStumpGrinder extends ItemFuelledTool {
       world.setBlockState(p, Blocks.AIR.getDefaultState(), 3);
     }
     grindSound(world, player);
-    placeMulch(world, player, new BlockPos(pos.getX(), groundLevel + 1, pos.getZ()));
+    // On the ground where the stump stood, or, when its root at ground level went too, in the
+    // hole that left.
+    BlockPos onGround = new BlockPos(pos.getX(), groundLevel + 1, pos.getZ());
+    if (!placeMulch(world, player, onGround)) {
+      placeMulch(world, player, onGround.down());
+    }
     payForLogs(stack, player, Math.max(1, ground));
     return true;
   }
 
-  /** Leaves ground mulch where the stump stood, if the cell is clear and stands on solid ground. */
-  private static void placeMulch(World world, EntityPlayer player, BlockPos pos) {
+  /**
+   * Leaves ground mulch at {@code pos}, if the cell is clear and stands on solid ground.
+   *
+   * @return whether mulch was placed
+   */
+  private static boolean placeMulch(World world, EntityPlayer player, BlockPos pos) {
     Block mulch = CsmRegistry.getBlock(MULCH);
     if (mulch == null || !world.isAirBlock(pos) || !world.isBlockModifiable(player, pos)) {
-      return;
+      return false;
     }
     BlockPos below = pos.down();
     IBlockState ground = world.getBlockState(below);
     if (!ground.isSideSolid(world, below, EnumFacing.UP) || !mulch.canPlaceBlockAt(world, pos)) {
-      return;
+      return false;
     }
     world.setBlockState(pos, mulch.getDefaultState(), 3);
+    return true;
   }
 }
