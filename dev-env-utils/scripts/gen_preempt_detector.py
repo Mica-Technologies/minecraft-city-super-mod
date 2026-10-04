@@ -4,7 +4,7 @@ gen_preempt_detector.py -- the preempt detector and the confirmation lights (Roa
 blockstates.
 
 The detector is drawn after an optical preemption detector: a small black head on a mount stub on
-top of a mast arm, its lens looking up the approach and a sun-shield fin off one side. It sits in
+top of a mast arm, its lens looking up the approach under a sun-shield fin. It sits in
 the cell ABOVE a thin traffic pole (`trafficpolehorizontal`, 8 px across, so its top is 4 px under
 this cell's floor): the stub reaches down to the pole, and into a full block if one is below.
 
@@ -190,10 +190,11 @@ def elements():
     els.append(b((6.7, 10.9, 5.15), (9.3, 13.1, 5.2), BODY, faces='n', lens_face='n'))
     # the cable connector on the body's front
     els.append(b((7.2, 5.0, 5.35), (8.8, 6.6, 5.7), METAL, faces='nsewud'))
-    # the sun-shield fin off the east side, tapering in steps
-    els.append(b((10.4, 11.3, 7.2), (12.5, 11.8, 8.8), BODY))
-    els.append(b((12.5, 11.3, 7.5), (14.0, 11.8, 8.5), BODY))
-    els.append(b((14.0, 11.3, 7.8), (15.2, 11.8, 8.2), BODY))
+    # the sun-shield fin over the lens, reaching out toward the approach (north, the way the
+    # lens looks and so toward whoever placed it) and tapering in steps
+    els.append(b((7.2, 13.5, 3.5), (8.8, 14.0, 5.6), BODY))
+    els.append(b((7.5, 13.5, 2.0), (8.5, 14.0, 3.5), BODY))
+    els.append(b((7.8, 13.5, 0.8), (8.2, 14.0, 2.0), BODY))
     return els
 
 
