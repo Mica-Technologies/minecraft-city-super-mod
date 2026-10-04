@@ -446,8 +446,13 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   public void onTick() {
     if (world == null || world.isRemote) return;
 
-    int blockColor =
-        world.getBlockState(pos).getValue(BlockControllableCrosswalkButtonAudible.COLOR);
+    // The tile entity can be found on a block that is not (or is no longer) a button with COLOR;
+    // reading it there throws and takes the server tick down with it.
+    IBlockState blockState = world.getBlockState(pos);
+    if (!blockState.getPropertyKeys().contains(BlockControllableCrosswalkButtonAudible.COLOR)) {
+      return;
+    }
+    int blockColor = blockState.getValue(BlockControllableCrosswalkButtonAudible.COLOR);
 
     // Detect state changes for walk sound management
     if (blockColor != lastSoundColorState) {

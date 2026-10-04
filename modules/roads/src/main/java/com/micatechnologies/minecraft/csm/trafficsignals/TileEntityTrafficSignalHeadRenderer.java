@@ -117,6 +117,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     // Gather block state information
     IBlockState blockState = te.getWorld().getBlockState(te.getPos());
+    // A tile entity can outlive its block by a frame or more on a multiplayer client (the block
+    // change arrives before the tile entity's removal), leaving air with no FACING or COLOR.
+    if (!blockState.getPropertyKeys().contains(AbstractBlockControllableSignalHead.FACING)
+        || !blockState.getPropertyKeys().contains(AbstractBlockControllableSignalHead.COLOR)) {
+      return;
+    }
     EnumFacing facing = blockState.getValue(AbstractBlockControllableSignalHead.FACING);
     int signalColorState = blockState.getValue(AbstractBlockControllableSignalHead.COLOR);
 

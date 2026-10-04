@@ -165,6 +165,11 @@ public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity im
       // Get block and world information
       BlockPos blockPos = getPos();
       IBlockState blockState = world.getBlockState(blockPos);
+      // The block may already be gone (or replaced) under this tile entity; the catch below does
+      // not cover the IllegalArgumentException a missing property throws.
+      if (!blockState.getPropertyKeys().contains(BlockForgeEnergyToRedstone.POWERED)) {
+        return;
+      }
 
       // Consume power from Forge Energy (true if power, false if none)
       boolean isGridPowered = consumeEnergy(energyConsume);

@@ -22,6 +22,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLight
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -266,6 +267,13 @@ public class TileEntityDynamicGuideSignRenderer
       return;
     }
 
+    // A tile entity can outlive its block by a frame or more on a multiplayer client (the block
+    // change arrives before the tile entity's removal), leaving air with no FACING to read.
+    IBlockState blockState = te.getWorld().getBlockState(te.getPos());
+    if (!blockState.getPropertyKeys().contains(BlockHorizontal.FACING)) {
+      return;
+    }
+
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
     worldSkyLight = (combinedLight >> 16) & 0xFFFF;
     worldBlockLight = combinedLight & 0xFFFF;
@@ -273,8 +281,7 @@ public class TileEntityDynamicGuideSignRenderer
     ambientBlockLight = worldBlockLight;
     lightOn = resolveLightOn(data, te);
 
-    EnumFacing facing = te.getWorld().getBlockState(te.getPos())
-        .getValue(BlockHorizontal.FACING);
+    EnumFacing facing = blockState.getValue(BlockHorizontal.FACING);
     trussTop = data.getPostType() == PostType.TRUSS
         ? trussTopBehind(te.getWorld(), te.getPos(), facing) : Float.NaN;
 
