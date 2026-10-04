@@ -893,6 +893,22 @@
   ],
   "connectionGroups": [
     {
+      "groupName": "Trailer",
+      "isHitch": true,
+      "canInitiateConnections": true,
+      "connections": [
+        {
+          "type": "trailer_standard",
+          "pos": [
+            0,
+            -0.25,
+            -2.68
+          ],
+          "distance": 2
+        }
+      ]
+    },
+    {
       "groupName": "Towing",
       "isHookup": true,
       "connections": [

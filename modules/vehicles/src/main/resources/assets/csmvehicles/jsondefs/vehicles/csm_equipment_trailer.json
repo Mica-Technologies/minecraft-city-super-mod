@@ -1,0 +1,314 @@
+{
+  "definitions": [
+    {
+      "name": "Equipment Trailer",
+      "subName": "_black",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Equipment Trailer (Orange)",
+      "subName": "_orange",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A low equipment trailer for small machines, the stump grinder among them. Hitch it to a truck (trailer_standard), drive the machine onto the deck and click the striped tie-down at the front of the deck to load it; click it again to unload.",
+    "materialLists": [
+      [
+        "minecraft:iron_block:0:3",
+        "minecraft:iron_ingot:0:8"
+      ]
+    ]
+  },
+  "motorized": {
+    "isTrailer": true,
+    "emptyMass": 900,
+    "hookupVariables": [
+      "electric_power",
+      "engine_reversed_1",
+      "engines_on",
+      "right_turn_signal",
+      "left_turn_signal",
+      "running_light",
+      "headlight",
+      "brake"
+    ],
+    "fuelCapacity": 0,
+    "defaultFuelQty": 0,
+    "axleRatio": 0,
+    "brakingFactor": 1.0,
+    "dragCoefficient": 0.5
+  },
+  "parts": [
+    {
+      "pos": [
+        1.1,
+        0.0,
+        -0.4
+      ],
+      "minValue": 0.48,
+      "maxValue": 0.96,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_van"
+    },
+    {
+      "pos": [
+        -1.1,
+        0.0,
+        -0.4
+      ],
+      "minValue": 0.48,
+      "maxValue": 0.96,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_van",
+      "rot": [
+        0,
+        180,
+        0
+      ],
+      "isMirrored": true
+    }
+  ],
+  "collisionGroups": [
+    {
+      "collisionTypes": [
+        "block",
+        "entity",
+        "attack"
+      ],
+      "collisions": [
+        {
+          "pos": [
+            0,
+            0.1,
+            -1.3
+          ],
+          "width": 2.1,
+          "height": 0.8
+        },
+        {
+          "pos": [
+            0,
+            0.1,
+            0.5
+          ],
+          "width": 2.1,
+          "height": 0.8
+        },
+        {
+          "pos": [
+            0,
+            0.1,
+            2.6
+          ],
+          "width": 2.1,
+          "height": 0.8
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "collisions": [
+        {
+          "pos": [
+            0.0,
+            0.47,
+            1.45
+          ],
+          "width": 0.4,
+          "height": 0.3,
+          "action": {
+            "action": "set",
+            "variable": "connection_requested",
+            "value": 1
+          }
+        }
+      ]
+    }
+  ],
+  "rendering": {
+    "modelType": "obj",
+    "customVariables": [],
+    "sounds": [],
+    "lightObjects": [
+      {
+        "objectName": "&BrakeL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF0000",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.5,
+              0
+            ],
+            "variable": "running_light"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "brake"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.8,
+              0.22,
+              -2.015
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.8,
+              0.22,
+              -2.015
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "left_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.8,
+              0.36,
+              -2.015
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnR",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "right_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.8,
+              0.36,
+              -2.015
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      }
+    ]
+  },
+  "connectionGroups": [
+    {
+      "groupName": "Deck",
+      "isHitch": true,
+      "canInitiateConnections": true,
+      "connections": [
+        {
+          "type": "tow_flatbed",
+          "mounted": true,
+          "distance": 3,
+          "pos": [
+            0,
+            0.42,
+            1.2000000000000002
+          ]
+        }
+      ]
+    },
+    {
+      "groupName": "Trailer",
+      "isHookup": true,
+      "connections": [
+        {
+          "type": "trailer_standard",
+          "pos": [
+            0,
+            0.1,
+            3.4
+          ],
+          "distance": 2
+        }
+      ]
+    }
+  ]
+}
