@@ -11,6 +11,7 @@ import com.micatechnologies.minecraft.csm.transit.airport.BlockCheckinDesk;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockFlightBoard;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockGateSign;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockJetBridge;
+import com.micatechnologies.minecraft.csm.transit.airport.BlockJetBridgeSlope;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockQueueStanchion;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSecurityLine;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSecurityTray;
@@ -270,6 +271,7 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockUtilityBox("airport_baggage_cart", new UtilityBoxSpec(1, 2, 2, new AxisAlignedBB(0, 0, 0, 1, 1.7, 2), null)));
     initTabBlock(new BlockUtilityBox("airport_air_stairs", new UtilityBoxSpec(1, 2, 2, new AxisAlignedBB(0, 0, 0, 1, 1.95, 2), null)));
     initTabBlock(new BlockJetBridge("airport_jet_bridge_tunnel", BlockJetBridge.Kind.TUNNEL));
+    initTabBlock(new BlockJetBridgeSlope("airport_jet_bridge_slope"));
     initTabBlock(new BlockJetBridge("airport_jet_bridge_cab", BlockJetBridge.Kind.CAB));
     initTabBlock(new BlockJetBridge("airport_jet_bridge_rotunda", BlockJetBridge.Kind.ROTUNDA));
     initTabBlock(new BlockPlatformColumn("airport_jet_bridge_drive", new double[]{-7, 0, 5.6, 23, 16, 10.4}));
