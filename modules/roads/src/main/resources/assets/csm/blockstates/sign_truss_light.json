@@ -51,6 +51,24 @@
     },
     {
       "when": {
+        "kind": "span_x",
+        "sign_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_light_sign_neg"
+      }
+    },
+    {
+      "when": {
+        "kind": "span_x",
+        "sign_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_light_sign_pos"
+      }
+    },
+    {
+      "when": {
         "kind": "span_z"
       },
       "apply": {
@@ -95,6 +113,26 @@
       },
       "apply": {
         "model": "csm:trafficaccessories/truss/sign_truss_light_join_pos",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "kind": "span_z",
+        "sign_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_light_sign_pos",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "kind": "span_z",
+        "sign_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_light_sign_neg",
         "y": 90
       }
     },

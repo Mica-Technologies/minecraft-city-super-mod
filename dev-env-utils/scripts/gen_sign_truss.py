@@ -368,6 +368,14 @@ def light_join(neg):
     return light_chords(-reach, 0) if neg else light_chords(16, 16 + reach)
 
 
+def light_sign_clips(neg):
+    """Clips from the span's front chords out to the post of a road sign hung against it (the
+    sign set back, its post on the cell's face), top and bottom."""
+    (b0, b1), (t0, t1) = LT_Y
+    z0, z1 = (0, LT_Z[0][0]) if neg else (LT_Z[1][1], 16)
+    return [box(7.25, b0, z0, 8.75, b1, z1, "#plate"), box(7.25, t0, z0, 8.75, t1, z1, "#plate")]
+
+
 def light_frame():
     x0, x1 = LT_POST_X
     mid = (x0 + x1) / 2
@@ -431,6 +439,8 @@ def part_models():
     for name, els in (("span", light_span()), ("end_neg", light_end(0, 1.25)),
                       ("end_pos", light_end(14.75, 16)), ("join_neg", light_join(True)),
                       ("join_pos", light_join(False)), ("frame", light_frame()),
+                      ("sign_neg", light_sign_clips(True)),
+                      ("sign_pos", light_sign_clips(False)),
                       ("frame_top", light_frame_top()), ("frame_base", light_frame_base())):
         m[LIGHT + "_" + name] = {"textures": lt, "elements": els}
     m[LIGHT + "_inventory"] = {"parent": "block/block", "textures": lt,
@@ -562,8 +572,13 @@ def light_blockstate():
         def ap(name, rot=rot):
             return dict({"model": MODEL_REF % (LIGHT + "_" + name)}, **rot)
         rules.append({"when": {"kind": kind}, "apply": ap("span")})
-        for prop in ("end_neg", "end_pos", "join_neg", "join_pos"):
-            rules.append({"when": {"kind": kind, prop: "true"}, "apply": ap(prop)})
+        # y 90 turns the drawn north side (neg z) to east (pos x) and south to west, so a span
+        # along z draws its west (neg) clips from the drawn south ones
+        for prop in ("end_neg", "end_pos", "join_neg", "join_pos", "sign_neg", "sign_pos"):
+            model = prop
+            if kind == "span_z" and prop.startswith("sign_"):
+                model = "sign_pos" if prop == "sign_neg" else "sign_neg"
+            rules.append({"when": {"kind": kind, prop: "true"}, "apply": ap(model)})
     for kind, rot in (("frame_x", {}), ("frame_z", {"y": 90})):
         def ap(name, rot=rot):
             return dict({"model": MODEL_REF % (LIGHT + "_" + name)}, **rot)

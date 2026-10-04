@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
+import com.micatechnologies.minecraft.csm.trafficaccessories.truss.ISignTruss;
+
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
@@ -403,6 +405,32 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
         hasSupportBelow(source, behindPos));
   }
 
+  /**
+   * Whether an overhead sign truss is directly behind this sign, a span a sign can hang from.
+   * Square-on facings only: a diagonal sign has no truss face to sit against.
+   *
+   * @param source the block access
+   * @param pos    the position of this sign
+   *
+   * @return {@code true} if the sign hangs on a truss behind it
+   *
+   * @since 2026.10
+   */
+  public static boolean getBlockIsInFrontOfSignTruss(IBlockAccess source, BlockPos pos) {
+    IBlockState state = source.getBlockState(pos);
+    if (!(state.getBlock() instanceof AbstractBlockSign)) {
+      return false;
+    }
+    DirectionEight facing = state.getValue(FACING);
+    if (facing.isDiagonal()) {
+      return false;
+    }
+    DirectionEight back = facing.getOpposite();
+    IBlockState behind = source.getBlockState(pos.add(back.getOffsetX(), 0, back.getOffsetZ()));
+    return behind.getBlock() instanceof ISignTruss
+        && ((ISignTruss) behind.getBlock()).getSignTrussTop(behind) >= 0;
+  }
+
   public boolean getShouldSetback(IBlockAccess source, BlockPos pos) {
     // A sign hung from a span wire sets back for the same reason it does in front of a signal
     // arm: it has to sit in line with the hardware beside it rather than centred in its block.
@@ -416,6 +444,12 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     }
 
     if (getBlockIsInFrontOfSignalArm(source, pos)) {
+      return true;
+    }
+
+    // Hung on an overhead sign truss: set back so the sign's post is against the truss, where it
+    // reads as the hanger (the low-profile truss draws clips from its chords out to it).
+    if (getBlockIsInFrontOfSignTruss(source, pos)) {
       return true;
     }
 
