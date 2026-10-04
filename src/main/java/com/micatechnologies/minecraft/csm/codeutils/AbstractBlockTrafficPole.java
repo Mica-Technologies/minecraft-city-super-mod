@@ -360,7 +360,53 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
     if (isIgnoredForItsState(worldIn, pos)) {
       return false;
     }
+    if (isFlatOverlayAt(worldIn, pos)) {
+      return false;
+    }
     return BlockUtils.getIsBlockToSide(worldIn, pos, ignoreBlock);
+  }
+
+  /**
+   * The fourth filter: a flat overlay is never something a pole mounts to.
+   *
+   * <p>Road paint, floor finishes, manhole and grate covers and the like are a skin of a block
+   * laid over whatever is under them, and a pole that drew a mount toward one reached for a stripe
+   * of paint. Named classes cannot cover them, since another mod's road markings are among them,
+   * so this goes by shape: a block whose box covers its whole footprint but stands no more than a
+   * sixteenth tall (carpet height) is an overlay, whichever mod it is from.</p>
+   *
+   * @param worldIn the world/block access
+   * @param pos     the adjacent position to test
+   *
+   * @return {@code true} if the block there is a flat overlay
+   */
+  private static boolean isFlatOverlayAt(IBlockAccess worldIn, BlockPos pos) {
+    IBlockState state = worldIn.getBlockState(pos);
+    if (state.getMaterial() == Material.AIR) {
+      return false;
+    }
+    try {
+      return isFlatOverlay(state.getBoundingBox(worldIn, pos));
+    } catch (RuntimeException e) {
+      return false;   // a block whose box needs more context than a neighbour lookup gives
+    }
+  }
+
+  /**
+   * Whether a block box is a flat overlay: its whole footprint, at most a sixteenth tall.
+   * Package-private for the test.
+   *
+   * @param box the block's bounding box, in block units
+   *
+   * @return {@code true} for a flat overlay
+   */
+  static boolean isFlatOverlay(@Nullable AxisAlignedBB box) {
+    if (box == null) {
+      return false;
+    }
+    double footprint = 1.0 - 0.05;
+    return box.maxY - box.minY <= 1.0 / 16 + 1e-4
+        && box.maxX - box.minX >= footprint && box.maxZ - box.minZ >= footprint;
   }
 
   /**
