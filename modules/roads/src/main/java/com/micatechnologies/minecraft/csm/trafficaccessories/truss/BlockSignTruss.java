@@ -39,7 +39,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.10
  */
-public class BlockSignTruss extends AbstractBlock {
+public class BlockSignTruss extends AbstractBlock implements ISignTruss {
 
   public static final PropertyEnum<EnumFacing.Axis> AXIS =
       PropertyEnum.create("axis", EnumFacing.Axis.class);
@@ -162,6 +162,16 @@ public class BlockSignTruss extends AbstractBlock {
           .withProperty(B_HIGH, isTruss(world, pos.offset(bNeg), axis));
     }
     return state;
+  }
+
+  @Override
+  public float getSignTrussTop(IBlockState state) {
+    return 15.5f;
+  }
+
+  @Override
+  public float getSignTrussFrontInset(IBlockState state) {
+    return 0.5f;
   }
 
   @Override

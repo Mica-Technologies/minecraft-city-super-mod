@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "392 blocks in this tab"
+!!! info "393 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -98,6 +98,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Horizontal Traffic Pole with Single Mount (Unpainted) | `csm:trafficpolehorzsinglemountunpainted` | 2 | 10 | pickaxe | 1 |
 | Lane Control Controller | `csm:lane_control_controller` | 2 | 10 | pickaxe | 1 |
 | Lane Control Signal | `csm:lane_control_signal` |  |  |  |  |
+| Low-Profile Sign Truss | `csm:sign_truss_light` | 3.0 | 12.0 | pickaxe | 1 |
 | Metal Wire (Centered, Bottom) | `csm:metalwirecenter` |  | 10 | pickaxe | 1 |
 | Metal Wire (Centered, Top) | `csm:metalwirecentertop` |  | 10 | pickaxe | 1 |
 | Metal Wire (Offset, Bottom) | `csm:metalwireoffset` |  | 10 | pickaxe | 1 |

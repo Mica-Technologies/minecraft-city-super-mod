@@ -1414,4 +1414,5 @@ gui.csm.utility_box.phone=Felanmälningsnummer
 gui.csm.utility_box.phone_default=Lämna telefonnumret tomt för %s
 tile.sign_truss.name=Fackverk för Portalskyltar
 tile.sign_truss_large.name=Fackverk för Portalskyltar (2x2)
+tile.sign_truss_light.name=Lätt Fackverk för Portalskyltar
 tile.sign_truss_catwalk.name=Gångbrygga för Portalskyltar

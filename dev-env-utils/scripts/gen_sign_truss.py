@@ -54,11 +54,14 @@ MODEL_REF = "csm:" + FOLDER + "/%s"
 SMALL = "sign_truss"
 LARGE = "sign_truss_large"
 CATWALK = "sign_truss_catwalk"
+LIGHT = "sign_truss_light"
 NAMES = {
     SMALL: ("Overhead Sign Truss", "Celosía para Señales Elevadas", "Schilderbrücken-Fachwerk",
             "Fackverk för Portalskyltar"),
     LARGE: ("Overhead Sign Truss (2x2)", "Celosía para Señales Elevadas (2x2)",
             "Schilderbrücken-Fachwerk (2x2)", "Fackverk för Portalskyltar (2x2)"),
+    LIGHT: ("Low-Profile Sign Truss", "Celosía Ligera para Señales Elevadas",
+            "Leichtes Schilderbrücken-Fachwerk", "Lätt Fackverk för Portalskyltar"),
     CATWALK: ("Sign Truss Catwalk", "Pasarela de Celosía para Señales",
               "Laufsteg für Schilderbrücken", "Gångbrygga för Portalskyltar"),
 }
@@ -138,7 +141,29 @@ def grate_texture():
     return img
 
 
+def _line_texture(lines, strut=None, width=2):
+    """Light truss webbing on a clear ground: each line a thin pipe from point to point, on a
+    32 px panel stretched over the face between the chords."""
+    s = 32
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    fill = _shift(GALV, -8)
+    for x0, y0, x1, y1 in lines:
+        draw.line([(x0, y0), (x1, y1)], fill=fill, width=width)
+    if strut:
+        draw.rectangle(strut, fill=_shift(GALV, -2))
+    return img
+
+
 TEXTURES = {
+    # a vertical at the panel's west edge and a V between, so a run reads as verticals and
+    # Warren diagonals
+    "truss_light_lace": lambda: _line_texture([(1, 31, 16, 0), (16, 0, 30, 31)],
+                                              strut=[0, 0, 1, 31]),
+    # the horizontal bracing across the top and bottom: one diagonal a panel
+    "truss_light_brace": lambda: _line_texture([(1, 31, 30, 0)], strut=[0, 0, 1, 31]),
+    # a support frame's ladder: a rung at the foot of each block and a diagonal
+    "truss_ladder": lambda: _line_texture([(2, 29, 29, 2)], strut=[0, 28, 31, 31], width=5),
     "truss_grate": grate_texture,
     "truss_chord": chord_texture,
     "truss_lace": lambda: lacing_texture(False),
@@ -299,6 +324,82 @@ def catwalk_end(east):
     return out
 
 
+# --------------------------------------------------------------------------------------------
+# The low-profile truss: a span drawn along x, a support frame drawn to carry a span along x
+# (its posts spaced along z). BlockSignTrussLight's SPAN_TOP and SPAN_FRONT are LT_Y[1][1] and
+# LT_Z[0][0].
+# --------------------------------------------------------------------------------------------
+
+LT_Y = ((2.0, 3.25), (12.75, 14.0))      # bottom and top chords
+LT_Z = ((3.0, 4.25), (11.75, 13.0))      # front and back chords
+LT_POST_X = (7.0, 9.0)                   # a frame's posts, centred in its cell
+LT_POST_Z = ((2.75, 4.75), (11.25, 13.25))
+
+
+def light_chords(x0, x1):
+    return [box(x0, y0, z0, x1, y1, z1, "#chord") for y0, y1 in LT_Y for z0, z1 in LT_Z]
+
+
+def light_span():
+    (b0, b1), (t0, t1) = LT_Y
+    (f0, f1), (k0, k1) = LT_Z
+    fz, kz = (f0 + f1) / 2, (k0 + k1) / 2
+    by, ty = (b0 + b1) / 2, (t0 + t1) / 2
+    full = [0, 0, 16, 16]
+    return light_chords(0, 16) + [
+        box(0, b1, fz, 16, t0, fz, "#lace", faces=("north", "south"), uv=full),
+        box(0, b1, kz, 16, t0, kz, "#lace", faces=("north", "south"), uv=full),
+        box(0, by, f1, 16, by, k0, "#brace", faces=("up", "down"), uv=full),
+        box(0, ty, f1, 16, ty, k0, "#brace", faces=("up", "down"), uv=full),
+    ]
+
+
+def light_end(x0, x1):
+    """The frame closing a span's end that nothing carries on from: a cantilever's tip."""
+    (b0, b1), (t0, t1) = LT_Y
+    (f0, f1), (k0, k1) = LT_Z
+    return [box(x0, b1, f0, x1, t0, f1, "#plate"), box(x0, b1, k0, x1, t0, k1, "#plate"),
+            box(x0, b0, f1, x1, b1, k0, "#plate"), box(x0, t0, f1, x1, t1, k0, "#plate")]
+
+
+def light_join(neg):
+    """A span's chords run on into the posts of the frame beside it."""
+    reach = 16 - LT_POST_X[1]
+    return light_chords(-reach, 0) if neg else light_chords(16, 16 + reach)
+
+
+def light_frame():
+    x0, x1 = LT_POST_X
+    mid = (x0 + x1) / 2
+    (a0, a1), (c0, c1) = LT_POST_Z
+    return [box(x0, 0, a0, x1, 16, a1, "#chord"), box(x0, 0, c0, x1, 16, c1, "#chord"),
+            box(mid, 0, a1, mid, 16, c0, "#ladder", faces=("east", "west"),
+                uv=[0, 0, 16, 16])]
+
+
+def light_frame_top():
+    x0, x1 = LT_POST_X
+    (a0, a1), (c0, c1) = LT_POST_Z
+    return [box(x0 - 0.5, 15.5, a0 - 0.5, x1 + 0.5, 16.5, a1 + 0.5, "#plate"),
+            box(x0 - 0.5, 15.5, c0 - 0.5, x1 + 0.5, 16.5, c1 + 0.5, "#plate"),
+            box(x0 + 0.25, 14.0, a1, x1 - 0.25, 15.0, c0, "#chord")]
+
+
+def light_frame_base():
+    out = []
+    for z0, z1 in LT_POST_Z:
+        out.append(box(5.5, 0, z0 - 1.5, 10.5, 1, z1 + 1.5, "#plate"))
+        for x in (5.75, 9.25):
+            out.append(box(x, 1, (z0 + z1) / 2 - 0.5, x + 1, 2, (z0 + z1) / 2 + 0.5, "#plate"))
+    return out
+
+
+def _light_tex():
+    return {"chord": TEX_REF % "truss_chord", "plate": TEX_REF % "truss_plate",
+            "lace": TEX_REF % "truss_light_lace", "brace": TEX_REF % "truss_light_brace",
+            "ladder": TEX_REF % "truss_ladder", "particle": TEX_REF % "truss_chord"}
+
+
 def part_models():
     m = {}
 
@@ -326,6 +427,15 @@ def part_models():
     m[CATWALK + "_inventory"] = {"parent": "block/block", "textures": cw_tex,
                                  "elements": catwalk_body() + catwalk_end(False)
                                  + catwalk_end(True)}
+    lt = _light_tex()
+    for name, els in (("span", light_span()), ("end_neg", light_end(0, 1.25)),
+                      ("end_pos", light_end(14.75, 16)), ("join_neg", light_join(True)),
+                      ("join_pos", light_join(False)), ("frame", light_frame()),
+                      ("frame_top", light_frame_top()), ("frame_base", light_frame_base())):
+        m[LIGHT + "_" + name] = {"textures": lt, "elements": els}
+    m[LIGHT + "_inventory"] = {"parent": "block/block", "textures": lt,
+                               "elements": light_span() + light_end(0, 1.25)
+                               + light_end(14.75, 16)}
     inv = model(large_inventory(), "truss_lace_wide", parent="block/block")
     inv["display"] = LARGE_DISPLAY
     m[LARGE + "_inventory"] = inv
@@ -445,6 +555,25 @@ def catwalk_blockstate():
             "multipart": rules}
 
 
+def light_blockstate():
+    rules = []
+    # y 90 turns the drawn +x end to +z, so a span's ends keep their names
+    for kind, rot in (("span_x", {}), ("span_z", {"y": 90})):
+        def ap(name, rot=rot):
+            return dict({"model": MODEL_REF % (LIGHT + "_" + name)}, **rot)
+        rules.append({"when": {"kind": kind}, "apply": ap("span")})
+        for prop in ("end_neg", "end_pos", "join_neg", "join_pos"):
+            rules.append({"when": {"kind": kind, prop: "true"}, "apply": ap(prop)})
+    for kind, rot in (("frame_x", {}), ("frame_z", {"y": 90})):
+        def ap(name, rot=rot):
+            return dict({"model": MODEL_REF % (LIGHT + "_" + name)}, **rot)
+        rules += [{"when": {"kind": kind}, "apply": ap("frame")},
+                  {"when": {"kind": kind, "end_pos": "true"}, "apply": ap("frame_top")},
+                  {"when": {"kind": kind, "base": "true"}, "apply": ap("frame_base")}]
+    return {"variants": {"inventory": {"model": MODEL_REF % (LIGHT + "_inventory")}},
+            "multipart": rules}
+
+
 def _dump(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", newline="\n", encoding="utf-8") as fh:
@@ -463,8 +592,9 @@ def write_all(tex_dir, model_dir, state_dir):
     _dump(os.path.join(state_dir, SMALL + ".json"), small_blockstate())
     _dump(os.path.join(state_dir, LARGE + ".json"), large_blockstate())
     _dump(os.path.join(state_dir, CATWALK + ".json"), catwalk_blockstate())
+    _dump(os.path.join(state_dir, LIGHT + ".json"), light_blockstate())
     written += [("state", SMALL + ".json"), ("state", LARGE + ".json"),
-                ("state", CATWALK + ".json")]
+                ("state", CATWALK + ".json"), ("state", LIGHT + ".json")]
     return written
 
 
@@ -472,12 +602,13 @@ def fragments():
     lines = []
     for lang_i, lang in enumerate(LANGS):
         lines.append("## " + lang)
-        for reg in (SMALL, LARGE, CATWALK):
+        for reg in (SMALL, LARGE, LIGHT, CATWALK):
             lines.append("tile.%s.name=%s" % (reg, NAMES[reg][lang_i]))
         lines.append("")
     lines.append("## tab")
     lines.append('    initTabBlock(new BlockSignTruss("%s", false));' % SMALL)
     lines.append('    initTabBlock(new BlockSignTruss("%s", true));' % LARGE)
+    lines.append('    initTabBlock(new BlockSignTrussLight("%s"));' % LIGHT)
     lines.append('    initTabBlock(new BlockTrussCatwalk("%s"));' % CATWALK)
     return "\n".join(lines)
 

@@ -156,7 +156,7 @@ public class BlockDynamicGuideSign extends AbstractBlockRotatableNSEW
     // The panel sits on the side opposite the way the sign faces, so the truss is behind it there.
     if (!world.isRemote && world.getBlockState(pos.offset(
         state.getValue(BlockHorizontal.FACING).getOpposite())).getBlock()
-        instanceof com.micatechnologies.minecraft.csm.trafficaccessories.truss.BlockSignTruss) {
+        instanceof com.micatechnologies.minecraft.csm.trafficaccessories.truss.ISignTruss) {
       TileEntity te = world.getTileEntity(pos);
       if (te instanceof TileEntityDynamicGuideSign) {
         TileEntityDynamicGuideSign sign = (TileEntityDynamicGuideSign) te;
