@@ -14,7 +14,8 @@ transit.airport unless another is named):
 - **Check-in**: the check-in desk (BlockCheckinDesk: joins into a run with the bag drop scale
   beside it, end panels only at the run's ends, and a lit airline panel a click steps through the
   four invented airlines), the bag drop scale (BlockAirportCounter) and the self check-in kiosk
-  (BlockSelfCheckinKiosk, which prints a Boarding Pass for a flight off the boards).
+  (BlockSelfCheckinKiosk, which prints a Boarding Pass for a flight off the boards), and the
+  same kiosk drawn a third bigger again, two blocks tall.
 - **The queue**: stanchions whose retractable belts reach to every stanchion beside them
   (BlockQueueStanchion), black and blue.
 - **Security**: the X-ray unit, roller conveyor and divesting table (BlockSecurityLine, which
@@ -874,22 +875,47 @@ def checkin():
           models, state, item=item_of(parts, tex, display=gui_display(0.5, -1.0)), tab=TAB)
 
 
+KIOSK_LARGE = 32.0 / 24.0    # the large kiosk: the kiosk drawn this much bigger, two blocks tall
+
+
+def kiosk_elements(f=1.0):
+    """The self check-in kiosk's elements, drawn `f` times their size about the middle of its
+    footprint (x 8, z 8.5) and the floor; the picture windows keep their uvs."""
+    def P(x, y, z):
+        if f == 1.0:
+            return (x, y, z)        # as written, so the kiosk's model is unchanged
+        return (8 + (x - 8) * f, y * f, 8.5 + (z - 8.5) * f)
+
+    def K(frm, to, tex, faces, **kw):
+        if "rot" in kw:
+            axis, angle, origin = kw["rot"]
+            kw["rot"] = (axis, angle, P(*origin))
+        return B(P(*frm), P(*to), tex, faces, **kw)
+
+    tilt = ("x", 22.5, (8, 10.5, 6))
+    return [K((3, 0, 4), (13, 0.6, 13), "body", SIDES + ("up",)),
+            K((5.5, 0.6, 7.5), (10.5, 6, 11), "body", SIDES),
+            K((3.5, 6, 6), (12.5, 10.5, 12), "body", ALL, per={"north": "front"},
+              uv={"north": [0, 0, 16, 16]}),
+            K((3.4, 10.5, 6), (12.6, 15.8, 7.2), "body", ALL, per={"north": "screen"},
+              uv={"north": win(64, 64, 64)}, rot=tilt),
+            K((3.5, 10.5, 7.2), (12.5, 13.5, 12), "body", SIDES + ("up",)),
+            # the header on its stem
+            K((7.2, 13.5, 10.2), (8.8, 20, 11.4), "body", SIDES),
+            K((3.5, 20, 9.2), (12.5, 24, 11.8), "body", ALL, per={"north": "header"},
+              uv={"north": [0, 0, 16, 7.1]})]
+
+
 def kiosk():
     """The self check-in kiosk: a pedestal, a tilted touchscreen over the card, passport and pass
     slots, and a lit header on a stem. The screen and slots are all in the lower block, where a
-    click reaches (a click reaches only the block the aim passes through)."""
-    tilt = ("x", 22.5, (8, 10.5, 6))
-    els = [B((3, 0, 4), (13, 0.6, 13), "body", SIDES + ("up",)),
-           B((5.5, 0.6, 7.5), (10.5, 6, 11), "body", SIDES),
-           B((3.5, 6, 6), (12.5, 10.5, 12), "body", ALL, per={"north": "front"},
-             uv={"north": [0, 0, 16, 16]}),
-           B((3.4, 10.5, 6), (12.6, 15.8, 7.2), "body", ALL, per={"north": "screen"},
-             uv={"north": win(64, 64, 64)}, rot=tilt),
-           B((3.5, 10.5, 7.2), (12.5, 13.5, 12), "body", SIDES + ("up",)),
-           # the header on its stem
-           B((7.2, 13.5, 10.2), (8.8, 20, 11.4), "body", SIDES),
-           B((3.5, 20, 9.2), (12.5, 24, 11.8), "body", ALL, per={"north": "header"},
-             uv={"north": [0, 0, 16, 7.1]})]
+    click reaches (a click reaches only the block the aim passes through).
+
+    The large kiosk is the same drawn KIOSK_LARGE times bigger, two blocks tall, for a terminal
+    built at a large scale. It is drawn from its one block, as the fare vending machine is, with
+    ambient occlusion off, since half of it stands in the air above that block; its box, and so
+    its collision, is the whole two blocks. A click reaches it through its lower block only (the
+    aim must pass through the block), which holds the card reader and the pass slot."""
     tex = {"body": C.T("kiosk_body"), "front": C.T("kiosk_front"),
            "screen": C.T("kiosk_screen"), "header": C.T("kiosk_header"),
            "particle": C.T("kiosk_body")}
@@ -898,7 +924,17 @@ def kiosk():
             'new double[]{3, 0, 4, 13, 16, 13})',
             names_of("Self Check-In Kiosk", "Check-in-Automat", "Quiosco de Autofacturación",
                      "Incheckningsautomat"),
-            els, tex, ao=False, display=gui_display(0.45, -2.0))
+            kiosk_elements(), tex, ao=False, display=gui_display(0.45, -2.0))
+    f = KIOSK_LARGE
+    x0, x1 = 8 - 5 * f, 8 + 5 * f
+    z0, z1 = 8.5 - 4.5 * f, 8.5 + 4.5 * f
+    fixture("airport_self_checkin_kiosk_large",
+            'new BlockSelfCheckinKiosk("airport_self_checkin_kiosk_large", '
+            'new double[]{%g, 0, %g, %g, 32, %g})' % (round(x0, 2), round(z0, 2), round(x1, 2),
+                                                     round(z1, 2)),
+            names_of("Large Self Check-In Kiosk", "Großer Check-in-Automat",
+                     "Quiosco de Autofacturación Grande", "Stor Incheckningsautomat"),
+            kiosk_elements(f), tex, ao=False, display=gui_display(0.34, -4.0))
 
 
 # ------------------------------------------------------------------------------------------

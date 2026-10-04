@@ -208,5 +208,6 @@ tile.airport_jet_bridge_large_tunnel.name=Pasarela de Embarque Grande (Túnel)
 tile.airport_jet_bridge_large_cab.name=Pasarela de Embarque Grande (Cabina)
 tile.airport_jet_bridge_large_slope.name=Pasarela de Embarque Grande (Túnel Inclinado)
 tile.airport_jet_bridge_large_drive.name=Pasarela de Embarque Grande (Tren de Rodaje)
+tile.airport_self_checkin_kiosk_large.name=Quiosco de Autofacturación Grande
 tile.airport_flight_board_large_departures.name=Pantalla Grande de Información de Vuelos (Salidas)
 tile.airport_flight_board_large_arrivals.name=Pantalla Grande de Información de Vuelos (Llegadas)

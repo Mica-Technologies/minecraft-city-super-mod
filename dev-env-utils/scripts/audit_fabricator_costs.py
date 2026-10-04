@@ -449,6 +449,8 @@ def cost_for(registry, info, ancestors):
                 return ("SHEET_METAL", "CONTROL_BOARD", "WIRING_HARNESS")
             if registry == "airport_self_checkin_kiosk":
                 return ("CONTROL_BOARD", "LED_MODULE", "SHEET_METAL")
+            if registry == "airport_self_checkin_kiosk_large":
+                return ("CONTROL_BOARD", "LED_MODULE", "SHEET_METAL x2")
             if registry == "airport_xray_scanner":
                 return ("ENCLOSURE_SHELL", "CONTROL_BOARD", "OPTICAL_SENSOR", "WIRING_HARNESS")
             if registry == "airport_boarding_pass_scanner":

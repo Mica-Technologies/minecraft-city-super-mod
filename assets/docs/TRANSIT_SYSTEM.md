@@ -835,7 +835,7 @@ panes and a fastener kit. `audit_fabricator_costs.py` mirrors the branch.
 
 ## Airports
 
-Twenty-seven blocks and one item in `transit.airport`, and the large hanging sign in
+Twenty-eight blocks and one item in `transit.airport`, and the large hanging sign in
 `transit.wayfinding`, all drawn by `gen_transit_airport.py`, with one sound (`kiosk_print`) from `gen_transit_sounds.py`. Every airline, flight number and city is
 invented, and every pictogram generic (a plane, a suitcase, a bus, a taxi).
 
@@ -861,6 +861,7 @@ the world: an install without Life Safety simply has no detector.
 | Bag Drop Scale | `csm:airport_checkin_scale` | `BlockAirportCounter` |
 | Gate Desk | `csm:airport_gate_desk` | `BlockAirportCounter` |
 | Self Check-In Kiosk | `csm:airport_self_checkin_kiosk` | `BlockSelfCheckinKiosk` |
+| Large Self Check-In Kiosk | `csm:airport_self_checkin_kiosk_large` | `BlockSelfCheckinKiosk` |
 | Queue Stanchion (Black Belt, Blue Belt) | `csm:airport_queue_stanchion_black`, `_blue` | `BlockQueueStanchion` |
 | Security X-Ray Scanner | `csm:airport_xray_scanner` | `BlockSecurityLine` |
 | Security Roller Conveyor, Divesting Table | `csm:airport_security_roller`, `csm:airport_divest_table` | `BlockSecurityLine` |
@@ -994,6 +995,14 @@ large one beside it (the small board is unchanged): `airport_flight_board_large_
   cancelled, with a seat, and plays `kiosk_print`. The screen and slots are in the lower block
   on purpose: a click reaches only the block the aim passes through, so the header above cannot be
   clicked (the help point's lesson).
+- **Large self check-in kiosk** (`airport_self_checkin_kiosk_large`, the same class): the kiosk
+  drawn a third bigger again (`KIOSK_LARGE`, 32 / 24), two blocks tall and 13 wide, for a terminal
+  built at a large scale. It behaves as the kiosk does, printing the same passes. It is drawn from
+  its one block, as the fare vending machine is, with ambient occlusion off (half of it stands in
+  the air above that block and would take the block's shade); its box, and so its collision and
+  outline, is the whole two blocks. It is clicked through its lower block, which holds the readers
+  and the pass slot; the generator's `kiosk_elements(f)` draws both kiosks, the small one exactly
+  as before.
 
 The **Boarding Pass** (`ItemBoardingPass`) carries only its flight's slot, a seat and whether it
 has been used (`s`, `seat`, `b`); the tooltip works the flight number, city, time and gate out of
@@ -1170,7 +1179,7 @@ panel built to size from cells, the legend set in a screen rather than baked.
 
 `TransitFabricatorRules.airport`: the desks two sheet metal, a control board and a fastener kit;
 the scale a sheet metal, a control board and a wiring harness; the kiosk a control board, an LED
-module and sheet metal; the X-ray an enclosure shell, a control board, an optical sensor and a
+module and sheet metal (the large kiosk two sheet metal); the X-ray an enclosure shell, a control board, an optical sensor and a
 wiring harness; the pass scanner a control board, an optical sensor and sheet metal; a board an LED
 module, a control board and sheet metal, and each cell of a large board an LED module and sheet
 metal; the carousel two sheet metal, a wiring harness and a
