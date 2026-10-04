@@ -375,6 +375,14 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * so this goes by shape: a block whose box covers its whole footprint but stands no more than a
    * sixteenth tall (carpet height) is an overlay, whichever mod it is from.</p>
    *
+   * <p>Asking a neighbour for its box can come straight back here: a rotatable block's box is
+   * worked out from its actual state, and a neighbouring pole's actual state asks this pole for
+   * its box in turn, so two poles side by side recursed until the stack overflowed. A check
+   * already in progress on this thread therefore answers {@code false} to the nested one. That
+   * nested answer only shapes a neighbour's mounts while its box is measured, and no pole's
+   * mounts make its box flat, so the outer answer is unchanged. Per thread, since chunks are
+   * tessellated on several.</p>
+   *
    * @param worldIn the world/block access
    * @param pos     the adjacent position to test
    *
@@ -385,12 +393,23 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
     if (state.getMaterial() == Material.AIR) {
       return false;
     }
+    boolean[] inProgress = FLAT_OVERLAY_CHECK_IN_PROGRESS.get();
+    if (inProgress[0]) {
+      return false;
+    }
+    inProgress[0] = true;
     try {
       return isFlatOverlay(state.getBoundingBox(worldIn, pos));
     } catch (RuntimeException e) {
       return false;   // a block whose box needs more context than a neighbour lookup gives
+    } finally {
+      inProgress[0] = false;
     }
   }
+
+  /** Set while {@link #isFlatOverlayAt} measures a neighbour's box on this thread. */
+  private static final ThreadLocal<boolean[]> FLAT_OVERLAY_CHECK_IN_PROGRESS =
+      ThreadLocal.withInitial(() -> new boolean[1]);
 
   /**
    * Whether a block box is a flat overlay: its whole footprint, at most a sixteenth tall.
