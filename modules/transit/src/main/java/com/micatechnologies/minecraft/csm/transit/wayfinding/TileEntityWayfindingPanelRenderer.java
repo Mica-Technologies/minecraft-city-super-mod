@@ -78,6 +78,11 @@ public class TileEntityWayfindingPanelRenderer
   private static final float CAPS_TWO_LINES = 0.28f;
   /** The arrow's square as a share of the pictogram's: an arrow reads well smaller. */
   private static final float ARROW_SHARE = 0.8f;
+  /**
+   * How small the pictogram and arrow may go, as a share of the panel's height inside its
+   * margins, to give a long legend room before the legend itself is shrunk to fit.
+   */
+  private static final float MIN_ART_SHARE = 0.55f;
   /** From one line to the next, in line heights. */
   private static final float LINE_STEP = 0.85f;
 
@@ -236,8 +241,9 @@ public class TileEntityWayfindingPanelRenderer
           .getAtlasSprite(pictogram.getSprite());
       colour(scheme.getPictogram());
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-      spriteQuad(buf, sprite, pictX, layout.margin, pictX + layout.square,
-          layout.margin + layout.square, ART_LIFT);
+      float half = layout.square / 2f;
+      spriteQuad(buf, sprite, pictX, layout.artMiddle - half, pictX + layout.square,
+          layout.artMiddle + half, ART_LIFT);
       tess.draw();
     }
     if (arrow != Arrow.NONE) {
@@ -246,7 +252,7 @@ public class TileEntityWayfindingPanelRenderer
       float half = layout.arrow / 2f;
       colour(scheme.getLegend());
       GlStateManager.pushMatrix();
-      GlStateManager.translate(arrowX + half, layout.margin + layout.square / 2f, ART_LIFT);
+      GlStateManager.translate(arrowX + half, layout.artMiddle, ART_LIFT);
       GlStateManager.rotate(arrow.getAngle(), 0F, 0F, 1F);
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
       spriteQuad(buf, sprite, -half, -half, half, half, 0);
@@ -326,6 +332,8 @@ public class TileEntityWayfindingPanelRenderer
 
     float margin;
     float square;
+    /** The pictogram's and arrow's middle, up the face. */
+    float artMiddle;
     float arrow;
     /** With the arrow at the right end, or none. */
     float pictX;
@@ -361,9 +369,38 @@ public class TileEntityWayfindingPanelRenderer
     Layout l = new Layout();
     l.textKey = textKey;
     l.margin = FRAME + 0.08f * height;
-    l.square = height - 2 * l.margin;
-    l.arrow = l.square * ARROW_SHARE;
+    float fullSquare = height - 2 * l.margin;
     float gap = l.margin;
+
+    if (line1.isEmpty() && line2.isEmpty()) {
+      l.lines = new String[0];
+    } else if (line1.isEmpty() || line2.isEmpty()) {
+      l.lines = new String[]{line1.isEmpty() ? line2 : line1};
+    } else {
+      l.lines = new String[]{line1, line2};
+    }
+    int n = l.lines.length;
+    int fontHeight = fr.FONT_HEIGHT;
+    l.lineStep = Math.round(fontHeight * LINE_STEP);
+    int widest = 0;
+    for (String line : l.lines) {
+      widest = Math.max(widest, fr.getStringWidth(line));
+    }
+    float wantScale = n == 0 ? 0
+        : (n == 1 ? CAPS_ONE_LINE : CAPS_TWO_LINES) * height / (CAP_SHARE * fontHeight);
+
+    // A legend too long for the room beside a full-height pictogram and arrow takes room from
+    // them first, down to MIN_ART_SHARE, and is shrunk only past that: the words are the sign.
+    float perSquare = (pictogram ? 1f : 0f) + (arrow ? ARROW_SHARE : 0f);
+    float room = width - 2 * l.margin - (pictogram ? fullSquare + gap : 0)
+        - (arrow ? fullSquare * ARROW_SHARE + gap : 0);
+    float short_ = widest * wantScale - room;
+    l.square = fullSquare;
+    if (short_ > 0 && perSquare > 0) {
+      l.square = Math.max(fullSquare * MIN_ART_SHARE, fullSquare - short_ / perSquare);
+    }
+    l.arrow = l.square * ARROW_SHARE;
+    l.artMiddle = height / 2f;
 
     // the arrow at the right end (or none): pictogram, text, arrow
     float xl = l.margin;
@@ -390,25 +427,10 @@ public class TileEntityWayfindingPanelRenderer
     }
     l.textXArrowLeft = xl;
 
-    if (line1.isEmpty() && line2.isEmpty()) {
-      l.lines = new String[0];
-    } else if (line1.isEmpty() || line2.isEmpty()) {
-      l.lines = new String[]{line1.isEmpty() ? line2 : line1};
-    } else {
-      l.lines = new String[]{line1, line2};
-    }
-    int n = l.lines.length;
-    int fontHeight = fr.FONT_HEIGHT;
-    l.lineStep = Math.round(fontHeight * LINE_STEP);
-    int widest = 0;
-    for (String line : l.lines) {
-      widest = Math.max(widest, fr.getStringWidth(line));
-    }
     if (n == 0 || widest == 0 || textWidth <= 0) {
       l.textScale = 0;
     } else {
-      float scale = (n == 1 ? CAPS_ONE_LINE : CAPS_TWO_LINES) * height
-          / (CAP_SHARE * fontHeight);
+      float scale = wantScale;
       if (widest * scale > textWidth) {
         scale = textWidth / widest;
       }
