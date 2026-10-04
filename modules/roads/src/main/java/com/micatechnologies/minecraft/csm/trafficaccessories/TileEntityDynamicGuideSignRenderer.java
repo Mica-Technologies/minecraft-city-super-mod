@@ -55,6 +55,10 @@ public class TileEntityDynamicGuideSignRenderer
   // panel's edge looks like anyway.
   private static final float BACK_SLEEVE_LIP = 0.05f;
   private static final float BACK_SLEEVE_MARGIN = 0.06f;
+  // How far the border plate and the back slab are pushed behind the face, in depth-buffer
+  // units (polygon offset); see renderSignBackground.
+  private static final float BORDER_DEPTH_OFFSET = 1.0f;
+  private static final float BACK_DEPTH_OFFSET = 3.0f;
   private static final float BORDER_INSET = 0.4f;
   private static final float CX = 8.0f;
   private static final float CY = 8.0f;
@@ -534,6 +538,12 @@ public class TileEntityDynamicGuideSignRenderer
       // without GlStateManager knowing, where a direct draw would have reset it.
       GlStateManager.resetColor();
     }
+    // The background sets polygon offset through raw GL and leaves it off at zero, so bring
+    // GlStateManager's cache to the same: enable then disable forces the real glDisable whatever
+    // the cache held, and a (0, 0) offset either matches the cache or is sent.
+    GlStateManager.enablePolygonOffset();
+    GlStateManager.disablePolygonOffset();
+    GlStateManager.doPolygonOffset(0.0f, 0.0f);
 
     // Far LOD (64-128 blocks): just the body silhouette and posts. Legend detail is
     // unreadable at that distance and the font/atlas passes are the expensive part.
@@ -716,12 +726,23 @@ public class TileEntityDynamicGuideSignRenderer
 
     float frontZ = faceZ + SIGN_DEPTH;
 
+    // The three plates stack a tenth of a pixel or less apart, under the depth buffer's
+    // resolution from about sixty blocks out, where the border and the back slab banded through
+    // the face. So the plates behind the face are pushed back by polygon offset, in depth-buffer
+    // units, which hold at any distance: the border one unit, the back slab three. The face is
+    // not moved, so the legend drawn over it keeps its place. Units only, no slope factor: a
+    // factor grows at glancing angles and would push the slab behind the plates it sleeves, and
+    // three units is still less than the 1.2 px between the slab's back and the plates' at 128
+    // blocks. Raw GL, since this is compiled into a display list; renderSign resyncs
+    // GlStateManager after it.
+    GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
     if (borderWidth > 0) {
       float bw = borderWidth * BORDER_INSET;
       List<RenderHelper.Box> border = new ArrayList<>();
       addRectBoxes(border, left - bw, bottom - bw, left + width + bw, bottom + height + bw,
           faceZ, faceZ + LIT_FACE_DEPTH, cornerStyle);
 
+      GL11.glPolygonOffset(0.0f, BORDER_DEPTH_OFFSET);
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(border, buf, legendR, legendG, legendB, 1.0f, 0, 0, 0,
           worldSkyLight, worldBlockLight);
@@ -733,6 +754,7 @@ public class TileEntityDynamicGuideSignRenderer
     addRectBoxes(face, left + inset, bottom + inset, left + width - inset, bottom + height - inset,
         faceZ - 0.1f, faceZ + LIT_FACE_DEPTH - 0.1f, cornerStyle);
 
+    GL11.glPolygonOffset(0.0f, 0.0f);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(face, buf,
         color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0,
@@ -751,10 +773,13 @@ public class TileEntityDynamicGuideSignRenderer
     addRectBoxes(back, left - bw - BACK_SLEEVE_MARGIN, bottom - bw - BACK_SLEEVE_MARGIN,
         left + width + bw + BACK_SLEEVE_MARGIN, bottom + height + bw + BACK_SLEEVE_MARGIN,
         faceZ + BACK_SLEEVE_LIP, frontZ + 0.05f, cornerStyle);
+    GL11.glPolygonOffset(0.0f, BACK_DEPTH_OFFSET);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(back, buf, 0.55f, 0.56f, 0.58f, 1.0f, 0, 0, 0,
         ambientSkyLight, ambientBlockLight);
     tess.draw();
+    GL11.glPolygonOffset(0.0f, 0.0f);
+    GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
   }
 
   // Voxel-style approximation of a rounded corner: split the rect into a horizontal
