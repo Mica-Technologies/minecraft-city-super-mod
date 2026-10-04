@@ -204,3 +204,7 @@ gui.csm.wayfinding.scheme.metro=Metro
 gui.csm.wayfinding.scheme.exit=Exit
 gui.csm.wayfinding.scheme.info=Information
 tile.airport_wayfinding_panel.name=Large Hanging Sign
+tile.airport_jet_bridge_large_tunnel.name=Large Jet Bridge (Tunnel)
+tile.airport_jet_bridge_large_cab.name=Large Jet Bridge (Cab)
+tile.airport_jet_bridge_large_slope.name=Large Jet Bridge (Sloped Tunnel)
+tile.airport_jet_bridge_large_drive.name=Large Jet Bridge (Drive Leg)

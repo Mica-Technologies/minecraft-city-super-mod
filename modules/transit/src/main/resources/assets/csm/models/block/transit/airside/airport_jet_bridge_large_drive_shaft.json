@@ -1,0 +1,110 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leg": "csm:blocks/transit/airside/jb_leg",
+    "tyre": "csm:blocks/transit/airside/tyre",
+    "particle": "csm:blocks/transit/airside/jb_leg"
+  },
+  "elements": [
+    {
+      "from": [
+        -15.0,
+        0,
+        6.5
+      ],
+      "to": [
+        -12.0,
+        16,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leg",
+          "uv": [
+            12.0,
+            0,
+            15.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#leg",
+          "uv": [
+            1.0,
+            0,
+            4.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#leg",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#leg",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        28.0,
+        0,
+        6.5
+      ],
+      "to": [
+        31.0,
+        16,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leg",
+          "uv": [
+            1.0,
+            0,
+            4.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#leg",
+          "uv": [
+            12.0,
+            0,
+            15.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#leg",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#leg",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

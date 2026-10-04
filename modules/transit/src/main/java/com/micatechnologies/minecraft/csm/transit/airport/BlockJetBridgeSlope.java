@@ -76,17 +76,53 @@ public class BlockJetBridgeSlope extends BlockPlatformFixture {
   private static final int LIGHT = 9;
 
   // the level tunnel's section, in sixteenths (gen_transit_airside.py's JB_* numbers)
-  private static final double X0 = -8;
-  private static final double X1 = 24;
-  private static final double WALL = 1.5;
-  private static final double FLOOR = 1.5;
-  private static final double CEIL = 30.5;
-  private static final double ROOF = 31.6;
+  private static final double[] SECTION = {-8, 0, 0, 24, 31.6, 16};
+  private static final double WALL_SMALL = 1.5;
+  private static final double FLOOR = BlockJetBridge.FLOOR;
+  private static final double CEIL_SMALL = 30.5;
+
+  private final boolean large;
+  // this piece's section: the level tunnel's, or the large bridge's (BlockJetBridge#toLarge)
+  private final double x0;
+  private final double x1;
+  private final double wall;
+  private final double ceil;
+  private final double roof;
 
   public BlockJetBridgeSlope(String registryName) {
-    super(registryName, new double[]{X0, 0, 0, X1, FLOOR, 16}, false, LIGHT);
+    this(registryName, false);
+  }
+
+  /**
+   * Constructs a sloped tunnel, level-bridge or large.
+   *
+   * @param registryName its registry name
+   * @param large        whether it is the large bridge's, three blocks wide and four tall
+   */
+  public BlockJetBridgeSlope(String registryName, boolean large) {
+    super(registryName, floorBox(large), false, LIGHT);
+    this.large = large;
+    double[] section = large ? BlockJetBridge.toLarge(SECTION, true) : SECTION;
+    double[] inner = large ? BlockJetBridge.toLarge(new double[]{-8 + WALL_SMALL, 0, 0,
+        24 - WALL_SMALL, CEIL_SMALL, 16}, true) : new double[]{-8 + WALL_SMALL, 0, 0,
+        24 - WALL_SMALL, CEIL_SMALL, 16};
+    this.x0 = section[0];
+    this.x1 = section[3];
+    this.roof = section[4];
+    this.wall = inner[0] - section[0];
+    this.ceil = inner[4];
     setDefaultState(getDefaultState().withProperty(GRADE, Grade.DOWN_8).withProperty(STEP, 0)
         .withProperty(AHEAD, false).withProperty(BEHIND, false));
+  }
+
+  private static double[] floorBox(boolean large) {
+    double[] floor = {-8, 0, 0, 24, FLOOR, 16};
+    return large ? BlockJetBridge.toLarge(floor, true) : floor;
+  }
+
+  /** Whether this is the large bridge's sloped tunnel. */
+  public boolean isLarge() {
+    return large;
   }
 
   @Override
@@ -148,10 +184,11 @@ public class BlockJetBridgeSlope extends BlockPlatformFixture {
    * the same axis right beyond its end, on its level or a block above or below (a run's low end
    * meets the level below, its high end the level above).
    */
-  private static boolean continues(IBlockAccess world, BlockPos pos, EnumFacing dir) {
+  private boolean continues(IBlockAccess world, BlockPos pos, EnumFacing dir) {
     for (int dy = -1; dy <= 1; dy++) {
-      if (BlockJetBridge.isBridgeOnAxis(world, pos.offset(dir).up(dy), dir.getAxis())
-          || BlockJetBridge.isRotundaOnAxis(world, pos.offset(dir, 2).up(dy), dir.getAxis())) {
+      if (BlockJetBridge.isBridgeOnAxis(world, pos.offset(dir).up(dy), dir.getAxis(), large)
+          || BlockJetBridge.isRotundaOnAxis(world, pos.offset(dir, 2).up(dy), dir.getAxis(),
+          large)) {
         return true;
       }
     }
@@ -172,7 +209,7 @@ public class BlockJetBridgeSlope extends BlockPlatformFixture {
    * still on a higher stretch (or on the level tunnel above the run). The camera never sees either
    * difference; feet sink a sixteenth or two into the carpet.</p>
    */
-  private static double[][] boxes(Grade grade, int step) {
+  private double[][] boxes(Grade grade, int step) {
     int drop = 16 / grade.pieces;             // sixteenths a piece drops
     double length = 16.0 / drop;              // each sixteenth of drop takes this much floor
     int lead = (int) Math.floor(PLAYER / length);
@@ -183,13 +220,13 @@ public class BlockJetBridgeSlope extends BlockPlatformFixture {
       double z0 = z1 - length;
       int g = step * drop + k;                // the stretch along the whole run, 0 to 15
       double floor = Math.min(16, g + 1 + lead);
-      out[k * 2] = new double[]{X0, -floor, z0, X1, FLOOR - floor, z1};
-      out[k * 2 + 1] = new double[]{X0, CEIL - g + rise, z0, X1, ROOF - g + rise, z1};
+      out[k * 2] = new double[]{x0, -floor, z0, x1, FLOOR - floor, z1};
+      out[k * 2 + 1] = new double[]{x0, ceil - g + rise, z0, x1, roof - g + rise, z1};
     }
     double low = (step + 1) * drop;
     double high = step * drop;
-    out[drop * 2] = new double[]{X0, FLOOR - low, 0, X0 + WALL, CEIL - high, 16};
-    out[drop * 2 + 1] = new double[]{X1 - WALL, FLOOR - low, 0, X1, CEIL - high, 16};
+    out[drop * 2] = new double[]{x0, FLOOR - low, 0, x0 + wall, ceil - high, 16};
+    out[drop * 2 + 1] = new double[]{x1 - wall, FLOOR - low, 0, x1, ceil - high, 16};
     return out;
   }
 
@@ -207,7 +244,7 @@ public class BlockJetBridgeSlope extends BlockPlatformFixture {
     Grade grade = state.getValue(GRADE);
     int step = step(source, pos, state);
     int drop = 16 / grade.pieces;
-    return box(new double[]{X0, -(step + 1) * drop, 0, X1, FLOOR - step * drop, 16});
+    return box(new double[]{x0, -(step + 1) * drop, 0, x1, FLOOR - step * drop, 16});
   }
 
   @Override

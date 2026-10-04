@@ -278,5 +278,9 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockJetBridge("airport_jet_bridge_rotunda", BlockJetBridge.Kind.ROTUNDA));
     initTabBlock(new BlockPlatformColumn("airport_jet_bridge_drive", new double[]{-7, 0, 5.6, 23, 16, 10.4}));
     initTabBlock(new BlockPlatformColumn("airport_jet_bridge_column", new double[]{2, 0, 2, 14, 16, 14}));
+    initTabBlock(new BlockJetBridge("airport_jet_bridge_large_tunnel", BlockJetBridge.Kind.TUNNEL, true));
+    initTabBlock(new BlockJetBridgeSlope("airport_jet_bridge_large_slope", true));
+    initTabBlock(new BlockJetBridge("airport_jet_bridge_large_cab", BlockJetBridge.Kind.CAB, true));
+    initTabBlock(new BlockPlatformColumn("airport_jet_bridge_large_drive", new double[]{-16, 0, 5.6, 32, 16, 10.4}));
   }
 }

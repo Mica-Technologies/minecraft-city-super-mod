@@ -204,3 +204,7 @@ gui.csm.wayfinding.scheme.metro=Metro
 gui.csm.wayfinding.scheme.exit=Salida
 gui.csm.wayfinding.scheme.info=Información
 tile.airport_wayfinding_panel.name=Letrero Colgante Grande
+tile.airport_jet_bridge_large_tunnel.name=Pasarela de Embarque Grande (Túnel)
+tile.airport_jet_bridge_large_cab.name=Pasarela de Embarque Grande (Cabina)
+tile.airport_jet_bridge_large_slope.name=Pasarela de Embarque Grande (Túnel Inclinado)
+tile.airport_jet_bridge_large_drive.name=Pasarela de Embarque Grande (Tren de Rodaje)
