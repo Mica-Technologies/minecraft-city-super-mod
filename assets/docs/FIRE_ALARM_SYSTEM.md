@@ -262,6 +262,14 @@ panel's strobes kept flashing on every client that had them.
 channel names it: a horn strobe is on its horn's channel and on the strobe channel at once, so
 stopping one must not put out a strobe the other still drives.
 
+**Appliances whose chunks load mid-alarm.** The panel's appliance cache skips a device whose chunk
+is not loaded, and a player is sent a channel's positions once, when they first come into range.
+So a strobe in a chunk that loaded after the alarm started never flashed (#259). The panel now
+counts its linked devices in loaded chunks every tick and rebuilds the cache when the count
+changes, and a channel whose list changed goes out to the players already on it as an update
+packet (`FireAlarmSoundPacket.update`): the client replaces the channel's strobe positions and the
+playing sound's positions without restarting the sound.
+
 ## How Sound Playback Works (Detailed Flow)
 
 ### Alarm Activation
@@ -355,9 +363,21 @@ panel alarms, and every door in the game is held open by power, so it needs to k
 about doors and works with CSM's and vanilla's alike. That keeps the Building Materials doors
 out of this module's code (a module may only reference Core).
 
-The annunciator's lamp and display follow the `alarm` state; right-click reads out the panel's
-status and the first alarm's device and position, from the panel's own fields
-(`getAlarmOriginPos` / `getAlarmOriginName`).
+The look is a scheduled tick started in `onBlockAdded`, and the block also takes random ticks,
+whose `updateTick` reschedules it. A device put down by something that skips `onBlockAdded` (a
+WorldEdit paste, a schematic) had no tick scheduled, never looked, and showed normal through any
+alarm (#261).
+
+**The annunciator shows alarm and trouble.** Besides `alarm` it keeps a `trouble` state (the
+fourth metadata bit, filled in by `followPanel` from the panel when the panel's chunk is loaded,
+kept as it was otherwise): lit while the panel has an unacknowledged trouble or any linked device
+missing, as a real annunciator's trouble lamp stays on until the fault is put right. Four faces
+(`gen_fire_protection.py`): SYSTEM NORMAL with only the green power lamp, SYSTEM TROUBLE with the
+amber lamp, FIRE ALARM with the red, and FIRE ALARM with red and amber. Its blockstate writes every
+facing, alarm and trouble out as a full variant (each definition in a list, as Forge requires),
+since the face depends on alarm and trouble together. Right-click reads out the panel's status and
+the first alarm's device and position, from the panel's own fields (`getAlarmOriginPos` /
+`getAlarmOriginName`).
 
 ### New detectors
 

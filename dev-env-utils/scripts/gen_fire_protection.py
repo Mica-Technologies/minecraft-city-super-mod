@@ -367,24 +367,26 @@ def _beam_front():
     return img
 
 
-def annunciator(alarm):
+def annunciator(alarm, trouble=False):
     def draw():
         img = fill(BEIGE, size=64, grain=2, seed=131)
         x0, y0, x1, y1 = north_region((3, 3), (13, 13), 64)
         bevel(img, x0, y0, x1, y1, BEIGE)
         # LCD
         lx0, ly0, lx1, ly1 = x0 + 5, y0 + 5, x1 - 5, y0 + 17
-        rect(img, lx0, ly0, lx1, ly1, (60, 88, 46) if alarm else (40, 52, 36))
-        draw_text(img, "FIRE" if alarm else "SYSTEM", lx0 + 2, ly0 + 1,
-                  (200, 240, 120) if alarm else (110, 150, 90))
-        draw_text(img, "ALARM" if alarm else "NORMAL", lx0 + 2, ly0 + 7,
-                  (200, 240, 120) if alarm else (110, 150, 90))
-        # lamps: FIRE (red), TROUBLE (amber), POWER (green)
-        for i, (on, off) in enumerate((((255, 40, 40), (90, 20, 20)),
-                                       ((200, 150, 30), (80, 60, 20)),
-                                       ((60, 230, 80), (60, 230, 80)))):
-            lit = on if (i != 0 or alarm) else off
-            disc(img, x0 + 9 + i * 11, y1 - 12, 2.5, lit)
+        # the display: an alarm outranks a trouble, as on the panel
+        lit_lcd = alarm or trouble
+        rect(img, lx0, ly0, lx1, ly1, (60, 88, 46) if lit_lcd else (40, 52, 36))
+        top, bottom = (("FIRE", "ALARM") if alarm else ("SYSTEM", "TROUBLE") if trouble
+                       else ("SYSTEM", "NORMAL"))
+        colour = (200, 240, 120) if lit_lcd else (110, 150, 90)
+        draw_text(img, top, lx0 + 2, ly0 + 1, colour)
+        draw_text(img, bottom, lx0 + 2, ly0 + 7, colour)
+        # lamps: FIRE (red) in alarm, TROUBLE (amber) in trouble, POWER (green) always
+        for i, (on, off, lit) in enumerate((((255, 40, 40), (90, 20, 20), alarm),
+                                            ((255, 180, 30), (80, 60, 20), trouble),
+                                            ((60, 230, 80), (60, 230, 80), True))):
+            disc(img, x0 + 9 + i * 11, y1 - 12, 2.5, on if lit else off)
         draw_text(img, "ACK", x0 + 5, y1 - 7, (60, 60, 60))
         return img
     return draw
@@ -392,6 +394,8 @@ def annunciator(alarm):
 
 C.textures["annunciator"] = annunciator(False)
 C.textures["annunciator_alarm"] = annunciator(True)
+C.textures["annunciator_trouble"] = annunciator(False, True)
+C.textures["annunciator_alarm_trouble"] = annunciator(True, True)
 
 
 @C.texture("magnet")
@@ -1044,6 +1048,25 @@ detector("beam_smoke_detector", (4, 3, 10, 12, 13, 16),
          [box([4.5, 3.5, 15], [11.5, 12.5, 16], "body"),
           box([4, 3, 10.5], [12, 13, 15], "body", per={"north": "front"})])
 
+def annunciator_state():
+    """The annunciator's blockstate: every facing, alarm and trouble written out in full, since
+    the face depends on alarm and trouble together and two property maps both setting it would
+    leave the result to Forge's merge order."""
+    faces = {(False, False): "annunciator", (True, False): "annunciator_alarm",
+             (False, True): "annunciator_trouble", (True, True): "annunciator_alarm_trouble"}
+    variants = {"inventory": [{}]}
+    for facing, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        for (alarm, trouble), face in faces.items():
+            key = "alarm=%s,facing=%s,trouble=%s" % (str(alarm).lower(), facing,
+                                                      str(trouble).lower())
+            v = {"textures": {"face": T(face)}}
+            if y:
+                v["y"] = y
+            variants[key] = [v]   # a full variant takes its definition in a list
+    return {"forge_marker": 1, "defaults": {"model": M("remote_annunciator")},
+            "variants": variants}
+
+
 C.add("remote_annunciator",
       'new BlockRemoteAnnunciator("remote_annunciator", %s)' % B(3, 3, 14, 13, 13, 16),
       ("Remote Fire Alarm Annunciator", "Feuerwehr-Anzeigetableau", "Anunciador remoto de alarma",
@@ -1052,8 +1075,7 @@ C.add("remote_annunciator",
                                     "particle": T("beige")},
                                    [box([3, 3, 14.5], [13, 13, 16], "beige",
                                         per={"north": "face"})])},
-      facing_state(M("remote_annunciator"),
-                   {"alarm": {"false": {}, "true": {"textures": {"face": T("annunciator_alarm")}}}}),
+      annunciator_state(),
       tab=FA)
 
 # The annunciator's read-out. %s are the device's name and x, y, z.
