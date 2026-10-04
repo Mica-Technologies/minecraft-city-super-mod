@@ -575,6 +575,36 @@ def _w_section(y0, y1):
     ]
 
 
+BEAM_FLANGE_Y0, BEAM_FLANGE_Y1 = 3, 13   # a beam's bottom and top flange faces
+BEAM_CUT = 4                             # a column's footprint is 4 to 12 along a beam over it
+BEAM_PLATE_X0, BEAM_PLATE_X1 = 3.5, 12.5  # the end plate, a little wider than the flanges
+BEAM_PLATE_T = 0.75
+
+
+def _beam_section(z0, z1):
+    """A wide-flange beam lying north-south from z0 to z1, flanges top and bottom."""
+    return [
+        _span(W_FLANGE_X0, BEAM_FLANGE_Y0, z0, W_FLANGE_X1, BEAM_FLANGE_Y0 + W_FLANGE_T, z1),
+        _span(W_FLANGE_X0, BEAM_FLANGE_Y1 - W_FLANGE_T, z0, W_FLANGE_X1, BEAM_FLANGE_Y1, z1),
+        _span(W_WEB_X0, BEAM_FLANGE_Y0 + W_FLANGE_T, z0, W_WEB_X1,
+              BEAM_FLANGE_Y1 - W_FLANGE_T, z1),
+    ]
+
+
+def joined_blockstate(name, parts):
+    """A multipart blockstate for a member turned by its axis: `parts` are (model, conditions),
+    each drawn turned a quarter for axis=x, with the whole member for the inventory."""
+    rules = []
+    for model, cond in parts:
+        for axis, y in (("z", None), ("x", 90)):
+            when = dict(cond, axis=axis)
+            apply = {"model": MODEL_REF % model}
+            if y:
+                apply["y"] = y
+            rules.append({"when": when, "apply": apply})
+    return {"variants": {"inventory": {"model": MODEL_REF % name}}, "multipart": rules}
+
+
 def structural_models():
     models = {}
 
@@ -582,11 +612,26 @@ def structural_models():
     models["struct_steel_column"] = _w_section(0, 16)
 
     # A beam: the same section laid down, spanning north-south. Flanges top and bottom.
-    models["struct_steel_beam"] = [
-        _span(W_FLANGE_X0, 3, 0, W_FLANGE_X1, 4, 16),
-        _span(W_FLANGE_X0, 12, 0, W_FLANGE_X1, 13, 16),
-        _span(W_WEB_X0, 4, 0, W_WEB_X1, 12, 16),
-    ]
+    models["struct_steel_beam"] = _beam_section(0, 16)
+    # Where a column meets a beam (BlockSteelColumn's `top` and `bottom`): the column reaches into
+    # the beam's block to its flange, since a beam's flanges sit three sixteenths in from the top
+    # and bottom of its block and a column fills its own. Left out, a column under a beam stopped
+    # short of it by that much.
+    models["struct_steel_column_top"] = _w_section(16, 16 + BEAM_FLANGE_Y0)
+    models["struct_steel_column_bottom"] = _w_section(-(16 - BEAM_FLANGE_Y1), 0)
+    # A beam in three lengths (BlockSteelBeam's `cut_north` and `cut_south`): its middle over a
+    # column's footprint, and an end each side, out to the block's edge. A beam that stops over a
+    # column stops at the column's far face with an end plate, instead of running half a block
+    # past it.
+    models["struct_steel_beam_middle"] = _beam_section(BEAM_CUT, 16 - BEAM_CUT)
+    models["struct_steel_beam_north"] = _beam_section(0, BEAM_CUT)
+    models["struct_steel_beam_south"] = _beam_section(16 - BEAM_CUT, 16)
+    models["struct_steel_beam_plate_north"] = [
+        _span(BEAM_PLATE_X0, BEAM_FLANGE_Y0 - 0.5, BEAM_CUT - BEAM_PLATE_T, BEAM_PLATE_X1,
+              BEAM_FLANGE_Y1 + 0.5, BEAM_CUT)]
+    models["struct_steel_beam_plate_south"] = [
+        _span(BEAM_PLATE_X0, BEAM_FLANGE_Y0 - 0.5, 16 - BEAM_CUT, BEAM_PLATE_X1,
+              BEAM_FLANGE_Y1 + 0.5, 16 - BEAM_CUT + BEAM_PLATE_T)]
 
     # A base plate: the column landing on a plate, held down by four anchor bolts.
     bolts = [_span(bx, 1, bz, bx + 1.5, 2.5, bz + 1.5)
@@ -1092,7 +1137,31 @@ def write_all(tex_dir, shared_dir, model_dir, state_dir):
                                       "particle": TEX_REF % texture},
                          "elements": structural[model]})
             written.append(("model", name + ".json"))
-            _write_json(os.path.join(state_dir, name + ".json"), span_blockstate(name))
+            if shape == "steel_column":
+                state = joined_blockstate(name, [
+                    (name, {}), (name + "_top", {"top": "true"}),
+                    (name + "_bottom", {"bottom": "true"})])
+                extra = {"_top": "struct_steel_column_top",
+                         "_bottom": "struct_steel_column_bottom"}
+            elif shape == "steel_beam":
+                state = joined_blockstate(name, [
+                    (name + "_middle", {}),
+                    (name + "_north", {"cut_north": "false"}),
+                    (name + "_south", {"cut_south": "false"}),
+                    (name + "_plate_north", {"cut_north": "true"}),
+                    (name + "_plate_south", {"cut_south": "true"})])
+                extra = {"_" + part: "struct_steel_beam_" + part
+                         for part in ("middle", "north", "south", "plate_north", "plate_south")}
+            else:
+                state, extra = span_blockstate(name), {}
+            for suffix_part, part_model in sorted(extra.items()):
+                _write_json(os.path.join(model_dir, name + suffix_part + ".json"),
+                            {"parent": "block/block",
+                             "textures": {"body": TEX_REF % texture,
+                                          "particle": TEX_REF % texture},
+                             "elements": structural[part_model]})
+                written.append(("model", name + suffix_part + ".json"))
+            _write_json(os.path.join(state_dir, name + ".json"), state)
             written.append(("state", name + ".json"))
 
     model_depth.separate_dirs([(tex_dir, TEX_DIR), (shared_dir, SHARED_DIR), (model_dir, MODEL_DIR), (state_dir, STATE_DIR)], written, _write_json)

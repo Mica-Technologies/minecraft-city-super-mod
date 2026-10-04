@@ -1,14 +1,64 @@
 {
   "variants": {
-    "axis=z": {
-      "model": "csm:buildingmaterials/steel_column_galvanized"
-    },
-    "axis=x": {
-      "model": "csm:buildingmaterials/steel_column_galvanized",
-      "y": 90
-    },
     "inventory": {
       "model": "csm:buildingmaterials/steel_column_galvanized"
     }
-  }
+  },
+  "multipart": [
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_galvanized"
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_galvanized",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_galvanized_top"
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_galvanized_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_galvanized_bottom"
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_galvanized_bottom",
+        "y": 90
+      }
+    }
+  ]
 }

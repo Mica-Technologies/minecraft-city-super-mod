@@ -134,6 +134,17 @@ spanning north-south, and turned for the other axis in the base class.
 Two members do not get their true extent, both for the same reason: the rafter and the X-brace are
 diagonals, and an axis-aligned box cannot describe a diagonal. They take a full cube.
 
+**Steel columns and beams meet** (2026-10). A beam's flanges sit three sixteenths in from the top
+and bottom of its block, where a column fills its own, so a column under a beam stopped visibly
+short of it, and a beam ending over a column ran on to the edge of its block, half a block past
+the column. Both now follow their neighbours, in actual state (nothing stored, so existing builds
+change as soon as they are loaded): a column with a steel beam on top or below reaches into the
+beam's block to its flange (`top`, `bottom`); a beam with a column (or a bolted connection) under
+it, where no beam carries on along its axis, stops at the column's far face with an end plate
+(`cut_north`, `cut_south`, in the model's frame, so north is east for an east-west beam). The beam
+is drawn in three lengths for it, its middle over the column's footprint (4 to 12) and an end each
+side, in a multipart blockstate (`gen_framing.py`).
+
 ## Why there are no roof trusses
 
 A pitched roof truss **cannot be a single block**. Element rotation in 1.12 allows one axis and

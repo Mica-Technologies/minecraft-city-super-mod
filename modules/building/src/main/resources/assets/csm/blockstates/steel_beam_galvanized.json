@@ -1,14 +1,102 @@
 {
   "variants": {
-    "axis=z": {
-      "model": "csm:buildingmaterials/steel_beam_galvanized"
-    },
-    "axis=x": {
-      "model": "csm:buildingmaterials/steel_beam_galvanized",
-      "y": 90
-    },
     "inventory": {
       "model": "csm:buildingmaterials/steel_beam_galvanized"
     }
-  }
+  },
+  "multipart": [
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_middle"
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_middle",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cut_north": "false",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_north"
+      }
+    },
+    {
+      "when": {
+        "cut_north": "false",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_north",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cut_south": "false",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_south"
+      }
+    },
+    {
+      "when": {
+        "cut_south": "false",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_south",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cut_north": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_plate_north"
+      }
+    },
+    {
+      "when": {
+        "cut_north": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_plate_north",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cut_south": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_plate_south"
+      }
+    },
+    {
+      "when": {
+        "cut_south": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_plate_south",
+        "y": 90
+      }
+    }
+  ]
 }
