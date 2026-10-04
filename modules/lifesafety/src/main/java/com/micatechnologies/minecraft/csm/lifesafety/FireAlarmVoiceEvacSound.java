@@ -163,6 +163,18 @@ public class FireAlarmVoiceEvacSound extends MovingSound {
   }
 
   /**
+   * Replaces the positions the sound is heard from, as appliances come into or go out of loaded
+   * chunks while it plays.
+   *
+   * @param positions the new positions
+   */
+  public void setSpeakerPositions(List<BlockPos> positions) {
+    if (!donePlaying) {
+      speakerPositions = new ArrayList<>(positions);
+    }
+  }
+
+  /**
    * Stops this sound from playing.
    */
   public void stopPlaying() {

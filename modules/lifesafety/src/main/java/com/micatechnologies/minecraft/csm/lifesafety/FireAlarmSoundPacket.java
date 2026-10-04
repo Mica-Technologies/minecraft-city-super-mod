@@ -21,6 +21,11 @@ public class FireAlarmSoundPacket implements IMessage {
   private float hearingRange;
   private List<BlockPos> speakerPositions;
   private boolean glitchy;
+  /**
+   * An update rather than a start: the channel's positions change and nothing else does, so a
+   * playing sound carries on and its strobes take the new list (#259).
+   */
+  private boolean update;
 
   public FireAlarmSoundPacket() {
     // Required by Forge
@@ -71,6 +76,16 @@ public class FireAlarmSoundPacket implements IMessage {
     return pkt;
   }
 
+  /**
+   * Creates an update packet: new positions for a channel already playing on the client, without
+   * restarting its sound. Sent when appliances come into or go out of loaded chunks mid-alarm.
+   */
+  public static FireAlarmSoundPacket update(String channel, List<BlockPos> speakerPositions) {
+    FireAlarmSoundPacket pkt = start(channel, "", 0, speakerPositions, false);
+    pkt.update = true;
+    return pkt;
+  }
+
   @Override
   public void fromBytes(ByteBuf buf) {
     start = buf.readBoolean();
@@ -83,6 +98,7 @@ public class FireAlarmSoundPacket implements IMessage {
       speakerPositions.add(new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()));
     }
     glitchy = buf.readBoolean();
+    update = buf.readBoolean();
   }
 
   @Override
@@ -102,6 +118,7 @@ public class FireAlarmSoundPacket implements IMessage {
       buf.writeInt(pos.getZ());
     }
     buf.writeBoolean(glitchy);
+    buf.writeBoolean(update);
   }
 
   public boolean isStart() {
@@ -126,5 +143,9 @@ public class FireAlarmSoundPacket implements IMessage {
 
   public boolean isGlitchy() {
     return glitchy;
+  }
+
+  public boolean isUpdate() {
+    return update;
   }
 }

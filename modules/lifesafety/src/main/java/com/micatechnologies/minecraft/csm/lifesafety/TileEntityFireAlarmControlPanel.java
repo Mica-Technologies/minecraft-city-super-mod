@@ -149,6 +149,16 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   // Channel-based active player tracking (voice evac, storm, and each horn sound)
   private final Map<String, HashSet<UUID>> channelActivePlayers = new HashMap<>();
   private final Set<String> lastActiveChannels = new HashSet<>();
+
+  /** The positions each channel last went out with, so a changed list is sent on (#259). */
+  private final Map<String, List<BlockPos>> lastSentPositions = new HashMap<>();
+
+  /**
+   * How many linked devices were in loaded chunks at the last look. The appliance cache skips a
+   * device whose chunk is not loaded, so when this changes the cache is rebuilt: otherwise a
+   * strobe whose chunk loaded after the alarm started was not flashed for up to five minutes.
+   */
+  private transient int loadedDeviceCount = -1;
   private String lastVoiceEvacSoundSent = null;
   private boolean lastGlitchySent = false;
 
@@ -753,6 +763,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         cacheRefreshTickCounter = 0;
         cachedVoiceEvacPositions = null;
       }
+      int loaded = countLoadedDevices();
+      if (loaded != loadedDeviceCount) {
+        loadedDeviceCount = loaded;
+        cachedVoiceEvacPositions = null;
+      }
 
       if (cachedVoiceEvacPositions == null) {
         rebuildApplianceCache();
@@ -922,6 +937,20 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     HashSet<UUID> activePlayers =
         channelActivePlayers.computeIfAbsent(channel, k -> new HashSet<>());
 
+    // The list changed (devices came into or went out of loaded chunks): the players already on
+    // this channel take the new list without their sound restarting
+    String scopedChannel = scoped(channel);
+    List<BlockPos> lastSent = lastSentPositions.get(channel);
+    if (lastSent != null && !lastSent.equals(positions) && !activePlayers.isEmpty()) {
+      FireAlarmSoundPacket update = FireAlarmSoundPacket.update(scopedChannel, positions);
+      for (EntityPlayerMP player : players) {
+        if (activePlayers.contains(player.getUniqueID())) {
+          CsmLifeSafety.NETWORK.sendTo(update, player);
+        }
+      }
+    }
+    lastSentPositions.put(channel, new ArrayList<>(positions));
+
     for (EntityPlayerMP player : players) {
       UUID playerId = player.getUniqueID();
       boolean inRange = isPlayerInRangeOfAny(player, positions, hearingRangeSq);
@@ -952,6 +981,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
    * Stops a specific channel: sends stop packets to all active players on that channel.
    */
   private void stopChannel(List<EntityPlayerMP> players, String channel) {
+    lastSentPositions.remove(channel);
     HashSet<UUID> activePlayers = channelActivePlayers.get(channel);
     if (activePlayers == null || activePlayers.isEmpty()) {
       return;
@@ -1013,6 +1043,22 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       }
     }
     return false;
+  }
+
+  /** How many linked appliances and initiating devices are in loaded chunks. */
+  private int countLoadedDevices() {
+    int n = 0;
+    for (BlockPos bp : connectedAppliances) {
+      if (world.isBlockLoaded(bp)) {
+        n++;
+      }
+    }
+    for (BlockPos bp : initiatingDevices) {
+      if (world.isBlockLoaded(bp)) {
+        n++;
+      }
+    }
+    return n;
   }
 
   private void rebuildApplianceCache() {
