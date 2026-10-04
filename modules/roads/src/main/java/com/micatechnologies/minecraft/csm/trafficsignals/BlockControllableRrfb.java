@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
@@ -72,7 +73,7 @@ public class BlockControllableRrfb extends AbstractBlockControllableSignal
       @Nonnull IBlockAccess worldIn, @Nonnull BlockPos pos) {
     TrafficSignalBodyColor housing = TrafficSignalBodyColor.FLAT_BLACK;
     boolean doubleSided = true;
-    TileEntity te = worldIn.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(worldIn, pos);
     if (te instanceof TileEntityRrfb) {
       housing = ((TileEntityRrfb) te).getHousingColor();
       doubleSided = ((TileEntityRrfb) te).isDoubleSided();

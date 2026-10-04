@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialFurniture;
@@ -17,10 +18,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 
 /**
  * A hanging aisle sign: a panel on two rods from the ceiling, the aisle's number on both faces.
@@ -73,9 +72,7 @@ public class BlockAisleSign extends BlockResidentialFurniture implements ICsmTil
    * @return its number
    */
   public static int numberAt(IBlockAccess world, BlockPos pos) {
-    TileEntity te = world instanceof ChunkCache
-        ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
-        : world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     return te instanceof TileEntityAisleSign ? ((TileEntityAisleSign) te).getNumber() : 1;
   }
 

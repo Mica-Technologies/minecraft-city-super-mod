@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
@@ -114,7 +115,7 @@ public abstract class AbstractBlockControllableCrosswalkSignalNew
 
     public DirectionSixteen getTiltedFacing( IBlockAccess worldIn, BlockPos pos,
             EnumFacing facing4 ) {
-        TileEntity tileEntity = worldIn.getTileEntity( pos );
+        TileEntity tileEntity = BlockUtils.getTileEntitySafe( worldIn, pos );
         if ( tileEntity instanceof TileEntityCrosswalkSignalNew te ) {
             return AbstractBlockControllableSignalHead.getTiltedFacing( te.getBodyTilt(),
                     facing4 );

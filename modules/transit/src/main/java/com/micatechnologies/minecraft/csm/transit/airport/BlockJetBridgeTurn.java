@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.airport;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
@@ -206,7 +207,7 @@ public class BlockJetBridgeTurn extends BlockPlatformFixture implements ICsmTile
   }
 
   private int cellAt(IBlockAccess world, BlockPos pos) {
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     if (te instanceof TileEntityJetBridgeTurn) {
       return MathHelper.clamp(((TileEntityJetBridgeTurn) te).getCell(), 0,
           shape.getCellCount() - 1);

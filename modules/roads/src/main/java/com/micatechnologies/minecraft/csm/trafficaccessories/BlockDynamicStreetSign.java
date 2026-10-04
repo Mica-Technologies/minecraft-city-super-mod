@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleStateIgnored;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
@@ -184,7 +185,7 @@ public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
     if (source == null) {
       return new StreetSignData().getMountType();
     }
-    TileEntity tileEntity = source.getTileEntity(pos);
+    TileEntity tileEntity = BlockUtils.getTileEntitySafe(source, pos);
     if (tileEntity instanceof TileEntityDynamicStreetSign) {
       return ((TileEntityDynamicStreetSign) tileEntity).getSignData().getMountType();
     }

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
 import com.micatechnologies.minecraft.csm.Csm;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
@@ -126,7 +127,7 @@ public class BlockDynamicRouteMarkerSign extends AbstractBlockSign
     if (source == null) {
       return GuideSignShieldType.INTERSTATE;
     }
-    TileEntity tileEntity = source.getTileEntity(pos);
+    TileEntity tileEntity = BlockUtils.getTileEntitySafe(source, pos);
     if (tileEntity instanceof TileEntityDynamicRouteMarkerSign) {
       return ((TileEntityDynamicRouteMarkerSign) tileEntity).getShield();
     }

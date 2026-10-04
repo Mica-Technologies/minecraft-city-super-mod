@@ -1,9 +1,13 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.chunk.Chunk;
 
 /**
  * Utility class providing helper methods for querying block adjacency, computing relative facing
@@ -360,6 +364,25 @@ public class BlockUtils {
       default:
         return direction.getOpposite();
     }
+  }
+
+  /**
+   * The tile entity at {@code pos}, never creating one. Use it from anything the chunk render
+   * threads call with a {@link ChunkCache} -- {@code getActualState}, {@code getExtendedState},
+   * light values, block colours -- where the plain {@code getTileEntity} defaults to IMMEDIATE and
+   * creates a missing tile entity off the main thread, racing the world's own tile entity map.
+   * Anywhere else it is the plain lookup.
+   *
+   * @param world the world or chunk cache
+   * @param pos   the position
+   *
+   * @return the tile entity there, or {@code null} if there is none (yet)
+   */
+  @Nullable
+  public static TileEntity getTileEntitySafe(IBlockAccess world, BlockPos pos) {
+    return world instanceof ChunkCache
+        ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
+        : world.getTileEntity(pos);
   }
 
 }

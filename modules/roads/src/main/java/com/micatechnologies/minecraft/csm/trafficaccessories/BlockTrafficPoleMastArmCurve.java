@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
@@ -173,7 +174,7 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
   }
 
   private int cellIndexAt(IBlockAccess world, BlockPos pos) {
-    TileEntity tileEntity = world.getTileEntity(pos);
+    TileEntity tileEntity = BlockUtils.getTileEntitySafe(world, pos);
     if (tileEntity instanceof TileEntityMastArmCurve) {
       return MathHelper.clamp(((TileEntityMastArmCurve) tileEntity).getCellIndex(), 0,
           profile.getCellCount() - 1);

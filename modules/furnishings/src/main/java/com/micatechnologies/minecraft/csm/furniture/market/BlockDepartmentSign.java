@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialFurniture;
@@ -17,10 +18,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 
 /**
  * A hanging department sign: a panel two metres wide on two rods from the ceiling, centred on its
@@ -75,9 +74,7 @@ public class BlockDepartmentSign extends BlockResidentialFurniture
    * @return its department
    */
   public static StoreDepartment departmentAt(IBlockAccess world, BlockPos pos) {
-    TileEntity te = world instanceof ChunkCache
-        ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
-        : world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     return te instanceof TileEntityDepartmentSign
         ? ((TileEntityDepartmentSign) te).getDepartment() : StoreDepartment.PRODUCE;
   }

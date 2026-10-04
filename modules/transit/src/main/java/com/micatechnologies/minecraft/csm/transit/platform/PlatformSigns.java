@@ -1,15 +1,14 @@
 package com.micatechnologies.minecraft.csm.transit.platform;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 
 /**
  * What the stepped station signs share (the platform number sign, the number band column and
@@ -39,9 +38,7 @@ public final class PlatformSigns {
    * @return 1 to {@code count}
    */
   public static int valueAt(IBlockAccess world, BlockPos pos, int count) {
-    TileEntity te = world instanceof ChunkCache
-        ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
-        : world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     int value = te instanceof TileEntityPlatformSign ? ((TileEntityPlatformSign) te).getValue()
         : 1;
     return Math.max(1, Math.min(count, value));

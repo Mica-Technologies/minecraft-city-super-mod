@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.lifesafety.exitsign;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.lifesafety.IEmergencyLightBlock;
@@ -33,10 +34,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -136,9 +135,7 @@ public abstract class AbstractBlockExitSign extends AbstractBlockRotatableNSEW
    * without creating a tile entity in it.
    */
   public ExitSignConfig getConfig(IBlockAccess world, BlockPos pos) {
-    TileEntity te = world instanceof ChunkCache
-        ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
-        : world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     return te instanceof TileEntityExitSign
         ? getSpec().clamp(((TileEntityExitSign) te).getConfig())
         : getSpec().getDefaults();

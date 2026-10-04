@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import javax.annotation.Nullable;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -160,7 +161,7 @@ public final class SpanWireHangOffset {
       return null;
     }
     for (int up = 1; up <= MAX_SEARCH_UP; up++) {
-      final TileEntity above = world.getTileEntity(pos.up(up));
+      final TileEntity above = BlockUtils.getTileEntitySafe(world, pos.up(up));
       if (above instanceof TileEntitySpanWireHanger) {
         return (TileEntitySpanWireHanger) above;
       }
@@ -174,7 +175,8 @@ public final class SpanWireHangOffset {
     }
     for (int up = 1; up <= MAX_SEARCH_UP; up++) {
       for (int[] offset : CLUSTER_SEARCH_OFFSETS) {
-        final TileEntity beside = world.getTileEntity(pos.add(offset[0], up, offset[1]));
+        final TileEntity beside =
+            BlockUtils.getTileEntitySafe(world, pos.add(offset[0], up, offset[1]));
         if (beside instanceof TileEntitySpanWireClusterMount
             && ((TileEntitySpanWireClusterMount) beside).covers(pos)) {
           // Everything on one bracket hangs from one mast, so every payload in a cluster takes

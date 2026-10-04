@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.Collections;
@@ -309,7 +310,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     // A chunk being built reads through a ChunkCache, whose getTileEntity only looks; a world's
     // would try to make one, which for a door is a no-op (createNewTileEntity makes none).
     return state.withProperty(SWING,
-        worldIn.getTileEntity(upperPos) instanceof TileEntityDoorSwing);
+        BlockUtils.getTileEntitySafe(worldIn, upperPos) instanceof TileEntityDoorSwing);
   }
 
   /**

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import net.minecraft.block.properties.PropertyDirection;
@@ -40,7 +41,7 @@ public final class SignalMountKitOrientation {
    *     hold (a signal head, blankout box, or lane-control signal).
    */
   public static boolean isSignalHead(IBlockAccess world, BlockPos pos) {
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     return te instanceof TileEntityTrafficSignalHead
         || te instanceof TileEntityBlankoutBox
         || te instanceof TileEntityLaneControlSignal;

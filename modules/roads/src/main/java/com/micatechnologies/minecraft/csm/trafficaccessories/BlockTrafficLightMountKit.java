@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDeferredSync;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
@@ -95,7 +96,7 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     // Check cache first
-    TileEntity te = source.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(source, pos);
     if (te instanceof TileEntityTrafficLightMountKit) {
       AxisAlignedBB cached = ((TileEntityTrafficLightMountKit) te).getCachedBoundingBox();
       if (cached != null) return cached;
@@ -295,7 +296,7 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
    */
   @Nullable
   private static float[] readSignalEnvelope(IBlockAccess world, BlockPos pos) {
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
 
     if (te instanceof TileEntityBlankoutBox || te instanceof TileEntityLaneControlSignal) {
       return new float[]{

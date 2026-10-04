@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety.stations;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
@@ -46,7 +47,7 @@ public class BlockStationNumberPlaque extends BlockFireProtectionProp implements
   @SuppressWarnings("deprecation")
   public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
     IBlockState actual = super.getActualState(state, world, pos);
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     int n = te instanceof TileEntityStationNumber ? ((TileEntityStationNumber) te).getNumber() : 1;
     return actual.withProperty(TENS, n / 10).withProperty(ONES, n % 10);
   }
