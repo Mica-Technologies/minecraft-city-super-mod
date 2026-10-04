@@ -29,7 +29,7 @@ The project ships its own Gradle wrapper, so no separate Gradle install is neede
 
 ## Modules
 
-The mod builds as a mandatory **CSM: Core** jar plus ten optional module jars, from this one
+The mod builds as a mandatory **CSM: Core** jar plus thirteen optional module jars, from this one
 repository: `build/libs/minecraft-city-super-mod-core-<version>.jar` and
 `minecraft-city-super-mod-<module>-<version>.jar` (`./gradlew printModuleJarNames` lists them).
 Core is the `src/main` source set; each module is a source set of its own under `modules/<name>`,
@@ -47,6 +47,22 @@ loaded:
 
 Running a module on its own is the only check that proves its assets are self-contained. See
 `assets/docs/MODULE_SYSTEM.md` for the whole design.
+
+### Every module with other mods: RoughlyEnoughIDs
+
+Every module together registers about 3,700 blocks, so the dev client is close to 1.12.2's
+4,096 block id limit on its own; add another content mod to `run/mods` and it stops with
+`Invalid id 4096 - maximum id range exceeded`. Put the City of Alto pack's
+**`!mixinbooter-10.7.jar`** and **`roughly-enough-ids.jar`** in `run/mods`, as release jars:
+MixinBooter loads as a coremod and its mixin service remaps REID's mixins in the dev client.
+(Setting the build's `forceEnableMixins` property instead was tried and is not enough: the run
+still fails with `NoClassDefFoundError: zone/rong/mixinbooter/IEarlyMixinLoader`.)
+
+!!! warning "Subset runs and Immersive Vehicles content packs"
+
+    The Immersive Vehicles content packs kept in `run/mods` for CSM: Vehicles need Immersive
+    Vehicles, which only the Vehicles module puts on the classpath. A subset run without it
+    stops on Forge's Missing Mods screen before MCMCP starts; move those jars out first.
 
 IntelliJ gets the same choices as run configurations: **2. Run Client** is the default (every
 module), and **2. Run Client (Core only)**, **2. Run Client (Core + All modules)** and

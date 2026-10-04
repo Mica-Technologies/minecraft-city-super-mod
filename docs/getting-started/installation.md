@@ -29,6 +29,7 @@ every module requires it. Beyond that, install only the subsystems you actually 
 | **CSM: Signage & Advertising** | Street ad kiosks, wall poster boards and billboards built to size. Road signs are in Roads & Traffic |
 | **CSM: Parks & Greenery** | Street trees built from blocks, the Tree Planting Tool, hedges and plantings, benches, playgrounds, fountains and irrigation |
 | **CSM: Transit** | Working fare gates, a fare vending machine, fare tickets and transit cards, bus stop signs and bus shelters. **Also requires CSM: Roads & Traffic** |
+| **CSM: Vehicles** | Fire engines, ambulances, police cars, work trucks and a city bus for Immersive Vehicles, emergency lightbars and sirens for any vehicle, and signal preemption for vehicles running their emergency lights. **Also requires CSM: Roads & Traffic and [Immersive Vehicles](https://www.curseforge.com/minecraft/mc-mods/immersive-vehicles)** |
 
 !!! warning "All from the same release, all the same version"
 
@@ -38,10 +39,27 @@ every module requires it. Beyond that, install only the subsystems you actually 
 
 !!! tip "Want the whole mod?"
 
-    Install all thirteen jars. That is everything the mod has; every block and item keeps the name it
+    Install all fourteen jars. That is everything the mod has; every block and item keeps the name it
     had when the mod was a single jar, so worlds carry over, though some have since moved to the tab
     of the module that now holds them (the fare equipment to Transit, for example). Modpacks that
     shipped the old single jar should list every jar they want instead.
+
+## Block IDs: install RoughlyEnoughIDs
+
+Minecraft 1.12.2 has room for **4,096 block IDs** in a world, shared by vanilla and every mod.
+City Super Mod uses most of them: with every module installed it registers about **3,700
+blocks**, and vanilla takes around 250 more, which leaves only about 160 for every other mod
+in the pack. Past the limit the game does not start; it stops with
+`Invalid id 4096 - maximum id range exceeded`.
+
+!!! tip "Recommended: RoughlyEnoughIDs"
+
+    Install **RoughlyEnoughIDs** (REID), which lifts the limit, together with **MixinBooter**,
+    which it needs. Both are ordinary jars in `mods`, on the client and the server. With them,
+    CSM and any number of other content mods fit. They are what the City of Alto packs run.
+
+    You can skip them only with a few CSM modules and few other mods. The block catalogue's
+    [reference pages](../reference/index.md) show how many blocks each module adds.
 
 ## Steps
 
