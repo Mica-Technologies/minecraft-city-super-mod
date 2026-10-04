@@ -38,6 +38,8 @@ import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmVoiceEvacStro
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelock7002TRed;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockASRed;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockASWhite;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockASWPCeilingRed;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockASWPCeilingWhite;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockExceederRed;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockExceederWhite;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockET24SounderStrobeRed;
@@ -218,6 +220,8 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensorclassichornstrobewhite", "csm:spectralert_classic", new AxisAlignedBB(0.078125, 0.012500, 0.725000, 0.921875, 0.993750, 1.000000), new float[]{3.83f, 0.69f, 11.6f}, new float[]{12.42f, 7.44f, 14.5f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensorlseriesceilinghornstrobered", "csm:spectralert", new AxisAlignedBB(0.062500, 0.062500, 0.843750, 0.937500, 0.937500, 1.000000), new float[]{5.46f, 5.79f, 13.5f}, new float[]{10.21f, 10.54f, 14.4f}, IStrobeBlock.StrobeLensShape.ROUND));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensorlseriesceilinghornstrobewhite", "csm:spectralert", new AxisAlignedBB(0.062500, 0.062500, 0.843750, 0.937500, 0.937500, 1.000000), new float[]{5.46f, 5.79f, 13.5f}, new float[]{10.21f, 10.54f, 14.4f}, IStrobeBlock.StrobeLensShape.ROUND));
+    initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensorlseriesceilinghornstrobewpred", "csm:spectralert", new AxisAlignedBB(0.062500, 0.062500, 0.531250, 0.937500, 0.937500, 1.000000), new float[]{5.46f, 5.79f, 8.5f}, new float[]{10.21f, 10.54f, 9.4f}, IStrobeBlock.StrobeLensShape.ROUND));
+    initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensorlseriesceilinghornstrobewpwhite", "csm:spectralert", new AxisAlignedBB(0.062500, 0.062500, 0.531250, 0.937500, 0.937500, 1.000000), new float[]{5.46f, 5.79f, 8.5f}, new float[]{10.21f, 10.54f, 9.4f}, IStrobeBlock.StrobeLensShape.ROUND));
     initTabBlock(new BlockFireAlarmVoiceEvacFactory("firealarmsystemsensorlseriesceilingspeakerred", new AxisAlignedBB(0.062500, 0.062500, 0.900000, 0.937500, 0.937500, 1.000000)));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsystemsensorlseriesceilingspeakerstrobered", new AxisAlignedBB(0.062500, 0.062500, 0.843750, 0.937500, 0.937500, 1.000000), new float[]{5.26f, 5.72f, 13.5f}, new float[]{10.16f, 10.63f, 14.4f}, IStrobeBlock.StrobeLensShape.ROUND));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsystemsensorlseriesceilingspeakerstrobewhite", new AxisAlignedBB(0.062500, 0.062500, 0.843750, 0.937500, 0.937500, 1.000000), new float[]{5.26f, 5.72f, 13.5f}, new float[]{10.16f, 10.63f, 14.4f}, IStrobeBlock.StrobeLensShape.ROUND));
@@ -229,6 +233,8 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsystemsensorlseriesledceilingspeakerstrobered", new AxisAlignedBB(0.062500, 0.062500, 0.843750, 0.937500, 0.937500, 1.000000), new float[]{6.33f, 6.35f, 13.5f}, new float[]{9.77f, 9.68f, 14.4f}, IStrobeBlock.StrobeLensShape.ROUND));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsystemsensorlseriesledceilingspeakerstrobewhite", new AxisAlignedBB(0.062500, 0.062500, 0.843750, 0.937500, 0.937500, 1.000000), new float[]{6.33f, 6.35f, 13.5f}, new float[]{9.77f, 9.68f, 14.4f}, IStrobeBlock.StrobeLensShape.ROUND));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsystemsensorlseriesledceilingspeakerstrobeblack", new AxisAlignedBB(0.062500, 0.062500, 0.843750, 0.937500, 0.937500, 1.000000), new float[]{6.33f, 6.35f, 13.5f}, new float[]{9.77f, 9.68f, 14.4f}, IStrobeBlock.StrobeLensShape.ROUND));
+    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsystemsensorlseriesledceilingspeakerstrobewpred", new AxisAlignedBB(0.062500, 0.062500, 0.531250, 0.937500, 0.937500, 1.000000), new float[]{6.33f, 6.35f, 8.5f}, new float[]{9.77f, 9.68f, 9.4f}, IStrobeBlock.StrobeLensShape.ROUND));
+    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsystemsensorlseriesledceilingspeakerstrobewpwhite", new AxisAlignedBB(0.062500, 0.062500, 0.531250, 0.937500, 0.937500, 1.000000), new float[]{6.33f, 6.35f, 8.5f}, new float[]{9.77f, 9.68f, 9.4f}, IStrobeBlock.StrobeLensShape.ROUND));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensorlseriesledhornstrobeoutdoorred", "csm:spectralert", new AxisAlignedBB(0.218750, 0.046875, 0.656250, 0.781250, 0.921875, 1.000000), new float[]{5.96f, 4.26f, 10.5f}, new float[]{9.99f, 8.06f, 11.5f}, IStrobeBlock.StrobeLensShape.ROUND));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensorlseriesledhornstrobered", "csm:spectralert", new AxisAlignedBB(0.187500, 0.187500, 0.812500, 0.812500, 1.000000, 1.000000), new float[]{5.96f, 6.33f, 13f}, new float[]{9.42f, 9.99f, 14f}, IStrobeBlock.StrobeLensShape.ROUND));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsystemsensorlseriesledhornstrobewhite", "csm:spectralert", new AxisAlignedBB(0.187500, 0.187500, 0.812500, 0.812500, 1.000000, 1.000000), new float[]{5.96f, 6.33f, 13f}, new float[]{9.42f, 9.99f, 14f}, IStrobeBlock.StrobeLensShape.ROUND));
@@ -242,6 +248,8 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(BlockFireAlarmWheelock7002TRed.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockASRed.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockASWhite.class, fmlPreInitializationEvent);
+    initTabBlock(BlockFireAlarmWheelockASWPCeilingRed.class, fmlPreInitializationEvent);
+    initTabBlock(BlockFireAlarmWheelockASWPCeilingWhite.class, fmlPreInitializationEvent);
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocke50red", new AxisAlignedBB(0.187500, 0.162500, 0.800000, 0.812500, 1.000000, 1.000000), new float[]{3.63f, 12.59f, 12.8f}, new float[]{12.24f, 15.37f, 14f}));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocke50white", new AxisAlignedBB(0.187500, 0.162500, 0.800000, 0.812500, 1.000000, 1.000000), new float[]{3.63f, 12.59f, 12.8f}, new float[]{12.24f, 15.37f, 14f}));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocke60white", new AxisAlignedBB(0.000000, 0.000000, 0.875000, 1.000000, 1.000000, 1.000000), new float[]{4f, 7f, 14f}, new float[]{12f, 9f, 16f}));

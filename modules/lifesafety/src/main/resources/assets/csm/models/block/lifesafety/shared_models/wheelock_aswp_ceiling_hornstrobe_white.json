@@ -1,0 +1,259 @@
+{
+  "credit": "The Wheelock AS face (wheelock_as_hornstrobe_red) set forward on its square WPBB weatherproof back box, for the ASWP ceiling horn strobe",
+  "textures": {
+    "0": "csm:blocks/lifesafety/wheelock_as_white_horn_strobe",
+    "box": "csm:blocks/lifesafety/system_sensor_l_series_white_ceiling_wp_backbox",
+    "particle": "csm:blocks/lifesafety/wheelock_as_white_horn_strobe"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        2.5,
+        10.0
+      ],
+      "to": [
+        14,
+        13.5,
+        12.0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.75,
+            1.25,
+            14.574,
+            14.565
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            2,
+            2.875,
+            2.57969,
+            4.425
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            2.125,
+            2.875,
+            2.63594,
+            5.08047
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            2.125,
+            2.25,
+            2.63203,
+            4.27656
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            2.125,
+            2.5,
+            2.72656,
+            4.375
+          ],
+          "rotation": 180,
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            2.125,
+            2.5,
+            2.625,
+            4.625
+          ],
+          "rotation": 180,
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        10.5,
+        8.0
+      ],
+      "to": [
+        13,
+        13.2,
+        10.0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.125,
+            1.875,
+            13.14844,
+            4.41016
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            3.125,
+            1.875,
+            13.14844,
+            4.41016
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            3.125,
+            1.875,
+            13.14844,
+            4.41016
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            3.125,
+            1.875,
+            13.14844,
+            4.41016
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            3.125,
+            1.875,
+            13.14844,
+            4.41016
+          ],
+          "rotation": 180,
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            3.125,
+            1.875,
+            13.14844,
+            4.41016
+          ],
+          "rotation": 180,
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        3.0,
+        12.6
+      ],
+      "to": [
+        13.5,
+        13.0,
+        16.0
+      ],
+      "faces": {
+        "south": {
+          "uv": [
+            0,
+            9,
+            16,
+            16
+          ],
+          "texture": "#box"
+        },
+        "east": {
+          "uv": [
+            0,
+            9,
+            16,
+            16
+          ],
+          "texture": "#box"
+        },
+        "west": {
+          "uv": [
+            0,
+            9,
+            16,
+            16
+          ],
+          "texture": "#box"
+        },
+        "up": {
+          "uv": [
+            0,
+            9,
+            16,
+            16
+          ],
+          "texture": "#box"
+        },
+        "down": {
+          "uv": [
+            0,
+            9,
+            16,
+            16
+          ],
+          "texture": "#box"
+        }
+      }
+    },
+    {
+      "from": [
+        2.25,
+        2.75,
+        12.0
+      ],
+      "to": [
+        13.75,
+        13.25,
+        12.6
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#box"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#box"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#box"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#box"
+        }
+      }
+    }
+  ]
+}
