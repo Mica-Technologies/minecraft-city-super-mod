@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "391 blocks in this tab"
+!!! info "392 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -149,6 +149,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Safety Fence | `csm:safety_fence` | 0.6 | 3 | pickaxe | 0 |
 | Sand Barrel | `csm:sand_barrel_array` | 0.6 | 3 | pickaxe | 0 |
 | School Zone Beacon Assembly | `csm:school_zone_beacon` | 2 | 10 | pickaxe | 1 |
+| Sign Truss Catwalk | `csm:sign_truss_catwalk` | 3.0 | 12.0 | pickaxe | 1 |
 | Silver Angled Thin Traffic Pole | `csm:trafficpolehorizontalanglesilver` | 2 | 10 | pickaxe | 1 |
 | Silver Double Horizontal Traffic Pole | `csm:trafficpolehorzdblsilver` |  | 10 | pickaxe | 1 |
 | Silver Double Vertical Traffic Pole | `csm:trafficpolevertdblsilver` |  | 10 | pickaxe | 1 |

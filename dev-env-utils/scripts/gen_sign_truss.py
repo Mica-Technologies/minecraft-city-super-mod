@@ -53,11 +53,14 @@ MODEL_REF = "csm:" + FOLDER + "/%s"
 
 SMALL = "sign_truss"
 LARGE = "sign_truss_large"
+CATWALK = "sign_truss_catwalk"
 NAMES = {
     SMALL: ("Overhead Sign Truss", "Celosía para Señales Elevadas", "Schilderbrücken-Fachwerk",
             "Fackverk för Portalskyltar"),
     LARGE: ("Overhead Sign Truss (2x2)", "Celosía para Señales Elevadas (2x2)",
             "Schilderbrücken-Fachwerk (2x2)", "Fackverk för Portalskyltar (2x2)"),
+    CATWALK: ("Sign Truss Catwalk", "Pasarela de Celosía para Señales",
+              "Laufsteg für Schilderbrücken", "Gångbrygga för Portalskyltar"),
 }
 LANGS = ("en_us", "es_es", "de_de", "sv_se")
 
@@ -118,7 +121,25 @@ def plate_texture():
     return img
 
 
+def grate_texture():
+    """Bar grating, seen from above: bearing bars across, cross rods along, on a clear ground
+    for the cutout layer, so the road shows through the catwalk as it does through a real one."""
+    s = 32
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    bar = _shift(GALV, -6)
+    rod = _shift(GALV, -22)
+    for x in range(0, s, 4):
+        draw.rectangle([x, 0, x + 1, s - 1], fill=bar)
+    for y in range(2, s, 8):
+        draw.rectangle([0, y, s - 1, y], fill=rod)
+    draw.rectangle([0, 0, s - 1, 0], fill=bar)
+    draw.rectangle([0, s - 1, s - 1, s - 1], fill=bar)
+    return img
+
+
 TEXTURES = {
+    "truss_grate": grate_texture,
     "truss_chord": chord_texture,
     "truss_lace": lambda: lacing_texture(False),
     "truss_lace_wide": lambda: lacing_texture(True),
@@ -238,6 +259,46 @@ LARGE_DISPLAY = {
 }
 
 
+# --------------------------------------------------------------------------------------------
+# The catwalk: drawn facing north, its railing on the north (outer) edge and the truss to the
+# south, behind it
+# --------------------------------------------------------------------------------------------
+
+CW_FLOOR = 1.0       # the grating's top
+CW_RAIL = 15.0       # the top rail's underside: about the 42 inches a guardrail stands
+CW_MID = 8.0
+CW_POST = (0.5, 1.5)  # a post's thickness band, along x and z
+
+
+def catwalk_body():
+    """Grating the full block, the toe board and railing along the outer edge (a post at the
+    block's west end, so joined blocks share one post a block), and two brackets under the
+    floor reaching back into the truss behind."""
+    p0, p1 = CW_POST
+    out = [box(0, 0, 0, 16, CW_FLOOR, 16, "#grate", faces=("up", "down"),
+               uv=[0, 0, 16, 16]),
+           box(0, 0, 0, 16, CW_FLOOR, 16, "#plate", faces=("north", "south", "east", "west")),
+           box(0, CW_FLOOR, p0, 16, CW_FLOOR + 2.5, p1, "#plate"),             # toe board
+           box(0, CW_RAIL, p0, 16, CW_RAIL + 1, p1, "#chord"),                  # top rail
+           box(0, CW_MID, p0, 16, CW_MID + 0.75, p1, "#chord"),                 # mid rail
+           box(p0, CW_FLOOR, p0, p1, CW_RAIL, p1, "#chord")]                    # post
+    for x in (3.0, 12.0):
+        out += [box(x, -2.0, 4, x + 1, 0, 16, "#plate"),                          # bracket
+                box(x, -2.0, 16, x + 1, CW_FLOOR, 17.5, "#plate")]                # to the truss
+    return out
+
+
+def catwalk_end(east):
+    """The railing across an end of the catwalk that nothing carries on from."""
+    x0, x1 = (16 - CW_POST[1], 16 - CW_POST[0]) if east else CW_POST
+    out = [box(x0, CW_RAIL, CW_POST[1], x1, CW_RAIL + 1, 16, "#chord"),
+           box(x0, CW_MID, CW_POST[1], x1, CW_MID + 0.75, 16, "#chord"),
+           box(x0, CW_FLOOR, 15, x1, CW_RAIL, 16, "#chord")]
+    if east:
+        out.append(box(x0, CW_FLOOR, CW_POST[0], x1, CW_RAIL, CW_POST[1], "#chord"))
+    return out
+
+
 def part_models():
     m = {}
 
@@ -258,6 +319,13 @@ def part_models():
     m[LARGE + "_end_bottom"] = model(large_end(0, 1), "truss_lace_wide")
     m[LARGE + "_end_top"] = model(large_end(15, 16), "truss_lace_wide")
     m[LARGE + "_base"] = model(large_base(), "truss_lace_wide")
+    cw_tex = dict(_tex(), grate=TEX_REF % "truss_grate")
+    m[CATWALK + "_body"] = {"textures": cw_tex, "elements": catwalk_body()}
+    m[CATWALK + "_end_west"] = {"textures": cw_tex, "elements": catwalk_end(False)}
+    m[CATWALK + "_end_east"] = {"textures": cw_tex, "elements": catwalk_end(True)}
+    m[CATWALK + "_inventory"] = {"parent": "block/block", "textures": cw_tex,
+                                 "elements": catwalk_body() + catwalk_end(False)
+                                 + catwalk_end(True)}
     inv = model(large_inventory(), "truss_lace_wide", parent="block/block")
     inv["display"] = LARGE_DISPLAY
     m[LARGE + "_inventory"] = inv
@@ -360,6 +428,23 @@ def large_blockstate():
 # Writing
 # --------------------------------------------------------------------------------------------
 
+def catwalk_blockstate():
+    rules = []
+    for facing, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        def ap(name, y=y):
+            out = {"model": MODEL_REF % name}
+            if y:
+                out["y"] = y
+            return out
+        rules += [{"when": {"facing": facing}, "apply": ap(CATWALK + "_body")},
+                  {"when": {"facing": facing, "end_west": "true"},
+                   "apply": ap(CATWALK + "_end_west")},
+                  {"when": {"facing": facing, "end_east": "true"},
+                   "apply": ap(CATWALK + "_end_east")}]
+    return {"variants": {"inventory": {"model": MODEL_REF % (CATWALK + "_inventory")}},
+            "multipart": rules}
+
+
 def _dump(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", newline="\n", encoding="utf-8") as fh:
@@ -377,7 +462,9 @@ def write_all(tex_dir, model_dir, state_dir):
         written.append(("model", name + ".json"))
     _dump(os.path.join(state_dir, SMALL + ".json"), small_blockstate())
     _dump(os.path.join(state_dir, LARGE + ".json"), large_blockstate())
-    written += [("state", SMALL + ".json"), ("state", LARGE + ".json")]
+    _dump(os.path.join(state_dir, CATWALK + ".json"), catwalk_blockstate())
+    written += [("state", SMALL + ".json"), ("state", LARGE + ".json"),
+                ("state", CATWALK + ".json")]
     return written
 
 
@@ -385,12 +472,13 @@ def fragments():
     lines = []
     for lang_i, lang in enumerate(LANGS):
         lines.append("## " + lang)
-        for reg in (SMALL, LARGE):
+        for reg in (SMALL, LARGE, CATWALK):
             lines.append("tile.%s.name=%s" % (reg, NAMES[reg][lang_i]))
         lines.append("")
     lines.append("## tab")
     lines.append('    initTabBlock(new BlockSignTruss("%s", false));' % SMALL)
     lines.append('    initTabBlock(new BlockSignTruss("%s", true));' % LARGE)
+    lines.append('    initTabBlock(new BlockTrussCatwalk("%s"));' % CATWALK)
     return "\n".join(lines)
 
 

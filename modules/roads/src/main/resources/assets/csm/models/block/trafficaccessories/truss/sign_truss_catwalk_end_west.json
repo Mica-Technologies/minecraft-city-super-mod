@@ -1,0 +1,215 @@
+{
+  "textures": {
+    "chord": "csm:blocks/trafficaccessories/truss/truss_chord",
+    "lace": "csm:blocks/trafficaccessories/truss/truss_lace",
+    "plate": "csm:blocks/trafficaccessories/truss/truss_plate",
+    "particle": "csm:blocks/trafficaccessories/truss/truss_chord",
+    "grate": "csm:blocks/trafficaccessories/truss/truss_grate"
+  },
+  "elements": [
+    {
+      "from": [
+        0.5,
+        15.0,
+        1.5
+      ],
+      "to": [
+        1.5,
+        16.0,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chord",
+          "uv": [
+            14.5,
+            0.0,
+            15.5,
+            1.0
+          ]
+        },
+        "south": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            0.0,
+            1.5,
+            1.0
+          ]
+        },
+        "east": {
+          "texture": "#chord",
+          "uv": [
+            0,
+            0.0,
+            14.5,
+            1.0
+          ]
+        },
+        "west": {
+          "texture": "#chord",
+          "uv": [
+            1.5,
+            0.0,
+            16.0,
+            1.0
+          ]
+        },
+        "up": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            1.5,
+            1.5,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            0,
+            1.5,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        8.0,
+        1.5
+      ],
+      "to": [
+        1.5,
+        8.75,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chord",
+          "uv": [
+            14.5,
+            7.25,
+            15.5,
+            8.0
+          ]
+        },
+        "south": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            7.25,
+            1.5,
+            8.0
+          ]
+        },
+        "east": {
+          "texture": "#chord",
+          "uv": [
+            0,
+            7.25,
+            14.5,
+            8.0
+          ]
+        },
+        "west": {
+          "texture": "#chord",
+          "uv": [
+            1.5,
+            7.25,
+            16.0,
+            8.0
+          ]
+        },
+        "up": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            1.5,
+            1.5,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            0,
+            1.5,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        1.0,
+        15
+      ],
+      "to": [
+        1.5,
+        15.0,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#chord",
+          "uv": [
+            14.5,
+            1.0,
+            15.5,
+            15.0
+          ]
+        },
+        "south": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            1.0,
+            1.5,
+            15.0
+          ]
+        },
+        "east": {
+          "texture": "#chord",
+          "uv": [
+            0,
+            1.0,
+            1,
+            15.0
+          ]
+        },
+        "west": {
+          "texture": "#chord",
+          "uv": [
+            15,
+            1.0,
+            16,
+            15.0
+          ]
+        },
+        "up": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            15,
+            1.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#chord",
+          "uv": [
+            0.5,
+            0,
+            1.5,
+            1
+          ]
+        }
+      }
+    }
+  ]
+}
