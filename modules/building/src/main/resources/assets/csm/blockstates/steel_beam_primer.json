@@ -1,14 +1,102 @@
 {
   "variants": {
-    "axis=z": {
-      "model": "csm:buildingmaterials/steel_beam_primer"
-    },
-    "axis=x": {
-      "model": "csm:buildingmaterials/steel_beam_primer",
-      "y": 90
-    },
     "inventory": {
       "model": "csm:buildingmaterials/steel_beam_primer"
     }
-  }
+  },
+  "multipart": [
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_middle"
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_middle",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cut_north": "false",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_north"
+      }
+    },
+    {
+      "when": {
+        "cut_north": "false",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_north",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cut_south": "false",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_south"
+      }
+    },
+    {
+      "when": {
+        "cut_south": "false",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_south",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cut_north": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_plate_north"
+      }
+    },
+    {
+      "when": {
+        "cut_north": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_plate_north",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cut_south": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_plate_south"
+      }
+    },
+    {
+      "when": {
+        "cut_south": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_primer_plate_south",
+        "y": 90
+      }
+    }
+  ]
 }

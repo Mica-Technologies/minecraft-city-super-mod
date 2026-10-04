@@ -1,14 +1,64 @@
 {
   "variants": {
-    "axis=z": {
-      "model": "csm:buildingmaterials/steel_column_primer"
-    },
-    "axis=x": {
-      "model": "csm:buildingmaterials/steel_column_primer",
-      "y": 90
-    },
     "inventory": {
       "model": "csm:buildingmaterials/steel_column_primer"
     }
-  }
+  },
+  "multipart": [
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_primer"
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_primer",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_primer_top"
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_primer_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_primer_bottom"
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_column_primer_bottom",
+        "y": 90
+      }
+    }
+  ]
 }

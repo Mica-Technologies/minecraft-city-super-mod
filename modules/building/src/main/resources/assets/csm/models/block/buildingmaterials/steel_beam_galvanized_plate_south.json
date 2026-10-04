@@ -1,0 +1,41 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/buildingmaterials/framing/steel_track",
+    "particle": "csm:blocks/buildingmaterials/framing/steel_track"
+  },
+  "elements": [
+    {
+      "from": [
+        3.5,
+        2.5,
+        12
+      ],
+      "to": [
+        12.5,
+        13.5,
+        12.75
+      ],
+      "faces": {
+        "east": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        },
+        "down": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        }
+      }
+    }
+  ]
+}
