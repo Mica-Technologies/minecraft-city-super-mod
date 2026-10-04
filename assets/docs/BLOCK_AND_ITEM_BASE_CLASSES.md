@@ -224,6 +224,13 @@ entity not being attached yet.
 Both filters sit alongside the user's `trafficPoleIgnoreBlocks` config list, which is matched by
 registry name and is unaffected by either interface.
 
+A fourth filter goes by shape: a **flat overlay** is never mounted to (`isFlatOverlay`, #258). A
+block whose box covers its whole footprint but stands no more than a sixteenth tall, carpet height,
+is a skin laid over what is under it: road paint and markings (the external road mod's paint blocks
+among them, pulled down onto the road under them), floor finishes, manhole and grate covers. Named
+classes could not cover another mod's markings, and the shape covers every one of them without
+naming any mod. `TrafficPoleFlatOverlayTest` holds the rule.
+
 ### Pole Fit (ICsmPoleFitted, CsmPoleFit)
 
 The opposite problem: a side-mounted arm that has to *reach* the pole. CSM has three vertical
