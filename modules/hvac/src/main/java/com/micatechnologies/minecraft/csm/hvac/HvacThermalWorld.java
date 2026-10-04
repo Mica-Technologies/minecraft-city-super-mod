@@ -101,6 +101,17 @@ public final class HvacThermalWorld implements IWorldEventListener {
    */
   private static final long ATTACH_BUDGET_NANOS = 4_000_000L;
 
+  /**
+   * The tick of each second on which each part of the per-second work runs. They used to run
+   * together on one tick, and at district scale (1,357 spaces) that was 6 ms every twentieth tick,
+   * a regular spike in the tick time where spread out it is a fraction of a millisecond a tick
+   * (#256). Rescans come first so the rooms they rebuild are settled and coupled before the step.
+   */
+  private static final int PHASE_RESCAN = 0;
+  private static final int PHASE_COUPLINGS = 5;
+  private static final int PHASE_STEP = 10;
+  private static final int PHASE_PLAYERS = 15;
+
   /** Distance to an HVAC device within which a player sees the HUD. */
   static final int HUD_RANGE = 24;
 
@@ -129,6 +140,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   /** Set when the flood budget left due anchors unattached; they are tried again next tick. */
   private boolean attachBacklog;
+
+  /** Whether a room has been built that has not yet been coupled to its neighbours and settled. */
+  private boolean newSpaces;
 
   /** Spaces taken apart this step for a rescan, kept until their cells are re-homed. */
   private final List<ThermalSpace> detached = new ArrayList<>();
@@ -165,6 +179,12 @@ public final class HvacThermalWorld implements IWorldEventListener {
     long stepNanos;
     long playerNanos;
     long maxTickNanos;
+    /** The worst single tick of each part, to tell which one a spike in maxTickNanos was. */
+    long maxRescanNanos;
+    long maxAttachNanos;
+    long maxCouplingNanos;
+    long maxStepNanos;
+    long maxPlayerNanos;
     long dirtyRescans;
     long periodicRescans;
     long couplings;
@@ -178,6 +198,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
       sinceTick = now;
       steps = rescanNanos = attachNanos = couplingNanos = stepNanos = playerNanos = 0;
       maxTickNanos = dirtyRescans = periodicRescans = couplings = scans = scannedCells = 0;
+      maxRescanNanos = maxAttachNanos = maxCouplingNanos = maxStepNanos = maxPlayerNanos = 0;
       blockUpdates = relevantBlockUpdates = waitSkips = 0;
     }
   }
@@ -633,6 +654,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
       s.temperatureKnown = true;
     } else {
       s.needsEquilibrium = true;
+      newSpaces = true;
     }
 
     // Spaces this one swallowed (a wall came down, a door opened) go; their anchors rejoin.
@@ -889,6 +911,17 @@ public final class HvacThermalWorld implements IWorldEventListener {
     settleNewSpaces();
   }
 
+  /** Couples the rooms built since the last look, and settles them; see {@link #newSpaces}. */
+  private void settleNewSpacesNow() {
+    newSpaces = false;
+    for (ThermalSpace s : spaces) {
+      if (s.needsEquilibrium && couplingsStale(s)) {
+        resolveCouplings(s);
+      }
+    }
+    settleNewSpaces();
+  }
+
   private void resolveCouplings(ThermalSpace s) {
     perf.couplings++;
     s.couplingStamp = stampCounter;
@@ -957,34 +990,88 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   // region Stepping
 
-  /** Called every server tick for this world. */
+  /**
+   * Called every server tick for this world. Each part of the per-second work has a tick of its
+   * own (see {@link #PHASE_STEP}), and rooms still to be built (a building's chunks have just
+   * loaded) take a slice of {@link #ATTACH_BUDGET_NANOS} every tick until they are all built.
+   */
   void tick() {
     long now = world.getTotalWorldTime();
-    if (now % STEP_TICKS != 0) {
-      if (attachBacklog) {
-        // Rooms still to be built (a building's chunks have just loaded): a slice every tick.
-        long t0 = System.nanoTime();
-        attachPending(now, ATTACH_BUDGET_NANOS);
-        long dt = System.nanoTime() - t0;
-        perf.attachNanos += dt;
-        perf.maxTickNanos = Math.max(perf.maxTickNanos, dt);
-      }
-      return;
-    }
     if (perf.sinceTick == Long.MIN_VALUE) {
       perf.reset(now);
     }
-    long t0 = System.nanoTime();
-    maintain(now, ATTACH_BUDGET_NANOS);
-    long t1 = System.nanoTime();
-    step();
-    long t2 = System.nanoTime();
-    updatePlayers(now);
-    long t3 = System.nanoTime();
-    perf.steps++;
-    perf.stepNanos += t2 - t1;
-    perf.playerNanos += t3 - t2;
-    perf.maxTickNanos = Math.max(perf.maxTickNanos, t3 - t0);
+    int phase = (int) (now % STEP_TICKS);
+    long start = System.nanoTime();
+    long t0 = start;
+    switch (phase) {
+      case PHASE_RESCAN:
+        rescanDue(now);
+        t0 = clock(t0, Part.RESCAN);
+        break;
+      case PHASE_COUPLINGS:
+        resolveCouplings(true);
+        t0 = clock(t0, Part.COUPLINGS);
+        break;
+      case PHASE_STEP:
+        resolveCouplings(false); // anything a player's scan built since; normally nothing
+        t0 = clock(t0, Part.COUPLINGS);
+        step();
+        perf.steps++;
+        t0 = clock(t0, Part.STEP);
+        break;
+      case PHASE_PLAYERS:
+        updatePlayers(now);
+        t0 = clock(t0, Part.PLAYERS);
+        break;
+      default:
+        break;
+    }
+    // Anchors come due for a retry on the rescan tick; a backlog is worked through every tick.
+    if (attachBacklog || phase == PHASE_RESCAN) {
+      attachPending(now, ATTACH_BUDGET_NANOS);
+      t0 = clock(t0, Part.ATTACH);
+    }
+    // Rooms built this tick, by a rescan or an attach, are coupled and settled now, while there
+    // are few of them. Left for the step, a district loading built hundreds within the second and
+    // settled them all on that one tick, each by some two hundred passes over its regions. Their
+    // neighbours' couplings, stale now too, wait for the step, so a room arriving every tick does
+    // not resolve the rooms around it again each time.
+    if (newSpaces) {
+      settleNewSpacesNow();
+      clock(t0, Part.COUPLINGS);
+    }
+    perf.maxTickNanos = Math.max(perf.maxTickNanos, System.nanoTime() - start);
+  }
+
+  private enum Part { RESCAN, ATTACH, COUPLINGS, STEP, PLAYERS }
+
+  /** Charges the time since {@code since} to a part of the work, and returns now. */
+  private long clock(long since, Part part) {
+    long now = System.nanoTime();
+    long dt = now - since;
+    switch (part) {
+      case RESCAN:
+        perf.rescanNanos += dt;
+        perf.maxRescanNanos = Math.max(perf.maxRescanNanos, dt);
+        break;
+      case ATTACH:
+        perf.attachNanos += dt;
+        perf.maxAttachNanos = Math.max(perf.maxAttachNanos, dt);
+        break;
+      case COUPLINGS:
+        perf.couplingNanos += dt;
+        perf.maxCouplingNanos = Math.max(perf.maxCouplingNanos, dt);
+        break;
+      case STEP:
+        perf.stepNanos += dt;
+        perf.maxStepNanos = Math.max(perf.maxStepNanos, dt);
+        break;
+      default:
+        perf.playerNanos += dt;
+        perf.maxPlayerNanos = Math.max(perf.maxPlayerNanos, dt);
+        break;
+    }
+    return now;
   }
 
   /**

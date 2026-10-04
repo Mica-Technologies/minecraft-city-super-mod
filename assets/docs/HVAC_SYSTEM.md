@@ -158,6 +158,20 @@ winter in about 10 minutes; a properly sized system warms it from freezing in 4-
   load, all its anchors come due together, and four 24-floor towers arriving at once were one
   235 ms tick; spread out, the worst HVAC step is 17-21 ms. An anchor joining a room that already
   exists is never held back, and the `/csmhvac` commands run their work at once.
+- **The per-second work is spread over the second** (#256): rescans run on its tick 0, the rolling
+  coupling refresh on tick 5, control and physics on tick 10 and the players' HUD on tick 15, with
+  new rooms flooded on any tick that has a backlog. They used to run together on one tick, which
+  at district scale (1,357 spaces, 3,196 anchors on the live server) was 6.2 ms every twentieth
+  tick, a regular p95 spike. A room is coupled and settled in the tick it is built, while there
+  are few of them; left for the step, a district loading settled hundreds on one tick, each by some
+  two hundred passes over its regions. Its neighbours' couplings, made stale by it, wait for the
+  step, so rooms arriving one a tick do not resolve the rooms around them over and over. `perf`
+  reports the worst single tick of each part, so a spike in the worst tick can be put down to
+  one part. Measured in a 289-room test city, one sample each and noisy: steady state 2.0 ms worst
+  tick before and after (the step alone dominates at that size); a world loading, 20-30 ms worst
+  tick either way, which is one room's flood, work a time budget cannot split.
+- An anchor waiting on an unloaded chunk costs a chunk lookup or two a retry (the `retries
+  skipped` in `perf`): the 24,560 the live district counted over 4,036 s is six a second.
 - A space with no anchors left is dropped.
 - A player standing in enclosed air near HVAC that no device's space covers (a hallway, a
   storeroom) anchors a space of their own, started at its equilibrium, so the HUD there comes from
@@ -309,7 +323,7 @@ the new world's clock was behind the old one's (found in the lab: a desert room 
 | `settemp <F>` | sets your room's every region (start a test from cold or hot) |
 | `ff <seconds>` | runs that much simulated time now (an hour of the whole lab: ~0.2 s) |
 | `rescan` | rescans your room now and reports the time |
-| `perf [reset]` | what the simulation has cost since the counters were reset: ms a step and a tick, by phase (rescan, attach, couplings, control and physics, players), rescans on a change and periodic, spaces whose couplings were resolved, floods and their cells, block changes seen and those that changed a room, anchors waiting for a chunk to load and the retries that saved |
+| `perf [reset]` | what the simulation has cost since the counters were reset: ms a second and a tick, by part (rescan, attach, couplings, control and physics, players), the worst tick of each part, rescans on a change and periodic, spaces whose couplings were resolved, floods and their cells, block changes seen and those that changed a room, anchors waiting for a chunk to load and the retries that saved |
 
 What it costs (issue #246, a ten-storey tower of 2,600-cell floors, each with a thermostat, a
 heater and eight vents): idle, 0.6-0.8 ms a step, 0.03-0.04 ms a tick; a lamp toggled beside every
