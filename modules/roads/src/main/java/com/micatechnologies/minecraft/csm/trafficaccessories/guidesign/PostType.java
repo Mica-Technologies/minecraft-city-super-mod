@@ -5,7 +5,12 @@ public enum PostType {
   RIGHT("Right"),
   CENTER("Center"),
   OVERHEAD("Overhead"),
-  RURAL("Rural");
+  RURAL("Rural"),
+  /**
+   * Hung on an overhead sign truss behind the sign: hanger brackets on the sign's back, up to the
+   * truss's top. Last, since a sign's post type is saved by its ordinal.
+   */
+  TRUSS("Truss");
 
   private final String friendlyName;
 

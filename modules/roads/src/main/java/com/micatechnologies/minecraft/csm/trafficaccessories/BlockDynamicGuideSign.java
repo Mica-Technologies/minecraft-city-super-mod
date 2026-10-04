@@ -152,6 +152,22 @@ public class BlockDynamicGuideSign extends AbstractBlockRotatableNSEW
       EntityLivingBase placer, ItemStack stack) {
     super.onBlockPlacedBy(world, pos, state, placer, stack);
     updatePoweredState(world, pos);
+    // Placed against an overhead sign truss: hang it on the truss rather than stand it on posts.
+    // The panel sits on the side opposite the way the sign faces, so the truss is behind it there.
+    if (!world.isRemote && world.getBlockState(pos.offset(
+        state.getValue(BlockHorizontal.FACING).getOpposite())).getBlock()
+        instanceof com.micatechnologies.minecraft.csm.trafficaccessories.truss.BlockSignTruss) {
+      TileEntity te = world.getTileEntity(pos);
+      if (te instanceof TileEntityDynamicGuideSign) {
+        TileEntityDynamicGuideSign sign = (TileEntityDynamicGuideSign) te;
+        com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignData data =
+            sign.getSignData().copy();
+        data.setPostType(
+            com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType.TRUSS
+                .ordinal());
+        sign.setSignData(data);
+      }
+    }
   }
 
   private void updatePoweredState(World world, BlockPos pos) {
