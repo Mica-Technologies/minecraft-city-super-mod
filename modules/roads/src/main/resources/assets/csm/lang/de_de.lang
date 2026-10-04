@@ -1414,4 +1414,5 @@ gui.csm.utility_box.phone=Störungsrufnummer
 gui.csm.utility_box.phone_default=Rufnummer leer lassen für %s
 tile.sign_truss.name=Schilderbrücken-Fachwerk
 tile.sign_truss_large.name=Schilderbrücken-Fachwerk (2x2)
+tile.sign_truss_light.name=Leichtes Schilderbrücken-Fachwerk
 tile.sign_truss_catwalk.name=Laufsteg für Schilderbrücken

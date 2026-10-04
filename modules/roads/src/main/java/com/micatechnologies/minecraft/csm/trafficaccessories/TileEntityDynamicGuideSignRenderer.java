@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
+import com.micatechnologies.minecraft.csm.trafficaccessories.truss.ISignTruss;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.BannerPosition;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.ExitTabData;
@@ -95,6 +96,8 @@ public class TileEntityDynamicGuideSignRenderer
    * at the sign's top). Set per sign in {@link #render} before it is drawn.
    */
   private float trussTop = Float.NaN;
+  /** How far behind the sign's block face that truss's front chords are, set with trussTop. */
+  private float trussInset = 0.5f;
 
   // Legend text renders in the FHWA-style highway font (GuideSignFontRenderer); all
   // text sizes below are CAP HEIGHTS in sign pixel units.
@@ -341,6 +344,7 @@ public class TileEntityDynamicGuideSignRenderer
    */
   public void renderForGui(GuideSignData data) {
     trussTop = Float.NaN;   // the preview has no world, so no truss behind it
+    trussInset = 0.5f;
     worldSkyLight = FULLBRIGHT;
     worldBlockLight = FULLBRIGHT;
     ambientSkyLight = FULLBRIGHT;
@@ -574,7 +578,8 @@ public class TileEntityDynamicGuideSignRenderer
     }
     // Bits 0-31 the combined light, 32 lit, 33 and 34 the skip toggles.
     long hardwareKey = backgroundKey | (skipPost ? 1L << 33 : 0L) | (skipLighting ? 1L << 34 : 0L)
-        | (Float.isNaN(trussTop) ? 0L : ((long) (trussTop + 128) & 0x3FFL) << 35);
+        | (Float.isNaN(trussTop) ? 0L : ((long) (trussTop * 2 + 256) & 0x3FFL) << 35)
+        | ((long) (trussInset * 2) & 0xFL) << 45;
     // Bound outside the list, every frame (the legend pass leaves it bound; this is a no-op then).
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     int hardwareList = bakeable
@@ -1241,13 +1246,18 @@ public class TileEntityDynamicGuideSignRenderer
    * bottom of its own block), or {@code NaN} with none within reach. The panel sits on the side
    * opposite the way the sign faces, so the truss is in the block behind it that way.
    */
-  private static float trussTopBehind(net.minecraft.world.World world, BlockPos pos,
+  private float trussTopBehind(net.minecraft.world.World world, BlockPos pos,
       EnumFacing facing) {
     BlockPos behind = pos.offset(facing.getOpposite());
     for (int dy = TRUSS_LOOK_UP; dy >= -TRUSS_LOOK_DOWN; dy--) {
-      if (world.getBlockState(behind.up(dy)).getBlock()
-          instanceof com.micatechnologies.minecraft.csm.trafficaccessories.truss.BlockSignTruss) {
-        return (dy + 1) * 16.0f - 0.5f;
+      net.minecraft.block.state.IBlockState s = world.getBlockState(behind.up(dy));
+      if (s.getBlock() instanceof ISignTruss) {
+        ISignTruss truss = (ISignTruss) s.getBlock();
+        float top = truss.getSignTrussTop(s);
+        if (top >= 0) {
+          trussInset = truss.getSignTrussFrontInset(s);
+          return dy * 16.0f + top;
+        }
       }
     }
     return Float.NaN;
@@ -1304,7 +1314,8 @@ public class TileEntityDynamicGuideSignRenderer
           if (!Float.isNaN(trussTop)) {
             posts.add(new RenderHelper.Box(
                 new float[]{hx - 0.5f, hTop - 1.5f, postFrontZ},
-                new float[]{hx + HANGER_WIDTH + 0.5f, hTop, postFrontZ + 2.2f}));
+                new float[]{hx + HANGER_WIDTH + 0.5f, hTop,
+                    16.0f + trussInset + 1.7f}));
           }
         }
         break;

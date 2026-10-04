@@ -380,6 +380,14 @@ assets from `gen_sign_truss.py`) are what a guide sign hangs from over a road.
   from whether the same truss carries on below it along the plane's two cross axes (`A_HIGH`,
   `B_HIGH`; the plane's axes are named in `LARGE_CORNERS`, and the Java and the generator must
   agree). It collides as a full block, since a player would fall between a 1x1's chords.
+- **`BlockSignTrussLight`** (`sign_truss_light`): the low-profile truss most newer sign
+  bridges use, a shallow span of thin pipe chords with verticals and V lacing on twin-post
+  ladder frames. One block, four stored kinds (span along x or z, frame carrying a span along x
+  or z); placed on a side face it is a span along that axis, on a top or bottom face a frame set
+  to carry a span across the way the player looks. A span's end runs its chords into a frame
+  beside it (`join_*`) or closes with an end frame; a frame caps its posts and stands on base
+  plates. Both truss blocks implement `ISignTruss`, which tells a hung sign the truss's top and
+  how far in its front chords are, so the hanger clamps reach them.
 - **`BlockTrussCatwalk`** (`sign_truss_catwalk`): the maintenance walkway in front of a truss
   below its signs. Facing is the outer, railed side; side-by-side catwalks of one facing join,
   with railings across open ends. Its railings collide at a fence's height.
