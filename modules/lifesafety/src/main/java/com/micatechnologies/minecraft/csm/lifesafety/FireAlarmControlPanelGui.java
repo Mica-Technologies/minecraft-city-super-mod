@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmChunks;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -214,7 +215,7 @@ public class FireAlarmControlPanelGui extends GuiScreen {
     }
     for (BlockPos pos : panel.getConnectedAppliances()) {
       deviceTotal++;
-      if (!world.isBlockLoaded(pos)) {
+      if (!CsmChunks.isReallyLoaded(world, pos)) {
         deviceUnloaded++;
         continue;
       }
