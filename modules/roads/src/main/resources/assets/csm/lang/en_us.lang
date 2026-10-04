@@ -1413,3 +1413,5 @@ gui.csm.utility_box.line=Line %d
 gui.csm.utility_box.automatic=Leave the number empty for an automatic one
 gui.csm.utility_box.phone=Trouble Phone Number
 gui.csm.utility_box.phone_default=Leave the phone number empty for %s
+tile.sign_truss.name=Overhead Sign Truss
+tile.sign_truss_large.name=Overhead Sign Truss (2x2)
