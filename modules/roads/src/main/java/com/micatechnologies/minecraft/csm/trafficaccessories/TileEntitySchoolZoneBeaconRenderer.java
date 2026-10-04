@@ -18,6 +18,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVert
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -162,7 +163,13 @@ public class TileEntitySchoolZoneBeaconRenderer
       return;
     }
 
-    EnumFacing facing = te.getWorld().getBlockState(te.getPos()).getValue(BlockHorizontal.FACING);
+    // A tile entity can outlive its block by a frame or more on a multiplayer client (the block
+    // change arrives before the tile entity's removal), leaving air with no FACING to read.
+    IBlockState blockState = te.getWorld().getBlockState(te.getPos());
+    if (!blockState.getPropertyKeys().contains(BlockHorizontal.FACING)) {
+      return;
+    }
+    EnumFacing facing = blockState.getValue(BlockHorizontal.FACING);
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x, y, z);

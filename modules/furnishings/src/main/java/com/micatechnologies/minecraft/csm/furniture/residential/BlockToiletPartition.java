@@ -236,6 +236,11 @@ public class BlockToiletPartition extends BlockResidentialFurniture {
   public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world,
       BlockPos pos) {
     IBlockState s = super.getActualState(state, world, pos);
+    // Asked about a position that no longer holds this piece (destroy particles after the block
+    // is gone, another mod's probe), governingKind below would cast whatever is there now.
+    if (!(world.getBlockState(pos).getBlock() instanceof BlockToiletPartition)) {
+      return s;
+    }
     EnumFacing facing = s.getValue(FACING);
     boolean behindStall = kind == Kind.PANEL && isPartition(world, pos.offset(facing), facing);
     boolean reach = behindStall && reachesUp(world, pos, facing);

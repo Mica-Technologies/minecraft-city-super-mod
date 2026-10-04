@@ -183,6 +183,11 @@ public class TileEntityStationAlertController extends AbstractTickableTileEntity
         continue;
       }
       IBlockState state = world.getBlockState(pos);
+      // Checked again here: a relay switched earlier in this loop can drive a piston (a bay
+      // door) that moves or replaces a device after the removeIf above.
+      if (!(state.getBlock() instanceof BlockStationAlertDevice)) {
+        continue;
+      }
       BlockStationAlertDevice device = (BlockStationAlertDevice) state.getBlock();
       boolean want = device.getKind() == BlockStationAlertDevice.Kind.CLEARANCE
           ? on && clearance : on;

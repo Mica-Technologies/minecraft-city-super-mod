@@ -585,7 +585,11 @@ public class TrafficSignalControllerCircuit {
 
         // Get the direction of the sensor
         IBlockState blockState = world.getBlockState(sensorPos);
-        EnumFacing sensorFacingDirection = blockState.getValue(BlockHorizontal.FACING);
+        // An eight-way sensor (AbstractBlockTrafficSignalSensorHZEight) has no BlockHorizontal
+        // FACING; reading it threw and faulted the controller. It counts in the totals only.
+        EnumFacing sensorFacingDirection =
+            blockState.getPropertyKeys().contains(BlockHorizontal.FACING)
+                ? blockState.getValue(BlockHorizontal.FACING) : null;
         if (sensorFacingDirection == EnumFacing.EAST) {
           standardEast += standardCount;
           leftEast += leftCount;
