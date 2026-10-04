@@ -2,251 +2,1395 @@
   "multipart": [
     {
       "when": {
-        "upper": "false",
+        "bottom": "true",
+        "top": "true",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_front_lower"
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_bt"
       }
     },
     {
       "when": {
-        "upper": "false",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_b"
+      }
+    },
+    {
+      "when": {
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_t"
+      }
+    },
+    {
+      "when": {
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_m"
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_shoe"
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_rail"
+      }
+    },
+    {
+      "when": {
         "left": "true",
+        "bottom": "true",
+        "top": "true",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_lower"
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_bt"
       }
     },
     {
       "when": {
-        "upper": "false",
-        "right": "true",
-        "facing": "north"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_lower"
-      }
-    },
-    {
-      "when": {
-        "upper": "true",
-        "facing": "north"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_front_upper"
-      }
-    },
-    {
-      "when": {
-        "upper": "true",
         "left": "true",
+        "bottom": "true",
+        "top": "false",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_upper"
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_b"
       }
     },
     {
       "when": {
-        "upper": "true",
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_t"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_m"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_bt"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_t"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_m"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_clamp_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_bracket_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_clamp_u"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_bracket_u"
+      }
+    },
+    {
+      "when": {
         "right": "true",
+        "bottom": "true",
+        "top": "true",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_upper"
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_bt"
       }
     },
     {
       "when": {
-        "upper": "false",
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_t"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_m"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_bt"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_t"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_m"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_clamp_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_bracket_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_clamp_u"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_bracket_u"
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "top": "true",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_front_lower",
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_bt",
         "y": 90
       }
     },
     {
       "when": {
-        "upper": "false",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_shoe",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_rail",
+        "y": 90
+      }
+    },
+    {
+      "when": {
         "left": "true",
+        "bottom": "true",
+        "top": "true",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_lower",
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_bt",
         "y": 90
       }
     },
     {
       "when": {
-        "upper": "false",
-        "right": "true",
-        "facing": "east"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_lower",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "upper": "true",
-        "facing": "east"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_front_upper",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "upper": "true",
         "left": "true",
+        "bottom": "true",
+        "top": "false",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_upper",
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_b",
         "y": 90
       }
     },
     {
       "when": {
-        "upper": "true",
-        "right": "true",
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_upper",
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_t",
         "y": 90
       }
     },
     {
       "when": {
-        "upper": "false",
-        "facing": "south"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_front_lower",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
         "left": "true",
-        "facing": "south"
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_lower",
-        "y": 180
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_m",
+        "y": 90
       }
     },
     {
       "when": {
-        "upper": "false",
-        "right": "true",
-        "facing": "south"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_lower",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "upper": "true",
-        "facing": "south"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_front_upper",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "upper": "true",
         "left": "true",
-        "facing": "south"
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_upper",
-        "y": 180
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_bt",
+        "y": 90
       }
     },
     {
       "when": {
-        "upper": "true",
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_clamp_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_bracket_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_clamp_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_bracket_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
         "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_clamp_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_bracket_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_clamp_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_bracket_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "top": "true",
         "facing": "south"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_upper",
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_bt",
         "y": 180
       }
     },
     {
       "when": {
-        "upper": "false",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_shoe",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_rail",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_clamp_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_bracket_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_clamp_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_bracket_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_clamp_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_bracket_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_clamp_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_bracket_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "top": "true",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_front_lower",
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_bt",
         "y": 270
       }
     },
     {
       "when": {
-        "upper": "false",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_fixed_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_shoe",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_rail",
+        "y": 270
+      }
+    },
+    {
+      "when": {
         "left": "true",
+        "bottom": "true",
+        "top": "true",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_lower",
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_bt",
         "y": 270
       }
     },
     {
       "when": {
-        "upper": "false",
-        "right": "true",
-        "facing": "west"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_lower",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "upper": "true",
-        "facing": "west"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_front_upper",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "upper": "true",
         "left": "true",
+        "bottom": "true",
+        "top": "false",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_upper",
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_b",
         "y": 270
       }
     },
     {
       "when": {
-        "upper": "true",
-        "right": "true",
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_upper",
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_own_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_back_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_clamp_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_bracket_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_clamp_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_left_bracket_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_own_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_back_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_clamp_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_bracket_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_clamp_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_pilaster_grey_right_bracket_u",
         "y": 270
       }
     }

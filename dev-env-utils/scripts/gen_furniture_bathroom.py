@@ -46,9 +46,12 @@ What joins or changes (the Java classes compute joins as actual state; the rest 
   * the changing station has a folded-up and a folded-down model;
   * the washing machine and dryer light their door windows while they run;
   * bath mats join on all four sides like the bedroom's rugs;
-  * the toilet partitions are two blocks tall, drawn whole and cut like the shower, their stall
-    panels drawn on the line between two blocks and reaching back into the toilet's block,
-    left and right from the neighbours, the door written out shut and swung open;
+  * the toilet partitions are cells: the door two blocks tall, drawn whole and cut like the
+    shower, the pilaster and panel one block, stacking to any height (shoes on the bottom
+    cell, the headrail on the top one, a transom over a door with a cell on it) and, as panel
+    cells behind a front, to any depth; their stall panels drawn on the line between two
+    blocks, through their own cell and on into the toilet's, left and right from the
+    neighbours, the door written out shut and swung open;
   * the trough sink joins left and right like the vanity, end caps only where it stops.
 
 Usage:
@@ -1005,25 +1008,30 @@ NAPKIN_BIN = [el([5, 5, 13], [11, 12.5, 16], "shell", NO_DOWN + ("down",)),
               el([5.5, 12.6, 15.75], [10.5, 13.4, 16.1], "trim", ("up", "south", "east",
                                                                   "west"))]
 
-# --- toilet partitions: a run of stalls placed as a row of fronts, each two blocks tall.
-# The front stands at the outer edge of its block, the row in front of the toilets, so a stall
-# is two blocks deep: the toilet's block and a clear block to stand in. The panel between two
-# stalls runs from the front back to the wall behind the toilet, two blocks, on the line
-# between two blocks, so that stalls are a block wide. Pilasters are narrow and the door wide,
-# so the doorway is 0.84 of a block (0.81 clear past the open door). Panels and doors 0.31 to
-# 1.81 m, pilasters floor to the headrail on stainless shoes. ------------------------------
+# --- toilet partitions: a run of stalls built of cells. The front of a stall stands at the
+# outer edge of its block, the row in front of the toilets, so a stall is two blocks deep: the
+# toilet's block and a clear block to stand in. The panel between two stalls stands on the line
+# between two blocks. The door is two blocks tall, drawn whole and cut at the block line; every
+# other piece is a one-block cell, stacking to any height (shoes on the bottom cell of a column,
+# the headrail on the top one) and, as a panel cell behind a front, to any depth. A side panel
+# runs through its own cell and on through the cell behind (the toilet's) when that cell holds
+# no partition piece. Pilasters are narrow and the door wide, so the doorway is 0.84 of a block
+# (0.81 clear past the open door). Panels and doors 0.31 to 1.81 m in a two-tall stall,
+# pilasters floor to the headrail on stainless shoes. ------------------------------------------
 P_BOTTOM, P_TOP = 5.0, 29.0
 HEADRAIL = [el([0, P_TOP, 0.25], [16, 30.5, 1.75], "hardware")]
-PART_FRONT_DOOR = ([el([0, 1.5, 0.5], [1.25, P_TOP, 1.5], "partition"),
-                    el([15.25, 1.5, 0.5], [16, P_TOP, 1.5], "partition"),
-                    el([0, 0, 0.25], [1.25, 1.5, 1.75], "hardware", NO_DOWN),
-                    el([15.25, 0, 0.25], [16, 1.5, 1.75], "hardware", NO_DOWN),
-                    # the hinges' pilaster leaves, and the latch's keeper inside
-                    el([0.5, 8, 0.4], [1.5, 10, 1.6], "hardware", NO_DOWN + ("down",)),
-                    el([0.5, 24, 0.4], [1.5, 26, 1.6], "hardware", NO_DOWN + ("down",)),
-                    el([15.25, 17.25, 1.5], [16, 18.75, 2.1], "hardware", NO_DOWN
-                       + ("down",))]
-                   + HEADRAIL)
+PART_FRONT_DOOR = [el([0, 1.5, 0.5], [1.25, P_TOP, 1.5], "partition"),
+                   el([15.25, 1.5, 0.5], [16, P_TOP, 1.5], "partition"),
+                   el([0, 0, 0.25], [1.25, 1.5, 1.75], "hardware", NO_DOWN),
+                   el([15.25, 0, 0.25], [16, 1.5, 1.75], "hardware", NO_DOWN),
+                   # the hinges' pilaster leaves, and the latch's keeper inside
+                   el([0.5, 8, 0.4], [1.5, 10, 1.6], "hardware", NO_DOWN + ("down",)),
+                   el([0.5, 24, 0.4], [1.5, 26, 1.6], "hardware", NO_DOWN + ("down",)),
+                   el([15.25, 17.25, 1.5], [16, 18.75, 2.1], "hardware", NO_DOWN
+                      + ("down",))]
+# Over a door with a cell stacked on it (a floor-to-ceiling stall), the headrail is the
+# transom's bottom rail and the transom panel fills the rest of the door's upper block.
+PART_TRANSOM = [el([0, 30.5, 0.5], [16, 32, 1.5], "partition")]
 PART_DOOR = [el([1.5, P_BOTTOM, 0.6], [15, P_TOP - 0.25, 1.4], "partition"),
              el([1.5, 8, 0.4], [2.75, 10, 1.6], "hardware", ("north", "south", "east", "up",
                                                              "down")),
@@ -1053,23 +1061,78 @@ def swung(specs, pivot=PART_HINGE):
 
 
 PART_OPEN = swung(PART_DOOR)
-PART_FRONT_FIXED = ([el([0, 1.5, 0.5], [16, P_TOP, 1.5], "partition"),
-                     el([0, 0, 0.25], [16, 1.5, 1.75], "hardware", NO_DOWN)]
-                    + HEADRAIL)
+
+# A cell's height parts, one box for each place a cell can have in its column: (suffix,
+# bottom, top). The bottom cell stands on its shoes, the top one carries the headrail, and a
+# cell between them runs the whole block, so stacked cells join without a seam. In a column
+# two tall these are exactly the old two-block piece's halves.
+CELL_HEIGHTS = (("bt", True, True), ("b", True, False), ("t", False, True), ("m", False, False))
+CELL_TOP = P_TOP - 16          # 13: the panels' and pilasters' top in the top cell
+CELL_RAIL = 30.5 - 16          # 14.5: the headrail's top
+CELL_SHOE = 1.5
+
+
+def cell_span(bottom, top, lo, hi):
+    """A part's height in a cell: from lo above the floor in a bottom cell (else the floor) to
+    hi in a top cell (else the block's top)."""
+    return (lo if bottom else 0.0), (hi if top else 16.0)
+
+
+def fixed_front(bottom, top):
+    """A pilaster cell's front panel, the block wide, between its shoes and headrail."""
+    y0, y1 = cell_span(bottom, top, CELL_SHOE, CELL_TOP)
+    return [el([0, y0, 0.5], [16, y1, 1.5], "partition")]
+
+
+FIXED_SHOE = [el([0, 0, 0.25], [16, CELL_SHOE, 1.75], "hardware", NO_DOWN)]
+FIXED_RAIL = [el([0, CELL_TOP, 0.25], [16, CELL_RAIL, 1.75], "hardware")]
+
+
+def post(bottom, top):
+    """A panel cell's slim pilaster, at the front of its left panel."""
+    y0, y1 = cell_span(bottom, top, CELL_SHOE, CELL_TOP)
+    return [el([-0.75, y0, 0.5], [0.75, y1, 1.5], "partition")]
+
+
+POST_SHOE = [el([-1, 0, 0.25], [1, CELL_SHOE, 1.75], "hardware", NO_DOWN)]
+POST_CAP = [el([-0.9, CELL_TOP, 0.35], [0.9, CELL_TOP + 0.75, 1.65], "hardware", NO_DOWN)]
+# The left side panel's three lengths: through the front cell behind its front (own), through
+# a panel cell behind a front, from its front edge (lead), and on through the cell behind
+# (back), to the wall behind the toilet. Each is a box of its own, so they meet end to end.
+DIVIDER_Z = {"own": (1.5, 16.0), "lead": (0.0, 1.5), "back": (16.0, 31.5)}
+
+
+def divider(length, bottom, top):
+    z0, z1 = DIVIDER_Z[length]
+    y0, y1 = cell_span(bottom, top, P_BOTTOM, CELL_TOP)
+    return [el([-0.4, y0, z0], [0.4, y1, z1], "partition")]
+
+
+def brackets(where, bottom):
+    """The wall bracket at the panel's back end, or the clamp at its front, one a cell: a
+    bottom cell's lower than an upper cell's, where the old two-block piece had them."""
+    y0 = 8.0 if bottom else 8.5
+    if where == "back":
+        return [el([-0.9, y0, 30.25], [0.9, y0 + 1.5, 32], "hardware", NO_DOWN + ("down",))]
+    return [el([-0.9, y0, 1.5], [0.9, y0 + 1.5, 3], "hardware", ALL)]
+
+
+# The whole two-block piece as it was drawn before the cells, for the items only.
 PART_DIVIDER = [el([-0.4, P_BOTTOM, 1.5], [0.4, P_TOP, 31.5], "partition"),
                 el([-0.9, 8, 30.25], [0.9, 9.5, 32], "hardware", NO_DOWN + ("down",)),
                 el([-0.9, 24.5, 30.25], [0.9, 26, 32], "hardware", NO_DOWN + ("down",)),
                 el([-0.9, 8, 1.5], [0.9, 9.5, 3], "hardware", ALL),
                 el([-0.9, 24.5, 1.5], [0.9, 26, 3], "hardware", ALL)]
-# A panel with no front ends at a slim pilaster of its own.
+PART_FRONT_FIXED = ([el([0, 1.5, 0.5], [16, P_TOP, 1.5], "partition"),
+                     el([0, 0, 0.25], [16, 1.5, 1.75], "hardware", NO_DOWN)]
+                    + HEADRAIL)
 PART_POST = [el([-0.75, 1.5, 0.5], [0.75, P_TOP, 1.5], "partition"),
              el([-1, 0, 0.25], [1, 1.5, 1.75], "hardware", NO_DOWN),
              el([-0.9, P_TOP, 0.35], [0.9, 29.75, 1.65], "hardware", NO_DOWN)]
-PARTITION_KINDS = {
-    "door": {"front": PART_FRONT_DOOR, "door": PART_DOOR, "open": PART_OPEN,
-             "divider": PART_DIVIDER},
-    "pilaster": {"front": PART_FRONT_FIXED, "divider": PART_DIVIDER},
-    "panel": {"divider": PART_DIVIDER + PART_POST},
+PARTITION_ITEMS = {
+    "door": PART_FRONT_DOOR + HEADRAIL + PART_DOOR + PART_DIVIDER + R.mirror_x(PART_DIVIDER),
+    "pilaster": PART_FRONT_FIXED + PART_DIVIDER + R.mirror_x(PART_DIVIDER),
+    "panel": PART_DIVIDER + PART_POST + R.mirror_x(PART_DIVIDER + PART_POST),
 }
 
 # ------------------------------------------------------------------------------------------
@@ -1503,48 +1566,106 @@ SHOWER_LOWER, SHOWER_UPPER = K.split_y(SHOWER)
 VANITY = K.run_piece(VANITY_BODY, VANITY_END, None)
 
 
+def _height_when(part_kind, bottom, top):
+    """The multipart condition for a cell's place in its column. A door's lower half is always
+    a bottom cell and its upper half never is, so for a door bottom is its upper flag turned
+    over; its lower half's top is always false."""
+    if part_kind == "door":
+        when = {"upper": "false" if bottom else "true"}
+    else:
+        when = {"bottom": "true" if bottom else "false"}
+    if top is not None:
+        when["top"] = "true" if top else "false"
+    return when
+
+
+def _heights(part_kind):
+    """The column places a piece's cells can take: a door's lower half (bottom) and its upper
+    half (top or under a transom); any place for a cell."""
+    if part_kind == "door":
+        return [h for h in CELL_HEIGHTS if h[0] in ("b", "t", "m")]
+    return list(CELL_HEIGHTS)
+
+
 def partition_parts(part_kind):
-    """A partition piece's parts, each cut at the block line into its lower and upper half:
-    {name: geometry}, the dividers as left (on the line at x 0) and right (at x 16)."""
-    parts = {}
-    for part, geo in PARTITION_KINDS[part_kind].items():
-        if part == "divider":
-            named = (("left", geo), ("right", R.mirror_x(geo)))
-        else:
-            named = ((part, geo),)
-        for name, specs in named:
-            lower, upper = K.split_y(specs)
-            parts[name + "_lower"] = lower
-            parts[name + "_upper"] = upper
-    return parts
+    """A partition piece's parts and the multipart rules that pick them, facing north:
+    ({name: geometry}, [(name, when)]). The side panels are drawn on the left (on the line at
+    x 0) and mirrored to the right (at x 16)."""
+    parts, rules = {}, []
+    # Which front a cell has, as a condition: a pilaster always the fixed front; a panel cell
+    # the fixed front (stacked over a door or pilaster), a slim pilaster per side panel, or
+    # none (behind a front, carrying the stall's sides back; reach: and up through the empty
+    # block above, beside a taller front).
+    fixed = {} if part_kind == "pilaster" else {"front": "fixed"}
+    has_front = {} if part_kind != "panel" else {"front": "post|fixed"}
+
+    def add(name, geo, when):
+        parts[name] = geo
+        rules.append((name, when))
+
+    if part_kind == "door":
+        lower, upper = K.split_y(PART_FRONT_DOOR)
+        add("front_lower", lower, {"upper": "false"})
+        add("front_upper", upper, {"upper": "true"})
+        add("header", K.split_y(HEADRAIL)[1], {"upper": "true"})
+        add("transom", K.split_y(PART_TRANSOM)[1], {"upper": "true", "top": "false"})
+        for name, geo, when in (("door", PART_DOOR, {"open": "false"}),
+                                ("open", PART_OPEN, {"open": "true"})):
+            lower, upper = K.split_y(geo)
+            add(name + "_lower", lower, dict(when, upper="false"))
+            add(name + "_upper", upper, dict(when, upper="true"))
+    if part_kind in ("pilaster", "panel"):
+        for sfx, b, t in CELL_HEIGHTS:
+            add("fixed_" + sfx, fixed_front(b, t), dict(fixed, **_height_when(part_kind, b, t)))
+        add("shoe", FIXED_SHOE, dict(fixed, bottom="true"))
+        add("rail", FIXED_RAIL, dict(fixed, top="true"))
+    for side, flip in (("left", False), ("right", True)):
+        def sided(geo, flip=flip):
+            return R.mirror_x(geo) if flip else geo
+
+        if part_kind == "panel":
+            for sfx, b, t in CELL_HEIGHTS:
+                add("post_%s_%s" % (side, sfx), sided(post(b, t)),
+                    dict({"front": "post", side: "true"}, **_height_when(part_kind, b, t)))
+            add("post_shoe_" + side, sided(POST_SHOE),
+                {"front": "post", side: "true", "bottom": "true"})
+            add("post_cap_" + side, sided(POST_CAP),
+                {"front": "post", side: "true", "top": "true"})
+        lengths = (("own", {}), ("back", {"back": "true"}))
+        if part_kind == "panel":
+            lengths += (("lead", {"front": "none|reach"}),)
+        for length, extra in lengths:
+            for sfx, b, t in _heights(part_kind):
+                when = dict({side: "true"}, **extra)
+                when.update(_height_when(part_kind, b, t))
+                add("%s_%s_%s" % (side, length, sfx), sided(divider(length, b, t)), when)
+        for b in (True, False):
+            hb = "b" if b else "u"
+            add("%s_clamp_%s" % (side, hb), sided(brackets("front", b)),
+                dict({side: "true"}, **has_front, **_height_when(part_kind, b, None)))
+            add("%s_bracket_%s" % (side, hb), sided(brackets("back", b)),
+                dict({side: "true", "back": "true"}, **_height_when(part_kind, b, None)))
+        if part_kind == "panel":
+            # A panel cell behind a taller front carries its sides on up through the empty
+            # block above it, as that block's top cell would.
+            for length, extra in lengths:
+                add("%s_reach_%s" % (side, length),
+                    sided(B.shift(divider(length, False, True), dy=16)),
+                    dict({"front": "reach", side: "true"}, **extra))
+            add("%s_reach_bracket" % side, sided(B.shift(brackets("back", False), dy=16)),
+                {"front": "reach", side: "true", "back": "true"})
+    return parts, rules
 
 
 def partition_item(part_kind):
-    """The whole piece, closed, with both its dividers, centred on the block for its item."""
-    geo = []
-    for part, specs in PARTITION_KINDS[part_kind].items():
-        if part == "open":
-            continue
-        geo += specs + (R.mirror_x(specs) if part == "divider" else [])
-    return B.centred(geo)
+    """The whole piece as a two-block stall front, closed, with both its side panels, centred
+    on the block for its item."""
+    return B.centred(PARTITION_ITEMS[part_kind])
 
 
 def partition_rules(part_kind):
-    """Each half's parts: the dividers where the block's actual state asks for them, the door
-    shut or swung open."""
-    rules = []
-    for half, upper in (("lower", "false"), ("upper", "true")):
-        for part in PARTITION_KINDS[part_kind]:
-            if part == "divider":
-                rules.append(("left_" + half, {"upper": upper, "left": "true"}))
-                rules.append(("right_" + half, {"upper": upper, "right": "true"}))
-            elif part == "door":
-                rules.append(("door_" + half, {"upper": upper, "open": "false"}))
-            elif part == "open":
-                rules.append(("open_" + half, {"upper": upper, "open": "true"}))
-            else:
-                rules.append((part + "_" + half, {"upper": upper}))
-    return R.faced(rules)
+    """Each part where the block's actual state asks for it, once per facing."""
+    return R.faced(partition_parts(part_kind)[1])
 
 
 def base_models():
@@ -1568,7 +1689,7 @@ def base_models():
             out.append((piece, geometry(spec["geo"], "shell")))
         elif kind == "partition":
             pk = spec["part_kind"]
-            for name, geo in partition_parts(pk).items():
+            for name, geo in partition_parts(pk)[0].items():
                 out.append(("%s_%s" % (piece, name), geometry(geo, "partition")))
             item = partition_item(pk)
             out.append(("%s_item" % piece, geometry(item, "partition",
@@ -1684,7 +1805,7 @@ def generate(assets):
             state = B.multipart_state(reg, VANITY["rules"])
         elif kind == "partition":
             pk = spec["part_kind"]
-            for name in partition_parts(pk):
+            for name in partition_parts(pk)[0]:
                 copy_model(blk % name, "%s_%s" % (piece, name), ftex)
             copy_model(item, "%s_item" % piece, ftex)
             state = B.multipart_state(reg, partition_rules(pk))

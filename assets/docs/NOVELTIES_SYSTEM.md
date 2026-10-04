@@ -352,35 +352,78 @@ station, from the same generator: generic fittings with no maker's name or logo 
   valve and no water, only its trap cartridge (a round cutout texture on an upward face) and no
   click; the urinal screen is a partition panel hung from the wall, meant to stand between two
   urinals a block apart.
-- **Toilet partitions** (`BlockToiletPartition`, `BlockToiletPartitionDoor`: `BlockResidentialTall`
-  pieces, two blocks tall, drawn whole in 0..32 and cut at the block line by `split_y`). A run of
-  stalls is a row of fronts placed side by side in the row in front of the toilets, facing out.
-  The front stands at the outer edge of its block, so a stall is two blocks deep and a block
-  wide: the toilet's block and a clear block to stand in. (It first stood across the middle of
-  its block, a 1.5 m stall with a 0.64-block doorway, which a player could never get fully into.)
-  The panel between two stalls stands on the line between two blocks and runs from the front
-  back to the wall behind the toilet, two blocks, reaching into the toilet's block (in the model,
-  in the collision boxes, which the 1.12 collision query's one-block margin reaches, and not in
-  the outline, which is cut to the piece's own block so it is the part a click can hit). The
-  pilasters beside a door are narrow (1.25 and 0.75 px) and the door 13.5 px wide, so the way in
-  past the open door is 0.81 of a block against a player's 0.6. Collision is kept thin, never
-  thicker than what is drawn: the front and pilasters only as deep as their panels (1 px, not
-  the shoes' and headrail's 1.5), the open door half its drawn thickness, and the flushometer
-  and close-coupled toilets (`BlockToilet`) collide only from 7 px back, behind the bowl's front,
-  so a player turns round in a shut stall; the outlines, and so the clicks, are still the drawn
-  parts, and a click from inside the stall passes the partition's parts to reach the toilet. `left`
-  and `right` are actual state: a side against a solid wall has no panel (the wall is the
-  stall's side); an open side, where the run stops, always has its end panel; where the run goes
-  on, only a door or a panel piece draws a panel on its left, so one panel stands between two
-  doors and a pilaster continues the stall to its left. A wide (accessible) stall is a door
-  with a pilaster on its right. Three pieces, each in beige or grey powder coat or stainless:
-  the door (between two narrow pilasters on stainless shoes, under the headrail, hinged on its
-  left and swinging in; `open` stored in both halves, the open model the door written out
-  turned a quarter about its hinge by `swung()`, lying along the stall's left side in the front
-  block, clear of the toilet, its inside coat hook short enough to clear the panel; the locker door's sounds), the pilaster (a fixed front the
-  width of the block, floor to headrail) and the panel (the stall panels with no front, each
-  ending at a slim pilaster of its own: an open bay, or an end panel on its own). Doors are 64
-  states, pilasters and panels 32; nothing ticks and there is no tile entity.
+- **Toilet partitions** (`BlockToiletPartition`, `BlockToiletPartitionDoor`): a cell system,
+  so stalls grow as pieces are added. A run of stalls is a row of fronts placed side by side in
+  the row in front of the toilets, facing out. The front stands at the outer edge of its block,
+  so a stall is a block wide and two deep: the toilet's block and a clear block to stand in. (It
+  first stood across the middle of its block, a 1.5 m stall with a 0.64-block doorway, which a
+  player could never get fully into.) Three pieces, each in beige or grey powder coat or
+  stainless:
+  - **The door** is two blocks tall, placed and broken as one (`UPPER` in the bit above the
+    facing, `open` in both halves, the open model the door written out turned a quarter about
+    its hinge by `swung()`, lying along the stall's left side in the front block; the locker
+    door's sounds). Its narrow pilasters (1.25 and 0.75 px) and 13.5 px door leave 0.81 of a
+    block past the open door against a player's 0.6.
+  - **The pilaster** (a fixed front the width of the block) and **the panel** (no front: an open
+    bay, or an end panel, each panel ending at a slim post) are one-block **cells**. They stack
+    to any height: the bottom cell of a column stands on its shoes and the top one carries the
+    headrail (`bottom`, `top`, actual state); a cell between draws neither and runs the whole
+    block, so a stack has no seam. Each part is one box per place in the column
+    (`CELL_HEIGHTS`), never segments, so nothing meets end to end inside a panel.
+  - **Height.** Stack cells on a run's fronts. A cell stacked on a door makes a floor-to-ceiling
+    stall: the door's upper `top` goes false, its headrail stays as the transom's bottom rail and
+    a transom panel fills the rest of its block, and the cell above draws a fixed front (a panel
+    cell over a door or pilaster draws the pilaster's front, `front=fixed`). Clicking the top of
+    a door with a partition piece in hand places it rather than working the door, so nobody has
+    to sneak.
+  - **Depth.** The side panels stand on the line between two blocks, which runs through the
+    toilet's own block, so a panel can never be a block of its own there. A cell draws its side
+    panels through its own block and, when the block behind holds no partition piece, no wall
+    and no panel cell reaching up into it (`back`), on through that block too. A
+    `toilet_partition_panel` placed on the floor behind a front, facing the same way, makes the
+    stall a block deeper: it carries the stall's sides through its own block (`front=none`) and
+    the last one on into the toilet's. A panel cell behind a taller front carries its sides on up
+    through the empty block above (`front=reach`), so a player places the cells on the floor
+    only, behind a door; stacking a cell there instead looks the same. `reach` follows the stall
+    back cell by cell. A stall with no panel cells is the old two-deep stall exactly.
+  - **Sides** (`left`, `right`, actual state, the viewer behind the front facing out), at every
+    depth and height: a side against a solid wall has no panel; an open side, where the run
+    stops, has its end panel; where the run goes on, a cell draws its left panel unless its stall
+    is fronted by a pilaster. What fronts a cell's stall is found by walking forward through the
+    panel cells to the front and down the front's column to its foot. A right side where the next
+    stall's front, beside this cell's front, already runs its left panel back through that block
+    has none (a deeper stall beside a shallower one).
+  - **Wide (accessible) stalls**: a door with one or more pilasters on its right, at any depth or
+    height. The pilasters never draw a panel inside the run, and neither do panel cells behind
+    them or cells stacked on them, so a wide stall has panels only on its two outer edges and its
+    headrail runs across the whole width. Put the toilet and the grab bar in a back corner.
+  - **Reach.** Every panel is drawn by a block no more than a block away, behind or above (a
+    `back` panel, a `reach` panel), which is as far as 1.12's collision query looks, so it
+    collides where it is drawn. Outlines are cut to the block's own space (the part a click can
+    hit), and `collisionRayTrace` finds the parts themselves, so a click from inside a stall
+    passes the partition to reach the toilet. Collision is kept thin, never thicker than what is
+    drawn: fronts and pilasters only as deep as their panels (1 px, not the shoes' and headrail's
+    1.5), the open door half its drawn thickness, and the flushometer and close-coupled toilets
+    (`BlockToilet`) collide only from 7 px back, so a player turns round in a shut stall.
+  - **Conversion.** Every registry name and the meta layout are kept. A pilaster or panel placed
+    when they were two-block pieces is two blocks already, and simply reads as two stacked cells;
+    the doors are unchanged. Placed stalls look as they did. Breaking is now per cell for
+    pilasters and panels (an old one's upper half drops a cell too, at half the old piece's
+    Fabricator cost).
+  - **Trap: an unused meta bit must stay a state.** The old upper halves are saved with the
+    `upper` bit (meta 4-7). A chunk's (id, meta) is looked up among the metas `getMetaFromState`
+    gives for the block's valid states, and a meta no state gives back loads as **air**. So the
+    cells keep `upper` as a stored property that nothing draws from. Dropping it emptied every
+    old upper half on the first test load.
+  - **Trap: run-back overlap.** Two cells may not both draw into one block. A cell does not run
+    back into a block that a partition piece holds or that a panel cell below reaches up into,
+    and does not draw a right panel that the next stall's front already runs back. Keep those
+    checks when adding a new way to fill a block.
+  - Generated by `gen_furniture_bathroom.py` (`partition_parts`): doors 28 parts, pilasters 30,
+    panels 58, each with multipart rules on the actual state. States: doors 256, pilasters 256,
+    panels 1,024 (was 64, 32 and 32); every state of a multipart block maps to one model location
+    (`CsmMultipartStateMapper`), so there is one variant per block. Nothing ticks and there is no
+    tile entity.
 - **Lavatories.** `BlockSensorBasin` (the wall-hung lavatory, its rim at 0.86 m with the trap and
   supplies exposed under it) and `BlockTroughSink` (a `BlockResidentialRun` that joins into one
   long trough, end caps only where it stops, a faucet over every block, in white porcelain,

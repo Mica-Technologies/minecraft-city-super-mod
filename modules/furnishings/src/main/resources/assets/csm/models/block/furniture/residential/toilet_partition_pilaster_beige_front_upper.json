@@ -1,6 +1,0 @@
-{
-  "parent": "csm:block/furniture/residential/base/toilet_partition_pilaster_front_upper",
-  "textures": {
-    "partition": "csm:blocks/furniture/residential/partition_beige"
-  }
-}

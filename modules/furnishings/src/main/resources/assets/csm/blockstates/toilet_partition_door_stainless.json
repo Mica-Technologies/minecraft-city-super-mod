@@ -11,46 +11,6 @@
     },
     {
       "when": {
-        "upper": "false",
-        "open": "false",
-        "facing": "north"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_door_lower"
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "open": "true",
-        "facing": "north"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_open_lower"
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "left": "true",
-        "facing": "north"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_lower"
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "right": "true",
-        "facing": "north"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_lower"
-      }
-    },
-    {
-      "when": {
         "upper": "true",
         "facing": "north"
       },
@@ -61,7 +21,36 @@
     {
       "when": {
         "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_header"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_transom"
+      }
+    },
+    {
+      "when": {
         "open": "false",
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_door_lower"
+      }
+    },
+    {
+      "when": {
+        "open": "false",
+        "upper": "true",
         "facing": "north"
       },
       "apply": {
@@ -70,8 +59,18 @@
     },
     {
       "when": {
-        "upper": "true",
         "open": "true",
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_open_lower"
+      }
+    },
+    {
+      "when": {
+        "open": "true",
+        "upper": "true",
         "facing": "north"
       },
       "apply": {
@@ -80,22 +79,224 @@
     },
     {
       "when": {
-        "upper": "true",
         "left": "true",
+        "upper": "false",
+        "top": "false",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_upper"
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_b"
       }
     },
     {
       "when": {
+        "left": "true",
         "upper": "true",
-        "right": "true",
+        "top": "true",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_upper"
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_t"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_m"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_t"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_m"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_clamp_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_bracket_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_clamp_u"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_bracket_u"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_t"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_m"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_t"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_m"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_clamp_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_bracket_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_clamp_u"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_bracket_u"
       }
     },
     {
@@ -105,50 +306,6 @@
       },
       "apply": {
         "model": "csm:furniture/residential/toilet_partition_door_stainless_front_lower",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "open": "false",
-        "facing": "east"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_door_lower",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "open": "true",
-        "facing": "east"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_open_lower",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "left": "true",
-        "facing": "east"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_lower",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "right": "true",
-        "facing": "east"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_lower",
         "y": 90
       }
     },
@@ -165,7 +322,39 @@
     {
       "when": {
         "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_header",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_transom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
         "open": "false",
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_door_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "open": "false",
+        "upper": "true",
         "facing": "east"
       },
       "apply": {
@@ -175,8 +364,19 @@
     },
     {
       "when": {
-        "upper": "true",
         "open": "true",
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_open_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "open": "true",
+        "upper": "true",
         "facing": "east"
       },
       "apply": {
@@ -186,23 +386,243 @@
     },
     {
       "when": {
-        "upper": "true",
         "left": "true",
+        "upper": "false",
+        "top": "false",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_upper",
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_b",
         "y": 90
       }
     },
     {
       "when": {
+        "left": "true",
         "upper": "true",
-        "right": "true",
+        "top": "true",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_upper",
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_clamp_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_bracket_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_clamp_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_bracket_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_clamp_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_bracket_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_clamp_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_bracket_u",
         "y": 90
       }
     },
@@ -213,50 +633,6 @@
       },
       "apply": {
         "model": "csm:furniture/residential/toilet_partition_door_stainless_front_lower",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "open": "false",
-        "facing": "south"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_door_lower",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "open": "true",
-        "facing": "south"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_open_lower",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "left": "true",
-        "facing": "south"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_lower",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "right": "true",
-        "facing": "south"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_lower",
         "y": 180
       }
     },
@@ -273,7 +649,39 @@
     {
       "when": {
         "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_header",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_transom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
         "open": "false",
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_door_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "open": "false",
+        "upper": "true",
         "facing": "south"
       },
       "apply": {
@@ -283,8 +691,19 @@
     },
     {
       "when": {
-        "upper": "true",
         "open": "true",
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_open_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "open": "true",
+        "upper": "true",
         "facing": "south"
       },
       "apply": {
@@ -294,23 +713,243 @@
     },
     {
       "when": {
-        "upper": "true",
         "left": "true",
+        "upper": "false",
+        "top": "false",
         "facing": "south"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_upper",
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_b",
         "y": 180
       }
     },
     {
       "when": {
+        "left": "true",
         "upper": "true",
-        "right": "true",
+        "top": "true",
         "facing": "south"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_upper",
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_clamp_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_bracket_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_clamp_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_bracket_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_clamp_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_bracket_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_clamp_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_bracket_u",
         "y": 180
       }
     },
@@ -321,50 +960,6 @@
       },
       "apply": {
         "model": "csm:furniture/residential/toilet_partition_door_stainless_front_lower",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "open": "false",
-        "facing": "west"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_door_lower",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "open": "true",
-        "facing": "west"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_open_lower",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "left": "true",
-        "facing": "west"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_lower",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "upper": "false",
-        "right": "true",
-        "facing": "west"
-      },
-      "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_lower",
         "y": 270
       }
     },
@@ -381,7 +976,39 @@
     {
       "when": {
         "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_header",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_transom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
         "open": "false",
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_door_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "open": "false",
+        "upper": "true",
         "facing": "west"
       },
       "apply": {
@@ -391,8 +1018,19 @@
     },
     {
       "when": {
-        "upper": "true",
         "open": "true",
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_open_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "open": "true",
+        "upper": "true",
         "facing": "west"
       },
       "apply": {
@@ -402,23 +1040,243 @@
     },
     {
       "when": {
-        "upper": "true",
         "left": "true",
+        "upper": "false",
+        "top": "false",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_upper",
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_b",
         "y": 270
       }
     },
     {
       "when": {
+        "left": "true",
         "upper": "true",
-        "right": "true",
+        "top": "true",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_upper",
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_own_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_back_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_clamp_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_bracket_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_clamp_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_left_bracket_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_own_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_back_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_clamp_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_bracket_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_clamp_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_door_stainless_right_bracket_u",
         "y": 270
       }
     }
