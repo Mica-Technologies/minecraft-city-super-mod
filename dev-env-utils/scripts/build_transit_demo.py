@@ -31,8 +31,9 @@ whole Transit tab to walk round:
   hall     (x 118..160, z 22..52) the large-scale concourse, its roof 14 blocks up: the large
                       hanging signs (scripted through their NBT), a 6x3 departures board on the
                       wall and a 4x2 arrivals board hung from the roof, the large kiosks; from its
-                      gate door the large jet bridge runs out over the apron, down a 1-in-4 slope
-                      to its cab, beside the large stand sign
+                      gate door the large jet bridge runs out over the apron, down a 1-in-4 slope,
+                      round a large curved turn (placed as a player places it) and on to its cab,
+                      beside the large stand sign
   plinths  (z -8)     every Transit block not shown elsewhere, each with a sign
 
 The landside ground is raised to y 8 (so the station's lower level fits above bedrock); the
@@ -647,17 +648,23 @@ for z in range(53, 57):
     put(LJX, Y, z, 'airport_jet_bridge_large_tunnel', S)
 for z in range(57, 61):
     put(LJX, Y, z, 'airport_jet_bridge_large_slope', S | (1 << 2))      # down, 1 in 4
-for z in range(61, 64):
+for z in (61, 62):
     put(LJX, Y - 1, z, 'airport_jet_bridge_large_tunnel', S)
-put(LJX, Y - 1, 64, 'airport_jet_bridge_large_cab', S)
+# the large curved turn (placed below, as a player places it) takes the bridge round to the
+# west: its cells x 137..140, z 63..66, its exit the west face of (137, 66); then two tunnels
+# and the cab, facing west
+for x in (135, 136):
+    put(x, Y - 1, 66, 'airport_jet_bridge_large_tunnel', W)
+put(134, Y - 1, 66, 'airport_jet_bridge_large_cab', W)
 for y in range(YA, Y):
     put(LJX, y, 55, 'airport_jet_bridge_large_drive', S)
 for y in range(YA, Y - 1):
-    put(LJX, y, 62, 'airport_jet_bridge_large_drive', S)
+    put(LJX, y, 61, 'airport_jet_bridge_large_drive', S)
+    put(136, y, 66, 'airport_jet_bridge_large_drive', W)
 for y in (YA, YA + 1):
-    put(148, y, 66, 'airport_airfield_mast', S)
-put(148, YA + 2, 66, 'airport_stand_sign_large', S, value(52))
-sign(146, YA, 66, ["Stand C12", "Large jet bridge", "from the hall", "above"], 0)
+    put(131, y, 71, 'airport_airfield_mast', S)
+put(131, YA + 2, 71, 'airport_stand_sign_large', N, value(52))
+sign(129, YA, 71, ["Stand C12", "Large jet bridge", "round a curved", "turn from the hall"], 8)
 flush()
 
 # ------------------------------------------------------------------------------------------
@@ -687,6 +694,22 @@ if place_as_player('csm:ad_shelter_panel', 10, Y, 1, 12, 1, 90, 20):
 else:
     print('shelter ad panel not placed (Signage missing, or the click missed)')
 cmd('clear %s' % PLAYER)
+
+# ------------------------------------------------------------------------------------------
+# The large jet bridge's curved turn, placed as a player places it: standing in the tunnel
+# above it, looking south and a little to the right (west), so it turns right, clicking the top
+# of a block put under its entry cell for the purpose
+# ------------------------------------------------------------------------------------------
+put(LJX, Y - 2, 63, 'minecraft:stone')
+flush()
+if place_as_player('csm:airport_jet_bridge_large_turn', LJX, Y - 1, 63, LJX, 61, 10, 52):
+    placed.add('airport_jet_bridge_large_turn')
+    print('large jet bridge turn placed')
+else:
+    print('large jet bridge turn NOT placed (the click missed, or a cell was blocked)')
+cmd('clear %s' % PLAYER)
+put(LJX, Y - 2, 63, 'minecraft:air')
+flush()
 
 # ------------------------------------------------------------------------------------------
 # The plinth row: every Transit block not shown elsewhere
