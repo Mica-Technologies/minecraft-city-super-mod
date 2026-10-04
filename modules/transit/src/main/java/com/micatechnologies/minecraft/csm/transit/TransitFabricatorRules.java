@@ -207,6 +207,11 @@ public final class TransitFabricatorRules {
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
             FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
             FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "airport_self_checkin_kiosk_large":
+        // the same kiosk, a body twice the height
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
       case "airport_xray_scanner":
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
             FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),

@@ -226,6 +226,7 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockAirportCounter("airport_checkin_scale", "checkin", new double[]{0.4, 0, 1, 15.6, 12.2, 16}));
     initTabBlock(new BlockAirportCounter("airport_gate_desk", "gate", new double[]{0, 0, 1, 16, 16, 13.2}));
     initTabBlock(new BlockSelfCheckinKiosk("airport_self_checkin_kiosk", new double[]{3, 0, 4, 13, 16, 13}));
+    initTabBlock(new BlockSelfCheckinKiosk("airport_self_checkin_kiosk_large", new double[]{1.33, 0, 2.5, 14.67, 32, 14.5}));
     initTabBlock(new BlockQueueStanchion("airport_queue_stanchion_black"));
     initTabBlock(new BlockQueueStanchion("airport_queue_stanchion_blue"));
     initTabBlock(new BlockSecurityLine("airport_xray_scanner", new double[]{0, 0, 2, 16, 16, 14}, 22.0));
