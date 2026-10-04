@@ -1124,6 +1124,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `audit_obj_models.py` -- checks generated OBJ models for the faults that only show up in game:
   coplanar overlapping faces and faces lying on a block boundary (both z-fighting), inconsistent
   winding (a surface that culls from the side you are looking at), and open boundary edges
+- `gen_sign_truss.py` -- the overhead sign trusses (Roads, `BlockSignTruss`: 1x1 and 2x2
+  galvanized box trusses, laced on every face, end frames and base plates from actual state, each
+  2x2 block a quarter of the section) and the catwalk (`BlockTrussCatwalk`): textures, part models
+  and multipart blockstates; see "Overhead Sign Trusses" in `DYNAMIC_GUIDE_SIGN_SYSTEM.md`;
+  `--check`, `--fragments`
 - `gen_mast_arm_curves.py` -- the realistically scaled mast arm upsweeps: sweeps a tapered
   parabolic tube, splits it across the block cells it passes through, and emits one OBJ per
   cell plus all 30 blockstates AND the Java enum holding the cell layout, so the placement code

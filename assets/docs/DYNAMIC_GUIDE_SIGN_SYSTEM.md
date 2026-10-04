@@ -366,6 +366,28 @@ Save sends a `DynamicGuideSignUpdatePacket(pos, data.toJson())`; Cancel closes w
 
 ---
 
+## Overhead Sign Trusses
+
+The galvanized box trusses in the Traffic Accessories tab (`trafficaccessories/truss/`, all
+assets from `gen_sign_truss.py`) are what a guide sign hangs from over a road.
+
+- **`BlockSignTruss`**, 1x1 (`sign_truss`) and 2x2 (`sign_truss_large`): only the axis is
+  stored (meta 0/1/2 = x/y/z), taken like a log's from the face it is placed against, so the
+  one block is a sign bridge's span, its leg, or a cantilever's upright and arm. Everything else
+  is actual state: an end frame where the truss does not carry on along its axis (the end of a
+  cantilever's arm included), and a base plate with anchor bolts under a standing truss on
+  anything that is not truss or air. Each 2x2 block is a quarter of the section, finding which
+  from whether the same truss carries on below it along the plane's two cross axes (`A_HIGH`,
+  `B_HIGH`; the plane's axes are named in `LARGE_CORNERS`, and the Java and the generator must
+  agree). It collides as a full block, since a player would fall between a 1x1's chords.
+- **`BlockTrussCatwalk`** (`sign_truss_catwalk`): the maintenance walkway in front of a truss
+  below its signs. Facing is the outer, railed side; side-by-side catwalks of one facing join,
+  with railings across open ends. Its railings collide at a fence's height.
+- **Hanging a sign**: `PostType.TRUSS` draws hanger brackets on the sign's back up to the top
+  of the truss in the block behind it (`trussTopBehind`, looking 8 blocks up and 4 down), with a
+  clamp over the truss's front chord. A sign placed against a truss starts as TRUSS. The truss
+  top is part of the hardware display list's key, so a truss built after the sign is picked up.
+
 ## Key Bugs Fixed (design constraints to preserve)
 
 These were resolved during development; the listed root causes are constraints to keep in mind when
