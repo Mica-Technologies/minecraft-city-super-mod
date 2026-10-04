@@ -727,15 +727,22 @@ def airfield_mast():
            post(8, 8, 1.5, 15.2, 16, "mast", bottom=False), tex, gui_display(0.9, 0.0))
 
 
-def stand_sign():
+def stand_sign(large=False):
     """The stand's letter and number, twice the gate sign's size, on a post as tall as the
     airfield mast is thick, so it stands on one. Cells are the gate sign's textures, laid out as
-    the gate sign lays them out (the back mirrored so it reads the same)."""
-    reg = "airport_stand_sign"
-    x0, x1, y0, y1 = -4.0, 20.0, 5.0, 15.0
+    the gate sign lays them out (the back mirrored so it reads the same).
+
+    `large` draws it twice as big again, three blocks across, for an apron seen from a terminal
+    built at a large scale: the panel's corners are the furthest a JSON element may reach
+    (-16 and 32), and the post grows to stand it on the mast."""
+    reg = "airport_stand_sign_large" if large else "airport_stand_sign"
+    f = 2.0 if large else 1.0
+    x0, x1 = 8 - 12.0 * f, 8 + 12.0 * f
+    y1 = 15.0 if not large else 32.0
+    y0 = y1 - 10.0 * f
     z0, z1 = 7.2, 8.8
-    lw = ga.GATE_LETTER_W * 2
-    k = ga.GATE_K / 2.0
+    lw = ga.GATE_LETTER_W * 2 * f
+    k = ga.GATE_K / 2.0 / f
     letter_uv = [0, 0, lw * k * 16.0 / 64, (y1 - y0) * k * 16.0 / 64]
     number_uv = [0, 0, (x1 - x0 - lw) * k * 16.0 / 64, (y1 - y0) * k * 16.0 / 64]
     fx = x1 - lw          # the front's letter is on its left: high x
@@ -747,7 +754,7 @@ def stand_sign():
            B((x0, y0, z0), (fx, y1, z0), "number", ("north",), uv={"north": number_uv}),
            B((x0, y0, z1), (lx, y1, z1), "letter", ("south",), uv={"south": letter_uv}),
            B((lx, y0, z1), (x1, y1, z1), "number", ("south",), uv={"south": number_uv})]
-    els += post(8, 8, MAST_R, 0, y0, "steel", top=False, bottom=True)
+    els += post(8, 8, MAST_R * f, 0, y0, "steel", top=False, bottom=True)
     tex = {"edge": ga.C.T("graphite"), "letter": ga.C.T("gate_letter_a"),
            "number": ga.C.T("gate_number_1"), "steel": C.T("mast"),
            "particle": ga.C.T("gate_label")}
@@ -756,11 +763,16 @@ def stand_sign():
              "number": {str(n): {"textures": {"number": ga.C.T("gate_number_%d" % n)}}
                         for n in range(1, ga.GATE_NUMBERS + 1)}}
     m = lc.model(tex, els)
-    m["display"] = gui_display(0.5, 0.0)
-    C.add(reg, 'new BlockStandSign("%s", %s)' % (reg, box_java((-4, 0, 7, 20, 15, 9))),
-          names_of("Stand Sign", "Standplatzschild", "Letrero de Puesto de Estacionamiento",
-                   "Uppställningsplatsskylt"),
-          {reg: m}, lc.facing_state(C.M(reg), extra), tab=TAB)
+    m["display"] = gui_display(0.27 if large else 0.5, 0.0)
+    if large:
+        names = names_of("Large Stand Sign", "Großes Standplatzschild",
+                         "Letrero de Puesto de Estacionamiento Grande",
+                         "Stor Uppställningsplatsskylt")
+    else:
+        names = names_of("Stand Sign", "Standplatzschild", "Letrero de Puesto de Estacionamiento",
+                         "Uppställningsplatsskylt")
+    C.add(reg, 'new BlockStandSign("%s", %s)' % (reg, box_java((x0, 0, 7, x1, y1, 9))),
+          names, {reg: m}, lc.facing_state(C.M(reg), extra), tab=TAB)
 
 
 # ------------------------------------------------------------------------------------------
@@ -1451,6 +1463,7 @@ wind_sock()
 airfield_signs()
 airfield_mast()
 stand_sign()
+stand_sign(large=True)
 ground_equipment()
 jet_bridge()
 jet_bridge_slope()

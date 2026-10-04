@@ -1206,6 +1206,7 @@ neither is drawn here. No exit or emergency-exit signs either: Life Safety has t
 | Taxiway Location, Taxiway Direction, Runway Holding Position and Runway Distance Remaining Signs | `csm:airport_taxiway_location_sign` and the rest | `BlockAirfieldSign` |
 | Airfield Mast | `csm:airport_airfield_mast` | `transit.platform.BlockPlatformColumn` |
 | Stand Sign | `csm:airport_stand_sign` | `BlockStandSign` |
+| Large Stand Sign | `csm:airport_stand_sign_large` | `BlockStandSign` |
 | Wheel Chocks, Ground Power Unit, Baggage Tug, Baggage Cart, Air Stairs | `csm:airport_wheel_chocks` and the rest | Roads' `streetscape.BlockUtilityBox` |
 | Jet Bridge (Tunnel, Cab, Rotunda) | `csm:airport_jet_bridge_tunnel`, `_cab`, `_rotunda` | `BlockJetBridge` |
 | Jet Bridge (Drive Leg, Rotunda Column) | `csm:airport_jet_bridge_drive`, `_column` | `transit.platform.BlockPlatformColumn` |
@@ -1255,6 +1256,10 @@ where nothing is below, a cap where nothing is above), the same thickness as the
 approach light bar, the wind sock and the stand sign, so each of them stands on it and reads as
 one pole. The **stand sign** is the gate sign twice the size on a post, with the gate sign's
 cells, tile entity and clicks (1 to 20, sneaking A to D); only its message says "Stand".
+The **large stand sign** (`airport_stand_sign_large`, 2026-10) is the same block at twice that
+again, for an apron seen from a terminal built at a large scale: a panel three blocks across
+(-16 to 32, as far as a JSON element may reach) on a post twice as thick, standing on the same
+mast (`stand_sign(large=True)`).
 
 **Ground equipment** is placed through Roads' `BlockUtilityBox`, which Transit may use because it
 requires Roads: it settles onto a road surface (an apron built from the external road mod's
