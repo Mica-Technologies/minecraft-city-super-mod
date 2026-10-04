@@ -166,12 +166,16 @@ public class CommandHvac extends CommandBase {
         + p.playerNanos) / 1e6;
     say(sender, String.format("HVAC over %.0f s (%d steps): %d spaces, %d anchors", seconds,
         p.steps, w.spaces().size(), w.anchors().size()));
-    say(sender, String.format("  %.2f ms a step on average, %.1f ms at most; %.3f ms a tick",
+    say(sender, String.format("  %.2f ms a second on average, worst tick %.1f ms; %.3f ms a tick",
         total / steps, p.maxTickNanos / 1e6, total / (seconds * 20)));
     say(sender, String.format("  per step: rescan %.2f  attach %.2f  couplings %.2f"
             + "  control+physics %.2f  players %.2f ms", p.rescanNanos / 1e6 / steps,
         p.attachNanos / 1e6 / steps, p.couplingNanos / 1e6 / steps, p.stepNanos / 1e6 / steps,
         p.playerNanos / 1e6 / steps));
+    say(sender, String.format("  worst tick: rescan %.1f  attach %.1f  couplings %.1f"
+            + "  control+physics %.1f  players %.1f ms", p.maxRescanNanos / 1e6,
+        p.maxAttachNanos / 1e6, p.maxCouplingNanos / 1e6, p.maxStepNanos / 1e6,
+        p.maxPlayerNanos / 1e6));
     say(sender, String.format("  rescans: %d on a change, %d periodic; couplings resolved for"
             + " %d spaces; %d floods of %d cells", p.dirtyRescans, p.periodicRescans, p.couplings,
         p.scans, p.scannedCells));
