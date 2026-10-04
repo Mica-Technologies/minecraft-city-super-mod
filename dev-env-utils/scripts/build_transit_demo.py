@@ -28,6 +28,11 @@ whole Transit tab to walk round:
                       antenna mast; a taxiway, connector and runway with edge, centreline,
                       threshold, stop bar and approach lights and the airfield signs, each circuit
                       switched by a lever (labelled)
+  hall     (x 118..160, z 22..52) the large-scale concourse, its roof 14 blocks up: the large
+                      hanging signs (scripted through their NBT), a 6x3 departures board on the
+                      wall and a 4x2 arrivals board hung from the roof, the large kiosks; from its
+                      gate door the large jet bridge runs out over the apron, down a 1-in-4 slope
+                      to its cab, beside the large stand sign
   plinths  (z -8)     every Transit block not shown elsewhere, each with a sign
 
 The landside ground is raised to y 8 (so the station's lower level fits above bedrock); the
@@ -569,6 +574,90 @@ sign(-4, YA, 100, ["Runway lights", "and approach bars:", "this lever"], 0)
 sign(107, YA, 63, ["Wind sock and", "antenna mast:", "this lever"], 0)
 sign(45, YA, 59, ["Airport beacon:", "the lever on", "its tower"], 0)
 sign(72, YA, 63, ["Stand B12", "Jet bridge from", "gate B12 above"], 0)
+flush()
+
+# ------------------------------------------------------------------------------------------
+# The large-scale hall: the pieces made for terminals with 14-block ceilings
+# ------------------------------------------------------------------------------------------
+HX0, HX1, HZ0, HZ1 = 118, 160, 22, 52
+HR = Y + 14                                  # the roof
+fill(115, AG + 1, 54, 170, AG + 20, 104, 'minecraft:air')
+fill(115, AG, 54, 170, AG, 77, 'minecraft:concrete', 8)        # the apron, carried on east
+fill(115, 4, LZ0, 162, G - 1, LZ1, 'minecraft:stone')
+fill(115, G, LZ0, 162, G, LZ1, 'minecraft:grass')
+fill(115, G + 1, LZ0, 162, HR + 1, LZ1, 'minecraft:air')
+fill(115, 4, LZ1, 162, G, LZ1, 'minecraft:concrete', 0)        # the apron wall
+fill(HX0, G, HZ0, HX1, G, HZ1, 'minecraft:concrete', 0)
+for x in range(HX0 + 2, HX1, 5):
+    for z in range(HZ0 + 2, HZ1, 5):
+        put(x, G, z, 'minecraft:sea_lantern')
+for x in range(HX0, HX1 + 1):
+    for z in (HZ0, HZ1):
+        for y in range(Y, HR):
+            put(x, y, z, 'minecraft:concrete' if x % 6 == 0 else 'minecraft:glass_pane', 0)
+for z in range(HZ0, HZ1 + 1):
+    for x in (HX0, HX1):
+        for y in range(Y, HR):
+            put(x, y, z, 'minecraft:concrete' if z % 6 == 4 else 'minecraft:glass_pane', 0)
+flush()
+fill(HX0, HR, HZ0, HX1, HR, HZ1, 'minecraft:concrete', 0)
+for x in range(HX0 + 3, HX1, 5):
+    for z in range(HZ0 + 3, HZ1, 5):
+        put(x, HR, z, 'minecraft:sea_lantern')
+fill(HX0, Y, 35, HX0, Y + 3, 38, 'minecraft:air')          # in from the terminal's side
+fill(138, Y, HZ1, 142, Y + 3, HZ1, 'minecraft:air')        # the gate door to the jet bridge
+
+
+def wayfinding(x0, z0, y0, width, height, facing, nbt):
+    """A large hanging sign facing west or east, its cells along z, every cell given the sign
+    (the GUI's and /blockdata's way are the same: every cell holds a copy)."""
+    for i in range(width):
+        for j in range(height):
+            put(x0, y0 + j, z0 + i, 'airport_wayfinding_panel', facing, nbt)
+
+
+def sign_nbt(l1, l2, pictogram, arrow, scheme):
+    return '{l1:"%s",l2:"%s",p:"%s",a:"%s",s:"%s",d:1b}' % (l1, l2, pictogram, arrow, scheme)
+
+
+# the signs across the hall, read walking east from the door, hung a few blocks under the roof
+wayfinding(124, 24, HR - 5, 8, 2, W, sign_nbt("CHECK-IN", "", "checkin", "none", "airport"))
+wayfinding(130, 34, HR - 5, 10, 2, W, sign_nbt("GATES", "C1-C12", "depart", "right",
+                                                "airport"))
+wayfinding(130, 24, HR - 5, 8, 2, W, sign_nbt("BAGGAGE CLAIM", "", "baggage", "left",
+                                               "airport"))
+wayfinding(146, 25, HR - 5, 10, 2, W, sign_nbt("GROUND", "TRANSPORTATION", "ground", "up",
+                                                "airport"))
+wayfinding(146, 39, HR - 5, 7, 2, W, sign_nbt("TO TRAINS", "", "train", "up_left", "metro"))
+# boards: a 6x3 departures on the east wall, a 4x2 arrivals hung from the roof
+for z in range(28, 34):
+    for y in range(Y + 4, Y + 7):
+        put(HX1 - 1, y, z, 'airport_flight_board_large_departures', W)
+for z in range(42, 46):
+    for y in (HR - 4, HR - 3):
+        put(140, y, z, 'airport_flight_board_large_arrivals', W)
+# the large kiosks, by the check-in sign
+for z in (25, 27, 29):
+    put(122, Y, z, 'airport_self_checkin_kiosk_large', E)
+sign(121, Y, 31, ["Large-scale hall", "for 14-block", "ceilings: signs,", "boards, kiosks"], 4)
+flush()
+# the large jet bridge, south from the gate door: level, a 1-in-4 slope down, level, the cab
+LJX = 140
+for z in range(53, 57):
+    put(LJX, Y, z, 'airport_jet_bridge_large_tunnel', S)
+for z in range(57, 61):
+    put(LJX, Y, z, 'airport_jet_bridge_large_slope', S | (1 << 2))      # down, 1 in 4
+for z in range(61, 64):
+    put(LJX, Y - 1, z, 'airport_jet_bridge_large_tunnel', S)
+put(LJX, Y - 1, 64, 'airport_jet_bridge_large_cab', S)
+for y in range(YA, Y):
+    put(LJX, y, 55, 'airport_jet_bridge_large_drive', S)
+for y in range(YA, Y - 1):
+    put(LJX, y, 62, 'airport_jet_bridge_large_drive', S)
+for y in (YA, YA + 1):
+    put(148, y, 66, 'airport_airfield_mast', S)
+put(148, YA + 2, 66, 'airport_stand_sign_large', S, value(52))
+sign(146, YA, 66, ["Stand C12", "Large jet bridge", "from the hall", "above"], 0)
 flush()
 
 # ------------------------------------------------------------------------------------------
