@@ -11,6 +11,7 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
@@ -328,21 +329,20 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
           oldTE.writeToNBT(oldNBT);
         }
 
+        // The facing carries over only where the replacement has the same property: a mapping
+        // to a block rotated another way would otherwise throw on every random tick.
+        IBlockState replacement = replacementBlock.getDefaultState();
         if (block instanceof AbstractBlockRotatableNSEW) {
-          EnumFacing facing = state.getValue(AbstractBlockRotatableNSEW.FACING);
-          worldIn.setBlockState(pos, replacementBlock.getDefaultState()
-              .withProperty(AbstractBlockRotatableNSEW.FACING, facing));
+          replacement = withPropertyIfPresent(replacement, AbstractBlockRotatableNSEW.FACING,
+              state.getValue(AbstractBlockRotatableNSEW.FACING));
         } else if (block instanceof AbstractBlockRotatableNSEWUD) {
-          EnumFacing facing = state.getValue(AbstractBlockRotatableNSEWUD.FACING);
-          worldIn.setBlockState(pos, replacementBlock.getDefaultState()
-              .withProperty(AbstractBlockRotatableNSEWUD.FACING, facing));
+          replacement = withPropertyIfPresent(replacement, AbstractBlockRotatableNSEWUD.FACING,
+              state.getValue(AbstractBlockRotatableNSEWUD.FACING));
         } else if (block instanceof AbstractBlockRotatableHZEight) {
-          DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
-          worldIn.setBlockState(pos, replacementBlock.getDefaultState()
-              .withProperty(AbstractBlockRotatableHZEight.FACING, facing));
-        } else {
-          worldIn.setBlockState(pos, replacementBlock.getDefaultState());
+          replacement = withPropertyIfPresent(replacement, AbstractBlockRotatableHZEight.FACING,
+              state.getValue(AbstractBlockRotatableHZEight.FACING));
         }
+        worldIn.setBlockState(pos, replacement);
 
         // Configure the replacement block's tile entity with old data
         if (oldNBT != null) {
@@ -350,5 +350,12 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
         }
       }
     }
+  }
+
+  /** {@code state} with {@code property} set to {@code value}, or unchanged if it has none. */
+  private static <T extends Comparable<T>> IBlockState withPropertyIfPresent(IBlockState state,
+      IProperty<T> property, T value) {
+    return state.getPropertyKeys().contains(property)
+        ? state.withProperty(property, value) : state;
   }
 }
