@@ -1,0 +1,69 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "hardware": "csm:blocks/furniture/residential/stainless",
+    "partition": "csm:blocks/furniture/residential/partition_beige",
+    "particle": "#partition"
+  },
+  "elements": [
+    {
+      "from": [
+        15.1,
+        13.0,
+        0.35
+      ],
+      "to": [
+        16.9,
+        13.75,
+        1.65
+      ],
+      "faces": {
+        "north": {
+          "texture": "#hardware",
+          "uv": [
+            0,
+            2.25,
+            1.8,
+            3.0
+          ]
+        },
+        "south": {
+          "texture": "#hardware",
+          "uv": [
+            14.2,
+            2.25,
+            16.0,
+            3.0
+          ]
+        },
+        "west": {
+          "texture": "#hardware",
+          "uv": [
+            0.35,
+            2.25,
+            1.65,
+            3.0
+          ]
+        },
+        "east": {
+          "texture": "#hardware",
+          "uv": [
+            14.35,
+            2.25,
+            15.65,
+            3.0
+          ]
+        },
+        "up": {
+          "texture": "#hardware",
+          "uv": [
+            14.2,
+            0.35,
+            16.0,
+            1.65
+          ]
+        }
+      }
+    }
+  ]
+}

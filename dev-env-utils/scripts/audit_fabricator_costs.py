@@ -753,8 +753,10 @@ def cost_for(registry, info, ancestors):
             return ("iron_ingot", "paper")
         if registry.startswith("toilet_brush_"):
             return ("iron_ingot",)
-        if registry.startswith("toilet_partition_"):
+        if registry.startswith("toilet_partition_door_"):
             return ("SHEET_METAL x2", "FASTENER_KIT")
+        if registry.startswith("toilet_partition_"):
+            return ("SHEET_METAL",)
         if registry.startswith("urinal_screen_"):
             return ("SHEET_METAL", "FASTENER_KIT")
         if registry.startswith(("flushometer_toilet_", "flushometer_urinal_")):

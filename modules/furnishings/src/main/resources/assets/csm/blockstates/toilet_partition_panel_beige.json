@@ -2,173 +2,2799 @@
   "multipart": [
     {
       "when": {
-        "upper": "false",
-        "left": "true",
+        "front": "fixed",
+        "bottom": "true",
+        "top": "true",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lower"
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_bt"
       }
     },
     {
       "when": {
-        "upper": "false",
+        "front": "fixed",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_b"
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_t"
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_m"
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_shoe"
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_rail"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_bt"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_b"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_t"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_m"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_shoe_left"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_cap_left"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_bt"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_t"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_m"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_bt"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_t"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_m"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_bt"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_t"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_m"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "post|fixed",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_clamp_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_bracket_b"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "post|fixed",
+        "bottom": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_clamp_u"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_bracket_u"
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_own"
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "back": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_back"
+      }
+    },
+    {
+      "when": {
+        "front": "none|reach",
+        "left": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_lead"
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "back": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_bracket"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_bt"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_b"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_t"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_m"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_shoe_right"
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_cap_right"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_bt"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_t"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_m"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_bt"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_t"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_m"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_bt"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_t"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_m"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "post|fixed",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_clamp_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_bracket_b"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "post|fixed",
+        "bottom": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_clamp_u"
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_bracket_u"
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
         "right": "true",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lower"
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_own"
       }
     },
     {
       "when": {
-        "upper": "true",
-        "left": "true",
+        "front": "reach",
+        "right": "true",
+        "back": "true",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_upper"
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_back"
       }
     },
     {
       "when": {
-        "upper": "true",
+        "front": "none|reach",
         "right": "true",
         "facing": "north"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_upper"
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_lead"
       }
     },
     {
       "when": {
-        "upper": "false",
-        "left": "true",
+        "front": "reach",
+        "right": "true",
+        "back": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_bracket"
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "true",
+        "top": "true",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lower",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_bt",
         "y": 90
       }
     },
     {
       "when": {
-        "upper": "false",
-        "right": "true",
+        "front": "fixed",
+        "bottom": "true",
+        "top": "false",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lower",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_b",
         "y": 90
       }
     },
     {
       "when": {
-        "upper": "true",
-        "left": "true",
+        "front": "fixed",
+        "bottom": "false",
+        "top": "true",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_upper",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_t",
         "y": 90
       }
     },
     {
       "when": {
-        "upper": "true",
-        "right": "true",
+        "front": "fixed",
+        "bottom": "false",
+        "top": "false",
         "facing": "east"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_upper",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_m",
         "y": 90
       }
     },
     {
       "when": {
-        "upper": "false",
+        "front": "fixed",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_shoe",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_rail",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
         "left": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_shoe_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_cap_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "post|fixed",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_clamp_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_bracket_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "post|fixed",
+        "bottom": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_clamp_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_bracket_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_own",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "back": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_back",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "none|reach",
+        "left": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_lead",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "back": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_bracket",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_shoe_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_cap_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_bt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_t",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_m",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "post|fixed",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_clamp_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_bracket_b",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "post|fixed",
+        "bottom": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_clamp_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_bracket_u",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_own",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "right": "true",
+        "back": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_back",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "none|reach",
+        "right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_lead",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "right": "true",
+        "back": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_bracket",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "true",
+        "top": "true",
         "facing": "south"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lower",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_bt",
         "y": 180
       }
     },
     {
       "when": {
-        "upper": "false",
+        "front": "fixed",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_shoe",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_rail",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_shoe_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_cap_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "post|fixed",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_clamp_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_bracket_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "post|fixed",
+        "bottom": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_clamp_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_bracket_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_own",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "back": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_back",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "none|reach",
+        "left": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_lead",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "back": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_bracket",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_shoe_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_cap_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_bt",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_t",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_m",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "post|fixed",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_clamp_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_bracket_b",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "post|fixed",
+        "bottom": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_clamp_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_bracket_u",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
         "right": "true",
         "facing": "south"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lower",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_own",
         "y": 180
       }
     },
     {
       "when": {
-        "upper": "true",
-        "left": "true",
+        "front": "reach",
+        "right": "true",
+        "back": "true",
         "facing": "south"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_upper",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_back",
         "y": 180
       }
     },
     {
       "when": {
-        "upper": "true",
+        "front": "none|reach",
         "right": "true",
         "facing": "south"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_upper",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_lead",
         "y": 180
       }
     },
     {
       "when": {
-        "upper": "false",
-        "left": "true",
+        "front": "reach",
+        "right": "true",
+        "back": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_bracket",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "true",
+        "top": "true",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lower",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_bt",
         "y": 270
       }
     },
     {
       "when": {
-        "upper": "false",
-        "right": "true",
+        "front": "fixed",
+        "bottom": "true",
+        "top": "false",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lower",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_b",
         "y": 270
       }
     },
     {
       "when": {
-        "upper": "true",
+        "front": "fixed",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_fixed_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_shoe",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "fixed",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_rail",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_left_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_shoe_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "left": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_cap_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_own_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_back_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_lead_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "post|fixed",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_clamp_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_bracket_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "front": "post|fixed",
+        "bottom": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_clamp_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_bracket_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
         "left": "true",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_upper",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_own",
         "y": 270
       }
     },
     {
       "when": {
-        "upper": "true",
+        "front": "reach",
+        "left": "true",
+        "back": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_back",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "none|reach",
+        "left": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_lead",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "left": "true",
+        "back": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_left_reach_bracket",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_right_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_shoe_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "post",
+        "right": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_post_cap_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_own_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_back_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_bt",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "true",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_t",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "none|reach",
+        "bottom": "false",
+        "top": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_lead_m",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "post|fixed",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_clamp_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_bracket_b",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "front": "post|fixed",
+        "bottom": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_clamp_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "true",
+        "back": "true",
+        "bottom": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_bracket_u",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
         "right": "true",
         "facing": "west"
       },
       "apply": {
-        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_upper",
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_own",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "right": "true",
+        "back": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_back",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "none|reach",
+        "right": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_lead",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "front": "reach",
+        "right": "true",
+        "back": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/toilet_partition_panel_beige_right_reach_bracket",
         "y": 270
       }
     }

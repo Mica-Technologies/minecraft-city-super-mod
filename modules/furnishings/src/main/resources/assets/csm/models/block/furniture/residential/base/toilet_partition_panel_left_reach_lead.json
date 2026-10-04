@@ -1,0 +1,77 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "partition": "csm:blocks/furniture/residential/partition_beige",
+    "particle": "#partition"
+  },
+  "elements": [
+    {
+      "from": [
+        -0.4,
+        16.0,
+        0.0
+      ],
+      "to": [
+        0.4,
+        29.0,
+        1.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#partition",
+          "uv": [
+            15.2,
+            0,
+            16.0,
+            13.0
+          ]
+        },
+        "south": {
+          "texture": "#partition",
+          "uv": [
+            0,
+            0,
+            0.8,
+            13.0
+          ]
+        },
+        "east": {
+          "texture": "#partition",
+          "uv": [
+            14.5,
+            0,
+            16.0,
+            13.0
+          ]
+        },
+        "west": {
+          "texture": "#partition",
+          "uv": [
+            0.0,
+            0,
+            1.5,
+            13.0
+          ]
+        },
+        "up": {
+          "texture": "#partition",
+          "uv": [
+            0,
+            0.0,
+            0.8,
+            1.5
+          ]
+        },
+        "down": {
+          "texture": "#partition",
+          "uv": [
+            0,
+            14.5,
+            0.8,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

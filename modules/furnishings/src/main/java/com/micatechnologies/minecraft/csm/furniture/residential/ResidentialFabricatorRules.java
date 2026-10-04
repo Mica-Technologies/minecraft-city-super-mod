@@ -144,9 +144,13 @@ public final class ResidentialFabricatorRules {
     }
     // The commercial restroom: a flushometer fixture is porcelain and its valve; partitions and
     // screens powder-coated or stainless sheet; dryers a motor in a shell.
-    if (registryName.startsWith("toilet_partition_")) {
+    // The door is two blocks tall; a pilaster or panel cell is one, about half a door.
+    if (registryName.startsWith("toilet_partition_door_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("toilet_partition_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }
     if (registryName.startsWith("urinal_screen_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
