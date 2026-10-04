@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSensorZoneTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
@@ -177,7 +178,7 @@ public abstract class AbstractBlockTrafficSignalAPS extends
 
   public static int getArrowOrientation(IBlockAccess source, BlockPos pos) {
 
-    TileEntity rawTileEntity = source.getTileEntity(pos);
+    TileEntity rawTileEntity = BlockUtils.getTileEntitySafe(source, pos);
     int orientation = 0;
     if (rawTileEntity instanceof TileEntityTrafficSignalAPS tileEntity) {
       orientation = tileEntity.getCrosswalkArrowOrientation();

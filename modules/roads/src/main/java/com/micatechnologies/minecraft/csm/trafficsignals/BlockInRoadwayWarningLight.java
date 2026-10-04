@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
@@ -77,7 +78,7 @@ public class BlockInRoadwayWarningLight extends AbstractBlockControllableSignal
       @Nonnull IBlockAccess worldIn, @Nonnull BlockPos pos) {
     InRoadwayLightPattern pattern = InRoadwayLightPattern.RRFB;
     InRoadwayLightLinkMode mode = InRoadwayLightLinkMode.BEACON;
-    TileEntity te = worldIn.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(worldIn, pos);
     if (te instanceof TileEntityInRoadwayWarningLight) {
       pattern = ((TileEntityInRoadwayWarningLight) te).getPattern();
       mode = ((TileEntityInRoadwayWarningLight) te).getLinkMode();

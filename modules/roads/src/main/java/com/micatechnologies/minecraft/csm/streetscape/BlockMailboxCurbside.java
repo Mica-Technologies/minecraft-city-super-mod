@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.streetscape;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
@@ -43,7 +44,7 @@ public class BlockMailboxCurbside extends BlockMailbox {
   public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world,
       BlockPos pos) {
     IBlockState actual = super.getActualState(state, world, pos);
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     return actual.withProperty(FLAG,
         te instanceof TileEntityMailbox && ((TileEntityMailbox) te).hasMail(0));
   }

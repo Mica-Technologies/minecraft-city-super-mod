@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
 import com.micatechnologies.minecraft.csm.Csm;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmExtendedBlockState;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
@@ -145,7 +146,7 @@ public class BlockMileMarkerSign extends AbstractBlockSign implements ICsmTileEn
     if (!(state instanceof IExtendedBlockState)) {
       return state;
     }
-    TileEntity tileEntity = world.getTileEntity(pos);
+    TileEntity tileEntity = BlockUtils.getTileEntitySafe(world, pos);
     MileMarkerLegend legend = tileEntity instanceof TileEntityMileMarkerSign
         ? ((TileEntityMileMarkerSign) tileEntity).legend(layout)
         : MileMarkerLegend.defaultFor(layout);

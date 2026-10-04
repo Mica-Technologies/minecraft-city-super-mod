@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
 import com.micatechnologies.minecraft.csm.Csm;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
@@ -73,7 +74,7 @@ public class BlockSpanWireHangerMount extends BlockTrafficAccessoryNSEWUD
     if (!hidesModelWhenLinked()) {
       return state;
     }
-    final TileEntity te = world.getTileEntity(pos);
+    final TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     return state.withProperty(LINKED,
         te instanceof AbstractTileEntitySpanWireAttachment
             && ((AbstractTileEntitySpanWireAttachment) te).getSpan() != null);

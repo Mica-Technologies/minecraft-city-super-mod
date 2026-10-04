@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.buildingmaterials.CustomDoorSettings.Movement;
 import com.micatechnologies.minecraft.csm.buildingmaterials.CustomDoorSettings.Redstone;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmExtendedBlockState;
 import java.util.List;
 import java.util.Random;
@@ -147,7 +148,7 @@ public class BlockCustomDoor extends BlockBuildingDoor {
   public static CustomDoorSettings settings(IBlockAccess world, BlockPos pos) {
     IBlockState state = world.getBlockState(pos);
     BlockPos lowerPos = state.getBlock() instanceof BlockCustomDoor ? lower(state, pos) : pos;
-    TileEntity te = world.getTileEntity(lowerPos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, lowerPos);
     return te instanceof TileEntityCustomDoor ? ((TileEntityCustomDoor) te).getSettings()
         : CustomDoorSettings.DEFAULT;
   }

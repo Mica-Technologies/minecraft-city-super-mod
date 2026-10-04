@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.furniture.residential.WidePieces.IWidePiece;
@@ -28,10 +29,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 
 /**
  * A TV: a flat screen on its stand, a flat screen hung on the wall, either one block or two
@@ -120,9 +119,7 @@ public class BlockTelevision extends BlockCounterPiece
    * @return its channel
    */
   public static TvChannel channelAt(IBlockAccess world, BlockPos pos) {
-    TileEntity te = world instanceof ChunkCache
-        ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
-        : world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     return te instanceof TileEntityTelevision ? ((TileEntityTelevision) te).getChannel()
         : TvChannel.OFF;
   }

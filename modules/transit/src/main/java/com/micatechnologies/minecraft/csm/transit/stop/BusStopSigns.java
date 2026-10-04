@@ -1,14 +1,13 @@
 package com.micatechnologies.minecraft.csm.transit.stop;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.SignShift;
 import com.micatechnologies.minecraft.csm.trafficsigns.AbstractBlockSign;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.chunk.Chunk;
 
 /**
  * What the bus stop's signs share. A stop is built on the road sign system: a column of Roads'
@@ -107,8 +106,6 @@ public final class BusStopSigns {
    * @return the tile entity, or null
    */
   public static TileEntity tileEntity(IBlockAccess world, BlockPos pos) {
-    return world instanceof ChunkCache
-        ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
-        : world.getTileEntity(pos);
+    return BlockUtils.getTileEntitySafe(world, pos);
   }
 }

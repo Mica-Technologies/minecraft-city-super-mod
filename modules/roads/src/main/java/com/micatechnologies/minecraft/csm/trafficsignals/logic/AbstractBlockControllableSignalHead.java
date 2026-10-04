@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
@@ -227,7 +228,7 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   public DirectionSixteen getTiltedFacing(
       @NotNull IBlockAccess worldIn,
       @NotNull BlockPos pos, EnumFacing facing4) {
-    TileEntity tileEntity = worldIn.getTileEntity(pos);
+    TileEntity tileEntity = BlockUtils.getTileEntitySafe(worldIn, pos);
     if (tileEntity instanceof TileEntityTrafficSignalHead trafficSignalHead) {
       TrafficSignalBodyTilt stateBodyTilt = trafficSignalHead.getBodyTilt();
       return getTiltedFacing(stateBodyTilt, facing4);
@@ -522,7 +523,8 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     // One tile entity lookup for both terms. They each used to fetch it themselves, which meant
     // every caller of this paid for two -- and this is read per head per frame by the renderer,
     // the bounding box helper, and the cover and mount kit geometry that fit around a signal.
-    final TileEntity tileEntity = world == null || pos == null ? null : world.getTileEntity(pos);
+    final TileEntity tileEntity =
+        world == null || pos == null ? null : BlockUtils.getTileEntitySafe(world, pos);
     final TileEntityTrafficSignalHead head = tileEntity instanceof TileEntityTrafficSignalHead
         ? (TileEntityTrafficSignalHead) tileEntity
         : null;

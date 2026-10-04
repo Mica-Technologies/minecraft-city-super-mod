@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
@@ -106,12 +107,12 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
     boolean horizontal = false;
 
     BlockPos signalPos = null;
-    TileEntity te = worldIn.getTileEntity(pos.offset(facing.getOpposite()));
+    TileEntity te = BlockUtils.getTileEntitySafe(worldIn, pos.offset(facing.getOpposite()));
     if (te instanceof TileEntityTrafficSignalHead) {
       signalPos = pos.offset(facing.getOpposite());
       tilt = ((TileEntityTrafficSignalHead) te).getBodyTilt();
     } else {
-      te = worldIn.getTileEntity(pos.offset(facing));
+      te = BlockUtils.getTileEntitySafe(worldIn, pos.offset(facing));
       if (te instanceof TileEntityTrafficSignalHead) {
         signalPos = pos.offset(facing);
         tilt = ((TileEntityTrafficSignalHead) te).getBodyTilt();
@@ -141,7 +142,7 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
    * @return the head's body tilt, never null.
    */
   public static TrafficSignalBodyTilt tiltOf(IBlockAccess world, BlockPos signalPos) {
-    final TileEntity te = world.getTileEntity(signalPos);
+    final TileEntity te = BlockUtils.getTileEntitySafe(world, signalPos);
     return te instanceof TileEntityTrafficSignalHead
         ? ((TileEntityTrafficSignalHead) te).getBodyTilt()
         : TrafficSignalBodyTilt.NONE;
@@ -181,7 +182,7 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
    * @return the vertical part of the head's span offset, in model units.
    */
   public static float spanRiseOf(IBlockAccess world, BlockPos signalPos) {
-    final TileEntity te = world.getTileEntity(signalPos);
+    final TileEntity te = BlockUtils.getTileEntitySafe(world, signalPos);
     return te instanceof TileEntityTrafficSignalHead
         ? ((TileEntityTrafficSignalHead) te).getSpanWireYOffset()
         : 0.0f;
@@ -196,11 +197,12 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
    * put it in front, and the original lookup has always allowed both.
    */
   public static BlockPos findSignalFor(IBlockAccess world, BlockPos platePos, EnumFacing facing) {
-    if (world.getTileEntity(platePos.offset(facing.getOpposite()))
+    if (BlockUtils.getTileEntitySafe(world, platePos.offset(facing.getOpposite()))
         instanceof TileEntityTrafficSignalHead) {
       return platePos.offset(facing.getOpposite());
     }
-    if (world.getTileEntity(platePos.offset(facing)) instanceof TileEntityTrafficSignalHead) {
+    if (BlockUtils.getTileEntitySafe(world, platePos.offset(facing))
+        instanceof TileEntityTrafficSignalHead) {
       return platePos.offset(facing);
     }
     return null;

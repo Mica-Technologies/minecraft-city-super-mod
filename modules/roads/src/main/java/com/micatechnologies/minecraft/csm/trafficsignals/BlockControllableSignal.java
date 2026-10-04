@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
@@ -160,7 +161,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   private boolean isConfiguredHorizontal(IBlockAccess world, BlockPos pos) {
     if (horizontal) return true;
     if (!allowsHorizontalFlip) return false;
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
     return te instanceof TileEntityTrafficSignalHead
         && ((TileEntityTrafficSignalHead) te).isHorizontalFlip();
   }
