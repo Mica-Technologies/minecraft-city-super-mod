@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.transit;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import com.micatechnologies.minecraft.csm.materials.CsmParts;
 import com.micatechnologies.minecraft.csm.materials.FabricatorIngredient;
+import com.micatechnologies.minecraft.csm.transit.airport.BlockJetBridgeTurn;
+import com.micatechnologies.minecraft.csm.transit.airport.JetBridgeTurnShape;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -47,6 +49,14 @@ public final class TransitFabricatorRules {
    */
   @Nullable
   public static List<FabricatorIngredient> price(Block block, String registryName) {
+    if (block instanceof BlockJetBridgeTurn) {
+      // a turn is its cells' worth of tunnel: what a tunnel of its size costs, a cell
+      JetBridgeTurnShape shape = ((BlockJetBridgeTurn) block).getShape();
+      int cells = shape.getCellCount();
+      return CsmFabricatorCosts.cost(
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, cells * (shape.isLarge() ? 2 : 3)),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, cells));
+    }
     if (registryName.startsWith("bus_stop_flag_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));

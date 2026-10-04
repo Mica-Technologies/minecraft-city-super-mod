@@ -945,7 +945,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   shared with `BlockJetBridge`'s collision boxes; and the sloped tunnel (`BlockJetBridgeSlope`), the
   level corridor sheared along its length into one OBJ a grade and step; the large bridge (three
   blocks wide and four tall inside: the same elements scaled by `LJ_SX`/`LJ_SY` into OBJ, the
-  boxes by `BlockJetBridge.toLarge`); `--check`, `--fragments`
+  boxes by `BlockJetBridge.toLarge`); and the turns (`BlockJetBridgeTurn`: corner room, curve and
+  U-turn at both sizes), each built once from the tunnel's section, cut at the block lines into
+  one OBJ a cell, with `JetBridgeTurnShape.java` (cells, ends, collision boxes) written from the
+  same walls after a simulated walk shows every box is reachable; `--check` (the Java too),
+  `--fragments`
 - `gen_transit_boards.py` -- the bus departure board and bay display (Transit; bus only, rail
   boards are RCMC's): the monitor and its screen texture (header with a bus pictogram, column
   heads' and rows' bands; every word is `TileEntityBusDepartureBoardRenderer`'s, which shares its

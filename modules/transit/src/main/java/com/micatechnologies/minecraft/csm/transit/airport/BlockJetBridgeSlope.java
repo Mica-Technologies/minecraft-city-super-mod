@@ -180,15 +180,13 @@ public class BlockJetBridgeSlope extends BlockPlatformFixture {
   }
 
   /**
-   * Whether the bridge carries on from this piece towards {@code dir}: any piece of jet bridge on
-   * the same axis right beyond its end, on its level or a block above or below (a run's low end
-   * meets the level below, its high end the level above).
+   * Whether the bridge carries on from this piece towards {@code dir}: any piece of jet bridge
+   * open towards it right beyond its end ({@link BlockJetBridge#opensToward}), on its level or a
+   * block above or below (a run's low end meets the level below, its high end the level above).
    */
   private boolean continues(IBlockAccess world, BlockPos pos, EnumFacing dir) {
     for (int dy = -1; dy <= 1; dy++) {
-      if (BlockJetBridge.isBridgeOnAxis(world, pos.offset(dir).up(dy), dir.getAxis(), large)
-          || BlockJetBridge.isRotundaOnAxis(world, pos.offset(dir, 2).up(dy), dir.getAxis(),
-          large)) {
+      if (BlockJetBridge.opensToward(world, pos.offset(dir).up(dy), dir.getOpposite(), large)) {
         return true;
       }
     }

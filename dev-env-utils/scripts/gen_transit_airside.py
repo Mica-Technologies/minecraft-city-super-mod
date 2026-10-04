@@ -1436,6 +1436,1042 @@ def jet_bridge_large():
 
 
 # ------------------------------------------------------------------------------------------
+# Jet bridge turns
+# ------------------------------------------------------------------------------------------
+# A corridor two blocks wide (three and a bit for the large bridge) cannot turn inside one cell:
+# two tunnel lines at right angles next to the same cell overlap each other's walls, and across a
+# large turn the far wall is past the one block the game looks for collision boxes. So a turn is
+# several real blocks placed as one (BlockJetBridgeTurn, all its cells or none, as the mast arm
+# curves are), each drawing and colliding its own share of one shape. Every cell is the same
+# block; which cell it is lives in a tile entity, read into the `cell` actual-state property.
+#
+# Each shape is written once, for a right-hand turn, in a canonical frame: the turn's entry
+# cell (end A) is (0, 0), entered through its south face heading north; end B is the exit. A
+# left-hand turn is the same cells turned a quarter (corner, curve: B's east face turned to
+# face south, so B becomes the entry) or entered from the other leg (U-turn), so no shape needs
+# a mirrored model. The shapes:
+#
+#   corner  a square room centred where the two corridor lines cross, three cells across (large
+#           five), open to the south and the east to the corridor's width
+#   turn    a quarter circle, centreline radius 2.5 blocks (large 3.5)
+#   uturn   a half circle back to a line two blocks over (large four), as close as two
+#           corridors can run side by side
+#
+# Sizes come from one rule: the tunnels that join a turn start where neither overlaps the
+# other's band, the corridor's half width (16, large 26.5 sixteenths) past the crossing line,
+# rounded up to the next whole block. Everything is drawn from the straight tunnel's section
+# (JB_* or its large scaling) and textures: carpet, panelled walls with a window a block, the
+# lit strip down the middle of the ceiling (following the centreline), the skin with its navy
+# band, the roof. Curves are many short straight pieces. The whole shape is built as flat
+# polygons, then cut at the block lines and each piece handed to the cell it lies in (or, past
+# the turn's cells, the cell beside it), and written as one OBJ a cell.
+#
+# The generator also writes JetBridgeTurnShape.java: each shape's cells, its two ends and each
+# cell's collision boxes, from the same walls and floors the models are drawn from, so the two
+# cannot disagree. Before writing it, it walks a player through every shape the way the game
+# looks for collision boxes (World.getCollisionBoxes: blocks within a block of the moving box,
+# skipping the corner columns of that range) and adds a cell wherever a box could be missed.
+
+TURN_JAVA_REL = os.path.join("modules", "transit", "src", "main", "java", "com",
+                             "micatechnologies", "minecraft", "csm", "transit", "airport",
+                             "JetBridgeTurnShape.java")
+TURN_KINDS = ("corner", "turn", "uturn")
+TURN_ENUM = {"corner": "CORNER", "turn": "TURN", "uturn": "UTURN"}
+_EPS = 1e-6
+
+
+def _turn_section(large):
+    """The corridor's section, in sixteenths: the straight tunnel's (JB_*), or as large_of
+    scales it."""
+    if not large:
+        return {"half": (JB_X1 - JB_X0) / 2.0, "wt": JB_WT, "floor": JB_FLOOR,
+                "ceil": JB_CEIL, "roof": JB_ROOF}
+    x0 = _lj_x(JB_X0)
+    return {"half": round(8 - x0, 4), "wt": round(_lj_x(JB_X0 + JB_WT) - x0, 4),
+            "floor": JB_FLOOR, "ceil": _lj_y(JB_CEIL), "roof": _lj_y(JB_ROOF)}
+
+
+# --- the shapes as runs of wall and pieces of floor ---------------------------------------
+class _Run(object):
+    """A wall: its skin side P and its inside face Q, sampled at the same stations (Q is P
+    offset by the wall's thickness), the panel each segment belongs to on each face, and
+    whether its ends are jambs (a face across the wall's thickness, where an opening starts)."""
+
+    def __init__(self, P, Q, panels_p, panels_q, skin=True, caps=(False, False)):
+        self.P, self.Q = P, Q
+        self.panels_p, self.panels_q = panels_p, panels_q
+        self.skin = skin
+        self.caps = caps
+
+
+def _panels(points, breaks):
+    """Panel ranges along a polyline: for each segment, (start, end, s0, s1) in its own length,
+    a panel ending at each index in `breaks` (and at the last point)."""
+    s = [0.0]
+    for a, b in zip(points, points[1:]):
+        s.append(s[-1] + math.hypot(b[0] - a[0], b[1] - a[1]))
+    ends = sorted(set(list(breaks) + [len(points) - 1]))
+    out = []
+    start = 0
+    for e in ends:
+        if e <= start:
+            continue
+        for i in range(start, e):
+            out.append((s[start], s[e], s[i], s[i + 1]))
+        start = e
+    return out
+
+
+def _grid_breaks(points):
+    """Panel breaks of a straight-sided run: at its corners and wherever it crosses a block
+    line, so a full block of wall carries one window, as a tunnel's does."""
+    pts = [points[0]]
+    breaks = []
+    for a, b in zip(points, points[1:]):
+        ax, az = a
+        bx, bz = b
+        cuts = []
+        if abs(bx - ax) > _EPS:
+            lo, hi = sorted((ax, bx))
+            k = math.floor(lo / 16.0) + 1
+            while k * 16.0 < hi - _EPS:
+                t = (k * 16.0 - ax) / (bx - ax)
+                cuts.append(t)
+                k += 1
+        if abs(bz - az) > _EPS:
+            lo, hi = sorted((az, bz))
+            k = math.floor(lo / 16.0) + 1
+            while k * 16.0 < hi - _EPS:
+                t = (k * 16.0 - az) / (bz - az)
+                cuts.append(t)
+                k += 1
+        for t in sorted(cuts):
+            if _EPS < t < 1 - _EPS:
+                pts.append((ax + (bx - ax) * t, az + (bz - az) * t))
+                breaks.append(len(pts) - 1)
+        pts.append(b)
+        breaks.append(len(pts) - 1)
+    return pts, breaks
+
+
+def _room_runs(sec, H):
+    """The corner room's two walls, running round it between its two openings."""
+    half, wt = sec["half"], sec["wt"]
+    hi = half - wt                       # the opening's half width, inside the walls
+    zc = 16 - H                          # the exit's centreline
+    x0, x1, z0, z1 = 8 - H, 8 + H, 16 - 2 * H, 16.0
+    runs = []
+    for P, Q in (([(8 - hi, z1), (x0, z1), (x0, z0), (x1, z0), (x1, zc - hi)],
+                  [(8 - hi, z1 - wt), (x0 + wt, z1 - wt), (x0 + wt, z0 + wt),
+                   (x1 - wt, z0 + wt), (x1 - wt, zc - hi)]),
+                 ([(x1, zc + hi), (x1, z1), (8 + hi, z1)],
+                  [(x1 - wt, zc + hi), (x1 - wt, z1 - wt), (8 + hi, z1 - wt)])):
+        # split both lines at the same block lines, taken from the skin
+        Pp, Pb = _grid_breaks(P)
+        # the inside line, cut where the skin's cuts are: same x (or z) as the skin's station
+        Qp = []
+        for i, p in enumerate(Pp):
+            # find the segment of P this station is on and offset it the way Q is
+            for j in range(len(P) - 1):
+                a, b = P[j], P[j + 1]
+                if _on_segment(p, a, b):
+                    qa, qb = Q[j], Q[j + 1]
+                    t = _param(p, a, b)
+                    Qp.append(_qpoint(p, a, b, qa, qb, t))
+                    break
+        runs.append(_Run(Pp, Qp, _panels(Pp, Pb), _panels(Qp, Pb), caps=(True, True)))
+    return runs
+
+
+def _on_segment(p, a, b):
+    cross = (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])
+    if abs(cross) > 1e-6:
+        return False
+    return (min(a[0], b[0]) - _EPS <= p[0] <= max(a[0], b[0]) + _EPS
+            and min(a[1], b[1]) - _EPS <= p[1] <= max(a[1], b[1]) + _EPS)
+
+
+def _param(p, a, b):
+    L2 = (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
+    return ((p[0] - a[0]) * (b[0] - a[0]) + (p[1] - a[1]) * (b[1] - a[1])) / L2
+
+
+def _qpoint(p, a, b, qa, qb, t):
+    """The inside line's station across the wall from skin station p on skin segment a-b: at
+    the segment's ends the mitred corner, between them straight across."""
+    if t < _EPS:
+        return qa
+    if t > 1 - _EPS:
+        return qb
+    # the inside segment runs parallel: move p across by the offset at the segment's middle
+    dx = (qa[0] + qb[0]) / 2 - (a[0] + b[0]) / 2
+    dz = (qa[1] + qb[1]) / 2 - (a[1] + b[1]) / 2
+    ux, uz = b[0] - a[0], b[1] - a[1]
+    L = math.hypot(ux, uz)
+    ux, uz = ux / L, uz / L
+    across = dx * (-uz) + dz * ux                 # the offset's part square to the wall
+    return (p[0] + across * (-uz), p[1] + across * ux)
+
+
+def _arc_point(O, r, th):
+    return (O[0] - r * math.cos(th), O[1] - r * math.sin(th))
+
+
+class _Shape(object):
+    """A turn in its canonical frame: walls, floor pieces (convex plan polygons with how their
+    ceiling is textured), the cells that hold it and its two ends."""
+
+    def __init__(self, kind, large):
+        self.kind, self.large = kind, large
+        self.sec = sec = _turn_section(large)
+        half, wt = sec["half"], sec["wt"]
+        self.runs = []
+        self.floors = []            # (polygon, ceiling uv function)
+        self.core = None            # in(x, z): on the block-wide band about the centreline
+        self.spot = None            # in(x, z): a player's feet can be centred here
+        if kind == "corner":
+            H = 24.0 if not large else 40.0
+            self.H = H
+            self.runs = _room_runs(sec, H)
+            self.end_a = ((0, 0), "south")
+            self.end_b = ((int((8 + H) // 16) - 1, int(math.floor((16 - H) / 16.0))), "east")
+            self._room_floors()
+            x0, x1, z0, z1 = 8 - H, 8 + H, 16 - 2 * H, 16.0
+            self.core = lambda x, z: x0 <= x <= x1 and z0 <= z <= z1
+            p, hi, zc = _PLAYER / 2, half - wt, 16 - H
+            self.spot = lambda x, z: (
+                (x0 + wt + p <= x <= x1 - wt - p and z0 + wt + p <= z <= z1 - wt - p)
+                or (8 - hi + p <= x <= 8 + hi - p and z0 + wt + p <= z <= z1)
+                or (zc - hi + p <= z <= zc + hi - p and x0 + wt + p <= x <= x1))
+            self.footprint = self.core
+            return
+        R = {("turn", False): 40.0, ("turn", True): 56.0,
+             ("uturn", False): 16.0, ("uturn", True): 32.0}[(kind, large)]
+        self.R = R
+        self.O = O = (8 + R, 16.0)
+        self.th_end = math.pi / 2 if kind == "turn" else math.pi
+        r_out, r_in = R + half, R - half
+        radii = {"out_skin": r_out, "out_in": r_out - wt, "in_skin": max(0.0, r_in),
+                 "in_in": max(0.0, r_in) + wt if r_in > 0 else wt}
+        self.radii = radii
+        if kind == "turn":
+            self.end_b = ((int((8 + R) // 16) - 1, int(math.floor((16 - R) / 16.0))), "east")
+        else:
+            self.end_b = ((int(2 * R // 16), 0), "south")
+        self.end_a = ((0, 0), "south")
+        # stations: fine enough that the outer skin's chords are about 4 sixteenths, and at
+        # every panel's ends on all four faces
+        n = int(math.ceil(self.th_end * r_out / 4.0))
+        angles = set(self.th_end * i / n for i in range(n + 1))
+        panel_ks = {}
+        for key, r in radii.items():
+            L = self.th_end * r
+            k = max(1, int(round(L / 16.0)))
+            panel_ks[key] = k
+            for j in range(k + 1):
+                angles.add(self.th_end * j / k)
+        self.angles = sorted(angles)
+        th = self.angles
+
+        def run_for(rp, rq, kp, kq, skin):
+            P = [_arc_point(O, rp, a) for a in th]
+            Q = [_arc_point(O, rq, a) for a in th]
+            bp = [i for i, a in enumerate(th) if any(abs(a - self.th_end * j / kp) < 1e-9
+                                                     for j in range(kp + 1))]
+            bq = [i for i, a in enumerate(th) if any(abs(a - self.th_end * j / kq) < 1e-9
+                                                     for j in range(kq + 1))]
+            return _Run(P, Q, _panels(P, bp), _panels(Q, bq), skin=skin)
+        self.runs = [run_for(radii["out_skin"], radii["out_in"], panel_ks["out_skin"],
+                             panel_ks["out_in"], True),
+                     run_for(radii["in_skin"], radii["in_in"], panel_ks["in_skin"],
+                             panel_ks["in_in"], r_in > 0)]
+        W = 2 * half
+        for a0, a1 in zip(th, th[1:]):
+            poly = [_arc_point(O, radii["in_skin"], a0), _arc_point(O, radii["out_skin"], a0),
+                    _arc_point(O, radii["out_skin"], a1), _arc_point(O, radii["in_skin"], a1)]
+            if radii["in_skin"] <= 0:
+                poly = poly[:3]
+            self.floors.append((poly, _polar_ceiling(O, R, W, (a0 + a1) / 2)))
+        r_lo, r_hi = radii["in_skin"], radii["out_skin"]
+
+        def polar(x, z):
+            dx, dz = O[0] - x, O[1] - z
+            return math.hypot(dx, dz), dz
+
+        def in_sector(x, z):
+            if kind == "turn" and x > O[0] + _EPS:
+                return False
+            return z <= O[1] + _EPS
+        self.footprint = lambda x, z: (in_sector(x, z)
+                                       and r_lo - _EPS <= polar(x, z)[0] <= r_hi + _EPS)
+        self.core = lambda x, z: in_sector(x, z) and abs(polar(x, z)[0] - R) <= 8.0
+        self.spot = lambda x, z: (in_sector(x, z) and radii["in_in"] + _PLAYER / 2
+                                  <= polar(x, z)[0] <= radii["out_in"] - _PLAYER / 2)
+
+    def _room_floors(self):
+        """The room's floor in nine rectangles: the lit strip runs up the middle of the entry,
+        to the middle of the room and out along the exit's middle, an L; the rest is ceiling."""
+        sec, H = self.sec, self.H
+        sw = 6.0 * (2 * sec["half"]) / 32.0           # the strip, as wide as a tunnel's
+        zc = 16 - H
+        xs = (8 - H, 8 - sw / 2, 8 + sw / 2, 8 + H)
+        zs = (16 - 2 * H, zc - sw / 2, zc + sw / 2, 16.0)
+        W = 2 * sec["half"]
+        for i in range(3):
+            for j in range(3):
+                poly = [(xs[i], zs[j]), (xs[i + 1], zs[j]), (xs[i + 1], zs[j + 1]),
+                        (xs[i], zs[j + 1])]
+                if i == 1 and j in (1, 2):
+                    uvf = _strip_ceiling(W, along="z", centre=8.0)
+                elif i == 2 and j == 1:
+                    uvf = _strip_ceiling(W, along="x", centre=zc)
+                else:
+                    uvf = _plain_ceiling()
+                self.floors.append((poly, uvf))
+
+    def ends(self):
+        return [self.end_a, self.end_b]
+
+
+def _polar_ceiling(O, R, W, th_mid):
+    """The ceiling round a curve: across the corridor as across a tunnel (the lit strip on the
+    centreline), along it by the centreline's length."""
+    s_base = 32.0 * math.floor(th_mid * R / 32.0)
+
+    def uvf(x, y, z, region):
+        dx, dz = O[0] - x, O[1] - z
+        if abs(dz) < 1e-9:
+            dz = 0.0
+        r = math.hypot(dx, dz)
+        th = math.atan2(dz, dx) if r > 1e-6 else th_mid
+        return ((16 + (r - R) * 32.0 / W) / 4.0, (th * R - s_base) / 4.0)
+    return uvf
+
+
+def _strip_ceiling(W, along, centre):
+    def uvf(x, y, z, region):
+        if along == "z":
+            across, length, base = x, z, 64 * math.floor(region[1] / 64.0)
+        else:
+            across, length, base = z, x, 64 * math.floor(region[0] / 64.0)
+        return ((16 + (across - centre) * 32.0 / W) / 4.0, (length - base) / 4.0)
+    return uvf
+
+
+def _plain_ceiling():
+    """Ceiling clear of the lit strip: a window of the texture right of it."""
+    def uvf(x, y, z, region):
+        bx = 32 * math.floor(region[0] / 32.0)
+        bz = 64 * math.floor(region[1] / 64.0)
+        return ((24 + (x - bx)) / 4.0, (z - bz) / 4.0)
+    return uvf
+
+
+def _planar():
+    """Carpet, roof and underside: a texel a sixteenth, as floor_uv, from the block grid."""
+    def uvf(x, y, z, region):
+        bx = 64 * math.floor(region[0] / 64.0)
+        bz = 64 * math.floor(region[1] / 64.0)
+        return ((x - bx) / 4.0, (z - bz) / 4.0)
+    return uvf
+
+
+# --- the faces ------------------------------------------------------------------------------
+WALL_V = JB_WALL_H * JB_K * 16.0 / 64       # the wall texture's height in uv: 14.5
+
+
+def _wall_uv(s0, s1, s, frame=False):
+    """u along a panel s0..s1: a whole window if the panel is a block's worth, else the plain
+    stretch right of the window (frame: the frame texture once along it)."""
+    L = s1 - s0
+    t = (s - s0) / L if L > _EPS else 0.0
+    if frame:
+        return 16.0 * t
+    if L >= 12.0:
+        return 32.0 * t / 4.0
+    return (24 + 8 * t) / 4.0
+
+
+def _vface(mat, p0, p1, y0, y1, normal, u0, u1, v0, v1):
+    """A vertical quad over plan points p0-p1 between y0 and y1: u runs p0 to p1, v from the top
+    (y1) down."""
+    pts = [(p0[0], y1, p0[1]), (p0[0], y0, p0[1]), (p1[0], y0, p1[1]), (p1[0], y1, p1[1])]
+    dx, dz = p1[0] - p0[0], p1[1] - p0[1]
+    L2 = dx * dx + dz * dz
+
+    def uvf(x, y, z, region):
+        t = ((x - p0[0]) * dx + (z - p0[1]) * dz) / L2 if L2 > _EPS else 0.0
+        return (u0 + (u1 - u0) * t, v0 + (v1 - v0) * (y1 - y) / (y1 - y0))
+    return (mat, pts, (normal[0], 0.0, normal[1]), uvf)
+
+
+def _hface(mat, poly, y, up, uvf):
+    return (mat, [(x, y, z) for x, z in poly], (0.0, 1.0 if up else -1.0, 0.0), uvf)
+
+
+def _unit(dx, dz):
+    L = math.hypot(dx, dz)
+    return (dx / L, dz / L) if L > _EPS else (0.0, 0.0)
+
+
+def _turn_faces(shape):
+    sec = shape.sec
+    fl, ce, rf = sec["floor"], sec["ceil"], sec["roof"]
+    faces = []
+    for poly, ceiling in shape.floors:
+        faces += [_hface("floor", poly, fl, True, _planar()),
+                  _hface("under", poly, 0.0, False, _planar()),
+                  _hface("roof", poly, rf, True, _planar()),
+                  _hface("ceiling", poly, ce, False, ceiling)]
+    for run in shape.runs:
+        P, Q = run.P, run.Q
+        for i in range(len(P) - 1):
+            a, b, qa, qb = P[i], P[i + 1], Q[i], Q[i + 1]
+            d = _unit(qb[0] - qa[0], qb[1] - qa[1])
+            n = (-d[1], d[0])
+            mid_out = ((a[0] + b[0] - qa[0] - qb[0]) / 2, (a[1] + b[1] - qa[1] - qb[1]) / 2)
+            if n[0] * mid_out[0] + n[1] * mid_out[1] < 0:
+                n = (-n[0], -n[1])
+            if run.skin and math.hypot(b[0] - a[0], b[1] - a[1]) > _EPS:
+                s0, s1, sa, sb = run.panels_p[i]
+                faces.append(_vface("skin", a, b, fl, ce, n, _wall_uv(s0, s1, sa),
+                                    _wall_uv(s0, s1, sb), 0.0, WALL_V))
+                fa, fb = _wall_uv(s0, s1, sa, True), _wall_uv(s0, s1, sb, True)
+                faces.append(_vface("frame", a, b, 0.0, fl, n, fa, fb, 0.0, 1.5))
+                faces.append(_vface("frame", a, b, ce, rf, n, fa, fb, 0.0, 1.5))
+            s0, s1, sa, sb = run.panels_q[i]
+            faces.append(_vface("inner", qa, qb, fl, ce, (-n[0], -n[1]), _wall_uv(s0, s1, sa),
+                                _wall_uv(s0, s1, sb), 0.0, WALL_V))
+        # the jambs where an opening starts: across the wall's thickness, facing the opening
+        for end, cap in ((0, run.caps[0]), (-1, run.caps[1])):
+            if not cap:
+                continue
+            p, q = P[end], Q[end]
+            nxt = P[1] if end == 0 else P[-2]
+            n = _unit(p[0] - nxt[0], p[1] - nxt[1])
+            faces.append(_vface("inner", p, q, fl, ce, n, 24 / 4.0, (24 + 2 * sec["wt"]) / 4.0,
+                                0.0, WALL_V))
+    return faces
+
+
+# --- cutting at the block lines ------------------------------------------------------------
+def _clip(pts, axis, value, keep_above):
+    """Sutherland-Hodgman against the plane x (axis 0) or z (axis 2) = value."""
+    out = []
+    n = len(pts)
+    for i in range(n):
+        a, b = pts[i], pts[(i + 1) % n]
+        ina = (a[axis] >= value - 1e-9) if keep_above else (a[axis] <= value + 1e-9)
+        inb = (b[axis] >= value - 1e-9) if keep_above else (b[axis] <= value + 1e-9)
+        if ina:
+            out.append(a)
+        if ina != inb:
+            t = (value - a[axis]) / (b[axis] - a[axis])
+            out.append(tuple(a[k] + (b[k] - a[k]) * t for k in range(3)))
+    return out
+
+
+def _area(pts, normal):
+    sx = sy = sz = 0.0
+    for i in range(len(pts)):
+        a, b = pts[i], pts[(i + 1) % len(pts)]
+        sx += (a[1] - b[1]) * (a[2] + b[2])
+        sy += (a[2] - b[2]) * (a[0] + b[0])
+        sz += (a[0] - b[0]) * (a[1] + b[1])
+    return abs(sx * normal[0] + sy * normal[1] + sz * normal[2]) / 2.0
+
+
+def _dedupe(pts):
+    out = []
+    for p in pts:
+        if not out or max(abs(p[k] - out[-1][k]) for k in range(3)) > 1e-7:
+            out.append(p)
+    while len(out) > 1 and max(abs(out[0][k] - out[-1][k]) for k in range(3)) <= 1e-7:
+        out.pop()
+    return out
+
+
+def _faces_into(pts, normal, cx, cz):
+    """Whether a face lying on one of the cell's block lines looks into the cell. Such a face
+    belongs to the cell it looks out of: kept in both, it would be drawn twice, once at the
+    depth of the neighbouring block's own face."""
+    for axis, n in ((0, normal[0]), (2, normal[2])):
+        lo = (cx if axis == 0 else cz) * 16.0
+        for edge, inward in ((lo, n > 0.5), (lo + 16, n < -0.5)):
+            if inward and all(abs(p[axis] - edge) < 1e-6 for p in pts):
+                return True
+    return False
+
+
+def _cut_faces(faces):
+    """Each face cut at the block lines: {(cx, cz): [(mat, pts, normal, uvf)]}, by the cell
+    each piece lies in."""
+    pieces = {}
+    for mat, pts, normal, uvf in faces:
+        xs = [p[0] for p in pts]
+        zs = [p[2] for p in pts]
+        # a block either side of a face lying on a block line, so the one it looks out of
+        # is offered it
+        for cx in range(int(math.floor((min(xs) - 1e-6) / 16.0)),
+                        int(math.floor((max(xs) + 1e-6) / 16.0)) + 1):
+            for cz in range(int(math.floor((min(zs) - 1e-6) / 16.0)),
+                            int(math.floor((max(zs) + 1e-6) / 16.0)) + 1):
+                if _faces_into(pts, normal, cx, cz):
+                    continue
+                q = list(pts)
+                for axis, value, above in ((0, cx * 16.0, True), (0, cx * 16.0 + 16, False),
+                                           (2, cz * 16.0, True), (2, cz * 16.0 + 16, False)):
+                    q = _clip(q, axis, value, above)
+                    if len(q) < 3:
+                        break
+                q = _dedupe(q)
+                if len(q) < 3 or _area(q, normal) < 1e-5:
+                    continue
+                pieces.setdefault((cx, cz), []).append((mat, q, normal, uvf))
+    return pieces
+
+
+# --- collision boxes ------------------------------------------------------------------------
+def _clip_box(b):
+    """A box (x0, y0, z0, x1, y1, z1) cut at the block lines: {(cx, cz): [box]}."""
+    out = {}
+    for cx in range(int(math.floor(b[0] / 16.0)), int(math.floor((b[3] - 1e-9) / 16.0)) + 1):
+        for cz in range(int(math.floor(b[2] / 16.0)), int(math.floor((b[5] - 1e-9) / 16.0)) + 1):
+            x0, x1 = max(b[0], cx * 16.0), min(b[3], cx * 16.0 + 16)
+            z0, z1 = max(b[2], cz * 16.0), min(b[5], cz * 16.0 + 16)
+            if x1 - x0 > 1e-6 and z1 - z0 > 1e-6:
+                out.setdefault((cx, cz), []).append((x0, b[1], z0, x1, b[4], z1))
+    return out
+
+
+def _rects(cells_on, step):
+    """Grid squares (i, k) of side `step` merged into rectangles: runs along x, stacked along z
+    while a run repeats."""
+    rows = {}
+    for i, k in cells_on:
+        rows.setdefault(k, []).append(i)
+    runs = {}
+    for k, xs in rows.items():
+        xs.sort()
+        out = []
+        start = prev = xs[0]
+        for x in xs[1:]:
+            if x != prev + 1:
+                out.append((start, prev))
+                start = x
+            prev = x
+        out.append((start, prev))
+        runs[k] = out
+    rects = []
+    open_ = {}
+    prev = None
+    for k in sorted(runs):
+        if prev is not None and k != prev + 1:
+            for r, k0 in open_.items():
+                rects.append((r[0] * step, k0 * step, (r[1] + 1) * step, (prev + 1) * step))
+            open_ = {}
+        nxt = {}
+        for r in runs[k]:
+            nxt[r] = open_.pop(r) if r in open_ else k
+        for r, k0 in open_.items():
+            rects.append((r[0] * step, k0 * step, (r[1] + 1) * step, k * step))
+        open_ = nxt
+        prev = k
+    for r, k0 in open_.items():
+        rects.append((r[0] * step, k0 * step, (r[1] + 1) * step, (prev + 1) * step))
+    return sorted(rects)
+
+
+def _turn_boxes(shape):
+    """Every collision box in the canonical frame, in sixteenths, cut at the block lines:
+    {(cx, cz): [box]}. Floor (and, on the level bridge, the roof) as rectangles of the floor's
+    plan; walls as the box of each short length of wall, from floor to ceiling, as a tunnel's."""
+    sec = shape.sec
+    fl, ce, rf = sec["floor"], sec["ceil"], sec["roof"]
+    boxes = {}
+
+    def add(b):
+        for cell, bs in _clip_box(b).items():
+            boxes.setdefault(cell, []).extend(bs)
+    # floor and roof
+    if shape.kind == "corner":
+        H = shape.H
+        plans = [(8 - H, 16 - 2 * H, 8 + H, 16.0)]
+    else:
+        step = 2.0
+        on = set()
+        r_hi = shape.radii["out_skin"]
+        O = shape.O
+        for i in range(int(math.floor((O[0] - r_hi) / step)) - 1,
+                       int(math.ceil((O[0] + r_hi) / step)) + 1):
+            for k in range(int(math.floor((O[1] - r_hi) / step)) - 1,
+                           int(math.ceil(O[1] / step)) + 1):
+                if shape.footprint((i + 0.5) * step, (k + 0.5) * step):
+                    on.add((i, k))
+        # merge per block, so no rectangle crosses a block line
+        per = {}
+        for i, k in on:
+            per.setdefault((int(math.floor(i * step / 16.0)), int(math.floor(k * step / 16.0))),
+                           set()).add((i, k))
+        plans = []
+        for cells_on in per.values():
+            plans += _rects(cells_on, step)
+    for x0, z0, x1, z1 in plans:
+        add((x0, 0.0, z0, x1, fl, z1))
+        if not shape.large:
+            add((x0, ce, z0, x1, rf, z1))
+    # walls: the room's straight walls whole, a curve's in lengths of about 2
+    for run in shape.runs:
+        P, Q = run.P, run.Q
+        for i in range(len(P) - 1):
+            a, b, qa, qb = P[i], P[i + 1], Q[i], Q[i + 1]
+            L = max(math.hypot(b[0] - a[0], b[1] - a[1]), math.hypot(qb[0] - qa[0],
+                                                                     qb[1] - qa[1]))
+            n = 1 if shape.kind == "corner" else max(1, int(math.ceil(L / 2.0)))
+            for j in range(n):
+                t0, t1 = j / float(n), (j + 1) / float(n)
+                pts = [_lerp(a, b, t0), _lerp(a, b, t1), _lerp(qa, qb, t0), _lerp(qa, qb, t1)]
+                xs = [p[0] for p in pts]
+                zs = [p[1] for p in pts]
+                if max(xs) - min(xs) < 1e-6 or max(zs) - min(zs) < 1e-6:
+                    continue
+                add((min(xs), fl, min(zs), max(xs), ce, max(zs)))
+    return boxes
+
+
+def _lerp(a, b, t):
+    return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+
+
+# --- which blocks hold a turn ---------------------------------------------------------------
+_PLAYER = 9.6        # a player's width, in sixteenths
+_TALL = 28.8         # and height
+_MOVE = 4.8          # how far a box is swept in a tick, each way, for the scan below
+
+
+def _owner(cell, members):
+    """The cell that draws and collides what lies in `cell`: itself if it is one of the turn's,
+    else the nearest of the turn's beside it."""
+    if cell in members:
+        return cell
+    cx, cz = cell
+    best = None
+    for c in sorted(members):
+        d = (abs(c[0] - cx) + abs(c[1] - cz), max(abs(c[0] - cx), abs(c[1] - cz)), c)
+        if best is None or d < best:
+            best = d
+    return best[2]
+
+
+def _scanned(box):
+    """The blocks (cx, cz) the game asks for collision boxes for a moving box, in sixteenths:
+    a block past the box each way, but not the four corner columns (World.getCollisionBoxes)."""
+    i0 = int(math.floor(box[0] / 16.0)) - 1
+    i1 = int(math.ceil(box[3] / 16.0))
+    k0 = int(math.floor(box[2] / 16.0)) - 1
+    k1 = int(math.ceil(box[5] / 16.0))
+    out = set()
+    for i in range(i0, i1 + 1):
+        for k in range(k0, k1 + 1):
+            if (i in (i0, i1)) and (k in (k0, k1)):
+                continue
+            out.add((i, k))
+    return out
+
+
+def _turn_cells(shape, boxes):
+    """The turn's cells: the block-wide band along its centreline (every cell of a room), plus
+    any cell a player inside could otherwise miss a box of. Returns (members, cells added)."""
+    xs = [c[0] for c in boxes]
+    zs = [c[1] for c in boxes]
+    members = set()
+    for cx in range(min(xs), max(xs) + 1):
+        for cz in range(min(zs), max(zs) + 1):
+            if any(shape.core(cx * 16 + k + 0.25, cz * 16 + j + 0.25)
+                   for k in range(0, 16) for j in range(0, 16)):
+                members.add((cx, cz))
+    # where a player can stand, from the middle of their feet: every 2 sixteenths
+    spots = [(x + 1.0, z + 1.0) for x in range(min(xs) * 16 - 16, max(xs) * 16 + 32, 2)
+             for z in range(min(zs) * 16 - 16, max(zs) * 16 + 32, 2)
+             if shape.spot(x + 1.0, z + 1.0)]
+    by_region = {}
+    for cell, bs in boxes.items():
+        by_region[cell] = bs
+    fl = shape.sec["floor"]
+    added = []
+    for _ in range(64):
+        missed = None
+        for x, z in spots:
+            for mx in (-_MOVE, 0.0, _MOVE):
+                for mz in (-_MOVE, 0.0, _MOVE):
+                    pb = (x - _PLAYER / 2 + min(0.0, mx), fl - 2, z - _PLAYER / 2 + min(0.0, mz),
+                          x + _PLAYER / 2 + max(0.0, mx), fl + _TALL + 8,
+                          z + _PLAYER / 2 + max(0.0, mz))
+                    scan = _scanned(pb)
+                    for cx in range(int(math.floor(pb[0] / 16.0)),
+                                    int(math.floor(pb[3] / 16.0)) + 1):
+                        for cz in range(int(math.floor(pb[2] / 16.0)),
+                                        int(math.floor(pb[5] / 16.0)) + 1):
+                            for b in by_region.get((cx, cz), ()):
+                                if (b[0] < pb[3] and b[3] > pb[0] and b[1] < pb[4]
+                                        and b[4] > pb[1] and b[2] < pb[5] and b[5] > pb[2]
+                                        and _owner((cx, cz), members) not in scan):
+                                    missed = (cx, cz)
+                                    break
+                            if missed:
+                                break
+                        if missed:
+                            break
+                    if missed:
+                        break
+                if missed:
+                    break
+            if missed:
+                break
+        if not missed:
+            return members, added
+        members.add(missed)
+        added.append(missed)
+    raise AssertionError("%s: could not make every box reachable" % shape.kind)
+
+
+# --- writing --------------------------------------------------------------------------------
+def _poly_obj(name, mtl, faces, origin):
+    """An OBJ of flat polygons, moved by origin (sixteenths) into its cell; quads kept, other
+    polygons fanned into quads and a triangle; each face wound to its normal. Coordinates in
+    blocks, v down the texture, as _sheared_obj writes them."""
+    vs, vts, vns, out = [], [], [], []
+    for mat, pts, normal, uvf, region in faces:
+        polys = []
+        if len(pts) == 4:
+            polys.append(pts)
+        else:
+            i = 1
+            while i < len(pts) - 1:
+                if i + 2 < len(pts):
+                    polys.append([pts[0], pts[i], pts[i + 1], pts[i + 2]])
+                    i += 2
+                else:
+                    polys.append([pts[0], pts[i], pts[i + 1]])
+                    i += 1
+        for poly in polys:
+            # Newell's normal, to wind the face to its outside
+            nx = ny = nz = 0.0
+            for j in range(len(poly)):
+                p, q = poly[j], poly[(j + 1) % len(poly)]
+                nx += (p[1] - q[1]) * (p[2] + q[2])
+                ny += (p[2] - q[2]) * (p[0] + q[0])
+                nz += (p[0] - q[0]) * (p[1] + q[1])
+            # wound so its right-hand normal points out, as _sheared_obj winds a box's faces
+            if nx * normal[0] + ny * normal[1] + nz * normal[2] < 0:
+                poly = poly[::-1]
+            refs = []
+            for x, y, z in poly:
+                u, v = uvf(x, y, z, region)
+                vs.append("v %.5f %.5f %.5f" % ((x - origin[0]) / 16.0, y / 16.0,
+                                                (z - origin[1]) / 16.0))
+                vts.append("vt %.5f %.5f" % (min(1, max(0, u / 16.0)), min(1, max(0, v / 16.0))))
+                vns.append("vn %.5f %.5f %.5f" % normal)
+                refs.append(len(vs))
+            out.append((mat, refs))
+    lines = ["# Generated by dev-env-utils/scripts/gen_transit_airside.py -- do not edit",
+             "mtllib %s.mtl" % mtl, "o %s" % name] + vs + vts + vns
+    current = None
+    for mat, refs in sorted(out, key=lambda f: f[0]):
+        if mat != current:
+            lines.append("usemtl " + mat)
+            current = mat
+        lines.append("f " + " ".join("%d/%d/%d" % (r, r, r) for r in refs))
+    return "\n".join(lines) + "\n"
+
+
+_FACE_STEPS = {"north": 0, "east": 1, "south": 2, "west": 3}
+
+
+def _icon_box(a, b, width, y0, y1, tex):
+    """A JSON element over plan points a-b (already in the icon's sixteenths), `width` across,
+    turned about y to the nearest step a JSON element allows (22.5 degrees, at most 45 either
+    way, so a box nearer z than x runs along z). Minecraft turns +x towards -z for a positive
+    angle."""
+    mx, mz = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
+    dx, dz = b[0] - a[0], b[1] - a[1]
+    L = math.hypot(dx, dz)
+    if L < 1e-6:
+        return None
+
+    def fold(deg):
+        while deg > 90:
+            deg -= 180
+        while deg <= -90:
+            deg += 180
+        return deg
+    ang_x = fold(math.degrees(math.atan2(-dz, dx)))
+    if abs(ang_x) <= 45 + 1e-6:
+        ang = ang_x
+        frm, to = (mx - L / 2, y0, mz - width / 2), (mx + L / 2, y1, mz + width / 2)
+    else:
+        ang = fold(math.degrees(math.atan2(dx, dz)))
+        frm, to = (mx - width / 2, y0, mz - L / 2), (mx + width / 2, y1, mz + L / 2)
+    ang = round(ang / 22.5) * 22.5
+    el = B(frm, to, tex, ALL)
+    for face in el["faces"].values():
+        u = face["uv"]
+        face["uv"] = [0, 0, round(min(16, max(0.5, abs(u[2] - u[0]))), 4),
+                      round(min(16, max(0.5, abs(u[3] - u[1]))), 4)]
+    if ang:
+        el["rotation"] = {"origin": [round(mx, 4), round(y0, 4), round(mz, 4)], "axis": "y",
+                          "angle": ang}
+    return el
+
+
+def _icon(shape):
+    """The item: the turn seen from above, its floor and walls (no roof) shrunk to fit a block,
+    as JSON elements. A JSON element turns only in steps of 22.5 degrees, so a curve is drawn as
+    chords centred on those angles (half chords at its ends)."""
+    sec = shape.sec
+    if shape.kind == "corner":
+        H = shape.H
+        bx, bz = (8 - H, 8 + H), (16 - 2 * H, 16.0)
+    else:
+        r = shape.radii["out_skin"]
+        O = shape.O
+        bx = (O[0] - r, O[0] + (r if shape.kind == "uturn" else 0))
+        bz = (O[1] - r, O[1])
+    f = 30.0 / max(bx[1] - bx[0], bz[1] - bz[0])
+    cx, cz = (bx[0] + bx[1]) / 2, (bz[0] + bz[1]) / 2
+
+    def t(p):
+        return (8 + (p[0] - cx) * f, 8 + (p[1] - cz) * f)
+    fl = round(max(0.6, sec["floor"] * f), 4)
+    top = round(fl + (sec["ceil"] - sec["floor"]) * f, 4)
+    els = []
+    if shape.kind == "corner":
+        H = shape.H
+        a, b = t((8 - H, 16 - 2 * H)), t((8 + H, 16.0))
+        els.append(B((a[0], 0, a[1]), (b[0], fl, b[1]), "floor", ALL,
+                     uv={k: [0, 0, 16, 16] for k in ALL}))
+        for run in shape.runs:
+            for i in range(len(run.P) - 1):
+                pts = [t(p) for p in (run.P[i], run.P[i + 1], run.Q[i], run.Q[i + 1])]
+                xs = [p[0] for p in pts]
+                zs = [p[1] for p in pts]
+                if max(xs) - min(xs) < 1e-6 or max(zs) - min(zs) < 1e-6:
+                    continue
+                els.append(B((min(xs), fl, min(zs)), (max(xs), top, max(zs)), "skin", ALL,
+                             uv={k: [0, 0, 4, 4] for k in ALL}))
+    else:
+        O, R = shape.O, shape.R
+        half, wt = sec["half"], sec["wt"]
+        step = math.radians(11.25)
+        n = int(round(math.degrees(shape.th_end) / 22.5))
+        for j in range(n + 1):
+            mid = math.radians(22.5 * j)
+            lo = max(-1.0, (0.0 - mid) / step)
+            hi = min(1.0, (shape.th_end - mid) / step)
+            if hi - lo < 1e-6:
+                continue
+            tan = (math.sin(mid), -math.cos(mid))
+            for r_o, width, tex, y0, y1 in ((R + half, 2 * half, "floor", 0.004 * (j % 2), fl),
+                                            (R + half - wt / 2, wt, "skin", fl, top),
+                                            (R - half + wt / 2, wt, "skin", fl, top)):
+                if r_o <= 0:
+                    continue
+                if tex == "floor":
+                    c = _arc_point(O, R * math.cos(step), mid)
+                else:
+                    c = _arc_point(O, r_o * math.cos(step), mid)
+                hl = r_o * math.sin(step)
+                a = (c[0] + tan[0] * hl * lo, c[1] + tan[1] * hl * lo)
+                b = (c[0] + tan[0] * hl * hi, c[1] + tan[1] * hl * hi)
+                el = _icon_box(t(a), t(b), width * f, y0, y1, tex)
+                if el:
+                    els.append(el)
+    m = lc.model(JB_TEX, els, ao=False)
+    m["display"] = gui_display(0.34, 0.0)
+    return m
+
+
+def jet_bridge_turns():
+    """The six turns: their per-cell OBJs, blockstates and items, and JetBridgeTurnShape.java."""
+    folder = C.M("x").split(":", 1)[1].rsplit("/", 1)[0]
+    java_shapes = []
+    for large in (False, True):
+        for kind in TURN_KINDS:
+            shape = _Shape(kind, large)
+            reg = "airport_jet_bridge_%s%s" % ("large_" if large else "", kind)
+            mtl = "jet_bridge_large" if large else "jet_bridge_slope"
+            boxes = _turn_boxes(shape)
+            members, added = _turn_cells(shape, boxes)
+            a_cell, b_cell = shape.end_a[0], shape.end_b[0]
+            assert a_cell in members and b_cell in members, (reg, a_cell, b_cell)
+            order = [a_cell] + sorted((c for c in members if c != a_cell),
+                                      key=lambda c: (c[1], c[0]))
+            index = {c: i for i, c in enumerate(order)}
+            # the models: every piece to the cell that holds it
+            per_cell = {}
+            for region, pieces in _cut_faces(_turn_faces(shape)).items():
+                owner = _owner(region, members)
+                for mat, pts, normal, uvf in pieces:
+                    per_cell.setdefault(owner, []).append(
+                        (mat, pts, normal, uvf, (region[0] * 16.0, region[1] * 16.0)))
+            models = {}
+            for c in order:
+                assert per_cell.get(c), (reg, c)
+                name = "%s_c%d" % (reg, index[c])
+                C.extra["models/block/%s/%s.obj" % (folder, name)] = _poly_obj(
+                    name, mtl, per_cell.get(c, []), (c[0] * 16.0, c[1] * 16.0))
+                models[c] = "csm:%s/%s.obj" % (folder, name)
+            # collision, per cell, in the cell's own sixteenths
+            cell_boxes = {c: [] for c in order}
+            for region, bs in sorted(boxes.items()):
+                owner = _owner(region, members)
+                ox, oz = owner[0] * 16.0, owner[1] * 16.0
+                for b in bs:
+                    cell_boxes[owner].append(tuple(round(v, 4) for v in (
+                        b[0] - ox, b[1], b[2] - oz, b[3] - ox, b[4], b[5] - oz)))
+            # the blockstate: each cell's model turned with the turn, and the tunnel's own end
+            # frame at an end that nothing continues from
+            frame = ("csm:%s/airport_jet_bridge_large_tunnel_end_behind.obj" % folder if large
+                     else C.M("airport_jet_bridge_tunnel_end_behind"))
+            left_steps = (_FACE_STEPS["south"] - _FACE_STEPS[shape.end_b[1]]) % 4
+            rules = []
+            for facing, y in FACINGS:
+                for left in (False, True):
+                    steps = (y // 90 + (left_steps if left else 0)) % 4
+                    for c in order:
+                        rules.append({"when": {"facing": facing, "left": str(left).lower(),
+                                               "cell": str(index[c])},
+                                      "apply": _turned(models[c], steps * 90)})
+                    for cell, face in shape.ends():
+                        fy = (_FACE_STEPS[face] - _FACE_STEPS["south"] + steps) % 4 * 90
+                        rules.append({"when": {"facing": facing, "left": str(left).lower(),
+                                               "cell": str(index[cell]), "frame": "true"},
+                                      "apply": _turned(frame, fy)})
+            enum = TURN_ENUM[kind] + ("_LARGE" if large else "")
+            names = _large_name(TURN_NAMES[kind]) if large else TURN_NAMES[kind]
+            C.add(reg, 'new BlockJetBridgeTurn("%s", JetBridgeTurnShape.%s)' % (reg, enum),
+                  names, {}, {"multipart": rules}, item=_icon(shape), tab=TAB)
+            java_shapes.append((enum, large, order, index[b_cell], shape.end_b[1], cell_boxes,
+                                len(added)))
+    return java_shapes
+
+
+TURN_NAMES = {
+    "corner": ("Jet Bridge (Corner)", "Fluggastbrücke (Ecke)", "Pasarela de Embarque (Esquina)",
+               "Flygbrygga (Hörn)"),
+    "turn": ("Jet Bridge (Curved Turn)", "Fluggastbrücke (Kurve)",
+             "Pasarela de Embarque (Curva)", "Flygbrygga (Kurva)"),
+    "uturn": ("Jet Bridge (U-Turn)", "Fluggastbrücke (Kehre)",
+              "Pasarela de Embarque (Giro en U)", "Flygbrygga (U-sväng)"),
+}
+def _large_name(names):
+    """A large piece's name from the level one's, as the other large pieces are named."""
+    en, de, es, sv = names
+    return ("Large " + en, "Große " + de,
+            es.replace("Pasarela de Embarque", "Pasarela de Embarque Grande"), "Stor " + sv)
+
+
+def turn_java(java_shapes):
+    """JetBridgeTurnShape.java: each shape's cells, ends and collision boxes."""
+    lines = [
+        "package com.micatechnologies.minecraft.csm.transit.airport;",
+        "",
+        "import net.minecraft.util.EnumFacing;",
+        "",
+        "/**",
+        " * The jet bridge turns' cells and collision boxes. GENERATED by",
+        " * {@code dev-env-utils/scripts/gen_transit_airside.py} from the same walls and floors the",
+        " * turns' models are drawn from, so placement, collision and drawing cannot disagree. Do not",
+        " * edit; change the generator and re-run it.",
+        " *",
+        " * <p>Each shape is a right-hand turn in its own frame: cell 0 is end A, the entry, at",
+        " * (0, 0), entered through its south face heading north (the model's north); {@code endB}",
+        " * is the exit, open on {@code faceB}. Cells are (x, z) in blocks, east and south positive.",
+        " * A left-hand turn is the same cells turned until end B's face looks south, entered at",
+        " * end B. Boxes are each cell's own, in sixteenths of that cell, facing north.</p>",
+        " *",
+        " * @since 2026.10",
+        " */",
+        "public enum JetBridgeTurnShape {",
+    ]
+    entries = []
+    for enum, large, order, b_index, b_face, cell_boxes, _added in java_shapes:
+        cells = ";".join("%d,%d" % c for c in order)
+        boxes = "|".join(";".join(",".join("%g" % v for v in b) for b in cell_boxes[c])
+                         for c in order)
+        entries.append('  %s(%s, "%s", %d, EnumFacing.%s,\n      "%s")'
+                       % (enum, "true" if large else "false", cells, b_index, b_face.upper(),
+                          boxes))
+    lines.append(",\n".join(entries) + ";")
+    lines += [
+        "",
+        "  private final boolean large;",
+        "  private final int[][] cells;",
+        "  private final int endB;",
+        "  private final EnumFacing faceB;",
+        "  private final double[][][] boxes;",
+        "",
+        "  JetBridgeTurnShape(boolean large, String cells, int endB, EnumFacing faceB,",
+        "      String boxes) {",
+        "    this.large = large;",
+        "    String[] c = cells.split(\";\");",
+        "    this.cells = new int[c.length][];",
+        "    for (int i = 0; i < c.length; i++) {",
+        "      String[] xz = c[i].split(\",\");",
+        "      this.cells[i] = new int[]{Integer.parseInt(xz[0]), Integer.parseInt(xz[1])};",
+        "    }",
+        "    this.endB = endB;",
+        "    this.faceB = faceB;",
+        "    String[] perCell = boxes.split(\"\\\\|\", -1);",
+        "    this.boxes = new double[perCell.length][][];",
+        "    for (int i = 0; i < perCell.length; i++) {",
+        "      String[] b = perCell[i].isEmpty() ? new String[0] : perCell[i].split(\";\");",
+        "      this.boxes[i] = new double[b.length][];",
+        "      for (int j = 0; j < b.length; j++) {",
+        "        String[] v = b[j].split(\",\");",
+        "        this.boxes[i][j] = new double[v.length];",
+        "        for (int k = 0; k < v.length; k++) {",
+        "          this.boxes[i][j][k] = Double.parseDouble(v[k]);",
+        "        }",
+        "      }",
+        "    }",
+        "  }",
+        "",
+        "  /** Whether this is a turn of the large bridge. */",
+        "  public boolean isLarge() {",
+        "    return large;",
+        "  }",
+        "",
+        "  /** How many cells the turn has. */",
+        "  public int getCellCount() {",
+        "    return cells.length;",
+        "  }",
+        "",
+        "  /** A cell's place in the right-hand turn's frame: x (east), z (south), in blocks. */",
+        "  public int[] getCell(int index) {",
+        "    return cells[index];",
+        "  }",
+        "",
+        "  /** End B, the right-hand turn's exit (end A is cell 0, open to the south). */",
+        "  public int getEndB() {",
+        "    return endB;",
+        "  }",
+        "",
+        "  /** The face end B is open on, in the right-hand turn's frame. */",
+        "  public EnumFacing getFaceB() {",
+        "    return faceB;",
+        "  }",
+        "",
+        "  /** A cell's collision boxes, in its own sixteenths, facing north. */",
+        "  public double[][] getBoxes(int index) {",
+        "    return boxes[index];",
+        "  }",
+        "}",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+# ------------------------------------------------------------------------------------------
 # Lang the Java reads
 # ------------------------------------------------------------------------------------------
 C.add_lang("csm.transit.stand", ("Stand %s", "Standplatz %s", "Puesto %s", "Plats %s"))
@@ -1456,6 +2492,12 @@ C.add_lang("csm.transit.jet_bridge_slope.up8", (
     "up 1 block over 8", "1 Block aufwärts auf 8", "sube 1 bloque en 8", "upp 1 block på 8"))
 C.add_lang("csm.transit.jet_bridge_slope.up4", (
     "up 1 block over 4", "1 Block aufwärts auf 4", "sube 1 bloque en 4", "upp 1 block på 4"))
+C.add_lang("csm.transit.jet_bridge_turn.blocked", (
+    "No room for the turn: blocked at %s, %s, %s", "Kein Platz für die Kurve: blockiert bei %s, %s, %s",
+    "No hay espacio para el giro: bloqueado en %s, %s, %s", "Inget utrymme för svängen: blockerad vid %s, %s, %s"))
+C.add_lang("csm.transit.jet_bridge_turn.hand", ("Turns %s", "Biegt %s ab", "Gira a la %s", "Svänger %s"))
+C.add_lang("csm.transit.jet_bridge_turn.left", ("left", "links", "izquierda", "vänster"))
+C.add_lang("csm.transit.jet_bridge_turn.right", ("right", "rechts", "derecha", "höger"))
 
 register_textures()
 airfield_lights()
@@ -1468,6 +2510,30 @@ ground_equipment()
 jet_bridge()
 jet_bridge_slope()
 jet_bridge_large()
+TURN_SHAPES = jet_bridge_turns()
+
+
+def _main():
+    """The catalogue's own run, then JetBridgeTurnShape.java, written or (--check) compared."""
+    rc = C.main()
+    if "--fragments" in sys.argv:
+        return rc
+    path = os.path.join(REPO, TURN_JAVA_REL)
+    text = turn_java(TURN_SHAPES)
+    if "--check" in sys.argv:
+        try:
+            with open(path, encoding="utf-8") as fh:
+                same = fh.read() == text
+        except IOError:
+            same = False
+        if not same:
+            print("out of date (re-run without --check):\n  " + TURN_JAVA_REL)
+            return 1
+        return rc
+    with open(path, "w", newline="\n", encoding="utf-8") as fh:
+        fh.write(text)
+    return rc
+
 
 if __name__ == "__main__":
-    sys.exit(C.main())
+    sys.exit(_main())
