@@ -40,6 +40,8 @@
       "types": [
         "interactable_csm_chipbox"
       ],
+      "minValue": 6,
+      "maxValue": 6,
       "defaultPart": "csmvehicles:csm_chipbox",
       "allowParentRemoval": true
     }

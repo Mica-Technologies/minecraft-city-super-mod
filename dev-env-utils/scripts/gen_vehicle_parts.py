@@ -538,6 +538,9 @@ def chipbed_json():
         'subParts': [{
             'pos': [0, 0.1, 0],
             'types': ['interactable_csm_chipbox'],
+            # IV fits a crate only to a slot whose min..max holds its inventoryUnits; without
+            # them the chip box was refused, silently, and the bed came without it
+            'minValue': CHIPBOX_UNITS, 'maxValue': CHIPBOX_UNITS,
             'defaultPart': '%s:csm_chipbox' % PACK,
             'allowParentRemoval': True,
         }],
@@ -563,6 +566,9 @@ def chipbed_json():
 
 # The collector's reach, behind the feed tray: logs dropped there are taken in.
 INTAKE_POS = [0, -0.5, BED_REAR - 2.4]
+# The chip box's size, in IV inventory units (a unit is a chest row); a slot that takes it must
+# have it inside its minValue..maxValue
+CHIPBOX_UNITS = 6
 
 
 def effector_box(pos, width, height):
@@ -585,7 +591,7 @@ def chipbox_json():
                     'stackSize': 1, 'materialLists': [['minecraft:chest:0:1'],
                                                       ['minecraft:chest:1']]},
         'generic': {'type': 'interactable_csm_chipbox', 'width': 2.4, 'height': 1.4},
-        'interactable': {'interactionType': 'crate', 'inventoryUnits': 6,
+        'interactable': {'interactionType': 'crate', 'inventoryUnits': CHIPBOX_UNITS,
                          'feedsVehicles': True},
         'subParts': sub,
         'rendering': {'modelType': 'none'},
