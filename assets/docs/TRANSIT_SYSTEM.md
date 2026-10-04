@@ -1048,6 +1048,20 @@ panel built to size from cells, the legend set in a screen rather than baked.
   panel copies its neighbour's, so adding a column on the left or a row below (which moves the
   controller) or breaking the controller keeps the legend. `/fill` and `/setblock` do not run
   placement, so cells made that way start as the default GATES sign until edited.
+- **Scripting it.** A `/blockdata` edit of any cell is the whole panel's, as a GUI edit is:
+  `TileEntityWayfindingPanel.readNBT` hands it to `WayfindingSign.applyToPanel`, the same method
+  the GUI's packet handler calls, which writes the sign to every cell of the panel and syncs each
+  to the clients. So a script places the cells with `/setblock` (facing in the metadata, 0 south,
+  1 west, 2 north, 3 east) and then sets the sign on any one of them, for example
+  `/blockdata x y z {l1:"BAGGAGE",l2:"CLAIM",p:"baggage",a:"down_left",s:"airport",d:1b}`. The keys:
+  `l1` and `l2` the two lines (printable ASCII, 32 characters, cleaned as the GUI's are; an empty
+  line is left out of the NBT), `p` the pictogram (`none`, `depart`, `arrive`, `checkin`,
+  `baggage`, `ground`, `train`, `bus`, `taxi`, `restroom`, `exit`), `a` the arrow (`none`, `left`,
+  `right`, `up`, `down`, `up_left`, `up_right`, `down_left`, `down_right`), `s` the colours
+  (`airport`, `metro`, `exit`, `info`) and `d` whether the back carries the legend (a byte, on
+  unless `0b`). An unknown id reads as the list's first value. Only a live edit spreads: a cell
+  read as its chunk loads is not yet in the world (`isBlockLoaded` is false and it is not the tile
+  entity at its position), and the cells the spread writes do not spread it again (a static flag).
 - **Layout.** The pictogram is a square the panel's height less its margins, at the end away from
   the arrow; the arrow is 0.8 of that at the end it points to (the left end for the three
   leftward arrows); the text sits left-aligned between them in Highway Gothic, its capitals 0.45

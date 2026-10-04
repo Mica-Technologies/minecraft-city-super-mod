@@ -1,10 +1,12 @@
 package com.micatechnologies.minecraft.csm.transit.wayfinding;
 
+import com.micatechnologies.minecraft.csm.transit.panel.CellPanel;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 /**
  * What a large hanging sign ({@link BlockWayfindingPanel}) says and how its cells make one panel:
@@ -32,7 +34,7 @@ public final class WayfindingSign {
   /** Characters a line may hold. */
   public static final int MAX_LINE_LENGTH = 32;
   /** How far above a panel the renderer looks for something to hang it from, in blocks. */
-  public static final int MAX_ROD_DROP = 24;
+  public static final int MAX_ROD_DROP = CellPanel.MAX_ROD_DROP;
 
   private WayfindingSign() {
   }
@@ -285,14 +287,12 @@ public final class WayfindingSign {
 
   /** Whether the cell at {@code pos} is this block facing this way: part of the same panel. */
   static boolean joins(IBlockAccess world, BlockPos pos, Block block, EnumFacing facing) {
-    IBlockState state = world.getBlockState(pos);
-    return state.getBlock() == block
-        && state.getValue(BlockWayfindingPanel.FACING) == facing;
+    return CellPanel.joins(world, pos, block, facing);
   }
 
   /** The reader's left for a panel facing this way: they face the panel, so it is clockwise. */
   static EnumFacing leftOf(EnumFacing facing) {
-    return facing.rotateY();
+    return CellPanel.leftOf(facing);
   }
 
   /**
@@ -306,37 +306,46 @@ public final class WayfindingSign {
    * @return the controller's position
    */
   public static BlockPos controllerOf(IBlockAccess world, BlockPos pos, IBlockState state) {
-    Block block = state.getBlock();
-    EnumFacing facing = state.getValue(BlockWayfindingPanel.FACING);
-    EnumFacing left = leftOf(facing);
-    BlockPos at = pos;
-    for (int i = 0; i < MAX_HEIGHT * 4 && joins(world, at.down(), block, facing); i++) {
-      at = at.down();
-    }
-    for (int i = 0; i < MAX_WIDTH * 4 && joins(world, at.offset(left), block, facing); i++) {
-      at = at.offset(left);
-    }
-    return at;
+    return CellPanel.controllerOf(world, pos, state, MAX_WIDTH, MAX_HEIGHT);
   }
 
   /** How many cells the controller's row has, from the controller to the reader's right. */
   public static int widthFrom(IBlockAccess world, BlockPos controller, Block block,
       EnumFacing facing) {
-    EnumFacing right = leftOf(facing).getOpposite();
-    int width = 1;
-    while (width < MAX_WIDTH && joins(world, controller.offset(right, width), block, facing)) {
-      width++;
-    }
-    return width;
+    return CellPanel.widthFrom(world, controller, block, facing, MAX_WIDTH);
   }
 
   /** How many cells the controller's column has, from the controller up. */
   public static int heightFrom(IBlockAccess world, BlockPos controller, Block block,
       EnumFacing facing) {
-    int height = 1;
-    while (height < MAX_HEIGHT && joins(world, controller.up(height), block, facing)) {
-      height++;
-    }
-    return height;
+    return CellPanel.heightFrom(world, controller, block, facing, MAX_HEIGHT);
+  }
+
+  /**
+   * Writes a sign to every cell of the panel a cell is in, at most {@link #MAX_WIDTH} x
+   * {@link #MAX_HEIGHT}, each sent to the clients, so that whichever cell becomes the controller
+   * later already has it. Server side: the editor's packet and a {@code /blockdata} edit of any
+   * cell both come here. The lines are cleaned by {@link #clamp}.
+   *
+   * @param world       the world
+   * @param cell        any cell of the panel
+   * @param line1       the top line
+   * @param line2       the bottom line, may be empty
+   * @param pictogram   the pictogram
+   * @param arrow       the arrow
+   * @param scheme      the colours
+   * @param doubleSided whether the back carries the legend too
+   */
+  public static void applyToPanel(World world, BlockPos cell, String line1, String line2,
+      Pictogram pictogram, Arrow arrow, Scheme scheme, boolean doubleSided) {
+    String l1 = clamp(line1);
+    String l2 = clamp(line2);
+    CellPanel.forEachCell(world, cell, MAX_WIDTH, MAX_HEIGHT, (at, te) -> {
+      if (te instanceof TileEntityWayfindingPanel) {
+        TileEntityWayfindingPanel panel = (TileEntityWayfindingPanel) te;
+        panel.setSign(l1, l2, pictogram, arrow, scheme, doubleSided);
+        panel.markDirtySync(world, at, true);
+      }
+    });
   }
 }
