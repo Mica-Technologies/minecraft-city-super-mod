@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.transit.wayfinding;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
+import com.micatechnologies.minecraft.csm.transit.panel.PanelRods;
 import com.micatechnologies.minecraft.csm.transit.wayfinding.WayfindingSign.Arrow;
 import com.micatechnologies.minecraft.csm.transit.wayfinding.WayfindingSign.Pictogram;
 import net.minecraft.client.Minecraft;
@@ -64,8 +65,6 @@ public class TileEntityWayfindingPanelRenderer
   /** How far in front of the slab's face the background and the art are drawn, in blocks. */
   private static final float BACKGROUND_LIFT = 0.1f / 16f;
   private static final float ART_LIFT = 0.2f / 16f;
-  /** Half a hanger rod's width, in blocks. */
-  private static final float ROD = 0.55f / 16f;
 
   /**
    * The Highway Gothic capitals' height as a share of the font's line height, measured in game:
@@ -136,7 +135,7 @@ public class TileEntityWayfindingPanelRenderer
     GlStateManager.enableTexture2D();
     bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
-    rods(te, height);
+    PanelRods.draw(te.getWorld(), te.getPos(), te.getLayout(), 0f);
 
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
     GlStateManager.enableBlend();
@@ -163,54 +162,6 @@ public class TileEntityWayfindingPanelRenderer
     GlStateManager.enableLighting();
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
     GlStateManager.popMatrix();
-  }
-
-  /** The hanger rods, steel, lit by the world at the panel's top. */
-  private void rods(TileEntityWayfindingPanel te, int height) {
-    float[] rodX = te.getRodX();
-    int[] drop = te.getRodDrop();
-    boolean any = false;
-    for (int d : drop) {
-      any |= d > 0;
-    }
-    if (!any) {
-      return;
-    }
-    int light = te.getWorld().getCombinedLight(te.getPos().up(height), 0);
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light & 0xFFFF,
-        light >>> 16);
-    TextureAtlasSprite steel = Minecraft.getMinecraft().getTextureMapBlocks()
-        .getAtlasSprite("csm:blocks/transit/airport/steel");
-    float u0 = steel.getMinU();
-    float u1 = steel.getInterpolatedU(2);
-    float v0 = steel.getMinV();
-    float v1 = steel.getMaxV();
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-    for (int i = 0; i < rodX.length && i < drop.length; i++) {
-      if (drop[i] <= 0) {
-        continue;
-      }
-      float x0 = rodX[i] - ROD;
-      float x1 = rodX[i] + ROD;
-      float y0 = height;
-      float y1 = height + drop[i];
-      // four sides, shaded by hand as the world's directional light would
-      side(buf, x0, -ROD, x1, -ROD, y0, y1, u0, u1, v0, v1, 0.8f);
-      side(buf, x1, ROD, x0, ROD, y0, y1, u0, u1, v0, v1, 0.8f);
-      side(buf, x0, ROD, x0, -ROD, y0, y1, u0, u1, v0, v1, 0.6f);
-      side(buf, x1, -ROD, x1, ROD, y0, y1, u0, u1, v0, v1, 0.6f);
-    }
-    tess.draw();
-  }
-
-  private static void side(BufferBuilder buf, float xa, float za, float xb, float zb, float y0,
-      float y1, float u0, float u1, float v0, float v1, float shade) {
-    buf.pos(xa, y0, za).tex(u0, v1).color(shade, shade, shade, 1f).endVertex();
-    buf.pos(xb, y0, zb).tex(u1, v1).color(shade, shade, shade, 1f).endVertex();
-    buf.pos(xb, y1, zb).tex(u1, v0).color(shade, shade, shade, 1f).endVertex();
-    buf.pos(xa, y1, za).tex(u0, v0).color(shade, shade, shade, 1f).endVertex();
   }
 
   /** One face of the sign, in the reader's space with the slab's face at z = 0. */

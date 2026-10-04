@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.transit.wayfinding;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.transit.panel.CellPanel;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformFixture;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,7 +17,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -51,13 +51,6 @@ public class BlockWayfindingPanel extends BlockPlatformFixture implements ICsmTi
   public static final PropertyBool EDGE_BOTTOM = PropertyBool.create("edge_bottom");
 
   /**
-   * Bumped whenever a chunk section holding a cell is rebuilt on the client (which is how a
-   * neighbour change shows there: neighbour notifications are the server's). Each cell's tile
-   * entity looks at its layout again when this has moved.
-   */
-  private static volatile int layoutGeneration;
-
-  /**
    * Constructs the block.
    *
    * @param registryName its registry name
@@ -67,11 +60,6 @@ public class BlockWayfindingPanel extends BlockPlatformFixture implements ICsmTi
     setDefaultState(getDefaultState().withProperty(EDGE_LEFT, true)
         .withProperty(EDGE_RIGHT, true).withProperty(EDGE_TOP, true)
         .withProperty(EDGE_BOTTOM, true));
-  }
-
-  /** See {@link #layoutGeneration}. */
-  static int layoutGeneration() {
-    return layoutGeneration;
   }
 
   @Override
@@ -86,9 +74,7 @@ public class BlockWayfindingPanel extends BlockPlatformFixture implements ICsmTi
   @SuppressWarnings("deprecation")
   public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world,
       BlockPos pos) {
-    if (world instanceof ChunkCache) {
-      layoutGeneration++;
-    }
+    CellPanel.noteActualState(world);
     EnumFacing facing = state.getValue(FACING);
     EnumFacing left = WayfindingSign.leftOf(facing);
     return state
