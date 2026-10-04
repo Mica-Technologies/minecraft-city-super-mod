@@ -23,10 +23,10 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
- * A preemption detector: the small black head clamped on top of a mast arm that sees an
+ * A preemption detector: the small black head mounted on top of a mast arm that sees an
  * approaching emergency vehicle's emitter and calls the controller's emergency preempt, after the
- * optical detectors real intersections carry. Place it on top of the arm; its clamp reaches down
- * round a thin traffic pole in the cell below.
+ * optical detectors real intersections carry. Place it on top of the arm; its mount stub reaches
+ * down to a thin traffic pole in the cell below.
  * <p>
  * It looks the way it faces, towards the approach it serves: place it standing on that approach,
  * facing the junction. It is linked to a circuit with the Signal Link Tool, like a sensor, and a
@@ -45,13 +45,13 @@ public class BlockPreemptDetector extends AbstractBlockRotatableNSEW
     implements ICsmTileEntityProvider, ICsmNoSnowAccumulation, ICsmTrafficPoleIgnored {
 
   /**
-   * The detector's box: the head and its stem, standing on the floor of its cell (the clamp below
-   * it hugs the arm in the cell underneath).
+   * The detector's box: the head and its stub, standing on the floor of its cell (the stub
+   * reaches on down to the arm in the cell underneath).
    *
    * @since 1.0
    */
   private static final AxisAlignedBB BOUNDING_BOX =
-      new AxisAlignedBB(5 / 16.0, 0.0, 5 / 16.0, 11 / 16.0, 14.6 / 16.0, 11 / 16.0);
+      new AxisAlignedBB(6.4 / 16.0, 0.0, 6.4 / 16.0, 9.6 / 16.0, 6.3 / 16.0, 9.6 / 16.0);
 
   public BlockPreemptDetector() {
     super(Material.IRON, SoundType.METAL, "pickaxe", 1, 2F, 10F, 0F, 0);

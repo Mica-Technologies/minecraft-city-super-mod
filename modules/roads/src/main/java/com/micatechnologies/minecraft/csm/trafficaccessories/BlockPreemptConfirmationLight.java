@@ -10,20 +10,20 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
- * A preemption confirmation light that clamps on top of a mast arm, beside the preempt detector:
+ * A preemption confirmation light that mounts on top of a mast arm, beside the preempt detector:
  * a PAR lamp facing the approach, or a 360 degree dome. It is a preemption beacon in every way
  * that matters (linked to a circuit with the Signal Link Tool, lit while a preempt triggered from
  * that circuit runs, and by redstone; the glow is the traffic beacon renderer's), with its own
  * model, lens and flash.
  *
  * <p>Its models are {@code gen_preempt_detector.py}'s and stand in the cell above a thin traffic
- * pole, the clamp reaching down round it. The lens boxes here must match that script's.</p>
+ * pole, a mount stub reaching down to it. The lens boxes here must match that script's.</p>
  *
  * @since 2026.10
  */
 public abstract class BlockPreemptConfirmationLight extends BlockPreemptBeacon {
 
-  /** The PAR lamp's box facing north: the yoke and can on their clamp plate. */
+  /** The PAR lamp's box facing north: the yoke and can on their mount stub. */
   static final AxisAlignedBB PAR_BOX =
       new AxisAlignedBB(4.6 / 16, 0.0, 4.7 / 16, 11.4 / 16, 7.0 / 16, 11.0 / 16);
 
