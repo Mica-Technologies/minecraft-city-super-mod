@@ -549,6 +549,11 @@ the table above, the same tank and burn rate, the chainsaw's cord pull sound).
   `TreeFelling` (which a player break would), and the first 12 play their break effect. Where the
   stump stood at ground level, if that cell is air and the block under it has a solid top, a layer of the
   module's `ground_mulch` (a `BlockParkProp` COVER) is placed; otherwise nothing.
+- **Machines grind by the same rules.** The grind itself is `ParksStumpGrinder`, which Parks
+  also registers with Core's `CsmStumpGrinders` from its pre-initialization: CSM: Vehicles' stump
+  grinder grinds the log under its cutter through it, with no reference to this module. A machine
+  with no player at its controls grinds nothing; one with a player is held to that player's
+  build permissions, as the hand tool is.
 - **Ore names.** The tree kit's logs and leaves are registered as `logWood` and `treeLeaves`
   (`CsmParks.registerOres`, at initialisation), so anything that takes wood by ore name takes
   ours: CSM: Vehicles' chip bed chips them into Mulch. The chainsaw still tells its own logs

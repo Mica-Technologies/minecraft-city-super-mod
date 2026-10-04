@@ -1,8 +1,10 @@
 package com.micatechnologies.minecraft.csm.parks;
 
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.CsmStumpGrinders;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
+import com.micatechnologies.minecraft.csm.parks.tools.ParksStumpGrinder;
 import com.micatechnologies.minecraft.csm.parks.tools.TreeToolEvents;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
@@ -71,6 +73,8 @@ public class CsmParks {
 
     ParksSounds.registerSounds();
     MinecraftForge.EVENT_BUS.register(new TreeToolEvents());
+    // Machines that grind stumps (CSM: Vehicles' stump grinder) grind by the hand tool's rules
+    CsmStumpGrinders.register(new ParksStumpGrinder());
 
     proxy.preInit(event);
   }

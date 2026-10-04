@@ -1,19 +1,14 @@
 package com.micatechnologies.minecraft.csm.parks.tools;
 
-import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.parks.ParksSounds;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 import javax.annotation.Nonnull;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -30,21 +25,18 @@ import net.minecraft.world.World;
  * <p>The grind takes the stump and its roots ({@link StumpGrinding}): logs only, never one above
  * the stump, none that another log still stands on. Nothing drops; where the stump stood, if the
  * cell is clear and the ground under it solid, a layer of this module's ground mulch is left.
- * Fuel and wear are paid per log, as the chainsaw pays them.</p>
+ * Fuel and wear are paid per log, as the chainsaw pays them. The grind itself is
+ * {@link ParksStumpGrinder}'s, which machines that grind stumps share.</p>
  *
  * @since 2026.10
  */
 public class ItemStumpGrinder extends ItemFuelledTool {
 
-  /** The registry name of the mulch left where a stump stood. */
-  static final String MULCH = "ground_mulch";
   /**
    * How fast it grinds a stump while running: a log of hardness 2 takes 2 x 30 / 1.5 = 40 ticks,
    * two seconds, of holding.
    */
   private static final float GRIND_SPEED = 1.5F;
-  /** Of the logs ground at once, how many play their break effect. */
-  private static final int EFFECTS = 12;
   /** The shortest gap between two grinding sounds for one player, in ticks. */
   private static final int GRIND_SOUND_GAP = 30;
 
@@ -83,27 +75,6 @@ public class ItemStumpGrinder extends ItemFuelledTool {
   @Override
   protected float getIdleVolume() {
     return 0.7F;
-  }
-
-  /** How the world reads to {@link StumpGrinding}: logs of any mod, this module's included. */
-  static StumpGrinding.Cells cells(World world) {
-    return p -> world.isBlockLoaded(p) && AnyTrees.isLog(world, p, world.getBlockState(p));
-  }
-
-  /**
-   * How the world reads to {@link StumpGrinding} as ground: the natural soil a stump stands in.
-   * Dirt, grass, sand, gravel, clay and the like, by material; never stone, wood or anything
-   * built.
-   */
-  static StumpGrinding.Cells soil(World world) {
-    return p -> {
-      if (!world.isBlockLoaded(p)) {
-        return false;
-      }
-      Material m = world.getBlockState(p).getMaterial();
-      return m == Material.GROUND || m == Material.GRASS || m == Material.SAND
-          || m == Material.CLAY;
-    };
   }
 
   /** Tells the player the log is not a stump standing in the ground. */
@@ -157,8 +128,7 @@ public class ItemStumpGrinder extends ItemFuelledTool {
     if (!AnyTrees.isLog(world, pos, state)) {
       return false;
     }
-    StumpGrinding.Cells cells = cells(world);
-    if (StumpGrinding.isStanding(cells, pos)) {
+    if (StumpGrinding.isStanding(ParksStumpGrinder.cells(world), pos)) {
       return true;
     }
     if (world.isRemote) {
@@ -167,52 +137,14 @@ public class ItemStumpGrinder extends ItemFuelledTool {
       // a refused break is never sent back.
       return true;
     }
-    StumpGrinding.Cells soil = soil(world);
-    Set<BlockPos> logs = StumpGrinding.grind(cells, soil, pos);
-    if (logs.isEmpty()) {
+    int ground = ParksStumpGrinder.grindStump(world, pos, player);
+    if (ground == 0) {
       // A log standing on a floor or a foundation, or too tall to be a stump: not ground.
       notStump(player);
       return true;
     }
-    int groundLevel = StumpGrinding.groundLevel(cells, soil, pos);
-    int ground = 0;
-    for (BlockPos p : logs) {
-      if (!p.equals(pos) && !world.isBlockModifiable(player, p)) {
-        continue;
-      }
-      IBlockState s = world.getBlockState(p);
-      if (ground++ < EFFECTS) {
-        world.playEvent(2001, p, Block.getStateId(s));
-      }
-      world.setBlockState(p, Blocks.AIR.getDefaultState(), 3);
-    }
     grindSound(world, player);
-    // On the ground where the stump stood, or, when its root at ground level went too, in the
-    // hole that left.
-    BlockPos onGround = new BlockPos(pos.getX(), groundLevel + 1, pos.getZ());
-    if (!placeMulch(world, player, onGround)) {
-      placeMulch(world, player, onGround.down());
-    }
     payForLogs(stack, player, Math.max(1, ground));
-    return true;
-  }
-
-  /**
-   * Leaves ground mulch at {@code pos}, if the cell is clear and stands on solid ground.
-   *
-   * @return whether mulch was placed
-   */
-  private static boolean placeMulch(World world, EntityPlayer player, BlockPos pos) {
-    Block mulch = CsmRegistry.getBlock(MULCH);
-    if (mulch == null || !world.isAirBlock(pos) || !world.isBlockModifiable(player, pos)) {
-      return false;
-    }
-    BlockPos below = pos.down();
-    IBlockState ground = world.getBlockState(below);
-    if (!ground.isSideSolid(world, below, EnumFacing.UP) || !mulch.canPlaceBlockAt(world, pos)) {
-      return false;
-    }
-    world.setBlockState(pos, mulch.getDefaultState(), 3);
     return true;
   }
 }
