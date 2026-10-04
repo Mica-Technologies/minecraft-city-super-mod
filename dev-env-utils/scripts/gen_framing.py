@@ -462,9 +462,37 @@ def _span_faces(broad, ends):
 def _span(x0, y0, z0, x1, y1, z1, broad="#body", ends=None, rotation=None):
     box = {"from": [x0, y0, z0], "to": [x1, y1, z1],
            "faces": _span_faces(broad, ends or broad)}
+    if rotation is None and any(c < 0 or c > 16 for c in (x0, y0, z0, x1, y1, z1)):
+        _fit_outside_uvs(box)
     if rotation is not None:
         box["rotation"] = rotation
     return box
+
+
+def _fit_outside_uvs(box):
+    """Explicit UVs for an element reaching past its block (a column into the beam over it).
+
+    Left to the game, a face's UV is its position, and past 0..16 that samples the sprites next
+    to this one in the atlas: the column's top showed as a few specks of something else. Each
+    span is moved a whole block back inside, never clamped, so the texture runs on unbroken.
+    """
+    (x0, y0, z0), (x1, y1, z1) = box["from"], box["to"]
+
+    def inside(a, b):
+        shift = 16 * ((a // 16) if a < 16 else ((b - 1e-9) // 16))
+        return a - shift, b - shift
+
+    ux0, ux1 = inside(x0, x1)
+    uy0, uy1 = inside(y0, y1)
+    uz0, uz1 = inside(z0, z1)
+    uvs = {"east": [16 - uz1, 16 - uy1, 16 - uz0, 16 - uy0],
+           "west": [uz0, 16 - uy1, uz1, 16 - uy0],
+           "north": [16 - ux1, 16 - uy1, 16 - ux0, 16 - uy0],
+           "south": [ux0, 16 - uy1, ux1, 16 - uy0],
+           "up": [ux0, uz0, ux1, uz1],
+           "down": [ux0, 16 - uz1, ux1, 16 - uz0]}
+    for face, uv in uvs.items():
+        box["faces"][face]["uv"] = [round(v, 4) for v in uv]
 
 
 def _diagonals(y_mid, half, thickness=1.0):
@@ -626,6 +654,10 @@ def structural_models():
     models["struct_steel_beam_middle"] = _beam_section(BEAM_CUT, 16 - BEAM_CUT)
     models["struct_steel_beam_north"] = _beam_section(0, BEAM_CUT)
     models["struct_steel_beam_south"] = _beam_section(16 - BEAM_CUT, 16)
+    # A beam that ends against the side of a beam crossing it (`meet_north`, `meet_south`)
+    # reaches on into that beam's block to its flange, which is W_FLANGE_X0 in from the face.
+    models["struct_steel_beam_meet_north"] = _beam_section(-W_FLANGE_X0, 0)
+    models["struct_steel_beam_meet_south"] = _beam_section(16, 16 + W_FLANGE_X0)
     models["struct_steel_beam_plate_north"] = [
         _span(BEAM_PLATE_X0, BEAM_FLANGE_Y0 - 0.5, BEAM_CUT - BEAM_PLATE_T, BEAM_PLATE_X1,
               BEAM_FLANGE_Y1 + 0.5, BEAM_CUT)]
@@ -1149,9 +1181,12 @@ def write_all(tex_dir, shared_dir, model_dir, state_dir):
                     (name + "_north", {"cut_north": "false"}),
                     (name + "_south", {"cut_south": "false"}),
                     (name + "_plate_north", {"cut_north": "true"}),
-                    (name + "_plate_south", {"cut_south": "true"})])
+                    (name + "_plate_south", {"cut_south": "true"}),
+                    (name + "_meet_north", {"meet_north": "true"}),
+                    (name + "_meet_south", {"meet_south": "true"})])
                 extra = {"_" + part: "struct_steel_beam_" + part
-                         for part in ("middle", "north", "south", "plate_north", "plate_south")}
+                         for part in ("middle", "north", "south", "plate_north", "plate_south",
+                                      "meet_north", "meet_south")}
             else:
                 state, extra = span_blockstate(name), {}
             for suffix_part, part_model in sorted(extra.items()):

@@ -46,6 +46,12 @@ public abstract class AbstractBlockSteelBeam extends BlockFramingSpan {
   public static final PropertyBool CUT_NORTH = PropertyBool.create("cut_north");
   /** The same at the model's south end (west when it spans east-west). */
   public static final PropertyBool CUT_SOUTH = PropertyBool.create("cut_south");
+  /**
+   * The beam ends against the side of a beam crossing it, past its north (model) end: it reaches
+   * on into that beam's block to its flange, rather than stopping a flange's width short.
+   */
+  public static final PropertyBool MEET_NORTH = PropertyBool.create("meet_north");
+  public static final PropertyBool MEET_SOUTH = PropertyBool.create("meet_south");
 
   @Override
   protected AxisAlignedBB getSpanBoundingBox() {
@@ -55,7 +61,7 @@ public abstract class AbstractBlockSteelBeam extends BlockFramingSpan {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, AXIS, CUT_NORTH, CUT_SOUTH);
+    return new CsmBlockStateContainer(this, AXIS, CUT_NORTH, CUT_SOUTH, MEET_NORTH, MEET_SOUTH);
   }
 
   @Override
@@ -69,12 +75,19 @@ public abstract class AbstractBlockSteelBeam extends BlockFramingSpan {
     return state
         .withProperty(CUT_NORTH, column && !continues(world, pos.offset(north), axis))
         .withProperty(CUT_SOUTH, column && !continues(world, pos.offset(north.getOpposite()),
-            axis));
+            axis))
+        .withProperty(MEET_NORTH, crosses(world, pos.offset(north), axis))
+        .withProperty(MEET_SOUTH, crosses(world, pos.offset(north.getOpposite()), axis));
   }
 
   private static boolean isColumn(IBlockState state) {
     return state.getBlock() instanceof AbstractBlockSteelColumn
         || state.getBlock() instanceof AbstractBlockSteelConnection;
+  }
+
+  private static boolean crosses(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis) {
+    IBlockState next = world.getBlockState(pos);
+    return next.getBlock() instanceof AbstractBlockSteelBeam && next.getValue(AXIS) != axis;
   }
 
   private static boolean continues(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis) {
