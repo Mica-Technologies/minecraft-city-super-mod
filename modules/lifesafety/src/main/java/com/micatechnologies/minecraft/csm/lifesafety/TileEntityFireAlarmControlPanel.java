@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.api.firealarm.CsmFireAlarmQuery;
 import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmEvent;
 import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmPanelRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmChunks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1092,7 +1093,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       return missing;
     }
     for (BlockPos bp : connectedAppliances) {
-      if (world.isBlockLoaded(bp)
+      // really loaded: on the client a chunk it was never sent counts as loaded, and reads as air
+      if (CsmChunks.isReallyLoaded(world, bp)
           && !(world.getBlockState(bp).getBlock() instanceof AbstractBlockFireAlarmSounder)) {
         missing.add(bp);
       }
@@ -1114,7 +1116,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       return missing;
     }
     for (BlockPos bp : initiatingDevices) {
-      if (world.isBlockLoaded(bp) && !(world.getTileEntity(bp) instanceof TileEntityFireAlarmSensor)) {
+      if (CsmChunks.isReallyLoaded(world, bp)
+          && !(world.getTileEntity(bp) instanceof TileEntityFireAlarmSensor)) {
         missing.add(bp);
       }
     }

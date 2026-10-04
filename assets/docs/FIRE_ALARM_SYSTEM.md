@@ -100,7 +100,10 @@ two seconds: `MISSING 2/3 INITIATING 142,7,-2297`.
   - The appliance census (SPKR / HORN / STRB) is computed **client-side** once a second by
     classifying each linked position exactly as `rebuildApplianceCache` does. Positions in
     unloaded chunks are counted separately and never reported as trouble -- a client cannot
-    tell an unloaded appliance from a removed one.
+    tell an unloaded appliance from a removed one. "Unloaded" is `CsmChunks.isReallyLoaded`, not
+    `isBlockLoaded`: on the client a chunk it was never sent comes back as a blank chunk that
+    counts as loaded and reads as air, so every appliance past the render distance showed as
+    MISSING and lit TROUBLE on a healthy panel (#260). The panel's own missing lists use it too.
   - LAMP TEST is purely local: it lights the panel's own lamps for 60 ticks and sends nothing.
 - **`FireAlarmPanelConfigAction`** -- Actions the GUI and the config tool can request:
   `CYCLE_VOICE_EVAC_SOUND`, `AUDIBLE_SILENCE`, `RESET_PANEL`, `TOGGLE_GLITCHY`,
