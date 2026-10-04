@@ -1,0 +1,147 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/airside/airport_stand_sign_large"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "letter": {
+      "a": {
+        "textures": {
+          "letter": "csm:blocks/transit/airport/gate_letter_a"
+        }
+      },
+      "b": {
+        "textures": {
+          "letter": "csm:blocks/transit/airport/gate_letter_b"
+        }
+      },
+      "c": {
+        "textures": {
+          "letter": "csm:blocks/transit/airport/gate_letter_c"
+        }
+      },
+      "d": {
+        "textures": {
+          "letter": "csm:blocks/transit/airport/gate_letter_d"
+        }
+      }
+    },
+    "number": {
+      "1": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_1"
+        }
+      },
+      "2": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_2"
+        }
+      },
+      "3": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_3"
+        }
+      },
+      "4": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_4"
+        }
+      },
+      "5": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_5"
+        }
+      },
+      "6": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_6"
+        }
+      },
+      "7": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_7"
+        }
+      },
+      "8": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_8"
+        }
+      },
+      "9": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_9"
+        }
+      },
+      "10": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_10"
+        }
+      },
+      "11": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_11"
+        }
+      },
+      "12": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_12"
+        }
+      },
+      "13": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_13"
+        }
+      },
+      "14": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_14"
+        }
+      },
+      "15": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_15"
+        }
+      },
+      "16": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_16"
+        }
+      },
+      "17": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_17"
+        }
+      },
+      "18": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_18"
+        }
+      },
+      "19": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_19"
+        }
+      },
+      "20": {
+        "textures": {
+          "number": "csm:blocks/transit/airport/gate_number_20"
+        }
+      }
+    }
+  }
+}

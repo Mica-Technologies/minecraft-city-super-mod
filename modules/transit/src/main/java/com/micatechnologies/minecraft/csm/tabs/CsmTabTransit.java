@@ -271,6 +271,7 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockAirfieldSign("airport_taxiway_direction_sign", new double[]{1, 0, 6.8, 15, 13, 9.2}, new String[]{"A", "B", "C", "D", "E", "F", "G", "H"}, true));
     initTabBlock(new BlockPlatformColumn("airport_airfield_mast", new double[]{6.5, 0, 6.5, 9.5, 16, 9.5}));
     initTabBlock(new BlockStandSign("airport_stand_sign", new double[]{-4, 0, 7, 20, 15, 9}));
+    initTabBlock(new BlockStandSign("airport_stand_sign_large", new double[]{-16, 0, 7, 32, 32, 9}));
     initTabBlock(new BlockUtilityBox("airport_wheel_chocks", new UtilityBoxSpec(1, 1, 1, new AxisAlignedBB(0.125, 0, 0.28, 0.875, 0.25, 0.72), null)));
     initTabBlock(new BlockUtilityBox("airport_ground_power_unit", new UtilityBoxSpec(1, 2, 2, new AxisAlignedBB(0, 0, 0, 1, 1.4, 2), null)));
     initTabBlock(new BlockUtilityBox("airport_baggage_tug", new UtilityBoxSpec(1, 2, 2, new AxisAlignedBB(0, 0, 0, 1, 1.9, 2), null)));
