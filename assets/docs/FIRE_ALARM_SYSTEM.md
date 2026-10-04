@@ -379,6 +379,26 @@ since the face depends on alarm and trouble together. Right-click reads out the 
 the first alarm's device and position, from the panel's own fields (`getAlarmOriginPos` /
 `getAlarmOriginName`).
 
+### Weatherproof ceiling appliances
+
+An open parking deck or a loading dock canopy is open to the weather, so its appliances are
+weatherproof models, and over the stall rows they hang from the ceiling (#257). Six blocks: the
+System Sensor L-Series ceiling horn strobe and L-Series LED ceiling speaker strobe, red and white,
+on their round SBBCRL / SBBCWL surface boxes, and the Wheelock ASWP ceiling horn strobe, red and
+white, on its square WPBB box. Each behaves exactly as its indoor sibling (the same factory class
+and sound; the ASWP subclasses the AS, sound toggle included); only the model differs.
+
+The face of a weatherproof unit is the same moulding as the indoor one, so each wears its
+sibling's photograph: an outdoor L-Series device's face is the indoor face with a moulded WP mark
+added by `gen_firealarm_obj.py`, which also writes the L-Series models (the device stood off the
+ceiling on its box, the box on a `#box` material of its own) and the back box textures in each
+housing's colour with the black gasket band. The box is drawn 2.5 in deep where the data sheet's
+whole unit is 4.66 in, so it does not read as a can at this scale. The ASWP model
+(`wheelock_aswp_ceiling_hornstrobe_*.json`) is the AS model's two elements moved forward and
+centred, with the box and gasket added as two elements on the same back box texture. Seen from
+below, a ceiling unit's WP reads upright from one side and turned from the other, as the real one
+does.
+
 ### New detectors
 
 `BlockFireAlarmDetectorFactory` builds detectors that differ only in name and box: the

@@ -16,6 +16,12 @@ Emits (into assets/csm/models/block/lifesafety/shared_models/):
   * systemsensor_lseries_led_speakerstrobe_ceiling.obj -- ceiling speaker strobe, a real dome
   * systemsensor_lseries_led_hornstrobe_outdoor.obj  -- weatherproof unit, faceplate on a backbox
   * firealarm_beacon.obj                             -- round Fresnel barrel on a mount plate
+  * systemsensor_lseries_ceiling_hornstrobe_wp.obj, systemsensor_lseries_led_speakerstrobe_
+    ceiling_wp.obj -- the weatherproof ceiling units: the ceiling device on a round gasketed
+    weatherproof back box, the box on a material of its own (#box)
+
+and the weatherproof units' textures: each face is its indoor sibling's with a moulded WP mark,
+and the back box texture is drawn in the housing's own colour with the gasket band.
 
 plus one shared MTL per model. Each model uses a single material so the blockstate can retexture it
 per colour variant with `"textures": {"#body": "csm:blocks/lifesafety/..."}` -- Forge's OBJ loader
@@ -697,7 +703,7 @@ def build_dome(mesh, centre, radius, z_base, z_tip, uv_centre, uv_radius,
 
 
 def build_barrel(mesh, centre, radius_base, radius_tip, z_base, z_tip, side_uv,
-                 cap_uv_centre=None, cap_uv_radius=0.0, segments=RING_SEGMENTS):
+                 cap_uv_centre=None, cap_uv_radius=0.0, segments=RING_SEGMENTS, material=None):
     """A round fluted barrel, optionally capped with a lens disc -- the beacon's Fresnel lens.
 
     `side_uv` is (u0, v0, u1, v1) and wraps once around: its u axis runs around the circumference
@@ -724,7 +730,7 @@ def build_barrel(mesh, centre, radius_base, radius_tip, z_base, z_tip, side_uv,
                  centre[1] + radius_tip * math.sin(angle_i), z_tip)
         outward = (outward_radial * math.cos(mid), outward_radial * math.sin(mid), outward_z)
         mesh.quad(base_i, base_j, tip_j, tip_i,
-                  (ui, v1), (uj, v1), (uj, v0), (ui, v0), outward=outward)
+                  (ui, v1), (uj, v1), (uj, v0), (ui, v0), outward=outward, material=material)
 
     if cap_uv_centre is None:
         return
@@ -740,7 +746,8 @@ def build_barrel(mesh, centre, radius_base, radius_tip, z_base, z_tip, side_uv,
               cap_uv_centre[1] - cap_uv_radius * math.sin(angle_i))
         ub = (cap_uv_centre[0] - cap_uv_radius * math.cos(angle_j),
               cap_uv_centre[1] - cap_uv_radius * math.sin(angle_j))
-        mesh.triangle(tip_centre, pa, pb, cap_uv_centre, ua, ub, outward=(0.0, 0.0, -1.0))
+        mesh.triangle(tip_centre, pa, pb, cap_uv_centre, ua, ub, outward=(0.0, 0.0, -1.0),
+                      material=material)
 
 
 def build_box(mesh, lo, hi, face_uv, material=None):
@@ -1089,6 +1096,143 @@ def ceiling_strobe_unit(texture, variants, model_rect=(1.0, 1.0, 15.0, 15.0),
     centre, radius, uv_centre, uv_radius = lens_from_uv(front_map, measure_chrome_lens(texture))
     build_dome(mesh, centre, radius, z_front, z_front - lens_depth, uv_centre, uv_radius)
     return mesh, centre, radius
+
+
+# --------------------------------------------------------------------------- weatherproof ceiling
+#: The weatherproof back box's material. Retextured per colour separately from the device's face.
+BOX_MATERIAL = "box"
+#: How deep the round weatherproof back box is, in model units. The device's disc is 14 units
+#: across for its real 6.98 in, so 2 units an inch: the data sheet gives the device on its SBBCRL /
+#: SBBCWL surface box as 4.66 in deep, of which the device is about 0.8 in, leaving a box near
+#: 3.8 in. Drawn a little shallower (2.5 in) so the unit does not read as a can hung off the
+#: ceiling at this scale. The device stands this much further off the ceiling than its indoor
+#: sibling, which sits flush on a recessed box.
+WP_BOX_DEPTH = 5.0
+#: The box's radius as a fraction of the device's: a hair inside it, so the device's rim overhangs
+#: the box all the way round, as the real one does.
+WP_BOX_RADIUS = 0.93
+#: The back box texture: the side band (u around the box, v from the device down to the ceiling)
+#: in the top half, the back cap in the bottom half.
+WP_BOX_SIDE_UV = (0.0, 0.0, 16.0, 8.0)
+WP_BOX_CAP_UV = (8.0, 12.0)
+
+
+def wp_backbox(mesh, centre, radius, z_back):
+    """The round gasketed back box behind a weatherproof ceiling unit, from the device's back face
+    (`z_back - WP_BOX_DEPTH`) to the ceiling (`z_back`), on BOX_MATERIAL. Its face toward the device
+    is hidden by the device's own back cap and is left out; the back cap is kept, for a unit hung
+    off something narrower than itself."""
+    r = radius * WP_BOX_RADIUS
+    build_barrel(mesh, centre, r, r, z_back, z_back - WP_BOX_DEPTH, WP_BOX_SIDE_UV,
+                 material=BOX_MATERIAL)
+    cap = (centre[0], centre[1], z_back)
+    for i in range(RING_SEGMENTS):
+        a0 = 2.0 * math.pi * i / RING_SEGMENTS
+        a1 = 2.0 * math.pi * (i + 1) / RING_SEGMENTS
+        mesh.triangle(cap,
+                      (centre[0] + r * math.cos(a0), centre[1] + r * math.sin(a0), z_back),
+                      (centre[0] + r * math.cos(a1), centre[1] + r * math.sin(a1), z_back),
+                      WP_BOX_CAP_UV,
+                      (WP_BOX_CAP_UV[0] + 3.5 * math.cos(a0), WP_BOX_CAP_UV[1] + 3.5 * math.sin(a0)),
+                      (WP_BOX_CAP_UV[0] + 3.5 * math.cos(a1), WP_BOX_CAP_UV[1] + 3.5 * math.sin(a1)),
+                      outward=(0.0, 0.0, 1.0), material=BOX_MATERIAL)
+
+
+def device_radius(front_map, texture):
+    """The radius of a ceiling unit's disc in model units, off its opaque bounds."""
+    u0, v0, u1, v1 = opaque_bounds(texture)
+    return min((u1 - u0) * front_map.scale_x, (v1 - v0) * front_map.scale_y) / 2.0
+
+
+def housing_colour(textures):
+    """The mean colour of a device's plain housing: what its matching back box is moulded in."""
+    u0, v0, u1, v1 = find_flat_patch(textures, 0.8)
+    img = Image.open(tex_path(textures[0])).convert("RGB")
+    scale = img.width / 16.0
+    patch = np.asarray(img.crop((int(u0 * scale), int(v0 * scale),
+                                 max(int(u0 * scale) + 1, int(u1 * scale)),
+                                 max(int(v0 * scale) + 1, int(v1 * scale)))), dtype=float)
+    return tuple(int(round(c)) for c in patch.reshape(-1, 3).mean(0))
+
+
+#: Where the WP mark is moulded on each weatherproof face, as the mark's left and top edge in UV
+#: units: on plain housing below the strobe, clear of the indicator LED and the speaker grille.
+WP_MARK_AT = {
+    "system_sensor_l_series_red_ceiling_horn_strobe": (9.6, 11.6),
+    "system_sensor_l_series_white_ceiling_horn_strobe": (9.6, 11.6),
+    "system_sensor_l_series_led_red_ceiling_speaker_strobe": (3.6, 10.9),
+    "system_sensor_l_series_led_white_ceiling_speaker_strobe": (3.6, 10.9),
+}
+
+#: W and P on a 5 x 5 grid, wider than the shared 3 x 5 font so the W reads as a W this small.
+WP_GLYPHS = {
+    "W": ["X...X", "X...X", "X.X.X", "X.X.X", ".X.X."],
+    "P": ["XXXX.", "X...X", "XXXX.", "X....", "X...."],
+}
+
+
+def write_wp_textures(dry_run=False):
+    """The weatherproof units' textures: each face is its indoor sibling's with WP moulded into the
+    housing (a shade darker, lit along its lower edge, as a raised legend in the plastic catches
+    the light), and a back box in the housing's own colour with a dark gasket band where it meets
+    the device. Returns the written paths."""
+    out_dir = os.path.dirname(tex_path("system_sensor_l_series_red_ceiling_horn_strobe"))
+    written = []
+    for texture, (mu, mv) in WP_MARK_AT.items():
+        img = Image.open(tex_path(texture)).convert("RGBA")
+        scale = img.width / 16.0
+        px = img.load()
+        cell = max(1, int(round(scale / 4.0)))   # 2 px a glyph cell at 128 px
+        x0, y0 = int(round(mu * scale)), int(round(mv * scale))
+        for k, letter in enumerate("WP"):
+            for row, line in enumerate(WP_GLYPHS[letter]):
+                for col, on in enumerate(line):
+                    if on != "X":
+                        continue
+                    for dy in range(cell):
+                        for dx in range(cell):
+                            x = x0 + (k * 6 + col) * cell + dx
+                            y = y0 + row * cell + dy
+                            r, g, b, a = px[x, y]
+                            px[x, y] = (int(r * 0.72), int(g * 0.72), int(b * 0.72), a)
+                            r, g, b, a = px[x, y + cell]
+                            if (row + 1 >= 5 or WP_GLYPHS[letter][row + 1][col] != "X"):
+                                px[x, y + cell] = (min(255, int(r * 1.12 + 8)),
+                                                   min(255, int(g * 1.12 + 8)),
+                                                   min(255, int(b * 1.12 + 8)), a)
+        path = os.path.join(out_dir, texture + "_wp.png")
+        written.append(path)
+        if not dry_run:
+            img.save(path)
+
+    for colour_name, source in (("red", "system_sensor_l_series_red_ceiling_horn_strobe"),
+                                ("white", "system_sensor_l_series_white_ceiling_horn_strobe")):
+        base = housing_colour([source])
+        size = 64
+        img = Image.new("RGBA", (size, size), base + (255,))
+        px = img.load()
+        side_rows = size // 2
+        for y in range(side_rows):
+            # Moulded box: a little lighter at the device end, darker toward the ceiling, and the
+            # black EPDM gasket for the first eighth of its depth.
+            t = y / float(side_rows - 1)
+            if t < 0.125:
+                c = (34, 34, 36)
+            else:
+                k = 1.04 - 0.16 * t
+                c = tuple(min(255, int(v * k)) for v in base)
+            for x in range(size):
+                # faint vertical moulding ribs, every 8 px round the box
+                rib = 0.94 if x % 8 == 0 and t >= 0.125 else 1.0
+                px[x, y] = tuple(int(v * rib) for v in c) + (255,)
+        for y in range(side_rows, size):
+            for x in range(size):
+                px[x, y] = tuple(int(v * 0.9) for v in base) + (255,)
+        path = os.path.join(out_dir, "system_sensor_l_series_%s_ceiling_wp_backbox.png" % colour_name)
+        written.append(path)
+        if not dry_run:
+            img.save(path)
+    return written
 
 
 def lseries_xenon_unit(texture, variants, model_rect=(3.0, 3.0, 13.0, 16.0),
@@ -1906,6 +2050,41 @@ def main():
     emit(mesh, "systemsensor_spectralert_classic_hornstrobe.obj", "spectralert_classic_hornstrobe",
          "system_sensor_spectralert_classic_red_horn_strobe",
          "System Sensor SpectrAlert Classic horn strobe")
+
+    # The weatherproof ceiling units: the indoor device stood off the ceiling on its back box. The
+    # face is traced from the indoor texture (the WP mark is inside the outline and changes nothing
+    # the trace reads) and worn as the _wp texture, so the two cannot drift apart.
+    write_wp_textures()
+    z_front, z_back = 14.4 - WP_BOX_DEPTH, 16.0 - WP_BOX_DEPTH
+    for stem, colours in (("ceiling_hornstrobe_wp",
+                           ("system_sensor_l_series_red_ceiling_horn_strobe",
+                            "system_sensor_l_series_white_ceiling_horn_strobe")),):
+        mesh, centre, radius = ceiling_strobe_unit(colours[0], list(colours),
+                                                   z_front=z_front, z_back=z_back)
+        front_map = FrontMap(opaque_bounds(colours[0]), (1.0, 1.0, 15.0, 15.0))
+        wp_backbox(mesh, centre, device_radius(front_map, colours[0]), 16.0)
+        reports.append(("systemsensor_lseries_%s.obj" % stem,
+                        mesh.write(os.path.join(OUT_DIR, "systemsensor_lseries_%s.obj" % stem),
+                                   "lseries_%s" % stem,
+                                   "csm:blocks/lifesafety/" + colours[0] + "_wp",
+                                   "System Sensor L-Series weatherproof ceiling horn strobe",
+                                   extra_materials={BOX_MATERIAL: "csm:blocks/lifesafety/"
+                                                    "system_sensor_l_series_red_ceiling_wp_backbox"}),
+                        (centre, radius, z_front, z_front - 0.9)))
+
+    led = "system_sensor_l_series_led_red_ceiling_speaker_strobe"
+    mesh, centre, radius, front_map = ceiling_unit(
+        led, model_rect=(1.0, 1.0, 15.0, 15.0), z_front=z_front, z_back=z_back, lens_depth=0.9)
+    wp_backbox(mesh, centre, device_radius(front_map, led), 16.0)
+    reports.append(("systemsensor_lseries_led_speakerstrobe_ceiling_wp.obj",
+                    mesh.write(os.path.join(OUT_DIR,
+                                            "systemsensor_lseries_led_speakerstrobe_ceiling_wp.obj"),
+                               "lseries_led_speakerstrobe_ceiling_wp",
+                               "csm:blocks/lifesafety/" + led + "_wp",
+                               "System Sensor L-Series LED weatherproof ceiling speaker strobe",
+                               extra_materials={BOX_MATERIAL: "csm:blocks/lifesafety/"
+                                                "system_sensor_l_series_red_ceiling_wp_backbox"}),
+                    (centre, radius, z_front, z_front - 0.9)))
 
     mesh, centre, radius, z_nose = beacon()
     emit(mesh, "firealarm_beacon.obj", "firealarm_beacon", "fire_alarm_beacon_red",

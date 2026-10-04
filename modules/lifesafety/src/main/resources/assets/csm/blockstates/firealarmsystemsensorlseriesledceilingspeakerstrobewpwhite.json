@@ -1,0 +1,41 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lifesafety/shared_models/systemsensor_lseries_led_speakerstrobe_ceiling_wp.obj",
+    "textures": {
+      "#body": "csm:blocks/lifesafety/system_sensor_l_series_led_white_ceiling_speaker_strobe_wp",
+      "#box": "csm:blocks/lifesafety/system_sensor_l_series_white_ceiling_wp_backbox"
+    },
+    "custom": {
+      "flip-v": true
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

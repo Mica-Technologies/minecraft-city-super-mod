@@ -2,7 +2,7 @@
 
 Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
-!!! info "146 blocks in this tab"
+!!! info "152 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -96,10 +96,12 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | System Sensor L Series LED Red (Horn Strobe) | `csm:firealarmsystemsensorlseriesledhornstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED Red (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledspeakerstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED Red/Ceiling (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledceilingspeakerstrobered` | 2 | 10 | pickaxe | 1 |
+| System Sensor L Series LED Red/Ceiling Weatherproof (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledceilingspeakerstrobewpred` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED Red/Outdoor (Horn Strobe) | `csm:firealarmsystemsensorlseriesledhornstrobeoutdoorred` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED White (Horn Strobe) | `csm:firealarmsystemsensorlseriesledhornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED White (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledspeakerstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series LED White/Ceiling (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledceilingspeakerstrobewhite` | 2 | 10 | pickaxe | 1 |
+| System Sensor L Series LED White/Ceiling Weatherproof (Speaker Strobe) | `csm:firealarmsystemsensorlseriesledceilingspeakerstrobewpwhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series Red (Horn Strobe) | `csm:firealarmsystemsensorlserieshornstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series Red (Horn) | `csm:firealarmsystemsensorlserieshornred` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series Red (Speaker Strobe) | `csm:firealarmsystemsensorlseriesspeakerstrobered` | 2 | 10 | pickaxe | 1 |
@@ -107,6 +109,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | System Sensor L Series Red/Ceiling (Horn Strobe) | `csm:firealarmsystemsensorlseriesceilinghornstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series Red/Ceiling (Speaker Strobe) | `csm:firealarmsystemsensorlseriesceilingspeakerstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series Red/Ceiling (Speaker) | `csm:firealarmsystemsensorlseriesceilingspeakerred` | 2 | 10 | pickaxe | 1 |
+| System Sensor L Series Red/Ceiling Weatherproof (Horn Strobe) | `csm:firealarmsystemsensorlseriesceilinghornstrobewpred` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series Strobe Red | `csm:sslstrobe` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series White (Horn Strobe) | `csm:firealarmsystemsensorlserieshornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series White (Horn) | `csm:firealarmsystemsensorlserieshornwhite` | 2 | 10 | pickaxe | 1 |
@@ -115,6 +118,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | System Sensor L Series White/Ceiling (Horn Strobe) | `csm:firealarmsystemsensorlseriesceilinghornstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series White/Ceiling (Speaker Strobe) | `csm:firealarmsystemsensorlseriesceilingspeakerstrobewhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor L Series White/Ceiling (Speaker) | `csm:firealarmsystemsensorlseriesceilingspeakerwhite` | 2 | 10 | pickaxe | 1 |
+| System Sensor L Series White/Ceiling Weatherproof (Horn Strobe) | `csm:firealarmsystemsensorlseriesceilinghornstrobewpwhite` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Advance Horn Strobe (Amber, ALERT) | `csm:firealarmsystemsensoradvancehornstrobeamber` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Advance LF Red (Horn Strobe) | `csm:firealarmsystemsensoradvancelfhornstrobered` | 2 | 10 | pickaxe | 1 |
 | System Sensor SpectrAlert Advance LF White (Horn Strobe) | `csm:firealarmsystemsensoradvancelfhornstrobewhite` | 2 | 10 | pickaxe | 1 |
@@ -132,6 +136,8 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Wheelock 7002T Red (Horn Strobe) | `csm:firealarmwheelock7002tred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS Red (Horn Strobe) | `csm:firealarmwheelockasred` | 2 | 10 | pickaxe | 1 |
 | Wheelock AS White (Horn Strobe) | `csm:firealarmwheelockaswhite` | 2 | 10 | pickaxe | 1 |
+| Wheelock ASWP Red/Ceiling Weatherproof (Horn Strobe) | `csm:firealarmwheelockaswpceilingred` | 2 | 10 | pickaxe | 1 |
+| Wheelock ASWP White/Ceiling Weatherproof (Horn Strobe) | `csm:firealarmwheelockaswpceilingwhite` | 2 | 10 | pickaxe | 1 |
 | Wheelock E50 Red (Speaker Strobe) | `csm:firealarmwheelocke50red` | 2 | 10 | pickaxe | 1 |
 | Wheelock E50 White (Speaker Strobe) | `csm:firealarmwheelocke50white` | 2 | 10 | pickaxe | 1 |
 | Wheelock E60 White/Ceiling (Speaker Strobe) | `csm:firealarmwheelocke60white` | 2 | 10 | pickaxe | 1 |
