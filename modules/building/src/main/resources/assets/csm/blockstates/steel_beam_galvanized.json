@@ -97,6 +97,44 @@
         "model": "csm:buildingmaterials/steel_beam_galvanized_plate_south",
         "y": 90
       }
+    },
+    {
+      "when": {
+        "meet_north": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_meet_north"
+      }
+    },
+    {
+      "when": {
+        "meet_north": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_meet_north",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "meet_south": "true",
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_meet_south"
+      }
+    },
+    {
+      "when": {
+        "meet_south": "true",
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/steel_beam_galvanized_meet_south",
+        "y": 90
+      }
     }
   ]
 }
