@@ -54,6 +54,7 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockTrafficSign;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusArrivalDisplay;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopFlag;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopPlaque;
+import com.micatechnologies.minecraft.csm.transit.wayfinding.BlockWayfindingPanel;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -243,6 +244,7 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockPlatformFixture("airport_sign_check_in", new double[]{0, 5, 7, 16, 16, 9}));
     initTabBlock(new BlockPlatformFixture("airport_sign_baggage_claim", new double[]{0, 5, 7, 16, 16, 9}));
     initTabBlock(new BlockPlatformFixture("airport_sign_ground_transport", new double[]{0, 5, 7, 16, 16, 9}));
+    initTabBlock(new BlockWayfindingPanel("airport_wayfinding_panel"));
     initTabBlock(new BlockPlatformFixture("airport_luggage_cart", new double[]{3, 0, 1, 13, 15.4, 14.8}));
     initTabBlock(new BlockPlatformRun("airport_cart_rack", new double[]{0, 0, 2.4, 16, 15.4, 13.6}));
     initTabItem(new ItemBoardingPass());

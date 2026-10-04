@@ -32,7 +32,9 @@ transit.airport unless another is named):
 - **Luggage carts**: a cart, and a rack of nested carts that joins into a row (BlockPlatformRun).
 - **Wayfinding**: hanging signs for gates, arrivals, check-in, baggage claim and ground transport,
   with generic pictograms, their arrows reversed on the back so they point the same way from
-  either side.
+  either side; and the large hanging sign (transit.wayfinding.BlockWayfindingPanel), cells that
+  join into one panel up to 16 x 6 whose legend, pictogram and arrow are set in a GUI and drawn
+  by its renderer from the sprites written here.
 
 Every model faces north, as the platform fit-out's do (gen_transit_platforms.py, whose element
 helpers this borrows): a counter's customer side, a sign's front and a monitor's screen look north,
@@ -549,9 +551,9 @@ WAYFINDING = [
 ]
 
 
-def pictogram(img, kind, x, y, s):
-    """A black pictogram on a yellow square s texels a side."""
-    rect(img, x, y, x + s, y + s, YELLOW)
+def pictogram(img, kind, x, y, s, bg=YELLOW):
+    """A black pictogram on a square s texels a side, yellow unless `bg` says otherwise."""
+    rect(img, x, y, x + s, y + s, bg)
     if kind == "depart":
         plane(img, x + s / 2.0, y + s / 2.0, s * 0.42, -30, BLACK)
     elif kind == "arrive":
@@ -568,8 +570,8 @@ def pictogram(img, kind, x, y, s):
             lc.disc(img, x + 6 + i * (s - 12) / 3.0, y + s * 0.86, 1.8, BLACK)
     elif kind == "ground":
         half = s // 2
-        bus(img, x + 3, y + 3, s - 6, half - 3, BLACK, YELLOW)
-        taxi(img, x + 5, y + half + 1, s - 10, half - 4, BLACK, YELLOW)
+        bus(img, x + 3, y + 3, s - 6, half - 3, BLACK, bg)
+        taxi(img, x + 5, y + half + 1, s - 10, half - 4, BLACK, bg)
 
 
 def wayfinding(entry, right):
@@ -1268,6 +1270,182 @@ def wayfinding_signs():
                 els, tex, display=gui_display(0.45, 0.0))
 
 
+# ------------------------------------------------------------------------------------------
+# The large hanging sign (transit.wayfinding.BlockWayfindingPanel)
+# ------------------------------------------------------------------------------------------
+# Cells of it side by side and stacked join into one panel up to 16 x 6 blocks. Each cell's baked
+# model is only the graphite slab and, on the panel's outer edges, its frame; the legend, the
+# pictogram, the arrow and the hanger rods are TileEntityWayfindingPanelRenderer's, drawn once
+# across the whole panel by its bottom-left cell. The renderer draws its sprites over the
+# slab's face, so the face must stay where it is: z 6 (front) and 10 (back), the frame's inner
+# edge 0.8 in from an outer edge (WayfindingPanelLayout.FRAME).
+PANEL_Z0, PANEL_Z1 = 6.0, 10.0
+PANEL_FRAME = 0.8          # the frame's width, in sixteenths
+PANEL_LIP = 0.6            # how far the frame stands proud of each face
+
+# The pictograms the renderer can draw, in WayfindingPictogram's order (the Java stores them by
+# this id, never by ordinal). Each is a white square with the art in black, which the renderer
+# tints: yellow for the airport scheme, white for the others.
+PANEL_PICTOGRAMS = ("depart", "arrive", "checkin", "baggage", "ground", "train", "bus", "taxi",
+                    "restroom", "exit")
+PANEL_SPRITE = 64
+
+
+def train_front(img, x, y, s, colour, bg):
+    """A train seen from the front: body, windscreen, two lamps, on rails."""
+    rect(img, x + s * 0.24, y + s * 0.1, x + s * 0.76, y + s * 0.72, colour)
+    rect(img, x + s * 0.3, y + s * 0.18, x + s * 0.7, y + s * 0.42, bg)
+    lc.disc(img, x + s * 0.35, y + s * 0.58, s * 0.05, bg)
+    lc.disc(img, x + s * 0.65, y + s * 0.58, s * 0.05, bg)
+    gp.line(img, x + s * 0.32, y + s * 0.72, x + s * 0.2, y + s * 0.88, colour, s * 0.06)
+    gp.line(img, x + s * 0.68, y + s * 0.72, x + s * 0.8, y + s * 0.88, colour, s * 0.06)
+    rect(img, x + s * 0.12, y + s * 0.86, x + s * 0.88, y + s * 0.91, colour)
+
+
+def restroom(img, x, y, s, colour):
+    """A man and a woman either side of a divider: the generic restroom sign."""
+    person(img, x + s * 0.27, y + s * 0.12, s * 0.76, colour)
+    cx, h, top = x + s * 0.73, s * 0.76, y + s * 0.12
+    r = h * 0.13
+    lc.disc(img, cx, top + r, r, colour)
+    ImageDraw.Draw(img).polygon(
+        [(cx, top + h * 0.28), (cx - h * 0.2, top + h * 0.68), (cx + h * 0.2, top + h * 0.68)],
+        fill=lc.clamp(colour) + (255,))
+    rect(img, cx - h * 0.12, top + h * 0.66, cx - h * 0.03, top + h, colour)
+    rect(img, cx + h * 0.03, top + h * 0.66, cx + h * 0.12, top + h, colour)
+    rect(img, x + s * 0.48, y + s * 0.08, x + s * 0.52, y + s * 0.92, colour)
+
+
+def running_exit(img, x, y, s, colour, bg):
+    """A figure running out through a doorway: the generic emergency exit sign."""
+    rect(img, x + s * 0.6, y + s * 0.1, x + s * 0.9, y + s * 0.9, colour)
+    rect(img, x + s * 0.66, y + s * 0.16, x + s * 0.84, y + s * 0.9, bg)
+    w = s * 0.085
+
+    def at(u, v):
+        return x + s * u, y + s * v
+    lc.disc(img, *at(0.43, 0.2), r=s * 0.075, colour=colour)
+    gp.line(img, *at(0.39, 0.33), *at(0.31, 0.58), colour=colour, width=w)       # torso
+    gp.line(img, *at(0.38, 0.36), *at(0.52, 0.46), colour=colour, width=w)       # front arm
+    gp.line(img, *at(0.52, 0.46), *at(0.6, 0.38), colour=colour, width=w)
+    gp.line(img, *at(0.38, 0.36), *at(0.24, 0.4), colour=colour, width=w)        # back arm
+    gp.line(img, *at(0.24, 0.4), *at(0.17, 0.5), colour=colour, width=w)
+    gp.line(img, *at(0.31, 0.58), *at(0.46, 0.7), colour=colour, width=w)        # front leg
+    gp.line(img, *at(0.46, 0.7), *at(0.44, 0.88), colour=colour, width=w)
+    gp.line(img, *at(0.31, 0.58), *at(0.2, 0.74), colour=colour, width=w)        # back leg
+    gp.line(img, *at(0.2, 0.74), *at(0.08, 0.74), colour=colour, width=w)
+
+
+def panel_pictogram(kind):
+    """One of the large sign's pictograms: black art on a white square, PANEL_SPRITE a side."""
+    s = PANEL_SPRITE
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    if kind in ("depart", "arrive", "checkin", "baggage", "ground"):
+        pictogram(img, kind, 0, 0, s, bg=WHITE)
+        return img
+    rect(img, 0, 0, s, s, WHITE)
+    if kind == "train":
+        train_front(img, 0, 0, s, BLACK, WHITE)
+    elif kind == "bus":
+        bus(img, 4, s * 0.24, s - 8, s * 0.52, BLACK, WHITE)
+    elif kind == "taxi":
+        taxi(img, 4, s * 0.2, s - 8, s * 0.6, BLACK, WHITE)
+    elif kind == "restroom":
+        restroom(img, 0, 0, s, BLACK)
+    elif kind == "exit":
+        running_exit(img, 0, 0, s, BLACK, WHITE)
+    return img
+
+
+def panel_arrow():
+    """The large sign's arrow: white, pointing right, on clear; the renderer tints and turns it."""
+    s = PANEL_SPRITE
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    gp.arrow(img, 4, 12, s - 8, 40, WHITE, True)
+    return img
+
+
+def wayfinding_panel():
+    reg = "airport_wayfinding_panel"
+    for kind in PANEL_PICTOGRAMS:
+        C.texture("wayfinding_picto_" + kind)(lambda k=kind: panel_pictogram(k))
+    C.texture("wayfinding_arrow")(panel_arrow)
+    f, lip = PANEL_FRAME, PANEL_LIP
+    z0, z1 = PANEL_Z0 - lip, PANEL_Z1 + lip
+    # facing north the reader looks south, so the reader's left is east (x = 16)
+    parts = [
+        ("body", {}, [B((0, 0, PANEL_Z0), (16, 16, PANEL_Z1), "panel", ("north", "south"))]),
+        ("edge_left", {"edge_left": True}, [B((16 - f, 0, z0), (16, 16, z1), "frame", ALL)]),
+        ("edge_right", {"edge_right": True}, [B((0, 0, z0), (f, 16, z1), "frame", ALL)]),
+        ("edge_top", {"edge_top": True}, [B((0, 16 - f, z0), (16, 16, z1), "frame", ALL)]),
+        ("edge_bottom", {"edge_bottom": True}, [B((0, 0, z0), (16, f, z1), "frame", ALL)]),
+    ]
+    tex = {"panel": C.T("graphite"), "frame": C.T("stainless"), "particle": C.T("graphite")}
+    models, state = multipart(parts, reg, tex)
+    item = item_of(parts, tex, keep=lambda cond: True, display=gui_display(0.6))
+    # The renderer's sprites are on the atlas through TileEntityWayfindingPanelRenderer's
+    # texture stitch handler, since no face of a model draws them. They are named here too, where
+    # nothing draws with them, so atlas_budget.py counts them.
+    for kind in PANEL_PICTOGRAMS:
+        item["textures"]["picto_" + kind] = C.T("wayfinding_picto_" + kind)
+    item["textures"]["arrow"] = C.T("wayfinding_arrow")
+    C.add(reg, 'new BlockWayfindingPanel("%s")' % reg,
+          names_of("Large Hanging Sign", "Großes Hängeschild", "Letrero Colgante Grande",
+                   "Stor Hängande Skylt"),
+          models, state, item=item, tab=TAB)
+
+    def lang(key, en, de, es, sv):
+        C.add_lang("gui.csm.wayfinding." + key, (en, de, es, sv))
+    lang("line1", "Top line", "Obere Zeile", "Línea superior", "Övre rad")
+    lang("line2", "Bottom line (optional)", "Untere Zeile (optional)",
+         "Línea inferior (opcional)", "Nedre rad (valfri)")
+    lang("pictogram", "Pictogram: %s", "Piktogramm: %s", "Pictograma: %s", "Piktogram: %s")
+    lang("arrow", "Arrow: %s", "Pfeil: %s", "Flecha: %s", "Pil: %s")
+    lang("scheme", "Colours: %s", "Farben: %s", "Colores: %s", "Färger: %s")
+    lang("double", "Both sides: %s", "Beide Seiten: %s", "Ambas caras: %s", "Båda sidor: %s")
+    lang("preset", "Preset: %s", "Vorlage: %s", "Plantilla: %s", "Mall: %s")
+    lang("preset.none", "Apply a preset", "Vorlage anwenden", "Aplicar una plantilla",
+         "Använd en mall")
+    lang("size", "Sign: %d x %d blocks", "Schild: %d x %d Blöcke", "Letrero: %d x %d bloques",
+         "Skylt: %d x %d block")
+    lang("hint", "Panels side by side and stacked join into one sign, up to 16 x 6",
+         "Tafeln neben- und übereinander bilden ein Schild, bis 16 x 6",
+         "Los paneles contiguos y apilados forman un letrero, hasta 16 x 6",
+         "Paneler bredvid och ovanpå varandra blir en skylt, upp till 16 x 6")
+    for key, en, de, es, sv in (
+            ("none", "None", "Keins", "Ninguno", "Inget"),
+            ("depart", "Departures", "Abflug", "Salidas", "Avgångar"),
+            ("arrive", "Arrivals", "Ankunft", "Llegadas", "Ankomster"),
+            ("checkin", "Check-in", "Check-in", "Facturación", "Incheckning"),
+            ("baggage", "Baggage claim", "Gepäckausgabe", "Recogida de equipaje",
+             "Bagageutlämning"),
+            ("ground", "Ground transport", "Bus und Taxi", "Transporte terrestre",
+             "Buss och taxi"),
+            ("train", "Train", "Zug", "Tren", "Tåg"),
+            ("bus", "Bus", "Bus", "Autobús", "Buss"),
+            ("taxi", "Taxi", "Taxi", "Taxi", "Taxi"),
+            ("restroom", "Restrooms", "Toiletten", "Aseos", "Toaletter"),
+            ("exit", "Exit", "Ausgang", "Salida", "Utgång")):
+        lang("pictogram." + key, en, de, es, sv)
+    for key, en, de, es, sv in (
+            ("none", "None", "Keiner", "Ninguna", "Ingen"),
+            ("left", "Left", "Links", "Izquierda", "Vänster"),
+            ("right", "Right", "Rechts", "Derecha", "Höger"),
+            ("up", "Up (ahead)", "Oben (geradeaus)", "Arriba (de frente)", "Upp (rakt fram)"),
+            ("down", "Down", "Unten", "Abajo", "Ned"),
+            ("up_left", "Up left", "Links oben", "Arriba a la izquierda", "Upp vänster"),
+            ("up_right", "Up right", "Rechts oben", "Arriba a la derecha", "Upp höger"),
+            ("down_left", "Down left", "Links unten", "Abajo a la izquierda", "Ned vänster"),
+            ("down_right", "Down right", "Rechts unten", "Abajo a la derecha", "Ned höger")):
+        lang("arrow." + key, en, de, es, sv)
+    for key, en, de, es, sv in (
+            ("airport", "Airport", "Flughafen", "Aeropuerto", "Flygplats"),
+            ("metro", "Metro", "Metro", "Metro", "Tunnelbana"),
+            ("exit", "Exit", "Ausgang", "Salida", "Utgång"),
+            ("info", "Information", "Information", "Información", "Information")):
+        lang("scheme." + key, en, de, es, sv)
+
+
 # BlockGateSign: the panel and its three cells, facing north, in sixteenths
 GATE_X0, GATE_X1 = 2.0, 14.0
 GATE_Y0, GATE_SPLIT_Y, GATE_Y1 = 3.0, 8.0, 10.0
@@ -1434,6 +1612,7 @@ boards()
 carousel()
 gate_sign()
 wayfinding_signs()
+wayfinding_panel()
 luggage_cart()
 cart_rack()
 

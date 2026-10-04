@@ -835,8 +835,8 @@ panes and a fastener kit. `audit_fabricator_costs.py` mirrors the branch.
 
 ## Airports
 
-Twenty-five blocks and one item in `transit.airport`, all drawn by `gen_transit_airport.py`, with
-one sound (`kiosk_print`) from `gen_transit_sounds.py`. Every airline, flight number and city is
+Twenty-five blocks and one item in `transit.airport`, and the large hanging sign in
+`transit.wayfinding`, all drawn by `gen_transit_airport.py`, with one sound (`kiosk_print`) from `gen_transit_sounds.py`. Every airline, flight number and city is
 invented, and every pictogram generic (a plane, a suitcase, a bus, a taxi).
 
 ### Terminal only
@@ -871,6 +871,7 @@ the world: an install without Life Safety simply has no detector.
 | Baggage Carousel | `csm:airport_baggage_carousel` | `BlockBaggageCarousel` |
 | Gate Sign | `csm:airport_gate_sign` | `BlockGateSign` |
 | Airport Sign (Gates, Arrivals, Check-In, Baggage Claim, Ground Transport) | `csm:airport_sign_<name>` | `transit.platform.BlockPlatformFixture` |
+| Large Hanging Sign | `csm:airport_wayfinding_panel` | `transit.wayfinding.BlockWayfindingPanel` |
 | Luggage Cart | `csm:airport_luggage_cart` | `transit.platform.BlockPlatformFixture` |
 | Luggage Cart Rack | `csm:airport_cart_rack` | `transit.platform.BlockPlatformRun` |
 | Boarding Pass (item) | `csm:boarding_pass` | `ItemBoardingPass` |
@@ -1016,6 +1017,61 @@ follows from where the loop's edge is.
   with the pictogram and the arrow swapped over, so from either side the arrow points the same way
   in the world; turning the sign round points it the other way.
 
+### The large hanging sign
+
+The one-block wayfinding signs read as specks under a terminal ceiling fourteen blocks up, so
+there is a large one beside them (they are unchanged): `airport_wayfinding_panel`, a backlit
+panel built to size from cells, the legend set in a screen rather than baked.
+
+- **Building it.** Cells placed side by side and stacked, facing the same way (each faces the
+  player who places it), join into one panel up to 16 wide and 6 tall (`WayfindingSign.MAX_*`).
+  Each cell's baked model is a graphite slab 4 px deep (z 6..10 facing north) with a frame on the
+  panel's outer edges only, picked by four actual-state booleans (`edge_left`, `edge_right`,
+  `edge_top`, `edge_bottom`, named as the reader sees them), so the state count is 4 x 16.
+- **The controller** is the bottom-left cell as read. Its width is how far its row runs to the
+  reader's right, its height how far its column runs up; a cell outside that rectangle (a ragged
+  build, or past 16 x 6) is drawn plain. Only the controller's renderer
+  (`TileEntityWayfindingPanelRenderer`) draws: the legend once across the whole face, fullbright
+  as a backlit sign is, and the same on the back with the arrow mirrored so it points the same
+  way in the world (`doubleSided`, on by default). Past 96 blocks only the slab shows.
+- **Setting it up.** Right-click any cell with an empty hand (GUI 46): two lines (printable ASCII,
+  32 characters), cycle buttons for the pictogram (none, departures, arrivals, check-in, baggage,
+  ground transport, train, bus, taxi, restrooms, exit), the arrow (none and eight directions) and
+  the colours (Airport yellow on charcoal with a yellow pictogram square, Metro white on navy,
+  Exit white on green, Information white on blue), the back toggle, and a Preset button that sets
+  the whole sign: GATES, ARRIVALS, CHECK-IN, BAGGAGE CLAIM, GROUND TRANSPORTATION, TO TRAINS,
+  EXIT, RESTROOMS. A preset with no arrow of its own keeps the sign's, since which way a sign
+  points depends on where it hangs. Every change is sent at once (`WayfindingPanelPacket`); the
+  server checks reach to the cell clicked, `allowEdit` and `isBlockModifiable`, cleans the lines
+  again, and writes the sign to every cell of the panel.
+- **Every cell holds the sign.** An edit writes them all, and a cell a player places against a
+  panel copies its neighbour's, so adding a column on the left or a row below (which moves the
+  controller) or breaking the controller keeps the legend. `/fill` and `/setblock` do not run
+  placement, so cells made that way start as the default GATES sign until edited.
+- **Layout.** The pictogram is a square the panel's height less its margins, at the end away from
+  the arrow; the arrow is 0.8 of that at the end it points to (the left end for the three
+  leftward arrows); the text sits left-aligned between them in Highway Gothic, its capitals 0.45
+  of the panel's height on one line or 0.28 each on two, both lines scaled down together to fit
+  the width. A long word on a narrow panel is therefore small: GROUND / TRANSPORTATION wants a
+  panel seven or more wide at two tall.
+- **Hanging.** Over the top row the renderer hangs two rods, or one for about every four blocks of
+  a wider panel, each from the panel's top up through air to the first block above, at most 24
+  blocks; a rod with a block right on top of the panel, or with nothing within reach, is not drawn.
+- **What it costs.** The layout (controller or not, size, rods, render box) is cached on the tile
+  entity and worked out again only when a chunk section holding a cell was rebuilt (the block's
+  `getActualState` under a `ChunkCache` bumps a counter, which is how a neighbour change shows on
+  the client) or every two seconds for a ceiling changing out of reach of that signal; a cell that
+  is not the controller costs two block lookups. The glyphs are one display list per controller,
+  keyed by the text and placed and scaled outside it; the background, pictogram and arrow are a
+  quad each. The renderer is global, so a sixteen-block panel whose controller's section is culled
+  still draws.
+- **Sprites.** The ten pictograms (64 px, black art on a white square the renderer tints) and the
+  arrow are `wayfinding_picto_<id>` and `wayfinding_arrow`, drawn by the generator's
+  `wayfinding_panel()` from the same `pictogram()` drawings as the small signs plus a train, a bus,
+  a taxi, a restroom pair and a running figure at a doorway, all generic. No model face draws them,
+  so the renderer's `Sprites` handler puts them on the atlas at the stitch; the item model names
+  them too, unused, so `atlas_budget.py` counts them.
+
 ### Traps
 
 - **The airlines are named in two places.** `FlightSchedule.AIRLINES` and the generator's
@@ -1031,6 +1087,10 @@ follows from where the loop's edge is.
   moved the screen forward, past the depth the renderer draws at, and the whole lit screen and its
   text vanished behind the baked one with no error. A face a renderer draws on must be more than
   0.2 from any other face of its model.
+- **The large sign's enums are saved by id.** `WayfindingSign`'s pictograms, arrows and schemes
+  are written to NBT by their `id` strings (`p`, `a`, `s`), never their ordinals, so they may be
+  reordered or added to; the pictogram ids are also the sprites' names in the generator's
+  `PANEL_PICTOGRAMS`, which must list the same ones.
 - **The boards follow the world's time of day, not total time.** `/time set` jumps the boards with
   the clocks, which is right; total world time would put them out of step with every clock in the
   mod.
@@ -1043,7 +1103,8 @@ module and sheet metal; the X-ray an enclosure shell, a control board, an optica
 wiring harness; the pass scanner a control board, an optical sensor and sheet metal; a board an LED
 module, a control board and sheet metal; the carousel two sheet metal, a wiring harness and a
 fastener kit; a stanchion a pole section and a fastener kit; trays and the cart a sheet metal and a
-fastener kit; the signs a sign blank and a fastener kit; the rollers, divesting table, seating and
+fastener kit; the signs a sign blank and a fastener kit, and each cell of the large hanging sign a
+sign blank and an LED module; the rollers, divesting table, seating and
 cart rack two sheet metal and a fastener kit. `audit_fabricator_costs.py` mirrors the branches.
 
 ### Airside
