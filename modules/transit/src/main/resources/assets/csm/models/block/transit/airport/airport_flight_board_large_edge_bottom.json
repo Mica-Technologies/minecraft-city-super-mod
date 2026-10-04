@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "bezel": "csm:blocks/transit/airport/bezel",
+    "frame": "csm:blocks/transit/airport/graphite",
+    "particle": "csm:blocks/transit/airport/bezel"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        12.4
+      ],
+      "to": [
+        16,
+        0.8,
+        15.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            15.2,
+            16,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            15.2,
+            16,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0.4,
+            15.2,
+            3.6,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            12.4,
+            15.2,
+            15.6,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            12.4,
+            16,
+            15.6
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0.4,
+            16,
+            3.6
+          ]
+        }
+      }
+    }
+  ]
+}

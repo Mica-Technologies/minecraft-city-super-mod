@@ -221,6 +221,11 @@ public final class TransitFabricatorRules {
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
             FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
             FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "airport_flight_board_large_departures":
+      case "airport_flight_board_large_arrivals":
+        // a cell of a large screen: its share of the panel and the bezel round it
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
       case "airport_wayfinding_panel":
         // a backlit sign cell: its face and the lamp behind it
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),

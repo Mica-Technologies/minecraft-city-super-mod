@@ -453,6 +453,8 @@ def cost_for(registry, info, ancestors):
                 return ("ENCLOSURE_SHELL", "CONTROL_BOARD", "OPTICAL_SENSOR", "WIRING_HARNESS")
             if registry == "airport_boarding_pass_scanner":
                 return ("CONTROL_BOARD", "OPTICAL_SENSOR", "SHEET_METAL")
+            if registry.startswith("airport_flight_board_large_"):
+                return ("LED_MODULE", "SHEET_METAL")
             if registry.startswith("airport_flight_board_"):
                 return ("LED_MODULE", "CONTROL_BOARD", "SHEET_METAL")
             if registry == "airport_wayfinding_panel":
